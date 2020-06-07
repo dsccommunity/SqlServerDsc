@@ -175,7 +175,7 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                 -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
 
-        SqlServerRole ('Add{0}ToDbCreator' -f $Node.SqlLogin_UserName)
+        SqlRole ('Add{0}ToDbCreator' -f $Node.SqlLogin_UserName)
         {
             Ensure               = 'Present'
             ServerRoleName       = 'dbcreator'

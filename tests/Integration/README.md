@@ -269,7 +269,7 @@ DSCRS2016 | RS | The Reporting Services is initialized, and in a working state.
 - **DatabaseServerName:** `$env:COMPUTERNAME`
 - **DatabaseInstanceName:** DSCSQLTEST
 
-## SqlServerRole
+## SqlRole
 
 **Run order:** 3
 

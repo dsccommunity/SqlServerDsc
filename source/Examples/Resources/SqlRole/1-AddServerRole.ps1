@@ -18,7 +18,7 @@ Configuration Example
 
     node localhost
     {
-        SqlServerRole 'Add_ServerRole_MyServerRole1'
+        SqlRole 'Add_ServerRole_MyServerRole1'
         {
             Ensure               = 'Present'
             ServerRoleName       = 'MyServerRole1'
@@ -28,7 +28,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerRole 'Add_ServerRole_MyServerRole2'
+        SqlRole 'Add_ServerRole_MyServerRole2'
         {
             Ensure               = 'Present'
             ServerRoleName       = 'MyServerRole2'

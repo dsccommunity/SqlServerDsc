@@ -99,6 +99,7 @@ in a future release.
     - `SqlServerProtocol` was renamed to `SqlProtocol`.
     - `SqlServerProtocolTcpIp` was renamed to `SqlProtocolTcpIp`.
     - `SqlServerReplication` was renamed to `SqlReplication`.
+    - `SqlServerRole` was renamed to `SqlRole`.
   - Changed all resource prefixes from `MSFT_` to `DSC_` ([issue #1496](https://github.com/dsccommunity/SqlServerDsc/issues/1496)).
     _Deprecated resource has not changed prefix._
   - All resources are now using the common module DscResource.Common.
@@ -195,7 +196,7 @@ in a future release.
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
   - Normalize parameter descriptive text for default values.
-- SqlServerRole
+- SqlRole
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
   - Normalize parameter descriptive text for default values.

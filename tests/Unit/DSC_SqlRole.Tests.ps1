@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Automated unit test for DSC_SqlServerRole DSC resource.
+        Automated unit test for DSC_SqlRole DSC resource.
 
 #>
 
@@ -12,7 +12,7 @@ if (-not (Test-BuildCategory -Type 'Unit'))
 }
 
 $script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlServerRole'
+$script:dscResourceName = 'DSC_SqlRole'
 
 function Invoke-TestSetup
 {
@@ -222,7 +222,7 @@ try
 
         #endregion
 
-        Describe "DSC_SqlServerRole\Get-TargetResource" -Tag 'Get' {
+        Describe "DSC_SqlRole\Get-TargetResource" -Tag 'Get' {
             BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
@@ -626,7 +626,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe "DSC_SqlServerRole\Test-TargetResource" -Tag 'Test' {
+        Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
@@ -795,7 +795,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe "DSC_SqlServerRole\Set-TargetResource" -Tag 'Set' {
+        Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
             BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName New-Object -MockWith $mockNewObjectServerRole -ParameterFilter {
@@ -1207,7 +1207,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe 'DSC_SqlServerRole\Test-SqlSecurityPrincipal' -Tag 'Helper' {
+        Describe 'DSC_SqlRole\Test-SqlSecurityPrincipal' -Tag 'Helper' {
             BeforeAll {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 

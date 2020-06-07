@@ -18,7 +18,7 @@ Configuration Example
 
     node localhost
     {
-        SqlServerRole 'Drop_ServerRole_AdminSqlforBI'
+        SqlRole 'Drop_ServerRole_AdminSqlforBI'
         {
             Ensure               = 'Present'
             ServerRoleName       = 'AdminSqlforBI'

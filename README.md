@@ -132,7 +132,7 @@ in a future release.
   protocol IP address groups for a SQL Server instance.
 * [**SqlReplication**](#sqlreplication) resource to manage SQL Replication
   distribution and publishing.
-* [**SqlServerRole**](#sqlserverrole) resource to manage SQL server roles.
+* [**SqlRole**](#sqlrole) resource to manage SQL server roles.
 * [**SqlServerSecureConnection**](#sqlserversecureconnection) resource to
   enable encrypted SQL connections.
 * [**SqlServiceAccount**](#sqlserviceaccount) Manage the service account
@@ -1726,7 +1726,7 @@ This resource manage SQL Replication distribution and publishing.
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlReplication).
 
-### SqlServerRole
+### SqlRole
 
 This resource is used to create a server role, when Ensure is set to 'Present'.
 Or remove a server role, when Ensure is set to 'Absent'. The resource also manages
@@ -1763,15 +1763,15 @@ server roles, please read the below articles.
 
 #### Examples
 
-* [Add server role](/source/Examples/Resources/SqlServerRole/1-AddServerRole.ps1)
-* [Remove server role](/source/Examples/Resources/SqlServerRole/2-RemoveServerRole.ps1)
-* [Add members to server role](/source/Examples/Resources/SqlServerRole/3-AddMembersToServerRole.ps1)
-* [Members to include in server role](/source/Examples/Resources/SqlServerRole/4-MembersToIncludeInServerRole.ps1)
-* [Members to exclude from server role](/source/Examples/Resources/SqlServerRole/5-MembersToExcludeInServerRole.ps1)
+* [Add server role](/source/Examples/Resources/SqlRole/1-AddServerRole.ps1)
+* [Remove server role](/source/Examples/Resources/SqlRole/2-RemoveServerRole.ps1)
+* [Add members to server role](/source/Examples/Resources/SqlRole/3-AddMembersToServerRole.ps1)
+* [Members to include in server role](/source/Examples/Resources/SqlRole/4-MembersToIncludeInServerRole.ps1)
+* [Members to exclude from server role](/source/Examples/Resources/SqlRole/5-MembersToExcludeInServerRole.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerRole).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlRole).
 
 ### SqlServerSecureConnection
 

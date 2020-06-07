@@ -70,7 +70,7 @@
         'SqlProtocol'
         'SqlProtocolTcpIp'
         'SqlReplication'
-        'SqlServerRole'
+        'SqlRole'
         'SqlServerSecureConnection'
         'SqlServiceAccount'
         'SqlSetup'

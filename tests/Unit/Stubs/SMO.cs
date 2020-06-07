@@ -525,7 +525,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.ServerRole
     // BaseType: Microsoft.SqlServer.Management.Smo.ScriptNameObjectBase
     // Used by:
-    //  DSC_SqlServerRole
+    //  DSC_SqlRole
     public class ServerRole
     {
         public ServerRole( Server server, string name ) {

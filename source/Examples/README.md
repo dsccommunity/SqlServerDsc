@@ -33,7 +33,7 @@ These are the links to the examples for each individual resource.
 - [SqlMemory](Resources/SqlMemory)
 - [SqlPermission](Resources/SqlPermission)
 - [SqlReplication](Resources/SqlReplication)
-- [SqlServerRole](Resources/SqlServerRole)
+- [SqlRole](Resources/SqlRole)
 - [SqlServerSecureConnection](Resources/SqlServerSecureConnection)
 - [SqlServiceAccount](Resources/SqlServiceAccount)
 - [SqlSetup](Resources/SqlSetup)

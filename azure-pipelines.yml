@@ -155,7 +155,7 @@ stages:
                   'tests/Integration/DSC_SqlServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
                   # Group 3
-                  'tests/Integration/DSC_SqlServerRole.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
@@ -222,7 +222,7 @@ stages:
                   'tests/Integration/DSC_SqlServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
                   # Group 3
-                  'tests/Integration/DSC_SqlServerRole.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'

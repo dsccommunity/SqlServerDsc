@@ -17,7 +17,7 @@ Configuration Example
 
     node localhost
     {
-        SqlServerRole 'Remove_ServerRole'
+        SqlRole 'Remove_ServerRole'
         {
             Ensure               = 'Absent'
             ServerRoleName       = 'serverRoleToDelete'

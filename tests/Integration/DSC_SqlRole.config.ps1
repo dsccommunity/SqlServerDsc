@@ -44,13 +44,13 @@ else
     .SYNOPSIS
         Adds a server role with a single member.
 #>
-Configuration DSC_SqlServerRole_AddRole1_Config
+Configuration DSC_SqlRole_AddRole1_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerRole 'Integration_Test'
+        SqlRole 'Integration_Test'
         {
             Ensure               = 'Present'
             ServerRoleName       = $Node.Role1Name
@@ -71,13 +71,13 @@ Configuration DSC_SqlServerRole_AddRole1_Config
     .SYNOPSIS
         Adds a server role without any members.
 #>
-Configuration DSC_SqlServerRole_AddRole2_Config
+Configuration DSC_SqlRole_AddRole2_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerRole 'Integration_Test'
+        SqlRole 'Integration_Test'
         {
             Ensure               = 'Present'
             ServerRoleName       = $Node.Role2Name
@@ -95,13 +95,13 @@ Configuration DSC_SqlServerRole_AddRole2_Config
     .SYNOPSIS
         Adds a server role with multiple members.
 #>
-Configuration DSC_SqlServerRole_AddRole3_Config
+Configuration DSC_SqlRole_AddRole3_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerRole 'Integration_Test'
+        SqlRole 'Integration_Test'
         {
             Ensure               = 'Present'
             ServerRoleName       = $Node.Role3Name
@@ -126,13 +126,13 @@ Configuration DSC_SqlServerRole_AddRole3_Config
         Role1 started out with one member, but will end up containing only two
         new members.
 #>
-Configuration DSC_SqlServerRole_Role1_ChangeMembers_Config
+Configuration DSC_SqlRole_Role1_ChangeMembers_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerRole 'Integration_Test'
+        SqlRole 'Integration_Test'
         {
             Ensure               = 'Present'
             ServerRoleName       = $Node.Role1Name
@@ -154,13 +154,13 @@ Configuration DSC_SqlServerRole_Role1_ChangeMembers_Config
     .SYNOPSIS
         Adding multiple members to an existing group, saving any previous members.
 #>
-Configuration DSC_SqlServerRole_Role2_AddMembers_Config
+Configuration DSC_SqlRole_Role2_AddMembers_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerRole 'Integration_Test'
+        SqlRole 'Integration_Test'
         {
             Ensure               = 'Present'
             ServerRoleName       = $Node.Role2Name
@@ -183,13 +183,13 @@ Configuration DSC_SqlServerRole_Role2_AddMembers_Config
     .SYNOPSIS
         Removes two members from an existing group.
 #>
-Configuration DSC_SqlServerRole_Role2_RemoveMembers_Config
+Configuration DSC_SqlRole_Role2_RemoveMembers_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerRole 'Integration_Test'
+        SqlRole 'Integration_Test'
         {
             Ensure               = 'Present'
             ServerRoleName       = $Node.Role2Name
@@ -211,13 +211,13 @@ Configuration DSC_SqlServerRole_Role2_RemoveMembers_Config
     .SYNOPSIS
         Removes an existing group.
 #>
-Configuration DSC_SqlServerRole_RemoveRole3_Config
+Configuration DSC_SqlRole_RemoveRole3_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerRole 'Integration_Test'
+        SqlRole 'Integration_Test'
         {
             Ensure               = 'Absent'
             ServerRoleName       = $Node.Role3Name
@@ -235,13 +235,13 @@ Configuration DSC_SqlServerRole_RemoveRole3_Config
     .SYNOPSIS
         Adds a custom server role to an existing role
 #>
-Configuration DSC_SqlServerRole_AddNestedRole_Config
+Configuration DSC_SqlRole_AddNestedRole_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     Node $AllNodes.NodeName
     {
-        SqlServerRole $Node.Role4Name
+        SqlRole $Node.Role4Name
         {
             Ensure = 'Present'
             ServerRoleName = $Node.Role4Name
@@ -256,7 +256,7 @@ Configuration DSC_SqlServerRole_AddNestedRole_Config
                 )
         }
 
-        SqlServerRole $Node.Role5Name
+        SqlRole $Node.Role5Name
         {
             Ensure = 'Present'
             ServerRoleName = $Node.Role5Name
@@ -265,7 +265,7 @@ Configuration DSC_SqlServerRole_AddNestedRole_Config
 
             MembersToInclude = $Node.Role4Name
 
-            DependsOn = "[SqlServerRole]$($Node.Role4Name)"
+            DependsOn = "[SqlRole]$($Node.Role4Name)"
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -281,13 +281,13 @@ Configuration DSC_SqlServerRole_AddNestedRole_Config
     .SYNOPSIS
         Removes a custom server role to an existing role
 #>
-Configuration DSC_SqlServerRole_RemoveNestedRole_Config
+Configuration DSC_SqlRole_RemoveNestedRole_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     Node $AllNodes.NodeName
     {
-        SqlServerRole $Node.Role5Name
+        SqlRole $Node.Role5Name
         {
             Ensure = 'Present'
             ServerRoleName = $Node.Role5Name
