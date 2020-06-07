@@ -1,5 +1,5 @@
-[ClassVersion("1.0.0.0"), FriendlyName("SqlServerProtocol")]
-class DSC_SqlServerProtocol : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("SqlProtocol")]
+class DSC_SqlProtocol : OMI_BaseResource
 {
     [Key, Description("Specifies the name of the SQL Server instance to enable the protocol for.")] String InstanceName;
     [Key, Description("Specifies the name of network protocol to be configured. Possible values are 'TcpIp', 'NamedPipes', or 'ShareMemory'."), ValueMap{"SharedMemory", "NamedPipes", "TcpIp"}, Values{"SharedMemory", "NamedPipes", "TcpIp"}] String ProtocolName;

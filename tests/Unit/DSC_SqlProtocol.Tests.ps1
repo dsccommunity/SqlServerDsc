@@ -1,10 +1,10 @@
 <#
     .SYNOPSIS
-        Automated unit test for DSC_SqlServerProtocol DSC resource.
+        Automated unit test for DSC_SqlProtocol DSC resource.
 #>
 
 $script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlServerProtocol'
+$script:dscResourceName = 'DSC_SqlProtocol'
 
 function Invoke-TestSetup
 {
@@ -38,7 +38,7 @@ try
     InModuleScope $script:dscResourceName {
         Set-StrictMode -Version 1.0
 
-        Describe 'SqlServerProtocol\Get-TargetResource' -Tag 'Get' {
+        Describe 'SqlProtocol\Get-TargetResource' -Tag 'Get' {
             BeforeAll {
                 $mockInstanceName = 'DSCTEST'
 
@@ -215,7 +215,7 @@ try
             }
         }
 
-        Describe 'SqlServerProtocol\Test-TargetResource' -Tag 'Test' {
+        Describe 'SqlProtocol\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 $testTargetResourceParameters = @{
                     InstanceName = 'DSCTEST'
@@ -264,7 +264,7 @@ try
             }
         }
 
-        Describe 'SqlServerProtocol\Compare-TargetResourceState' -Tag 'Compare' {
+        Describe 'SqlProtocol\Compare-TargetResourceState' -Tag 'Compare' {
             BeforeAll {
                 $mockInstanceName = 'DSCTEST'
             }
@@ -574,7 +574,7 @@ try
             }
         }
 
-        Describe 'SqlServerProtocol\Set-TargetResource' -Tag 'Set' {
+        Describe 'SqlProtocol\Set-TargetResource' -Tag 'Set' {
             BeforeAll {
                 $mockInstanceName = 'DSCTEST'
             }

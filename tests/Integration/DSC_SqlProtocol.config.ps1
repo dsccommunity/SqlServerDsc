@@ -33,13 +33,13 @@ else
     .SYNOPSIS
         Disables Named Pipes.
 #>
-Configuration DSC_SqlServerProtocol_DisableNamedPipes_Config
+Configuration DSC_SqlProtocol_DisableNamedPipes_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerProtocol 'Integration_Test'
+        SqlProtocol 'Integration_Test'
         {
             InstanceName         = $Node.InstanceName
             ProtocolName         = 'NamedPipes'
@@ -56,13 +56,13 @@ Configuration DSC_SqlServerProtocol_DisableNamedPipes_Config
     .SYNOPSIS
         Enabled Named Pipes.
 #>
-Configuration DSC_SqlServerProtocol_EnableNamedPipes_Config
+Configuration DSC_SqlProtocol_EnableNamedPipes_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerProtocol 'Integration_Test'
+        SqlProtocol 'Integration_Test'
         {
             InstanceName         = $Node.InstanceName
             ProtocolName         = 'NamedPipes'

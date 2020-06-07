@@ -32,15 +32,15 @@ in a future release.
     property in the resource _SqlEndpoint_ ([issue #968](https://github.com/dsccommunity/SqlServerDsc/issues/968)).
 - SqlServerNetwork
   - This resource is now deprecated. The functionality is now covered by
-    the resources _SqlServerProtocol_ and _SqlServerProtocolTcpIp_.
+    the resources _SqlProtocol_ and _SqlProtocolTcpIp_.
 
 ### Added
 
 - SqlSetup
   - Added support for major version upgrade ([issue #1561](https://github.com/dsccommunity/SqlServerDsc/issues/1561)).
 - SqlServerDsc
-  - Added new resource SqlServerProtocol ([issue #1377](https://github.com/dsccommunity/SqlServerDsc/issues/1377)).
-  - Added new resource SqlServerProtocolTcpIp ([issue #1378](https://github.com/dsccommunity/SqlServerDsc/issues/1378)).
+  - Added new resource SqlProtocol ([issue #1377](https://github.com/dsccommunity/SqlServerDsc/issues/1377)).
+  - Added new resource SqlProtocolTcpIp ([issue #1378](https://github.com/dsccommunity/SqlServerDsc/issues/1378)).
   - Fixing a problem with the latest ModuleBuild 1.7.0 that breaks the CI
     pipeline.
   - Prepare repository for auto-documentation by adding README.md to each
@@ -96,6 +96,8 @@ in a future release.
     - `SqlServerMaxDop` was renamed to `SqlMaxDop`.
     - `SqlServerMemory` was renamed to `SqlMemory`.
     - `SqlServerPermission` was renamed to `SqlPermission`.
+    - `SqlServerProtocol` was renamed to `SqlProtocol`.
+    - `SqlServerProtocolTcpIp` was renamed to `SqlProtocolTcpIp`.
   - Changed all resource prefixes from `MSFT_` to `DSC_` ([issue #1496](https://github.com/dsccommunity/SqlServerDsc/issues/1496)).
     _Deprecated resource has not changed prefix._
   - All resources are now using the common module DscResource.Common.

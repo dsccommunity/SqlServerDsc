@@ -1,6 +1,6 @@
 <#
     .DESCRIPTION
-        This example will disable the TCP/IP protocol.
+        This example will disable the Shared Memory protocol.
 
         The resource will be run as the account provided in $SystemAdministratorAccount.
 #>
@@ -17,10 +17,10 @@ Configuration Example
 
     node localhost
     {
-        SqlServerProtocol 'ChangeTcpIpOnDefaultInstance'
+        SqlProtocol 'ChangeTcpIpOnDefaultInstance'
         {
             InstanceName           = 'MSSQLSERVER'
-            ProtocolName           = 'TcpIp'
+            ProtocolName           = 'SharedMemory'
             Enabled                = $false
 
             PsDscRunAsCredential   = $SystemAdministratorAccount

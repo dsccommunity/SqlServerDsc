@@ -17,7 +17,7 @@ Configuration Example
 
     node localhost
     {
-        SqlServerProtocol 'DisableListenAllIPAddresses'
+        SqlProtocol 'DisableListenAllIPAddresses'
         {
             InstanceName           = 'MSSQLSERVER'
             ProtocolName           = 'TcpIp'
@@ -27,7 +27,7 @@ Configuration Example
             PsDscRunAsCredential   = $SystemAdministratorAccount
         }
 
-        SqlServerProtocolTcpIP 'ChangeIP1'
+        SqlProtocolTcpIP 'ChangeIP1'
         {
             InstanceName         = 'MSSQLSERVER'
             IpAddressGroup       = 'IP1'

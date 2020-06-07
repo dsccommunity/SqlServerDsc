@@ -1,5 +1,5 @@
-[ClassVersion("1.0.0.0"), FriendlyName("SqlServerProtocolTcpIp")]
-class DSC_SqlServerProtocolTcpIp : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("SqlProtocolTcpIp")]
+class DSC_SqlProtocolTcpIp : OMI_BaseResource
 {
     [Key, Description("Specifies the name of the SQL Server instance to manage the IP address group for.")] String InstanceName;
     [Key, Description("Specifies the name of the IP address group in the TCP/IP protocol, e.g. 'IP1', 'IP2' etc., or 'IPAll'.")] String IpAddressGroup;

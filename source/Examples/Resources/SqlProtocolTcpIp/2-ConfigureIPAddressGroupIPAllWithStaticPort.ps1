@@ -1,6 +1,6 @@
 <#
     .DESCRIPTION
-        This example will set the TCP/IP address group IPAll to use dynamic port.
+        This example will set the TCP/IP address group IPAll to use static ports.
 
         The resource will be run as the account provided in $SystemAdministratorAccount.
 #>
@@ -17,11 +17,11 @@ Configuration Example
 
     node localhost
     {
-        SqlServerProtocolTcpIP 'ChangeIPAll'
+        SqlProtocolTcpIP 'ChangeIPAll'
         {
             InstanceName           = 'MSSQLSERVER'
             IpAddressGroup         = 'IPAll'
-            UseTcpDynamicPort      = $true
+            TcpPort                = '1433,1500,1501'
 
             PsDscRunAsCredential   = $SystemAdministratorAccount
         }

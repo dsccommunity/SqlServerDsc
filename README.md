@@ -74,8 +74,8 @@ in a future release.
 * SqlDatabaseOwner _(replaced by a property in [**SqlDatabase**](#sqldatabase))_.
 * SqlDatabaseRecoveryModel _(replaced by a property in [**SqlDatabase**](#sqldatabase))_.
 * SqlServerEndpointState _(replaced by a property in [**SqlEndpoint**](#sqlendpoint))_.
-* SqlServerNetwork _(replaced by [**SqlServerProtocol**](#sqlserverprotocol) and_
-  _[**SqlServerProtocolTcpIp**](#sqlserverprotocoltcpip))_.
+* SqlServerNetwork _(replaced by [**SqlProtocol**](#sqlprotocol) and_
+  _[**SqlProtocolTcpIp**](#sqlprotocoltcpip))_.
 
 ## Resources
 
@@ -126,9 +126,9 @@ in a future release.
 * [**SqlMemory**](#sqlmemory) resource to manage Memory for SQL Server.
 * [**SqlPermission**](#sqlpermission) Grant or revoke permission on
   the SQL Server.
-* [**SqlServerProtocol**](#sqlserverprotocol) resource manage the SQL Server
+* [**SqlProtocol**](#sqlprotocol) resource manage the SQL Server
   protocols for a SQL Server instance.
-* [**SqlServerProtocolTcpIp**](#sqlserverprotocoltcpip) resource manage the TCP/IP
+* [**SqlProtocolTcpIp**](#sqlprotocoltcpip) resource manage the TCP/IP
   protocol IP address groups for a SQL Server instance.
 * [**SqlServerReplication**](#sqlserverreplication) resource to manage SQL Replication
   distribution and publishing.
@@ -1553,9 +1553,9 @@ AlterAnyEndPoint and ViewServerState.
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlPermission).
 
-### SqlServerProtocol
+### SqlProtocol
 
-The `SqlServerProtocol` DSC resource manage the SQL Server protocols
+The `SqlProtocol` DSC resource manage the SQL Server protocols
 for a SQL Server instance.
 
 #### Requirements
@@ -1608,20 +1608,20 @@ for a SQL Server instance.
 
 #### Examples
 
-* [Enable the TCP/IP protocol](/source/Examples/Resources/SqlServerProtocol/1-EnableTcpIp.ps1)
-* [Enable the Named Pipes protocol](/source/Examples/Resources/SqlServerProtocol/2-EnableNamedPipes.ps1)
-* [Enable the Shared Memory protocol](/source/Examples/Resources/SqlServerProtocol/3-EnableSharedMemory.ps1)
-* [Disable the TCP/IP protocol](/source/Examples/Resources/SqlServerProtocol/4-DisableTcpIp.ps1)
-* [Disable the Named Pipes protocol](/source/Examples/Resources/SqlServerProtocol/5-DisableNamedPipes.ps1)
-* [Disable the Shared Memory protocol](/source/Examples/Resources/SqlServerProtocol/6-DisableSharedMemory.ps1)
+* [Enable the TCP/IP protocol](/source/Examples/Resources/SqlProtocol/1-EnableTcpIp.ps1)
+* [Enable the Named Pipes protocol](/source/Examples/Resources/SqlProtocol/2-EnableNamedPipes.ps1)
+* [Enable the Shared Memory protocol](/source/Examples/Resources/SqlProtocol/3-EnableSharedMemory.ps1)
+* [Disable the TCP/IP protocol](/source/Examples/Resources/SqlProtocol/4-DisableTcpIp.ps1)
+* [Disable the Named Pipes protocol](/source/Examples/Resources/SqlProtocol/5-DisableNamedPipes.ps1)
+* [Disable the Shared Memory protocol](/source/Examples/Resources/SqlProtocol/6-DisableSharedMemory.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerProtocol).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlProtocol).
 
-### SqlServerProtocolTcpIp
+### SqlProtocolTcpIp
 
-The `SqlServerProtocolTcpIp` DSC resource manage the TCP/IP protocol IP
+The `SqlProtocolTcpIp` DSC resource manage the TCP/IP protocol IP
 address groups for a SQL Server instance.
 
 #### Requirements
@@ -1632,7 +1632,7 @@ address groups for a SQL Server instance.
   PowerShell module.
 * To configure a single IP address to listen on multiple ports, the
   TcpIp protocol must also set the **Listen All** property to **No**.
-  This can be done with the resource `SqlServerProtocol` using the
+  This can be done with the resource `SqlProtocol` using the
   parameter `ListenOnAllIpAddresses`.
 
 #### Parameters
@@ -1678,13 +1678,13 @@ address groups for a SQL Server instance.
 
 #### Examples
 
-* [Configure the IP address group IPAll with dynamic port](/source/Examples/Resources/SqlServerProtocolTcpIp/1-ConfigureIPAddressGroupIPAllWithDynamicPort.ps1)
-* [Configure the IP address group IPAll with static port(s)](/source/Examples/Resources/SqlServerProtocolTcpIp/2-ConfigureIPAddressGroupIPAllWithStaticPort.ps1)
-* [Configure the IP address group IP1 with IP address and static port(s)](/source/Examples/Resources/SqlServerProtocolTcpIp/3-ConfigureIPAddressGroupIP1.ps1)
+* [Configure the IP address group IPAll with dynamic port](/source/Examples/Resources/SqlProtocolTcpIp/1-ConfigureIPAddressGroupIPAllWithDynamicPort.ps1)
+* [Configure the IP address group IPAll with static port(s)](/source/Examples/Resources/SqlProtocolTcpIp/2-ConfigureIPAddressGroupIPAllWithStaticPort.ps1)
+* [Configure the IP address group IP1 with IP address and static port(s)](/source/Examples/Resources/SqlProtocolTcpIp/3-ConfigureIPAddressGroupIP1.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerProtocolTcpIp).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlProtocolTcpIp).
 
 ### SqlServerReplication
 

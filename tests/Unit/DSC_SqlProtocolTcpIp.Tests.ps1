@@ -1,10 +1,10 @@
 <#
     .SYNOPSIS
-        Automated unit test for DSC_SqlServerProtocolTcpIp DSC resource.
+        Automated unit test for DSC_SqlProtocolTcpIp DSC resource.
 #>
 
 $script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlServerProtocolTcpIp'
+$script:dscResourceName = 'DSC_SqlProtocolTcpIp'
 
 function Invoke-TestSetup
 {
@@ -38,7 +38,7 @@ try
     InModuleScope $script:dscResourceName {
         Set-StrictMode -Version 1.0
 
-        Describe 'SqlServerProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
+        Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
             BeforeAll {
                 $mockInstanceName = 'DSCTEST'
 
@@ -314,7 +314,7 @@ try
             }
         }
 
-        Describe 'SqlServerProtocolTcpIp\Test-TargetResource' -Tag 'Test' {
+        Describe 'SqlProtocolTcpIp\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 $testTargetResourceParameters = @{
                     InstanceName   = 'DSCTEST'
@@ -363,7 +363,7 @@ try
             }
         }
 
-        Describe 'SqlServerProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
+        Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
             BeforeAll {
                 $mockInstanceName = 'DSCTEST'
             }
@@ -814,7 +814,7 @@ try
             }
         }
 
-        Describe 'SqlServerProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
+        Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
             BeforeAll {
                 $mockInstanceName = 'DSCTEST'
             }

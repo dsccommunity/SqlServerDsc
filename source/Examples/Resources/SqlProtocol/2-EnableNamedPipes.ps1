@@ -17,7 +17,7 @@ Configuration Example
 
     node localhost
     {
-        SqlServerProtocol 'ChangeTcpIpOnDefaultInstance'
+        SqlProtocol 'ChangeTcpIpOnDefaultInstance'
         {
             InstanceName         = 'MSSQLSERVER'
             ProtocolName         = 'NamedPipes'

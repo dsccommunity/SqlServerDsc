@@ -393,7 +393,7 @@ ScriptDatabase4 | DscAdmin1
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlServerProtocol
+## SqlProtocol
 
 **Run order:** 5
 
@@ -405,7 +405,7 @@ enabled (SqlSetup is run with `NpEnabled = $true`).
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlServerProtocolTcpIp
+## SqlProtocolTcpIp
 
 **Run order:** 6
 

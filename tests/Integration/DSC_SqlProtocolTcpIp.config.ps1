@@ -41,13 +41,13 @@ else
         'IP1' with the first IP address assigned to the node (first IP address
         which has DHCP as the prefix origin).
 #>
-Configuration DSC_SqlServerProtocolTcpIp_ListenOnSpecificIpAddress_Config
+Configuration DSC_SqlProtocolTcpIp_ListenOnSpecificIpAddress_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerProtocol 'DisableListenAllIPAddresses'
+        SqlProtocol 'DisableListenAllIPAddresses'
         {
             InstanceName           = $Node.InstanceName
             ProtocolName           = 'TcpIp'
@@ -60,7 +60,7 @@ Configuration DSC_SqlServerProtocolTcpIp_ListenOnSpecificIpAddress_Config
                 -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
 
-        SqlServerProtocolTcpIP 'Integration_Test'
+        SqlProtocolTcpIP 'Integration_Test'
         {
             InstanceName           = $Node.InstanceName
             IpAddressGroup         = 'IP1'
