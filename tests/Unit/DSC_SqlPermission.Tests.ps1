@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Automated unit test for DSC_SqlServerPermission DSC resource.
+        Automated unit test for DSC_SqlPermission DSC resource.
 
 #>
 
@@ -12,7 +12,7 @@ if (-not (Test-BuildCategory -Type 'Unit'))
 }
 
 $script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlServerPermission'
+$script:dscResourceName = 'DSC_SqlPermission'
 
 function Invoke-TestSetup
 {
@@ -60,7 +60,7 @@ try
             Permission   = $mockPermission
         }
 
-        Describe 'DSC_SqlServerPermission\Get-TargetResource' {
+        Describe 'DSC_SqlPermission\Get-TargetResource' {
             BeforeEach {
                 $testParameters = $defaultParameters.Clone()
 
@@ -186,7 +186,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe 'DSC_SqlServerPermission\Test-TargetResource' {
+        Describe 'DSC_SqlPermission\Test-TargetResource' {
             BeforeEach {
                 $testParameters = $defaultParameters.Clone()
 
@@ -254,7 +254,7 @@ try
             Assert-VerifiableMock
         }
 
-        Describe 'DSC_SqlServerPermission\Set-TargetResource' {
+        Describe 'DSC_SqlPermission\Set-TargetResource' {
             BeforeEach {
                 $testParameters = $defaultParameters.Clone()
 

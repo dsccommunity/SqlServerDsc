@@ -144,7 +144,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.ServerPermissionSet
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionSetBase
     // Used by:
-    //  SqlServerPermission.Tests.ps1
+    //  SqlPermission.Tests.ps1
     public class ServerPermissionSet
     {
         public ServerPermissionSet(){}
@@ -170,7 +170,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.ServerPermissionInfo
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionInfo
     // Used by:
-    //  SqlServerPermission.Tests.ps1
+    //  SqlPermission.Tests.ps1
     public class ServerPermissionInfo
     {
         public ServerPermissionInfo()
@@ -231,7 +231,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.Server
     // BaseType: Microsoft.SqlServer.Management.Smo.SqlSmoObject
     // Used by:
-    //  SqlServerPermission
+    //  SqlPermission
     //  DSC_SqlLogin
     public class Server
     {

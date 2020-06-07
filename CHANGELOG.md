@@ -95,6 +95,7 @@ in a future release.
     - `SqlServerLogin` was renamed to `SqlLogin`.
     - `SqlServerMaxDop` was renamed to `SqlMaxDop`.
     - `SqlServerMemory` was renamed to `SqlMemory`.
+    - `SqlServerPermission` was renamed to `SqlPermission`.
   - Changed all resource prefixes from `MSFT_` to `DSC_` ([issue #1496](https://github.com/dsccommunity/SqlServerDsc/issues/1496)).
     _Deprecated resource has not changed prefix._
   - All resources are now using the common module DscResource.Common.
@@ -259,7 +260,7 @@ in a future release.
 - SqlEndpoint
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
-- SqlServerPermission
+- SqlPermission
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
 - SqlServerReplication

@@ -33,7 +33,7 @@ Configuration Example
         }
 
         # Add the required permissions to the cluster service login
-        SqlServerPermission 'AddNTServiceClusSvcPermissions'
+        SqlPermission 'AddNTServiceClusSvcPermissions'
         {
             DependsOn            = '[SqlLogin]AddNTServiceClusSvc'
             Ensure               = 'Present'
@@ -85,7 +85,7 @@ Configuration Example
             DatabaseHealthTrigger         = $true
             DtcSupportEnabled             = $true
 
-            DependsOn                     = '[SqlAlwaysOnService]EnableHADR', '[SqlEndpoint]HADREndpoint', '[SqlServerPermission]AddNTServiceClusSvcPermissions'
+            DependsOn                     = '[SqlAlwaysOnService]EnableHADR', '[SqlEndpoint]HADREndpoint', '[SqlPermission]AddNTServiceClusSvcPermissions'
 
             PsDscRunAsCredential          = $SqlAdministratorCredential
         }

@@ -66,7 +66,7 @@
         'SqlMaxDop'
         'SqlMemory'
         'SqlServerNetwork'
-        'SqlServerPermission'
+        'SqlPermission'
         'SqlServerProtocol'
         'SqlServerProtocolTcpIp'
         'SqlServerReplication'

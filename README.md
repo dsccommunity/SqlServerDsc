@@ -124,7 +124,7 @@ in a future release.
 * [**SqlMaxDop**](#sqlmaxdop) resource to manage MaxDegree of Parallelism
   for SQL Server.
 * [**SqlMemory**](#sqlmemory) resource to manage Memory for SQL Server.
-* [**SqlServerPermission**](#sqlserverpermission) Grant or revoke permission on
+* [**SqlPermission**](#sqlpermission) Grant or revoke permission on
   the SQL Server.
 * [**SqlServerProtocol**](#sqlserverprotocol) resource manage the SQL Server
   protocols for a SQL Server instance.
@@ -1518,7 +1518,7 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlMemory).
 
-### SqlServerPermission
+### SqlPermission
 
 This resource sets server permissions to a user (login).
 
@@ -1546,12 +1546,12 @@ AlterAnyEndPoint and ViewServerState.
 
 #### Examples
 
-* [Add server permission for a login](/source/Examples/Resources/SqlServerPermission/1-AddServerPermissionForLogin.ps1)
-* [Remove server permission for a login](/source/Examples/Resources/SqlServerPermission/2-RemoveServerPermissionForLogin.ps1)
+* [Add server permission for a login](/source/Examples/Resources/SqlPermission/1-AddServerPermissionForLogin.ps1)
+* [Remove server permission for a login](/source/Examples/Resources/SqlPermission/2-RemoveServerPermissionForLogin.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerPermission).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlPermission).
 
 ### SqlServerProtocol
 

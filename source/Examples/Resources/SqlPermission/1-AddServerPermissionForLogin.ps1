@@ -17,7 +17,7 @@ Configuration Example
     node localhost
     {
         # Add permission
-        SqlServerPermission 'SQLConfigureServerPermission-SYSTEM'
+        SqlPermission 'SQLConfigureServerPermission-SYSTEM'
         {
             Ensure               = 'Present'
             ServerName           = 'SQLNODE01.company.local'
@@ -28,7 +28,7 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerPermission 'SQLConfigureServerPermission-ClusSvc'
+        SqlPermission 'SQLConfigureServerPermission-ClusSvc'
         {
             Ensure               = 'Present'
             ServerName           = 'SQLNODE01.company.local'

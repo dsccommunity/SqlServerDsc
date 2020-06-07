@@ -35,7 +35,7 @@ Configuration Example
         }
 
         # Add the required permissions to the cluster service login
-        SqlServerPermission 'AddNTServiceClusSvcPermissions'
+        SqlPermission 'AddNTServiceClusSvcPermissions'
         {
             DependsOn            = '[SqlLogin]AddNTServiceClusSvc'
             Ensure               = 'Present'

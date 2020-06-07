@@ -17,7 +17,7 @@ Configuration Example
     node localhost
     {
         # Add permission
-        SqlServerPermission 'SQLConfigureServerPermission'
+        SqlPermission 'SQLConfigureServerPermission'
         {
             Ensure               = 'Absent'
             ServerName           = 'SQLNODE01.company.local'
