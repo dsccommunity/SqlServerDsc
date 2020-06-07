@@ -59,7 +59,7 @@
         'SqlScriptQuery'
         'SqlConfiguration'
         'SqlDatabaseMail'
-        'SqlServerEndpoint'
+        'SqlEndpoint'
         'SqlServerEndpointPermission'
         'SqlServerEndpointState'
         'SqlServerLogin'

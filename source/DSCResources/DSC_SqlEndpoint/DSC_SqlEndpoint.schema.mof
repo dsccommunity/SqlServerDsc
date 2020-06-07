@@ -1,5 +1,5 @@
-[ClassVersion("1.0.0.0"), FriendlyName("SqlServerEndpoint")]
-class DSC_SqlServerEndpoint : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("SqlEndpoint")]
+class DSC_SqlEndpoint : OMI_BaseResource
 {
     [Key, Description("The name of the endpoint.")] String EndpointName;
     [Key, Description("The name of the SQL instance to be configured.")] String InstanceName;

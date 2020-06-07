@@ -26,7 +26,7 @@ These are the links to the examples for each individual resource.
 - [SqlScriptQuery](Resources/SqlScriptQuery)
 - [SqlConfiguration](Resources/SqlConfiguration)
 - [SqlDatabaseMail](Resources/SqlDatabaseMail)
-- [SqlServerEndpoint](Resources/SqlServerEndpoint)
+- [SqlEndpoint](Resources/SqlEndpoint)
 - [SqlServerEndpointPermission](Resources/SqlServerEndpointPermission)
 - [SqlServerLogin](Resources/SqlServerLogin)
 - [SqlServerMaxDop](Resources/SqlServerMaxDop)

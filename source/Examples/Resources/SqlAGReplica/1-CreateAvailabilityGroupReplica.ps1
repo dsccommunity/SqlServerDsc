@@ -48,7 +48,7 @@ Configuration Example
         }
 
         # Create a DatabaseMirroring endpoint
-        SqlServerEndpoint 'HADREndpoint'
+        SqlEndpoint 'HADREndpoint'
         {
             EndPointName         = 'HADR'
             EndpointType         = 'DatabaseMirroring'

@@ -145,7 +145,7 @@ stages:
                   'tests/Integration/DSC_SqlAgentAlert.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlServerNetwork.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlServerLogin.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerEndpoint.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
@@ -212,7 +212,7 @@ stages:
                   # Group 2
                   'tests/Integration/DSC_SqlAgentAlert.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlServerLogin.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerEndpoint.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'

@@ -223,7 +223,7 @@ worker.*
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlServerEndpoint
+## SqlEndpoint
 
 **Run order:** 2
 

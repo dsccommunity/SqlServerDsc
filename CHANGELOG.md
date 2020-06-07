@@ -29,7 +29,7 @@ in a future release.
     a property in the resource _SqlDatabase_ ([issue #967](https://github.com/dsccommunity/SqlServerDsc/issues/967)).
 - SqlServerEndpointState
   - This resource is now deprecated. The functionality is covered by a
-    property in the resource _SqlServerEndpoint_ ([issue #968](https://github.com/dsccommunity/SqlServerDsc/issues/968)).
+    property in the resource _SqlEndpoint_ ([issue #968](https://github.com/dsccommunity/SqlServerDsc/issues/968)).
 - SqlServerNetwork
   - This resource is now deprecated. The functionality is now covered by
     the resources _SqlServerProtocol_ and _SqlServerProtocolTcpIp_.
@@ -54,7 +54,7 @@ in a future release.
 - CommonTestHelper
   - Added the functions `Get-InvalidOperationRecord` and `Get-InvalidResultRecord`
     that is needed for evaluate localized error message strings for unit tests.
-- SqlServerEndpoint
+- SqlEndpoint
   - BREAKING CHANGE: A new required property `EndpointType` was added to
     support different types of endpoints in the future. For now the only
     endpoint type that is supported is the database mirror endpoint type
@@ -173,7 +173,7 @@ in a future release.
   - Normalize parameter descriptive text for default values.
 - SqlDatabaseMail
   - Normalize parameter descriptive text for default values.
-- SqlServerEndpoint
+- SqlEndpoint
   - BREAKING CHANGE: Now the properties are only enforced if they are
     specified in the configuration.
   - Normalize parameter descriptive text for default values.
@@ -250,7 +250,7 @@ in a future release.
 - SqlServerEndpoint
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
-- SqlServerEndpointState
+- SqlEndpoint
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
 - SqlServerPermission

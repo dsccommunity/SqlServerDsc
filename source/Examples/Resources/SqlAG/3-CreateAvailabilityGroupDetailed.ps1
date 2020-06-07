@@ -45,7 +45,7 @@ Configuration Example
         }
 
         # Create a DatabaseMirroring endpoint
-        SqlServerEndpoint 'HADREndpoint'
+        SqlEndpoint 'HADREndpoint'
         {
             EndPointName         = 'HADR'
             EndpointType         = 'DatabaseMirroring'
@@ -85,7 +85,7 @@ Configuration Example
             DatabaseHealthTrigger         = $true
             DtcSupportEnabled             = $true
 
-            DependsOn                     = '[SqlAlwaysOnService]EnableHADR', '[SqlServerEndpoint]HADREndpoint', '[SqlServerPermission]AddNTServiceClusSvcPermissions'
+            DependsOn                     = '[SqlAlwaysOnService]EnableHADR', '[SqlEndpoint]HADREndpoint', '[SqlServerPermission]AddNTServiceClusSvcPermissions'
 
             PsDscRunAsCredential          = $SqlAdministratorCredential
         }

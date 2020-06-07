@@ -1,8 +1,6 @@
 <#
     .DESCRIPTION
-        This example will add a Database Mirror endpoint, to two instances, using
-        the default values.
-
+        This example will remove an Database Mirror endpoint from two instances.
 #>
 Configuration Example
 {
@@ -17,8 +15,10 @@ Configuration Example
 
     node localhost
     {
-        SqlServerEndpoint 'SQLConfigureEndpoint-Instance1'
+        SqlEndpoint 'SQLConfigureEndpoint-Instance1'
         {
+            Ensure               = 'Absent'
+
             EndpointName         = 'HADR'
             EndpointType         = 'DatabaseMirroring'
             InstanceName         = 'INST1'
@@ -26,8 +26,10 @@ Configuration Example
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
 
-        SqlServerEndpoint 'SQLConfigureEndpoint-Instances2'
+        SqlEndpoint 'SQLConfigureEndpoint-Instance2'
         {
+            Ensure               = 'Absent'
+
             EndpointName         = 'HADR'
             EndpointType         = 'DatabaseMirroring'
             InstanceName         = 'INST2'

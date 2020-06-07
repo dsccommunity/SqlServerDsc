@@ -73,7 +73,7 @@ in a future release.
 
 * SqlDatabaseOwner _(replaced by a property in [**SqlDatabase**](#sqldatabase))_.
 * SqlDatabaseRecoveryModel _(replaced by a property in [**SqlDatabase**](#sqldatabase))_.
-* SqlServerEndpointState _(replaced by a property in [**SqlServerEndpoint**](#sqlserverendpoint))_.
+* SqlServerEndpointState _(replaced by a property in [**SqlEndpoint**](#sqlendpoint))_.
 * SqlServerNetwork _(replaced by [**SqlServerProtocol**](#sqlserverprotocol) and_
   _[**SqlServerProtocolTcpIp**](#sqlserverprotocoltcpip))_.
 
@@ -112,11 +112,11 @@ in a future release.
   functionality to T-SQL.
 * [**SqlScriptQuery**](#sqlscriptquery) resource to extend DSC Get/Set/Test
   functionality to T-SQL.
-* [**SqlConfiguration**](#SqlConfiguration) resource to manage
+* [**SqlConfiguration**](#sqlconfiguration) resource to manage
   [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx).
-* [**SqlDatabaseMail**](#SqlDatabaseMail) resource
+* [**SqlDatabaseMail**](#sqldatabasemail) resource
   to manage SQL Server Database Mail.
-* [**SqlServerEndpoint**](#sqlserverendpoint) resource to ensure database endpoint
+* [**SqlEndpoint**](#sqlendpoint) resource to ensure database endpoint
   is present or absent.
 * [**SqlServerEndpointPermission**](#sqlserverendpointpermission) Grant or revoke
   permission on the endpoint.
@@ -1245,7 +1245,7 @@ Resource to manage SQL Server Database Mail.
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseMail).
 
-### SqlServerEndpoint
+### SqlEndpoint
 
 This resource is used to create an endpoint. Currently it only supports creating
 a database mirror endpoint which can be used by, for example, AlwaysOn.
@@ -1291,13 +1291,13 @@ a database mirror endpoint which can be used by, for example, AlwaysOn.
 
 #### Examples
 
-* [Create an endpoint with default values](/source/Examples/Resources/SqlServerEndpoint/1-CreateEndpointWithDefaultValues.ps1)
-* [Create an endpoint with specific port and IP address](/source/Examples/Resources/SqlServerEndpoint/2-CreateEndpointWithSpecificPortIPAddressOwner.ps1)
-* [Remove an endpoint](/source/Examples/Resources/SqlServerEndpoint/3-RemoveEndpoint.ps1)
+* [Create an endpoint with default values](/source/Examples/Resources/SqlEndpoint/1-CreateEndpointWithDefaultValues.ps1)
+* [Create an endpoint with specific port and IP address](/source/Examples/Resources/SqlEndpoint/2-CreateEndpointWithSpecificPortIPAddressOwner.ps1)
+* [Remove an endpoint](/source/Examples/Resources/SqlEndpoint/3-RemoveEndpoint.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpoint).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlEndpoint).
 
 ### SqlServerEndpointPermission
 

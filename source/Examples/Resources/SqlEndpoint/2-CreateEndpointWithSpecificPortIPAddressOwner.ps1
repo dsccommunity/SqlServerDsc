@@ -16,7 +16,7 @@ Configuration Example
 
     node localhost
     {
-        SqlServerEndpoint 'SQLConfigureEndpoint'
+        SqlEndpoint 'SQLConfigureEndpoint'
         {
             Ensure               = 'Present'
 

@@ -35,13 +35,13 @@ else
     .SYNOPSIS
         Configuration to ensure present and specify all the parameters
 #>
-Configuration DSC_SqlServerEndpoint_Add_Config
+Configuration DSC_SqlEndpoint_Add_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerEndpoint 'Integration_Test'
+        SqlEndpoint 'Integration_Test'
         {
             Ensure               = 'Present'
 
@@ -62,13 +62,13 @@ Configuration DSC_SqlServerEndpoint_Add_Config
     .SYNOPSIS
         Configuration to ensure Absent and specify all the parameters
 #>
-Configuration DSC_SqlServerEndpoint_Remove_Config
+Configuration DSC_SqlEndpoint_Remove_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerEndpoint 'Integration_Test'
+        SqlEndpoint 'Integration_Test'
         {
             Ensure               = 'Absent'
 

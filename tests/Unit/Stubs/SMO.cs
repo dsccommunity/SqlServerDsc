@@ -60,7 +60,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
     // TypeName: Microsoft.SqlServer.Management.Smo.EndpointType
     // Used by:
-    //  SqlServerEndpoint
+    //  SqlEndpoint
     public enum EndpointType
     {
         DatabaseMirroring,
@@ -71,7 +71,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
     // TypeName: Microsoft.SqlServer.Management.Smo.ProtocolType
     // Used by:
-    //  SqlServerEndpoint
+    //  SqlEndpoint
     public enum ProtocolType
     {
         Http,
@@ -83,7 +83,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
     // TypeName: Microsoft.SqlServer.Management.Smo.ServerMirroringRole
     // Used by:
-    //  SqlServerEndpoint
+    //  SqlEndpoint
     public enum ServerMirroringRole
     {
         All,
@@ -94,7 +94,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
     // TypeName: Microsoft.SqlServer.Management.Smo.EndpointEncryption
     // Used by:
-    //  SqlServerEndpoint
+    //  SqlEndpoint
     public enum EndpointEncryption
     {
         Disabled,
@@ -104,7 +104,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
     // TypeName: Microsoft.SqlServer.Management.Smo.EndpointEncryptionAlgorithm
     // Used by:
-    //  SqlServerEndpoint
+    //  SqlEndpoint
     public enum EndpointEncryptionAlgorithm
     {
         Aes,
