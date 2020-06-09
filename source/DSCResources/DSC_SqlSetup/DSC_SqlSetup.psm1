@@ -2190,12 +2190,17 @@ function Test-TargetResource
         }
     }
 
-    if ($getTargetResourceParameters.Action -eq "Upgrade")
+    if ($getTargetResourceParameters.Action -eq 'Upgrade')
     {
-        $installerSqlVersion = Get-SqlMajorVersion -Path $sourcePath\setup.exe
-        $instanceSqlVersion = Get-SQLInstanceMajorVersion -InstanceName $instanceName
+        $installerSqlVersion = Get-SqlMajorVersion -Path (Join-Path -Path $sourcePath -ChildPath 'setup.exe')
+        $instanceSqlVersion = Get-SQLInstanceMajorVersion -InstanceName $InstanceName
+
         if ($installerSQLVersion -gt $instanceSqlVersion)
         {
+            Write-Verbose -Message (
+                $script:localizedData.DifferentMajorVersion -f $InstanceName, $instanceSqlVersion, $installerSqlVersion
+            )
+
             $result = $false
         }
     }

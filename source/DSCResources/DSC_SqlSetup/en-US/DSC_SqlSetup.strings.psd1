@@ -63,4 +63,5 @@ ConvertFrom-StringData @'
     MasterDataServicesFeatureNotFound = Master Data Services (MDS) feature not detected.
     FeatureAlreadyInstalled = The feature '{0}' is already installed so it will not be installed again.
     FeatureFlag = Using feature flag '{0}'
+    DifferentMajorVersion = The instance '{0}' has the wrong major version. The major version is '{1}', but expected version '{2}'.
 '@
