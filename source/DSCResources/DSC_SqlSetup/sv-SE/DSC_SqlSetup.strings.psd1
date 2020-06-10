@@ -63,4 +63,5 @@ ConvertFrom-StringData @'
     MasterDataServicesFeatureNotFound = Master Data Services (MDS) funktionen hittades inte.
     FeatureAlreadyInstalled = Funktionen '{0}' är redan installerad så den kommer inte bli installerad igen.
     FeatureFlag = Använder tilläggsflagga '{0}'
+    DifferentMajorVersion = The instance '{0}' has the wrong major version. The major version is '{1}', but expected version '{2}'.
 '@

@@ -1490,6 +1490,8 @@ try
 
         Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
+                $mockSourcePath = $TestDrive.FullName
+
                 <#
                     These are written with both lower-case and upper-case to make sure we support that.
                     The feature list must be written in the order it is returned by the function Get-TargetResource.
@@ -1584,6 +1586,39 @@ try
                     }
 
                     # This is a test for regression testing of issue #432
+                    It 'Should return $false' {
+                        $result = Test-TargetResource @testParameters -Verbose
+                        $result | Should -BeFalse
+
+                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
+                    }
+                }
+
+                Context 'When Action is set to ''Upgrade'' and current major version is not the expected' {
+                    BeforeAll {
+                        $testParameters = $mockDefaultParameters.Clone()
+                        $testParameters += @{
+                            Action = 'Upgrade'
+                            InstanceName = $mockDefaultInstance_InstanceName
+                            SourceCredential = $null
+                            SourcePath = $mockSourcePath
+                        }
+
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = $mockDefaultFeatures
+                            }
+                        }
+
+                        Mock -CommandName Get-SqlMajorVersion -MockWith {
+                            return '15'
+                        }
+
+                        Mock -CommandName Get-SQLInstanceMajorVersion -MockWith {
+                            return '14'
+                        }
+                    }
+
                     It 'Should return $false' {
                         $result = Test-TargetResource @testParameters -Verbose
                         $result | Should -BeFalse
