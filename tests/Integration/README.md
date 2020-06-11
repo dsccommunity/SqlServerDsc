@@ -161,7 +161,7 @@ Data | Log | Backup
 --- | --- | ---
 C:\SQLData | C:\SQLLog | C:\Backups
 
-## SqlServerLogin
+## SqlLogin
 
 **Run order:** 2
 
@@ -214,7 +214,7 @@ worker.*
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlServerDatabaseMail
+## SqlDatabaseMail
 
 **Run order:** 2
 
@@ -223,7 +223,7 @@ worker.*
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlServerEndpoint
+## SqlEndpoint
 
 **Run order:** 2
 
@@ -269,11 +269,11 @@ DSCRS2016 | RS | The Reporting Services is initialized, and in a working state.
 - **DatabaseServerName:** `$env:COMPUTERNAME`
 - **DatabaseInstanceName:** DSCSQLTEST
 
-## SqlServerRole
+## SqlRole
 
 **Run order:** 3
 
-**Depends on:** SqlSetup, SqlServerLogin
+**Depends on:** SqlSetup, SqlLogin
 
 The integration test will keep the following server roles on the SQL Server instance
 **DSCSQLTEST**.
@@ -287,7 +287,7 @@ DscServerRole2 | DscUser4
 
 **Run order:** 3
 
-**Depends on:** SqlSetup, SqlServerLogin, SqlDatabase
+**Depends on:** SqlSetup, SqlLogin, SqlDatabase
 
 The integration test will leave these database users for other integration tests
 to use.
@@ -331,7 +331,7 @@ AsymmetricKey1 | RSA_2048 | P@ssw0rd1
 
 The integration test will not leave anything on any instance.
 
-## SqlServerReplication
+## SqlReplication
 
 **Run order:** 3
 
@@ -384,7 +384,7 @@ Database name | Owner
 ScriptDatabase3 | $env:COMPUTERNAME\SqlAdmin
 ScriptDatabase4 | DscAdmin1
 
-## SqlServerSecureConnection
+## SqlSecureConnection
 
 **Run order:** 5
 
@@ -393,7 +393,7 @@ ScriptDatabase4 | DscAdmin1
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlServerProtocol
+## SqlProtocol
 
 **Run order:** 5
 
@@ -405,7 +405,7 @@ enabled (SqlSetup is run with `NpEnabled = $true`).
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlServerProtocolTcpIp
+## SqlProtocolTcpIp
 
 **Run order:** 6
 

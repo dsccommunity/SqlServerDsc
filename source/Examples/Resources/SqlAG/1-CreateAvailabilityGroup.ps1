@@ -17,7 +17,7 @@ Configuration Example
     Node $AllNodes.NodeName
     {
         # Adding the required service account to allow the cluster to log into SQL
-        SqlServerLogin 'AddNTServiceClusSvc'
+        SqlLogin 'AddNTServiceClusSvc'
         {
             Ensure               = 'Present'
             Name                 = 'NT SERVICE\ClusSvc'
@@ -29,9 +29,9 @@ Configuration Example
         }
 
         # Add the required permissions to the cluster service login
-        SqlServerPermission 'AddNTServiceClusSvcPermissions'
+        SqlPermission 'AddNTServiceClusSvcPermissions'
         {
-            DependsOn            = '[SqlServerLogin]AddNTServiceClusSvc'
+            DependsOn            = '[SqlLogin]AddNTServiceClusSvc'
             Ensure               = 'Present'
             ServerName           = $Node.NodeName
             InstanceName         = 'MSSQLSERVER'
@@ -42,7 +42,7 @@ Configuration Example
         }
 
         # Create a DatabaseMirroring endpoint
-        SqlServerEndpoint 'HADREndpoint'
+        SqlEndpoint 'HADREndpoint'
         {
             EndPointName         = 'HADR'
             EndpointType         = 'DatabaseMirroring'
@@ -72,7 +72,7 @@ Configuration Example
             InstanceName         = 'MSSQLSERVER'
             ServerName           = $Node.NodeName
 
-            DependsOn            = '[SqlAlwaysOnService]EnableHADR', '[SqlServerEndpoint]HADREndpoint', '[SqlServerPermission]AddNTServiceClusSvcPermissions'
+            DependsOn            = '[SqlAlwaysOnService]EnableHADR', '[SqlEndpoint]HADREndpoint', '[SqlPermission]AddNTServiceClusSvcPermissions'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
         }

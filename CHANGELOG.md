@@ -29,18 +29,18 @@ in a future release.
     a property in the resource _SqlDatabase_ ([issue #967](https://github.com/dsccommunity/SqlServerDsc/issues/967)).
 - SqlServerEndpointState
   - This resource is now deprecated. The functionality is covered by a
-    property in the resource _SqlServerEndpoint_ ([issue #968](https://github.com/dsccommunity/SqlServerDsc/issues/968)).
+    property in the resource _SqlEndpoint_ ([issue #968](https://github.com/dsccommunity/SqlServerDsc/issues/968)).
 - SqlServerNetwork
   - This resource is now deprecated. The functionality is now covered by
-    the resources _SqlServerProtocol_ and _SqlServerProtocolTcpIp_.
+    the resources _SqlProtocol_ and _SqlProtocolTcpIp_.
 
 ### Added
 
 - SqlSetup
   - Added support for major version upgrade ([issue #1561](https://github.com/dsccommunity/SqlServerDsc/issues/1561)).
 - SqlServerDsc
-  - Added new resource SqlServerProtocol ([issue #1377](https://github.com/dsccommunity/SqlServerDsc/issues/1377)).
-  - Added new resource SqlServerProtocolTcpIp ([issue #1378](https://github.com/dsccommunity/SqlServerDsc/issues/1378)).
+  - Added new resource SqlProtocol ([issue #1377](https://github.com/dsccommunity/SqlServerDsc/issues/1377)).
+  - Added new resource SqlProtocolTcpIp ([issue #1378](https://github.com/dsccommunity/SqlServerDsc/issues/1378)).
   - Fixing a problem with the latest ModuleBuild 1.7.0 that breaks the CI
     pipeline.
   - Prepare repository for auto-documentation by adding README.md to each
@@ -54,7 +54,7 @@ in a future release.
 - CommonTestHelper
   - Added the functions `Get-InvalidOperationRecord` and `Get-InvalidResultRecord`
     that is needed for evaluate localized error message strings for unit tests.
-- SqlServerEndpoint
+- SqlEndpoint
   - BREAKING CHANGE: A new required property `EndpointType` was added to
     support different types of endpoints in the future. For now the only
     endpoint type that is supported is the database mirror endpoint type
@@ -67,7 +67,7 @@ in a future release.
     if the instance is clustered.
   - Added the properties `NpEnabled` and `TcpEnabled` ([issue #1161](https://github.com/dsccommunity/SqlServerDsc/issues/1161)).
   - Added the property `UseEnglish` ([issue #1473](https://github.com/dsccommunity/SqlServerDsc/issues/1473)).
-- SqlServerReplication
+- SqlReplication
   - Add integration tests ([issue #755](https://github.com/dsccommunity/SqlServerDsc/issues/755).
 - SqlDatabase
   - The property `OwnerName` was added.
@@ -87,6 +87,20 @@ in a future release.
 ### Changed
 
 - SqlServerDsc
+  - BREAKING CHANGE: Some DSC resources have been renamed ([issue #1540](https://github.com/dsccommunity/SqlServerDsc/issues/1540)).
+    - `SqlServerConfiguration` was renamed to `SqlConfiguration`.
+    - `SqlServerDatabaseMail` was renamed to `SqlDatabaseMail`.
+    - `SqlServerEndpoint` was renamed to `SqlEndpoint`.
+    - `SqlServerEndpointPermission` was renamed to `SqlEndpointPermission`.
+    - `SqlServerLogin` was renamed to `SqlLogin`.
+    - `SqlServerMaxDop` was renamed to `SqlMaxDop`.
+    - `SqlServerMemory` was renamed to `SqlMemory`.
+    - `SqlServerPermission` was renamed to `SqlPermission`.
+    - `SqlServerProtocol` was renamed to `SqlProtocol`.
+    - `SqlServerProtocolTcpIp` was renamed to `SqlProtocolTcpIp`.
+    - `SqlServerReplication` was renamed to `SqlReplication`.
+    - `SqlServerRole` was renamed to `SqlRole`.
+    - `SqlServerSecureConnection` was renamed to `SqlSecureConnection`.
   - Changed all resource prefixes from `MSFT_` to `DSC_` ([issue #1496](https://github.com/dsccommunity/SqlServerDsc/issues/1496)).
     _Deprecated resource has not changed prefix._
   - All resources are now using the common module DscResource.Common.
@@ -165,25 +179,25 @@ in a future release.
     parameters `ServerName` and `InstanceName`. The parameter `InstanceName`
     is the only one mandatory which fixes the issue that it was possible to
     run the same query using different host names ([issue #925](https://github.com/dsccommunity/SqlServerDsc/issues/925)).
-- SqlServerConfiguration
+- SqlConfiguration
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
   - Normalize parameter descriptive text for default values.
-- SqlServerDatabaseMail
+- SqlDatabaseMail
   - Normalize parameter descriptive text for default values.
-- SqlServerEndpoint
+- SqlEndpoint
   - BREAKING CHANGE: Now the properties are only enforced if they are
     specified in the configuration.
   - Normalize parameter descriptive text for default values.
-- SqlServerEndpointPermission
+- SqlEndpointPermission
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
   - Normalize parameter descriptive text for default values.
-- SqlServerLogin
+- SqlLogin
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
   - Normalize parameter descriptive text for default values.
-- SqlServerRole
+- SqlRole
   - BREAKING CHANGE: The parameter `ServerName` is now non-mandatory and
     defaults to `$env:COMPUTERNAME` ([issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
   - Normalize parameter descriptive text for default values.
@@ -242,19 +256,19 @@ in a future release.
 - SqlRs
   - Fix typo in the schema parameter `SuppressRestart` description
     and in the parameter description in the `README.md`.
-- SqlServerDatabaseMail
+- SqlDatabaseMail
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
 - SqlServerEndpoint
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
-- SqlServerEndpointState
+- SqlEndpoint
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
-- SqlServerPermission
+- SqlPermission
   - The parameter `ServerName` now throws when passing an empty string or
     null value (part of [issue #319](https://github.com/dsccommunity/SqlServerDsc/issues/319)).
-- SqlServerReplication
+- SqlReplication
   - Enhanced the exception handling so it shows the inner exception error
     message that have the actual error that occurred.
   - Corrected the examples.

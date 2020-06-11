@@ -14,7 +14,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
     // TypeName: Microsoft.SqlServer.Management.Smo.LoginCreateOptions
     // Used by:
-    //  DSC_SqlServerLogin.Tests.ps1
+    //  DSC_SqlLogin.Tests.ps1
     public enum LoginCreateOptions
     {
         None = 0,
@@ -25,7 +25,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.LoginType
     // BaseType: Microsoft.SqlServer.Management.Smo.ScriptNameObjectBase
     // Used by:
-    //  DSC_SqlServerLogin
+    //  DSC_SqlLogin
     public enum LoginType
     {
         AsymmetricKey = 4,
@@ -60,7 +60,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
     // TypeName: Microsoft.SqlServer.Management.Smo.EndpointType
     // Used by:
-    //  SqlServerEndpoint
+    //  SqlEndpoint
     public enum EndpointType
     {
         DatabaseMirroring,
@@ -71,7 +71,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
     // TypeName: Microsoft.SqlServer.Management.Smo.ProtocolType
     // Used by:
-    //  SqlServerEndpoint
+    //  SqlEndpoint
     public enum ProtocolType
     {
         Http,
@@ -83,7 +83,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
     // TypeName: Microsoft.SqlServer.Management.Smo.ServerMirroringRole
     // Used by:
-    //  SqlServerEndpoint
+    //  SqlEndpoint
     public enum ServerMirroringRole
     {
         All,
@@ -94,7 +94,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
     // TypeName: Microsoft.SqlServer.Management.Smo.EndpointEncryption
     // Used by:
-    //  SqlServerEndpoint
+    //  SqlEndpoint
     public enum EndpointEncryption
     {
         Disabled,
@@ -104,7 +104,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
     // TypeName: Microsoft.SqlServer.Management.Smo.EndpointEncryptionAlgorithm
     // Used by:
-    //  SqlServerEndpoint
+    //  SqlEndpoint
     public enum EndpointEncryptionAlgorithm
     {
         Aes,
@@ -127,7 +127,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // Typename: Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionSetBase
     // Used by:
-    //  SqlServerEndpointPermission.Tests.ps1
+    //  SqlEndpointPermission.Tests.ps1
     public class ObjectPermissionSet
     {
         public ObjectPermissionSet(){}
@@ -144,7 +144,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.ServerPermissionSet
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionSetBase
     // Used by:
-    //  SqlServerPermission.Tests.ps1
+    //  SqlPermission.Tests.ps1
     public class ServerPermissionSet
     {
         public ServerPermissionSet(){}
@@ -170,7 +170,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.ServerPermissionInfo
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionInfo
     // Used by:
-    //  SqlServerPermission.Tests.ps1
+    //  SqlPermission.Tests.ps1
     public class ServerPermissionInfo
     {
         public ServerPermissionInfo()
@@ -231,8 +231,8 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.Server
     // BaseType: Microsoft.SqlServer.Management.Smo.SqlSmoObject
     // Used by:
-    //  SqlServerPermission
-    //  DSC_SqlServerLogin
+    //  SqlPermission
+    //  DSC_SqlLogin
     public class Server
     {
         public string MockGranteeName;
@@ -340,7 +340,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.Login
     // BaseType: Microsoft.SqlServer.Management.Smo.ScriptNameObjectBase
     // Used by:
-    //  DSC_SqlServerLogin
+    //  DSC_SqlLogin
     public class Login
     {
         private bool _mockPasswordPassed = false;
@@ -525,7 +525,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.ServerRole
     // BaseType: Microsoft.SqlServer.Management.Smo.ScriptNameObjectBase
     // Used by:
-    //  DSC_SqlServerRole
+    //  DSC_SqlRole
     public class ServerRole
     {
         public ServerRole( Server server, string name ) {
@@ -659,7 +659,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.SqlServerManagementException
     // BaseType: System.Exception
     // Used by:
-    //  SqlServerLogin.Tests.ps1
+    //  SqlLogin.Tests.ps1
     public class SqlServerManagementException : Exception
     {
         public SqlServerManagementException () : base () {}
@@ -672,7 +672,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.SmoException
     // BaseType: Microsoft.SqlServer.Management.Smo.SqlServerManagementException
     // Used by:
-    //  SqlServerLogin.Tests.ps1
+    //  SqlLogin.Tests.ps1
     public class SmoException : SqlServerManagementException
     {
         public SmoException () : base () {}
@@ -685,7 +685,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // TypeName: Microsoft.SqlServer.Management.Smo.FailedOperationException
     // BaseType: Microsoft.SqlServer.Management.Smo.SmoException
     // Used by:
-    //  SqlServerLogin.Tests.ps1
+    //  SqlLogin.Tests.ps1
     public class FailedOperationException : SmoException
     {
         public FailedOperationException () : base () {}

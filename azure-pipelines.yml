@@ -144,9 +144,9 @@ stages:
                   # Group 2
                   'tests/Integration/DSC_SqlAgentAlert.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlServerNetwork.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerLogin.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerEndpoint.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerDatabaseMail.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlLogin.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabase.Integration.Tests.ps1'
@@ -155,19 +155,19 @@ stages:
                   'tests/Integration/DSC_SqlServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
                   # Group 3
-                  'tests/Integration/DSC_SqlServerRole.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerReplication.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
                   # Group 4
                   'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
                   # Group 5
-                  'tests/Integration/DSC_SqlServerSecureConnection.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlSecureConnection.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerProtocol.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlProtocol.Integration.Tests.ps1'
                   # Group 6 (tests makes changes that could make SQL Server to loose connectivity)
-                  'tests/Integration/DSC_SqlServerProtocolTcpIp.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlProtocolTcpIp.Integration.Tests.ps1'
               )
             name: test
             displayName: 'Run Integration Test'
@@ -211,9 +211,9 @@ stages:
                   'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
                   # Group 2
                   'tests/Integration/DSC_SqlAgentAlert.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerLogin.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerEndpoint.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerDatabaseMail.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlLogin.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabase.Integration.Tests.ps1'
@@ -222,19 +222,19 @@ stages:
                   'tests/Integration/DSC_SqlServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
                   # Group 3
-                  'tests/Integration/DSC_SqlServerRole.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerReplication.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
                   # Group 4
                   'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
                   # Group 5
-                  'tests/Integration/DSC_SqlServerSecureConnection.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlSecureConnection.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerProtocol.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlProtocol.Integration.Tests.ps1'
                   # Group 6 (tests makes changes that could make SQL Server to loose connectivity)
-                  'tests/Integration/DSC_SqlServerProtocolTcpIp.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlProtocolTcpIp.Integration.Tests.ps1'
               )
             name: test
             displayName: 'Run Integration Test'

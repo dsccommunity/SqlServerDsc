@@ -154,7 +154,7 @@ Configuration DSC_SqlScript_CreateDependencies_Config
             }
         }
 
-        SqlServerLogin ('Create{0}' -f $Node.SqlLogin_UserName)
+        SqlLogin ('Create{0}' -f $Node.SqlLogin_UserName)
         {
             Ensure                         = 'Present'
             Name                           = $Node.SqlLogin_UserName
@@ -175,7 +175,7 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                 -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
 
-        SqlServerRole ('Add{0}ToDbCreator' -f $Node.SqlLogin_UserName)
+        SqlRole ('Add{0}ToDbCreator' -f $Node.SqlLogin_UserName)
         {
             Ensure               = 'Present'
             ServerRoleName       = 'dbcreator'
@@ -190,7 +190,7 @@ Configuration DSC_SqlScript_CreateDependencies_Config
                 -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
 
             DependsOn            = @(
-                ('[SqlServerLogin]Create{0}' -f $Node.SqlLogin_UserName)
+                ('[SqlLogin]Create{0}' -f $Node.SqlLogin_UserName)
             )
         }
     }

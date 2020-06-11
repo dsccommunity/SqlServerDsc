@@ -73,9 +73,9 @@ in a future release.
 
 * SqlDatabaseOwner _(replaced by a property in [**SqlDatabase**](#sqldatabase))_.
 * SqlDatabaseRecoveryModel _(replaced by a property in [**SqlDatabase**](#sqldatabase))_.
-* SqlServerEndpointState _(replaced by a property in [**SqlServerEndpoint**](#sqlserverendpoint))_.
-* SqlServerNetwork _(replaced by [**SqlServerProtocol**](#sqlserverprotocol) and_
-  _[**SqlServerProtocolTcpIp**](#sqlserverprotocoltcpip))_.
+* SqlServerEndpointState _(replaced by a property in [**SqlEndpoint**](#sqlendpoint))_.
+* SqlServerNetwork _(replaced by [**SqlProtocol**](#sqlprotocol) and_
+  _[**SqlProtocolTcpIp**](#sqlprotocoltcpip))_.
 
 ## Resources
 
@@ -112,28 +112,28 @@ in a future release.
   functionality to T-SQL.
 * [**SqlScriptQuery**](#sqlscriptquery) resource to extend DSC Get/Set/Test
   functionality to T-SQL.
-* [**SqlServerConfiguration**](#sqlserverconfiguration) resource to manage
+* [**SqlConfiguration**](#sqlconfiguration) resource to manage
   [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx).
-* [**SqlServerDatabaseMail**](#sqlserverdatabasemail) resource
+* [**SqlDatabaseMail**](#sqldatabasemail) resource
   to manage SQL Server Database Mail.
-* [**SqlServerEndpoint**](#sqlserverendpoint) resource to ensure database endpoint
+* [**SqlEndpoint**](#sqlendpoint) resource to ensure database endpoint
   is present or absent.
-* [**SqlServerEndpointPermission**](#sqlserverendpointpermission) Grant or revoke
+* [**SqlEndpointPermission**](#sqlendpointpermission) Grant or revoke
   permission on the endpoint.
-* [**SqlServerLogin**](#sqlserverlogin) resource to manage SQL logins.
-* [**SqlServerMaxDop**](#sqlservermaxdop) resource to manage MaxDegree of Parallelism
+* [**SqlLogin**](#sqllogin) resource to manage SQL logins.
+* [**SqlMaxDop**](#sqlmaxdop) resource to manage MaxDegree of Parallelism
   for SQL Server.
-* [**SqlServerMemory**](#sqlservermemory) resource to manage Memory for SQL Server.
-* [**SqlServerPermission**](#sqlserverpermission) Grant or revoke permission on
+* [**SqlMemory**](#sqlmemory) resource to manage Memory for SQL Server.
+* [**SqlPermission**](#sqlpermission) Grant or revoke permission on
   the SQL Server.
-* [**SqlServerProtocol**](#sqlserverprotocol) resource manage the SQL Server
+* [**SqlProtocol**](#sqlprotocol) resource manage the SQL Server
   protocols for a SQL Server instance.
-* [**SqlServerProtocolTcpIp**](#sqlserverprotocoltcpip) resource manage the TCP/IP
+* [**SqlProtocolTcpIp**](#sqlprotocoltcpip) resource manage the TCP/IP
   protocol IP address groups for a SQL Server instance.
-* [**SqlServerReplication**](#sqlserverreplication) resource to manage SQL Replication
+* [**SqlReplication**](#sqlreplication) resource to manage SQL Replication
   distribution and publishing.
-* [**SqlServerRole**](#sqlserverrole) resource to manage SQL server roles.
-* [**SqlServerSecureConnection**](#sqlserversecureconnection) resource to
+* [**SqlRole**](#sqlrole) resource to manage SQL server roles.
+* [**SqlSecureConnection**](#sqlsecureconnection) resource to
   enable encrypted SQL connections.
 * [**SqlServiceAccount**](#sqlserviceaccount) Manage the service account
   for SQL Server services.
@@ -1161,7 +1161,7 @@ The Set T-SQL script performs the actual change when Test T-SQL script fails.
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlScript).
 
-### SqlServerConfiguration
+### SqlConfiguration
 
 This resource manage the [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
 on a SQL Server instance.
@@ -1188,18 +1188,18 @@ on a SQL Server instance.
 
 #### Examples
 
-* [Configure two instances on the same server to have CLR enabled](/source/Examples/Resources/SqlServerConfiguration/1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1)
-* [Configure a instance to have 'Priority Boost' enabled](/source/Examples/Resources/SqlServerConfiguration/2-ConfigureInstanceToEnablePriorityBoost.ps1)
+* [Configure two instances on the same server to have CLR enabled](/source/Examples/Resources/SqlConfiguration/1-ConfigureTwoInstancesOnTheSameServerToEnableClr.ps1)
+* [Configure a instance to have 'Priority Boost' enabled](/source/Examples/Resources/SqlConfiguration/2-ConfigureInstanceToEnablePriorityBoost.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerConfiguration).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlConfiguration).
 
-### SqlServerDatabaseMail
+### SqlDatabaseMail
 
 Resource to manage SQL Server Database Mail.
 
->**Note:** Database Mail XPs can be enabled using the resource SqlServerConfiguration.
+>**Note:** Database Mail XPs can be enabled using the resource SqlConfiguration.
 
 #### Requirements
 
@@ -1238,14 +1238,14 @@ Resource to manage SQL Server Database Mail.
 
 #### Examples
 
-* [Enable Database Mail](/source/Examples/Resources/SqlServerDatabaseMail/1-EnableDatabaseMail.ps1)
-* [Disable Database Mail](/source/Examples/Resources/SqlServerDatabaseMail/2-DisableDatabaseMail.ps1)
+* [Enable Database Mail](/source/Examples/Resources/SqlDatabaseMail/1-EnableDatabaseMail.ps1)
+* [Disable Database Mail](/source/Examples/Resources/SqlDatabaseMail/2-DisableDatabaseMail.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerDatabaseMail).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseMail).
 
-### SqlServerEndpoint
+### SqlEndpoint
 
 This resource is used to create an endpoint. Currently it only supports creating
 a database mirror endpoint which can be used by, for example, AlwaysOn.
@@ -1253,7 +1253,7 @@ a database mirror endpoint which can be used by, for example, AlwaysOn.
 >Note: The endpoint will be started after creation, but will not be enforced
 >unless the the parameter `State` is specified.
 >To set connect permission to the endpoint, please use
->the resource [**SqlServerEndpointPermission**](#sqlserverendpointpermission).
+>the resource [**SqlEndpointPermission**](#sqlendpointpermission).
 
 #### Requirements
 
@@ -1291,15 +1291,15 @@ a database mirror endpoint which can be used by, for example, AlwaysOn.
 
 #### Examples
 
-* [Create an endpoint with default values](/source/Examples/Resources/SqlServerEndpoint/1-CreateEndpointWithDefaultValues.ps1)
-* [Create an endpoint with specific port and IP address](/source/Examples/Resources/SqlServerEndpoint/2-CreateEndpointWithSpecificPortIPAddressOwner.ps1)
-* [Remove an endpoint](/source/Examples/Resources/SqlServerEndpoint/3-RemoveEndpoint.ps1)
+* [Create an endpoint with default values](/source/Examples/Resources/SqlEndpoint/1-CreateEndpointWithDefaultValues.ps1)
+* [Create an endpoint with specific port and IP address](/source/Examples/Resources/SqlEndpoint/2-CreateEndpointWithSpecificPortIPAddressOwner.ps1)
+* [Remove an endpoint](/source/Examples/Resources/SqlEndpoint/3-RemoveEndpoint.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpoint).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlEndpoint).
 
-### SqlServerEndpointPermission
+### SqlEndpointPermission
 
 This resource is used to give connect permission to an endpoint for a user (login).
 
@@ -1322,16 +1322,16 @@ This resource is used to give connect permission to an endpoint for a user (logi
 
 #### Examples
 
-* [Add connect permission to an Endpoint](/source/Examples/Resources/SqlServerEndpointPermission/1-AddConnectPermission.ps1)
-* [Remove the connect permission for an Endpoint](/source/Examples/Resources/SqlServerEndpointPermission/2-RemoveConnectPermission.ps1)
-* [Add connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/source/Examples/Resources/SqlServerEndpointPermission/3-AddConnectPermissionToTwoReplicasEachWithDifferentServiceAccount.ps1)
-* [Remove connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/source/Examples/Resources/SqlServerEndpointPermission/4-RemoveConnectPermissionForTwoReplicasEachWithDifferentServiceAccount.ps1)
+* [Add connect permission to an Endpoint](/source/Examples/Resources/SqlEndpointPermission/1-AddConnectPermission.ps1)
+* [Remove the connect permission for an Endpoint](/source/Examples/Resources/SqlEndpointPermission/2-RemoveConnectPermission.ps1)
+* [Add connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/source/Examples/Resources/SqlEndpointPermission/3-AddConnectPermissionToTwoReplicasEachWithDifferentServiceAccount.ps1)
+* [Remove connect permission to both an Always On primary replica and an Always On secondary replica, and where each replica has a different SQL service account](/source/Examples/Resources/SqlEndpointPermission/4-RemoveConnectPermissionForTwoReplicasEachWithDifferentServiceAccount.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerEndpointPermission).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlEndpointPermission).
 
-### SqlServerLogin
+### SqlLogin
 
 No description.
 
@@ -1373,14 +1373,14 @@ No description.
 
 #### Examples
 
-* [Add a login](/source/Examples/Resources/SqlServerLogin/1-AddLogin.ps1)
-* [Remove a login](/source/Examples/Resources/SqlServerLogin/2-RemoveLogin.ps1)
+* [Add a login](/source/Examples/Resources/SqlLogin/1-AddLogin.ps1)
+* [Remove a login](/source/Examples/Resources/SqlLogin/2-RemoveLogin.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerLogin).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlLogin).
 
-### SqlServerMaxDop
+### SqlMaxDop
 
 This resource set the max degree of parallelism server configuration option.
 The max degree of parallelism option is used to limit the number of processors to
@@ -1430,15 +1430,15 @@ Read more about max degree of parallelism in this article
 
 #### Examples
 
-* [Set SQLServerMaxDop to 1](/source/Examples/Resources/SqlServerMaxDop/1-SetMaxDopToOne.ps1)
-* [Set SQLServerMaxDop to Auto](/source/Examples/Resources/SqlServerMaxDop/2-SetMaxDopToAuto.ps1)
-* [Set SQLServerMaxDop to Default](/source/Examples/Resources/SqlServerMaxDop/3-SetMaxDopToDefault.ps1)
+* [Set SqlMaxDop to 1](/source/Examples/Resources/SqlMaxDop/1-SetMaxDopToOne.ps1)
+* [Set SqlMaxDop to Auto](/source/Examples/Resources/SqlMaxDop/2-SetMaxDopToAuto.ps1)
+* [Set SqlMaxDop to Default](/source/Examples/Resources/SqlMaxDop/3-SetMaxDopToDefault.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerMaxDop).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlMaxDop).
 
-### SqlServerMemory
+### SqlMemory
 
 This resource sets the minimum server memory and maximum server memory configuration
 option.
@@ -1509,16 +1509,16 @@ SQL Max Memory = TotalPhysicalMemory - (NumOfSQLThreads\*ThreadStackSize) -
 
 #### Examples
 
-* [Set SQLServerMaxMemory to 12GB](/source/Examples/Resources/SqlServerMemory/1-SetMaxMemoryTo12GB.ps1)
-* [Set SQLServerMaxMemory to Auto](/source/Examples/Resources/SqlServerMemory/2-SetMaxMemoryToAuto.ps1)
-* [Set SQLServerMinMemory to 2GB and SQLServerMaxMemory to Auto](/source/Examples/Resources/SqlServerMemory/3-SetMinMemoryToFixedValueAndMaxMemoryToAuto.ps1)
-* [Set SQLServerMaxMemory to Default](/source/Examples/Resources/SqlServerMemory/4-SetMaxMemoryToDefault.ps1)
+* [Set SQLServerMaxMemory to 12GB](/source/Examples/Resources/SqlMemory/1-SetMaxMemoryTo12GB.ps1)
+* [Set SQLServerMaxMemory to Auto](/source/Examples/Resources/SqlMemory/2-SetMaxMemoryToAuto.ps1)
+* [Set SQLServerMinMemory to 2GB and SQLServerMaxMemory to Auto](/source/Examples/Resources/SqlMemory/3-SetMinMemoryToFixedValueAndMaxMemoryToAuto.ps1)
+* [Set SQLServerMaxMemory to Default](/source/Examples/Resources/SqlMemory/4-SetMaxMemoryToDefault.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerMemory).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlMemory).
 
-### SqlServerPermission
+### SqlPermission
 
 This resource sets server permissions to a user (login).
 
@@ -1546,16 +1546,16 @@ AlterAnyEndPoint and ViewServerState.
 
 #### Examples
 
-* [Add server permission for a login](/source/Examples/Resources/SqlServerPermission/1-AddServerPermissionForLogin.ps1)
-* [Remove server permission for a login](/source/Examples/Resources/SqlServerPermission/2-RemoveServerPermissionForLogin.ps1)
+* [Add server permission for a login](/source/Examples/Resources/SqlPermission/1-AddServerPermissionForLogin.ps1)
+* [Remove server permission for a login](/source/Examples/Resources/SqlPermission/2-RemoveServerPermissionForLogin.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerPermission).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlPermission).
 
-### SqlServerProtocol
+### SqlProtocol
 
-The `SqlServerProtocol` DSC resource manage the SQL Server protocols
+The `SqlProtocol` DSC resource manage the SQL Server protocols
 for a SQL Server instance.
 
 #### Requirements
@@ -1608,20 +1608,20 @@ for a SQL Server instance.
 
 #### Examples
 
-* [Enable the TCP/IP protocol](/source/Examples/Resources/SqlServerProtocol/1-EnableTcpIp.ps1)
-* [Enable the Named Pipes protocol](/source/Examples/Resources/SqlServerProtocol/2-EnableNamedPipes.ps1)
-* [Enable the Shared Memory protocol](/source/Examples/Resources/SqlServerProtocol/3-EnableSharedMemory.ps1)
-* [Disable the TCP/IP protocol](/source/Examples/Resources/SqlServerProtocol/4-DisableTcpIp.ps1)
-* [Disable the Named Pipes protocol](/source/Examples/Resources/SqlServerProtocol/5-DisableNamedPipes.ps1)
-* [Disable the Shared Memory protocol](/source/Examples/Resources/SqlServerProtocol/6-DisableSharedMemory.ps1)
+* [Enable the TCP/IP protocol](/source/Examples/Resources/SqlProtocol/1-EnableTcpIp.ps1)
+* [Enable the Named Pipes protocol](/source/Examples/Resources/SqlProtocol/2-EnableNamedPipes.ps1)
+* [Enable the Shared Memory protocol](/source/Examples/Resources/SqlProtocol/3-EnableSharedMemory.ps1)
+* [Disable the TCP/IP protocol](/source/Examples/Resources/SqlProtocol/4-DisableTcpIp.ps1)
+* [Disable the Named Pipes protocol](/source/Examples/Resources/SqlProtocol/5-DisableNamedPipes.ps1)
+* [Disable the Shared Memory protocol](/source/Examples/Resources/SqlProtocol/6-DisableSharedMemory.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerProtocol).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlProtocol).
 
-### SqlServerProtocolTcpIp
+### SqlProtocolTcpIp
 
-The `SqlServerProtocolTcpIp` DSC resource manage the TCP/IP protocol IP
+The `SqlProtocolTcpIp` DSC resource manage the TCP/IP protocol IP
 address groups for a SQL Server instance.
 
 #### Requirements
@@ -1632,7 +1632,7 @@ address groups for a SQL Server instance.
   PowerShell module.
 * To configure a single IP address to listen on multiple ports, the
   TcpIp protocol must also set the **Listen All** property to **No**.
-  This can be done with the resource `SqlServerProtocol` using the
+  This can be done with the resource `SqlProtocol` using the
   parameter `ListenOnAllIpAddresses`.
 
 #### Parameters
@@ -1678,15 +1678,15 @@ address groups for a SQL Server instance.
 
 #### Examples
 
-* [Configure the IP address group IPAll with dynamic port](/source/Examples/Resources/SqlServerProtocolTcpIp/1-ConfigureIPAddressGroupIPAllWithDynamicPort.ps1)
-* [Configure the IP address group IPAll with static port(s)](/source/Examples/Resources/SqlServerProtocolTcpIp/2-ConfigureIPAddressGroupIPAllWithStaticPort.ps1)
-* [Configure the IP address group IP1 with IP address and static port(s)](/source/Examples/Resources/SqlServerProtocolTcpIp/3-ConfigureIPAddressGroupIP1.ps1)
+* [Configure the IP address group IPAll with dynamic port](/source/Examples/Resources/SqlProtocolTcpIp/1-ConfigureIPAddressGroupIPAllWithDynamicPort.ps1)
+* [Configure the IP address group IPAll with static port(s)](/source/Examples/Resources/SqlProtocolTcpIp/2-ConfigureIPAddressGroupIPAllWithStaticPort.ps1)
+* [Configure the IP address group IP1 with IP address and static port(s)](/source/Examples/Resources/SqlProtocolTcpIp/3-ConfigureIPAddressGroupIP1.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerProtocolTcpIp).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlProtocolTcpIp).
 
-### SqlServerReplication
+### SqlReplication
 
 This resource manage SQL Replication distribution and publishing.
 
@@ -1719,14 +1719,14 @@ This resource manage SQL Replication distribution and publishing.
 
 #### Examples
 
-* [Configure a instance as the distributor](/source/Examples/Resources/SqlServerReplication/1-ConfigureInstanceAsDistributor.ps1)
-* [Configure a instance as the publisher](/source/Examples/Resources/SqlServerReplication/2-ConfigureInstanceAsPublisher.ps1)
+* [Configure a instance as the distributor](/source/Examples/Resources/SqlReplication/1-ConfigureInstanceAsDistributor.ps1)
+* [Configure a instance as the publisher](/source/Examples/Resources/SqlReplication/2-ConfigureInstanceAsPublisher.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerReplication).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlReplication).
 
-### SqlServerRole
+### SqlRole
 
 This resource is used to create a server role, when Ensure is set to 'Present'.
 Or remove a server role, when Ensure is set to 'Absent'. The resource also manages
@@ -1763,17 +1763,17 @@ server roles, please read the below articles.
 
 #### Examples
 
-* [Add server role](/source/Examples/Resources/SqlServerRole/1-AddServerRole.ps1)
-* [Remove server role](/source/Examples/Resources/SqlServerRole/2-RemoveServerRole.ps1)
-* [Add members to server role](/source/Examples/Resources/SqlServerRole/3-AddMembersToServerRole.ps1)
-* [Members to include in server role](/source/Examples/Resources/SqlServerRole/4-MembersToIncludeInServerRole.ps1)
-* [Members to exclude from server role](/source/Examples/Resources/SqlServerRole/5-MembersToExcludeInServerRole.ps1)
+* [Add server role](/source/Examples/Resources/SqlRole/1-AddServerRole.ps1)
+* [Remove server role](/source/Examples/Resources/SqlRole/2-RemoveServerRole.ps1)
+* [Add members to server role](/source/Examples/Resources/SqlRole/3-AddMembersToServerRole.ps1)
+* [Members to include in server role](/source/Examples/Resources/SqlRole/4-MembersToIncludeInServerRole.ps1)
+* [Members to exclude from server role](/source/Examples/Resources/SqlRole/5-MembersToExcludeInServerRole.ps1)
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerRole).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlRole).
 
-### SqlServerSecureConnection
+### SqlSecureConnection
 
 Configures SQL connections to be encrypted.
 Read more about encrypted connections in this article [Enable Encrypted Connections](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine).
@@ -1816,14 +1816,14 @@ In that case, the 'SYSTEM' service account can be used.
 
 #### Examples
 
-* [Force Secure Connection](/source/Examples/Resources/SqlServerSecureConnection/1-ForceSecureConnection.ps1).
-* [Secure Connection but not required](/source/Examples/Resources/SqlServerSecureConnection/2-SecureConnectionNotForced.ps1).
-* [Secure Connection disabled](/source/Examples/Resources/SqlServerSecureConnection/3-SecureConnectionAbsent.ps1).
-* [Secure Connection Using "SYSTEM" Account](/source/Examples/Resources/SqlServerSecureConnection/4-SecureConnectionUsingSYSTEMAccount.ps1).
+* [Force Secure Connection](/source/Examples/Resources/SqlSecureConnection/1-ForceSecureConnection.ps1).
+* [Secure Connection but not required](/source/Examples/Resources/SqlSecureConnection/2-SecureConnectionNotForced.ps1).
+* [Secure Connection disabled](/source/Examples/Resources/SqlSecureConnection/3-SecureConnectionAbsent.ps1).
+* [Secure Connection Using "SYSTEM" Account](/source/Examples/Resources/SqlSecureConnection/4-SecureConnectionUsingSYSTEMAccount.ps1).
 
 #### Known issues
 
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlServerSecureConnection).
+All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlSecureConnection).
 
 ### SqlServiceAccount
 
