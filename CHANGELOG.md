@@ -41,6 +41,7 @@ in a future release.
 - SqlServerDsc
   - Added new resource SqlProtocol ([issue #1377](https://github.com/dsccommunity/SqlServerDsc/issues/1377)).
   - Added new resource SqlProtocolTcpIp ([issue #1378](https://github.com/dsccommunity/SqlServerDsc/issues/1378)).
+  - Added new resource SqlDatabaseObjectPermission ([issue #1119](https://github.com/dsccommunity/SqlServerDsc/issues/1119)).
   - Fixing a problem with the latest ModuleBuild 1.7.0 that breaks the CI
     pipeline.
   - Prepare repository for auto-documentation by adding README.md to each
@@ -83,6 +84,17 @@ in a future release.
     names. Using this parameter the cluster group will only be taken
     offline and back online if the cluster group owner is one specified
     in this parameter.
+  - The helper function `Compare-ResourcePropertyState` was improved to
+    handle embedded instances by adding a parameter `CimInstanceKeyProperties`
+    that can be used to identify the unique parameter for each embedded
+    instance in a collection.
+  - The helper function `Test-DscPropertyState` was improved to evaluate
+    the properties in a single CIM instance or a collection of CIM instances
+    by recursively call itself.
+  - When the helper function `Test-DscPropertyState` evaluated an array
+    the verbose messages was not very descriptive. Instead of outputting
+    the side indicator from the compare it now outputs a descriptive
+    message.
 
 ### Changed
 
@@ -1985,7 +1997,7 @@ in a future release.
 
 ### Changed
 
- Improvements how tests are initiated in AppVeyor
+- Improvements how tests are initiated in AppVeyor
   - Removed previous workaround (issue #201) from unit tests.
   - Changes in appveyor.yml so that SQL modules are removed before common test is
     run.
@@ -2072,8 +2084,8 @@ in a future release.
 - Added common test (xSQLServerCommon.Tests) for xSQLServer module
   - Now all markdown files will be style checked when tests are running in AppVeyor
     after sending in a pull request.
-  - Now all [Examples](/source/Examples/Resources) will be tested by compiling to a .mof
-    file after sending in a pull request.
+  - Now all [Examples](/source/Examples/Resources) will be tested by compiling
+    to a .mof file after sending in a pull request.
 - Changes to xSQLServerDatabaseOwner
   - The example 'SetDatabaseOwner' can now compile, it wrongly had a `DependsOn`
     in the example.
@@ -2153,7 +2165,7 @@ in a future release.
   - Get-TargetResource now works with Get-DscConfiguration.
 - Fixes in xSQLServerRole
   - Updated Ensure parameter to 'Present' default value.
-  - Renamed helper functions *-SqlServerRole to *-SqlServerRoleMember.
+  - Renamed helper functions *-SqlServerRole* to *-SqlServerRoleMember*.
 - Changes to xSQLAlias
   - Add UseDynamicTcpPort parameter for option "Dynamically determine port".
   - Change Get-WmiObject to Get-CimInstance in Resource and associated pester file.
