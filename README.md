@@ -146,36 +146,6 @@ in a future release.
 * [**SqlWindowsFirewall**](#sqlwindowsfirewall) configures firewall settings to
   allow remote access to a SQL Server instance.
 
-### SqlAgentOperator
-
-This resource is used to add/remove SQL Agent Operators. You can also update
-the operators email address.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2012 or later.
-* Target machine must be running SQL Server Database Engine 2012 or later.
-
-#### Parameters
-
-* **`[String]` Name** _(Key)_: The name of the SQL Agent Operator.
-* **`[String]` Ensure** _(Write)_: Specifies if the SQL Agent Operator should
-  be present or absent. Default is Present. { *Present* | Absent }
-* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be
-  configured. Default is $env:COMPUTERNAME.
-* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` EmailAddress** _(Write)_: The email address to be used for
-  the SQL Agent Operator.
-
-#### Examples
-
-* [Add a SQL Agent Operator](/source/Examples/Resources/SqlAgentOperator/1-AddOperator.ps1)
-* [Remove a SQL Agent Operator](/source/Examples/Resources/SqlAgentOperator/2-RemoveOperator.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAgentOperator).
-
 ### SqlAGListener
 
 No description.
