@@ -146,52 +146,6 @@ in a future release.
 * [**SqlWindowsFirewall**](#sqlwindowsfirewall) configures firewall settings to
   allow remote access to a SQL Server instance.
 
-### SqlAGListener
-
-No description.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2012 or later.
-* Target machine must be running SQL Server Database Engine 2012 or later.
-* Target machine must have access to the SQLPS PowerShell module or the SqlServer
-  PowerShell module.
-* Requires that the Cluster name Object (CNO) has been delegated the right
-  _Create Computer Object_ in the organizational unit (OU) in which the
-  Cluster Name Object (CNO) resides.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: The SQL Server instance name of the primary
-  replica.
-* **`[String]` AvailabilityGroup** _(Key)_: The name of the availability group to
-  which the availability group listener is or will be connected.
-* **`[String]` ServerName** _(Write)_: The host name or FQDN of the primary replica.
-* **`[String]` Ensure** _(Write)_: If the availability group listener should be present
-  or absent. Default value is 'Present'. { *Present* | Absent }.
-* **`[String]` Name** _(Write)_: The name of the availability group listener, max
-  15 characters. This name will be used as the Virtual Computer Object (VCO).
-* **`[String[]]` IpAddress** _(Write)_: The IP address used for the availability
-  group listener, in the format 192.168.10.45/255.255.252.0. If using DHCP, set
-  to the first IP-address of the DHCP subnet, in the format 192.168.8.1/255.255.252.0.
-  Must be valid in the cluster-allowed IP range.
-* **`[Uint16]` Port** _(Write)_: The port used for the availability group listener.
-* **`[Boolean]` DHCP** _(Write)_: If DHCP should be used for the availability group
-  listener instead of static IP address.
-
-#### Examples
-
-* [Adds an Availability Group listener with the same name as the Availability Group VCO](/source/Examples/Resources/SqlAGListener/1-AddAvailabilityGroupListenerWithSameNameAsVCO.ps1)
-* [Adds an Availability Group listener with a different name than the Availability Group VCO](/source/Examples/Resources/SqlAGListener/2-AddAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
-* [Removes an Availability Group listener with the same name as the Availability Group VCO](/source/Examples/Resources/SqlAGListener/3-RemoveAvailabilityGroupListenerWithSameNameAsVCO.ps1)
-* [Removes an Availability Group listener with a different name than the Availability Group VCO](/source/Examples/Resources/SqlAGListener/4-RemoveAvailabilityGroupListenerWithDifferentNameAsVCO.ps1)
-* [Adds an Availability Group listener using DHCP on the default server subnet](/source/Examples/Resources/SqlAGListener/5-AddAvailabilityGroupListenerUsingDHCPWithDefaultServerSubnet.ps1)
-* [Adds an Availability Group listener using DHCP with a specific subnet](/source/Examples/Resources/SqlAGListener/6-AddAvailabilityGroupListenerUsingDHCPWithSpecificSubnet.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAGListener).
-
 ### SqlAGReplica
 
 This resource is used to create, remove, and update an
