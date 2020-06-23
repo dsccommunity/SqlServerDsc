@@ -146,36 +146,6 @@ in a future release.
 * [**SqlWindowsFirewall**](#sqlwindowsfirewall) configures firewall settings to
   allow remote access to a SQL Server instance.
 
-### SqlAgentAlert
-
-This resource is used to add/remove SQL Agent Alerts. You can also
-update the severity or message id.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2012 or later.
-* Target machine must be running SQL Server Database Engine 2012 or later.
-
-#### Parameters
-
-* **`[String]` Name** _(Key)_: The name of the SQL Agent Alert.
-* **`[String]` Ensure** _(Write)_: Specifies if the SQL Agent Alert should
-  be present or absent. Default is Present. { *Present* | Absent }
-* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be
-  configured. Default is $env:COMPUTERNAME.
-* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` Severity** _(Write)_: The severity of the SQL Agent Alert.
-* **`[String]` MessageId** _(Write)_: The message id of the SQL Agent Alert.
-
-#### Examples
-
-* [Add a SQL Agent Alert](/source/Examples/Resources/SqlAgentAlert/1-AddAlert.ps1)
-* [Remove a SQL Agent Alert](/source/Examples/Resources/SqlAgentAlert/2-RemoveAlert.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAgentAlert).
-
 ### SqlAgentFailsafe
 
 This resource is used to add/remove the SQL Agent Failsafe Operator. You can also
