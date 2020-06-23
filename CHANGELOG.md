@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- SqlServerDsc
+  - Documentation is now published to the GitHub Wiki.
+
 ## [14.0.0] - 2020-06-12
 
 ### Remove
