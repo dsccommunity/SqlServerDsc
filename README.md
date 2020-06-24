@@ -146,48 +146,6 @@ in a future release.
 * [**SqlWindowsFirewall**](#sqlwindowsfirewall) configures firewall settings to
   allow remote access to a SQL Server instance.
 
-### SqlDatabasePermission
-
-This resource is used to grant, deny or revoke permissions for a user in a database.
-For more information about permissions, please read the article
-[Permissions (Database Engine)](https://docs.microsoft.com/en-us/sql/relational-databases/security/permissions-database-engine).
-
->**Note:** When revoking permission with PermissionState 'GrantWithGrant', both the
->grantee and _all the other users the grantee has granted the same permission to_,
->will also get their permission revoked.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2012 or later.
-* Target machine must be running SQL Server Database Engine 2012 or later.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-  Default value is `'MSSQLSERVER'`.
-* **`[String]` DatabaseName** _(Key)_: The name of the database.
-* **`[String]` Name** _(Key)_: The name of the user that should be granted or denied
-  the permission.
-* **`[String]` PermissionState** _(Key)_: The state of the permission.
-  { Grant | Deny | GrantWithGrant }.
-* **`[String[]]` Permissions** _(Required)_: The permissions to be granted or denied
-  for the user in the database. Valid permission names can be found in the article
-  [DatabasePermissionSet Class properties](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.databasepermissionset#properties).
-* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
-  Default values is `$env:COMPUTERNAME`.
-* **`[String]` Ensure** _(Write)_: If the permission should be granted (Present)
-  or revoked (Absent). { Present | Absent }.
-
-#### Examples
-
-* [Grant Database Permission](/source/Examples/Resources/SqlDatabasePermission/1-GrantDatabasePermissions.ps1)
-* [Revoke Database Permission](/source/Examples/Resources/SqlDatabasePermission/2-RevokeDatabasePermissions.ps1)
-* [Deny Database Permission](/source/Examples/Resources/SqlDatabasePermission/3-DenyDatabasePermissions.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabasePermission).
-
 ### SqlDatabaseRole
 
 This resource is used to create a database role when Ensure is set to 'Present'

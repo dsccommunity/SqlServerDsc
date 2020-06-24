@@ -8,6 +8,8 @@ please read the article [Permissions (Database Engine)](https://docs.microsoft.c
 >grantee and _all the other users the grantee has granted the same permission to_,
 >will also get their permission revoked.
 
+Valid permission names can be found in the article [DatabasePermissionSet Class properties](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.databasepermissionset#properties).
+
 ## Requirements
 
 * Target machine must be running Windows Server 2012 or later.
