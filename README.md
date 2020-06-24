@@ -146,41 +146,6 @@ in a future release.
 * [**SqlWindowsFirewall**](#sqlwindowsfirewall) configures firewall settings to
   allow remote access to a SQL Server instance.
 
-### SqlAlwaysOnService
-
-Enables or disabled SQL Server Always On high availability and disaster recovery
-(Always On HADR).
-
-#### Requirements
-
-* Target machine must be running Windows Server 2012 or later.
-* Target machine must be running SQL Server Database Engine 2012 or later.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` Ensure** _(Required)_: An enumerated value that describes if the SQL
-  Server should have Always On high availability and disaster recovery (HADR)
-  property enabled ('Present') or disabled ('Absent'). { Present | Absent }.
-* **`[String]` ServerName** _(Write)_: The hostname of the SQL Server to be configured.
-  Default value is `$env:COMPUTERNAME`.
-* **`[SInt32]` RestartTimeout** _(Write)_: The length of time, in seconds, to wait
-  for the service to restart. Default is 120 seconds.
-
-#### Read-Only Properties from Get-TargetResource
-
-* **`[Boolean]` IsHadrEnabled** _(Read)_: Returns the status of AlwaysOn high
-  availability and disaster recovery (HADR).
-
-#### Examples
-
-* [Enable SQL Server Always On](/source/Examples/Resources/SqlAlwaysOnService/1-EnableAlwaysOn.ps1)
-* [Disable SQL Server Always On](/source/Examples/Resources/SqlAlwaysOnService/2-DisableAlwaysOn.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAlwaysOnService).
-
 ### SqlDatabase
 
 This resource is used to create or delete a database. For more information about
