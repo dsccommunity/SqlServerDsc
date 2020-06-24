@@ -146,58 +146,6 @@ in a future release.
 * [**SqlWindowsFirewall**](#sqlwindowsfirewall) configures firewall settings to
   allow remote access to a SQL Server instance.
 
-### SqlDatabaseRole
-
-This resource is used to create a database role when Ensure is set to 'Present'
-or remove a database role when Ensure is set to 'Absent'. The resource also
-manages members in both built-in and user created database roles.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2012 or later.
-* Target machine must be running SQL Server Database Engine 2012 or later.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` DatabaseName** _(Key)_: The name of the database in which the role should
-  be configured.
-* **`[String]` Name** _(Key)_: The name of the database role to be added or removed.
-* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
-  Default value is `$env:COMPUTERNAME`.
-* **`[String[]]` Members** _(Write)_: The members the database role should have.
-  This parameter will replace all the current database role members with the
-  specified members. Can only be used when parameter Ensure is set to 'Present'.
-* **`[String[]]` MembersToInclude** _(Write)_: The members the database role should
-  include. This parameter will only add members to a database role. Can only
-  be used when parameter Ensure is set to 'Present'. Can not be used at the same
-  time as parameter Members.
-* **`[String[]]` MembersToExclude** _(Write)_: The members the database role should
-  exclude. This parameter will only remove members from a database role. Can only
-  be used when parameter Ensure is set to 'Present'. Can not be used at the same
-  time as parameter Members.
-* **`[String]` Ensure** _(Write)_: If 'Present' (the default value) then the role
-  will be added to the database and the role membership will be set. If 'Absent'
-  then the role will be removed from the database. { *Present* | Absent }.
-
-#### Read-Only Properties from Get-TargetResource
-
-* **`[String]` MembersInDesiredState** _(Read)_: Indicates whether the database
-  role members are in the desired state.
-
-#### Examples
-
-* [Add Role to a database](/source/Examples/Resources/SqlDatabaseRole/1-AddDatabaseRole.ps1)
-* [Remove Role from a database](/source/Examples/Resources/SqlDatabaseRole/2-RemoveDatabaseRole.ps1)
-* [Enforce Role membership](/source/Examples/Resources/SqlDatabaseRole/3-EnforceDatabaseRoleMembers.ps1)
-* [Members to include in database role](/source/Examples/Resources/SqlDatabaseRole/4-MembersToIncludeInDatabaseRole.ps1)
-* [Members to exclude from database role](/source/Examples/Resources/SqlDatabaseRole/5-MembersToExcludeFromDatabaseRole.ps1)
-* [Members to include and exclude in a database role](/source/Examples/Resources/SqlDatabaseRole/6-MembersToIncludeAndExcludeInDatabaseRole.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseRole).
-
 ### SqlDatabaseUser
 
 This resource is used to create a database users. A database user can be
