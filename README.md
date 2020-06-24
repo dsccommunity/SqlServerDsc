@@ -146,47 +146,6 @@ in a future release.
 * [**SqlWindowsFirewall**](#sqlwindowsfirewall) configures firewall settings to
   allow remote access to a SQL Server instance.
 
-### SqlDatabaseDefaultLocation
-
-This resource is used to configure default locations for user databases. The
-types of default locations that can be changed are Data, Log, and Backup. For
-more information about database default locations, please read the article
-[Changing the Database Default Locations](https://technet.microsoft.com/en-us/library/dd206993.aspx).
-
-#### Requirements
-
-* Target machine must be running Windows Server 2012 or later.
-* Target machine must be running SQL Server Database Engine 2012 or later.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to
-  be configured.
-* **`[String]` Type** _(Key)_: The type of database default location to be
-  configured. { Data | Log | Backup }
-* **`[String]` Path** _(Required)_: The path to the default directory to be configured.
-* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
-  Default value is `$env:COMPUTERNAME`.
-* **`[Boolean]` RestartService** _(Write)_: If set to $true then SQL Server and
-  dependent services will be restarted if a change to the configuration is made.
-  The default value is $false.
-* **`[Boolean]` ProcessOnlyOnActiveNode** _(Write)_: Specifies that the resource
-  will only determine if a change is needed if the target node is the active
-  host of the SQL Server Instance.
-
-#### Read-Only Property from Get-TargetResource
-
-* **`[Boolean]` IsActiveNode** _(Read)_: Determines if the current node is
-  actively hosting the SQL Server instance.
-
-#### Examples
-
-* [Set database default locations](/source/Examples/Resources/SqlDatabaseDefaultLocation/1-SetDatabaseDefaultLocation.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseDefaultLocation).
-
 ### SqlDatabaseObjectPermission
 
 This DSC resource is used to manage the permissions of database objects
