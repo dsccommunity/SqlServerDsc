@@ -146,43 +146,6 @@ in a future release.
 * [**SqlWindowsFirewall**](#sqlwindowsfirewall) configures firewall settings to
   allow remote access to a SQL Server instance.
 
-### SqlAlias
-
-No description.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2012 or later.
-
-#### Parameters
-
-* **`[String]` Name** _(Key)_: The name of Alias (e.g. svr01\inst01).
-* **`[String]` ServerName** _(Write)_: The SQL Server you are aliasing (the NetBIOS
-  name or FQDN).
-* **`[String]` Ensure** _(Write)_: Determines whether the alias should be added or
-  removed. Default value is 'Present'. { *Present* | Absent }.
-* **`[String]` Protocol** _(Write)_: Protocol to use when connecting. Valid values
-  are 'TCP' or 'NP' (Named Pipes). Default value is 'TCP'. { *TCP* | NP }.
-* **`[Uint16]` TCPPort** _(Write)_: The TCP port SQL is listening on. Only used when
-  protocol is set to 'TCP'. Default value is port 1433.
-* **`[Boolean]` UseDynamicTcpPort** _(Write)_: The UseDynamicTcpPort specify that
-  the Net-Library will determine the port dynamically. The port specified in Port
-  number will not be used. Default value is '$false'.
-
-#### Read-Only Properties from Get-TargetResource
-
-* **`[String]` PipeName** _(Read)_: Named Pipes path from the Get-TargetResource
-  method.
-
-#### Examples
-
-* [Add an SQL Server alias](/source/Examples/Resources/SqlAlias/1-AddSqlAlias.ps1)
-* [Remove an SQL Server alias](/source/Examples/Resources/SqlAlias/2-RemoveSqlAlias.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAlias).
-
 ### SqlAlwaysOnService
 
 Enables or disabled SQL Server Always On high availability and disaster recovery
