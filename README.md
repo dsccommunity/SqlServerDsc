@@ -146,41 +146,6 @@ in a future release.
 * [**SqlWindowsFirewall**](#sqlwindowsfirewall) configures firewall settings to
   allow remote access to a SQL Server instance.
 
-### SqlPermission
-
-This resource sets server permissions to a user (login).
-
->Note: Currently the resource only supports ConnectSql, AlterAnyAvailabilityGroup,
-AlterAnyEndPoint and ViewServerState.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2012 or later.
-* Target machine must be running SQL Server Database Engine 2012 or later.
-* Target machine must have access to the SQLPS PowerShell module or the SqlServer
-  PowerShell module.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` Principal** _(Key)_: The login to which permission will be set.
-* **`[String]` Ensure** _(Write)_: If the permission should be present or absent.
-  Default value is 'Present'. { Present | Absent }.
-* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
-  Default value is $env:COMPUTERNAME.
-* **`[String[]]` Permission** _(Write)_: The permission to set for the login. Valid
-  values are ConnectSql, AlterAnyAvailabilityGroup, ViewServerState or AlterAnyEndPoint.
-  { ConnectSql, AlterAnyAvailabilityGroup | AlterAnyEndPoint | ViewServerState }.
-
-#### Examples
-
-* [Add server permission for a login](/source/Examples/Resources/SqlPermission/1-AddServerPermissionForLogin.ps1)
-* [Remove server permission for a login](/source/Examples/Resources/SqlPermission/2-RemoveServerPermissionForLogin.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlPermission).
-
 ### SqlProtocol
 
 The `SqlProtocol` DSC resource manage the SQL Server protocols
