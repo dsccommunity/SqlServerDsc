@@ -146,58 +146,6 @@ in a future release.
 * [**SqlWindowsFirewall**](#sqlwindowsfirewall) configures firewall settings to
   allow remote access to a SQL Server instance.
 
-### SqlSecureConnection
-
-Configures SQL connections to be encrypted.
-Read more about encrypted connections in this article [Enable Encrypted Connections](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine).
-
->Note: that the 'LocalSystem' service account will return a connection
-error, even though the connection has been successful.
-In that case, the 'SYSTEM' service account can be used.
-
-#### Requirements
-
-* Target machine must be running Windows Server 2012 or later.
-* You must have a Certificate that is trusted and issued for
-   `ServerAuthentication`.
-* The name of the Certificate must be the fully qualified domain name (FQDN)
-   of the computer.
-* The Certificate must be installed in the LocalMachine Personal store.
-* If `PsDscRunAsCredential` common parameter is used to run the resource, the
-  specified credential must have permissions to connect to the SQL Server instance
-  specified in `InstanceName`.
-
-#### Parameters
-
-* **`[String]` InstanceName** _(Key)_: Name of the SQL Server instance to be
-   configured.
-* **`[String]` Thumbprint** _(Required)_: Thumbprint of the certificate being
-   used for encryption. If parameter Ensure is set to 'Absent', then the
-   parameter Certificate can be set to an empty string.
-* **`[String]` ServiceAccount** _(Required)_: Name of the account running the
-   SQL Server service. If parameter is set to "LocalSystem", then a
-   connection error is displayed. Use the "SYSTEM" account instead, in that
-   case.
-* **`[String]` Ensure** _(Write)_: If Encryption should be Enabled (Present)
-  or Disabled (Absent). { *Present* | Absent }. Default value is Present.
-* **`[Boolean]` ForceEncryption** _(Write)_: If all connections to the SQL
-  instance should be encrypted. If this parameter is not assigned a value,
-  the default is, set to *True*, that all connections must be encrypted.
-* **`[Boolean]` SuppressRestart** _(Write)_: If set to $true then the required
-  restart will be suppressed. You will need to restart the service before
-  changes will take effect. The default value is $false.
-
-#### Examples
-
-* [Force Secure Connection](/source/Examples/Resources/SqlSecureConnection/1-ForceSecureConnection.ps1).
-* [Secure Connection but not required](/source/Examples/Resources/SqlSecureConnection/2-SecureConnectionNotForced.ps1).
-* [Secure Connection disabled](/source/Examples/Resources/SqlSecureConnection/3-SecureConnectionAbsent.ps1).
-* [Secure Connection Using "SYSTEM" Account](/source/Examples/Resources/SqlSecureConnection/4-SecureConnectionUsingSYSTEMAccount.ps1).
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlSecureConnection).
-
 ### SqlServiceAccount
 
 Manage the service account for SQL Server services.
