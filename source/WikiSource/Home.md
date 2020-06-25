@@ -11,6 +11,18 @@ Please leave comments, feature requests, and bug reports for this module in
 the [issues section](https://github.com/dsccommunity/SqlServerDsc/issues)
 for this repository.
 
+## Deprecated resources
+
+The documentation, examples, unit test, and integration tests have been removed
+for these deprecated resources. These resources will be removed
+in a future release.
+
+- SqlDatabaseOwner _(replaced by a property in [**SqlDatabase**](#sqldatabase))_.
+- SqlDatabaseRecoveryModel _(replaced by a property in [**SqlDatabase**](#sqldatabase))_.
+- SqlServerEndpointState _(replaced by a property in [**SqlEndpoint**](#sqlendpoint))_.
+- SqlServerNetwork _(replaced by [**SqlProtocol**](#sqlprotocol) and_
+  _[**SqlProtocolTcpIp**](#sqlprotocoltcpip))_.
+
 ## Getting started
 
 To get started either:
@@ -35,8 +47,15 @@ Get-DscResource -Module SqlServerDsc
 
 ## Prerequisites
 
-The SqlServerDsc module requires PowerShell v5.0 or higher.
+The minimum Windows Management Framework (PowerShell) version required is 5.0
+or higher, which ships with Windows 10 or Windows Server 2016,
+but can also be installed on Windows 7 SP1, Windows 8.1, Windows Server 2012,
+and Windows Server 2012 R2.
 
 Optionally the PowerShell Module [_SqlServer_](https://www.powershellgallery.com/packages/SqlServer)
 can be installed which then will be used instead of the PowerShell module
 _SQLPS_ that is installed with SQL Server.
+
+## Change log
+
+A full list of changes in each version can be found in the [change log](https://github.com/dsccommunity/SqlServerDsc/blob/master/CHANGELOG.md).
