@@ -32,7 +32,7 @@ BuildWorkflow:
     - Clean
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
-    - Create_changelog_release_output
+    - Create_Changelog_Release_Output
     - Generate_Conceptual_Help
     - Generate_Wiki_Content
 
@@ -45,11 +45,12 @@ BuildWorkflow:
 
   test:
     - Pester_Tests_Stop_On_Fail
-    - Pester_if_Code_Coverage_Under_Threshold
+    - Pester_If_Code_Coverage_Under_Threshold
 
   publish:
-    - Publish_release_to_GitHub
-    - publish_module_to_gallery
+    - Publish_Release_To_GitHub
+    - Publish_Module_To_gallery
+    - Publish_Wiki_Content
 
 ####################################################
 #       PESTER  Configuration                      #

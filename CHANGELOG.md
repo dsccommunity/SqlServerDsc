@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- SqlServerDsc
+  - Update resource parameter documentation ([issue #1568](https://github.com/dsccommunity/SqlServerDsc/issues/1568)).
+  - Documentation is now published to the GitHub Wiki.
+
 ## [14.0.0] - 2020-06-12
 
 ### Remove

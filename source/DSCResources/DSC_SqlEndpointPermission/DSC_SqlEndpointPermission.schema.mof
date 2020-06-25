@@ -7,6 +7,6 @@ class DSC_SqlEndpointPermission : OMI_BaseResource
     [Required, Description("The name of the endpoint.")] String Name;
     [Write, Description("The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.")] String ServerName;
     [Write, Description("If the permission should be present or absent. Default value is 'Present'."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
-    [Write, Description("The permission to set for the login. Valid value for permission are only CONNECT."), ValueMap{"CONNECT"}, Values{"CONNECT"}] String Permission;
+    [Write, Description("The permission to set for the login. Valid value for permission are only 'CONNECT'."), ValueMap{"CONNECT"}, Values{"CONNECT"}] String Permission;
 };
 
