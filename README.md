@@ -146,60 +146,6 @@ in a future release.
 * [**SqlWindowsFirewall**](#sqlwindowsfirewall) configures firewall settings to
   allow remote access to a SQL Server instance.
 
-### SqlEndpoint
-
-This resource is used to create an endpoint. Currently it only supports creating
-a database mirror endpoint which can be used by, for example, AlwaysOn.
-
->Note: The endpoint will be started after creation, but will not be enforced
->unless the the parameter `State` is specified.
->To set connect permission to the endpoint, please use
->the resource [**SqlEndpointPermission**](#sqlendpointpermission).
-
-#### Requirements
-
-* Target machine must be running Windows Server 2012 or later.
-* Target machine must be running SQL Server Database Engine 2012 or later.
-
-#### Security Requirements
-
-* The built-in parameter PsDscRunAsCredential must be set to the credentials of
-  an account with the permission to create and alter endpoints.
-
-#### Parameters
-
-* **`[String]` EndpointName** _(Key)_: The name of the endpoint.
-* **`[String]` InstanceName** _(Key)_: The name of the SQL instance to be configured.
-* **`[String]` EndpointType** _(Required)_: Specifies the type of endpoint. Currently
-  the only type that is supported is the Database Mirror type. { *DatabaseMirroring* }.
-* **`[String]` Ensure** _(Write)_: If the endpoint should be present or absent.
-  Default values is 'Present'. { *Present* | Absent }.
-* **`[Uint16]` Port** _(Write)_: The network port the endpoint is listening on.
-  Default value is 5022, but default value is only used during endpoint creation,
-  it is not enforce.
-* **`[String]` ServerName** _(Write)_: The host name of the SQL Server to be configured.
-  Default value is $env:COMPUTERNAME.
-* **`[String]` IpAddress** _(Write)_: The network IP address the endpoint is listening
-  on. Default value is '0.0.0.0' which means listen on any valid IP address.
-  The default value is only used during endpoint creation, it is not enforce.
-* **`[String]` Owner** _(Write)_: The owner of the endpoint. Default is the
-  login used for the creation.
-* **`[String]` State** _(Write)_: Specifies the state of the endpoint. Valid
-  states are Started, Stopped, or Disabled. When an endpoint is created and
-  the state is not specified then the endpoint will be started after it is
-  created. The state will not be enforced unless the parameter is specified.
-  { Started | Stopped | Disabled }.
-
-#### Examples
-
-* [Create an endpoint with default values](/source/Examples/Resources/SqlEndpoint/1-CreateEndpointWithDefaultValues.ps1)
-* [Create an endpoint with specific port and IP address](/source/Examples/Resources/SqlEndpoint/2-CreateEndpointWithSpecificPortIPAddressOwner.ps1)
-* [Remove an endpoint](/source/Examples/Resources/SqlEndpoint/3-RemoveEndpoint.ps1)
-
-#### Known issues
-
-All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlEndpoint).
-
 ### SqlEndpointPermission
 
 This resource is used to give connect permission to an endpoint for a user (login).
