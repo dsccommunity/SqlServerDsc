@@ -99,6 +99,21 @@ having growth set to 10% then the returned value would be 110.
 This will be notable if there are multiple files in the filegroup `PRIMARY`
 with different sizes and growths.
 
+## Considerations for the parameter SourceCredential
+
+Using the parameter `SourceCredential` will trigger a copy of the installation
+media to a temp folder on the target node. Setup will then be started from
+the temp folder on the target node. For any subsequent calls to the resource,
+the parameter `SourceCredential` is used to evaluate what major version the
+file 'setup.exe' has in the path set, again, by the parameter `SourcePath`.
+To know how the temp folder is evaluated please read the online documentation
+for [System.IO.Path.GetTempPath()](https://msdn.microsoft.com/en-us/library/system.io.path.gettemppath(v=vs.110).aspx).
+If the path, that is assigned to parameter `SourcePath`, contains a leaf folder,
+for example '\\server\share\folder', then that leaf folder will be used as the
+name of the temporary folder. If the path, that is assigned to parameter
+`SourcePath`, does not have a leaf folder, for example '\\server\share', then
+a unique GUID will be used as the name of the temporary folder.
+
 ## Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlSetup).
