@@ -2,12 +2,12 @@
 class DSC_SqlReplication : OMI_BaseResource
 {
     [Key, Description("SQL Server instance name where replication distribution will be configured")] String InstanceName;
-    [Write, ValueMap{"Present", "Absent"}, Values{"Present", "Absent"}] String Ensure;
-    [Required, ValueMap{"Local", "Remote"}, Values{"Local", "Remote"}] String DistributorMode;
-    [Required, EmbeddedInstance("MSFT_Credential"), Description("Distributor administration link password")] String AdminLinkCredentials;
-    [Write, Description("Distribution database name")] String DistributionDBName;
-    [Write, Description("Distributor server name if configuring publisher with remote distributor")] String RemoteDistributor;
-    [Required, Description("Publisher working directory")] String WorkingDirectory;
-    [Write, Description("Publisher security mode")] Boolean UseTrustedConnection;
-    [Write, Description("Force flag for uninstall procedure")] Boolean UninstallWithForce;
+    [Write, Description("'Present' will configure replication, 'Absent' will disable replication. Default value is 'Present'."), ValueMap{"Present", "Absent"}, Values{"Present", "Absent"}] String Ensure;
+    [Required, Description("'Local' - Instance will be configured as it's own distributor. 'Remote' - Instance will be configure with remote distributor (remote distributor needs to be already configured for distribution)."), ValueMap{"Local", "Remote"}, Values{"Local", "Remote"}] String DistributorMode;
+    [Required, EmbeddedInstance("MSFT_Credential"), Description("AdminLink password to be used when setting up publisher distributor relationship.")] String AdminLinkCredentials;
+    [Write, Description("Distribution database name. If DistributionMode='Local' this will be created, if 'Remote' needs to match distribution database on remote distributor. Default value is 'distributor'.")] String DistributionDBName;
+    [Write, Description("SQL Server network name that will be used as distributor for local instance. Required if DistributionMode='Remote'.")] String RemoteDistributor;
+    [Required, Description("Publisher working directory.")] String WorkingDirectory;
+    [Write, Description("Publisher security mode. Default value is $true.")] Boolean UseTrustedConnection;
+    [Write, Description("Force flag for uninstall procedure. Default values is $true.")] Boolean UninstallWithForce;
 };
