@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update documentation around design pattern for accounts that does not
     use passwords ([issue #378](https://github.com/dsccommunity/SqlServerDsc/issues/378))
     and ([issue #1230](https://github.com/dsccommunity/SqlServerDsc/issues/1230)).
+  - Updating the Integration Test README.md to better explain what the
+    integration tests for SqlSetup, SqlRSSetup, and SqlRS does ([issue #1315](https://github.com/dsccommunity/SqlServerDsc/issues/1315)).
 - SqlAGReplica
   - Update documentation with a requirement for SqlServer in certain circumstances
     ([issue #1033](https://github.com/dsccommunity/SqlServerDsc/issues/1033)).

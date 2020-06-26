@@ -207,6 +207,16 @@ There are also configuration made by existing integration tests that can be reus
 to write integration tests for other resources. This is documented in
 [Integration tests for SqlServerDsc](https://github.com/PowerShell/SqlServerDsc/blob/master/Tests/Integration/README.md).
 
+Since integration tests must run in order because they are dependent on each
+other to some degree. Most resource are dependent on that integration tests
+for the DSC resource _SqlSetup_ have installed the instance to connect to.
+To make sure a integration tests is run in the correct order the integration
+tests are grouped in the file `azure-pipelines.yml` in the integration tests
+jobs.
+
+There are two integration tests jobs that each test SQL Server 2016 and
+SQL Server 2017.
+
 ### Testing of examples files
 
 When sending in a Pull Request (PR) all example files will be tested so they can
