@@ -14,7 +14,7 @@ ConvertFrom-StringData @'
     Restart = Restarting the target node.
     SuppressRestart = Suppressing restart of target node.
     EditionInvalidParameter = Both the parameters Edition and ProductKey was specified. Only either parameter Edition or ProductKey is allowed.
-    EditionMissingParameter = Neither the parameters Edition and ProductKey was specified.
+    EditionMissingParameter = Neither the parameters Edition or ProductKey was specified.
     SourcePathNotFound = The source path '{0}' does not exist, or the path does not specify an executable file.
     VersionFound = The Microsoft SQL Server Reporting Service instance is version '{0}'.
     PackageNotFound = Could not determine the version of the Microsoft SQL Server Reporting Service instance.

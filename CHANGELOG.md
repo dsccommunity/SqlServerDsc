@@ -27,6 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlAGReplica
   - Update documentation with a requirement for SqlServer in certain circumstances
     ([issue #1033](https://github.com/dsccommunity/SqlServerDsc/issues/1033)).
+- SqlRSSetup
+  - There was a typo in the error message that was thrown when not passing
+    either the `Edition` or `ProductKey` that could be misleading ([issue #1386](https://github.com/dsccommunity/SqlServerDsc/issues/1386)).
+  - Updated the parameter descriptions for the parameters `Edition` and
+    `ProductKey` that they are mutually exclusive ([issue #1386](https://github.com/dsccommunity/SqlServerDsc/issues/1386)).
 
 ## [14.0.0] - 2020-06-12
 
