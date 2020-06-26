@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update resource parameter documentation ([issue #1568](https://github.com/dsccommunity/SqlServerDsc/issues/1568)).
   - Documentation is now published to the GitHub Wiki.
     - Deploy task was updated with the correct name.
+  - Update documentation around design pattern for Group Managed Service
+    Account ([issue #378](https://github.com/dsccommunity/SqlServerDsc/issues/378))
 
 ## [14.0.0] - 2020-06-12
 

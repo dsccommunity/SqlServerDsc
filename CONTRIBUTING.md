@@ -34,6 +34,17 @@ supported versions.
 Those SQL Server products that are still supported can be listed at the
 [Microsoft life cycle site](https://support.microsoft.com/en-us/lifecycle/search?alpha=SQL%20Server).
 
+## Design patterns
+
+### Group Managed Service Account
+
+For a resource to support (g)MSAs the DSC resource need to ignore the password
+part of the credential object when it is passed to the DSC resource. We should
+not add separate parameters for passing a (g)MSA. This also applies to Managed
+Service Accounts (MSAs).
+
+_This was discussed in [issue #738](https://github.com/dsccommunity/SqlServerDsc/issues/738)_.
+
 ### Naming convention
 
 The DSC resources contained in SqlServerDsc use the following naming convention:
