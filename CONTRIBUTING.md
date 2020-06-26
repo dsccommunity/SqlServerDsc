@@ -8,13 +8,14 @@ to use, and we would love to have contributions from the community.
 
 Please check out common DSC Community [contributing guidelines](https://dsccommunity.org/guidelines/contributing).
 
-## Running the Tests
+## Documentation with Markdown
 
-If want to know how to run this module's tests you can look at the [Testing Guidelines](https://dsccommunity.org/guidelines/testing-guidelines/#running-tests)
+If using Visual Studio Code to edit Markdown files it can be a good idea
+to install the markdownlint extension. It will help to do style checking.
+The file [.markdownlint.json](/.markdownlint.json) is prepared with a default
+set of rules which will automatically be used by the extension.
 
-## Specific guidelines for SqlServerDsc
-
-### Automatic formatting with VS Code
+## Automatic formatting with VS Code
 
 There is a VS Code workspace settings file within this project with formatting
 settings matching the style guideline. That will make it possible inside VS Code
@@ -36,14 +37,19 @@ Those SQL Server products that are still supported can be listed at the
 
 ## Design patterns
 
-### Group Managed Service Account
+### Credentials that does not have password
 
-For a resource to support (g)MSAs the DSC resource need to ignore the password
-part of the credential object when it is passed to the DSC resource. We should
-not add separate parameters for passing a (g)MSA. This also applies to Managed
-Service Accounts (MSAs).
+Credential that needs to be passed to a DSC resource might include Manged
+Service Account (MSA), Group Managed Service Account (gMSA), and built-in
+accounts (e.g. 'NT AUTHORITY\NetworkService').
 
-_This was discussed in [issue #738](https://github.com/dsccommunity/SqlServerDsc/issues/738)_.
+For a resource to support these types of accounts (credentials) the DSC
+resource need to ignore the password part of the credential object when
+it is passed to the DSC resource. We should not add separate parameters
+for passing such account names.
+
+_This was discussed in [issue #738](https://github.com/dsccommunity/SqlServerDsc/issues/738)_
+_and [issue #1230](https://github.com/dsccommunity/SqlServerDsc/issues/1230)_.
 
 ### Naming convention
 
@@ -110,14 +116,13 @@ naming structure using the following components.
 - **Feature**: Endpoint
 - **Property**: Permission
 
-#### mof-based resource
+### mof-based resource
 
-All mof-based resource (with Get/Set/Test-TargetResource) should be prefixed with
-'DSC\_Sql'. I.e. DSC\_SqlDatabase
+A mof-based resource is a resource tha has the functions Get-, Set-, and
+Test-TargetResource in a PowerShell module script file (.psm1) and a
+schema.mof that describes the properties of the resource.
 
-Please note that not all places should contain the prefix 'DSC\_'.
-
-##### Folder and file structure
+#### Folder and file structure
 
 Please note that for the examples folder we don't use the 'DSC\_' prefix on the
 resource folders.
@@ -125,18 +130,23 @@ This is to make those folders more user friendly, to resemble the name the user
 would use in the configuration file.
 
 ```Text
-DSCResources/DSC_SqlConfiguration/DSC_SqlConfiguration.psm1
-DSCResources/DSC_SqlConfiguration/DSC_SqlConfiguration.schema.mof
-DSCResources/DSC_SqlConfiguration/en-US/DSC_SqlConfiguration.strings.psd1
+source/DSCResources/DSC_SqlConfiguration/DSC_SqlConfiguration.psm1
+source/DSCResources/DSC_SqlConfiguration/DSC_SqlConfiguration.schema.mof
+source/DSCResources/DSC_SqlConfiguration/en-US/DSC_SqlConfiguration.strings.psd1
+source/DSCResources/DSC_SqlConfiguration/README.md
 
-Tests/Unit/DSC_SqlConfiguration.Tests.ps1
+source/Examples/Resources/SqlConfiguration/1-AddConfigurationOption.ps1
+source/Examples/Resources/SqlConfiguration/2-RemoveConfigurationOption.ps1
 
-Examples/Resources/SqlConfiguration/1-AddConfigurationOption.ps1
-Examples/Resources/SqlConfiguration/2-RemoveConfigurationOption.ps1
+tests/Unit/DSC_SqlConfiguration.Tests.ps1
+
+tests/Integration/DSC_SqlConfiguration.config.ps1
+tests/Integration/DSC_SqlConfiguration.Integration.Tests.ps1
 ```
 
 ##### Schema mof file
 
+The class name should be prefixed with 'DSC\_Sql', e.g. _DSC_SqlConfiguration_.
 Please note that the `FriendlyName` in the schema mof file should not contain the
 prefix `DSC\_`.
 
@@ -148,7 +158,7 @@ class DSC_SqlConfiguration : OMI_BaseResource
 };
 ```
 
-#### Composite or class-based resource
+### Composite or class-based resource
 
 Any composite (with a Configuration) or class-based resources should be prefixed
 with just 'Sql'
@@ -157,31 +167,22 @@ with just 'Sql'
 
 In each resource folder there should be, at least, a localization folder for
 english language 'en-US'.
-In the 'en-US' (and any other language folder) there should be a file named
-'DSC_ResourceName.strings.psd1', i.e.
-'DSC_SqlSetup.strings.psd1'.
-At the top of each resource the localized strings should be loaded, see the helper
-function `Get-LocalizedData` for more information on how this is done.
 
-The localized string file should contain the following (beside the localization
-strings)
-
-```powershell
-# Localized resources for SqlSetup
-
-ConvertFrom-StringData @'
-    InstallingUsingPathMessage = Installing using path '{0}'.
-'@
-```
+Read more about this in the [localization style guideline](https://dsccommunity.org/styleguidelines/localization/).
 
 ### Helper functions
 
-Helper functions or wrapper functions that are used only by the resource can preferably
-be placed in the resource module file. If the functions are of a type that could
-be used by more than
-one resource, then the functions can also be placed in the common module
-[SqlServerDsc.Common](https://github.com/dsccommunity/SqlServerDsc/blob/master/source/Modules/SqlServerDsc.Common)
+Helper functions or wrapper functions that are used only by the resource can
+preferably be placed in the resource module file. If the functions are of a
+type that could be used by more than one resource, then the functions can also
+be placed in the common module [SqlServerDsc.Common](https://github.com/dsccommunity/SqlServerDsc/blob/master/source/Modules/SqlServerDsc.Common)
 module file.
+
+If a helper function can be used by more than one DSC module it is preferably
+that the helper function is added to the PowerShell module [DscResource.Common](https://github.com/dsccommunity/DscResource.Common).
+Once the helper function is in a full release (not preview) then it can be
+automatically be used by DSC resources in this module. This is because the
+_DscResource.Common_ module is incorporating during the build phase.
 
 ### Unit tests
 
@@ -189,10 +190,13 @@ For a review of a Pull Request (PR) to start, all tests must pass without error.
 If you need help to figure why some test don't pass, just write a comment in the
 Pull Request (PR), or submit an issue, and somebody will come along and assist.
 
-#### Unit tests for examples files
+If want to know how to run this module's tests you can look at the [Testing Guidelines](https://dsccommunity.org/guidelines/testing-guidelines/#running-tests)
 
-When sending in a Pull Request (PR) all example files will be tested so they can
-be compiled to a .mof file. If the tests find any errors the build will fail.
+#### Using SMO stub classes
+
+There are [stub classes](https://github.com/PowerShell/SqlServerDsc/blob/master/Tests/Unit/Stubs/SMO.cs)
+for the SMO classes which can be used and improved on when creating tests where
+SMO classes are used in the code being tested.
 
 ### Integration tests
 
@@ -201,17 +205,9 @@ the CI.
 
 There are also configuration made by existing integration tests that can be reused
 to write integration tests for other resources. This is documented in
-[Integration tests for SqlServerDsc](https://github.com/PowerShell/SqlServerDsc/blob/dev/Tests/Integration/README.md).
+[Integration tests for SqlServerDsc](https://github.com/PowerShell/SqlServerDsc/blob/master/Tests/Integration/README.md).
 
-#### Using SMO stub classes
+### Testing of examples files
 
-There are [stub classes](https://github.com/PowerShell/SqlServerDsc/blob/dev/Tests/Unit/Stubs/SMO.cs)
-for the SMO classes which can be used and improved on when creating tests where
-SMO classes are used in the code being tested.
-
-### Documentation with Markdown
-
-If using Visual Studio Code to edit Markdown files it can be a good idea to install
-the markdownlint extension. It will help to do style checking.
-The file [.markdownlint.json](/.markdownlint.json) is prepared with a default set
-of rules which will automatically be used by the extension.
+When sending in a Pull Request (PR) all example files will be tested so they can
+be compiled to a .mof file. If the tests find any errors the build will fail.
