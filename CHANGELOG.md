@@ -5,6 +5,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- SqlServerDsc
+  - Remove the file `.github/CONTRIBUTION.md` as it no longer filled any
+    purpose as GitHub will find the CONTRIBUTION.md in the root folder
+    directly now ([issue #1227](https://github.com/dsccommunity/SqlServerDsc/issues/1227)).
+
 ### Fixed
 
 - SqlServerDsc
