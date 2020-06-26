@@ -93,9 +93,13 @@ try
         $mockNamedInstance_IntegrationServiceName = $mockSqlIntegrationName
         $mockNamedInstance_AnalysisServiceName = "$($mockSqlAnalysisName)`$$($mockNamedInstance_InstanceName)"
 
-        $mockmockSourceCredentialUserName = "COMPANY\sqladmin"
-        $mockmockSourceCredentialPassword = "dummyPassw0rd" | ConvertTo-SecureString -asPlainText -Force
-        $mockSourceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockmockSourceCredentialUserName, $mockmockSourceCredentialPassword)
+        $mockSourceCredentialUserName = "COMPANY\sqladmin"
+        $mockSourceCredentialPassword = "dummyPassw0rd" | ConvertTo-SecureString -asPlainText -Force
+        $mockSourceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockSourceCredentialUserName, $mockSourceCredentialPassword)
+
+        $mockFqdnSourceCredentialUserName = "sqladmin@company.local"
+        $mockFqdnSourceCredentialPassword = "dummyPassw0rd" | ConvertTo-SecureString -asPlainText -Force
+        $mockFqdnSourceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockFqdnSourceCredentialUserName, $mockFqdnSourceCredentialPassword)
 
         $mockDynamicSQLEngineFirewallRulePresent = $true
         $mockDynamicSQLBrowserFirewallRulePresent = $true
@@ -525,7 +529,7 @@ try
                 }
 
                 Context "When SQL Server version is $mockCurrentSqlMajorVersion and there are no components installed" {
-                    BeforeEach {
+                    BeforeAll {
                         $testParameters = $mockDefaultParameters.Clone()
                         $testParameters += @{
                             InstanceName = $mockCurrentInstanceName
@@ -559,19 +563,50 @@ try
                         $result.Features | Should -BeNullOrEmpty
                     }
 
-                    It 'Should call the correct functions exact number of times' {
-                        $result = Get-TargetResource @testParameters
-                        Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 1 -Scope It
-                        Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It
-                        Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-                        Assert-MockCalled -CommandName Test-IsFirewallRuleInDesiredState -Exactly -Times 0 -Scope It
-                        Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
-                        Assert-MockCalled -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 0 -Scope It
+                    Context 'When authenticating using NetBIOS domain' {
+                        It 'Should call the correct functions exact number of times' {
+                            $result = Get-TargetResource @testParameters
+
+                            Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Test-IsFirewallRuleInDesiredState -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 0 -Scope It
+
+                            Assert-MockCalled -CommandName New-SmbMapping -ParameterFilter {
+                                $UserName -eq $mockSourceCredentialUserName
+                            } -Exactly -Times 1 -Scope It
+                        }
+                    }
+
+                    Context 'When authenticating using Fully Qualified Domain Name (FQDN)' {
+                        BeforeAll {
+                            $testParameters['SourceCredential'] = $mockFqdnSourceCredential
+                        }
+
+                        It 'Should call the correct functions exact number of times' {
+                            $result = Get-TargetResource @testParameters
+
+                            Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Test-IsFirewallRuleInDesiredState -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 0 -Scope It
+
+                            Assert-MockCalled -CommandName New-SmbMapping -ParameterFilter {
+                                $UserName -eq $mockFqdnSourceCredentialUserName
+                            } -Exactly -Times 1 -Scope It
+                        }
                     }
                 }
 
@@ -1054,7 +1089,7 @@ try
                 Mock -CommandName Test-TargetResource -MockWith { return $false }
 
                 Context "When SQL Server version is $mockCurrentSqlMajorVersion and there are no components installed" {
-                    BeforeEach {
+                    BeforeAll {
                         $testParameters = $mockDefaultParameters.Clone()
                         $testParameters += @{
                             InstanceName = $mockCurrentInstanceName
@@ -1069,20 +1104,50 @@ try
                         Mock -CommandName Set-NetFirewallRule -Verifiable
                     }
 
-                    It 'Should throw the correct error when Set-TargetResource verifies result with Test-TargetResource' {
-                        { Set-TargetResource @testParameters } | Should -Throw $script:localizedData.TestFailedAfterSet
+                    Context 'When authenticating using NetBIOS domain' {
+                        It 'Should throw the correct error when Set-TargetResource verifies result with Test-TargetResource' {
+                            { Set-TargetResource @testParameters } | Should -Throw $script:localizedData.TestFailedAfterSet
 
-                        Assert-MockCalled -CommandName New-SmbMapping -Exactly -Times 1 -Scope It
-                        Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It
-                        Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-                        Assert-MockCalled -CommandName Test-IsFirewallRuleInDesiredState -Exactly -Times 0 -Scope It
-                        Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
-                        Assert-MockCalled -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
-                        Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Test-IsFirewallRuleInDesiredState -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 0 -Scope It
+
+                            Assert-MockCalled -CommandName New-SmbMapping -ParameterFilter {
+                                $UserName -eq $mockSourceCredentialUserName
+                            } -Exactly -Times 1 -Scope It
+                        }
+                    }
+
+                    Context 'When authenticating using Fully Qualified Domain Name (FQDN)' {
+                        BeforeAll {
+                            $testParameters['SourceCredential'] = $mockFqdnSourceCredential
+                        }
+
+                        It 'Should throw the correct error when Set-TargetResource verifies result with Test-TargetResource' {
+                            { Set-TargetResource @testParameters } | Should -Throw $script:localizedData.TestFailedAfterSet
+
+                            Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
+                            Assert-MockCalled -CommandName Test-IsFirewallRuleInDesiredState -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
+                            Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 0 -Scope It
+
+                            Assert-MockCalled -CommandName New-SmbMapping -ParameterFilter {
+                                $UserName -eq $mockFqdnSourceCredentialUserName
+                            } -Exactly -Times 1 -Scope It
+                        }
                     }
                 }
 

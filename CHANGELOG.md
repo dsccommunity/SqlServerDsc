@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update resource parameter documentation ([issue #1568](https://github.com/dsccommunity/SqlServerDsc/issues/1568)).
   - Documentation is now published to the GitHub Wiki.
     - Deploy task was updated with the correct name.
+- SqlServerDsc.Common
+  - Connect-UncPath
+    - Now support to authenticate using both NetBIOS domain and Fully Qualified
+      Domain Name (FQDN) ([issue #1223](https://github.com/dsccommunity/SqlServerDsc/issues/1223)).
+  - Connect-SQL
+    - Now support to authenticate using both NetBIOS domain and Fully Qualified
+      Domain Name (FQDN) ([issue #1223](https://github.com/dsccommunity/SqlServerDsc/issues/1223)).
+  - Connect-SQLAnalysis
+    - Now support to authenticate using both NetBIOS domain and Fully Qualified
+      Domain Name (FQDN) ([issue #1223](https://github.com/dsccommunity/SqlServerDsc/issues/1223)).
+- SqlWindowsFirewall
+  - Now support to authenticate using both NetBIOS domain and Fully Qualified
+    Domain Name (FQDN) ([issue #1223](https://github.com/dsccommunity/SqlServerDsc/issues/1223)).
 
 ## [14.0.0] - 2020-06-12
 

@@ -577,6 +577,13 @@ InModuleScope $script:subModuleName {
                 ($mockShareCredentialPassword | ConvertTo-SecureString -AsPlainText -Force)
             )
 
+            $mockFqdnShareCredentialUserName = 'SqlAdmin@company.local'
+            $mockFqdnShareCredentialPassword = 'dummyPassW0rd'
+            $mockFqdnShareCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @(
+                $mockFqdnShareCredentialUserName,
+                ($mockFqdnShareCredentialPassword | ConvertTo-SecureString -AsPlainText -Force)
+            )
+
             Mock -CommandName New-SmbMapping -MockWith {
                 return @{
                     RemotePath = $mockSourcePathUNC
@@ -602,20 +609,40 @@ InModuleScope $script:subModuleName {
         }
 
         Context 'When connecting to a UNC path with specific credentials' {
-            It 'Should call the correct mocks' {
-                {
-                    $connectUncPathParameters = @{
-                        RemotePath = $mockSourcePathUNC
-                        SourceCredential = $mockShareCredential
-                    }
+            Context 'When connecting using NetBIOS domain' {
+                It 'Should call the correct mocks' {
+                    {
+                        $connectUncPathParameters = @{
+                            RemotePath = $mockSourcePathUNC
+                            SourceCredential = $mockShareCredential
+                        }
 
-                    Connect-UncPath @connectUncPathParameters
-                } | Should -Not -Throw
+                        Connect-UncPath @connectUncPathParameters
+                    } | Should -Not -Throw
 
-                Assert-MockCalled -CommandName New-SmbMapping -ParameterFilter {
-                    $RemotePath -eq $mockSourcePathUNC `
-                    -and $UserName -eq $mockShareCredentialUserName
-                } -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName New-SmbMapping -ParameterFilter {
+                        $RemotePath -eq $mockSourcePathUNC `
+                        -and $UserName -eq $mockShareCredentialUserName
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When connecting using Fully Qualified Domain Name (FQDN)' {
+                It 'Should call the correct mocks' {
+                    {
+                        $connectUncPathParameters = @{
+                            RemotePath = $mockSourcePathUNC
+                            SourceCredential = $mockFqdnShareCredential
+                        }
+
+                        Connect-UncPath @connectUncPathParameters
+                    } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName New-SmbMapping -ParameterFilter {
+                        $RemotePath -eq $mockSourcePathUNC `
+                        -and $UserName -eq $mockFqdnShareCredentialUserName
+                    } -Exactly -Times 1 -Scope It
+                }
             }
         }
 
@@ -1407,6 +1434,16 @@ InModuleScope $script:subModuleName {
             $mockSqlCredentialSecurePassword = ConvertTo-SecureString -String $mockSqlCredentialPassword -AsPlainText -Force
             $mockSqlCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSqlCredentialUserName, $mockSqlCredentialSecurePassword)
 
+            $mockNetBiosSqlCredentialUserName = 'DOMAIN\TestUserName12345'
+            $mockNetBiosSqlCredentialPassword = 'StrongOne7.'
+            $mockNetBiosSqlCredentialSecurePassword = ConvertTo-SecureString -String $mockNetBiosSqlCredentialPassword -AsPlainText -Force
+            $mockNetBiosSqlCredential = New-Object -TypeName PSCredential -ArgumentList ($mockNetBiosSqlCredentialUserName, $mockNetBiosSqlCredentialSecurePassword)
+
+            $mockFqdnSqlCredentialUserName = 'TestUserName12345@domain.local'
+            $mockFqdnSqlCredentialPassword = 'StrongOne7.'
+            $mockFqdnSqlCredentialSecurePassword = ConvertTo-SecureString -String $mockFqdnSqlCredentialPassword -AsPlainText -Force
+            $mockFqdnSqlCredential = New-Object -TypeName PSCredential -ArgumentList ($mockFqdnSqlCredentialUserName, $mockFqdnSqlCredentialSecurePassword)
+
             Mock -CommandName Import-Assembly
         }
 
@@ -1440,13 +1477,37 @@ InModuleScope $script:subModuleName {
         }
 
         Context 'When connecting to the named instance using Windows Authentication impersonation' {
-            It 'Should not throw when connecting' {
-                $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockSqlCredentialUserName;Password=$mockSqlCredentialPassword"
+            Context 'When authentication without NetBIOS domain and Fully Qualified Domain Name (FQDN)' {
+                It 'Should not throw when connecting' {
+                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockSqlCredentialUserName;Password=$mockSqlCredentialPassword"
 
-                { Connect-SQLAnalysis -InstanceName $mockInstanceName -SetupCredential $mockSqlCredential } | Should -Not -Throw
+                    { Connect-SQLAnalysis -InstanceName $mockInstanceName -SetupCredential $mockSqlCredential } | Should -Not -Throw
 
-                Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
-                    -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                }
+            }
+
+            Context 'When authentication using NetBIOS domain' {
+                It 'Should not throw when connecting' {
+                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockNetBiosSqlCredentialUserName;Password=$mockNetBiosSqlCredentialPassword"
+
+                    { Connect-SQLAnalysis -InstanceName $mockInstanceName -SetupCredential $mockNetBiosSqlCredential } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                }
+            }
+
+            Context 'When authentication using Fully Qualified Domain Name (FQDN)' {
+                It 'Should not throw when connecting' {
+                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockFqdnSqlCredentialUserName;Password=$mockFqdnSqlCredentialPassword"
+
+                    { Connect-SQLAnalysis -InstanceName $mockInstanceName -SetupCredential $mockFqdnSqlCredential } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                        -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                }
             }
         }
 
@@ -2674,6 +2735,11 @@ InModuleScope $script:subModuleName {
             $mockWinCredentialPassword = 'StrongerOne7.'
             $mockWinCredentialSecurePassword = ConvertTo-SecureString -String $mockWinCredentialPassword -AsPlainText -Force
             $mockWinCredential = New-Object -TypeName PSCredential -ArgumentList ($mockWinCredentialUserName, $mockWinCredentialSecurePassword)
+
+            $mockWinFqdnCredentialUserName = 'TestUserName12345@domain.local'
+            $mockWinFqdnCredentialPassword = 'StrongerOne7.'
+            $mockWinFqdnCredentialSecurePassword = ConvertTo-SecureString -String $mockWinFqdnCredentialPassword -AsPlainText -Force
+            $mockWinFqdnCredential = New-Object -TypeName PSCredential -ArgumentList ($mockWinFqdnCredentialUserName, $mockWinFqdnCredentialSecurePassword)
         }
 
         BeforeEach {
@@ -2777,7 +2843,7 @@ InModuleScope $script:subModuleName {
                     $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
                     $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
                     $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should -BeExactly $mockWinCredential.GetNetworkCredential().Password
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockWinCredential.GetNetworkCredential().UserName
+                    $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockWinCredential.UserName
                     $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
                     $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $true
 
@@ -2787,26 +2853,52 @@ InModuleScope $script:subModuleName {
             }
 
             Context 'When using the default login type' {
-                BeforeAll {
-                    $testParameters = @{
-                        ServerName = $mockExpectedDatabaseEngineServer
-                        InstanceName = $mockExpectedDatabaseEngineInstance
-                        SetupCredential = $mockWinCredential
-                        LoginType = 'WindowsUser'
+                Context 'When authenticating using NetBIOS domain' {
+                    BeforeAll {
+                        $testParameters = @{
+                            ServerName = $mockExpectedDatabaseEngineServer
+                            InstanceName = $mockExpectedDatabaseEngineInstance
+                            SetupCredential = $mockWinCredential
+                            LoginType = 'WindowsUser'
+                        }
+                    }
+
+                    It 'Should return the correct service instance' {
+                        $databaseEngineServerObject = Connect-SQL @testParameters
+                        $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+                        $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
+                        $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should -BeExactly $mockWinCredential.GetNetworkCredential().Password
+                        $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockWinCredential.UserName
+                        $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
+                        $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $true
+
+                        Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                            -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
                     }
                 }
 
-                It 'Should return the correct service instance' {
-                    $databaseEngineServerObject = Connect-SQL @testParameters
-                    $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should -BeExactly $mockWinCredential.GetNetworkCredential().Password
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockWinCredential.GetNetworkCredential().UserName
-                    $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
-                    $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $true
+                Context 'When authenticating using Fully Qualified Domain Name (FQDN)' {
+                    BeforeAll {
+                        $testParameters = @{
+                            ServerName = $mockExpectedDatabaseEngineServer
+                            InstanceName = $mockExpectedDatabaseEngineInstance
+                            SetupCredential = $mockWinFqdnCredential
+                            LoginType = 'WindowsUser'
+                        }
+                    }
 
-                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
-                        -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+                    It 'Should return the correct service instance' {
+                        $databaseEngineServerObject = Connect-SQL @testParameters
+                        $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+                        $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
+                        $databaseEngineServerObject.ConnectionContext.ConnectAsUserPassword | Should -BeExactly $mockWinFqdnCredential.GetNetworkCredential().Password
+                        $databaseEngineServerObject.ConnectionContext.ConnectAsUserName | Should -BeExactly $mockWinFqdnCredential.UserName
+                        $databaseEngineServerObject.ConnectionContext.ConnectAsUser | Should -Be $true
+                        $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $true
+
+                        Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
+                            -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+                    }
                 }
             }
         }

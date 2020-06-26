@@ -314,7 +314,7 @@ function Connect-UncPath
 
     if ($PSBoundParameters.ContainsKey('SourceCredential'))
     {
-        $newSmbMappingParameters['UserName'] = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
+        $newSmbMappingParameters['UserName'] = $SourceCredential.UserName
         $newSmbMappingParameters['Password'] = $SourceCredential.GetNetworkCredential().Password
     }
 
@@ -527,7 +527,7 @@ function Connect-SQL
     }
     else
     {
-        $connectUserName = $SetupCredential.GetNetworkCredential().UserName
+        $connectUserName = $SetupCredential.UserName
 
         Write-Verbose -Message (
             $script:localizedData.ConnectingUsingImpersonation -f $connectUsername, $LoginType
@@ -633,7 +633,7 @@ function Connect-SQLAnalysis
 
     if ($SetupCredential)
     {
-        $userName = $SetupCredential.GetNetworkCredential().UserName
+        $userName = $SetupCredential.UserName
         $password = $SetupCredential.GetNetworkCredential().Password
 
         $analysisServicesDataSource = "Data Source=$analysisServiceInstance;User ID=$userName;Password=$password"
