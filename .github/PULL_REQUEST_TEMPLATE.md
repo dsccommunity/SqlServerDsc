@@ -1,7 +1,7 @@
 <!--
     Thanks for submitting a Pull Request (PR) to this project.
     Your contribution to this project is greatly appreciated!
-    
+
     Please prefix the PR title with the resource name,
     e.g. 'ResourceName: My short description'.
     If this is a breaking change, then also prefix the PR title
@@ -36,18 +36,17 @@
     everything updated as required.
 
     Change to [x] for each task in the task list that applies to your PR.
-    For those task that don't apply to you PR, leave those as is.
+    For those task that don't apply to you PR, leave those unchecked.
 -->
 - [ ] Added an entry to the change log under the Unreleased section of the
       file CHANGELOG.md. Entry should say what was changed and how that
       affects users (if applicable), and reference the issue being resolved
       (if applicable).
-- [ ] Resource documentation added/updated in README.md.
-- [ ] Resource parameter descriptions added/updated in README.md, schema.mof
-      and comment-based help.
-- [ ] Comment-based help added/updated.
-- [ ] Localization strings added/updated in all localization files as appropriate.
-- [ ] Examples appropriately added/updated.
-- [ ] Unit tests added/updated. See [DSC Community Testing Guidelines](https://dsccommunity.org/guidelines/testing-guidelines).
-- [ ] Integration tests added/updated (where possible). See [DSC Community Testing Guidelines](https://dsccommunity.org/guidelines/testing-guidelines).
-- [ ] New/changed code adheres to [DSC Community Style Guidelines](https://dsccommunity.org/styleguidelines).
+- [ ] Resource documentation updated in the resource's README.md.
+- [ ] Resource parameter descriptions updated in schema.mof.
+- [ ] Comment-based help updated, including parameter descriptions.
+- [ ] Localization strings updated.
+- [ ] Examples updated.
+- [ ] Unit tests updated. See [DSC Community Testing Guidelines](https://dsccommunity.org/guidelines/testing-guidelines).
+- [ ] Integration tests updated (where possible). See [DSC Community Testing Guidelines](https://dsccommunity.org/guidelines/testing-guidelines).
+- [ ] Code changes adheres to [DSC Community Style Guidelines](https://dsccommunity.org/styleguidelines).
