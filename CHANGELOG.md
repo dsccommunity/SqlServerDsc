@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Deploy task was updated with the correct name.
   - Minor changes too schema property descriptions to generate documentation
     correctly.
+  - Updated task list in the PULL_REQUEST_TEMPLATE.md.
 
 ## [14.0.0] - 2020-06-12
 
