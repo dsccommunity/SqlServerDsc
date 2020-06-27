@@ -40,6 +40,10 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         Use a Windows PowerShell array to specify multiple variables and their values. For more information how to use this,
         please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
 
+    .PARAMETER DisableVariables
+        Specifies, as a boolean, whether or not PowerShell will ignore sqlcmd scripting variables that share a format such as $(variable_name).
+        For more information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx)")]
+
     .PARAMETER QueryTimeout
         Specifies, as an integer, the number of seconds after which the T-SQL script execution will time out.
         In some SQL Server versions there is a bug in Invoke-Sqlcmd where the normal default value 0 (no timeout) is not respected and the default value is incorrectly set to 30 seconds.
@@ -85,19 +89,24 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String[]]
-        $Variable
+        $Variable,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableVariables
     )
 
     $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
 
     $invokeParameters = @{
-        ServerInstance = $serverInstance
-        InputFile      = $GetFilePath
-        Credential     = $Credential
-        Variable       = $Variable
-        QueryTimeout   = $QueryTimeout
-        Verbose        = $VerbosePreference
-        ErrorAction    = 'Stop'
+        ServerInstance   = $serverInstance
+        InputFile        = $GetFilePath
+        Credential       = $Credential
+        Variable         = $Variable
+        DisableVariables = $DisableVariables
+        QueryTimeout     = $QueryTimeout
+        Verbose          = $VerbosePreference
+        ErrorAction      = 'Stop'
     }
 
     Write-Verbose -Message (
@@ -109,15 +118,16 @@ function Get-TargetResource
     $getResult = Out-String -InputObject $result
 
     $returnValue = @{
-        ServerName   = [System.String] $ServerName
-        InstanceName = [System.String] $InstanceName
-        SetFilePath  = [System.String] $SetFilePath
-        GetFilePath  = [System.String] $GetFilePath
-        TestFilePath = [System.String] $TestFilePath
-        Credential   = [System.Object] $Credential
-        QueryTimeout = [System.UInt32] $QueryTimeout
-        Variable     = [System.String[]] $Variable
-        GetResult    = [System.String[]] $getResult
+        ServerName       = [System.String] $ServerName
+        InstanceName     = [System.String] $InstanceName
+        SetFilePath      = [System.String] $SetFilePath
+        GetFilePath      = [System.String] $GetFilePath
+        TestFilePath     = [System.String] $TestFilePath
+        Credential       = [System.Object] $Credential
+        QueryTimeout     = [System.UInt32] $QueryTimeout
+        Variable         = [System.String[]] $Variable
+        DisableVariables = [System.Boolean] $DisableVariables
+        GetResult        = [System.String[]] $getResult
     }
 
     return $returnValue
@@ -164,6 +174,10 @@ function Get-TargetResource
         Specifies, as a string array, a Invoke-Sqlcmd scripting variable for use in the Invoke-Sqlcmd script, and sets a value for the variable.
         Use a Windows PowerShell array to specify multiple variables and their values. For more information how to use this,
         please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
+
+    .PARAMETER DisableVariables
+        Specifies, as a boolean, whether or not PowerShell will ignore sqlcmd scripting variables that share a format such as $(variable_name).
+        For more information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx)")]
 #>
 function Set-TargetResource
 {
@@ -202,7 +216,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String[]]
-        $Variable
+        $Variable,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableVariables
     )
 
     $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
@@ -212,13 +230,14 @@ function Set-TargetResource
     )
 
     $invokeParameters = @{
-        ServerInstance = $serverInstance
-        InputFile      = $SetFilePath
-        Credential     = $Credential
-        Variable       = $Variable
-        QueryTimeout   = $QueryTimeout
-        Verbose        = $VerbosePreference
-        ErrorAction    = 'Stop'
+        ServerInstance   = $serverInstance
+        InputFile        = $SetFilePath
+        Credential       = $Credential
+        Variable         = $Variable
+        DisableVariables = $DisableVariables
+        QueryTimeout     = $QueryTimeout
+        Verbose          = $VerbosePreference
+        ErrorAction      = 'Stop'
     }
 
     Invoke-SqlScript @invokeParameters
@@ -266,6 +285,9 @@ function Set-TargetResource
         Use a Windows PowerShell array to specify multiple variables and their values. For more information how to use this,
         please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx).
 
+    .PARAMETER DisableVariables
+        Specifies, as a boolean, whether or not PowerShell will ignore sqlcmd scripting variables that share a format such as $(variable_name).
+        For more information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx)")]
 #>
 function Test-TargetResource
 {
@@ -305,7 +327,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String[]]
-        $Variable
+        $Variable,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableVariables
     )
 
     Write-Verbose -Message (
@@ -315,13 +341,14 @@ function Test-TargetResource
     $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
 
     $invokeParameters = @{
-        ServerInstance = $serverInstance
-        InputFile      = $TestFilePath
-        Credential     = $Credential
-        Variable       = $Variable
-        QueryTimeout   = $QueryTimeout
-        Verbose        = $VerbosePreference
-        ErrorAction    = 'Stop'
+        ServerInstance   = $serverInstance
+        InputFile        = $TestFilePath
+        Credential       = $Credential
+        Variable         = $Variable
+        DisableVariables = $DisableVariables
+        QueryTimeout     = $QueryTimeout
+        Verbose          = $VerbosePreference
+        ErrorAction      = 'Stop'
     }
 
     $result = $null
