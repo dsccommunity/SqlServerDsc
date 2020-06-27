@@ -27,6 +27,7 @@ else
                 InstanceName    = 'DSCSQLTEST'
                 Database1Name   = 'ScriptDatabase3'
                 Database2Name   = 'ScriptDatabase4'
+                Database3Name   = '$(DatabaseName)'
 
                 GetQuery        = @'
 SELECT Name FROM sys.databases WHERE Name = '$(DatabaseName)' FOR JSON AUTO
@@ -109,6 +110,58 @@ Configuration DSC_SqlScriptQuery_RunSqlScriptQueryAsSqlUser_Config
             Credential     = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.SqlLogin_Username, (ConvertTo-SecureString -String $Node.SqlLogin_Password -AsPlainText -Force))
+        }
+    }
+}
+
+
+<#
+    .SYNOPSIS
+        Runs the SQL query with variables disabled.
+#>
+Configuration DSC_SqlScriptQuery_RunSqlScriptQueryWithVariablesDisabled_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlScriptQuery 'Integration_Test'
+        {
+            ServerName       = $Node.ServerName
+            InstanceName     = $Node.InstanceName
+
+            GetQuery         = $Node.GetQuery
+            TestQuery        = $Node.TestQuery
+            SetQuery         = $Node.SetQuery
+            DisableVariables = $true
+            QueryTimeout     = 30
+            Credential       = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.SqlLogin_Username, (ConvertTo-SecureString -String $Node.SqlLogin_Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Remove Database3
+#>
+Configuration DSC_SqlScriptQuery_RemoveDatabase3_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlDatabase 'RemoveDatabase3'
+        {
+            Ensure               = 'Absent'
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            Name                 = $Node.Database3Name
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
     }
 }
