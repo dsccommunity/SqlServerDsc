@@ -55,7 +55,7 @@ function Get-TargetResource
 
     if ($SourceCredential)
     {
-        $userName = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
+        $userName = $SourceCredential.UserName
 
         Write-Verbose -Message (
             $script:localizedData.ConnectUsingCredential -f $SourcePath, $userName
@@ -375,7 +375,7 @@ function Set-TargetResource
 
     if ($SourceCredential)
     {
-        $userName = "$($SourceCredential.GetNetworkCredential().Domain)\$($SourceCredential.GetNetworkCredential().UserName)"
+        $userName = $SourceCredential.UserName
 
         Write-Verbose -Message (
             $script:localizedData.ConnectUsingCredential -f $SourcePath, $userName
