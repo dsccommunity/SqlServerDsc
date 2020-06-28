@@ -24,6 +24,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     and ([issue #1230](https://github.com/dsccommunity/SqlServerDsc/issues/1230)).
   - Updating the Integration Test README.md to better explain what the
     integration tests for SqlSetup, SqlRSSetup, and SqlRS does ([issue #1315](https://github.com/dsccommunity/SqlServerDsc/issues/1315)).
+- SqlServerDsc.Common
+  - Connect-UncPath
+    - Now support to authenticate using both NetBIOS domain and Fully Qualified
+      Domain Name (FQDN) ([issue #1223](https://github.com/dsccommunity/SqlServerDsc/issues/1223)).
+  - Connect-SQL
+    - Now support to authenticate using both NetBIOS domain and Fully Qualified
+      Domain Name (FQDN) ([issue #1223](https://github.com/dsccommunity/SqlServerDsc/issues/1223)).
+  - Connect-SQLAnalysis
+    - Now support to authenticate using both NetBIOS domain and Fully Qualified
+      Domain Name (FQDN) ([issue #1223](https://github.com/dsccommunity/SqlServerDsc/issues/1223)).
 - SqlAGReplica
   - Update documentation with a requirement for SqlServer in certain circumstances
     ([issue #1033](https://github.com/dsccommunity/SqlServerDsc/issues/1033)).
@@ -32,6 +42,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     either the `Edition` or `ProductKey` that could be misleading ([issue #1386](https://github.com/dsccommunity/SqlServerDsc/issues/1386)).
   - Updated the parameter descriptions for the parameters `Edition` and
     `ProductKey` that they are mutually exclusive ([issue #1386](https://github.com/dsccommunity/SqlServerDsc/issues/1386)).
+- SqlWindowsFirewall
+  - Now support to authenticate using both NetBIOS domain and Fully Qualified
+    Domain Name (FQDN) ([issue #1223](https://github.com/dsccommunity/SqlServerDsc/issues/1223)).
 
 ## [14.0.0] - 2020-06-12
 
