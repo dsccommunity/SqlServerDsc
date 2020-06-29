@@ -25,7 +25,7 @@ Configuration Example
             SetQuery          = 'Set query'
             TestQuery         = 'Test query'
             GetQuery          = 'Get query'
-            DisabledVariables = $true
+            DisableVariables  = $true
         }
     }
 }
