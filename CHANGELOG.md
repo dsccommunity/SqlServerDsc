@@ -25,6 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Now support to authenticate using both NetBIOS domain and Fully Qualified
     Domain Name (FQDN) ([issue #1223](https://github.com/dsccommunity/SqlServerDsc/issues/1223)).
 
+### Added
+
+- SqlScript
+  - Added the DisabledVariables parameter ([issue #1422](https://github.com/dsccommunity/SqlServerDsc/issues/1422))
+- SqlScriptQuery
+  - Added the DisabledVariables parameter ([issue #1422](https://github.com/dsccommunity/SqlServerDsc/issues/1422))
+
 ## [14.0.0] - 2020-06-12
 
 ### Remove
