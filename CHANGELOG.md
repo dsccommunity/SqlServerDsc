@@ -28,9 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - SqlScript
-  - Added the DisabledVariables parameter ([issue #1422](https://github.com/dsccommunity/SqlServerDsc/issues/1422))
+  - Added the DisableVariables parameter ([issue #1422](https://github.com/dsccommunity/SqlServerDsc/issues/1422))
 - SqlScriptQuery
-  - Added the DisabledVariables parameter ([issue #1422](https://github.com/dsccommunity/SqlServerDsc/issues/1422))
+  - Added the DisableVariables parameter ([issue #1422](https://github.com/dsccommunity/SqlServerDsc/issues/1422))
 
 ## [14.0.0] - 2020-06-12
 
