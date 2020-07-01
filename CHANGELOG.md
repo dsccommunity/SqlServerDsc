@@ -5,12 +5,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- SqlServerDsc
+  - Remove the file `.github/CONTRIBUTION.md` as it no longer filled any
+    purpose as GitHub will find the CONTRIBUTION.md in the root folder
+    directly now ([issue #1227](https://github.com/dsccommunity/SqlServerDsc/issues/1227)).
+
 ### Fixed
 
 - SqlServerDsc
   - Update resource parameter documentation ([issue #1568](https://github.com/dsccommunity/SqlServerDsc/issues/1568)).
   - Documentation is now published to the GitHub Wiki.
     - Deploy task was updated with the correct name.
+  - The documentation in CONTRIBUTING.md has been somewhat updated.
+  - Update documentation around design pattern for accounts that does not
+    use passwords ([issue #378](https://github.com/dsccommunity/SqlServerDsc/issues/378))
+    and ([issue #1230](https://github.com/dsccommunity/SqlServerDsc/issues/1230)).
+  - Updating the Integration Test README.md to better explain what the
+    integration tests for SqlSetup, SqlRSSetup, and SqlRS does ([issue #1315](https://github.com/dsccommunity/SqlServerDsc/issues/1315)).
 - SqlServerDsc.Common
   - Connect-UncPath
     - Now support to authenticate using both NetBIOS domain and Fully Qualified
@@ -21,6 +34,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Connect-SQLAnalysis
     - Now support to authenticate using both NetBIOS domain and Fully Qualified
       Domain Name (FQDN) ([issue #1223](https://github.com/dsccommunity/SqlServerDsc/issues/1223)).
+- SqlAGReplica
+  - Update documentation with a requirement for SqlServer in certain circumstances
+    ([issue #1033](https://github.com/dsccommunity/SqlServerDsc/issues/1033)).
+- SqlRSSetup
+  - There was a typo in the error message that was thrown when not passing
+    either the `Edition` or `ProductKey` that could be misleading ([issue #1386](https://github.com/dsccommunity/SqlServerDsc/issues/1386)).
+  - Updated the parameter descriptions for the parameters `Edition` and
+    `ProductKey` that they are mutually exclusive ([issue #1386](https://github.com/dsccommunity/SqlServerDsc/issues/1386)).
 - SqlWindowsFirewall
   - Now support to authenticate using both NetBIOS domain and Fully Qualified
     Domain Name (FQDN) ([issue #1223](https://github.com/dsccommunity/SqlServerDsc/issues/1223)).

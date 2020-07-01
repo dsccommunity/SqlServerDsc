@@ -16,6 +16,12 @@ to each other. Dependencies are made to speed up the testing.**
 
 ## SqlSetup
 
+Installs the Database Engine, Analysis Service for both SQL Server 2016
+and SQL Server 2017 in two different Azure Pipelines jobs with the configuration
+names `'Integration_SQL2016'` and `'Integration_SQL2017'`. It will also
+install the Reporting Services 2016 in the Azure Pipelines job with the configuration
+name `'Integration_SQL2016'`.
+
 **Run order:** 1
 
 **Depends on:** None
@@ -67,6 +73,9 @@ with this user and that means that this user must have permission to access the
 properties `IsClustered` and `IsHadrEnable`.*
 
 ## SqlRSSetup
+
+Installs SQL Server 2017 Reporting Services in Azure Pipelines job with the
+configuration name `'Integration_SQL2017'`.
 
 **Run order:** 2
 
@@ -242,6 +251,10 @@ worker.*
 worker.*
 
 ## SqlRS
+
+Configures _SQL Server Reporting Services 2016_ and _SQL Server Reporting_
+_Services 2017_ in two different Azure Pipelines jobs with the configuration
+names `'Integration_SQL2016'` and `'Integration_SQL2017'`.
 
 **Run order:** 3
 
