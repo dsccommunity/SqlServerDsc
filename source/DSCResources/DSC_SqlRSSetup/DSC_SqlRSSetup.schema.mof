@@ -7,11 +7,11 @@ class DSC_SqlRSSetup : OMI_BaseResource
     [Write, Description("The action to be performed. Default value is 'Install' which performs either install or upgrade."), ValueMap{"Install","Uninstall"}, Values{"Install","Uninstall"}] String Action;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("Credentials used to access the path set in the parameter 'SourcePath'.")] String SourceCredential;
     [Write, Description("Suppresses any attempts to restart.")] Boolean SuppressRestart;
-    [Write, Description("Sets the custom license key, e.g. '12345-12345-12345-12345-12345'.")] String ProductKey;
+    [Write, Description("Sets the custom license key, e.g. '12345-12345-12345-12345-12345'. This parameter is mutually exclusive with the parameter Edition.")] String ProductKey;
     [Write, Description("Forces a restart after installation is finished. If set to $true then it will override the parameter SuppressRestart.")] Boolean ForceRestart;
     [Write, Description("Upgrades the edition of the installed product. Requires that either the ProductKey or the Edition parameter is also assigned. By default no edition upgrade is performed.")] Boolean EditionUpgrade;
     [Write, Description("Upgrades installed product version if the major product version of the source executable is higher than the currently installed major version. Requires that either the ProductKey or the Edition parameter is also assigned. Default is $false.")] Boolean VersionUpgrade;
-    [Write, Description("Sets the custom free edition."), ValueMap{"Development","Evaluation","ExpressAdvanced"}, Values{"Development","Evaluation","ExpressAdvanced"}] String Edition;
+    [Write, Description("Sets the custom free edition. This parameter is mutually exclusive with the parameter ProductKey."), ValueMap{"Development","Evaluation","ExpressAdvanced"}, Values{"Development","Evaluation","ExpressAdvanced"}] String Edition;
     [Write, Description("Specifies the setup log file location, e.g. 'log.txt'. By default log files are created under %TEMP%.")] String LogPath;
     [Write, Description("Sets the install folder, e.g. 'C:\\Program Files\\SSRS'. Default value is 'C:\\Program Files\\Microsoft SQL Server Reporting Services'.")] String InstallFolder;
     [Write, Description("The timeout, in seconds, to wait for the setup process to finish. Default value is 7200 seconds (2 hours). If the setup process does not finish before this time an error will be thrown.")] UInt32 SetupProcessTimeout;
