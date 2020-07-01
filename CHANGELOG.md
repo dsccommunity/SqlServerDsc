@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update resource parameter documentation ([issue #1568](https://github.com/dsccommunity/SqlServerDsc/issues/1568)).
   - Documentation is now published to the GitHub Wiki.
     - Deploy task was updated with the correct name.
+  - Minor changes too schema property descriptions to generate documentation
+    correctly.
+  - Updated task list in the PULL_REQUEST_TEMPLATE.md.
   - The documentation in CONTRIBUTING.md has been somewhat updated.
   - Update documentation around design pattern for accounts that does not
     use passwords ([issue #378](https://github.com/dsccommunity/SqlServerDsc/issues/378))

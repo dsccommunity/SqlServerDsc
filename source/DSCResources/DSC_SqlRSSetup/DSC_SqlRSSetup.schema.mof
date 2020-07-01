@@ -1,8 +1,8 @@
 [ClassVersion("1.0.0.0"), FriendlyName("SqlRSSetup")]
 class DSC_SqlRSSetup : OMI_BaseResource
 {
-    [Key, Description("Name of the Microsoft SQL Server Reporting Service instance to installed. This can only be set to 'SSRS'. { 'SSRS' }"), ValueMap{"SSRS"}, Values{"SSRS"}] String InstanceName;
-    [Required, Description("Accept licens terms. This must be set to 'Yes'. { 'Yes' }"), ValueMap{"Yes"}, Values{"Yes"}] String IAcceptLicenseTerms;
+    [Key, Description("Name of the Microsoft SQL Server Reporting Service instance to installed. This can only be set to 'SSRS'."), ValueMap{"SSRS"}, Values{"SSRS"}] String InstanceName;
+    [Required, Description("Accept licens terms. This must be set to 'Yes'."), ValueMap{"Yes"}, Values{"Yes"}] String IAcceptLicenseTerms;
     [Required, Description("The path to the installation media file to be used for installation, e.g an UNC path to a shared resource. Environment variables can be used in the path.")] String SourcePath;
     [Write, Description("The action to be performed. Default value is 'Install' which performs either install or upgrade."), ValueMap{"Install","Uninstall"}, Values{"Install","Uninstall"}] String Action;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("Credentials used to access the path set in the parameter 'SourcePath'.")] String SourceCredential;
