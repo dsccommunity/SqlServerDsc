@@ -259,6 +259,11 @@ Configuration DSC_SqlScript_RunSqlScriptAsSqlUser_Config
 <#
     .SYNOPSIS
         Runs the SQL script with variables disabled.
+
+    .NOTES
+        When the test is run with the DisableVariables parameter the ConfigData variable as it apears in the query will be used as the database name.
+        For example if the ConfigData database name is written as $(DatabaseName) in the T-SQL then the name of the database created will be $(DatabaseName).
+        It might appear odd but it is a valid name.
 #>
 Configuration DSC_SqlScript_RunSqlScriptWithVariablesDisabled_Config
 {
@@ -285,7 +290,12 @@ Configuration DSC_SqlScript_RunSqlScriptWithVariablesDisabled_Config
 
 <#
     .SYNOPSIS
-        Runs the SQL script as a SQL login.
+        Remove the database created from the DisabledVariables test.
+
+    .NOTES
+        The current integration test run order has SqlScriptQuery running after SqlScript. Since both the SqlScript and SqlScriptQuery
+        resources use the same database name variable in their ConfigData queries it is imperative this database is absent when
+        the SqlScriptQuery resource runs its DisableVariables integration test.
 #>
 Configuration DSC_SqlScript_RemoveDatabase3_Config
 {
@@ -293,12 +303,6 @@ Configuration DSC_SqlScript_RemoveDatabase3_Config
 
     node $AllNodes.NodeName
     {
-        <#
-            When run with the DisableVariables parameter the ConfigData variable name is used as the database name.
-            The current integration test run order has SqlScriptQuery running after SqlScript. Since both the SqlScript and
-            SqlScriptQuery resources use the same database name variable in their ConfigData queries it is imperative
-            this database is absent when the SqlScriptQuery resource runs its similar integration test.
-        #>
         SqlDatabase 'RemoveDatabase3'
         {
             Ensure               = 'Absent'

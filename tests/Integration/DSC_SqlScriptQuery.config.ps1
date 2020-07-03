@@ -118,6 +118,15 @@ Configuration DSC_SqlScriptQuery_RunSqlScriptQueryAsSqlUser_Config
 <#
     .SYNOPSIS
         Runs the SQL query with variables disabled.
+
+    .NOTES
+        When the test is run with the DisableVariables parameter the ConfigData variable as it apears in the query will be used as the database name.
+        For example if the ConfigData database name is written as $(DatabaseName) in the T-SQL then the name of the database created will be $(DatabaseName).
+        It might appear odd but it is a valid database name.
+
+        The SqlScript resource has a similar test for DisableVariables.  The integration test run order has SqlScriptQuery running after SqlScript.
+        The SqlScript test is written to remove the database because if the database already existed the SqlScriptQuery test would be invalid as
+        the TestQuery would see an existing database and therefore not run the SetQuery.
 #>
 Configuration DSC_SqlScriptQuery_RunSqlScriptQueryWithVariablesDisabled_Config
 {
@@ -144,7 +153,10 @@ Configuration DSC_SqlScriptQuery_RunSqlScriptQueryWithVariablesDisabled_Config
 
 <#
     .SYNOPSIS
-        Remove Database3
+        Remove the database created from the DisabledVariables test.
+
+    .NOTES
+        At this point the database is no longer needed by any other resources or tests so it will be removed.
 #>
 Configuration DSC_SqlScriptQuery_RemoveDatabase3_Config
 {
