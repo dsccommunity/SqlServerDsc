@@ -14,7 +14,7 @@ class DSC_SqlDatabaseObjectPermission : OMI_BaseResource
 [ClassVersion("1.0.0")]
 class DSC_DatabaseObjectPermission
 {
-    [Key, Description("Specifies the state of the permission. Valid values are 'Grant', 'Deny' and 'GrantWithGrant'."), ValueMap{"Grant","Deny","GrantWithGrant"}, Values{"Grant","Deny","GrantWithGrant"}] String State;
-    [Required, Description("Specifies the set of permissions for the database object for the principal assigned to 'Name'.")] String Permission[];
+    [Key, Description("Specifies the state of the permission."), ValueMap{"Grant","Deny","GrantWithGrant"}, Values{"Grant","Deny","GrantWithGrant"}] String State;
+    [Required, Description("Specifies the set of permissions for the database object for the principal assigned to 'Name'. Valid permission names can be found in the article [ObjectPermissionSet Class properties](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.objectpermissionset#properties).")] String Permission[];
     [Write, Description("Specifies the desired state of the permission. When set to 'Present', the permissions will be added. When set to 'Absent', the permissions will be removed. Default value is 'Present'."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
 };

@@ -17,17 +17,6 @@ property names of the [ObjectPermissionSet](https://docs.microsoft.com/en-us/dot
 * Target machine must have access to the SQLPS PowerShell module or the
   SqlServer PowerShell module.
 
-## Embedded instance DSC_DatabaseObjectPermission
-
-* **`[String]` State** _(Key)_: Specifies the state of the permission.
-  Valid values are 'Grant', 'Deny' and 'GrantWithGrant'.
-* **`[String[]]` Permission** _(Required)_: Specifies the set of permissions
-  for the database object for the principal assigned to 'Name'. Valid
-  permission names can be found in the article [ObjectPermissionSet Class properties](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.objectpermissionset#properties).
-* **`[String]` Ensure** _(Key)_: Specifies the desired state of the permission.
-  When set to 'Present', the permissions will be added. When set to 'Absent',
-  the permissions will be removed. Default value is 'Present'.
-
 ## Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabaseObjectPermission).
