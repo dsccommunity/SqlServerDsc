@@ -53,6 +53,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     embedded instances the duplicate documentation was removed from the
     resource README.md, and some was added to the schema MOF parameter
     descriptions ([issue #1580](https://github.com/dsccommunity/SqlServerDsc/issues/1580)).
+- SqlScript
+  - Fixed the URLs in the parameter documentation ([issue #1582](https://github.com/dsccommunity/SqlServerDsc/issues/1582)).
+- SqlScriptQuery
+  - Fixed the URLs in the parameter documentation ([issue #1583](https://github.com/dsccommunity/SqlServerDsc/issues/1583)).
 
 ### Added
 
