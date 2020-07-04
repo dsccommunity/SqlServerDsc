@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Update resource parameter documentation ([issue #1568](https://github.com/dsccommunity/SqlServerDsc/issues/1568)).
+    - Remove italic and inline code-block markdown code in documentation.
   - Documentation is now published to the GitHub Wiki.
     - Deploy task was updated with the correct name.
   - Minor changes too schema property descriptions to generate documentation
