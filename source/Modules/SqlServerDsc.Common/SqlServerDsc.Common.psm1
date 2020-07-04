@@ -2045,6 +2045,10 @@ function Test-ActiveNode
 
     .PARAMETER Variable
         Creates a Invoke-Sqlcmd scripting variable for use in the Invoke-Sqlcmd script, and sets a value for the variable.
+
+    .PARAMETER DisableVariables
+        Specifies, as a boolean, whether or not PowerShell will ignore sqlcmd scripting variables that share a format such as $(variable_name).
+        For more information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx)")]
 #>
 function Invoke-SqlScript
 {
@@ -2074,7 +2078,11 @@ function Invoke-SqlScript
 
         [Parameter()]
         [System.String[]]
-        $Variable
+        $Variable,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableVariables
     )
 
     Import-SQLPSModule
