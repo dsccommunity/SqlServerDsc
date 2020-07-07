@@ -362,7 +362,7 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-        Determines the desired state of the SQL Server protocol for the specified
+        Determines the current state of the SQL Server protocol for the specified
         SQL Server instance.
 
     .PARAMETER InstanceName

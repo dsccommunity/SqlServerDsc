@@ -8,13 +8,13 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
-    This function gets the max degree of parallelism server configuration option.
+        This function gets the max degree of parallelism server configuration option.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured.
+        The host name of the SQL Server to be configured.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 #>
 function Get-TargetResource
 {
@@ -58,28 +58,35 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-    This function sets the max degree of parallelism server configuration option.
+        This function sets the max degree of parallelism server configuration option.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured.
+        The host name of the SQL Server to be configured.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 
     .PARAMETER Ensure
-    When set to 'Present' then max degree of parallelism will be set to either the value in parameter MaxDop or dynamically configured when parameter DynamicAlloc is set to $true.
-    When set to 'Absent' max degree of parallelism will be set to 0 which means no limit in number of processors used in parallel plan execution.
+        When set to 'Present' then max degree of parallelism will be set to either
+        the value in parameter MaxDop or dynamically configured when parameter
+        DynamicAlloc is set to $true. When set to 'Absent' max degree of parallelism
+        will be set to 0 which means no limit in number of processors used in parallel
+        plan execution.
 
     .PARAMETER DynamicAlloc
-    If set to $true then max degree of parallelism will be dynamically configured.
-    When this is set parameter is set to $true, the parameter MaxDop must be set to $null or not be configured.
+        If set to $true then max degree of parallelism will be dynamically configured.
+        When this is set parameter is set to $true, the parameter MaxDop must be set
+        to $null or not be configured.
 
     .PARAMETER MaxDop
-    A numeric value to limit the number of processors used in parallel plan execution.
+        A numeric value to limit the number of processors used in parallel plan
+        execution.
 
     .PARAMETER ProcessOnlyOnActiveNode
-    Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
-    Not used in Set-TargetResource.
+        Specifies that the resource will only determine if a change is needed if
+        the target node is the active host of the SQL Server Instance.
+
+        Not used in Set-TargetResource.
 #>
 function Set-TargetResource
 {
@@ -175,27 +182,33 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-    This function tests the max degree of parallelism server configuration option.
+        This function tests the max degree of parallelism server configuration option.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured.
+        The host name of the SQL Server to be configured.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 
     .PARAMETER Ensure
-    When set to 'Present' then max degree of parallelism will be set to either the value in parameter MaxDop or dynamically configured when parameter DynamicAlloc is set to $true.
-    When set to 'Absent' max degree of parallelism will be set to 0 which means no limit in number of processors used in parallel plan execution.
+        When set to 'Present' then max degree of parallelism will be set to either
+        the value in parameter MaxDop or dynamically configured when parameter
+        DynamicAlloc is set to $true. When set to 'Absent' max degree of parallelism
+        will be set to 0 which means no limit in number of processors used in parallel
+        plan execution.
 
     .PARAMETER DynamicAlloc
-    If set to $true then max degree of parallelism will be dynamically configured.
-    When this is set parameter is set to $true, the parameter MaxDop must be set to $null or not be configured.
+        If set to $true then max degree of parallelism will be dynamically configured.
+        When this is set parameter is set to $true, the parameter MaxDop must be set
+        to $null or not be configured.
 
     .PARAMETER MaxDop
-    A numeric value to limit the number of processors used in parallel plan execution.
+        A numeric value to limit the number of processors used in parallel plan
+        execution.
 
     .PARAMETER ProcessOnlyOnActiveNode
-    Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+        Specifies that the resource will only determine if a change is needed if
+        the target node is the active host of the SQL Server Instance.
 #>
 function Test-TargetResource
 {
@@ -308,7 +321,7 @@ function Test-TargetResource
 
 <#
     .SYNOPSIS
-    This cmdlet is used to return the dynamic max degree of parallelism
+        This cmdlet is used to return the dynamic max degree of parallelism
 #>
 function Get-SqlDscDynamicMaxDop
 {

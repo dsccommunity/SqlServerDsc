@@ -17,11 +17,11 @@ The documentation, examples, unit test, and integration tests have been removed
 for these deprecated resources. These resources will be removed
 in a future release.
 
-- SqlDatabaseOwner _(replaced by a property in [**SqlDatabase**](#sqldatabase))_.
-- SqlDatabaseRecoveryModel _(replaced by a property in [**SqlDatabase**](#sqldatabase))_.
-- SqlServerEndpointState _(replaced by a property in [**SqlEndpoint**](#sqlendpoint))_.
-- SqlServerNetwork _(replaced by [**SqlProtocol**](#sqlprotocol) and_
-  _[**SqlProtocolTcpIp**](#sqlprotocoltcpip))_.
+- SqlDatabaseOwner _(replaced by a property in [**SqlDatabase**](sqldatabase))_.
+- SqlDatabaseRecoveryModel _(replaced by a property in [**SqlDatabase**](sqldatabase))_.
+- SqlServerEndpointState _(replaced by a property in [**SqlEndpoint**](sqlendpoint))_.
+- SqlServerNetwork _(replaced by [**SqlProtocol**](sqlprotocol) and_
+  _[**SqlProtocolTcpIp**](sqlprotocoltcpip))_.
 
 ## Getting started
 

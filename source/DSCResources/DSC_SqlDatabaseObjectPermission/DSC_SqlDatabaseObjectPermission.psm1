@@ -780,6 +780,14 @@ function ConvertTo-CimDatabaseObjectPermission
         -ClientOnly
 }
 
+<#
+    .SYNOPSIS
+        Asserts that if Ensure property is not set, then the Ensure property is
+        set to 'Present' (which is the default).
+
+    .PARAMETER Permission
+        Specifies array of permission CIM instances.
+#>
 function Assert-PermissionEnsureProperty
 {
     [CmdletBinding()]
@@ -791,10 +799,6 @@ function Assert-PermissionEnsureProperty
         $Permission
     )
 
-    <#
-        If Ensure property is not set in the desired permission, then
-        default to 'Present'.
-    #>
     foreach ($desiredPermission in $Permission)
     {
         if (-not $desiredPermission.Ensure)

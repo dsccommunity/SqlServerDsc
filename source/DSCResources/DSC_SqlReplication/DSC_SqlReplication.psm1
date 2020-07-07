@@ -6,6 +6,44 @@ Import-Module -Name $script:resourceHelperModulePath
 
 $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
+<#
+    .SYNOPSIS
+        Returns the current state of the SQL Replication distributor or publisher.
+
+    .PARAMETER InstanceName
+        SQL Server instance name where replication distribution will be configured.
+
+    .PARAMETER Ensure
+        'Present' will configure replication, 'Absent' will disable replication.
+        Default value is 'Present'.
+
+    .PARAMETER DistributorMode
+        'Local' - Instance will be configured as it's own distributor.
+        'Remote' - Instance will be configure with remote distributor
+        (remote distributor needs to be already configured for distribution).
+
+    .PARAMETER AdminLinkCredentials
+        AdminLink password to be used when setting up publisher distributor
+        relationship.
+
+    .PARAMETER DistributionDBName
+        Distribution database name. If DistributionMode='Local' this will be created,
+        if 'Remote' needs to match distribution database on remote distributor.
+        Default value is 'distributor'.
+
+    .PARAMETER RemoteDistributor
+        SQL Server network name that will be used as distributor for local instance.
+        Required if DistributionMode='Remote'.
+
+    .PARAMETER WorkingDirectory
+        Publisher working directory.
+
+    .PARAMETER UseTrustedConnection
+        Publisher security mode. Default value is $true.
+
+    .PARAMETER UninstallWithForce
+        Force flag for uninstall procedure. Default values is $true.
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -105,6 +143,44 @@ function Get-TargetResource
     return $returnValue
 }
 
+<#
+    .SYNOPSIS
+        Set the desired state of the SQL Replication distributor or publisher.
+
+    .PARAMETER InstanceName
+        SQL Server instance name where replication distribution will be configured.
+
+    .PARAMETER Ensure
+        'Present' will configure replication, 'Absent' will disable replication.
+        Default value is 'Present'.
+
+    .PARAMETER DistributorMode
+        'Local' - Instance will be configured as it's own distributor.
+        'Remote' - Instance will be configure with remote distributor
+        (remote distributor needs to be already configured for distribution).
+
+    .PARAMETER AdminLinkCredentials
+        AdminLink password to be used when setting up publisher distributor
+        relationship.
+
+    .PARAMETER DistributionDBName
+        Distribution database name. If DistributionMode='Local' this will be created,
+        if 'Remote' needs to match distribution database on remote distributor.
+        Default value is 'distributor'.
+
+    .PARAMETER RemoteDistributor
+        SQL Server network name that will be used as distributor for local instance.
+        Required if DistributionMode='Remote'.
+
+    .PARAMETER WorkingDirectory
+        Publisher working directory.
+
+    .PARAMETER UseTrustedConnection
+        Publisher security mode. Default value is $true.
+
+    .PARAMETER UninstallWithForce
+        Force flag for uninstall procedure. Default values is $true.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -229,6 +305,44 @@ function Set-TargetResource
     }
 }
 
+<#
+    .SYNOPSIS
+        Determines the current state of the SQL Replication distributor or publisher.
+
+    .PARAMETER InstanceName
+        SQL Server instance name where replication distribution will be configured.
+
+    .PARAMETER Ensure
+        'Present' will configure replication, 'Absent' will disable replication.
+        Default value is 'Present'.
+
+    .PARAMETER DistributorMode
+        'Local' - Instance will be configured as it's own distributor.
+        'Remote' - Instance will be configure with remote distributor
+        (remote distributor needs to be already configured for distribution).
+
+    .PARAMETER AdminLinkCredentials
+        AdminLink password to be used when setting up publisher distributor
+        relationship.
+
+    .PARAMETER DistributionDBName
+        Distribution database name. If DistributionMode='Local' this will be created,
+        if 'Remote' needs to match distribution database on remote distributor.
+        Default value is 'distributor'.
+
+    .PARAMETER RemoteDistributor
+        SQL Server network name that will be used as distributor for local instance.
+        Required if DistributionMode='Remote'.
+
+    .PARAMETER WorkingDirectory
+        Publisher working directory.
+
+    .PARAMETER UseTrustedConnection
+        Publisher security mode. Default value is $true.
+
+    .PARAMETER UninstallWithForce
+        Force flag for uninstall procedure. Default values is $true.
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]
@@ -293,6 +407,16 @@ function Test-TargetResource
     return $result
 }
 
+<#
+    .SYNOPSIS
+        Initiates and returns a new server connection.
+
+    .PARAMETER SqlMajorVersion
+        Specifies the major version of the Sql Server instance.
+
+    .PARAMETER SqlServerName
+        SQL Server instance name to connect to.
+#>
 function New-ServerConnection
 {
     [CmdletBinding()]
@@ -314,6 +438,16 @@ function New-ServerConnection
     return $serverConnection
 }
 
+<#
+    .SYNOPSIS
+        Initiates and returns a new server connection.
+
+    .PARAMETER SqlMajorVersion
+        Specifies the major version of the Sql Server instance.
+
+    .PARAMETER ServerConnection
+        SQL Server instance to connect to.
+#>
 function New-ReplicationServer
 {
     [CmdletBinding()]
@@ -335,6 +469,19 @@ function New-ReplicationServer
     return $localReplicationServer;
 }
 
+<#
+    .SYNOPSIS
+        Initiates and returns a new distribution database object.
+
+    .PARAMETER SqlMajorVersion
+        Specifies the major version of the Sql Server instance.
+
+    .PARAMETER DistributionDBName
+        Specifies the distribution database name.
+
+    .PARAMETER ServerConnection
+        SQL Server instance to connect to.
+#>
 function New-DistributionDatabase
 {
     [CmdletBinding()]
@@ -365,6 +512,19 @@ function New-DistributionDatabase
     return $distributionDB
 }
 
+<#
+    .SYNOPSIS
+        Initiates and returns a new distribution publisher object.
+
+    .PARAMETER SqlMajorVersion
+        Specifies the major version of the Sql Server instance.
+
+    .PARAMETER PublisherName
+        Specifies the name of the publisher.
+
+    .PARAMETER ServerConnection
+        SQL Server instance to connect to.
+#>
 function New-DistributionPublisher
 {
     [CmdletBinding()]
@@ -400,6 +560,20 @@ function New-DistributionPublisher
     return $distributorPublisher
 }
 
+<#
+    .SYNOPSIS
+        Installs a remote distributor.
+
+    .PARAMETER ReplicationServer
+        Specifies the replication server object from the cmdlet New-ReplicationServer.
+
+    .PARAMETER RemoteDistributor
+        Specifies the name of the remote distributor.
+
+    .PARAMETER AdminLinkCredentials
+        AdminLink password to be used when setting up publisher distributor
+        relationship.
+#>
 function Install-RemoteDistributor
 {
     [CmdletBinding()]
@@ -434,6 +608,20 @@ function Install-RemoteDistributor
     }
 }
 
+<#
+    .SYNOPSIS
+        Installs a local distributor.
+
+    .PARAMETER ReplicationServer
+        Specifies the replication server object from the cmdlet New-ReplicationServer.
+
+    .PARAMETER DistributionDB
+        Specifies the name of the distributor database.
+
+    .PARAMETER AdminLinkCredentials
+        AdminLink password to be used when setting up publisher distributor
+        relationship.
+#>
 function Install-LocalDistributor
 {
     [CmdletBinding()]
@@ -468,6 +656,16 @@ function Install-LocalDistributor
     }
 }
 
+<#
+    .SYNOPSIS
+        Uninstalls a distributor.
+
+    .PARAMETER ReplicationServer
+        Specifies the replication server object from the cmdlet New-ReplicationServer.
+
+    .PARAMETER UninstallWithForce
+        Force flag for uninstall procedure. Default values is $true.
+#>
 function Uninstall-Distributor
 {
     [CmdletBinding()]
@@ -498,6 +696,28 @@ function Uninstall-Distributor
     }
 }
 
+<#
+    .SYNOPSIS
+        Registers a distribution publisher.
+
+    .PARAMETER SqlMajorVersion
+        Specifies the major version of the Sql Server instance.
+
+    .PARAMETER PublisherName
+        Specifies the name of the publisher.
+
+    .PARAMETER ServerConnection
+        SQL Server instance to connect to.
+
+    .PARAMETER DistributionDBName
+        Specifies the distribution database name.
+
+    .PARAMETER WorkingDirectory
+        Publisher working directory.
+
+    .PARAMETER UseTrustedConnection
+        Publisher security mode. Default value is $true.
+#>
 function Register-DistributorPublisher
 {
     [CmdletBinding()]
@@ -643,6 +863,13 @@ function Get-RmoAssembly
     return $rmo
 }
 
+<#
+    .SYNOPSIS
+        Returns the major version or the installed SQL Server instance.
+
+    .PARAMETER InstanceName
+        Specifies the instance name.
+#>
 function Get-SqlServerMajorVersion
 {
     [CmdletBinding()]
@@ -668,6 +895,13 @@ function Get-SqlServerMajorVersion
     return $sqlMajorVersion
 }
 
+<#
+    .SYNOPSIS
+        Returns the service name to connect to.
+
+    .PARAMETER InstanceName
+        Specifies the instance name.
+#>
 function Get-SqlLocalServerName
 {
     [CmdletBinding()]

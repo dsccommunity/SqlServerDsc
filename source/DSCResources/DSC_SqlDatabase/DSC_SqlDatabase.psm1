@@ -128,8 +128,8 @@ function Get-TargetResource
         Default value is server collation.
 
     .PARAMETER CompatibilityLevel
-    The version of the SQL compatibility level to use for the new database.
-    Default value is server version.
+        The version of the SQL compatibility level to use for the new database.
+        Default value is server version.
 
     .PARAMETER RecoveryModel
         The recovery model to be used for the new database.
@@ -377,7 +377,7 @@ function Set-TargetResource
        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-     The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 
     .PARAMETER Collation
         The name of the SQL collation to use for the new database.

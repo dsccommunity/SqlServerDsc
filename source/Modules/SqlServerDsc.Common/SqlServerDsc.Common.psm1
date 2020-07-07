@@ -595,8 +595,9 @@ function Connect-SQL
         String containing the SQL Server Analysis Service instance to connect to.
 
     .PARAMETER SetupCredential
-        PSCredential object with the credentials to use to impersonate a user when connecting.
-        If this is not provided then the current user will be used to connect to the SQL Server Analysis Service instance.
+        PSCredential object with the credentials to use to impersonate a user when
+        connecting. If this is not provided then the current user will be used to
+        connect to the SQL Server Analysis Service instance.
 #>
 function Connect-SQLAnalysis
 {
@@ -752,7 +753,8 @@ function Import-Assembly
         Returns the major SQL version for the specific instance.
 
     .PARAMETER InstanceName
-        String containing the name of the SQL instance to be configured. Default value is 'MSSQLSERVER'.
+        String containing the name of the SQL instance to be configured. Default
+        value is 'MSSQLSERVER'.
 
     .OUTPUTS
         System.UInt16. Returns the SQL Server major version number.
@@ -788,9 +790,8 @@ function Get-SqlInstanceMajorVersion
 
     .PARAMETER Force
         Forces the removal of the previous SQL module, to load the same or newer
-        version fresh.
-        This is meant to make sure the newest version is used, with the latest
-        assemblies.
+        version fresh. This is meant to make sure the newest version is used, with
+        the latest assemblies.
 
 #>
 function Import-SQLPSModule
@@ -1542,7 +1543,9 @@ function Update-AvailabilityGroupReplica
         Default is 'SERVER'.
 
     .PARAMETER SecurableName
-        String containing the name of the object against which permissions exist, e.g. if SecurableClass is LOGIN this is the name of a login permissions may exist against.
+        String containing the name of the object against which permissions exist,
+        e.g. if SecurableClass is LOGIN this is the name of a login permissions
+        may exist against.
 
         Default is $null.
 
@@ -1862,7 +1865,8 @@ function Test-ImpersonatePermissions
 
 <#
     .SYNOPSIS
-        Takes a SQL Instance name in the format of 'Server\Instance' and splits it into a hash table prepared to be passed into Connect-SQL.
+        Takes a SQL Instance name in the format of 'Server\Instance' and splits
+        it into a hash table prepared to be passed into Connect-SQL.
 
     .PARAMETER FullSqlInstanceName
         The full SQL instance name string to be split.
@@ -2026,7 +2030,8 @@ function Test-ActiveNode
 
     .PARAMETER ServerInstance
         The name of an instance of the Database Engine.
-        For default instances, only specify the computer name. For named instances, use the format ComputerName\InstanceName.
+        For default instances, only specify the computer name. For named instances,
+        use the format ComputerName\InstanceName.
 
     .PARAMETER InputFile
         Path to SQL script file that will be executed.
@@ -2035,20 +2040,27 @@ function Test-ActiveNode
         The full query that will be executed.
 
     .PARAMETER Credential
-        The credentials to use to authenticate using SQL Authentication. To authenticate using Windows Authentication, assign the credentials
-        to the built-in parameter 'PsDscRunAsCredential'. If both parameters 'Credential' and 'PsDscRunAsCredential' are not assigned, then
-        the SYSTEM account will be used to authenticate using Windows Authentication.
+        The credentials to use to authenticate using SQL Authentication. To
+        authenticate using Windows Authentication, assign the credentials
+        to the built-in parameter 'PsDscRunAsCredential'. If both parameters
+        'Credential' and 'PsDscRunAsCredential' are not assigned, then the
+        SYSTEM account will be used to authenticate using Windows Authentication.
 
     .PARAMETER QueryTimeout
-        Specifies, as an integer, the number of seconds after which the T-SQL script execution will time out.
-        In some SQL Server versions there is a bug in Invoke-Sqlcmd where the normal default value 0 (no timeout) is not respected and the default value is incorrectly set to 30 seconds.
+        Specifies, as an integer, the number of seconds after which the T-SQL
+        script execution will time out. In some SQL Server versions there is a
+        bug in Invoke-Sqlcmd where the normal default value 0 (no timeout) is not
+        respected and the default value is incorrectly set to 30 seconds.
 
     .PARAMETER Variable
-        Creates a Invoke-Sqlcmd scripting variable for use in the Invoke-Sqlcmd script, and sets a value for the variable.
+        Creates a Invoke-Sqlcmd scripting variable for use in the Invoke-Sqlcmd
+        script, and sets a value for the variable.
 
     .PARAMETER DisableVariables
-        Specifies, as a boolean, whether or not PowerShell will ignore sqlcmd scripting variables that share a format such as $(variable_name).
-        For more information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://technet.microsoft.com/en-us/library/mt683370.aspx)")]
+        Specifies, as a boolean, whether or not PowerShell will ignore sqlcmd
+        scripting variables that share a format such as $(variable_name). For more
+        information how to use this, please go to the help documentation for
+        [Invoke-Sqlcmd](https://docs.microsoft.com/en-us/powershell/module/sqlserver/Invoke-Sqlcmd).
 #>
 function Invoke-SqlScript
 {

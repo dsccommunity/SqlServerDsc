@@ -6,6 +6,13 @@ Import-Module -Name $script:resourceHelperModulePath
 
 $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
+<#
+    .SYNOPSIS
+        Returns the current state of the SQL Server alias.
+
+    .PARAMETER Name
+        The name of Alias (e.g. svr01\\inst01).
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -18,7 +25,7 @@ function Get-TargetResource
         $Name
     )
 
-    $returnValue = @{
+    $returnValue = @{s
         Name = [System.String] $Name
         Protocol = [System.String] ''
         ServerName = [System.String] $null
@@ -94,6 +101,33 @@ function Get-TargetResource
     $returnValue
 }
 
+<#
+    .SYNOPSIS
+        Sets the desired state of the SQL Server alias.
+
+    .PARAMETER Name
+        The name of Alias (e.g. svr01\\inst01).
+
+    .PARAMETER Protocol
+        Protocol to use when connecting. Valid values are 'TCP' or 'NP' (Named Pipes).
+        Default value is 'TCP'.
+
+    .PARAMETER ServerName
+        The SQL Server you are aliasing (the NetBIOS name or FQDN).
+
+    .PARAMETER TcpPort
+        The TCP port the SQL Server instance is listening on. Only used when protocol
+        is set to 'TCP'. Default value is port 1433.
+
+    .PARAMETER UseDynamicTcpPort
+        The UseDynamicTcpPort specify that the Net-Library will determine the port
+        dynamically. The port specified in Port number will not be used. Default
+        value is $false.
+
+    .PARAMETER Ensure
+        Determines whether the alias should be added or removed. Default value is
+        'Present'.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -198,6 +232,33 @@ function Set-TargetResource
     }
 }
 
+<#
+    .SYNOPSIS
+        Determines the desired state of the SQL Server alias.
+
+    .PARAMETER Name
+        The name of Alias (e.g. svr01\\inst01).
+
+    .PARAMETER Protocol
+        Protocol to use when connecting. Valid values are 'TCP' or 'NP' (Named Pipes).
+        Default value is 'TCP'.
+
+    .PARAMETER ServerName
+        The SQL Server you are aliasing (the NetBIOS name or FQDN).
+
+    .PARAMETER TcpPort
+        The TCP port the SQL Server instance is listening on. Only used when protocol
+        is set to 'TCP'. Default value is port 1433.
+
+    .PARAMETER UseDynamicTcpPort
+        The UseDynamicTcpPort specify that the Net-Library will determine the port
+        dynamically. The port specified in Port number will not be used. Default
+        value is $false.
+
+    .PARAMETER Ensure
+        Determines whether the alias should be added or removed. Default value is
+        'Present'.
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]

@@ -261,8 +261,8 @@ function Test-TargetResource
 
 <#
     .SYNOPSIS
-       Takes a Microsoft.SqlServer.Management.Smo.ServerPermissionSet object which will be
-       enumerated and returned as a string array.
+        Takes a Microsoft.SqlServer.Management.Smo.ServerPermissionSet object which will be
+        enumerated and returned as a string array.
 
     .PARAMETER ServerPermissionSet
         A PermissionSet object which should be enumerated.
@@ -294,15 +294,18 @@ function Get-SQLPermission
 
 <#
     .SYNOPSIS
-       Takes either an array of strings or an array of Microsoft.SqlServer.Management.Smo.ServerPermissionSet objects which
-       will be enumerated and concatenated to a single Microsoft.SqlServer.Management.Smo.ServerPermissionSet object.
+        Takes either an array of strings or an array of Microsoft.SqlServer.Management.Smo.ServerPermissionSet
+        objects which will be enumerated and concatenated to a single
+        Microsoft.SqlServer.Management.Smo.ServerPermissionSet object.
 
     .PARAMETER Permission
-        An array of strings which should be concatenated to a single Microsoft.SqlServer.Management.Smo.ServerPermissionSet object.
+        An array of strings which should be concatenated to a single
+        Microsoft.SqlServer.Management.Smo.ServerPermissionSet object.
 
     .PARAMETER ServerPermissionSet
-        An array of Microsoft.SqlServer.Management.Smo.ServerPermissionSet objects which should be concatenated to a single
-        Microsoft.SqlServer.Management.Smo.ServerPermissionSet object.
+        An array of Microsoft.SqlServer.Management.Smo.ServerPermissionSet objects
+        which should be concatenated to a single Microsoft.SqlServer.Management.Smo.ServerPermissionSet
+        object.
 #>
 function Get-SQLServerPermissionSet
 {
@@ -340,10 +343,10 @@ function Get-SQLServerPermissionSet
 
 <#
     .SYNOPSIS
-       Merges an array of any PermissionSet objects into a single PermissionSet.
+        Merges an array of any PermissionSet objects into a single PermissionSet.
 
-       The though with this helper function si it can be used for any permission set object
-       because all inherits from Microsoft.SqlServer.Management.Smo.PermissionSetBase.
+        The though with this helper function si it can be used for any permission set object
+        because all inherits from Microsoft.SqlServer.Management.Smo.PermissionSetBase.
 
     .PARAMETER Object
         An array of strings which should be concatenated to a single PermissionSet object.

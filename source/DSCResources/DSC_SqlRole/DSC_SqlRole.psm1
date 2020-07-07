@@ -8,25 +8,25 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
-    This function gets the sql server role properties.
+        This function gets the sql server role properties.
 
     .PARAMETER Members
-    The members the server role should have.
+        The members the server role should have.
 
     .PARAMETER MembersToInclude
-    The members the server role should include.
+        The members the server role should include.
 
     .PARAMETER MembersToExclude
-    The members the server role should exclude.
+        The members the server role should exclude.
 
     .PARAMETER ServerRoleName
-    The name of server role to be created or dropped.
+        The name of server role to be created or dropped.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 #>
 function Get-TargetResource
 {
@@ -159,29 +159,29 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-    This function sets the sql server role properties.
+        This function sets the sql server role properties.
 
     .PARAMETER Ensure
-    When set to 'Present', the server role will be created.
-    When set to 'Absent', the server role will be dropped.
+        When set to 'Present', the server role will be created.
+        When set to 'Absent', the server role will be dropped.
 
     .PARAMETER Members
-    The members the server role should have.
+        The members the server role should have.
 
     .PARAMETER MembersToInclude
-    The members the server role should include.
+        The members the server role should include.
 
     .PARAMETER MembersToExclude
-    The members the server role should exclude.
+        The members the server role should exclude.
 
     .PARAMETER ServerRoleName
-    The name of server role to be created or dropped.
+        The name of server role to be created or dropped.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 #>
 function Set-TargetResource
 {
@@ -352,29 +352,29 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-    This function tests the sql server role properties.
+        This function tests the sql server role properties.
 
     .PARAMETER Ensure
-    When set to 'Present', the server role will be created.
-    When set to 'Absent', the server role will be dropped.
+        When set to 'Present', the server role will be created.
+        When set to 'Absent', the server role will be dropped.
 
     .PARAMETER Members
-    The members the server role should have.
+        The members the server role should have.
 
     .PARAMETER MembersToInclude
-    The members the server role should include.
+        The members the server role should include.
 
     .PARAMETER MembersToExclude
-    The members the server role should exclude.
+        The members the server role should exclude.
 
     .PARAMETER ServerRoleName
-    The name of server role to be created or dropped.
+        The name of server role to be created or dropped.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 #>
 function Test-TargetResource
 {

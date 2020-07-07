@@ -525,6 +525,22 @@ function Test-TargetResource
     return $result
 }
 
+<#
+    .SYNOPSIS
+        Returns the listener with the specified name for the specified availability group.
+
+    .PARAMETER InstanceName
+        The SQL Server instance name of the primary replica. Default value is 'MSSQLSERVER'.
+
+    .PARAMETER ServerName
+        The host name or FQDN of the primary replica.
+
+    .PARAMETER Name
+        The name of the availability group listener, max 15 characters. This name will be used as the Virtual Computer Object (VCO).
+
+    .PARAMETER AvailabilityGroup
+        The name of the availability group to which the availability group listener is or will be connected.
+#>
 function Get-SQLAlwaysOnAvailabilityGroupListener
 {
     [CmdletBinding()]

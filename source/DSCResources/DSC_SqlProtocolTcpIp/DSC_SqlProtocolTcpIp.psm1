@@ -431,7 +431,7 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-        Determines the desired state of the SQL Server TCP/IP protocol IP address
+        Determines the current state of the SQL Server TCP/IP protocol IP address
         group for the specified SQL Server instance.
 
     .PARAMETER InstanceName
