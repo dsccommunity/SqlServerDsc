@@ -25,7 +25,7 @@ function Get-TargetResource
         $Name
     )
 
-    $returnValue = @{s
+    $returnValue = @{
         Name = [System.String] $Name
         Protocol = [System.String] ''
         ServerName = [System.String] $null
