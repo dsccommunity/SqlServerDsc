@@ -24,6 +24,10 @@ coverage:
         target: auto
         threshold: 5
 
+flags:
+  unit:
+    carryforward: true
+
 fixes:
   - '\d+\.\d+\.\d+\/::source/'  # move path "X.Y.Z/" => "source/"
 
