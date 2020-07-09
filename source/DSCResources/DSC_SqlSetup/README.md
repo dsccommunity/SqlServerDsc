@@ -4,52 +4,57 @@ The `SqlSetup` DSC resource installs SQL Server on the target node.
 
 ## Requirements
 
-* Target machine must be running Windows Server 2012 or later.
-* For configurations that utilize the 'InstallFailoverCluster' action, the following
+- Target machine must be running Windows Server 2012 or later.
+- For configurations that utilize the 'InstallFailoverCluster' action, the following
   parameters are required (beyond those required for the standalone installation).
   See the article [Install SQL Server from the Command Prompt](https://msdn.microsoft.com/en-us/library/ms144259.aspx)
   under the section [Failover Cluster Parameters](https://msdn.microsoft.com/en-us/library/ms144259.aspx#Anchor_8)
   for more information.
-  * InstanceName (can be MSSQLSERVER if you want to install a default clustered
+  - InstanceName (can be MSSQLSERVER if you want to install a default clustered
     instance).
-  * FailoverClusterNetworkName
-  * FailoverClusterIPAddress
-  * Additional parameters need when installing Database Engine.
-    * InstallSQLDataDir
-    * AgtSvcAccount
-    * SQLSvcAccount
-    * SQLSysAdminAccounts
-  * Additional parameters need when installing Analysis Services.
-    * ASSysAdminAccounts
-    * AsSvcAccount
-* The parameters below can only be used when installing SQL Server 2016 or
+  - FailoverClusterNetworkName
+  - FailoverClusterIPAddress
+  - Additional parameters need when installing Database Engine.
+    - InstallSQLDataDir
+    - AgtSvcAccount
+    - SQLSvcAccount
+    - SQLSysAdminAccounts
+  - Additional parameters need when installing Analysis Services.
+    - ASSysAdminAccounts
+    - AsSvcAccount
+- The parameters below can only be used when installing SQL Server 2016 or
   later:
-  * SqlTempdbFileCount
-  * SqlTempdbFileSize
-  * SqlTempdbFileGrowth
-  * SqlTempdbLogFileSize
-  * SqlTempdbLogFileGrowth
+  - SqlTempdbFileCount
+  - SqlTempdbFileSize
+  - SqlTempdbFileGrowth
+  - SqlTempdbLogFileSize
+  - SqlTempdbLogFileGrowth
 
 > **Note:** It is not possible to add or remove features to a SQL Server failover
 cluster. This is a limitation of SQL Server. See article
 [You cannot add or remove features to a SQL Server 2008, SQL Server 2008 R2, or
 SQL Server 2012 failover cluster](https://support.microsoft.com/en-us/help/2547273/you-cannot-add-or-remove-features-to-a-sql-server-2008,-sql-server-2008-r2,-or-sql-server-2012-failover-cluster).
 
-## Feature flags
+## Features supported
 
-Feature flags are used to toggle functionality on or off. One or more
-feature flags can be added to the parameter `FeatureFlag`, i.e.
-`FeatureFlag = @('DetectionSharedFeatures')`.
+This is a list of currently supported features. All features might not be
+available on all versions of _SQL Server_.
 
->**NOTE:** The functionality, exposed
-with a feature flag, can be changed from one release to another, including
-having breaking changes.
-
-<!-- markdownlint-disable MD013 -->
-Flag | Description
---- | ---
-\- | -
-<!-- markdownlint-enable MD013 -->
+- SQLENGINE
+- REPLICATION
+- DQ
+- DQC
+- BOL
+- CONN
+- BC
+- SDK
+- MDS
+- FULLTEXT
+- RS
+- AS
+- IS
+- SSMS
+- ADV_SSMS
 
 ## Skip rules
 
@@ -113,6 +118,23 @@ for example '\\server\share\folder', then that leaf folder will be used as the
 name of the temporary folder. If the path, that is assigned to parameter
 `SourcePath`, does not have a leaf folder, for example '\\server\share', then
 a unique GUID will be used as the name of the temporary folder.
+
+## Feature flags
+
+_Not to be mistaken with the **Features** parameter._
+
+Feature flags are used to toggle resource functionality on or off. One or
+more feature flags can be added to the parameter `FeatureFlag`, i.e.
+`FeatureFlag = @('DetectionSharedFeatures')`.
+
+>**NOTE:** The functionality, exposed with a feature flag, can be changed
+>from one release to another, including having breaking changes.
+
+<!-- markdownlint-disable MD013 -->
+Flag | Description
+--- | ---
+\- | -
+<!-- markdownlint-enable MD013 -->
 
 ## Known issues
 

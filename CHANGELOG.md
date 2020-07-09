@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Updated comment-based help according to style guideline throughout
     ([issue #1500](https://github.com/dsccommunity/SqlServerDsc/issues/1500)).
+- SqlSetup
+  - Updated the documentation with the currently supported features
+    ([issue #1566](https://github.com/dsccommunity/SqlServerDsc/issues/1566)).
 
 ## [14.1.0] - 2020-07-06
 
