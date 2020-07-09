@@ -8,25 +8,25 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
-    Returns the current permissions for the user in the database.
+        Returns the current permissions for the user in the database.
 
     .PARAMETER DatabaseName
-    This is the SQL database
+        This is the SQL database
 
     .PARAMETER Name
-    This is the name of the SQL login for the permission set.
+        This is the name of the SQL login for the permission set.
 
     .PARAMETER PermissionState
-    This is the state of permission set. Valid values are 'Grant' or 'Deny'.
+        This is the state of permission set. Valid values are 'Grant' or 'Deny'.
 
     .PARAMETER Permissions
-    This is a list that represents a SQL Server set of database permissions.
+        This is a list that represents a SQL Server set of database permissions.
 
     .PARAMETER ServerName
-    This is the SQL Server for the database. Default value is $env:COMPUTERNAME.
+        This is the SQL Server for the database. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    This is the SQL instance for the database.
+        This is the SQL instance for the database.
 #>
 function Get-TargetResource
 {
@@ -141,28 +141,28 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-    Sets the permissions for the user in the database.
+        Sets the permissions for the user in the database.
 
     .PARAMETER Ensure
-    This is The Ensure if the permission should be granted (Present) or revoked (Absent).
+        This is The Ensure if the permission should be granted (Present) or revoked (Absent).
 
     .PARAMETER DatabaseName
-    This is the SQL database
+        This is the SQL database
 
     .PARAMETER Name
-    This is the name of the SQL login for the permission set.
+        This is the name of the SQL login for the permission set.
 
     .PARAMETER PermissionState
-    This is the state of permission set. Valid values are 'Grant' or 'Deny'.
+        This is the state of permission set. Valid values are 'Grant' or 'Deny'.
 
     .PARAMETER Permissions
-    This is a list that represents a SQL Server set of database permissions.
+        This is a list that represents a SQL Server set of database permissions.
 
     .PARAMETER ServerName
-    This is the SQL Server for the database. Default value is $env:COMPUTERNAME.
+        This is the SQL Server for the database. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    This is the SQL instance for the database.
+        This is the SQL instance for the database.
 #>
 function Set-TargetResource
 {
@@ -300,28 +300,28 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-    Tests if the permissions is set for the user in the database.
+        Tests if the permissions is set for the user in the database.
 
     .PARAMETER Ensure
-    This is The Ensure if the permission should be granted (Present) or revoked (Absent).
+        This is The Ensure if the permission should be granted (Present) or revoked (Absent).
 
     .PARAMETER DatabaseName
-    This is the SQL database
+        This is the SQL database
 
     .PARAMETER Name
-    This is the name of the SQL login for the permission set.
+        This is the name of the SQL login for the permission set.
 
     .PARAMETER PermissionState
-    This is the state of permission set. Valid values are 'Grant' or 'Deny'.
+        This is the state of permission set. Valid values are 'Grant' or 'Deny'.
 
     .PARAMETER Permissions
-    This is a list that represents a SQL Server set of database permissions.
+        This is a list that represents a SQL Server set of database permissions.
 
     .PARAMETER ServerName
-    This is the SQL Server for the database. Default value is $env:COMPUTERNAME.
+        This is the SQL Server for the database. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    This is the SQL instance for the database.
+        This is the SQL instance for the database.
 #>
 function Test-TargetResource
 {

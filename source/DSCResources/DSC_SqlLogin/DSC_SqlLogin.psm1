@@ -8,16 +8,16 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
-    Gets the specified login by name.
+        Gets the specified login by name.
 
     .PARAMETER Name
-    The name of the login to retrieve.
+        The name of the login to retrieve.
 
     .PARAMETER ServerName
-    Hostname of the SQL Server to retrieve the login from. Default value is $env:COMPUTERNAME.
+        Hostname of the SQL Server to retrieve the login from. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    Name of the SQL instance to retrieve the login from.
+        Name of the SQL instance to retrieve the login from.
 #>
 function Get-TargetResource
 {
@@ -84,40 +84,40 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-    Creates a login.
+        Creates a login.
 
     .PARAMETER Ensure
-    Specifies if the login to exist. Default is 'Present'.
+        Specifies if the login to exist. Default is 'Present'.
 
     .PARAMETER Name
-    The name of the login to retrieve.
+        The name of the login to retrieve.
 
     .PARAMETER LoginType
-    The type of login to create. Default is 'WindowsUser'
+        The type of login to create. Default is 'WindowsUser'
 
     .PARAMETER ServerName
-    Hostname of the SQL Server to create the login on. Default value is $env:COMPUTERNAME.
+        Hostname of the SQL Server to create the login on. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    Name of the SQL instance to create the login on.
+        Name of the SQL instance to create the login on.
 
     .PARAMETER LoginCredential
-    The credential containing the password for a SQL Login. Only applies if the login type is SqlLogin.
+        The credential containing the password for a SQL Login. Only applies if the login type is SqlLogin.
 
     .PARAMETER LoginMustChangePassword
-    Specifies if the login is required to have its password change on the next login. Only applies to SQL Logins. Default is $true.
+        Specifies if the login is required to have its password change on the next login. Only applies to SQL Logins. Default is $true.
 
     .PARAMETER LoginPasswordExpirationEnabled
-    Specifies if the login password is required to expire in accordance to the operating system security policy. Only applies to SQL Logins. Default is $true.
+        Specifies if the login password is required to expire in accordance to the operating system security policy. Only applies to SQL Logins. Default is $true.
 
     .PARAMETER LoginPasswordPolicyEnforced
-    Specifies if the login password is required to conform to the password policy specified in the system security policy. Only applies to SQL Logins. Default is $true.
+        Specifies if the login password is required to conform to the password policy specified in the system security policy. Only applies to SQL Logins. Default is $true.
 
     .PARAMETER Disabled
-    Specifies if the login is disabled. Default is $false.
+        Specifies if the login is disabled. Default is $false.
 
     .PARAMETER DefaultDatabase
-    Specifies the default database for the login.
+        Specifies the default database for the login.
 #>
 function Set-TargetResource
 {
@@ -337,40 +337,40 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-    Tests to verify the login exists and the properties are correctly set.
+        Tests to verify the login exists and the properties are correctly set.
 
     .PARAMETER Ensure
-    Specifies if the login is supposed to exist. Default is 'Present'.
+        Specifies if the login is supposed to exist. Default is 'Present'.
 
     .PARAMETER Name
-    The name of the login.
+        The name of the login.
 
     .PARAMETER LoginType
-    The type of login. Default is 'WindowsUser'
+        The type of login. Default is 'WindowsUser'
 
     .PARAMETER ServerName
-    Hostname of the SQL Server to create the login on. Default value is $env:COMPUTERNAME.
+        Hostname of the SQL Server to create the login on. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    Name of the SQL instance.
+        Name of the SQL instance.
 
     .PARAMETER LoginCredential
-    The credential containing the password for a SQL Login. Only applies if the login type is SqlLogin.
+        The credential containing the password for a SQL Login. Only applies if the login type is SqlLogin.
 
     .PARAMETER LoginMustChangePassword
-    Specifies if the login is required to have its password change on the next login. Only applies to SQL Logins. Default is $true.
+        Specifies if the login is required to have its password change on the next login. Only applies to SQL Logins. Default is $true.
 
     .PARAMETER LoginPasswordExpirationEnabled
-    Specifies if the login password is required to expire in accordance to the operating system security policy. Only applies to SQL Logins. Default is $true.
+        Specifies if the login password is required to expire in accordance to the operating system security policy. Only applies to SQL Logins. Default is $true.
 
     .PARAMETER LoginPasswordPolicyEnforced
-    Specifies if the login password is required to conform to the password policy specified in the system security policy. Only applies to SQL Logins. Default is $true.
+        Specifies if the login password is required to conform to the password policy specified in the system security policy. Only applies to SQL Logins. Default is $true.
 
     .PARAMETER Disabled
-    Specifies if the login is disabled. Default is $false.
+        Specifies if the login is disabled. Default is $false.
 
     .PARAMETER DefaultDatabase
-    Specifies the default database for the login.
+        Specifies the default database for the login.
 #>
 function Test-TargetResource
 {
@@ -598,13 +598,13 @@ function Test-TargetResource
 
 <#
     .SYNOPSIS
-    Alters a login.
+        Alters a login.
 
     .PARAMETER Login
-    The Login object to alter.
+        The Login object to alter.
 
     .NOTES
-    This function allows us to more easily write mocks.
+        This function allows us to more easily write mocks.
 #>
 function Update-SQLServerLogin
 {
@@ -635,25 +635,25 @@ function Update-SQLServerLogin
 
 <#
     .SYNOPSIS
-    Creates a login.
+        Creates a login.
 
     .PARAMETER Login
-    The Login object to create.
+        The Login object to create.
 
     .PARAMETER LoginCreateOptions
-    The LoginCreateOptions object to use when creating a SQL login.
+        The LoginCreateOptions object to use when creating a SQL login.
 
     .PARAMETER SecureString
-    The SecureString object that contains the password for a SQL login.
+        The SecureString object that contains the password for a SQL login.
 
     .EXAMPLE
-    CreateLogin -Login $login -LoginCreateOptions $LoginCreateOptions -SecureString $LoginCredential.Password -ErrorAction Stop
+        CreateLogin -Login $login -LoginCreateOptions $LoginCreateOptions -SecureString $LoginCredential.Password -ErrorAction Stop
 
     .EXAMPLE
-    CreateLogin -Login $login
+        CreateLogin -Login $login
 
     .NOTES
-    This function allows us to more easily write mocks.
+        This function allows us to more easily write mocks.
 #>
 function New-SQLServerLogin
 {
@@ -733,13 +733,13 @@ function New-SQLServerLogin
 
 <#
     .SYNOPSIS
-    Drops a login.
+        Drops a login.
 
     .PARAMETER Login
-    The Login object to drop.
+        The Login object to drop.
 
     .NOTES
-    This function allows us to more easily write mocks.
+        This function allows us to more easily write mocks.
 #>
 function Remove-SQLServerLogin
 {
@@ -770,16 +770,16 @@ function Remove-SQLServerLogin
 
 <#
     .SYNOPSIS
-    Changes the password of a SQL Login.
+        Changes the password of a SQL Login.
 
     .PARAMETER Login
-    The Login object to change the password on.
+        The Login object to change the password on.
 
     .PARAMETER SecureString
-    The SecureString object that contains the password for a SQL login.
+        The SecureString object that contains the password for a SQL login.
 
     .NOTES
-    This function allows us to more easily write mocks.
+        This function allows us to more easily write mocks.
 #>
 function Set-SQLServerLoginPassword
 {

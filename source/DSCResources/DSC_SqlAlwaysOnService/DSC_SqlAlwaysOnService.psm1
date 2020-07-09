@@ -8,21 +8,21 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
-    Gets the current value of the SQL Server Always On high availability and
-    disaster recovery (HADR) property.
+        Gets the current value of the SQL Server Always On high availability and
+        disaster recovery (HADR) property.
 
     .PARAMETER Ensure
-    An enumerated value that describes if the SQL Server should have Always On high
-    availability and disaster recovery (HADR) property enabled ('Present') or
-    disabled ('Absent').
+        An enumerated value that describes if the SQL Server should have Always On high
+        availability and disaster recovery (HADR) property enabled ('Present') or
+        disabled ('Absent').
 
-    *** Not used in this function ***
+        *** Not used in this function ***
 
     .PARAMETER ServerName
-    The hostname of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        The hostname of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 #>
 function Get-TargetResource
 {
@@ -68,21 +68,23 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-    Sets the current value of the SQL Server Always On high availability and disaster recovery (HADR) property.
+        Sets the current value of the SQL Server Always On high availability and
+        disaster recovery (HADR) property.
 
     .PARAMETER Ensure
-    An enumerated value that describes if the SQL Server should have Always On high
-    availability and disaster recovery (HADR) property enabled ('Present') or
-    disabled ('Absent').
+        An enumerated value that describes if the SQL Server should have Always On high
+        availability and disaster recovery (HADR) property enabled ('Present') or
+        disabled ('Absent').
 
     .PARAMETER ServerName
-    The hostname of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        The hostname of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 
     .PARAMETER RestartTimeout
-    The length of time, in seconds, to wait for the service to restart. Default is 120 seconds.
+        The length of time, in seconds, to wait for the service to restart. Default is
+        120 seconds.
 #>
 function Set-TargetResource
 {
@@ -164,24 +166,25 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-    Determines whether the current value of the SQL Server Always On high
-    availability and disaster recovery (HADR) property is properly set.
+        Determines whether the current value of the SQL Server Always On high
+        availability and disaster recovery (HADR) property is properly set.
 
     .PARAMETER Ensure
-    An enumerated value that describes if the SQL Server should have Always On high
-    availability and disaster recovery (HADR) property enabled ('Present') or
-    disabled ('Absent').
+        An enumerated value that describes if the SQL Server should have Always On high
+        availability and disaster recovery (HADR) property enabled ('Present') or
+        disabled ('Absent').
 
     .PARAMETER ServerName
-    The hostname of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        The hostname of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 
     .PARAMETER RestartTimeout
-    The length of time, in seconds, to wait for the service to restart. Default is 120 seconds.
+        The length of time, in seconds, to wait for the service to restart. Default
+        is 120 seconds.
 
-    *** Not used in this function ***
+        *** Not used in this function ***
 #>
 function Test-TargetResource
 {

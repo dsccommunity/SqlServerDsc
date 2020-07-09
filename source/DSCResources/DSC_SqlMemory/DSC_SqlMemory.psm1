@@ -61,7 +61,8 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-        This function sets the value for the min and max memory server configuration option.
+        This function sets the value for the min and max memory server configuration
+        option.
 
     .PARAMETER ServerName
         The host name of the SQL Server to be configured.
@@ -70,21 +71,28 @@ function Get-TargetResource
         The name of the SQL instance to be configured.
 
     .PARAMETER Ensure
-        When set to 'Present' then min and max memory will be set to either the value in parameter MinMemory and MaxMemory or dynamically configured when parameter DynamicAlloc is set to $true.
-        When set to 'Absent' min and max memory will be set to default values.
+        When set to 'Present' then min and max memory will be set to either the
+        value in parameter MinMemory and MaxMemory or dynamically configured when
+        parameter DynamicAlloc is set to $true. When set to 'Absent' min and max
+        memory will be set to default values.
 
     .PARAMETER DynamicAlloc
-        If set to $true then max memory will be dynamically configured.
-        When this is set parameter is set to $true, the parameter MaxMemory must be set to $null or not be configured.
+        If set to $true then max memory will be dynamically configured. When this
+        is set parameter is set to $true, the parameter MaxMemory must be set to
+        $null or not be configured.
 
     .PARAMETER MinMemory
-        This is the minimum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
+        This is the minimum amount of memory, in MB, in the buffer pool used by
+        the instance of SQL Server.
 
     .PARAMETER MaxMemory
-        This is the maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
+        This is the maximum amount of memory, in MB, in the buffer pool used by
+        the instance of SQL Server.
 
     .PARAMETER ProcessOnlyOnActiveNode
-        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server instance.
+        Specifies that the resource will only determine if a change is needed if
+        the target node is the active host of the SQL Server instance.
+
         Not used in Set-TargetResource.
 #>
 function Set-TargetResource
@@ -206,7 +214,8 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-        This function tests the value of the min and max memory server configuration option.
+        This function tests the value of the min and max memory server configuration
+        option.
 
     .PARAMETER ServerName
         The host name of the SQL Server to be configured.
@@ -215,21 +224,27 @@ function Set-TargetResource
         The name of the SQL instance to be configured.
 
     .PARAMETER Ensure
-        When set to 'Present' then min and max memory will be set to either the value in parameter MinMemory and MaxMemory or dynamically configured when parameter DynamicAlloc is set to $true.
-        When set to 'Absent' min and max memory will be set to default values.
+        When set to 'Present' then min and max memory will be set to either the
+        value in parameter MinMemory and MaxMemory or dynamically configured when
+        parameter DynamicAlloc is set to $true. When set to 'Absent' min and max
+        memory will be set to default values.
 
     .PARAMETER DynamicAlloc
-        If set to $true then max memory will be dynamically configured.
-        When this is set parameter is set to $true, the parameter MaxMemory must be set to $null or not be configured.
+        If set to $true then max memory will be dynamically configured. When this
+        is set parameter is set to $true, the parameter MaxMemory must be set to
+        $null or not be configured.
 
     .PARAMETER MinMemory
-        This is the minimum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
+        This is the minimum amount of memory, in MB, in the buffer pool used by
+        the instance of SQL Server.
 
     .PARAMETER MaxMemory
-        This is the maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.
+        This is the maximum amount of memory, in MB, in the buffer pool used by
+        the instance of SQL Server.
 
     .PARAMETER ProcessOnlyOnActiveNode
-        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server instance.
+        Specifies that the resource will only determine if a change is needed if
+        the target node is the active host of the SQL Server instance.
 #>
 function Test-TargetResource
 {
@@ -373,7 +388,7 @@ function Test-TargetResource
 
 <#
     .SYNOPSIS
-    This cmdlet is used to return the Dynamic MaxMemory of a SQL Instance
+        This cmdlet is used to return the Dynamic MaxMemory of a SQL Instance
 #>
 function Get-SqlDscDynamicMaxMemory
 {

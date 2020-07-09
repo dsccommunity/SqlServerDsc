@@ -12,16 +12,17 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         along with the time and number of times to wait.
 
     .PARAMETER Name
-        Name of the cluster role/group to look for (normally the same as the Availability Group name).
+        Name of the cluster role/group to look for (normally the same as the
+        Availability Group name).
 
     .PARAMETER RetryIntervalSec
         The interval, in seconds, to check for the presence of the cluster role/group.
-        Default value is 20 seconds.
-        When the cluster role/group has been found the resource will wait for this amount of time once
-        more before returning.
+        Default value is 20 seconds. When the cluster role/group has been found the
+        resource will wait for this amount of time once more before returning.
 
     .PARAMETER RetryCount
-        Maximum number of retries until the resource will timeout and throw an error. Default values is 30 times.
+        Maximum number of retries until the resource will timeout and throw an error.
+        Default values is 30 times.
 #>
 function Get-TargetResource
 {
@@ -77,16 +78,17 @@ function Get-TargetResource
         Waits for a cluster role/group to be created
 
     .PARAMETER Name
-        Name of the cluster role/group to look for (normally the same as the Availability Group name).
+        Name of the cluster role/group to look for (normally the same as the Availability
+        Group name).
 
     .PARAMETER RetryIntervalSec
         The interval, in seconds, to check for the presence of the cluster role/group.
-        Default value is 20 seconds.
-        When the cluster role/group has been found the resource will wait for this amount of time once
-        more before returning.
+        Default value is 20 seconds. When the cluster role/group has been found the
+        resource will wait for this amount of time once more before returning.
 
     .PARAMETER RetryCount
-        Maximum number of retries until the resource will timeout and throw an error. Default values is 30 times.
+        Maximum number of retries until the resource will timeout and throw an error.
+        Default values is 30 times.
 #>
 function Set-TargetResource
 {
@@ -152,16 +154,17 @@ function Set-TargetResource
         Tests if the cluster role/group has been created.
 
     .PARAMETER Name
-        Name of the cluster role/group to look for (normally the same as the Availability Group name).
+        Name of the cluster role/group to look for (normally the same as the Availability
+        Group name).
 
     .PARAMETER RetryIntervalSec
         The interval, in seconds, to check for the presence of the cluster role/group.
-        Default value is 20 seconds.
-        When the cluster role/group has been found the resource will wait for this amount of time once
-        more before returning.
+        Default value is 20 seconds. When the cluster role/group has been found the
+        resource will wait for this amount of time once more before returning.
 
     .PARAMETER RetryCount
-        Maximum number of retries until the resource will timeout and throw an error. Default values is 30 times.
+        Maximum number of retries until the resource will timeout and throw an error.
+        Default values is 30 times.
 #>
 function Test-TargetResource
 {

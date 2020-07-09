@@ -8,16 +8,16 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
-    This function gets the SQL Agent Operator.
+        This function gets the SQL Agent Operator.
 
     .PARAMETER Name
-    The name of the SQL Agent Operator.
+        The name of the SQL Agent Operator.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured. Default is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 
 #>
 function Get-TargetResource
@@ -90,22 +90,22 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-    This function sets the SQL Agent Operator.
+        This function sets the SQL Agent Operator.
 
     .PARAMETER Ensure
-    Specifies if the SQL Agent Operator should be present or absent. Default is Present
+        Specifies if the SQL Agent Operator should be present or absent. Default is Present
 
     .PARAMETER Name
-    The name of the SQL Agent Operator.
+        The name of the SQL Agent Operator.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured. Default is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 
     .PARAMETER EmailAddress
-    The email address to be used for the SQL Agent Operator.
+        The email address to be used for the SQL Agent Operator.
 #>
 function Set-TargetResource
 {
@@ -230,22 +230,22 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-    This function tests the SQL Agent Operator.
+        This function tests the SQL Agent Operator.
 
     .PARAMETER Ensure
-    Specifies if the SQL Agent Operator should be present or absent. Default is Present
+        Specifies if the SQL Agent Operator should be present or absent. Default is Present
 
     .PARAMETER Name
-    The name of the SQL Agent Operator.
+        The name of the SQL Agent Operator.
 
     .PARAMETER ServerName
-    The host name of the SQL Server to be configured. Default is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
-    The name of the SQL instance to be configured.
+        The name of the SQL instance to be configured.
 
     .PARAMETER EmailAddress
-    The email address to be used for the SQL Agent Operator.
+        The email address to be used for the SQL Agent Operator.
 #>
 function Test-TargetResource
 {

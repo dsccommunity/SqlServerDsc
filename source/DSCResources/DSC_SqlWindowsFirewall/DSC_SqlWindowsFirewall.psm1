@@ -11,10 +11,12 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         Returns the current state of the firewall rules.
 
     .PARAMETER SourcePath
-        The path to the root of the source files for installation. I.e and UNC path to a shared resource.  Environment variables can be used in the path.
+        The path to the root of the source files for installation. I.e and UNC
+        path to a shared resource.  Environment variables can be used in the path.
 
     .PARAMETER Features
-        One or more SQL feature to create default firewall rules for. Each feature should be separated with a comma, i.e. 'SQLEngine,IS,RS'.
+        One or more SQL feature to create default firewall rules for. Each feature
+        should be separated with a comma, i.e. 'SQLEngine,IS,RS'.
 
     .PARAMETER SourceCredential
         Credentials used to access the path set in the parameter `SourcePath`.
@@ -324,13 +326,16 @@ function Get-TargetResource
         Creates, updates or remove the firewall rules.
 
     .PARAMETER Ensure
-        If the firewall rules should be present ('Present') or absent ('Absent'). The default value is 'Present'.
+        If the firewall rules should be present ('Present') or absent ('Absent').
+        The default value is 'Present'.
 
     .PARAMETER SourcePath
-        The path to the root of the source files for installation. I.e and UNC path to a shared resource.  Environment variables can be used in the path.
+        The path to the root of the source files for installation. I.e and UNC path
+        to a shared resource.  Environment variables can be used in the path.
 
     .PARAMETER Features
-        One or more SQL feature to create default firewall rules for. Each feature should be separated with a comma, i.e. 'SQLEngine,IS,RS'.
+        One or more SQL feature to create default firewall rules for. Each feature
+        should be separated with a comma, i.e. 'SQLEngine,IS,RS'.
 
     .PARAMETER SourceCredential
         Credentials used to access the path set in the parameter `SourcePath`.
@@ -610,13 +615,16 @@ function Set-TargetResource
         Test if the firewall rules are in desired state.
 
     .PARAMETER Ensure
-        If the firewall rules should be present ('Present') or absent ('Absent'). The default value is 'Present'.
+        If the firewall rules should be present ('Present') or absent ('Absent').
+        The default value is 'Present'.
 
     .PARAMETER SourcePath
-        The path to the root of the source files for installation. I.e and UNC path to a shared resource.  Environment variables can be used in the path.
+        The path to the root of the source files for installation. I.e and UNC path
+        to a shared resource.  Environment variables can be used in the path.
 
     .PARAMETER Features
-        One or more SQL feature to create default firewall rules for. Each feature should be separated with a comma, i.e. 'SQLEngine,IS,RS'.
+        One or more SQL feature to create default firewall rules for. Each feature
+        should be separated with a comma, i.e. 'SQLEngine,IS,RS'.
 
     .PARAMETER SourceCredential
         Credentials used to access the path set in the parameter `SourcePath`.
@@ -743,26 +751,31 @@ function Get-SQLPath
         String containing the display name for the firewall rule.
 
     .PARAMETER Enabled
-        String containing either 'True' or 'False' meaning if the firewall rule should be active or not.
+        String containing either 'True' or 'False' meaning if the firewall rule
+        should be active or not.
 
     .PARAMETER Profile
         String containing one or more profiles to which the firewall rule is assigned.
 
     .PARAMETER Direction
-        String containing the direction of traffic for the the firewall rule. It can be either 'Inbound' or 'Outbound'.
+        String containing the direction of traffic for the the firewall rule. It
+        can be either 'Inbound' or 'Outbound'.
 
     .PARAMETER Program
         String containing the path to an executable. This parameter is optional.
 
     .PARAMETER Service
-        String containing the name of a service for the firewall rule. This parameter is optional.
+        String containing the name of a service for the firewall rule. This parameter
+        is optional.
 
     .PARAMETER Protocol
-        String containing the protocol for the local port parameter. This parameter is optional.
+        String containing the protocol for the local port parameter. This parameter
+        is optional.
 
     .PARAMETER LocalPort
-        String containing the local port for the firewall rule. This parameter is optional, with the exception that if
-        the parameter Protocol is specified this parameter must also be specified.
+        String containing the local port for the firewall rule. This parameter is
+        optional, with the exception that if the parameter Protocol is specified
+        this parameter must also be specified.
 #>
 function Test-IsFirewallRuleInDesiredState
 {
@@ -853,7 +866,8 @@ function Test-IsFirewallRuleInDesiredState
 
 <#
     .SYNOPSIS
-        Returns the SQL Server major version from the setup.exe executable provided in the Path parameter.
+        Returns the SQL Server major version from the setup.exe executable provided
+        in the Path parameter.
 
     .PARAMETER Path
         String containing the path to the SQL Server setup.exe executable.
