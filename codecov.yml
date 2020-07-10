@@ -4,7 +4,7 @@ codecov:
   branch: master
 
 comment:
-  layout: "reach, diff"
+  layout: "reach, diff, flags, files"
   behavior: default
 
 coverage:
