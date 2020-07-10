@@ -14,12 +14,12 @@ The `SqlSetup` DSC resource installs SQL Server on the target node.
     instance).
   - FailoverClusterNetworkName
   - FailoverClusterIPAddress
-  - Additional parameters need when installing Database Engine.
+  - Additional parameters needed when installing Database Engine.
     - InstallSQLDataDir
     - AgtSvcAccount
     - SQLSvcAccount
     - SQLSysAdminAccounts
-  - Additional parameters need when installing Analysis Services.
+  - Additional parameters needed when installing Analysis Services.
     - ASSysAdminAccounts
     - AsSvcAccount
 - The parameters below can only be used when installing SQL Server 2016 or
@@ -29,11 +29,12 @@ The `SqlSetup` DSC resource installs SQL Server on the target node.
   - SqlTempdbFileGrowth
   - SqlTempdbLogFileSize
   - SqlTempdbLogFileGrowth
-
-> **Note:** It is not possible to add or remove features to a SQL Server failover
-cluster. This is a limitation of SQL Server. See article
-[You cannot add or remove features to a SQL Server 2008, SQL Server 2008 R2, or
-SQL Server 2012 failover cluster](https://support.microsoft.com/en-us/help/2547273/you-cannot-add-or-remove-features-to-a-sql-server-2008,-sql-server-2008-r2,-or-sql-server-2012-failover-cluster).
+- When installing _SQL Server Analysis Services_ the account used to start
+  the service must have the correct permissions in directory tree for the
+  data folders. If not the service can fail with an access denied error.
+  See more information in the [issue #1443](https://github.com/dsccommunity/SqlServerDsc/issues/1443).
+  To change permissions on folders the DSC resource [FileSystemAccessRule](https://github.com/dsccommunity/FileSystemDsc)
+  can be used.
 
 ## Features supported
 
@@ -55,6 +56,11 @@ available on all versions of _SQL Server_.
 - IS
 - SSMS
 - ADV_SSMS
+
+> **Note:** It is not possible to add or remove features to a SQL Server failover
+>cluster. This is a limitation of SQL Server. See article
+>[You cannot add or remove features to a SQL Server 2008, SQL Server 2008 R2, or
+>SQL Server 2012 failover cluster](https://support.microsoft.com/en-us/help/2547273/you-cannot-add-or-remove-features-to-a-sql-server-2008,-sql-server-2008-r2,-or-sql-server-2012-failover-cluster).
 
 ## Skip rules
 
