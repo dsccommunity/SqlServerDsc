@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ([issue #1500](https://github.com/dsccommunity/SqlServerDsc/issues/1500)).
   - Using Codecov carry forward flag because we are not sending code coverage
     report on each commit.
+- SqlSetup
+  - Updated the documentation with the currently supported features
+    ([issue #1566](https://github.com/dsccommunity/SqlServerDsc/issues/1566)).
+  - Update documentation around permissions in directory tree for Analysis Services
+    ([issue #1443](https://github.com/dsccommunity/SqlServerDsc/issues/1443)).
 
 ## [14.1.0] - 2020-07-06
 
