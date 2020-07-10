@@ -30,7 +30,7 @@ coverage:
 flags:
   unit:
     paths:
-      - source
+      - source/
     carryforward: true
 
 fixes:
