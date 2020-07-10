@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ([issue #1566](https://github.com/dsccommunity/SqlServerDsc/issues/1566)).
   - Update documentation around permissions in directory tree for Analysis Services
     ([issue #1443](https://github.com/dsccommunity/SqlServerDsc/issues/1443)).
+  - Documented that on certain operating systems, when using least privilege
+    for the service account, the security policy setting _Network access:_
+    _Restrict clients allowed to make remote calls to SAM_ can result in
+    a access denied error during install of the _SQL Server Database Engine_
+    ([issue #1559](https://github.com/dsccommunity/SqlServerDsc/issues/1559)).
 
 ## [14.1.0] - 2020-07-06
 
