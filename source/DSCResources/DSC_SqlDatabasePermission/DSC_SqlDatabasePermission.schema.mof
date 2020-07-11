@@ -4,8 +4,8 @@ class DSC_SqlDatabasePermission : OMI_BaseResource
     [Key, Description("The name of the database.")] String DatabaseName;
     [Key, Description("The name of the user that should be granted or denied the permission.")] String Name;
     [Key, Description("The state of the permission."), ValueMap{"Grant","Deny","GrantWithGrant"}, Values{"Grant","Deny","GrantWithGrant"}] String PermissionState;
-    [Key, Description("The name of the SQL instance to be configured. Default value is 'MSSQLSERVER'.")] String InstanceName;
+    [Key, Description("The name of the _SQL Server_ instance to be configured. Default value is `'MSSQLSERVER'`.")] String InstanceName;
     [Required, Description("The permissions to be granted or denied for the user in the database.")] String Permissions[];
-    [Write, Description("If the permission should be granted ('Present') or revoked ('Absent')."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
-    [Write, Description("The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.")] String ServerName;
+    [Write, Description("If the permission should be granted (`'Present'`) or revoked (`'Absent'`)."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("The host name of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
 };

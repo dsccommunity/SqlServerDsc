@@ -1,9 +1,9 @@
 [ClassVersion("1.0.0.0"), FriendlyName("SqlAgentFailsafe")]
 class DSC_SqlAgentFailsafe : OMI_BaseResource
 {
-    [Required, Description("The name of the SQL Agent Failsafe Operator.")] String Name;
-    [Write, Description("Specifies if the SQL Agent Failsafe Operator should be present or absent. Default value is 'Present'."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
-    [Write, Description("The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.")] String ServerName;
-    [Key, Description("The name of the SQL instance to be configured.")] String InstanceName;
-    [Write, Description("The method of notification for the Failsafe Operator. The default value is 'None'."), ValueMap{"None","NotifyEmail","Pager","NetSend","NotifyAll"}, Values{"None","NotifyEmail","Pager","NetSend","NotifyAll"}] String NotificationMethod;
+    [Required, Description("The name of the _SQL Server Agent_ failsafe operator.")] String Name;
+    [Write, Description("Specifies if the _SQL Server Agent_ failsafe operator should be present or absent. Default value is `'Present'`."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("The host name of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
+    [Key, Description("The name of the _SQL Server_ instance to be configured.")] String InstanceName;
+    [Write, Description("The method of notification for the failsafe operator. The default value is `'None'`."), ValueMap{"None","NotifyEmail","Pager","NetSend","NotifyAll"}, Values{"None","NotifyEmail","Pager","NetSend","NotifyAll"}] String NotificationMethod;
 };

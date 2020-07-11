@@ -8,6 +8,11 @@ and the default setting for maximum server memory is 2147483647 MB. Read
 more about minimum server memory and maximum server memory in this article
 [Server Memory Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms178067.aspx).
 
+>**NOTE** These configuration options can also be configured using the DSC
+>resource _SqlConfiguration_ but will not allow the dynamic configuration
+>as this resource provides. Make sure this value is not configured by both
+>the resources _SqLMemory_ and _SqlConfiguration_!
+
 ## Formula for dynamically allocating maximum memory
 
 The formula is based on the [SQL Max Memory Calculator](http://sqlmax.chuvash.eu/)

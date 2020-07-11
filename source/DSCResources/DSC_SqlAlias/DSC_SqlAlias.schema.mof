@@ -1,11 +1,11 @@
 [ClassVersion("1.0.0.0"), FriendlyName("SqlAlias")]
 class DSC_SqlAlias : OMI_BaseResource
 {
-    [Key, Description("The name of Alias (e.g. svr01\\inst01).")] String Name;
-    [Write, Description("Protocol to use when connecting. Valid values are 'TCP' or 'NP' (Named Pipes). Default value is 'TCP'."), ValueMap{"TCP","NP"}, Values{"TCP","NP"}] String Protocol;
-    [Write, Description("The SQL Server you are aliasing (the NetBIOS name or FQDN).")] String ServerName;
-    [Write, Description("The TCP port the SQL Server instance is listening on. Only used when protocol is set to 'TCP'. Default value is port 1433.")] UInt16 TcpPort;
-    [Write, Description("The UseDynamicTcpPort specify that the Net-Library will determine the port dynamically. The port specified in Port number will not be used. Default value is $false.")] Boolean UseDynamicTcpPort;
-    [Write, Description("Determines whether the alias should be added or removed. Default value is 'Present'."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
-    [Read, Description("Returns the Named Pipes path if Protocol is set to 'NP'.")] String PipeName;
+    [Key, Description("The name of Alias (e.g. `'svr01\\inst01'`).")] String Name;
+    [Write, Description("Protocol to use when connecting. Valid values are `'TCP'` (_TCP/IP_) or `'NP'` (_Named Pipes_). Default value is `'TCP'`."), ValueMap{"TCP","NP"}, Values{"TCP","NP"}] String Protocol;
+    [Write, Description("The _SQL Server_ you are aliasing. This should be set to the NetBIOS name or fully qualified domain name (FQDN).")] String ServerName;
+    [Write, Description("The TCP port the _SQL Server_ instance is listening on. Only used when **Protocol** is set to `'TCP'`. Default value is port `1433`.")] UInt16 TcpPort;
+    [Write, Description("Specifies that the Net-Library will determine the port dynamically. The port number specified in **Port** will be ignored. Default value is `$false`.")] Boolean UseDynamicTcpPort;
+    [Write, Description("Determines whether the alias should be added (`'Present'`) or removed (`'Absent'`). Default value is `'Present'`."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Read, Description("Returns the _Named Pipes_ path if **Protocol** is set to `'NP'`.")] String PipeName;
 };
