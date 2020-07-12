@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ([issue #1500](https://github.com/dsccommunity/SqlServerDsc/issues/1500)).
   - Using Codecov carry forward flag because we are not sending code coverage
     report on each commit.
+- CommonTestHelper
+  - Minor style changes.
 - SqlSetup
   - Updated the documentation with the currently supported features
     ([issue #1566](https://github.com/dsccommunity/SqlServerDsc/issues/1566)).
