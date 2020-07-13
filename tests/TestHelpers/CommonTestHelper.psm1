@@ -224,8 +224,6 @@ function Get-NetIPAddressNetwork
     return $networkObject
 }
 
-
-
 <#
     .SYNOPSIS
         This command will create a new self-signed certificate to be used to
