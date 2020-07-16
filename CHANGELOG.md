@@ -34,6 +34,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     purpose as GitHub will find the CONTRIBUTION.md in the root folder
     directly now ([issue #1227](https://github.com/dsccommunity/SqlServerDsc/issues/1227)).
 
+### Changed
+
+- SqlServerDsc
+  - Updated DSC resources parameter documentation.
+
 ### Fixed
 
 - SqlServerDsc
