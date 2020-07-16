@@ -1,7 +1,7 @@
 [ClassVersion("1.0.0.0"), FriendlyName("SqlRSSetup")]
 class DSC_SqlRSSetup : OMI_BaseResource
 {
-    [Key, Description("Name of the Microsoft SQL Server Reporting Service instance to installed. This can only be set to `'SSRS'`."), ValueMap{"SSRS"}, Values{"SSRS"}] String InstanceName;
+    [Key, Description("Name of the _Microsoft SQL Server Reporting Service_ instance to installed. This can only be set to `'SSRS'`."), ValueMap{"SSRS"}, Values{"SSRS"}] String InstanceName;
     [Required, Description("Accept licens terms. This must be set to `'Yes'`."), ValueMap{"Yes"}, Values{"Yes"}] String IAcceptLicenseTerms;
     [Required, Description("The path to the installation media file to be used for installation, e.g an UNC path to a shared resource. Environment variables can be used in the path.")] String SourcePath;
     [Write, Description("The action to be performed. Default value is `'Install'` which performs either install or upgrade."), ValueMap{"Install","Uninstall"}, Values{"Install","Uninstall"}] String Action;
@@ -17,5 +17,5 @@ class DSC_SqlRSSetup : OMI_BaseResource
     [Write, Description("The timeout, in seconds, to wait for the setup process to finish. Default value is `7200` seconds (2 hours). If the setup process does not finish before this time an error will be thrown.")] UInt32 SetupProcessTimeout;
     [Read, Description("Returns the path to error dump log files.")] String ErrorDumpDirectory;
     [Read, Description("Returns the current version of the installed _Microsoft SQL Server Reporting Service_ instance.")] String CurrentVersion;
-    [Read, Description("Returns the current name of the _Microsoft SQL Server Reporting Service_ instance Windows service.")] String ServiceName;
+    [Read, Description("Returns the current name of the _Microsoft SQL Server Reporting Service_ instance _Windows_ service.")] String ServiceName;
 };

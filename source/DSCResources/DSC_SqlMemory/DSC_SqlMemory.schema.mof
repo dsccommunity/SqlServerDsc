@@ -5,8 +5,8 @@ class DSC_SqlMemory : OMI_BaseResource
     [Write, Description("The host name of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
     [Write, Description("When set to `'Present'` then min and max memory will be set to either the value in parameter **MinMemory** and **MaxMemory**, or dynamically configured when parameter **DynamicAlloc** is set to `$true`. When set to `'Absent'` min and max memory will be set to its default values. Default value is `'Present'`."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Write, Description("If set to `$true` then max memory will be dynamically configured. When this parameter is set to `$true`, the parameter **MaxMemory** must be set to `$null` or not be configured. Default value is `$false`.")] Boolean DynamicAlloc;
-    [Write, Description("Minimum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.")] SInt32 MinMemory;
-    [Write, Description("Maximum amount of memory, in MB, in the buffer pool used by the instance of SQL Server.")] SInt32 MaxMemory;
+    [Write, Description("Minimum amount of memory, in MB, in the buffer pool used by the instance of _SQL Server_.")] SInt32 MinMemory;
+    [Write, Description("Maximum amount of memory, in MB, in the buffer pool used by the instance of _SQL Server_.")] SInt32 MaxMemory;
     [Write, Description("Specifies that the resource will only determine if a change is needed if the target node is the active host of the _SQL Server_ instance.")] Boolean ProcessOnlyOnActiveNode;
     [Read, Description("Returns if the current node is actively hosting the _SQL Server_ instance.")] Boolean IsActiveNode;
 };
