@@ -1,12 +1,12 @@
 [ClassVersion("1.0.0.0"), FriendlyName("SqlDatabase")]
 class DSC_SqlDatabase : OMI_BaseResource
 {
-    [Key, Description("The name of the SQL database.")] String Name;
-    [Key, Description("The name of the SQL instance to be configured.")] String InstanceName;
-    [Write, Description("When set to 'Present', the database will be created. When set to 'Absent', the database will be dropped. Default value is 'Present'."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
-    [Write, Description("The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.")] String ServerName;
-    [Write, Description("The name of the SQL collation to use for the new database. Default value is server collation.")] String Collation;
-    [Write, Description("Specifies the version of the SQL Database Compatibility Level to use for the specified database."), ValueMap{"Version80","Version90","Version100","Version110","Version120","Version130","Version140","Version150"}, Values{"Version80","Version90","Version100","Version110","Version120","Version130","Version140","Version150"}] String CompatibilityLevel;
+    [Key, Description("The name of the _SQL Server_ database.")] String Name;
+    [Key, Description("The name of the _SQL Server_ instance to be configured.")] String InstanceName;
+    [Write, Description("When set to `'Present'`, the database will be created. When set to `'Absent'`, the database will be dropped. Default value is `'Present'`."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("The host name of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
+    [Write, Description("The name of the collation to use for the new database. Default value is the collation used by the server.")] String Collation;
+    [Write, Description("Specifies the version of the _SQL Database Compatibility Level_ to use for the specified database."), ValueMap{"Version80","Version90","Version100","Version110","Version120","Version130","Version140","Version150"}, Values{"Version80","Version90","Version100","Version110","Version120","Version130","Version140","Version150"}] String CompatibilityLevel;
     [Write, Description("The recovery model for the specified database."), ValueMap{"Simple","Full","BulkLogged"}, Values{"Simple","Full","BulkLogged"}] String RecoveryModel;
     [Write, Description("Specifies the name of the login that should be the owner of the database.")] String OwnerName;
 };

@@ -1,16 +1,16 @@
 [ClassVersion("1.0.0.0"), FriendlyName("SqlProtocolTcpIp")]
 class DSC_SqlProtocolTcpIp : OMI_BaseResource
 {
-    [Key, Description("Specifies the name of the SQL Server instance to manage the IP address group for.")] String InstanceName;
-    [Key, Description("Specifies the name of the IP address group in the TCP/IP protocol, e.g. 'IP1', 'IP2' etc., or 'IPAll'.")] String IpAddressGroup;
-    [Write, Description("Specifies the host name of the SQL Server to be configured. If the SQL Server belongs to a cluster or availability group specify the host name for the listener or cluster group. Default value is $env:COMPUTERNAME.")] String ServerName;
-    [Write, Description("Specified if the IP address group should be enabled or disabled. Only used if the IP address group is not set to 'IPAll'. If not specified, the existing value will not be changed.")] Boolean Enabled;
-    [Write, Description("Specifies the IP address for the IP adress group. Only used if the IP address group is not set to 'IPAll'. If not specified, the existing value will not be changed.")] String IpAddress;
-    [Write, Description("Specifies whether the SQL Server instance should use a dynamic port. If not specified, the existing value will not be changed. This parameter is not allowed to be used at the same time as the parameter TcpPort.")] Boolean UseTcpDynamicPort;
-    [Write, Description("Specifies the TCP port(s) that SQL Server should be listening on. If the IP address should listen on more than one port, list all ports as a string value with the port numbers separated with a comma, e.g. '1433,1500,1501'. This parameter is limited to 2047 characters. If not specified, the existing value will not be changed. This parameter is not allowed to be used at the same time as the parameter UseTcpDynamicPort.")] String TcpPort;
-    [Write, Description("If set to $true then the any attempt by the resource to restart the service is suppressed. The default value is $false.")] Boolean SuppressRestart;
-    [Write, Description("Timeout value for restarting the SQL Server services. The default value is 120 seconds.")] UInt16 RestartTimeout;
-    [Read, Description("Returns $true or $false whether the IP address group is active. Not applicable for IP address group 'IPAll'.")] Boolean IsActive;
-    [Read, Description("Returns the IP address's adress family. Not applicable for IP address group 'IPAll'.")] String AddressFamily;
-    [Read, Description("Returns the TCP/IP dynamic port. Only applicable for the IP address group 'IPAll'.")] String TcpDynamicPort;
+    [Key, Description("Specifies the name of the _SQL Server_ instance to manage the IP address group for.")] String InstanceName;
+    [Key, Description("Specifies the name of the IP address group in the TCP/IP protocol, e.g. `'IP1'`, `'IP2'` etc., or `'IPAll'`.")] String IpAddressGroup;
+    [Write, Description("Specifies the host name of the _SQL Server_ to be configured. If the _SQL Server_ belongs to a cluster or availability group specify the host name for the listener or cluster group. Default value is `$env:COMPUTERNAME`.")] String ServerName;
+    [Write, Description("Specified if the IP address group should be enabled or disabled. Only used if the parameter **IpAddressGroup** is _not_ set to `'IPAll'`. If not specified, the existing value will not be changed.")] Boolean Enabled;
+    [Write, Description("Specifies the IP address for the IP address group. Only used if the parameter **IpAddressGroup** is _not_ set to `'IPAll'`. If not specified, the existing value will not be changed.")] String IpAddress;
+    [Write, Description("Specifies whether the _SQL Server_ instance should use a dynamic port. If not specified, the existing value will not be changed. This parameter is not allowed to be used at the same time as the parameter **TcpPort**.")] Boolean UseTcpDynamicPort;
+    [Write, Description("Specifies the TCP port(s) that _SQL Server_ instance should be listening on. If the IP address should listen on more than one port, list all ports as a string value with the port numbers separated with a comma, e.g. `'1433,1500,1501'`. This parameter is limited to 2047 characters. If not specified, the existing value will not be changed. This parameter is not allowed to be used at the same time as the parameter **UseTcpDynamicPort**.")] String TcpPort;
+    [Write, Description("If set to `$true` then the any attempt by the resource to restart the service is suppressed. The default value is `$false`.")] Boolean SuppressRestart;
+    [Write, Description("Timeout value for restarting the _SQL Server_ services. The default value is `120` seconds.")] UInt16 RestartTimeout;
+    [Read, Description("Returns `$true` or `$false` whether the IP address group is active. Not applicable for IP address group `'IPAll'`.")] Boolean IsActive;
+    [Read, Description("Returns the IP address's adress family. Not applicable for IP address group `'IPAll'`.")] String AddressFamily;
+    [Read, Description("Returns the TCP/IP dynamic port. Only applicable for the IP address group `'IPAll'`.")] String TcpDynamicPort;
 };

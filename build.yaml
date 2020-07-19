@@ -9,10 +9,26 @@ CopyPaths:
 Encoding: UTF8
 VersionedOutputDirectory: true
 
+ModuleBuildTasks:
+  Sampler:
+    - '*.build.Sampler.ib.tasks'
+  DscResource.DocGenerator:
+    - 'Task.*'
+
+TaskHeader: |
+  param($Path)
+  ""
+  "=" * 79
+  Write-Build Cyan "`t`t`t$($Task.Name.replace("_"," ").ToUpper())"
+  Write-Build DarkGray  "$(Get-BuildSynopsis $Task)"
+  "-" * 79
+  Write-Build DarkGray "  $Path"
+  Write-Build DarkGray "  $($Task.InvocationInfo.ScriptName):$($Task.InvocationInfo.ScriptLineNumber)"
+  ""
+
 ####################################################
 #   ModuleBuilder Dependent Modules Configuration  #
 ####################################################
-
 NestedModule:
   DscResource.Common:
     CopyOnly: true
@@ -53,9 +69,8 @@ BuildWorkflow:
     - Publish_GitHub_Wiki_Content
 
 ####################################################
-#       PESTER  Configuration                      #
+#              PESTER Configuration                #
 ####################################################
-
 Pester:
   OutputFormat: NUnitXML
   ExcludeFromCodeCoverage:
@@ -92,31 +107,33 @@ DscTest:
     - DSCResources/MSFT_SqlDatabaseRecoveryModel
     - DSCResources/MSFT_SqlServerEndpointState
 
+####################################################
+#              PSDepend Configuration              #
+####################################################
 Resolve-Dependency:
   Gallery: 'PSGallery'
   AllowPrerelease: false
   Verbose: false
 
-ModuleBuildTasks:
-  Sampler:
-    - '*.build.Sampler.ib.tasks'
-  DscResource.DocGenerator:
-    - 'Task.*'
-
-TaskHeader: |
-  param($Path)
-  ""
-  "=" * 79
-  Write-Build Cyan "`t`t`t$($Task.Name.replace("_"," ").ToUpper())"
-  Write-Build DarkGray  "$(Get-BuildSynopsis $Task)"
-  "-" * 79
-  Write-Build DarkGray "  $Path"
-  Write-Build DarkGray "  $($Task.InvocationInfo.ScriptName):$($Task.InvocationInfo.ScriptLineNumber)"
-  ""
-
+####################################################
+#               GitHub Configuration               #
+####################################################
 GitHubConfig:
   GitHubFilesToAdd:
     - 'CHANGELOG.md'
   GitHubConfigUserName: dscbot
   GitHubConfigUserEmail: dsccommunity@outlook.com
   UpdateChangelogOnPrerelease: false
+
+####################################################
+#      DscResource.DocGenerator Configuration      #
+####################################################
+DscResource.DocGenerator:
+  Generate_Conceptual_Help:
+    MarkdownCodeRegularExpression:
+      - '\`(.+?)\`' # Match inline code-block
+      - '\\(\\)' # Match escaped backslash
+      - '\[[^\[]+\]\((.+?)\)' # Match markdown URL
+      - '_(.+?)_' # Match Italic (underscore)
+      - '\*\*(.+?)\*\*' # Match bold
+      - '\*(.+?)\*' # Match Italic (asterisk)

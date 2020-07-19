@@ -1,14 +1,14 @@
 [ClassVersion("1.0.0.0"), FriendlyName("SqlRS")]
 class DSC_SqlRS : OMI_BaseResource
 {
-    [Key, Description("Name of the SQL Server Reporting Services instance to be configured.")] String InstanceName;
-    [Required, Description("Name of the SQL Server to host the Reporting Service database.")] String DatabaseServerName;
-    [Required, Description("Name of the SQL Server instance to host the Reporting Service database.")] String DatabaseInstanceName;
-    [Write, Description("Report Server Web Service virtual directory. Optional.")] String ReportServerVirtualDirectory;
-    [Write, Description("Report Manager/Report Web App virtual directory name. Optional.")] String ReportsVirtualDirectory;
-    [Write, Description("Report Server URL reservations. Optional. If not specified, 'http://+:80' URL reservation will be used.")] String ReportServerReservedUrl[];
-    [Write, Description("Report Manager/Report Web App URL reservations. Optional. If not specified, 'http://+:80' URL reservation will be used.")] String ReportsReservedUrl[];
-    [Write, Description("If connections to the Reporting Services must use SSL. If this parameter is not assigned a value, the default is that Reporting Services does not use SSL.")] Boolean UseSsl;
-    [Write, Description("Reporting Services need to be restarted after initialization or settings change. If this parameter is set to $true, Reporting Services will not be restarted, even after initialization.")] Boolean SuppressRestart;
-    [Read, Description("Returns if the Reporting Services instance initialized or not.")] Boolean IsInitialized;
+    [Key, Description("Name of the _SQL Server Reporting Services_ instance to be configured.")] String InstanceName;
+    [Required, Description("Name of the _SQL Server_ to host the _Reporting Services_ database.")] String DatabaseServerName;
+    [Required, Description("Name of the _SQL Server_ instance to host the _Reporting Services_ database.")] String DatabaseInstanceName;
+    [Write, Description("_Report Server Web Service_ virtual directory. Optional.")] String ReportServerVirtualDirectory;
+    [Write, Description("_Report Manager_ or _Report Web App_ virtual directory name. Optional.")] String ReportsVirtualDirectory;
+    [Write, Description("_Report Server_ URL reservations. Optional. If not specified, `'http://+:80'` URL reservation will be used.")] String ReportServerReservedUrl[];
+    [Write, Description("_Report Manager_ or _Report Web App_ URL reservations. Optional. If not specified, `'http://+:80'` URL reservation will be used.")] String ReportsReservedUrl[];
+    [Write, Description("If connections to the _Reporting Services_ must use SSL. If this parameter is not assigned a value, the default is that _Reporting Services_ does not use SSL.")] Boolean UseSsl;
+    [Write, Description("_Reporting Services_ need to be restarted after initialization or settings change. If this parameter is set to `$true`, _Reporting Services_ will not be restarted, even after initialization.")] Boolean SuppressRestart;
+    [Read, Description("Returns if the _Reporting Services_ instance initialized or not.")] Boolean IsInitialized;
 };

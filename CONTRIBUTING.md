@@ -10,6 +10,32 @@ Please check out common DSC Community [contributing guidelines](https://dsccommu
 
 ## Documentation with Markdown
 
+In each resource folder there is a README.md that is the main resource
+documentation, parameter descriptions are documented in the resource schema
+MOF file. And examples are added to the resource examples folder.
+
+On build the resources README, schema.mof and example files will be parsed
+and build a wiki page and conceptual help for each resource.
+
+The parameter descriptions in the schema MOF file can contain markdown
+code. That markdown code will only be used in the Wiki page and will be
+automatically removed in the conceptual help.
+
+The following table is a guideline on when to use markdown code in parameter
+description. There can be other usages that are not described here. Backslash
+must always be escaped (using `\`, e.g `\\`).
+
+<!-- markdownlint-disable MD013 - Line length -->
+Type | Markdown syntax | Example
+-- | -- | --
+**Parameter reference** | `**ParameterName**` (bold) | **ParameterName**
+**Parameter value reference** | `` `'String1'` ``, `` `$true` ``, `` `50` `` (inline code-block) | `'String1'`, `$true`, `50`
+**Name reference** (resource, modules, products, or features, etc.) | `_Microsoft SQL Server Database Engine_` (Italic) | _Microsoft SQL Server Database Engine_
+**Path reference** | `` `C:\\Program Files\\SSRS` `` | `C:\\Program Files\\SSRS`
+**Filename reference** | `` `log.txt` `` | `log.txt`
+
+<!-- markdownlint-enable MD013 - Line length -->
+
 If using Visual Studio Code to edit Markdown files it can be a good idea
 to install the markdownlint extension. It will help to do style checking.
 The file [.markdownlint.json](/.markdownlint.json) is prepared with a default

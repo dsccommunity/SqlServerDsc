@@ -1,14 +1,14 @@
 [ClassVersion("1.0.0.0"), FriendlyName("SqlWindowsFirewall")]
 class DSC_SqlWindowsFirewall : OMI_BaseResource
 {
-    [Write, Description("Ensures that SQL firewall rules are 'Present' or 'Absent' on the machine."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("Ensures that _SQL Server_ services firewall rules are `'Present'` or `'Absent'` on the machine."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Write, Description("UNC path to the root of the source files for installation.")] String SourcePath;
-    [Key, Description("SQL features to enable firewall rules for.")] String Features;
-    [Key, Description("SQL instance to enable firewall rules for.")] String InstanceName;
-    [Read, Description("Returns if the firewall rule for the Database Engine is enabled.")] Boolean DatabaseEngineFirewall;
-    [Read, Description("Returns if the firewall rule for the Browser is enabled.")] Boolean BrowserFirewall;
-    [Read, Description("Returns if the firewall rule for Reporting Services is enabled.")] Boolean ReportingServicesFirewall;
-    [Read, Description("Returns if the firewall rule for Analysis Services is enabled.")] Boolean AnalysisServicesFirewall;
-    [Read, Description("Returns if the firewall rule for the Integration Services is enabled.")] Boolean IntegrationServicesFirewall;
-    [Write, EmbeddedInstance("MSFT_Credential"), Description("Credentials used to access the path set in the parameter 'SourcePath'. This parameter is optional either if built-in parameter 'PsDscRunAsCredential' is used, or if the source path can be access using the SYSTEM account.")] String SourceCredential;
+    [Key, Description("_SQL Server_ features to enable firewall rules for.")] String Features;
+    [Key, Description("_SQL Server_ instance to enable firewall rules for.")] String InstanceName;
+    [Read, Description("Returns wether the firewall rule(s) for the _SQL Server Database Engine_ is enabled.")] Boolean DatabaseEngineFirewall;
+    [Read, Description("Returns wether the firewall rule(s) for the _SQL Server Browser_ is enabled.")] Boolean BrowserFirewall;
+    [Read, Description("Returns wether the firewall rule(s) for _SQL Server Reporting Services_ is enabled.")] Boolean ReportingServicesFirewall;
+    [Read, Description("Returns wether the firewall rule(s) for _SQL Server Analysis Services_ is enabled.")] Boolean AnalysisServicesFirewall;
+    [Read, Description("Returns wether the firewall rule(s) for the _SQL Server Integration Services_ is enabled.")] Boolean IntegrationServicesFirewall;
+    [Write, EmbeddedInstance("MSFT_Credential"), Description("Credentials used to access the path set in the parameter **SourcePath**. This parameter is optional either if built-in parameter **PsDscRunAsCredential** is used, or if the source path can be access using the SYSTEM account.")] String SourceCredential;
  };
