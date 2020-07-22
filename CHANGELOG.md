@@ -25,7 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     a access denied error during install of the _SQL Server Database Engine_
     ([issue #1559](https://github.com/dsccommunity/SqlServerDsc/issues/1559)).
 - SqlRole
-  - Fixed the `ServerName` parameter to work with default value of `$env.COMPUTERNAME` ([issue #1592](https://github.com/dsccommunity/SqlServerDsc/issues/1592)).
+  - Fixed the `ServerName` parameter to work with default value of
+    `$env:COMPUTERNAME` ([issue #1592](https://github.com/dsccommunity/SqlServerDsc/issues/1592)).
 
 ## [14.1.0] - 2020-07-06
 
