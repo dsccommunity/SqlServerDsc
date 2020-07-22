@@ -422,7 +422,7 @@ function Test-TargetResource
 
     $getTargetResourceParameters = @{
         InstanceName     = $PSBoundParameters.InstanceName
-        ServerName       = $PSBoundParameters.ServerName
+        ServerName       = $ServerName
         ServerRoleName   = $PSBoundParameters.ServerRoleName
         Members          = $PSBoundParameters.Members
         MembersToInclude = $PSBoundParameters.MembersToInclude
