@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Removed helper functions that was moved to the module _DscResource.Common_.
+  DSC resources using those functions are using them from the module
+  _DscResource.Common_.
+
 ## [14.2.0] - 2020-07-23
 
 ### Fixed
