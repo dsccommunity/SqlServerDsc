@@ -293,7 +293,7 @@ function Set-TargetResource
                 foreach ($desiredPermissionState in $Permission)
                 {
                     # Get the equivalent permission state form the current state.
-                    $currentPermissionState = $permissionProperty.Actual.Where({ $_.State -eq $desiredPermissionState.State })
+                    $currentPermissionState = $permissionProperty.Actual | Where-Object -FilterScript {$permissionProperty.Actual.State -eq $desiredPermissionState.State}
 
                     if ($desiredPermissionState.Ensure -ne $currentPermissionState.Ensure)
                     {
