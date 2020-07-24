@@ -27,7 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlRole
   - Fixed the `ServerName` parameter to work with default value of
     `$env:COMPUTERNAME` ([issue #1592](https://github.com/dsccommunity/SqlServerDsc/issues/1592)).
-
+- SqlDatabaseObjectPermission
+  - Fixed Method invocation failed beacuse of missing Where method ([issue #1600](https://github.com/PowerShell/SqlServerDsc/issues/1600)).
+  
 ## [14.1.0] - 2020-07-06
 
 ### Removed
