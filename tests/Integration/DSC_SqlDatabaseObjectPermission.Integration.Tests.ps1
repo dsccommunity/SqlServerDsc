@@ -107,7 +107,7 @@ try
                 $resourceCurrentState.ObjectType | Should -Be 'Table'
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
 
-                $resourceCurrentState.Permission | Should -HaveCount 2
+                $resourceCurrentState.Permission | Should -HaveCount 1
                 $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
                 $resourceCurrentState.Permission[1] | Should -BeOfType 'CimInstance'
 
@@ -169,7 +169,7 @@ try
                 $resourceCurrentState.ObjectType | Should -Be 'Table'
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
 
-                $resourceCurrentState.Permission | Should -HaveCount 2
+                $resourceCurrentState.Permission | Should -HaveCount 1
                 $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
                 $resourceCurrentState.Permission[1] | Should -BeOfType 'CimInstance'
 
