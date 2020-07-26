@@ -109,7 +109,6 @@ try
 
                 $resourceCurrentState.Permission | Should -HaveCount 1
                 $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
-                $resourceCurrentState.Permission[1] | Should -BeOfType 'CimInstance'
 
                 $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Grant' })
                 $grantPermission | Should -Not -BeNullOrEmpty
@@ -171,7 +170,6 @@ try
 
                 $resourceCurrentState.Permission | Should -HaveCount 1
                 $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
-                $resourceCurrentState.Permission[1] | Should -BeOfType 'CimInstance'
 
                 $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Grant' })
                 $grantPermission | Should -Not -BeNullOrEmpty
