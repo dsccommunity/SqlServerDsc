@@ -61,7 +61,129 @@ try
             }
         }
 
-        $configurationName = "$($script:dscResourceName)_Grant_Config"
+        $configurationName = "$($script:dscResourceName)_Single_Grant_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath           = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData    = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
+                }
+
+                $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+                $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+                $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
+                $resourceCurrentState.SchemaName | Should -Be $ConfigurationData.AllNodes.SchemaName
+                $resourceCurrentState.ObjectName | Should -Be $ConfigurationData.AllNodes.TableName
+                $resourceCurrentState.ObjectType | Should -Be 'Table'
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
+
+                $resourceCurrentState.Permission | Should -HaveCount 1
+                $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
+
+                $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Grant' })
+                $grantPermission | Should -Not -BeNullOrEmpty
+                $grantPermission.Ensure | Should -Be 'Present'
+                $grantPermission.Permission | Should -HaveCount 1
+                $grantPermission.Permission | Should -Contain @('Select')
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be 'True'
+            }
+        }
+
+        $configurationName = "$($script:dscResourceName)_Single_Revoke_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath           = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData    = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
+                }
+
+                $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+                $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+                $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
+                $resourceCurrentState.SchemaName | Should -Be $ConfigurationData.AllNodes.SchemaName
+                $resourceCurrentState.ObjectName | Should -Be $ConfigurationData.AllNodes.TableName
+                $resourceCurrentState.ObjectType | Should -Be 'Table'
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
+
+                $resourceCurrentState.Permission | Should -HaveCount 1
+                $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
+
+                $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Grant' })
+                $grantPermission | Should -Not -BeNullOrEmpty
+                $grantPermission.Ensure | Should -Be 'Absent'
+                $grantPermission.Permission | Should -HaveCount 1
+                $grantPermission.Permission | Should -Contain @('Select')
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be 'True'
+            }
+        }
+
+        $configurationName = "$($script:dscResourceName)_Multiple_Grant_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -130,7 +252,7 @@ try
             }
         }
 
-        $configurationName = "$($script:dscResourceName)_Revoke_Config"
+        $configurationName = "$($script:dscResourceName)_Multiple_Revoke_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {

@@ -67,7 +67,7 @@ CREATE TABLE [$(DatabaseName)].[dbo].[$(TableName)](
 
 <#
     .SYNOPSIS
-        Grant a user permission for an object in a database.
+        Create a table in the database to use for the tests.
 #>
 Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Config
 {
@@ -101,9 +101,83 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Config
 
 <#
     .SYNOPSIS
-        Grant a user permission for a table in a database.
+        Grant a user single permission for a table in a database.
 #>
-Configuration DSC_SqlDatabaseObjectPermission_Grant_Config
+Configuration DSC_SqlDatabaseObjectPermission_Single_Grant_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlDatabaseObjectPermission 'Integration_Test'
+        {
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            DatabaseName         = $Node.DatabaseName
+            SchemaName           = $Node.SchemaName
+            ObjectName           = $Node.TableName
+            ObjectType           = 'Table'
+            Name                 = $Node.User1_Name
+            Permission           = @(
+                DSC_DatabaseObjectPermission
+                {
+                    State      = 'Grant'
+                    Permission = @('Select')
+                }
+            )
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @(
+                    $Node.UserName,
+                    (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
+                )
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Revoke a single permission for a user for a table in a database.
+#>
+Configuration DSC_SqlDatabaseObjectPermission_Single_Revoke_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlDatabaseObjectPermission 'Integration_Test'
+        {
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            DatabaseName         = $Node.DatabaseName
+            SchemaName           = $Node.SchemaName
+            ObjectName           = $Node.TableName
+            ObjectType           = 'Table'
+            Name                 = $Node.User1_Name
+            Permission           = @(
+                DSC_DatabaseObjectPermission
+                {
+                    State      = 'Grant'
+                    Permission = @('Select')
+                    Ensure     = 'Absent'
+                }
+            )
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @(
+                    $Node.UserName,
+                    (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
+                )
+        }
+    }
+}
+<#
+    .SYNOPSIS
+        Grant a user multiple permissions for a table in a database.
+#>
+Configuration DSC_SqlDatabaseObjectPermission_Multiple_Grant_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -144,9 +218,9 @@ Configuration DSC_SqlDatabaseObjectPermission_Grant_Config
 
 <#
     .SYNOPSIS
-        Revoke the permission for a user for a table in a database.
+        Revoke multiple permissions for a user for a table in a database.
 #>
-Configuration DSC_SqlDatabaseObjectPermission_Revoke_Config
+Configuration DSC_SqlDatabaseObjectPermission_Multiple_Revoke_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -187,4 +261,3 @@ Configuration DSC_SqlDatabaseObjectPermission_Revoke_Config
         }
     }
 }
-

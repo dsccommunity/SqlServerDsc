@@ -263,7 +263,7 @@ function Set-TargetResource
     $propertyState = Compare-TargetResourceState @PSBoundParameters
 
     # Get all properties that are not in desired state.
-    $propertiesNotInDesiredState = $propertyState.Where( { -not $_.InDesiredState })
+    $propertiesNotInDesiredState = $propertyState | Where-Object -FilterScript { -not $_.InDesiredState }
 
     if ($propertiesNotInDesiredState.Count -gt 0)
     {
@@ -284,7 +284,7 @@ function Set-TargetResource
 
         if ($sqlObject)
         {
-            $permissionProperty = $propertiesNotInDesiredState.Where( { $_.ParameterName -eq 'Permission' })
+            $permissionProperty = $propertiesNotInDesiredState | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
 
             # Check if Permission property need updating.
             if ($permissionProperty)
@@ -293,7 +293,7 @@ function Set-TargetResource
                 foreach ($desiredPermissionState in $Permission)
                 {
                     # Get the equivalent permission state form the current state.
-                    $currentPermissionState = $permissionProperty.Actual.Where({ $_.State -eq $desiredPermissionState.State })
+                    $currentPermissionState = $permissionProperty.Actual | Where-Object -FilterScript { $_.State -eq $desiredPermissionState.State}
 
                     if ($desiredPermissionState.Ensure -ne $currentPermissionState.Ensure)
                     {
