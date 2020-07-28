@@ -5,6 +5,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SqlDatabaseObjectPermission
+  - New integration tests to verify scenarios when passing a single permission.
+
+### Fixed
+
+- SqlDatabaseObjectPermission
+  - Fixed method invocation failed because of missing `Where()` method ([issue #1600](https://github.com/PowerShell/SqlServerDsc/issues/1600)).
+
 ## [14.2.0] - 2020-07-23
 
 ### Fixed
