@@ -34,7 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     _DscResource.Common_.
 - SqlDatabaseObjectPermission
   - Fixed method invocation failed because of missing `Where()` method ([issue #1600](https://github.com/PowerShell/SqlServerDsc/issues/1600)).
-    - Added new integration tests to verify scenarios when passing a single permission.
+    - New integration tests to verify scenarios when passing a single permission.
+  - Fixed permission switch from _GrantWithGrant_ to _Grant_ permissions ([issue #1602](https://github.com/dsccommunity/SqlServerDsc/issues/1602)).
+    - New integration tests to verify scenarios when current permission is
+      GrantWithGrant but should be permission Grant.
 - SqlSetup
   - The example `4-InstallNamedInstanceInFailoverClusterFirstNode.ps1` was
     updated to no longer reference the issue #405 and issue #444 in the
@@ -65,9 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlRole
   - Fixed the `ServerName` parameter to work with default value of
     `$env:COMPUTERNAME` ([issue #1592](https://github.com/dsccommunity/SqlServerDsc/issues/1592)).
-- SqlDatabaseObjectPermission
-  - Fixed permission switch from GrantwithGrant to Grant permissions ([issue #1602](https://github.com/dsccommunity/SqlServerDsc/issues/1602)).
-  
+
 ## [14.1.0] - 2020-07-06
 
 ### Removed
