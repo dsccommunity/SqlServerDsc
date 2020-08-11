@@ -1,6 +1,6 @@
 mode: ContinuousDelivery
 next-version: 13.3.0
-major-version-bump-message: '(breaking\hchange|breaking|major)\b'
+major-version-bump-message: '(breaking\schange|breaking|major)\b'
 minor-version-bump-message: '(adds?|features?|minor)\b'
 patch-version-bump-message: '\s?(fix|patch)'
 no-bump-message: '\+semver:\s?(none|skip)'
