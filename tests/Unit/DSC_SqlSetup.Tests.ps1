@@ -193,7 +193,7 @@ try
 
                 # General mocks
                 Mock -CommandName Get-PSDrive
-                Mock -CommandName Get-SqlMajorVersion -MockWith $mockGetSqlMajorVersion
+                Mock -CommandName Get-FilePathMajorVersion -MockWith $mockGetSqlMajorVersion
 
                 Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
                     $Name -eq 'ImagePath'
@@ -1610,7 +1610,7 @@ try
                             }
                         }
 
-                        Mock -CommandName Get-SqlMajorVersion -MockWith {
+                        Mock -CommandName Get-FilePathMajorVersion -MockWith {
                             return '15'
                         }
 
@@ -2071,7 +2071,7 @@ try
                 # General mocks
                 Mock -CommandName Get-PSDrive
                 Mock -CommandName Import-SQLPSModule
-                Mock -CommandName Get-SqlMajorVersion -MockWith $mockGetSqlMajorVersion
+                Mock -CommandName Get-FilePathMajorVersion -MockWith $mockGetSqlMajorVersion
 
                 # Mocking SharedDirectory and SharedWowDirectory (when not previously installed)
                 Mock -CommandName Get-ItemProperty

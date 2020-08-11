@@ -172,7 +172,7 @@ function Get-TargetResource
 
     Write-Verbose -Message ($script:localizedData.UsingPath -f $pathToSetupExecutable)
 
-    $sqlVersion = Get-SqlMajorVersion -Path $pathToSetupExecutable
+    $sqlVersion = Get-FilePathMajorVersion -Path $pathToSetupExecutable
 
     if ($SourceCredential)
     {
@@ -984,7 +984,7 @@ function Set-TargetResource
 
     Write-Verbose -Message ($script:localizedData.UsingPath -f $pathToSetupExecutable)
 
-    $sqlVersion = Get-SqlMajorVersion -Path $pathToSetupExecutable
+    $sqlVersion = Get-FilePathMajorVersion -Path $pathToSetupExecutable
 
     # Determine features to install
     $featuresToInstall = ''
@@ -2192,7 +2192,7 @@ function Test-TargetResource
 
     if ($getTargetResourceParameters.Action -eq 'Upgrade')
     {
-        $installerSqlVersion = Get-SqlMajorVersion -Path (Join-Path -Path $sourcePath -ChildPath 'setup.exe')
+        $installerSqlVersion = Get-FilePathMajorVersion -Path (Join-Path -Path $sourcePath -ChildPath 'setup.exe')
         $instanceSqlVersion = Get-SQLInstanceMajorVersion -InstanceName $InstanceName
 
         if ($installerSQLVersion -gt $instanceSqlVersion)
@@ -2206,26 +2206,6 @@ function Test-TargetResource
     }
 
     return $result
-}
-
-<#
-    .SYNOPSIS
-        Returns the SQL Server major version from the setup.exe executable provided in the Path parameter.
-
-    .PARAMETER Path
-        String containing the path to the SQL Server setup.exe executable.
-#>
-function Get-SqlMajorVersion
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Path
-    )
-
-    (Get-Item -Path $Path).VersionInfo.ProductVersion.Split('.')[0]
 }
 
 <#

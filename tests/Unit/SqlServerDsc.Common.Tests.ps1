@@ -3446,4 +3446,24 @@ InModuleScope $script:subModuleName {
             $result | Should -BeExactly ('{0}\{1}' -f $env:COMPUTERNAME, 'MyInstance')
         }
     }
+
+    Describe 'SqlServerDsc.Common\Get-FilePathMajorVersion' {
+        BeforeAll {
+            $mockGetItem_SqlMajorVersion = {
+                return New-Object -TypeName Object |
+                            Add-Member -MemberType ScriptProperty -Name VersionInfo -Value {
+                                return New-Object -TypeName Object |
+                                            Add-Member -MemberType NoteProperty -Name 'ProductVersion' -Value '10.0.0000.00000' -PassThru -Force
+                            } -PassThru -Force
+            }
+
+            Mock -CommandName Get-Item -MockWith $mockGetItem_SqlMajorVersion
+        }
+
+        It 'Should return correct version' {
+            $result = Get-FilePathMajorVersion -Path 'C:\AnyPath\Setup.exe'
+
+            $result | Should -Be '10'
+        }
+    }
 }

@@ -78,7 +78,7 @@ function Get-TargetResource
         $script:localizedData.UsingPath -f $pathToSetupExecutable
     )
 
-    $sqlVersion = Get-SqlMajorVersion -Path $pathToSetupExecutable
+    $sqlVersion = Get-FilePathMajorVersion -Path $pathToSetupExecutable
 
     Write-Verbose -Message (
         $script:localizedData.MajorVersion -f $sqlVersion
@@ -401,7 +401,7 @@ function Set-TargetResource
         $script:localizedData.UsingPath -f $pathToSetupExecutable
     )
 
-    $sqlVersion = Get-SqlMajorVersion -Path $pathToSetupExecutable
+    $sqlVersion = Get-FilePathMajorVersion -Path $pathToSetupExecutable
 
     Write-Verbose -Message (
         $script:localizedData.MajorVersion -f $sqlVersion
@@ -862,27 +862,6 @@ function Test-IsFirewallRuleInDesiredState
     }
 
     return $isRuleInDesiredState
-}
-
-<#
-    .SYNOPSIS
-        Returns the SQL Server major version from the setup.exe executable provided
-        in the Path parameter.
-
-    .PARAMETER Path
-        String containing the path to the SQL Server setup.exe executable.
-#>
-function Get-SqlMajorVersion
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $path
-    )
-
-    (Get-Item -Path $path).VersionInfo.ProductVersion.Split('.')[0]
 }
 
 Export-ModuleMember -Function *-TargetResource
