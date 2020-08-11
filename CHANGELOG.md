@@ -5,15 +5,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-- SqlDatabaseObjectPermission
-  - New integration tests to verify scenarios when passing a single permission.
-
 ### Changed
 
 - SqlServerDsc
-  - Minor document changes in the file `build.yml`.
+  - Document changes in the file `build.yml`.
+  - The regular expression for `major-version-bump-message` in the file
+    `GitVersion.yml` was changed to only raise major version when the
+    commit message contain the phrase `breaking change`, or when it contain
+    the word `breaking` or `major`.
 - SqlSetup
   - Duplicate function Get-SqlMajorVersion was removed and instead the
     helper function `Get-FilePathMajorVersion` from the helper module
@@ -35,6 +34,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     _DscResource.Common_.
 - SqlDatabaseObjectPermission
   - Fixed method invocation failed because of missing `Where()` method ([issue #1600](https://github.com/PowerShell/SqlServerDsc/issues/1600)).
+    - Added new integration tests to verify scenarios when passing a single permission.
+- SqlSetup
+  - The example `4-InstallNamedInstanceInFailoverClusterFirstNode.ps1` was
+    updated to no longer reference the issue #405 and issue #444 in the
+    comment-based help. The issues was fixed a while back and _SqlSetup_
+    now supports the built-in parameter `PsDscRunAsCredential` ([issue #975](https://github.com/PowerShell/SqlServerDsc/issues/975)).
 
 ## [14.2.0] - 2020-07-23
 
