@@ -1,43 +1,6 @@
 ---
 ####################################################
-#          ModuleBuilder Configuration             #
-####################################################
-CopyPaths:
-  - DSCResources
-  - en-US
-  - Modules
-Encoding: UTF8
-VersionedOutputDirectory: true
-
-ModuleBuildTasks:
-  Sampler:
-    - '*.build.Sampler.ib.tasks'
-  DscResource.DocGenerator:
-    - 'Task.*'
-
-TaskHeader: |
-  param($Path)
-  ""
-  "=" * 79
-  Write-Build Cyan "`t`t`t$($Task.Name.replace("_"," ").ToUpper())"
-  Write-Build DarkGray  "$(Get-BuildSynopsis $Task)"
-  "-" * 79
-  Write-Build DarkGray "  $Path"
-  Write-Build DarkGray "  $($Task.InvocationInfo.ScriptName):$($Task.InvocationInfo.ScriptLineNumber)"
-  ""
-
-####################################################
-#   ModuleBuilder Dependent Modules Configuration  #
-####################################################
-NestedModule:
-  DscResource.Common:
-    CopyOnly: true
-    Path: ./output/RequiredModules/DscResource.Common
-    AddToManifest: false
-    Exclude: PSGetModuleInfo.xml
-
-####################################################
-#           Pipeline Configuration                 #
+# Pipeline Build Task Configuration (Invoke-Build) #
 ####################################################
 BuildWorkflow:
   '.':
@@ -69,7 +32,44 @@ BuildWorkflow:
     - Publish_GitHub_Wiki_Content
 
 ####################################################
-#              PESTER Configuration                #
+#           ModuleBuilder Configuration            #
+####################################################
+CopyPaths:
+  - DSCResources
+  - en-US
+  - Modules
+Encoding: UTF8
+VersionedOutputDirectory: true
+
+ModuleBuildTasks:
+  Sampler:
+    - '*.build.Sampler.ib.tasks'
+  DscResource.DocGenerator:
+    - 'Task.*'
+
+TaskHeader: |
+  param($Path)
+  ""
+  "=" * 79
+  Write-Build Cyan "`t`t`t$($Task.Name.replace("_"," ").ToUpper())"
+  Write-Build DarkGray  "$(Get-BuildSynopsis $Task)"
+  "-" * 79
+  Write-Build DarkGray "  $Path"
+  Write-Build DarkGray "  $($Task.InvocationInfo.ScriptName):$($Task.InvocationInfo.ScriptLineNumber)"
+  ""
+
+####################################################
+#     Dependent Modules Configuration (Sampler)    #
+####################################################
+NestedModule:
+  DscResource.Common:
+    CopyOnly: true
+    Path: ./output/RequiredModules/DscResource.Common
+    AddToManifest: false
+    Exclude: PSGetModuleInfo.xml
+
+####################################################
+#          Pester Configuration (Sampler)          #
 ####################################################
 Pester:
   OutputFormat: NUnitXML
@@ -88,6 +88,9 @@ Pester:
   CodeCoverageOutputFile: JaCoCo_coverage.xml
   CodeCoverageOutputFileEncoding: ascii
 
+####################################################
+#      Pester Configuration (DscResource.Test)     #
+####################################################
 DscTest:
   ExcludeTag:
     - "Common Tests - New Error-Level Script Analyzer Rules"

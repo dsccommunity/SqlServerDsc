@@ -411,18 +411,9 @@ try
         }
         $mockSetNetFirewallRule = $mockNewNetFirewallRule
 
-        $mockGetItem_SqlMajorVersion = {
-            return New-Object -TypeName Object |
-                        Add-Member -MemberType ScriptProperty -Name VersionInfo -Value {
-                            return New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty -Name 'ProductVersion' -Value ('{0}.0.0000.00000' -f $mockCurrentSqlMajorVersion) -PassThru -Force
-                        } -PassThru -Force
+        $mockGetSqlMajorVersion = {
+            return $mockCurrentSqlMajorVersion
         }
-
-        $mockGetItem_SqlMajorVersion_ParameterFilter = {
-            $Path -eq $mockCurrentPathToSetupExecutable
-        }
-
         #endregion Function mocks
 
         # Default parameters that are used for the It-blocks
@@ -438,7 +429,7 @@ try
 
             BeforeEach {
                 # General mocks
-                Mock -CommandName Get-Item -ParameterFilter $mockGetItem_SqlMajorVersion_ParameterFilter -MockWith $mockGetItem_SqlMajorVersion -Verifiable
+                Mock -CommandName Get-FilePathMajorVersion -MockWith $mockGetSqlMajorVersion -Verifiable
 
                 # Mock SQL Server Database Engine registry for Instance ID.
                 Mock -CommandName Get-ItemProperty `
@@ -1028,7 +1019,7 @@ try
 
             BeforeEach {
                 # General mocks
-                Mock -CommandName Get-Item -ParameterFilter $mockGetItem_SqlMajorVersion_ParameterFilter -MockWith $mockGetItem_SqlMajorVersion -Verifiable
+                Mock -CommandName Get-FilePathMajorVersion -MockWith $mockGetSqlMajorVersion -Verifiable
 
                 # Mock SQL Server Database Engine registry for Instance ID.
                 Mock -CommandName Get-ItemProperty `
@@ -1323,7 +1314,7 @@ try
 
             BeforeEach {
                 # General mocks
-                Mock -CommandName Get-Item -ParameterFilter $mockGetItem_SqlMajorVersion_ParameterFilter -MockWith $mockGetItem_SqlMajorVersion -Verifiable
+                Mock -CommandName Get-FilePathMajorVersion -MockWith $mockGetSqlMajorVersion -Verifiable
 
                 # Mock SQL Server Database Engine registry for Instance ID.
                 Mock -CommandName Get-ItemProperty `

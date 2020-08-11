@@ -10,6 +10,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlDatabaseObjectPermission
   - New integration tests to verify scenarios when passing a single permission.
 
+### Changed
+
+- SqlServerDsc
+  - Minor document changes in the file `build.yml`.
+- SqlSetup
+  - Duplicate function Get-SqlMajorVersion was removed and instead the
+    helper function `Get-FilePathMajorVersion` from the helper module
+    SqlServerDsc.Common is used ([issue #1178](https://github.com/PowerShell/SqlServerDsc/issues/1178)).
+- SqlWindowsFirewall
+  - Duplicate function Get-SqlMajorVersion was removed and instead the
+    helper function `Get-FilePathMajorVersion` from the helper module
+    SqlServerDsc.Common is used ([issue #1178](https://github.com/PowerShell/SqlServerDsc/issues/1178)).
+- SqlServerDsc.Common
+  - Function `Get-FilePathMajorVersion` was added. The function `Get-SqlMajorVersion`
+    from the resources _SqlSetup_ and _SqlWindowsFirewall_ was moved and
+    renamed without any functional changes ([issue #1178](https://github.com/PowerShell/SqlServerDsc/issues/1178)).
+
 ### Fixed
 
 - SqlServerDsc
