@@ -338,12 +338,22 @@ function Set-TargetResource
                                                 Even if we just revoke the "WithGrant" and leaving the desired permission
                                                 the permissions must always be granted regardless because it is not known
                                                 if one or more permission existed with GrantWithGrant or did not exist at all.
-
-                                                It could be done if looping through each permission and evaluating WithGrant
-                                                but that would mean additional calls that did not seem necessary.
+                                                It could be known if looping through the permissions and evaluating WithGrant
+                                                for each, but that would mean additional calls that did not seem necessary at
+                                                the time.
                                             #>
                                             if ($sqlObject.EnumObjectPermissions($Name, $permissionSet).PermissionState -contains 'GrantWithGrant')
                                             {
+                                                Write-Verbose -Message (
+                                                    $script:localizedData.RevokePermissionWithGrant -f @(
+                                                        ($desiredPermissionState.Permission -join ','),
+                                                        $Name
+                                                        ('{0}.{1}' -f $SchemaName, $ObjectName),
+                                                        $ObjectType,
+                                                        $DatabaseName
+                                                    )
+                                                )
+
                                                 # This must cascade the revoke.
                                                 $sqlObject.Revoke($permissionSet, $Name, $true, $true)
                                             }
