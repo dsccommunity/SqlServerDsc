@@ -331,10 +331,23 @@ function Set-TargetResource
 
                                         'Grant'
                                         {
-                                            if ($sqlObject.EnumObjectPermissions($Name).PermissionState -contains 'GrantWithGrant')
+                                            <#
+                                                If the permission was previously granted using WithGrant then WithGrant
+                                                is revoked from all permissions since it is not the desired state.
+
+                                                Even if we just revoke the "WithGrant" and leaving the desired permission
+                                                the permissions must always be granted regardless because it is not known
+                                                if one or more permission existed with GrantWithGrant or did not exist at all.
+
+                                                It could be done if looping through each permission and evaluating WithGrant
+                                                but that would mean additional calls that did not seem necessary.
+                                            #>
+                                            if ($sqlObject.EnumObjectPermissions($Name, $permissionSet).PermissionState -contains 'GrantWithGrant')
                                             {
-                                                $sqlObject.Revoke($permissionSet, $Name, $false, $true)
+                                                # This must cascade the revoke.
+                                                $sqlObject.Revoke($permissionSet, $Name, $true, $true)
                                             }
+
                                             $sqlObject.Grant($permissionSet, $Name)
                                         }
 
