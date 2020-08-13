@@ -101,7 +101,54 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Config
 
 <#
     .SYNOPSIS
+        Grant a user single permission for a table in a database, also allows
+        the user to grant the permission (GrantWithGrant).
+
+    .NOTES
+        This is a regression test for issue #1602. The next test should replace
+        the permission GrantWithGrant with the permission Grant.
+#>
+Configuration DSC_SqlDatabaseObjectPermission_Single_GrantWithGrant_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlDatabaseObjectPermission 'Integration_Test'
+        {
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            DatabaseName         = $Node.DatabaseName
+            SchemaName           = $Node.SchemaName
+            ObjectName           = $Node.TableName
+            ObjectType           = 'Table'
+            Name                 = $Node.User1_Name
+            Permission           = @(
+                DSC_DatabaseObjectPermission
+                {
+                    State      = 'GrantWithGrant'
+                    Permission = @('Select')
+                }
+            )
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @(
+                    $Node.UserName,
+                    (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
+                )
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
         Grant a user single permission for a table in a database.
+
+    .NOTES
+        This test is used for the previous regression test for issue #1602. This
+        test should replace the previous test that set the permission GrantWithGrant
+        with the permission Grant.
 #>
 Configuration DSC_SqlDatabaseObjectPermission_Single_Grant_Config
 {
@@ -125,6 +172,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Single_Grant_Config
                     Permission = @('Select')
                 }
             )
+            Force                = $true
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
