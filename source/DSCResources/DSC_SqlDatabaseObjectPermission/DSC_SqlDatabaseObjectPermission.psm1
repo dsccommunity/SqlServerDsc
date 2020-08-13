@@ -111,6 +111,7 @@ function Get-TargetResource
         ObjectType   = $ObjectType
         Name         = $Name
         Permission   = $cimInstancePermissionCollection
+        Force        = $Force
     }
 
     $getDatabaseObjectParameters = @{
