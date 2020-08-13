@@ -42,7 +42,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         Specifies that permissions that has parameter Ensure set to 'Present'
         (the default value for permissions) should always be enforced even if that
         encompasses cascading revocations. An example if the desired state is
-        'Grant' but the current state is GrantWithGrant. If parameter Force is set
+        'Grant' but the current state is 'GrantWithGrant'. If parameter Force is set
         to $true the With Grant permission is revoked, if set to $false an exception
         is thrown since the desired state could not be set. Default is to throw an
         exception.
@@ -229,7 +229,7 @@ function Get-TargetResource
         Specifies that permissions that has parameter Ensure set to 'Present'
         (the default value for permissions) should always be enforced even if that
         encompasses cascading revocations. An example if the desired state is
-        'Grant' but the current state is GrantWithGrant. If parameter Force is set
+        'Grant' but the current state is 'GrantWithGrant'. If parameter Force is set
         to $true the With Grant permission is revoked, if set to $false an exception
         is thrown since the desired state could not be set. Default is to throw an
         exception.
@@ -358,15 +358,14 @@ function Set-TargetResource
                                         'Grant'
                                         {
                                             <#
-                                                If the permission was previously granted using WithGrant then WithGrant
-                                                is revoked from all permissions since it is not the desired state.
+                                                If the permission was previously granted using With Grant then With Grant is
+                                                revoked from all permissions since it is not the desired state.
 
-                                                Even if we just revoke the "WithGrant" and leaving the desired permission
-                                                the permissions must always be granted regardless because it is not known
-                                                if one or more permission existed with GrantWithGrant or did not exist at all.
-                                                It could be known if looping through the permissions and evaluating WithGrant
-                                                for each, but that would mean additional calls that did not seem necessary at
-                                                the time.
+                                                Even if we just revoke the With Grant and leaving the desired permission the
+                                                permissions must always be granted regardless, this is because it is not known
+                                                which permissions existed with With Grant or did not exist at all. It could be
+                                                known if looping through the permissions and evaluating With Grant for each,
+                                                but that would mean additional calls that did not seem necessary at the time
                                             #>
                                             if ($sqlObject.EnumObjectPermissions($Name, $permissionSet).PermissionState -contains 'GrantWithGrant')
                                             {
@@ -511,7 +510,7 @@ function Set-TargetResource
         Specifies that permissions that has parameter Ensure set to 'Present'
         (the default value for permissions) should always be enforced even if that
         encompasses cascading revocations. An example if the desired state is
-        'Grant' but the current state is GrantWithGrant. If parameter Force is set
+        'Grant' but the current state is 'GrantWithGrant'. If parameter Force is set
         to $true the With Grant permission is revoked, if set to $false an exception
         is thrown since the desired state could not be set. Default is to throw an
         exception.
@@ -632,7 +631,7 @@ function Test-TargetResource
         Specifies that permissions that has parameter Ensure set to 'Present'
         (the default value for permissions) should always be enforced even if that
         encompasses cascading revocations. An example if the desired state is
-        'Grant' but the current state is GrantWithGrant. If parameter Force is set
+        'Grant' but the current state is 'GrantWithGrant'. If parameter Force is set
         to $true the With Grant permission is revoked, if set to $false an exception
         is thrown since the desired state could not be set. Default is to throw an
         exception.
