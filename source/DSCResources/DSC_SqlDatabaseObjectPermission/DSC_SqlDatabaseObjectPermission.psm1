@@ -37,6 +37,15 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. Default value
         is $env:COMPUTERNAME.
+
+    .PARAMETER Force
+        Specifies that permissions that has parameter Ensure set to 'Present'
+        (the default value for permissions) should always be enforced even if that
+        encompasses cascading revocations. An example if the desired state is
+        'Grant' but the current state is GrantWithGrant. If parameter Force is set
+        to $true the With Grant permission is revoked, if set to $false an exception
+        is thrown since the desired state could not be set. Default is to throw an
+        exception.
 #>
 function Get-TargetResource
 {
@@ -77,7 +86,11 @@ function Get-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME
+        $ServerName = $env:COMPUTERNAME,
+
+        [Parameter()]
+        [System.Boolean]
+        $Force
     )
 
     Write-Verbose -Message (
@@ -211,6 +224,15 @@ function Get-TargetResource
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. Default value
         is $env:COMPUTERNAME.
+
+    .PARAMETER Force
+        Specifies that permissions that has parameter Ensure set to 'Present'
+        (the default value for permissions) should always be enforced even if that
+        encompasses cascading revocations. An example if the desired state is
+        'Grant' but the current state is GrantWithGrant. If parameter Force is set
+        to $true the With Grant permission is revoked, if set to $false an exception
+        is thrown since the desired state could not be set. Default is to throw an
+        exception.
 #>
 function Set-TargetResource
 {
@@ -250,7 +272,11 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME
+        $ServerName = $env:COMPUTERNAME,
+
+        [Parameter()]
+        [System.Boolean]
+        $Force
     )
 
     $Permission = Assert-PermissionEnsureProperty -Permission $Permission
@@ -344,18 +370,33 @@ function Set-TargetResource
                                             #>
                                             if ($sqlObject.EnumObjectPermissions($Name, $permissionSet).PermissionState -contains 'GrantWithGrant')
                                             {
-                                                Write-Verbose -Message (
-                                                    $script:localizedData.RevokePermissionWithGrant -f @(
+                                                if ($Force)
+                                                {
+                                                    Write-Verbose -Message (
+                                                        $script:localizedData.RevokePermissionWithGrant -f @(
+                                                            ($desiredPermissionState.Permission -join ','),
+                                                            $Name
+                                                            ('{0}.{1}' -f $SchemaName, $ObjectName),
+                                                            $ObjectType,
+                                                            $DatabaseName
+                                                        )
+                                                    )
+
+                                                    # This must cascade the revoke.
+                                                    $sqlObject.Revoke($permissionSet, $Name, $true, $true)
+                                                }
+                                                else
+                                                {
+                                                    $errorMessage = $script:localizedData.GrantCantBeSetBecauseRevokeIsNotOptedIn -f @(
                                                         ($desiredPermissionState.Permission -join ','),
                                                         $Name
                                                         ('{0}.{1}' -f $SchemaName, $ObjectName),
                                                         $ObjectType,
                                                         $DatabaseName
                                                     )
-                                                )
 
-                                                # This must cascade the revoke.
-                                                $sqlObject.Revoke($permissionSet, $Name, $true, $true)
+                                                    New-InvalidOperationException -Message $errorMessage
+                                                }
                                             }
 
                                             $sqlObject.Grant($permissionSet, $Name)
@@ -465,6 +506,15 @@ function Set-TargetResource
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. Default value
         is $env:COMPUTERNAME.
+
+    .PARAMETER Force
+        Specifies that permissions that has parameter Ensure set to 'Present'
+        (the default value for permissions) should always be enforced even if that
+        encompasses cascading revocations. An example if the desired state is
+        'Grant' but the current state is GrantWithGrant. If parameter Force is set
+        to $true the With Grant permission is revoked, if set to $false an exception
+        is thrown since the desired state could not be set. Default is to throw an
+        exception.
 #>
 function Test-TargetResource
 {
@@ -505,7 +555,11 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME
+        $ServerName = $env:COMPUTERNAME,
+
+        [Parameter()]
+        [System.Boolean]
+        $Force
     )
 
     $fullObjectName = '{0}.{1}' -f $SchemaName, $ObjectName
@@ -573,6 +627,15 @@ function Test-TargetResource
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. Default value
         is $env:COMPUTERNAME.
+
+    .PARAMETER Force
+        Specifies that permissions that has parameter Ensure set to 'Present'
+        (the default value for permissions) should always be enforced even if that
+        encompasses cascading revocations. An example if the desired state is
+        'Grant' but the current state is GrantWithGrant. If parameter Force is set
+        to $true the With Grant permission is revoked, if set to $false an exception
+        is thrown since the desired state could not be set. Default is to throw an
+        exception.
 #>
 function Compare-TargetResourceState
 {
@@ -613,7 +676,11 @@ function Compare-TargetResourceState
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME
+        $ServerName = $env:COMPUTERNAME,
+
+        [Parameter()]
+        [System.Boolean]
+        $Force
     )
 
     $Permission = Assert-PermissionEnsureProperty -Permission $Permission
@@ -627,6 +694,7 @@ function Compare-TargetResourceState
         Name         = $Name
         Permission   = $Permission
         ServerName   = $ServerName
+        Force        = $Force
     }
 
     <#

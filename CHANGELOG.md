@@ -35,7 +35,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlDatabaseObjectPermission
   - Fixed method invocation failed because of missing `Where()` method ([issue #1600](https://github.com/PowerShell/SqlServerDsc/issues/1600)).
     - New integration tests to verify scenarios when passing a single permission.
-  - Fixed permission switch from _GrantWithGrant_ to _Grant_ permissions ([issue #1602](https://github.com/dsccommunity/SqlServerDsc/issues/1602)).
+  - To enforce a scenario where a permission must be changed from _GrantWithGrant_
+    to _Grant_ a new parameter **Force** was added ([issue #1602](https://github.com/dsccommunity/SqlServerDsc/issues/1602)).
+    The parameter **Force** is used to enforce the desired state in those
+    scenarios where revocations must be performed to enforce the desired
+    state, even if that encompasses cascading revocations. If parameter
+    **Force** is _not_ set to `$true` an exception is thrown in those
+    scenarios where a revocation must be performed to enforce the desired
+    state.
     - New integration tests to verify scenarios when current permission is
       GrantWithGrant but should be permission Grant.
 - SqlSetup

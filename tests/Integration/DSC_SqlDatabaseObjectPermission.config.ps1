@@ -172,6 +172,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Single_Grant_Config
                     Permission = @('Select')
                 }
             )
+            Force                = $true
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `

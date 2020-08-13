@@ -1863,7 +1863,7 @@ try
                         }
 
                         # Regression test for issue #1602.
-                        Context 'When setting permission for the permission state ''Grant'' and current permission state already is GrantWithGrant' {
+                        Context 'When current permission state already is GrantWithGrant' {
                             BeforeAll {
                                 Mock -CommandName Get-DatabaseObject -MockWith {
                                     # Should mock a database object, e.g. Schema, Table, View.
@@ -1891,14 +1891,34 @@ try
                                 }
                             }
 
-                            It 'Should set the permissions without throwing an exception' {
-                                { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                            Context 'When Force is not set or set to $false' {
+                                It 'Should set the permissions without throwing an exception' {
+                                    $mockErrorMessage = $script:localizedData.GrantCantBeSetBecauseRevokeIsNotOptedIn -f @(
+                                        ($cimInstancePermissionCollection[0].Permission -join ','),
+                                        $setTargetResourceParameters.Name,
+                                        ('{0}.{1}' -f $setTargetResourceParameters.SchemaName, $setTargetResourceParameters.ObjectName),
+                                        $setTargetResourceParameters.ObjectType,
+                                        $setTargetResourceParameters.DatabaseName
+                                    )
 
-                                Assert-MockCalled -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
+                                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw
+                                }
+                            }
 
-                                $script:mockMethodRevokeRanTimes | Should -Be 1
-                                $script:mockMethodGrantRanTimes | Should -Be 1
-                                $script:mockMethodDenyRanTimes  | Should -Be 0
+                            Context 'When Force is set to $true' {
+                                BeforeAll {
+                                    $setTargetResourceParameters['Force'] = $true
+                                }
+
+                                It 'Should set the permissions without throwing an exception' {
+                                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+
+                                    Assert-MockCalled -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
+
+                                    $script:mockMethodRevokeRanTimes | Should -Be 1
+                                    $script:mockMethodGrantRanTimes | Should -Be 1
+                                    $script:mockMethodDenyRanTimes  | Should -Be 0
+                                }
                             }
                         }
                     }
