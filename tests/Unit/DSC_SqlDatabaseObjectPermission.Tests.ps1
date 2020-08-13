@@ -1786,22 +1786,12 @@ try
                             Add-Member -MemberType NoteProperty -Name 'ViewChangeTracking' -Value $false -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'ViewDefinition' -Value $false -PassThru -Force
                         }
-
-                        Mock -CommandName Get-DatabaseObject -MockWith {
-                            # Should mock a database object, e.g. Schema, Table, View.
-                            return New-Object -TypeName PSCustomObject |
-                                Add-Member -MemberType ScriptMethod -Name 'Grant' -Value {
-                                    $script:mockMethodGrantRanTimes += 1
-                                } -PassThru |
-                                Add-Member -MemberType ScriptMethod -Name 'Deny' -Value {
-                                    $script:mockMethodDenyRanTimes += 1
-                                } -PassThru -Force
-                        }
                     }
 
                     BeforeEach {
                         $script:mockMethodGrantRanTimes = 0
                         $script:mockMethodDenyRanTimes = 0
+                        $script:mockMethodRevokeRanTimes = 0
                     }
 
                     Context 'When setting permission for the permission state ''Grant''' {
@@ -1818,6 +1808,20 @@ try
                                         )
                                     }
                                 )
+                            }
+
+                            Mock -CommandName Get-DatabaseObject -MockWith {
+                                # Should mock a database object, e.g. Schema, Table, View.
+                                return New-Object -TypeName PSCustomObject |
+                                    Add-Member -MemberType ScriptMethod -Name 'Grant' -Value {
+                                        $script:mockMethodGrantRanTimes += 1
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'Deny' -Value {
+                                        $script:mockMethodDenyRanTimes += 1
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'EnumObjectPermissions' -Value {
+                                        return $null
+                                    } -PassThru -Force
                             }
 
                             # Create an empty collection of CimInstance that we can return.
@@ -1857,6 +1861,88 @@ try
                             $script:mockMethodGrantRanTimes | Should -Be 1
                             $script:mockMethodDenyRanTimes  | Should -Be 0
                         }
+
+                        # Regression test for issue #1602.
+                        Context 'When setting permission for the permission state ''Grant'' and current permission state already is GrantWithGrant' {
+                            BeforeAll {
+                                Mock -CommandName Compare-TargetResourceState -MockWith {
+                                    return @(
+                                        @{
+                                            ParameterName  = 'Permission'
+                                            InDesiredState = $false
+                                            Actual         = @(
+                                                (New-Object -TypeName PSCustomObject |
+                                                    Add-Member -MemberType NoteProperty -Name 'State' -Value 'Grant' -PassThru |
+                                                    Add-Member -MemberType NoteProperty -Name 'Ensure' -Value 'Absent' -PassThru -Force)
+                                            )
+                                        }
+                                    )
+                                }
+
+                                Mock -CommandName Get-DatabaseObject -MockWith {
+                                    # Should mock a database object, e.g. Schema, Table, View.
+                                    return New-Object -TypeName PSCustomObject |
+                                        Add-Member -MemberType ScriptMethod -Name 'Grant' -Value {
+                                            $script:mockMethodGrantRanTimes += 1
+                                        } -PassThru |
+                                        Add-Member -MemberType ScriptMethod -Name 'Deny' -Value {
+                                            $script:mockMethodDenyRanTimes += 1
+                                        } -PassThru |
+                                        Add-Member -MemberType ScriptMethod -Name 'Revoke' -Value {
+                                            $script:mockMethodRevokeRanTimes += 1
+                                        } -PassThru |
+                                        Add-Member -MemberType ScriptMethod -Name 'EnumObjectPermissions' -Value {
+                                            <#
+                                                Normally it returns an array of
+                                                Microsoft.SqlServer.Management.Smo.ObjectPermissionInfo[]
+                                                with the permissions that had the state 'GrantWithGrant'.
+                                            #>
+                                            return @(
+                                                New-Object -TypeName PSCustomObject |
+                                                    Add-Member -MemberType NoteProperty -Name 'PermissionState' -Value 'GrantWithGrant' -PassThru -Force
+                                            )
+                                        } -PassThru -Force
+                                }
+
+                                # Create an empty collection of CimInstance that we can return.
+                                $cimInstancePermissionCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection`1[Microsoft.Management.Infrastructure.CimInstance]'
+
+                                <#
+                                    Intentionally not using helper ConvertTo-CimDatabaseObjectPermission
+                                    to increase code coverage.
+                                #>
+                                $cimInstancePermissionCollection += New-CimInstance `
+                                    -ClassName 'DSC_DatabaseObjectPermission' `
+                                    -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
+                                    -Property @{
+                                        State      = 'Grant'
+                                        Permission = @('Delete')
+                                        Ensure     = 'Present'
+                                    } `
+                                    -ClientOnly
+
+                                $setTargetResourceParameters = @{
+                                    InstanceName = 'DSCTEST'
+                                    DatabaseName = 'AdventureWorks'
+                                    SchemaName   = 'dbo'
+                                    ObjectName   = 'Table1'
+                                    ObjectType   = 'Table'
+                                    Name         = 'TestAppRole'
+                                    Permission   = $cimInstancePermissionCollection
+                                    Verbose      = $true
+                                }
+                            }
+
+                            It 'Should set the permissions without throwing an exception' {
+                                { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+
+                                Assert-MockCalled -CommandName Get-DatabaseObject -Exactly -Times 1 -Scope It
+
+                                $script:mockMethodRevokeRanTimes | Should -Be 1
+                                $script:mockMethodGrantRanTimes | Should -Be 1
+                                $script:mockMethodDenyRanTimes  | Should -Be 0
+                            }
+                        }
                     }
 
                     Context 'When setting permission for the permission state ''GrantWithGrant''' {
@@ -1873,6 +1959,17 @@ try
                                         )
                                     }
                                 )
+                            }
+
+                            Mock -CommandName Get-DatabaseObject -MockWith {
+                                # Should mock a database object, e.g. Schema, Table, View.
+                                return New-Object -TypeName PSCustomObject |
+                                    Add-Member -MemberType ScriptMethod -Name 'Grant' -Value {
+                                        $script:mockMethodGrantRanTimes += 1
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'Deny' -Value {
+                                        $script:mockMethodDenyRanTimes += 1
+                                    } -PassThru -Force
                             }
 
                             # Create an empty collection of CimInstance that we can return.
@@ -1927,6 +2024,17 @@ try
                                         )
                                     }
                                 )
+                            }
+
+                            Mock -CommandName Get-DatabaseObject -MockWith {
+                                # Should mock a database object, e.g. Schema, Table, View.
+                                return New-Object -TypeName PSCustomObject |
+                                    Add-Member -MemberType ScriptMethod -Name 'Grant' -Value {
+                                        $script:mockMethodGrantRanTimes += 1
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'Deny' -Value {
+                                        $script:mockMethodDenyRanTimes += 1
+                                    } -PassThru -Force
                             }
 
                             # Create an empty collection of CimInstance that we can return.
@@ -1984,6 +2092,17 @@ try
                                         )
                                     }
                                 )
+                            }
+
+                            Mock -CommandName Get-DatabaseObject -MockWith {
+                                # Should mock a database object, e.g. Schema, Table, View.
+                                return New-Object -TypeName PSCustomObject |
+                                    Add-Member -MemberType ScriptMethod -Name 'Grant' -Value {
+                                        $script:mockMethodGrantRanTimes += 1
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'Deny' -Value {
+                                        $script:mockMethodDenyRanTimes += 1
+                                    } -PassThru -Force
                             }
 
                             # Create an empty collection of CimInstance that we can return.
