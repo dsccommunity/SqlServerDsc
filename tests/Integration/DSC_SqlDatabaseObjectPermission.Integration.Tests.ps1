@@ -110,6 +110,7 @@ try
                 $resourceCurrentState.ObjectName | Should -Be $ConfigurationData.AllNodes.TableName
                 $resourceCurrentState.ObjectType | Should -Be 'Table'
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
+                $resourceCurrentState.Force | Should -BeFalse
 
                 $resourceCurrentState.Permission | Should -HaveCount 1
                 $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
@@ -176,6 +177,7 @@ try
                 $resourceCurrentState.ObjectName | Should -Be $ConfigurationData.AllNodes.TableName
                 $resourceCurrentState.ObjectType | Should -Be 'Table'
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
+                $resourceCurrentState.Force | Should -BeTrue
 
                 $resourceCurrentState.Permission | Should -HaveCount 1
                 $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
