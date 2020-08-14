@@ -10,6 +10,7 @@
     "powershell.codeFormatting.pipelineIndentationStyle": "IncreaseIndentationForFirstPipeline",
     "powershell.codeFormatting.preset": "Custom",
     "powershell.codeFormatting.alignPropertyValuePairs": true,
+    "powershell.codeFormatting.useConstantStrings": true,
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
     "powershell.scriptAnalysis.settingsPath": ".vscode\\analyzersettings.psd1",
