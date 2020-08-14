@@ -193,7 +193,7 @@ function Set-TargetResource
     $getTargetResourceParameters = @{
         EndpointName = $EndpointName
         EndpointType = $EndpointType
-        ServerName = $ServerName
+        ServerName   = $ServerName
         InstanceName = $InstanceName
     }
 
@@ -460,7 +460,7 @@ function Test-TargetResource
     $getTargetResourceParameters = @{
         EndpointName = $EndpointName
         EndpointType = $EndpointType
-        ServerName = $ServerName
+        ServerName   = $ServerName
         InstanceName = $InstanceName
     }
 
@@ -489,9 +489,9 @@ function Test-TargetResource
 
         if ($getTargetResourceResult.Ensure -eq 'Present' `
                 -and (
-                        $getTargetResourceResult.Port -ne $Port `
+                $getTargetResourceResult.Port -ne $Port `
                     -or $getTargetResourceResult.IpAddress -ne $IpAddress
-                )
+            )
         )
         {
             $result = $false

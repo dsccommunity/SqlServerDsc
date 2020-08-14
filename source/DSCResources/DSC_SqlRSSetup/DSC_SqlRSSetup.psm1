@@ -61,21 +61,21 @@ function Get-TargetResource
     )
 
     $returnObject = @{
-        InstanceName = $null
+        InstanceName        = $null
         IAcceptLicenseTerms = $IAcceptLicenseTerms
-        SourcePath = $SourcePath
-        Action = $null
-        SourceCredential = $null
-        ProductKey = $null
-        ForceRestart = $false
-        EditionUpgrade = $false
-        VersionUpgrade = $false
-        Edition = $null
-        LogPath = $null
-        InstallFolder = $null
-        ErrorDumpDirectory = $null
-        CurrentVersion = $null
-        ServiceName = $null
+        SourcePath          = $SourcePath
+        Action              = $null
+        SourceCredential    = $null
+        ProductKey          = $null
+        ForceRestart        = $false
+        EditionUpgrade      = $false
+        VersionUpgrade      = $false
+        Edition             = $null
+        LogPath             = $null
+        InstallFolder       = $null
+        ErrorDumpDirectory  = $null
+        CurrentVersion      = $null
+        ServiceName         = $null
     }
 
     $InstanceName = $InstanceName.ToUpper()
@@ -118,11 +118,11 @@ function Get-TargetResource
 
         # CurrentVersion
         $getPackageParameters = @{
-            Name = 'Microsoft SQL Server Reporting Services'
+            Name         = 'Microsoft SQL Server Reporting Services'
             ProviderName = 'Programs'
-            ErrorAction = 'SilentlyContinue'
+            ErrorAction  = 'SilentlyContinue'
             # Get-Package returns a lot of excessive information that we don't need.
-            Verbose = $false
+            Verbose      = $false
         }
 
         $reportingServicesPackage = Get-Package @getPackageParameters
@@ -243,7 +243,7 @@ function Set-TargetResource
         $SourcePath,
 
         [Parameter()]
-        [ValidateSet('Install','Uninstall')]
+        [ValidateSet('Install', 'Uninstall')]
         [System.String]
         $Action = 'Install',
 
@@ -272,7 +272,7 @@ function Set-TargetResource
         $VersionUpgrade,
 
         [Parameter()]
-        [ValidateSet('Development','Evaluation','ExpressAdvanced')]
+        [ValidateSet('Development', 'Evaluation', 'ExpressAdvanced')]
         [System.String]
         $Edition,
 
@@ -335,9 +335,9 @@ function Set-TargetResource
         $executableFileName = Split-Path -Path $SourcePath -Leaf
 
         $invokeInstallationMediaCopyParameters = @{
-            SourcePath = $executableParentFolder
+            SourcePath       = $executableParentFolder
             SourceCredential = $SourceCredential
-            PassThru = $true
+            PassThru         = $true
         }
 
         $newExecutableParentFolder = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters
@@ -361,7 +361,7 @@ function Set-TargetResource
     else
     {
         $setupArguments += @{
-            'uninstall' =  [System.Management.Automation.SwitchParameter] $true
+            'uninstall' = [System.Management.Automation.SwitchParameter] $true
         }
     }
 
@@ -469,9 +469,9 @@ function Set-TargetResource
     #>
 
     $startProcessParameters = @{
-        FilePath = $SourcePath
+        FilePath     = $SourcePath
         ArgumentList = $argumentString
-        Timeout = $SetupProcessTimeout
+        Timeout      = $SetupProcessTimeout
     }
 
     $processExitCode = Start-SqlSetupProcess @startProcessParameters
@@ -618,7 +618,7 @@ function Test-TargetResource
         $SourcePath,
 
         [Parameter()]
-        [ValidateSet('Install','Uninstall')]
+        [ValidateSet('Install', 'Uninstall')]
         [System.String]
         $Action = 'Install',
 
@@ -647,7 +647,7 @@ function Test-TargetResource
         $VersionUpgrade,
 
         [Parameter()]
-        [ValidateSet('Development','Evaluation','ExpressAdvanced')]
+        [ValidateSet('Development', 'Evaluation', 'ExpressAdvanced')]
         [System.String]
         $Edition,
 
@@ -669,9 +669,9 @@ function Test-TargetResource
     )
 
     $getTargetResourceParameters = @{
-        InstanceName = $InstanceName
+        InstanceName        = $InstanceName
         IAcceptLicenseTerms = $IAcceptLicenseTerms
-        SourcePath = $SourcePath
+        SourcePath          = $SourcePath
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters

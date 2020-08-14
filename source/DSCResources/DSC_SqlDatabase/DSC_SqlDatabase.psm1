@@ -7,8 +7,8 @@ Import-Module -Name $script:resourceHelperModulePath
 $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 $script:supportedCompatibilityLevels = @{
-    8 = @('Version80')
-    9 = @('Version80', 'Version90')
+    8  = @('Version80')
+    9  = @('Version80', 'Version90')
     10 = @('Version80', 'Version90', 'Version100')
     11 = @('Version90', 'Version100', 'Version110')
     12 = @('Version100', 'Version110', 'Version120')
@@ -258,7 +258,7 @@ function Set-TargetResource
                 if ($PSBoundParameters.ContainsKey('OwnerName'))
                 {
                     Write-Verbose -Message (
-                        $script:localizedData.UpdatingOwner-f $OwnerName
+                        $script:localizedData.UpdatingOwner -f $OwnerName
                     )
 
                     try
@@ -446,8 +446,8 @@ function Test-TargetResource
     )
 
     $getTargetResourceParameters = @{
-        Name = $Name
-        ServerName = $ServerName
+        Name         = $Name
+        ServerName   = $ServerName
         InstanceName = $InstanceName
     }
 

@@ -463,8 +463,7 @@ function Set-EncryptedConnectionSetting
     }
     else
     {
-        throw $script:localizedData.CouldNotFindEncryptionValues `
-                -f $InstanceName
+        throw ($script:localizedData.CouldNotFindEncryptionValues -f $InstanceName)
     }
 }
 
@@ -597,7 +596,7 @@ function Test-CertificatePermission
         # Get the current acl of the private key
         $acl = Get-CertificateAcl -Thumbprint $Thumbprint
 
-        [array] $permissions = $acl.ACL.Access.Where( {$_.IdentityReference -eq $accessRule.IdentityReference})
+        [array] $permissions = $acl.ACL.Access.Where( { $_.IdentityReference -eq $accessRule.IdentityReference })
         if ($permissions.Count -eq 0)
         {
             return $false

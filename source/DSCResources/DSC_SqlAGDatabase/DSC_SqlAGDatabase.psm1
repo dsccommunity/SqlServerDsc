@@ -730,7 +730,7 @@ function Test-TargetResource
     #>
     if ( $ProcessOnlyOnActiveNode -and -not $currentConfiguration.IsActiveNode )
     {
-        Write-Verbose -Message ( $script:localizedData.NotActiveNode -f $env:COMPUTERNAME,$InstanceName )
+        Write-Verbose -Message ( $script:localizedData.NotActiveNode -f $env:COMPUTERNAME, $InstanceName )
         return $configurationInDesiredState
     }
 

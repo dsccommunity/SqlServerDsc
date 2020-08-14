@@ -75,18 +75,18 @@ function Get-TargetResource
     $IpAddressGroup = Convert-IpAdressGroupCasing -IpAddressGroup $IpAddressGroup
 
     $returnValue = @{
-        InstanceName       = $InstanceName
-        IpAddressGroup     = $IpAddressGroup
-        ServerName         = $ServerName
-        SuppressRestart    = $SuppressRestart
-        RestartTimeout     = $RestartTimeout
-        Enabled            = $false
-        IpAddress          = $null
-        UseTcpDynamicPort  = $false
-        TcpPort            = $null
-        IsActive           = $false
-        AddressFamily      = $null
-        TcpDynamicPort     = $null
+        InstanceName      = $InstanceName
+        IpAddressGroup    = $IpAddressGroup
+        ServerName        = $ServerName
+        SuppressRestart   = $SuppressRestart
+        RestartTimeout    = $RestartTimeout
+        Enabled           = $false
+        IpAddress         = $null
+        UseTcpDynamicPort = $false
+        TcpPort           = $null
+        IsActive          = $false
+        AddressFamily     = $null
+        TcpDynamicPort    = $null
     }
 
     Write-Verbose -Message (
@@ -119,8 +119,8 @@ function Get-TargetResource
 
             # Get the current state of TcpDynamicPort.
             if (-not (
-                [System.String]::IsNullOrEmpty($currentTcpDynamicPort) `
-                    -or [System.String]::IsNullOrWhiteSpace($currentTcpDynamicPort)
+                    [System.String]::IsNullOrEmpty($currentTcpDynamicPort) `
+                        -or [System.String]::IsNullOrWhiteSpace($currentTcpDynamicPort)
                 )
             )
             {

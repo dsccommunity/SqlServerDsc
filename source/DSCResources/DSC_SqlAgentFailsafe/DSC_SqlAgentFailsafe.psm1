@@ -57,7 +57,7 @@ function Get-TargetResource
             $script:localizedData.GetSqlAgentFailsafe
         )
 
-        $sqlAlertSystemObject = $sqlServerObject.JobServer.AlertSystem | Where-Object -FilterScript {$_.FailSafeOperator -eq $Name}
+        $sqlAlertSystemObject = $sqlServerObject.JobServer.AlertSystem | Where-Object -FilterScript { $_.FailSafeOperator -eq $Name }
 
         if ($sqlAlertSystemObject)
         {
@@ -170,7 +170,7 @@ function Set-TargetResource
                 }
                 catch
                 {
-                    $errorMessage = $script:localizedData.UpdateFailsafeOperatorError -f  $Name, $ServerName, $InstanceName
+                    $errorMessage = $script:localizedData.UpdateFailsafeOperatorError -f $Name, $ServerName, $InstanceName
                     New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
             }
@@ -256,9 +256,9 @@ function Test-TargetResource
     )
 
     $getTargetResourceParameters = @{
-        ServerName     = $ServerName
-        InstanceName   = $InstanceName
-        Name           = $Name
+        ServerName   = $ServerName
+        InstanceName = $InstanceName
+        Name         = $Name
     }
 
     $returnValue = $false

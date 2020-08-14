@@ -44,6 +44,7 @@
         'PSPlaceOpenBrace',
         'PSPlaceCloseBrace',
         'AlignAssignmentStatement',
+        'AvoidUsingDoubleQuotesForConstantString',
 
         'Measure-*'
     )

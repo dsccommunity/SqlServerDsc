@@ -60,7 +60,7 @@ function Get-TargetResource
             $script:localizedData.GetSqlAgents
         )
         # Check operator exists
-        $sqlOperatorObject = $sqlServerObject.JobServer.Operators | Where-Object {$_.Name -eq $Name}
+        $sqlOperatorObject = $sqlServerObject.JobServer.Operators | Where-Object { $_.Name -eq $Name }
         if ($sqlOperatorObject)
         {
             Write-Verbose -Message (
@@ -146,7 +146,7 @@ function Set-TargetResource
         {
             'Present'
             {
-                $sqlOperatorObject = $sqlServerObject.JobServer.Operators | Where-Object {$_.Name -eq $Name}
+                $sqlOperatorObject = $sqlServerObject.JobServer.Operators | Where-Object { $_.Name -eq $Name }
 
                 if ($sqlOperatorObject)
                 {
@@ -203,7 +203,7 @@ function Set-TargetResource
             {
                 try
                 {
-                    $sqlOperatorObjectToDrop = $sqlServerObject.JobServer.Operators | Where-Object {$_.Name -eq $Name}
+                    $sqlOperatorObjectToDrop = $sqlServerObject.JobServer.Operators | Where-Object { $_.Name -eq $Name }
                     if ($sqlOperatorObjectToDrop)
                     {
                         Write-Verbose -Message (
@@ -285,9 +285,9 @@ function Test-TargetResource
     )
 
     $getTargetResourceParameters = @{
-        Name           = $Name
-        ServerName     = $ServerName
-        InstanceName   = $InstanceName
+        Name         = $Name
+        ServerName   = $ServerName
+        InstanceName = $InstanceName
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
