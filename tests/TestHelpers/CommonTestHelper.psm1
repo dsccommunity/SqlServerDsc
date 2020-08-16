@@ -554,7 +554,7 @@ function Test-SetupArgument
     $argumentHashTable = @{}
 
     # Break the argument string into a hash table
-    ($Argument -split ' ?/') | ForEach-Object {
+    ($Argument -split ' ?/') | ForEach-Object -Process {
         <#
             This regex must support different types of values, and no values:
             /ENU /ACTION="Install" /FEATURES=SQLENGINE /SQLSYSADMINACCOUNTS="COMPANY\sqladmin" "COMPANY\SQLAdmins" /FailoverClusterDisks="Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs"

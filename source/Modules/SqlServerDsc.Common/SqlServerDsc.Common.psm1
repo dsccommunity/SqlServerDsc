@@ -1053,7 +1053,7 @@ function Restart-SqlService
 
         # Start dependent services
         $agentService |
-            ForEach-Object {
+            ForEach-Object -Process {
                 Write-Verbose -Message ($script:localizedData.StartingDependentService -f $_.DisplayName) -Verbose
                 $_ | Start-Service
             }
@@ -1295,7 +1295,7 @@ function Restart-ReportingServicesService
     $reportingServicesService | Start-Service
 
     # Start dependent services
-    $dependentService | ForEach-Object {
+    $dependentService | ForEach-Object -Process {
         Write-Verbose -Message ($script:localizedData.StartingDependentService -f $_.DisplayName) -Verbose
         $_ | Start-Service
     }

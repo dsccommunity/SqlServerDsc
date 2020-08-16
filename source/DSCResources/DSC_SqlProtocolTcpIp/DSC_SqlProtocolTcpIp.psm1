@@ -670,7 +670,7 @@ function Compare-TargetResourceState
 
         Need the @() around the Keys property to get a new array to enumerate.
     #>
-    @($getTargetResourceParameters.Keys) | ForEach-Object {
+    @($getTargetResourceParameters.Keys) | ForEach-Object -Process {
         if (-not $PSBoundParameters.ContainsKey($_))
         {
             $getTargetResourceParameters.Remove($_)

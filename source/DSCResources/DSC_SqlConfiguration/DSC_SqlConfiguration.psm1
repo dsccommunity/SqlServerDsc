@@ -67,7 +67,8 @@ function Get-TargetResource
     $sql = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
 
     # Get the current value of the configuration option.
-    $option = $sql.Configuration.Properties | Where-Object { $_.DisplayName -eq $OptionName }
+    $option = $sql.Configuration.Properties |
+        Where-Object -FilterScript { $_.DisplayName -eq $OptionName }
 
     if (-not $option)
     {
@@ -148,7 +149,8 @@ function Set-TargetResource
     $sql = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
 
     # Get the current value of the configuration option.
-    $option = $sql.Configuration.Properties | Where-Object { $_.DisplayName -eq $OptionName }
+    $option = $sql.Configuration.Properties |
+        Where-Object -FilterScript { $_.DisplayName -eq $OptionName }
 
     if (-not $option)
     {

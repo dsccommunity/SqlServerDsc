@@ -58,7 +58,7 @@ function Get-TargetResource
         # Gets a set of permissions granted based on the desired permissions in $Permission
         $desiredPermissionSet = Get-SQLServerPermissionSet -Permission $Permission
         $grantedPermissionSet = $sqlServerObject.EnumServerPermissions( $Principal, $desiredPermissionSet ) |
-            Where-Object { $_.PermissionState -eq 'Grant' }
+            Where-Object -FilterScript { $_.PermissionState -eq 'Grant' }
 
         if ($null -ne $grantedPermissionSet)
         {

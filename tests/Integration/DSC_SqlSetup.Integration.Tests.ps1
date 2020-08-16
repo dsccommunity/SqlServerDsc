@@ -53,9 +53,11 @@ function Show-SqlBootstrapLog
     Write-Verbose -Message $('-' * 80) -Verbose
     Write-Verbose -Message 'Summary.txt' -Verbose
     Write-Verbose -Message $('-' * 80) -Verbose
-    $summaryLog | ForEach-Object {
+
+    $summaryLog | ForEach-Object -Process {
         Write-Verbose $_ -Verbose
     }
+
     Write-Verbose -Message $('-' * 80) -Verbose
 }
 
