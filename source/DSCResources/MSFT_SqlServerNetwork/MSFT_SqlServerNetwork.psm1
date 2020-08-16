@@ -57,7 +57,7 @@ function Get-TargetResource
         TcpPort        = $tcp.IPAddresses['IPAll'].IPAddressProperties['TcpPort'].Value
     }
 
-    $returnValue.Keys | ForEach-Object {
+    $returnValue.Keys | ForEach-Object -Process {
         Write-Verbose -Message "$_ = $($returnValue[$_])"
     }
 

@@ -116,7 +116,7 @@ function Get-TargetResource
         {
             'SQLENGINE'
             {
-                if ($services | Where-Object {$_.Name -eq $databaseServiceName})
+                if ($services | Where-Object -FilterScript { $_.Name -eq $databaseServiceName })
                 {
                     $featuresInstalled += "$_,"
 
@@ -163,7 +163,7 @@ function Get-TargetResource
 
             'RS'
             {
-                if ($services | Where-Object {$_.Name -eq $reportServiceName})
+                if ($services | Where-Object -FilterScript { $_.Name -eq $reportServiceName })
                 {
                     $featuresInstalled += "$_,"
 
@@ -207,7 +207,7 @@ function Get-TargetResource
 
             'AS'
             {
-                if ($services | Where-Object {$_.Name -eq $analysisServiceName})
+                if ($services | Where-Object -FilterScript { $_.Name -eq $analysisServiceName })
                 {
                     $featuresInstalled += "$_,"
 
@@ -253,7 +253,7 @@ function Get-TargetResource
 
             'IS'
             {
-                if ($services | Where-Object {$_.Name -eq $integrationServiceName})
+                if ($services | Where-Object -FilterScript { $_.Name -eq $integrationServiceName })
                 {
                     $featuresInstalled += "$_,"
 

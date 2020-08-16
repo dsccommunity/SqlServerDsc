@@ -1871,7 +1871,7 @@ try
                 $mockGetCimAssociatedInstance_MSCluster_ResourceToPossibleOwner = {
                     return @(
                         (
-                            $mockClusterNodes | ForEach-Object {
+                            $mockClusterNodes | ForEach-Object -Process {
                                 $node = $_
                                 New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Node', 'root/MSCluster' |
                                     Add-Member -MemberType NoteProperty -Name 'Name' -Value $node -PassThru -Force
@@ -1956,7 +1956,7 @@ try
                 $mockGetCimInstance_MSClusterNetwork = {
                     return @(
                         (
-                            $mockClusterSites | ForEach-Object {
+                            $mockClusterSites | ForEach-Object -Process {
                                 $network = $_
 
                                 New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Network', 'root/MSCluster' |
@@ -1974,7 +1974,7 @@ try
                     return @(
                         (
                             # $mockClusterDiskMap contains variables that are assigned dynamically (during runtime) before each test.
-                            (& $mockClusterDiskMap).Keys | ForEach-Object {
+                            (& $mockClusterDiskMap).Keys | ForEach-Object -Process {
                                 $diskName = $_
                                 New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource','root/MSCluster' |
                                     Add-Member -MemberType NoteProperty -Name 'Name' -Value $diskName -PassThru -Force |
@@ -3232,7 +3232,7 @@ try
                         $multiSubnetParameters = $testParameters.Clone()
                         $multiSubnetParameters.Remove('FailoverClusterIPAddress')
                         $multiSubnetParameters += @{
-                            FailoverClusterIPAddress = ($mockClusterSites | ForEach-Object { $_.Address })
+                            FailoverClusterIPAddress = ($mockClusterSites | ForEach-Object -Process { $_.Address })
                         }
 
                         $mockStartSqlSetupProcessExpectedArgument = $mockStartSqlSetupProcessExpectedArgumentClusterDefault.Clone()
@@ -3553,7 +3553,7 @@ try
                         $multiSubnetParameters = $testParameters.Clone()
                         $multiSubnetParameters.Remove('FailoverClusterIPAddress')
                         $multiSubnetParameters += @{
-                            FailoverClusterIPAddress = ($mockClusterSites | ForEach-Object { $_.Address })
+                            FailoverClusterIPAddress = ($mockClusterSites | ForEach-Object -Process { $_.Address })
                         }
 
                         $mockStartSqlSetupProcessExpectedArgument = $mockStartSqlSetupProcessExpectedArgumentClusterDefault.Clone()

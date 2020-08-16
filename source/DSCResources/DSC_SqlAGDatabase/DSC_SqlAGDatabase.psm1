@@ -325,7 +325,10 @@ function Set-TargetResource
 
                 if ( $availabilityReplicaFilestreamLevel.Values -contains 'Disabled' )
                 {
-                    $availabilityReplicaFilestreamLevelDisabled = $availabilityReplicaFilestreamLevel.GetEnumerator() | Where-Object { $_.Value -eq 'Disabled' } | Select-Object -ExpandProperty Key
+                    $availabilityReplicaFilestreamLevelDisabled = $availabilityReplicaFilestreamLevel.GetEnumerator() |
+                        Where-Object -FilterScript { $_.Value -eq 'Disabled' } |
+                        Select-Object -ExpandProperty Key
+
                     $prerequisiteCheckFailures += ( 'Filestream is disabled on the following instances: {0}' -f ( $availabilityReplicaFilestreamLevelDisabled -join ', ' ) )
                 }
             }
@@ -343,15 +346,18 @@ function Set-TargetResource
 
                 if ( $availabilityReplicaContainmentEnabled.Values -notcontains 'None' )
                 {
-                    $availabilityReplicaContainmentNotEnabled = $availabilityReplicaContainmentEnabled.GetEnumerator() | Where-Object { $_.Value -eq 'None' } | Select-Object -ExpandProperty Key
+                    $availabilityReplicaContainmentNotEnabled = $availabilityReplicaContainmentEnabled.GetEnumerator() |
+                        Where-Object -FilterScript { $_.Value -eq 'None' } |
+                        Select-Object -ExpandProperty Key
+
                     $prerequisiteCheckFailures += ( 'Contained Database Authentication is not enabled on the following instances: {0}' -f ( $availabilityReplicaContainmentNotEnabled -join ', ' ) )
                 }
             }
 
             # Ensure the data and log file paths exist on all replicas
             $databaseFileDirectories = @()
-            $databaseFileDirectories += $databaseObject.FileGroups.Files.FileName | ForEach-Object { Split-Path -Path $_ -Parent }
-            $databaseFileDirectories += $databaseObject.LogFiles.FileName | ForEach-Object { Split-Path -Path $_ -Parent }
+            $databaseFileDirectories += $databaseObject.FileGroups.Files.FileName | ForEach-Object -Process { Split-Path -Path $_ -Parent }
+            $databaseFileDirectories += $databaseObject.LogFiles.FileName | ForEach-Object -Process { Split-Path -Path $_ -Parent }
             $databaseFileDirectories = $databaseFileDirectories | Select-Object -Unique
 
             $availabilityReplicaMissingDirectories = @{}
@@ -397,7 +403,9 @@ function Set-TargetResource
                 {
                     $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
                     $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
-                    [System.Array]$installedCertificateThumbprints = $currentAvailabilityGroupReplicaServerObject.Databases['master'].Certificates | ForEach-Object { [System.BitConverter]::ToString($_.Thumbprint) }
+
+                    [System.Array] $installedCertificateThumbprints = $currentAvailabilityGroupReplicaServerObject.Databases['master'].Certificates |
+                        ForEach-Object -Process { [System.BitConverter]::ToString($_.Thumbprint) }
 
                     if ( $installedCertificateThumbprints -notcontains $databaseCertificateThumbprint )
                     {
@@ -730,7 +738,7 @@ function Test-TargetResource
     #>
     if ( $ProcessOnlyOnActiveNode -and -not $currentConfiguration.IsActiveNode )
     {
-        Write-Verbose -Message ( $script:localizedData.NotActiveNode -f $env:COMPUTERNAME,$InstanceName )
+        Write-Verbose -Message ( $script:localizedData.NotActiveNode -f $env:COMPUTERNAME, $InstanceName )
         return $configurationInDesiredState
     }
 

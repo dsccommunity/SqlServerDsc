@@ -320,7 +320,7 @@ function Set-TargetResource
                 foreach ($desiredPermissionState in $Permission)
                 {
                     # Get the equivalent permission state form the current state.
-                    $currentPermissionState = $permissionProperty.Actual | Where-Object -FilterScript { $_.State -eq $desiredPermissionState.State}
+                    $currentPermissionState = $permissionProperty.Actual | Where-Object -FilterScript { $_.State -eq $desiredPermissionState.State }
 
                     if ($desiredPermissionState.Ensure -ne $currentPermissionState.Ensure)
                     {
@@ -703,7 +703,7 @@ function Compare-TargetResourceState
 
         Need the @() around the Keys property to get a new array to enumerate.
     #>
-    @($getTargetResourceParameters.Keys) | ForEach-Object {
+    @($getTargetResourceParameters.Keys) | ForEach-Object -Process {
         if (-not $PSBoundParameters.ContainsKey($_))
         {
             $getTargetResourceParameters.Remove($_)

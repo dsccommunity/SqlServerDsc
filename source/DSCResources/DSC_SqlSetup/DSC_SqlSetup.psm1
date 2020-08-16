@@ -1106,7 +1106,7 @@ function Set-TargetResource
 
         foreach ($currentRequiredDrive in $requiredDrive)
         {
-            foreach ($diskResource in ($availableStorage | Where-Object { $_.IsPossibleOwner -eq $true }))
+            foreach ($diskResource in ($availableStorage | Where-Object -FilterScript { $_.IsPossibleOwner -eq $true }))
             {
                 $partitions = $diskResource | Get-CimAssociatedInstance -ResultClassName 'MSCluster_DiskPartition' | Select-Object -ExpandProperty Path
                 foreach ($partition in $partitions)
@@ -1136,12 +1136,12 @@ function Set-TargetResource
 
         foreach ($clusterSharedVolume in $clusterSharedVolumes)
         {
-            foreach ($currentRequiredDrive in ($requiredDrive | Where-Object { $_.IsMapped -eq $false }))
+            foreach ($currentRequiredDrive in ($requiredDrive | Where-Object -FilterScript { $_.IsMapped -eq $false }))
             {
                 if ($currentRequiredDrive -imatch $clusterSharedVolume.Name.Replace('\', '\\'))
                 {
                     $diskName = Get-CimInstance -ClassName 'MSCluster_ClusterSharedVolumeToResource' -Namespace 'root/MSCluster' | `
-                            Where-Object { $_.GroupComponent.Name -eq $clusterSharedVolume.Name } | `
+                            Where-Object -FilterScript { $_.GroupComponent.Name -eq $clusterSharedVolume.Name } | `
                             Select-Object -ExpandProperty PartComponent | `
                             Select-Object -ExpandProperty Name
                     $failoverClusterDisks += $diskName
@@ -1154,7 +1154,7 @@ function Set-TargetResource
         $failoverClusterDisks = $failoverClusterDisks | Sort-Object -Unique
 
         # Ensure we mapped all required drives
-        $unMappedRequiredDrives = $requiredDrive | Where-Object { $_.IsMapped -eq $false } | Measure-Object
+        $unMappedRequiredDrives = $requiredDrive | Where-Object -FilterScript { $_.IsMapped -eq $false } | Measure-Object
         if ($unMappedRequiredDrives.Count -gt 0)
         {
             $errorMessage = $script:localizedData.FailoverClusterDiskMappingError -f ($failoverClusterDisks -join '; ')
@@ -1479,7 +1479,7 @@ function Set-TargetResource
                 $setupArgumentValue = (
                     $currentSetupArgument.Value |
                         Sort-Object |
-                        ForEach-Object {
+                        ForEach-Object -Process {
                             '"{0}"' -f $_
                         }
                 ) -join ' '
@@ -2179,15 +2179,17 @@ function Test-TargetResource
     {
         Write-Verbose -Message $script:localizedData.EvaluatingClusterParameters
 
-        $boundParameters.Keys | Where-Object { $_ -imatch "^FailoverCluster" } | ForEach-Object {
-            $variableName = $_
+        $boundParameters.Keys |
+            Where-Object -FilterScript { $_ -imatch "^FailoverCluster" } |
+            ForEach-Object -Process {
+                $variableName = $_
 
-            if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName])
-            {
-                Write-Verbose -Message ($script:localizedData.ClusterParameterIsNotInDesiredState -f $variableName, $($boundParameters[$variableName]))
-                $result = $false
+                if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName])
+                {
+                    Write-Verbose -Message ($script:localizedData.ClusterParameterIsNotInDesiredState -f $variableName, $($boundParameters[$variableName]))
+                    $result = $false
+                }
             }
-        }
     }
 
     if ($getTargetResourceParameters.Action -eq 'Upgrade')
@@ -2273,7 +2275,8 @@ function ConvertTo-Decimal
 
     $i = 3
     $decimalIpAddress = 0
-    $IPAddress.GetAddressBytes() | ForEach-Object {
+
+    $IPAddress.GetAddressBytes() | ForEach-Object -Process {
         $decimalIpAddress += $_ * [Math]::Pow(256, $i)
         $i--
     }

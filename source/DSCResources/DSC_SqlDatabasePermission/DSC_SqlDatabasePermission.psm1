@@ -95,7 +95,7 @@ function Get-TargetResource
                 foreach ($currentDatabasePermissionInfo in $databasePermissionInfo)
                 {
                     $permissionProperty = ($currentDatabasePermissionInfo.PermissionType |
-                        Get-Member -MemberType Property).Name
+                            Get-Member -MemberType Property).Name
 
                     foreach ($currentPermissionProperty in $permissionProperty)
                     {
@@ -117,7 +117,7 @@ function Get-TargetResource
                     $returnValue['Permissions'] = $getSqlDatabasePermissionResult
 
                     $compareObjectParameters = @{
-                        ReferenceObject = $Permissions
+                        ReferenceObject  = $Permissions
                         DifferenceObject = $getSqlDatabasePermissionResult
                     }
 
@@ -212,14 +212,14 @@ function Set-TargetResource
         {
             $nameExist = $sqlDatabaseObject.Users[$Name] `
                 -or (
-                    <#
+                <#
                         Skip fixed roles like db_datareader as it is not possible to set
                         permissions on those.
                     #>
-                    $sqlDatabaseObject.Roles | Where-Object -FilterScript {
-                        -not $_.IsFixedRole -and $_.Name -eq $Name
-                    }
-                 ) `
+                $sqlDatabaseObject.Roles | Where-Object -FilterScript {
+                    -not $_.IsFixedRole -and $_.Name -eq $Name
+                }
+            ) `
                 -or $sqlDatabaseObject.ApplicationRoles[$Name]
 
             if ($nameExist)

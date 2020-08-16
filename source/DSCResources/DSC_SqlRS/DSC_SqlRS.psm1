@@ -75,7 +75,7 @@ function Get-TargetResource
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
-                MethodName = 'ListReservedUrls'
+                MethodName  = 'ListReservedUrls'
             }
 
             $reservedUrls = Invoke-RsCimMethod @invokeRsCimMethodParameters
@@ -334,11 +334,11 @@ function Set-TargetResource
 
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
-                    MethodName = 'SetVirtualDirectory'
-                    Arguments = @{
-                        Application = 'ReportServerWebService'
+                    MethodName  = 'SetVirtualDirectory'
+                    Arguments   = @{
+                        Application      = 'ReportServerWebService'
                         VirtualDirectory = $ReportServerVirtualDirectory
-                        Lcid = $language
+                        Lcid             = $language
                     }
                 }
 
@@ -349,11 +349,11 @@ function Set-TargetResource
 
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
-                        MethodName = 'ReserveUrl'
-                        Arguments = @{
+                        MethodName  = 'ReserveUrl'
+                        Arguments   = @{
                             Application = 'ReportServerWebService'
-                            UrlString = $_
-                            Lcid = $language
+                            UrlString   = $_
+                            Lcid        = $language
                         }
                     }
 
@@ -367,11 +367,11 @@ function Set-TargetResource
 
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
-                    MethodName = 'SetVirtualDirectory'
-                    Arguments = @{
-                        Application = $reportingServicesData.ReportsApplicationName
+                    MethodName  = 'SetVirtualDirectory'
+                    Arguments   = @{
+                        Application      = $reportingServicesData.ReportsApplicationName
                         VirtualDirectory = $ReportsVirtualDirectory
-                        Lcid = $language
+                        Lcid             = $language
                     }
                 }
 
@@ -382,11 +382,11 @@ function Set-TargetResource
 
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
-                        MethodName = 'ReserveUrl'
-                        Arguments = @{
+                        MethodName  = 'ReserveUrl'
+                        Arguments   = @{
                             Application = $reportingServicesData.ReportsApplicationName
-                            UrlString = $_
-                            Lcid = $language
+                            UrlString   = $_
+                            Lcid        = $language
                         }
                     }
 
@@ -396,11 +396,11 @@ function Set-TargetResource
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
-                MethodName = 'GenerateDatabaseCreationScript'
-                Arguments = @{
-                    DatabaseName = $reportingServicesDatabaseName
+                MethodName  = 'GenerateDatabaseCreationScript'
+                Arguments   = @{
+                    DatabaseName     = $reportingServicesDatabaseName
                     IsSharePointMode = $false
-                    Lcid = $language
+                    Lcid             = $language
                 }
             }
 
@@ -413,11 +413,11 @@ function Set-TargetResource
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
-                MethodName = 'GenerateDatabaseRightsScript'
-                Arguments = @{
-                    DatabaseName = $reportingServicesDatabaseName
-                    UserName = $reportingServicesServiceAccountUserName
-                    IsRemote = $false
+                MethodName  = 'GenerateDatabaseRightsScript'
+                Arguments   = @{
+                    DatabaseName  = $reportingServicesDatabaseName
+                    UserName      = $reportingServicesServiceAccountUserName
+                    IsRemote      = $false
                     IsWindowsUser = $true
                 }
             }
@@ -435,12 +435,12 @@ function Set-TargetResource
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
-                MethodName = 'SetDatabaseConnection'
-                Arguments = @{
-                    Server = $reportingServicesConnection
-                    DatabaseName = $reportingServicesDatabaseName
-                    Username = ''
-                    Password = ''
+                MethodName  = 'SetDatabaseConnection'
+                Arguments   = @{
+                    Server          = $reportingServicesConnection
+                    DatabaseName    = $reportingServicesDatabaseName
+                    Username        = ''
+                    Password        = ''
 
                     <#
                         Can be set to either:
@@ -475,8 +475,8 @@ function Set-TargetResource
             {
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
-                    MethodName = 'InitializeReportServer'
-                    Arguments = @{
+                    MethodName  = 'InitializeReportServer'
+                    Arguments   = @{
                         InstallationId = $reportingServicesData.Configuration.InstallationID
                     }
                 }
@@ -490,9 +490,9 @@ function Set-TargetResource
 
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
-                    MethodName = 'SetSecureConnectionLevel'
-                    Arguments = @{
-                        Level = @(0,1)[$UseSsl]
+                    MethodName  = 'SetSecureConnectionLevel'
+                    Arguments   = @{
+                        Level = @(0, 1)[$UseSsl]
                     }
                 }
 
@@ -537,11 +537,11 @@ function Set-TargetResource
                 $currentConfig.ReportServerReservedUrl | ForEach-Object -Process {
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
-                        MethodName = 'RemoveURL'
-                        Arguments = @{
+                        MethodName  = 'RemoveURL'
+                        Arguments   = @{
                             Application = 'ReportServerWebService'
-                            UrlString = $_
-                            Lcid = $language
+                            UrlString   = $_
+                            Lcid        = $language
                         }
                     }
 
@@ -550,11 +550,11 @@ function Set-TargetResource
 
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
-                    MethodName = 'SetVirtualDirectory'
-                    Arguments = @{
-                        Application = 'ReportServerWebService'
+                    MethodName  = 'SetVirtualDirectory'
+                    Arguments   = @{
+                        Application      = 'ReportServerWebService'
                         VirtualDirectory = $ReportServerVirtualDirectory
-                        Lcid = $language
+                        Lcid             = $language
                     }
                 }
 
@@ -563,11 +563,11 @@ function Set-TargetResource
                 $currentConfig.ReportServerReservedUrl | ForEach-Object -Process {
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
-                        MethodName = 'ReserveUrl'
-                        Arguments = @{
+                        MethodName  = 'ReserveUrl'
+                        Arguments   = @{
                             Application = 'ReportServerWebService'
-                            UrlString = $_
-                            Lcid = $language
+                            UrlString   = $_
+                            Lcid        = $language
                         }
                     }
 
@@ -584,11 +584,11 @@ function Set-TargetResource
                 $currentConfig.ReportsReservedUrl | ForEach-Object -Process {
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
-                        MethodName = 'RemoveURL'
-                        Arguments = @{
+                        MethodName  = 'RemoveURL'
+                        Arguments   = @{
                             Application = $reportingServicesData.ReportsApplicationName
-                            UrlString = $_
-                            Lcid = $language
+                            UrlString   = $_
+                            Lcid        = $language
                         }
                     }
 
@@ -597,11 +597,11 @@ function Set-TargetResource
 
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
-                    MethodName = 'SetVirtualDirectory'
-                    Arguments = @{
-                        Application = $reportingServicesData.ReportsApplicationName
+                    MethodName  = 'SetVirtualDirectory'
+                    Arguments   = @{
+                        Application      = $reportingServicesData.ReportsApplicationName
                         VirtualDirectory = $ReportsVirtualDirectory
-                        Lcid = $language
+                        Lcid             = $language
                     }
                 }
 
@@ -610,11 +610,11 @@ function Set-TargetResource
                 $currentConfig.ReportsReservedUrl | ForEach-Object -Process {
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
-                        MethodName = 'ReserveUrl'
-                        Arguments = @{
+                        MethodName  = 'ReserveUrl'
+                        Arguments   = @{
                             Application = $reportingServicesData.ReportsApplicationName
-                            UrlString = $_
-                            Lcid = $language
+                            UrlString   = $_
+                            Lcid        = $language
                         }
                     }
 
@@ -634,11 +634,11 @@ function Set-TargetResource
                 $currentConfig.ReportServerReservedUrl | ForEach-Object -Process {
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
-                        MethodName = 'RemoveURL'
-                        Arguments = @{
+                        MethodName  = 'RemoveURL'
+                        Arguments   = @{
                             Application = 'ReportServerWebService'
-                            UrlString = $_
-                            Lcid = $language
+                            UrlString   = $_
+                            Lcid        = $language
                         }
                     }
 
@@ -649,11 +649,11 @@ function Set-TargetResource
                     Write-Verbose -Message "Adding report server URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
-                        MethodName = 'ReserveUrl'
-                        Arguments = @{
+                        MethodName  = 'ReserveUrl'
+                        Arguments   = @{
                             Application = 'ReportServerWebService'
-                            UrlString = $_
-                            Lcid = $language
+                            UrlString   = $_
+                            Lcid        = $language
                         }
                     }
 
@@ -673,11 +673,11 @@ function Set-TargetResource
                 $currentConfig.ReportsReservedUrl | ForEach-Object -Process {
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
-                        MethodName = 'RemoveURL'
-                        Arguments = @{
+                        MethodName  = 'RemoveURL'
+                        Arguments   = @{
                             Application = $reportingServicesData.ReportsApplicationName
-                            UrlString = $_
-                            Lcid = $language
+                            UrlString   = $_
+                            Lcid        = $language
                         }
                     }
 
@@ -689,11 +689,11 @@ function Set-TargetResource
 
                     $invokeRsCimMethodParameters = @{
                         CimInstance = $reportingServicesData.Configuration
-                        MethodName = 'ReserveUrl'
-                        Arguments = @{
+                        MethodName  = 'ReserveUrl'
+                        Arguments   = @{
                             Application = $reportingServicesData.ReportsApplicationName
-                            UrlString = $_
-                            Lcid = $language
+                            UrlString   = $_
+                            Lcid        = $language
                         }
                     }
 
@@ -709,9 +709,9 @@ function Set-TargetResource
 
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
-                    MethodName = 'SetSecureConnectionLevel'
-                    Arguments = @{
-                        Level = @(0,1)[$UseSsl]
+                    MethodName  = 'SetSecureConnectionLevel'
+                    Arguments   = @{
+                        Level = @(0, 1)[$UseSsl]
                     }
                 }
 
@@ -972,7 +972,7 @@ function Invoke-RsCimMethod
     )
 
     $invokeCimMethodParameters = @{
-        MethodName = $MethodName
+        MethodName  = $MethodName
         ErrorAction = 'Stop'
     }
 

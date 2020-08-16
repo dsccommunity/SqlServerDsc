@@ -124,7 +124,7 @@ try
                 )
             }
 
-            $managedComputerObject.Services | ForEach-Object {
+            $managedComputerObject.Services | ForEach-Object -Process {
                 $_ | Add-Member @mockAddMemberParameters_SetServiceAccount
             }
 
@@ -204,7 +204,7 @@ try
                 )
             }
 
-            $managedComputerObject.Services | ForEach-Object {
+            $managedComputerObject.Services | ForEach-Object -Process {
                 $_ | Add-Member @mockAddMemberParameters_SetServiceAccount
             }
 
@@ -224,7 +224,7 @@ try
                 )
             }
 
-            $managedComputerObject.Services | ForEach-Object {
+            $managedComputerObject.Services | ForEach-Object -Process {
                 $_ | Add-Member @mockAddMemberParameters_SetServiceAccount_Exception
             }
 

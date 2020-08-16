@@ -49,7 +49,7 @@ function Get-TargetResource
         ServerName   = $ServerName
         InstanceName = $InstanceName
         Severity     = $null
-        MessageId     = $null
+        MessageId    = $null
     }
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
@@ -60,7 +60,7 @@ function Get-TargetResource
             $script:localizedData.GetSqlAlerts
         )
         # Check agent exists
-        $sqlAgentObject = $sqlServerObject.JobServer.Alerts | Where-Object -FilterScript {$_.Name -eq $Name}
+        $sqlAgentObject = $sqlServerObject.JobServer.Alerts | Where-Object -FilterScript { $_.Name -eq $Name }
         if ($sqlAgentObject)
         {
             Write-Verbose -Message (
@@ -154,7 +154,7 @@ function Set-TargetResource
         {
             'Present'
             {
-                $sqlAlertObject = $sqlServerObject.JobServer.Alerts | Where-Object -FilterScript {$_.Name -eq $Name}
+                $sqlAlertObject = $sqlServerObject.JobServer.Alerts | Where-Object -FilterScript { $_.Name -eq $Name }
                 if ($sqlAlertObject)
                 {
                     if ($PSBoundParameters.ContainsKey('Severity') -and $PSBoundParameters.ContainsKey('MessageId'))
@@ -245,7 +245,7 @@ function Set-TargetResource
             {
                 try
                 {
-                    $sqlAlertObjectToDrop = $sqlServerObject.JobServer.Alerts| Where-Object -FilterScript {$_.Name -eq $Name}
+                    $sqlAlertObjectToDrop = $sqlServerObject.JobServer.Alerts | Where-Object -FilterScript { $_.Name -eq $Name }
                     if ($sqlAlertObjectToDrop)
                     {
                         Write-Verbose -Message (
@@ -329,9 +329,9 @@ function Test-TargetResource
     )
 
     $getTargetResourceParameters = @{
-        ServerName     = $ServerName
-        InstanceName   = $InstanceName
-        Name           = $Name
+        ServerName   = $ServerName
+        InstanceName = $InstanceName
+        Name         = $Name
     }
 
     $returnValue = $false

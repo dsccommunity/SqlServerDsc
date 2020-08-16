@@ -26,13 +26,13 @@ function Get-TargetResource
     )
 
     $returnValue = @{
-        Name = [System.String] $Name
-        Protocol = [System.String] ''
-        ServerName = [System.String] $null
-        TcpPort = [System.UInt16] 0
+        Name              = [System.String] $Name
+        Protocol          = [System.String] ''
+        ServerName        = [System.String] $null
+        TcpPort           = [System.UInt16] 0
         UseDynamicTcpPort = [System.Boolean] $false
-        PipeName = [System.String] ''
-        Ensure = [System.String] 'Absent'
+        PipeName          = [System.String] ''
+        Ensure            = [System.String] 'Absent'
     }
 
     $protocolTcp = 'DBMSSOCN'
@@ -43,8 +43,8 @@ function Get-TargetResource
     )
 
     $itemValue = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo' `
-                                  -Name $Name `
-                                  -ErrorAction SilentlyContinue
+        -Name $Name `
+        -ErrorAction SilentlyContinue
 
     if (((Get-CimInstance -ClassName win32_OperatingSystem).OSArchitecture) -eq '64-bit')
     {
@@ -54,15 +54,15 @@ function Get-TargetResource
 
         $isWow6432Node = $true
         $itemValueWow6432Node = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo' `
-                                                 -Name $Name `
-                                                 -ErrorAction SilentlyContinue
+            -Name $Name `
+            -ErrorAction SilentlyContinue
     }
 
     if ((-not $isWow6432Node -and $null -ne $itemValue ) -or `
-       (($null -ne $itemValue -and $null -ne $itemValueWow6432Node) -and `
-       ($isWow6432Node -and $itemValueWow6432Node."$Name" -eq $itemValue."$Name")))
+        (($null -ne $itemValue -and $null -ne $itemValueWow6432Node) -and `
+            ($isWow6432Node -and $itemValueWow6432Node."$Name" -eq $itemValue."$Name")))
     {
-        $itemConfig = $itemValue."$Name" | ConvertFrom-Csv -Header 'Protocol','ServerName','TcpPort'
+        $itemConfig = $itemValue."$Name" | ConvertFrom-Csv -Header 'Protocol', 'ServerName', 'TcpPort'
         if ($itemConfig)
         {
             if ($itemConfig.Protocol -eq $protocolTcp)
@@ -139,7 +139,7 @@ function Set-TargetResource
         $Name,
 
         [Parameter()]
-        [ValidateSet('TCP','NP')]
+        [ValidateSet('TCP', 'NP')]
         [System.String]
         $Protocol = 'TCP',
 
@@ -157,7 +157,7 @@ function Set-TargetResource
         $UseDynamicTcpPort = $false,
 
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present'
     )
@@ -221,7 +221,7 @@ function Set-TargetResource
 
         # If this is a 64-bit OS then also remove from Wow6432Node
         if (((Get-CimInstance -ClassName win32_OperatingSystem).OSArchitecture) -eq '64-bit' `
-              -and (Test-Path -Path $registryPathWow6432Node))
+                -and (Test-Path -Path $registryPathWow6432Node))
         {
             Write-Verbose -Message (
                 $script:localizedData.RemoveClientAlias32Bit -f $Name
@@ -271,7 +271,7 @@ function Test-TargetResource
         $Name,
 
         [Parameter()]
-        [ValidateSet('TCP','NP')]
+        [ValidateSet('TCP', 'NP')]
         [System.String]
         $Protocol = 'TCP',
 
@@ -289,7 +289,7 @@ function Test-TargetResource
         $UseDynamicTcpPort = $false,
 
         [Parameter()]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present'
     )

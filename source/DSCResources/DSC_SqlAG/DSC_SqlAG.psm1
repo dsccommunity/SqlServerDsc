@@ -49,7 +49,7 @@ function Get-TargetResource
     $sqlMajorVersion = $serverObject.Version.Major
 
     # Get the endpoint properties
-    $endpoint = $serverObject.Endpoints | Where-Object { $_.EndpointType -eq 'DatabaseMirroring' }
+    $endpoint = $serverObject.Endpoints | Where-Object -FilterScript { $_.EndpointType -eq 'DatabaseMirroring' }
     if ( $endpoint )
     {
         $endpointPort = $endpoint.Protocol.Tcp.ListenerPort
@@ -297,7 +297,7 @@ function Set-TargetResource
             Test-ClusterPermissions -ServerObject $serverObject
 
             # Make sure a database mirroring endpoint exists.
-            $endpoint = $serverObject.Endpoints | Where-Object { $_.EndpointType -eq 'DatabaseMirroring' }
+            $endpoint = $serverObject.Endpoints | Where-Object -FilterScript { $_.EndpointType -eq 'DatabaseMirroring' }
             if ( -not $endpoint )
             {
                 $errorMessage = $script:localizedData.DatabaseMirroringEndpointNotFound -f ('{0}\{1}' -f $ServerName, $InstanceName)

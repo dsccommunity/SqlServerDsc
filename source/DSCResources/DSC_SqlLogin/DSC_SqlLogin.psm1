@@ -559,15 +559,15 @@ function Test-TargetResource
                         if ((Find-ExceptionByNumber -ExceptionToSearch $_.Exception -ErrorNumber 18470))
                         {
                             Write-Verbose -Message (
-                                    $script:localizedData.PasswordValidButLoginDisabled -f $Name
+                                $script:localizedData.PasswordValidButLoginDisabled -f $Name
                             )
                         }
                         elseif ((Find-ExceptionByNumber -ExceptionToSearch $_.Exception -ErrorNumber 18456))
                         {
                             Write-Verbose -Message (
                                 '{0} {1}' -f
-                                    ($script:localizedData.PasswordValidationFailed -f $Name),
-                                    ($script:localizedData.PasswordValidationFailedMessage -f $_.Exception.message)
+                                ($script:localizedData.PasswordValidationFailed -f $Name),
+                                ($script:localizedData.PasswordValidationFailedMessage -f $_.Exception.message)
                             )
 
                             # The password was not correct, password validation failed

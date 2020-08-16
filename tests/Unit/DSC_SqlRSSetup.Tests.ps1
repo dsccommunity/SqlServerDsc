@@ -71,7 +71,7 @@ try
             $argumentHashTable = @{}
 
             # Break the argument string into a hash table
-            ($Argument -split ' ?/') | ForEach-Object {
+            ($Argument -split ' ?/') | ForEach-Object -Process {
                 if ($_ -imatch '(\w+)="?([^\/]+)"?')
                 {
                     $key = $Matches[1]
