@@ -37,41 +37,6 @@ try
 {
     InModuleScope $script:dscResourceName {
         Describe 'Helper functions' {
-            Context 'Get-SqlServerMajorVersion' {
-                Mock -CommandName Get-ItemProperty -MockWith {
-                    return [PSCustomObject] @{
-                        MSSQLSERVER = 'MSSQL12.MSSQLSERVER'
-                    }
-                } -ParameterFilter {
-                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL'
-                }
-
-                It 'Should return correct major version for default instance' {
-                    Mock -CommandName Get-ItemProperty -MockWith {
-                        return [PSCustomObject] @{
-                            Version = '12.1.4100.1'
-                        }
-                    } -ParameterFilter {
-                        $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.MSSQLSERVER\Setup'
-                    }
-
-                    Get-SqlServerMajorVersion -InstanceName 'MSSQLSERVER' | Should -Be '12'
-                }
-
-                It 'Should throw error if major version cannot be resolved' {
-
-                    Mock -CommandName Get-ItemProperty -MockWith {
-                        return [PSCustomObject] @{
-                            Version = ''
-                        }
-                    } -ParameterFilter {
-                        $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.MSSQLSERVER\Setup'
-                    }
-
-                    { Get-SqlServerMajorVersion -InstanceName 'MSSQLSERVER' } | Should -Throw ($script:localizedData.FailedToDetectSqlVersion -f 'MSSQLSERVER')
-                }
-            }
-
             Context 'Get-SqlLocalServerName' {
 
                 It 'Should return COMPUTERNAME given MSSQLSERVER' {
@@ -97,7 +62,7 @@ try
                     WorkingDirectory = 'C:\Temp'
                 }
 
-                Mock -CommandName Get-SqlServerMajorVersion -MockWith { return '99' }
+                Mock -CommandName Get-SqlInstanceMajorVersion -MockWith { return '99' }
                 Mock -CommandName Get-SqlLocalServerName -MockWith { return 'SERVERNAME' }
                 Mock -CommandName New-ServerConnection -MockWith {
                     return [PSCustomObject] @{
@@ -123,8 +88,8 @@ try
             Context 'The system is not in the desired state' {
                 Context 'Get method' {
                     $result = Get-TargetResource @testParameters
-                    It 'Get method calls Get-SqlServerMajorVersion with InstanceName = MSSQLSERVER' {
-                        Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                    It 'Get method calls Get-SqlInstanceMajorVersion with InstanceName = MSSQLSERVER' {
+                        Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion -Times 1 `
                             -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
                     }
                     It 'Get method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
@@ -183,8 +148,8 @@ try
 
             Context 'Set method' {
                 Set-TargetResource @testParameters
-                It 'Set method calls Get-SqlServerMajorVersion with $InstanceName = MSSQLSERVER' {
-                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                It 'Set method calls Get-SqlInstanceMajorVersion with $InstanceName = MSSQLSERVER' {
+                    Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion -Times 1 `
                         -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
                 }
                 It 'Set method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
@@ -231,7 +196,7 @@ try
                 Ensure = 'Present'
             }
 
-            Mock -CommandName Get-SqlServerMajorVersion -MockWith { return '99' }
+            Mock -CommandName Get-SqlInstanceMajorVersion -MockWith { return '99' }
             Mock -CommandName Get-SqlLocalServerName -MockWith { return 'SERVERNAME\INSTANCENAME' }
             Mock -CommandName New-ServerConnection -MockWith {
                 return [PSCustomObject] @{
@@ -256,8 +221,8 @@ try
             Context 'The system is not in the desired state' {
                 Context 'Get method' {
                     $result = Get-TargetResource @testParameters
-                    It 'Get method calls Get-SqlServerMajorVersion with $InstanceName = INSTANCENAME' {
-                        Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                    It 'Get method calls Get-SqlInstanceMajorVersion with $InstanceName = INSTANCENAME' {
+                        Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion -Times 1 `
                             -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
                     }
                     It 'Get method calls Get-SqlLocalServerName with $InstanceName = INSTANCENAME' {
@@ -316,8 +281,8 @@ try
 
             Context 'Set method' {
                 Set-TargetResource @testParameters
-                It 'Set method calls Get-SqlServerMajorVersion with $InstanceName = INSTANCENAME' {
-                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                It 'Set method calls Get-SqlInstanceMajorVersion with $InstanceName = INSTANCENAME' {
+                    Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion -Times 1 `
                         -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
                 }
                 It 'Set method calls Get-SqlLocalServerName with $InstanceName = INSTANCENAME' {
@@ -376,7 +341,7 @@ try
                 Ensure = 'Present'
             }
 
-            Mock -CommandName Get-SqlServerMajorVersion -MockWith { return '99' }
+            Mock -CommandName Get-SqlInstanceMajorVersion -MockWith { return '99' }
             Mock -CommandName Get-SqlLocalServerName -MockWith { return 'SERVERNAME' }
             Mock -CommandName New-ServerConnection -MockWith {
                 return [PSCustomObject] @{
@@ -400,8 +365,8 @@ try
 
             Context 'Get method' {
                 $result = Get-TargetResource @testParameters
-                It 'Get method calls Get-SqlServerMajorVersion with InstanceName = MSSQLSERVER' {
-                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                It 'Get method calls Get-SqlInstanceMajorVersion with InstanceName = MSSQLSERVER' {
+                    Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion -Times 1 `
                         -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
                 }
                 It 'Get method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
@@ -459,8 +424,8 @@ try
 
             Context 'Set method' {
                 Set-TargetResource @testParameters
-                It 'Set method calls Get-SqlServerMajorVersion with $InstanceName = MSSQLSERVER' {
-                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                It 'Set method calls Get-SqlInstanceMajorVersion with $InstanceName = MSSQLSERVER' {
+                    Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion -Times 1 `
                         -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
                 }
                 It 'Set method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
@@ -504,7 +469,7 @@ try
                 Ensure = 'Present'
             }
 
-            Mock -CommandName Get-SqlServerMajorVersion -MockWith { return '99' }
+            Mock -CommandName Get-SqlInstanceMajorVersion -MockWith { return '99' }
             Mock -CommandName Get-SqlLocalServerName -MockWith { return 'SERVERNAME\INSTANCENAME' }
             Mock -CommandName New-ServerConnection -MockWith {
                 return [PSCustomObject] @{
@@ -528,8 +493,8 @@ try
 
             Context 'Get method' {
                 $result = Get-TargetResource @testParameters
-                It 'Get method calls Get-SqlServerMajorVersion with $InstanceName = INSTANCENAME' {
-                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                It 'Get method calls Get-SqlInstanceMajorVersion with $InstanceName = INSTANCENAME' {
+                    Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion -Times 1 `
                         -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
                 }
                 It 'Get method calls Get-SqlLocalServerName with $InstanceName = INSTANCENAME' {
@@ -587,8 +552,8 @@ try
 
             Context 'Set method' {
                 Set-TargetResource @testParameters
-                It 'Set method calls Get-SqlServerMajorVersion with $InstanceName = INSTANCENAME' {
-                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                It 'Set method calls Get-SqlInstanceMajorVersion with $InstanceName = INSTANCENAME' {
+                    Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion -Times 1 `
                         -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
                 }
                 It 'Set method calls Get-SqlLocalServerName with $InstanceName = INSTANCENAME' {
@@ -631,7 +596,7 @@ try
                 Ensure = 'Absent'
             }
 
-            Mock -CommandName Get-SqlServerMajorVersion -MockWith { return '99' }
+            Mock -CommandName Get-SqlInstanceMajorVersion -MockWith { return '99' }
             Mock -CommandName Get-SqlLocalServerName -MockWith { return 'SERVERNAME' }
             Mock -CommandName New-ServerConnection -MockWith {
                 return [PSCustomObject] @{
@@ -655,8 +620,8 @@ try
 
             Context 'Get method' {
                 $result = Get-TargetResource @testParameters
-                It 'Get method calls Get-SqlServerMajorVersion with InstanceName = MSSQLSERVER' {
-                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                It 'Get method calls Get-SqlInstanceMajorVersion with InstanceName = MSSQLSERVER' {
+                    Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion -Times 1 `
                         -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
                 }
                 It 'Get method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
@@ -715,8 +680,8 @@ try
             Context 'Set method' {
                 Set-TargetResource @testParameters
 
-                It 'Set method calls Get-SqlServerMajorVersion with $InstanceName = MSSQLSERVER' {
-                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                It 'Set method calls Get-SqlInstanceMajorVersion with $InstanceName = MSSQLSERVER' {
+                    Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion -Times 1 `
                         -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
                 }
                 It 'Set method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
@@ -761,7 +726,7 @@ try
                 Ensure = 'Absent'
             }
 
-            Mock -CommandName Get-SqlServerMajorVersion -MockWith { return '99' }
+            Mock -CommandName Get-SqlInstanceMajorVersion -MockWith { return '99' }
             Mock -CommandName Get-SqlLocalServerName -MockWith { return 'SERVERNAME\INSTANCENAME' }
             Mock -CommandName New-ServerConnection -MockWith {
                 return [PSCustomObject] @{
@@ -785,8 +750,8 @@ try
 
             Context 'Get method' {
                 $result = Get-TargetResource @testParameters
-                It 'Get method calls Get-SqlServerMajorVersion with $InstanceName = INSTANCENAME' {
-                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                It 'Get method calls Get-SqlInstanceMajorVersion with $InstanceName = INSTANCENAME' {
+                    Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion -Times 1 `
                         -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
                 }
                 It 'Get method calls Get-SqlLocalServerName with $InstanceName = INSTANCENAME' {
@@ -844,8 +809,8 @@ try
 
             Context 'Set method' {
                 Set-TargetResource @testParameters
-                It 'Set method calls Get-SqlServerMajorVersion with $InstanceName = INSTANCENAME' {
-                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                It 'Set method calls Get-SqlInstanceMajorVersion with $InstanceName = INSTANCENAME' {
+                    Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion -Times 1 `
                         -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
                 }
                 It 'Set method calls Get-SqlLocalServerName with $InstanceName = INSTANCENAME' {
@@ -889,7 +854,7 @@ try
                 Ensure = 'Absent'
             }
 
-            Mock -CommandName Get-SqlServerMajorVersion -MockWith { return '99' }
+            Mock -CommandName Get-SqlInstanceMajorVersion -MockWith { return '99' }
             Mock -CommandName Get-SqlLocalServerName -MockWith { return 'SERVERNAME' }
             Mock -CommandName New-ServerConnection -MockWith {
                 return [PSCustomObject] @{
@@ -913,8 +878,8 @@ try
 
             Context 'Get method' {
                 $result = Get-TargetResource @testParameters
-                It 'Get method calls Get-SqlServerMajorVersion with InstanceName = MSSQLSERVER' {
-                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                It 'Get method calls Get-SqlInstanceMajorVersion with InstanceName = MSSQLSERVER' {
+                    Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion -Times 1 `
                         -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
                 }
                 It 'Get method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
@@ -972,8 +937,8 @@ try
 
             Context 'Set method' {
                 Set-TargetResource @testParameters
-                It 'Set method calls Get-SqlServerMajorVersion with $InstanceName = MSSQLSERVER' {
-                    Assert-MockCalled -CommandName Get-SqlServerMajorVersion -Times 1 `
+                It 'Set method calls Get-SqlInstanceMajorVersion with $InstanceName = MSSQLSERVER' {
+                    Assert-MockCalled -CommandName Get-SqlInstanceMajorVersion -Times 1 `
                         -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
                 }
                 It 'Set method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
