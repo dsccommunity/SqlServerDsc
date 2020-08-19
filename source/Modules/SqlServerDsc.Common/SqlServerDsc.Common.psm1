@@ -767,7 +767,7 @@ function Get-SqlInstanceMajorVersion
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName = 'MSSQLSERVER'
+        $InstanceName
     )
 
     $sqlInstanceId = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL').$InstanceName
@@ -828,7 +828,7 @@ function Import-SQLPSModule
     # Get the newest SqlServer module if more than one exist
     $availableModule = Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable |
         Sort-Object -Property 'Version' -Descending |
-            Select-Object -First 1 -Property Name, Path, Version
+        Select-Object -First 1 -Property Name, Path, Version
 
     if ($availableModule)
     {
@@ -858,8 +858,8 @@ function Import-SQLPSModule
                     (Select-String -InputObject $_.Path -Pattern '\\([0-9]{3})\\' -List).Matches.Groups[1].Value
                 }
             } |
-                Sort-Object -Property 'Version' -Descending |
-                    Select-Object -First 1
+            Sort-Object -Property 'Version' -Descending |
+            Select-Object -First 1
 
         if ($availableModule)
         {
@@ -1157,9 +1157,9 @@ function Restart-SqlClusterService
 
             $agentService = $sqlService |
                 Get-CimAssociatedInstance -ResultClassName MSCluster_Resource |
-                    Where-Object -FilterScript {
-                        $_.Type -eq 'SQL Server Agent' -and $_.State -eq 2
-                    }
+                Where-Object -FilterScript {
+                    $_.Type -eq 'SQL Server Agent' -and $_.State -eq 2
+                }
 
             # Build a listing of resources being acted upon
             $resourceNames = @($sqlService.Name, ($agentService |
@@ -1628,7 +1628,7 @@ function Test-LoginEffectivePermissions
     {
         $loginMissingPermissions = Compare-Object -ReferenceObject $Permissions -DifferenceObject $loginEffectivePermissions |
             Where-Object -FilterScript { $_.SideIndicator -ne '=>' } |
-                Select-Object -ExpandProperty InputObject
+            Select-Object -ExpandProperty InputObject
 
         if ( $loginMissingPermissions.Count -eq 0 )
         {

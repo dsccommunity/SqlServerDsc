@@ -93,7 +93,7 @@ function Get-TargetResource
         $script:localizedData.GetCurrentState -f $InstanceName
     )
 
-    $sqlMajorVersion = Get-SqlServerMajorVersion -InstanceName $InstanceName
+    $sqlMajorVersion = Get-SqlInstanceMajorVersion -InstanceName $InstanceName
     $localSqlName = Get-SqlLocalServerName -InstanceName $InstanceName
 
     $localServerConnection = New-ServerConnection -SqlMajorVersion $sqlMajorVersion -SqlServerName $localSqlName
@@ -231,7 +231,7 @@ function Set-TargetResource
         New-InvalidArgumentException -ArgumentName 'RemoteDistributor' -Message $errorMessage
     }
 
-    $sqlMajorVersion = Get-SqlServerMajorVersion -InstanceName $InstanceName
+    $sqlMajorVersion = Get-SqlInstanceMajorVersion -InstanceName $InstanceName
     $localSqlName = Get-SqlLocalServerName -InstanceName $InstanceName
 
     $localServerConnection = New-ServerConnection -SqlMajorVersion $sqlMajorVersion -SqlServerName $localSqlName
@@ -861,38 +861,6 @@ function Get-RmoAssembly
     $rmo = Import-Assembly -Name "Microsoft.SqlServer.Rmo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
 
     return $rmo
-}
-
-<#
-    .SYNOPSIS
-        Returns the major version or the installed SQL Server instance.
-
-    .PARAMETER InstanceName
-        Specifies the instance name.
-#>
-function Get-SqlServerMajorVersion
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $InstanceName
-    )
-
-    $instanceId = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL").$InstanceName
-    $sqlVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Setup").Version
-
-    $sqlMajorVersion = $sqlVersion.Split(".")[0]
-    if (-not $sqlMajorVersion)
-    {
-        $errorMessage = $script:localizedData.FailedToDetectSqlVersion -f $InstanceName
-
-        New-InvalidResultException -Message $errorMessage
-    }
-
-    return $sqlMajorVersion
 }
 
 <#
