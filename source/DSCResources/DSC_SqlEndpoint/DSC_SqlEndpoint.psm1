@@ -14,8 +14,8 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         The name of the endpoint.
 
     .PARAMETER EndpointType
-        Specifies the type of endpoint. Currently the only type that is supported
-        is the Database Mirror type.
+        Specifies the type of endpoint. Currently the only types that are supported
+        are Database Mirror and Service Broker.
 
     .PARAMETER ServerName
         The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
@@ -42,7 +42,7 @@ function Get-TargetResource
         $EndpointName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('DatabaseMirroring')]
+        [ValidateSet('DatabaseMirroring','ServiceBroker')]
         [System.String]
         $EndpointType,
 
@@ -61,15 +61,17 @@ function Get-TargetResource
     )
 
     $getTargetResourceReturnValues = @{
-        ServerName   = $ServerName
-        InstanceName = $InstanceName
-        EndpointType = $EndpointType
-        Ensure       = 'Absent'
-        EndpointName = ''
-        Port         = ''
-        IpAddress    = ''
-        Owner        = ''
-        State        = $null
+        ServerName              = $ServerName
+        InstanceName            = $InstanceName
+        EndpointType            = $EndpointType
+        Ensure                  = 'Absent'
+        EndpointName            = ''
+        Port                    = ''
+        IpAddress               = ''
+        Owner                   = ''
+        State                   = $null
+        EnableMessageForwarding = $null
+        MessageForwardingSize   = $null
     }
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
@@ -95,6 +97,14 @@ function Get-TargetResource
             $getTargetResourceReturnValues.IpAddress = $endpointObject.Protocol.Tcp.ListenerIPAddress
             $getTargetResourceReturnValues.Owner = $endpointObject.Owner
             $getTargetResourceReturnValues.State = $endpointObject.EndpointState
+            if ($endpointObject.EndpointType -eq 'ServiceBroker')
+            {
+                $getTargetResourceReturnValues.EnableMessageForwarding = $endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled
+                if ($endpointObject.EnableMessageForwarding -eq $true)
+                {
+                    $getTargetResourceReturnValues.MessageForwardingSize = $endpointObject.Payload.ServiceBroker.MessageForwardingSize
+                }
+            }
         }
     }
     else
@@ -114,15 +124,15 @@ function Get-TargetResource
         The name of the endpoint.
 
     .PARAMETER EndpointType
-        Specifies the type of endpoint. Currently the only type that is supported
-        is the Database Mirror type.
+        Specifies the type of endpoint. Currently the only types that are supported
+        are Database Mirror and Service Broker.
 
     .PARAMETER Ensure
         If the endpoint should be present or absent. Default values is 'Present'.
 
     .PARAMETER Port
         The network port the endpoint is listening on. Default value is 5022, but
-        default value is only used during endpoint creation, it is not enforce.
+        default value is only used during endpoint creation, it is not enforced.
 
     .PARAMETER ServerName
         The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
@@ -138,11 +148,19 @@ function Get-TargetResource
     .PARAMETER Owner
         The owner of the endpoint. Default is the login used for the creation.
 
+    .PARAMETER EnableMessageForwarding
+        Determines whether messages received by this endpoint that are for services located elsewhere will be forwarded.
+
+    .PARAMETER MessageForwardingSize
+        Specifies the maximum amount of storage in megabytes to allocate for the endpoint to use when storing messages that are to be forwarded.
+
     .PARAMETER State
         Specifies the state of the endpoint. Valid states are Started, Stopped, or
         Disabled. When an endpoint is created and the state is not specified then
         the endpoint will be started after it is created. The state will not be
         enforced unless the parameter is specified.
+
+
 #>
 function Set-TargetResource
 {
@@ -154,7 +172,7 @@ function Set-TargetResource
         $EndpointName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('DatabaseMirroring')]
+        [ValidateSet('DatabaseMirroring','ServiceBroker')]
         [System.String]
         $EndpointType,
 
@@ -185,6 +203,14 @@ function Set-TargetResource
         $Owner,
 
         [Parameter()]
+        [System.Boolean]
+        $EnableMessageForwarding,
+
+        [Parameter()]
+        [System.UInt32]
+        $MessageForwardingSize,
+
+        [Parameter()]
         [ValidateSet('Started', 'Stopped', 'Disabled')]
         [System.String]
         $State
@@ -211,35 +237,48 @@ function Set-TargetResource
                     $script:localizedData.CreateEndpoint -f $EndpointName, $InstanceName
                 )
 
-                switch ($EndpointType)
+                if(($EndpointType -eq 'DatabaseMirroring')  -or ($EndpointType -eq 'ServiceBroker'))
                 {
-                    'DatabaseMirroring'
+                    $endpointObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Endpoint' -ArgumentList @($sqlServerObject, $EndpointName)
+
+                    $endpointObject.ProtocolType = [Microsoft.SqlServer.Management.Smo.ProtocolType]::Tcp
+                    $endpointObject.Protocol.Tcp.ListenerPort = $Port
+                    $endpointObject.Protocol.Tcp.ListenerIPAddress = $IpAddress
+
+                    if ($PSBoundParameters.ContainsKey('Owner'))
                     {
-                        $endpointObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Endpoint' -ArgumentList @($sqlServerObject, $EndpointName)
-                        $endpointObject.EndpointType = [Microsoft.SqlServer.Management.Smo.EndpointType]::DatabaseMirroring
-                        $endpointObject.ProtocolType = [Microsoft.SqlServer.Management.Smo.ProtocolType]::Tcp
-                        $endpointObject.Protocol.Tcp.ListenerPort = $Port
-                        $endpointObject.Protocol.Tcp.ListenerIPAddress = $IpAddress
-
-                        if ($PSBoundParameters.ContainsKey('Owner'))
+                        $endpointObject.Owner = $Owner
+                    }
+                    switch ($EndpointType)
+                    {
+                        'DatabaseMirroring'
                         {
-                            $endpointObject.Owner = $Owner
+                            $endpointObject.EndpointType = [Microsoft.SqlServer.Management.Smo.EndpointType]::DatabaseMirroring
+                            $endpointObject.Payload.DatabaseMirroring.ServerMirroringRole = [Microsoft.SqlServer.Management.Smo.ServerMirroringRole]::All
+                            $endpointObject.Payload.DatabaseMirroring.EndpointEncryption = [Microsoft.SqlServer.Management.Smo.EndpointEncryption]::Required
+                            $endpointObject.Payload.DatabaseMirroring.EndpointEncryptionAlgorithm = [Microsoft.SqlServer.Management.Smo.EndpointEncryptionAlgorithm]::Aes
+                            $endpointObject.Create()
                         }
-
-                        $endpointObject.Payload.DatabaseMirroring.ServerMirroringRole = [Microsoft.SqlServer.Management.Smo.ServerMirroringRole]::All
-                        $endpointObject.Payload.DatabaseMirroring.EndpointEncryption = [Microsoft.SqlServer.Management.Smo.EndpointEncryption]::Required
-                        $endpointObject.Payload.DatabaseMirroring.EndpointEncryptionAlgorithm = [Microsoft.SqlServer.Management.Smo.EndpointEncryptionAlgorithm]::Aes
-                        $endpointObject.Create()
-
-                        <#
-                            If endpoint state is not specified, then default to
-                            starting the endpoint. If state is specified then
-                            it will be handled later.
-                        #>
-                        if (-not ($PSBoundParameters.ContainsKey('State')))
+                        'ServiceBroker'
                         {
-                            $endpointObject.Start()
+                            $endpointObject.EndpointType = [Microsoft.SqlServer.Management.Smo.EndpointType]::ServiceBroker
+                            $endpointObject.Payload.ServiceBroker.EndpointEncryption = [Microsoft.SqlServer.Management.Smo.EndpointEncryption]::Required
+                            $endpointObject.Payload.ServiceBroker.EndpointEncryptionAlgorithm = [Microsoft.SqlServer.Management.Smo.EndpointEncryptionAlgorithm]::Aes
+                            $endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled = $EnableMessageForwarding
+                            if($EnableMessageForwarding -eq $true){
+                                $endpointObject.Payload.ServiceBroker.MessageForwardingSize = $MessageForwardingSize
+                            }
+                            $endpointObject.Create()
                         }
+                    }
+                    <#
+                        If endpoint state is not specified, then default to
+                        starting the endpoint. If state is specified then
+                        it will be handled later.
+                    #>
+                    if (-not ($PSBoundParameters.ContainsKey('State')))
+                    {
+                        $endpointObject.Start()
                     }
                 }
             }
@@ -376,8 +415,8 @@ function Set-TargetResource
         The name of the endpoint.
 
     .PARAMETER EndpointType
-        Specifies the type of endpoint. Currently the only type that is supported
-        is the Database Mirror type.
+        Specifies the type of endpoint. Currently the only types that are supported
+        are Database Mirror and Service Broker.
 
     .PARAMETER Ensure
         If the endpoint should be present or absent. Default values is 'Present'.
@@ -400,6 +439,12 @@ function Set-TargetResource
     .PARAMETER Owner
         The owner of the endpoint. Default is the login used for the creation.
 
+    .PARAMETER EnableMessageForwarding
+        Determines whether messages received by this endpoint that are for services located elsewhere will be forwarded.
+
+    .PARAMETER MessageForwardingSize
+        Specifies the maximum amount of storage in megabytes to allocate for the endpoint to use when storing messages that are to be forwarded.
+
     .PARAMETER State
         Specifies the state of the endpoint. Valid states are Started, Stopped, or
         Disabled. When an endpoint is created and the state is not specified then
@@ -417,7 +462,7 @@ function Test-TargetResource
         $EndpointName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('DatabaseMirroring')]
+        [ValidateSet('DatabaseMirroring','ServiceBroker')]
         [System.String]
         $EndpointType,
 
@@ -446,6 +491,14 @@ function Test-TargetResource
         [Parameter()]
         [System.String]
         $Owner,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableMessageForwarding,
+
+        [Parameter()]
+        [System.UInt32]
+        $MessageForwardingSize,
 
         [Parameter()]
         [ValidateSet('Started', 'Stopped', 'Disabled')]
@@ -484,6 +537,21 @@ function Test-TargetResource
             if ($getTargetResourceResult.State -ne $State)
             {
                 $result = $false
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('EnableMessageForwarding'))
+        {
+            if ($getTargetResourceResult.EnableMessageForwarding -ne $EnableMessageForwarding)
+            {
+                $result = $false
+            }
+            if ($getTargetResourceResult.EnableMessageForwarding -eq $true)
+            {
+                if ($getTargetResourceResult.MessageForwardingSize -ne $MessageForwardingSize)
+                {
+                    $result = $false
+                }
             }
         }
 

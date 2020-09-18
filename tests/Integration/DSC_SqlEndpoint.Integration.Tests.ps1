@@ -35,7 +35,7 @@ try
             $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:dscResourceName)_Add_Config"
+        $configurationName = "$($script:dscResourceName)_Add_HADR_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -86,7 +86,7 @@ try
             }
         }
 
-        $configurationName = "$($script:dscResourceName)_Remove_Config"
+        $configurationName = "$($script:dscResourceName)_Remove_HADR_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -126,6 +126,107 @@ try
                 $resourceCurrentState.Ensure | Should -Be 'Absent'
                 $resourceCurrentState.EndpointName | Should -BeNullOrEmpty
                 $resourceCurrentState.EndpointType | Should -Be 'DatabaseMirroring'
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be 'True'
+            }
+        }
+
+        $configurationName = "$($script:dscResourceName)_Add_ServiceBroker_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath           = $TestDrive
+                        ConfigurationData    = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
+                }
+
+                $resourceCurrentState.Ensure | Should -Be 'Present'
+                $resourceCurrentState.EndpointName | Should -Be $ConfigurationData.AllNodes.EndpointName
+                $resourceCurrentState.EndpointType | Should -Be 'ServiceBroker'
+                $resourceCurrentState.Port | Should -Be $ConfigurationData.AllNodes.SSbrPort
+                $resourceCurrentState.IpAddress | Should -Be $ConfigurationData.AllNodes.IpAddress
+                $resourceCurrentState.Owner | Should -Be $ConfigurationData.AllNodes.Owner
+                $resourceCurrentState.State | Should -Be 'Started'
+
+                $resourceCurrentState.EnableMessageForwarding | Should -Be $ConfigurationData.AllNodes.EnableMessageForwarding
+                $resourceCurrentState.MessageForwardingSize | Should -Be $ConfigurationData.AllNodes.MessageForwardingSize
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be 'True'
+            }
+        }
+
+        $configurationName = "$($script:dscResourceName)_Remove_ServiceBroker_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath           = $TestDrive
+                        ConfigurationData    = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
+                }
+
+                $resourceCurrentState.Ensure | Should -Be 'Absent'
+                $resourceCurrentState.EndpointName | Should -BeNullOrEmpty
+                $resourceCurrentState.EndpointType | Should -Be 'ServiceBroker'
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
