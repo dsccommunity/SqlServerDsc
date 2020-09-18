@@ -182,7 +182,12 @@ try
             EndpointName = $mockEndpointName
             EndpointType = $mockEndpointType
         }
-
+        $defaultSsbrParameters = @{
+            InstanceName = $mockInstanceName
+            ServerName   = $mockServerName
+            EndpointName = $mockSsbrEndpointName
+            EndpointType = $mockSsbrEndpointType
+        }
         Describe 'DSC_SqlEndpoint\Get-TargetResource' -Tag 'Get' {
             BeforeEach {
                 $testParameters = $defaultParameters
@@ -230,6 +235,8 @@ try
             $mockDynamicEnableMessageForwarding = $mockSsbrEnableMessageForwarding
             $mockDynamicMessageForwardingSize = $mockSsbrMessageForwardingSize
 
+            $testParameters = $defaultSsbrParameters
+
             Context 'When the system is in the desired state' {
                 It 'Should return the desired state as present' {
                     $result = Get-TargetResource @testParameters
@@ -258,7 +265,7 @@ try
 
                 Context 'When endpoint exist but with wrong endpoint type' {
                     It 'Should throw the correct error' {
-                        { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.EndpointFoundButWrongType -f $testParameters.EndpointName, $mockOtherEndpointType, $mockEndpointType)
+                        { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.EndpointFoundButWrongType -f $testParameters.EndpointName, $mockOtherEndpointType, $mockSSbrEndpointType)
                     }
                 }
 
@@ -409,6 +416,8 @@ try
                 $mockDynamicMessageForwardingSize = $mockSsbrMessageForwardingSize
                 $mockDynamicEndpointState = 'Started'
 
+                $testParameters = $defaultSsbrParameters
+
                 Context 'When ServiceBroker message forwarding is not in desired state' {
                     It 'Should return that desired state is absent' {
                         $testParameters.Add('Ensure', 'Present')
@@ -437,7 +446,7 @@ try
                 $mockDynamicEndpointOwner = $mockEndpointOwner
             }
 
-
+            $testParameters = $defaultParameters
 
             Context 'When the system is in the desired state' {
                 # Make sure the mock do return the correct endpoint
