@@ -42,7 +42,7 @@ function Get-TargetResource
         $EndpointName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('DatabaseMirroring','ServiceBroker')]
+        [ValidateSet('DatabaseMirroring', 'ServiceBroker')]
         [System.String]
         $EndpointType,
 
@@ -172,7 +172,7 @@ function Set-TargetResource
         $EndpointName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('DatabaseMirroring','ServiceBroker')]
+        [ValidateSet('DatabaseMirroring', 'ServiceBroker')]
         [System.String]
         $EndpointType,
 
@@ -237,7 +237,7 @@ function Set-TargetResource
                     $script:localizedData.CreateEndpoint -f $EndpointName, $InstanceName
                 )
 
-                if(($EndpointType -eq 'DatabaseMirroring')  -or ($EndpointType -eq 'ServiceBroker'))
+                if (($EndpointType -eq 'DatabaseMirroring')  -or ($EndpointType -eq 'ServiceBroker'))
                 {
                     $endpointObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Endpoint' -ArgumentList @($sqlServerObject, $EndpointName)
 
@@ -265,7 +265,8 @@ function Set-TargetResource
                             $endpointObject.Payload.ServiceBroker.EndpointEncryption = [Microsoft.SqlServer.Management.Smo.EndpointEncryption]::Required
                             $endpointObject.Payload.ServiceBroker.EndpointEncryptionAlgorithm = [Microsoft.SqlServer.Management.Smo.EndpointEncryptionAlgorithm]::Aes
                             $endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled = $EnableMessageForwarding
-                            if($EnableMessageForwarding -eq $true){
+                            if ($EnableMessageForwarding -eq $true)
+                            {
                                 $endpointObject.Payload.ServiceBroker.MessageForwardingSize = $MessageForwardingSize
                             }
                             $endpointObject.Create()
@@ -462,7 +463,7 @@ function Test-TargetResource
         $EndpointName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('DatabaseMirroring','ServiceBroker')]
+        [ValidateSet('DatabaseMirroring', 'ServiceBroker')]
         [System.String]
         $EndpointType,
 

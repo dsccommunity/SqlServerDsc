@@ -89,7 +89,7 @@ Configuration DSC_SqlEndpoint_Remove_HADR_Config
     .SYNOPSIS
         Configuration to ensure present and specify all the parameters
 #>
-Configuration DSC_SqlEndpoint_Add_ServerBroker_Config
+Configuration DSC_SqlEndpoint_Add_ServiceBroker_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -119,7 +119,7 @@ Configuration DSC_SqlEndpoint_Add_ServerBroker_Config
     .SYNOPSIS
         Configuration to ensure Absent and specify all the parameters
 #>
-Configuration DSC_SqlEndpoint_Remove_ServerBroker_Config
+Configuration DSC_SqlEndpoint_Remove_ServiceBroker_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
