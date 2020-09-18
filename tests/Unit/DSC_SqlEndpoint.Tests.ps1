@@ -114,7 +114,7 @@ try
                                 Add-Member -MemberType NoteProperty -Name 'EndpointEncryption' -Value $null -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'EndpointEncryptionAlgorithm' -Value $null -PassThru -Force|
                                 Add-Member -MemberType NoteProperty -Name 'EnableMessageForwarding' -Value $mockDynamicEnableMessageForwarding -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'MessageForwardingSize' -Value $mockDynamicMessageForwardingSize -PassThru |
+                                Add-Member -MemberType NoteProperty -Name 'MessageForwardingSize' -Value $mockDynamicMessageForwardingSize -PassThru
                         } -PassThru -Force
                 } -PassThru |
                 Add-Member -MemberType ScriptMethod -Name 'Alter' -Value {
