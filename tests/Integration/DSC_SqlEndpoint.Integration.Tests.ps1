@@ -171,9 +171,9 @@ try
                 }
 
                 $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.EndpointName | Should -Be $ConfigurationData.AllNodes.EndpointName
+                $resourceCurrentState.EndpointName | Should -Be $ConfigurationData.AllNodes.SsbrEndpointName
                 $resourceCurrentState.EndpointType | Should -Be 'ServiceBroker'
-                $resourceCurrentState.Port | Should -Be $ConfigurationData.AllNodes.SSbrPort
+                $resourceCurrentState.Port | Should -Be $ConfigurationData.AllNodes.SsbrPort
                 $resourceCurrentState.IpAddress | Should -Be $ConfigurationData.AllNodes.IpAddress
                 $resourceCurrentState.Owner | Should -Be $ConfigurationData.AllNodes.Owner
                 $resourceCurrentState.State | Should -Be 'Started'

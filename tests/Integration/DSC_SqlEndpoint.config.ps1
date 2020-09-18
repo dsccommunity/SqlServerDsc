@@ -28,6 +28,7 @@ else
 
                 CertificateFile         = $env:DscPublicCertificatePath
 
+                SsbrEndpointName        = 'Ssbr'
                 EnableMessageForwarding = $true
                 MessageForwardingSize   = 2
             }
@@ -99,7 +100,7 @@ Configuration DSC_SqlEndpoint_Add_ServiceBroker_Config
         {
             Ensure                  = 'Present'
 
-            EndpointName            = $Node.EndpointName
+            EndpointName            = $Node.SsbrEndpointName
             EndpointType            = 'ServiceBroker'
             Port                    = $Node.SsbrPort
             IpAddress               = $Node.IpAddress
@@ -129,7 +130,7 @@ Configuration DSC_SqlEndpoint_Remove_ServiceBroker_Config
         {
             Ensure               = 'Absent'
 
-            EndpointName         = $Node.EndpointName
+            EndpointName         = $Node.SsbrEndpointName
             EndpointType         = 'ServiceBroker'
 
             ServerName           = $Node.ServerName

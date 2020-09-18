@@ -100,7 +100,7 @@ function Get-TargetResource
             if ($endpointObject.EndpointType -eq 'ServiceBroker')
             {
                 $getTargetResourceReturnValues.EnableMessageForwarding = $endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled
-                if ($endpointObject.EnableMessageForwarding -eq $true)
+                if ($endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled -eq $true)
                 {
                     $getTargetResourceReturnValues.MessageForwardingSize = $endpointObject.Payload.ServiceBroker.MessageForwardingSize
                 }
@@ -531,7 +531,6 @@ function Test-TargetResource
                 $result = $false
             }
         }
-
 
         if ($PSBoundParameters.ContainsKey('State'))
         {
