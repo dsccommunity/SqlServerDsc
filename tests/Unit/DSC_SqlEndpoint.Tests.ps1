@@ -276,11 +276,13 @@ try
 
             Context 'When the system is in the desired state' {
                 It 'Should return the desired state as present' {
+                    $testParameters = $defaultSsbrParameters
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should -Be 'Present'
                 }
 
                 It 'Should return the same values as passed as parameters' {
+                    $testParameters = $defaultSsbrParameters
                     $result = Get-TargetResource @testParameters
                     $result.ServerName | Should -Be $testParameters.ServerName
                     $result.InstanceName | Should -Be $testParameters.InstanceName
@@ -293,6 +295,7 @@ try
                 }
 
                 It 'Should call the mock function Connect-SQL' {
+                    $testParameters = $defaultSsbrParameters
                     $result = Get-TargetResource @testParameters
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
@@ -302,6 +305,7 @@ try
 
                 Context 'When endpoint exist but with wrong endpoint type' {
                     It 'Should throw the correct error' {
+                        $testParameters = $defaultSsbrParameters
                         { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.EndpointFoundButWrongType -f $testParameters.EndpointName, $mockOtherEndpointType, $mockSSbrEndpointType)
                     }
                 }
