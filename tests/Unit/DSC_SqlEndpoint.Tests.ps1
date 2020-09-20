@@ -226,6 +226,43 @@ try
                 }
             }
 
+            # Make sure the mock do return the correct endpoint
+            $mockDynamicEndpointName = $mockEndpointName
+
+            Context 'When the system is in the desired state' {
+                It 'Should return the desired state as present' {
+                    $result = Get-TargetResource @testParameters
+                    $result.Ensure | Should -Be 'Present'
+                }
+
+                It 'Should return the same values as passed as parameters' {
+                    $result = Get-TargetResource @testParameters
+                    $result.ServerName | Should -Be $testParameters.ServerName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
+                    $result.EndpointName | Should -Be $testParameters.EndpointName
+                    $result.Port | Should -Be $mockEndpointListenerPort
+                    $result.IpAddress | Should -Be $mockEndpointListenerIpAddress
+                    $result.Owner | Should -Be $mockEndpointOwner
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    $result = Get-TargetResource @testParameters
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                # Make sure the mock return the endpoint with wrong endpoint type
+                $mockDynamicEndpointType = $mockOtherEndpointType
+
+                Context 'When endpoint exist but with wrong endpoint type' {
+                    It 'Should throw the correct error' {
+                        { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.EndpointFoundButWrongType -f $testParameters.EndpointName)
+                    }
+                }
+
+                # Make sure the mock return the endpoint with correct endpoint type
+                $mockDynamicEndpointType = $mockEndpointType
+            }
+
             # Make sure the mock returns the ServiceBroker endpoint
             $mockDynamicEndpointName = $mockSsbrEndpointName
             $mockDynamicEndpointType = $mockSsbrEndpointType
