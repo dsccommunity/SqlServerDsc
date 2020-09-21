@@ -195,6 +195,7 @@ try
                 $testParameters = $defaultParameters
 
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
+                Mock -CommandName New-Object -MockWith $mockNewObjectEndPoint -ParameterFilter $mockNewObjectEndPoint_ParameterFilter -Verifiable
             }
 
             # Make sure the mock does not return the correct endpoint
@@ -463,7 +464,7 @@ try
 
                 Context 'When ServiceBroker message forwarding is not in desired state' {
                     It 'Should return that desired state is absent' {
-                        $testParameters = $defaultSsbrParameters
+                        $testParameters = $defaultSsbrParameters.Clone()
                         $testParameters.Add('Ensure', 'Present')
                         $testParameters.Add('EnableMessageForwarding', $mockSsbrEnableMessageForwarding)
                         $testParameters.Add('MessageForwardingSize', $mockSsbrMessageForwardingSize)
@@ -597,7 +598,7 @@ try
                 $mockExpectedNameWhenCallingMethod = $mockSsbrEndpointName
 
                 It 'Should call the method Create when desired state is to be Present (setting all parameters for ServiceBroker endpoint)' {
-                    $testParameters = $defaultSsbrParameters
+                    $testParameters = $defaultSsbrParameters.Clone()
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             Ensure = 'Absent'
@@ -691,7 +692,7 @@ try
                 $mockExpectedNameWhenCallingMethod = $mockSsbrEndpointName
 
                 It 'Should call the method Create when desired state is to be Present (setting all parameters for ServiceBroker endpoint)' {
-                    $testParameters = $defaultSsbrParameters
+                    $testParameters = $defaultSsbrParameters.Clone()
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             Ensure = 'Present'
