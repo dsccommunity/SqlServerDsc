@@ -112,7 +112,7 @@ try
                         Add-Member -MemberType ScriptProperty -Name 'ServiceBroker' -Value {
                             return New-Object -TypeName Object |
                                 Add-Member -MemberType NoteProperty -Name 'EndpointEncryption' -Value $null -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'EndpointEncryptionAlgorithm' -Value $null -PassThru -Force|
+                                Add-Member -MemberType NoteProperty -Name 'EndpointEncryptionAlgorithm' -Value $null -PassThru -Force |
                                 Add-Member -MemberType NoteProperty -Name 'EnableMessageForwarding' -Value $mockDynamicEnableMessageForwarding -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'MessageForwardingSize' -Value $mockDynamicMessageForwardingSize -PassThru
                         } -PassThru -Force
@@ -182,12 +182,14 @@ try
             EndpointName = $mockEndpointName
             EndpointType = $mockEndpointType
         }
+
         $defaultSsbrParameters = @{
             InstanceName = $mockInstanceName
             ServerName   = $mockServerName
             EndpointName = $mockSsbrEndpointName
             EndpointType = $mockSsbrEndpointType
         }
+
         Describe 'DSC_SqlEndpoint\Get-TargetResource' -Tag 'Get' {
             BeforeEach {
                 $testParameters = $defaultParameters
@@ -229,7 +231,7 @@ try
             # Make sure the mock do return the correct endpoint
             $mockDynamicEndpointName = $mockEndpointName
 
-            Context 'When the system is in the desired state' {
+            Context 'When the system is in the desired state (mirror)' {
                 It 'Should return the desired state as present' {
                     $result = Get-TargetResource @testParameters
                     $result.Ensure | Should -Be 'Present'
@@ -255,7 +257,7 @@ try
 
                 Context 'When endpoint exist but with wrong endpoint type' {
                     It 'Should throw the correct error' {
-                        { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.EndpointFoundButWrongType -f $testParameters.EndpointName)
+                        { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.EndpointFoundButWrongType -f $testParameters.EndpointName, $mockOtherEndpointType, $mockEndpointType)
                     }
                 }
 
@@ -274,7 +276,7 @@ try
 
             $testParameters = $defaultSsbrParameters
 
-            Context 'When the system is in the desired state' {
+            Context 'When the system is in the desired state (ServiceBroker)' {
                 It 'Should return the desired state as present' {
                     $testParameters = $defaultSsbrParameters
                     $result = Get-TargetResource @testParameters
@@ -461,6 +463,7 @@ try
 
                 Context 'When ServiceBroker message forwarding is not in desired state' {
                     It 'Should return that desired state is absent' {
+                        $testParameters = $defaultSsbrParameters
                         $testParameters.Add('Ensure', 'Present')
                         $testParameters.Add('EnableMessageForwarding', $mockSsbrEnableMessageForwarding)
                         $testParameters.Add('MessageForwardingSize', $mockSsbrMessageForwardingSize)
@@ -594,6 +597,7 @@ try
                 $mockExpectedNameWhenCallingMethod = $mockSsbrEndpointName
 
                 It 'Should call the method Create when desired state is to be Present (setting all parameters for ServiceBroker endpoint)' {
+                    $testParameters = $defaultSsbrParameters
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             Ensure = 'Absent'
@@ -687,6 +691,7 @@ try
                 $mockExpectedNameWhenCallingMethod = $mockSsbrEndpointName
 
                 It 'Should call the method Create when desired state is to be Present (setting all parameters for ServiceBroker endpoint)' {
+                    $testParameters = $defaultSsbrParameters
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             Ensure = 'Present'
