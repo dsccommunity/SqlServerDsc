@@ -204,11 +204,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $EnableMessageForwarding,
+        $IsMessageForwardingEnabled,
 
         [Parameter()]
         [System.UInt32]
-        $IsMessageForwardingEnabled,
+        $MessageForwardingSize,
 
         [Parameter()]
         [ValidateSet('Started', 'Stopped', 'Disabled')]
