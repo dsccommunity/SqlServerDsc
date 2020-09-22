@@ -18,22 +18,22 @@ Configuration Example
     {
         SqlEndpoint 'ServiceBroker'
         {
-            Ensure               = 'Present'
+            Ensure                     = 'Present'
 
-            EndpointName         = 'SSBR'
-            EndpointType         = 'ServiceBroker'
-            Port                 = 5023
-            IpAddress            = '192.168.0.20'
-            Owner                = 'sa'
-            State                = 'Started'
+            EndpointName               = 'SSBR'
+            EndpointType               = 'ServiceBroker'
+            Port                       = 5023
+            IpAddress                  = '192.168.0.20'
+            Owner                      = 'sa'
+            State                      = 'Started'
 
-            ServerName           = 'server1.company.local'
-            InstanceName         = 'INST1'
+            ServerName                 = 'server1.company.local'
+            InstanceName               = 'INST1'
 
-            EnableMessageForwarding = $true
-            MessageForwardingSize   = 2
+            IsMessageForwardingEnabled = $true
+            MessageForwardingSize      = 2
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            PsDscRunAsCredential       = $SqlAdministratorCredential
 
         }
     }

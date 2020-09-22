@@ -66,7 +66,7 @@ try
         $mockSsbrEndpointListenerPort = 5023
         $mockSsbrEndpointListenerIpAddress = '192.168.0.20'
         $mockSsbrEndpointOwner = 'COMPANY\OtherAcct'
-        $mockSsbrEnableMessageForwarding = $true
+        $mockSsbrIsMessageForwardingEnabled = $true
         $mockSsbrMessageForwardingSize = 2
         $mockSsbrEndpointState = 'Started'
 
@@ -80,7 +80,7 @@ try
         $mockDynamicEndpointListenerPort = $mockEndpointListenerPort
         $mockDynamicEndpointListenerIpAddress = $mockEndpointListenerIpAddress
         $mockDynamicEndpointOwner = $mockEndpointOwner
-        $mockDynamicEnableMessageForwarding = $null
+        $mockDynamicIsMessageForwardingEnabled = $null
         $mockDynamicMessageForwardingSize = $null
         $mockDynamicEndpointState = 'Started'
 
@@ -112,8 +112,8 @@ try
                         Add-Member -MemberType ScriptProperty -Name 'ServiceBroker' -Value {
                             return New-Object -TypeName Object |
                                 Add-Member -MemberType NoteProperty -Name 'EndpointEncryption' -Value $null -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'EndpointEncryptionAlgorithm' -Value $null -PassThru -Force |
-                                Add-Member -MemberType NoteProperty -Name 'EnableMessageForwarding' -Value $mockDynamicEnableMessageForwarding -PassThru |
+                                Add-Member -MemberType NoteProperty -Name 'EndpointEncryptionAlgorithm' -Value $null -PassThru |
+                                Add-Member -MemberType NoteProperty -Name 'IsMessageForwardingEnabled' -Value $mockDynamicIsMessageForwardingEnabled -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'MessageForwardingSize' -Value $mockDynamicMessageForwardingSize -PassThru
                         } -PassThru -Force
                 } -PassThru |
@@ -219,7 +219,7 @@ try
                     $result.Port | Should -Be ''
                     $result.IpAddress | Should -Be ''
                     $result.Owner | Should -Be ''
-                    $result.EnableMessageForwarding | Should -Be $null
+                    $result.IsMessageForwardingEnabled | Should -Be $null
                     $result.MessageForwardingSize | Should -Be $null
                 }
 
@@ -272,7 +272,7 @@ try
             $mockDynamicEndpointListenerPort = $mockEndpointListenerPort
             $mockDynamicEndpointListenerIpAddress = $mockEndpointListenerIpAddress
             $mockDynamicEndpointOwner = $mockEndpointOwner
-            $mockDynamicEnableMessageForwarding = $mockSsbrEnableMessageForwarding
+            $mockDynamicIsMessageForwardingEnabled = $mockSsbrIsMessageForwardingEnabled
             $mockDynamicMessageForwardingSize = $mockSsbrMessageForwardingSize
 
             $testParameters = $defaultSsbrParameters
@@ -293,7 +293,7 @@ try
                     $result.Port | Should -Be $mockEndpointListenerPort
                     $result.IpAddress | Should -Be $mockEndpointListenerIpAddress
                     $result.Owner | Should -Be $mockEndpointOwner
-                    $result.EnableMessageForwarding | Should -Be $mockSsbrEnableMessageForwarding
+                    $result.IsMessageForwardingEnabled | Should -Be $mockSsbrIsMessageForwardingEnabled
                     $result.MessageForwardingSize | Should -Be $mockSsbrMessageForwardingSize
                 }
 
@@ -319,7 +319,7 @@ try
                 $mockDynamicEndpointListenerPort = $mockEndpointListenerPort
                 $mockDynamicEndpointListenerIpAddress = $mockEndpointListenerIpAddress
                 $mockDynamicEndpointOwner = $mockEndpointOwner
-                $mockDynamicEnableMessageForwarding = $null
+                $mockDynamicIsMessageForwardingEnabled = $null
                 $mockDynamicMessageForwardingSize = $null
             }
 
@@ -456,7 +456,7 @@ try
                 $mockDynamicEndpointListenerPort = $mockSsbrEndpointListenerPort
                 $mockDynamicEndpointListenerIpAddress = $mockSsbrEndpointListenerIpAddress
                 $mockDynamicEndpointOwner = $mockSsbrEndpointOwner
-                $mockDynamicEnableMessageForwarding = $mockSsbrEnableMessageForwarding
+                $mockDynamicIsMessageForwardingEnabled = $mockSsbrIsMessageForwardingEnabled
                 $mockDynamicMessageForwardingSize = $mockSsbrMessageForwardingSize
                 $mockDynamicEndpointState = 'Started'
 
@@ -466,7 +466,7 @@ try
                     It 'Should return that desired state is absent' {
                         $testParameters = $defaultSsbrParameters.Clone()
                         $testParameters.Add('Ensure', 'Present')
-                        $testParameters.Add('EnableMessageForwarding', $mockSsbrEnableMessageForwarding)
+                        $testParameters.Add('IsMessageForwardingEnabled', $mockSsbrIsMessageForwardingEnabled)
                         $testParameters.Add('MessageForwardingSize', $mockSsbrMessageForwardingSize)
 
 
@@ -483,7 +483,7 @@ try
                 $mockDynamicEndpointListenerPort = $mockEndpointListenerPort
                 $mockDynamicEndpointListenerIpAddress = $mockEndpointListenerIpAddress
                 $mockDynamicEndpointOwner = $mockEndpointOwner
-                $mockDynamicEnableMessageForwarding = $null
+                $mockDynamicIsMessageForwardingEnabled = $null
                 $mockDynamicMessageForwardingSize = $null
                 $mockDynamicEndpointState = 'Started'
 
@@ -610,7 +610,7 @@ try
                     $testParameters.Add('Port', $mockEndpointListenerPort)
                     $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
                     $testParameters.Add('Owner', $mockEndpointOwner)
-                    $testParameters.Add('EnableMessageForwarding', $mockSsbrEnableMessageForwarding)
+                    $testParameters.Add('IsMessageForwardingEnabled', $mockSsbrIsMessageForwardingEnabled)
                     $testParameters.Add('MessageForwardingSize', $mockSsbrMessageForwardingSize)
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
@@ -698,7 +698,7 @@ try
                             Ensure = 'Present'
                             Port = $mockEndpointListenerPort
                             IpAddress = $mockEndpointListenerIpAddress
-                            EnableMessageForwarding = $false
+                            IsMessageForwardingEnabled = $false
                             MessageForwardingSize = 1
                         }
                     } -Verifiable
@@ -708,7 +708,7 @@ try
                     $testParameters.Add('Port', $mockEndpointListenerPort)
                     $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
                     $testParameters.Add('Owner', $mockEndpointOwner)
-                    $testParameters.Add('EnableMessageForwarding', $mockSsbrEnableMessageForwarding)
+                    $testParameters.Add('IsMessageForwardingEnabled', $mockSsbrIsMessageForwardingEnabled)
                     $testParameters.Add('MessageForwardingSize', $mockSsbrMessageForwardingSize)
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw

@@ -178,7 +178,7 @@ try
                 $resourceCurrentState.Owner | Should -Be $ConfigurationData.AllNodes.Owner
                 $resourceCurrentState.State | Should -Be 'Started'
 
-                $resourceCurrentState.EnableMessageForwarding | Should -Be $ConfigurationData.AllNodes.EnableMessageForwarding
+                $resourceCurrentState.IsMessageForwardingEnabled | Should -Be $ConfigurationData.AllNodes.IsMessageForwardingEnabled
                 $resourceCurrentState.MessageForwardingSize | Should -Be $ConfigurationData.AllNodes.MessageForwardingSize
             }
 

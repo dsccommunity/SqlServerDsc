@@ -61,17 +61,17 @@ function Get-TargetResource
     )
 
     $getTargetResourceReturnValues = @{
-        ServerName              = $ServerName
-        InstanceName            = $InstanceName
-        EndpointType            = $EndpointType
-        Ensure                  = 'Absent'
-        EndpointName            = ''
-        Port                    = ''
-        IpAddress               = ''
-        Owner                   = ''
-        State                   = $null
-        EnableMessageForwarding = $null
-        MessageForwardingSize   = $null
+        ServerName                 = $ServerName
+        InstanceName               = $InstanceName
+        EndpointType               = $EndpointType
+        Ensure                     = 'Absent'
+        EndpointName               = ''
+        Port                       = ''
+        IpAddress                  = ''
+        Owner                      = ''
+        State                      = $null
+        IsMessageForwardingEnabled = $null
+        MessageForwardingSize      = $null
     }
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
@@ -99,7 +99,7 @@ function Get-TargetResource
             $getTargetResourceReturnValues.State = $endpointObject.EndpointState
             if ($endpointObject.EndpointType -eq 'ServiceBroker')
             {
-                $getTargetResourceReturnValues.EnableMessageForwarding = $endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled
+                $getTargetResourceReturnValues.IsMessageForwardingEnabled = $endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled
                 if ($endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled -eq $true)
                 {
                     $getTargetResourceReturnValues.MessageForwardingSize = $endpointObject.Payload.ServiceBroker.MessageForwardingSize
@@ -208,7 +208,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.UInt32]
-        $MessageForwardingSize,
+        $IsMessageForwardingEnabled,
 
         [Parameter()]
         [ValidateSet('Started', 'Stopped', 'Disabled')]
@@ -264,8 +264,8 @@ function Set-TargetResource
                             $endpointObject.EndpointType = [Microsoft.SqlServer.Management.Smo.EndpointType]::ServiceBroker
                             $endpointObject.Payload.ServiceBroker.EndpointEncryption = [Microsoft.SqlServer.Management.Smo.EndpointEncryption]::Required
                             $endpointObject.Payload.ServiceBroker.EndpointEncryptionAlgorithm = [Microsoft.SqlServer.Management.Smo.EndpointEncryptionAlgorithm]::Aes
-                            $endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled = $EnableMessageForwarding
-                            if ($EnableMessageForwarding -eq $true)
+                            $endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled = $IsMessageForwardingEnabled
+                            if ($IsMessageForwardingEnabled -eq $true)
                             {
                                 $endpointObject.Payload.ServiceBroker.MessageForwardingSize = $MessageForwardingSize
                             }
@@ -495,7 +495,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $EnableMessageForwarding,
+        $IsMessageForwardingEnabled,
 
         [Parameter()]
         [System.UInt32]
@@ -540,13 +540,13 @@ function Test-TargetResource
             }
         }
 
-        if ($PSBoundParameters.ContainsKey('EnableMessageForwarding'))
+        if ($PSBoundParameters.ContainsKey('IsMessageForwardingEnabled'))
         {
-            if ($getTargetResourceResult.EnableMessageForwarding -ne $EnableMessageForwarding)
+            if ($getTargetResourceResult.IsMessageForwardingEnabled -ne $IsMessageForwardingEnabled)
             {
                 $result = $false
             }
-            if ($getTargetResourceResult.EnableMessageForwarding -eq $true)
+            if ($getTargetResourceResult.IsMessageForwardingEnabled -eq $true)
             {
                 if ($getTargetResourceResult.MessageForwardingSize -ne $MessageForwardingSize)
                 {

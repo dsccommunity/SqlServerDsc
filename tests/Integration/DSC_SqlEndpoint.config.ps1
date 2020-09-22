@@ -16,21 +16,21 @@ else
     $ConfigurationData = @{
         AllNodes = @(
             @{
-                NodeName                = 'localhost'
-                ServerName              = $env:COMPUTERNAME
-                InstanceName            = 'DSCSQLTEST'
+                NodeName                   = 'localhost'
+                ServerName                 = $env:COMPUTERNAME
+                InstanceName               = 'DSCSQLTEST'
 
-                EndpointName            = 'HADR'
-                Port                    = 5022
-                SsbrPort                = 5023
-                IpAddress               = '0.0.0.0'
-                Owner                   = 'sa'
+                EndpointName               = 'HADR'
+                Port                       = 5022
+                SsbrPort                   = 5023
+                IpAddress                  = '0.0.0.0'
+                Owner                      = 'sa'
 
-                CertificateFile         = $env:DscPublicCertificatePath
+                CertificateFile            = $env:DscPublicCertificatePath
 
-                SsbrEndpointName        = 'Ssbr'
-                EnableMessageForwarding = $true
-                MessageForwardingSize   = 2
+                SsbrEndpointName           = 'Ssbr'
+                IsMessageForwardingEnabled = $true
+                MessageForwardingSize      = 2
             }
         )
     }
@@ -110,7 +110,7 @@ Configuration DSC_SqlEndpoint_Add_ServiceBroker_Config
             InstanceName            = $Node.InstanceName
             ServerName              = $Node.ServerName
 
-            EnableMessageForwarding = $Node.EnableMessageForwarding
+            IsMessageForwardingEnabled = $Node.IsMessageForwardingEnabled
             MessageForwardingSize   = $Node.MessageForwardingSize
         }
     }
