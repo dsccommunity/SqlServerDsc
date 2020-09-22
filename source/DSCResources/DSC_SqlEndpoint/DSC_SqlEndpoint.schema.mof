@@ -9,7 +9,7 @@ class DSC_SqlEndpoint : OMI_BaseResource
     [Write, Description("The host name of the SQL Server to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
     [Write, Description("The network IP address the endpoint is listening on. Default value is `'0.0.0.0'` which means listen on any valid IP address. The default value is only used during endpoint creation, it is not enforce.")] String IpAddress;
     [Write, Description("The owner of the endpoint. Default is the login used for the creation.")] String Owner;
-    [Write, Description("Specifies whether messages received by this endpoint that are for services located elsewhere will be forwarded.")] Boolean EnableMessageForwarding;
+    [Write, Description("Specifies whether messages received by this endpoint that are for services located elsewhere will be forwarded.")] Boolean IsMessageForwardingEnabled;
     [Write, Description("Specifies the maximum amount of storage in megabytes to allocate for the endpoint to use when storing messages that are to be forwarded.")] Uint32 MessageForwardingSize;
     [Write, Description("Specifies the state of the endpoint. When an endpoint is created and the state is not specified then the endpoint will be started after it is created. The state will not be enforced unless the parameter is specified."), ValueMap{"Started","Stopped","Disabled"}, Values{"Started","Stopped","Disabled"}] String State;
 };
