@@ -107,8 +107,8 @@ try
                                 Add-Member -MemberType NoteProperty -Name 'ServerMirroringRole' -Value $null -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'EndpointEncryption' -Value $null -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'EndpointEncryptionAlgorithm' -Value $null -PassThru -Force
-                        } -PassThru -Force
-                    return New-Object -TypeName Object |
+                        } -PassThru -Force |
+#                    return New-Object -TypeName Object |
                         Add-Member -MemberType ScriptProperty -Name 'ServiceBroker' -Value {
                             return New-Object -TypeName Object |
                                 Add-Member -MemberType NoteProperty -Name 'EndpointEncryption' -Value $null -PassThru |
@@ -453,9 +453,9 @@ try
                 # Make sure the mock return the endpoint with ServiceBroker endpoint type
                 $mockDynamicEndpointName = $mockEndpointName
                 $mockDynamicEndpointType = $mockSsbrEndpointType
-                $mockDynamicEndpointListenerPort = $mockEndpointListenerPort
-                $mockDynamicEndpointListenerIpAddress = $mockEndpointListenerIpAddress
-                $mockDynamicEndpointOwner = $mockEndpointOwner
+                $mockDynamicEndpointListenerPort = $mockSsbrEndpointListenerPort
+                $mockDynamicEndpointListenerIpAddress = $mockSsbrEndpointListenerIpAddress
+                $mockDynamicEndpointOwner = $mockSsbrEndpointOwner
                 $mockDynamicEnableMessageForwarding = $mockSsbrEnableMessageForwarding
                 $mockDynamicMessageForwardingSize = $mockSsbrMessageForwardingSize
                 $mockDynamicEndpointState = 'Started'
