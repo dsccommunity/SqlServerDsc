@@ -376,6 +376,32 @@ function Set-TargetResource
                             $endpointObject.Alter()
                         }
                     }
+
+                    if ($PSBoundParameters.ContainsKey('IsMessageForwardingEnabled'))
+                    {
+                        if ($endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled -ne $IsMessageForwardingEnabled)
+                        {
+                            Write-Verbose -Message (
+                                $script:localizedData.UpdatingEndpointIsMessageForwardingEnabled -f $IsMessageForwardingEnabled
+                            )
+
+                            $endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled = $IsMessageForwardingEnabled
+                            $endpointObject.Alter()
+                        }
+                    }
+
+                    if ($PSBoundParameters.ContainsKey('MessageForwardingSize'))
+                    {
+                        if (($endpointObject.Payload.ServiceBroker.MessageForwardingSize -ne $MessageForwardingSize) -and ($endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled -eq $true))
+                        {
+                            Write-Verbose -Message (
+                                $script:localizedData.UpdatingEndpointMessageForwardingSize -f $MessageForwardingSize
+                            )
+
+                            $endpointObject.Payload.ServiceBroker.MessageForwardingSize = $MessageForwardingSize
+                            $endpointObject.Alter()
+                        }
+                    }
                 }
             }
         }

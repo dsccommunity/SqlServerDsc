@@ -693,7 +693,7 @@ try
                 $mockExpectedNameWhenCallingMethod = $mockSsbrEndpointName
                 $mockDynamicEndpointName = $mockSsbrEndpointName
 
-                It 'Should call the method Create when desired state is to be Present (setting all parameters for ServiceBroker endpoint)' {
+                It 'Should call the method Alter when desired state is to be Present (setting all parameters for ServiceBroker endpoint)' {
                     $testParameters = $defaultSsbrParameters.Clone()
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
