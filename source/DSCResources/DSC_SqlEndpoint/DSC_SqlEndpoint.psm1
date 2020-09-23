@@ -333,50 +333,54 @@ function Set-TargetResource
                 }
             }
 
+            #These are for ServiceBroker and DatabaseMirroring
+            if ($PSBoundParameters.ContainsKey('IpAddress'))
+            {
+                if ($endpointObject.Protocol.Tcp.ListenerIPAddress -ne $IpAddress)
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.UpdatingEndpointIPAddress -f $IpAddress
+                    )
+
+                    $endpointObject.Protocol.Tcp.ListenerIPAddress = $IpAddress
+                    $endpointObject.Alter()
+                }
+            }
+
+            if ($PSBoundParameters.ContainsKey('Port'))
+            {
+                if ($endpointObject.Protocol.Tcp.ListenerPort -ne $Port)
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.UpdatingEndpointPort -f $Port
+                    )
+
+                    $endpointObject.Protocol.Tcp.ListenerPort = $Port
+                    $endpointObject.Alter()
+                }
+            }
+
+            if ($PSBoundParameters.ContainsKey('Owner'))
+            {
+                if ($endpointObject.Owner -ne $Owner)
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.UpdatingEndpointOwner -f $Owner
+                    )
+
+                    $endpointObject.Owner = $Owner
+                    $endpointObject.Alter()
+                }
+            }
             # Individual endpoint type properties.
             switch ($EndpointType)
             {
                 'DatabaseMirroring'
                 {
-                    if ($PSBoundParameters.ContainsKey('IpAddress'))
-                    {
-                        if ($endpointObject.Protocol.Tcp.ListenerIPAddress -ne $IpAddress)
-                        {
-                            Write-Verbose -Message (
-                                $script:localizedData.UpdatingEndpointIPAddress -f $IpAddress
-                            )
-
-                            $endpointObject.Protocol.Tcp.ListenerIPAddress = $IpAddress
-                            $endpointObject.Alter()
-                        }
-                    }
-
-                    if ($PSBoundParameters.ContainsKey('Port'))
-                    {
-                        if ($endpointObject.Protocol.Tcp.ListenerPort -ne $Port)
-                        {
-                            Write-Verbose -Message (
-                                $script:localizedData.UpdatingEndpointPort -f $Port
-                            )
-
-                            $endpointObject.Protocol.Tcp.ListenerPort = $Port
-                            $endpointObject.Alter()
-                        }
-                    }
-
-                    if ($PSBoundParameters.ContainsKey('Owner'))
-                    {
-                        if ($endpointObject.Owner -ne $Owner)
-                        {
-                            Write-Verbose -Message (
-                                $script:localizedData.UpdatingEndpointOwner -f $Owner
-                            )
-
-                            $endpointObject.Owner = $Owner
-                            $endpointObject.Alter()
-                        }
-                    }
-
+                    break
+                }
+                'ServiceBroker'
+                {
                     if ($PSBoundParameters.ContainsKey('IsMessageForwardingEnabled'))
                     {
                         if ($endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled -ne $IsMessageForwardingEnabled)
