@@ -596,6 +596,7 @@ try
 
                 # Set what the expected endpoint name should be when Drop() method is called.
                 $mockExpectedNameWhenCallingMethod = $mockSsbrEndpointName
+                $mockDynamicEndpointName = $mockSsbrEndpointName
 
                 It 'Should call the method Create when desired state is to be Present (setting all parameters for ServiceBroker endpoint)' {
                     $testParameters = $defaultSsbrParameters.Clone()
@@ -630,7 +631,7 @@ try
 
                 # Set what the expected endpoint name should be when Drop() method is called.
                 $mockExpectedNameWhenCallingMethod = $mockEndpointName
-
+                $mockDynamicEndpointName = $mockEndpointName
                 It 'Should call the method Drop when desired state is to be Absent' {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
@@ -690,6 +691,7 @@ try
 
                 # Set what the expected endpoint name should be when Alter() method is called. (ServiceBroker)
                 $mockExpectedNameWhenCallingMethod = $mockSsbrEndpointName
+                $mockDynamicEndpointName = $mockSsbrEndpointName
 
                 It 'Should call the method Create when desired state is to be Present (setting all parameters for ServiceBroker endpoint)' {
                     $testParameters = $defaultSsbrParameters.Clone()
@@ -729,6 +731,7 @@ try
 
                 # Set what the expected endpoint name should be when Alter() method is called.
                 $mockExpectedNameWhenCallingMethod = $mockEndpointName
+                $mockDynamicEndpointName = $mockEndpointName
 
                 It 'Should call Alter method when listener IP address is not in desired state' {
                     Mock -CommandName Get-TargetResource -MockWith {
