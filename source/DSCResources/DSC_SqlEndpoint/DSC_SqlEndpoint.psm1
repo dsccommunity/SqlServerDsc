@@ -264,11 +264,12 @@ function Set-TargetResource
                             $endpointObject.EndpointType = [Microsoft.SqlServer.Management.Smo.EndpointType]::ServiceBroker
                             $endpointObject.Payload.ServiceBroker.EndpointEncryption = [Microsoft.SqlServer.Management.Smo.EndpointEncryption]::Required
                             $endpointObject.Payload.ServiceBroker.EndpointEncryptionAlgorithm = [Microsoft.SqlServer.Management.Smo.EndpointEncryptionAlgorithm]::Aes
-                            $endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled = $IsMessageForwardingEnabled
-                            if ($IsMessageForwardingEnabled -eq $true)
-                            {
-                                $endpointObject.Payload.ServiceBroker.MessageForwardingSize = $MessageForwardingSize
-                            }
+#Moved down to support parameter section.
+#                            $endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled = $IsMessageForwardingEnabled
+#                            if ($IsMessageForwardingEnabled -eq $true)
+#                            {
+#                                $endpointObject.Payload.ServiceBroker.MessageForwardingSize = $MessageForwardingSize
+#                            }
                             $endpointObject.Create()
                         }
                     }

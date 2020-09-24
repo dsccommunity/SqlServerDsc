@@ -269,9 +269,9 @@ try
             # Make sure the mock returns the ServiceBroker endpoint
             $mockDynamicEndpointName = $mockSsbrEndpointName
             $mockDynamicEndpointType = $mockSsbrEndpointType
-            $mockDynamicEndpointListenerPort = $mockEndpointListenerPort
-            $mockDynamicEndpointListenerIpAddress = $mockEndpointListenerIpAddress
-            $mockDynamicEndpointOwner = $mockEndpointOwner
+            $mockDynamicEndpointListenerPort = $mockSsbrEndpointListenerPort
+            $mockDynamicEndpointListenerIpAddress = $mockSsbrEndpointListenerIpAddress
+            $mockDynamicEndpointOwner = $mockSsbrEndpointOwner
             $mockDynamicIsMessageForwardingEnabled = $mockSsbrIsMessageForwardingEnabled
             $mockDynamicMessageForwardingSize = $mockSsbrMessageForwardingSize
 
@@ -290,9 +290,9 @@ try
                     $result.ServerName | Should -Be $testParameters.ServerName
                     $result.InstanceName | Should -Be $testParameters.InstanceName
                     $result.EndpointName | Should -Be $testParameters.EndpointName
-                    $result.Port | Should -Be $mockEndpointListenerPort
-                    $result.IpAddress | Should -Be $mockEndpointListenerIpAddress
-                    $result.Owner | Should -Be $mockEndpointOwner
+                    $result.Port | Should -Be $mockSsbrEndpointListenerPort
+                    $result.IpAddress | Should -Be $mockSsbrEndpointListenerIpAddress
+                    $result.Owner | Should -Be $mockSsbrEndpointOwner
                     $result.IsMessageForwardingEnabled | Should -Be $mockSsbrIsMessageForwardingEnabled
                     $result.MessageForwardingSize | Should -Be $mockSsbrMessageForwardingSize
                 }
@@ -594,11 +594,11 @@ try
                 $script:mockMethodAlterRan = $false
                 $script:mockMethodDropRan = $false
 
-                # Set what the expected endpoint name should be when Drop() method is called.
+
                 $mockExpectedNameWhenCallingMethod = $mockSsbrEndpointName
                 $mockDynamicEndpointName = $mockSsbrEndpointName
 
-                It 'Should call the method Create when desired state is to be Present (setting all parameters for ServiceBroker endpoint)' {
+                It 'Should call the method Create when desired state is to be Present (setting parameters for ServiceBroker endpoint)' {
                     $testParameters = $defaultSsbrParameters.Clone()
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
@@ -608,16 +608,45 @@ try
                     $testParameters.EndpointName = $mockSsbrEndpointName
                     $testParameters.EndpointType = $mockSsbrEndpointType
                     $testParameters.Add('Ensure', 'Present')
-                    $testParameters.Add('Port', $mockEndpointListenerPort)
-                    $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
-                    $testParameters.Add('Owner', $mockEndpointOwner)
+                    $testParameters.Add('Port', $mockSsbrEndpointListenerPort)
+                    $testParameters.Add('IpAddress', $mockSsbrEndpointListenerIpAddress)
+                    $testParameters.Add('Owner', $mockSsbrEndpointOwner)
+
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodCreateRan | Should -Be $true
+                    $script:mockMethodStartRan | Should -Be $true
+                    $script:mockMethodAlterRan | Should -Be $false
+                    $script:mockMethodDropRan | Should -Be $false
+
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                # Set all method call tests variables to $false
+                $script:mockMethodCreateRan = $false
+                $script:mockMethodStartRan = $false
+                $script:mockMethodAlterRan = $false
+                $script:mockMethodDropRan = $false
+
+                It 'Should call the method Alter when desired state is to be Present (setting all parameters for ServiceBroker endpoint)' {
+                    $testParameters = $defaultSsbrParameters.Clone()
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Absent'
+                        }
+                    } -Verifiable
+                    $testParameters.EndpointName = $mockSsbrEndpointName
+                    $testParameters.EndpointType = $mockSsbrEndpointType
+                    $testParameters.Add('Ensure', 'Present')
+                    $testParameters.Add('Port', $mockSsbrEndpointListenerPort)
+                    $testParameters.Add('IpAddress', $mockSsbrEndpointListenerIpAddress)
+                    $testParameters.Add('Owner', $mockSsbrEndpointOwner)
                     $testParameters.Add('IsMessageForwardingEnabled', $mockSsbrIsMessageForwardingEnabled)
                     $testParameters.Add('MessageForwardingSize', $mockSsbrMessageForwardingSize)
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                     $script:mockMethodCreateRan | Should -Be $true
                     $script:mockMethodStartRan | Should -Be $true
-                    $script:mockMethodAlterRan | Should -Be $false
+                    $script:mockMethodAlterRan | Should -Be $true
                     $script:mockMethodDropRan | Should -Be $false
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
