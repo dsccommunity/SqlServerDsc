@@ -451,13 +451,13 @@ try
                 }
 
                 # Make sure the mock return the endpoint with ServiceBroker endpoint type
-                $mockDynamicEndpointName = $mockEndpointName
+                $mockDynamicEndpointName = $mockSsbrEndpointName
                 $mockDynamicEndpointType = $mockSsbrEndpointType
                 $mockDynamicEndpointListenerPort = $mockSsbrEndpointListenerPort
                 $mockDynamicEndpointListenerIpAddress = $mockSsbrEndpointListenerIpAddress
                 $mockDynamicEndpointOwner = $mockSsbrEndpointOwner
-                $mockDynamicIsMessageForwardingEnabled = $mockSsbrIsMessageForwardingEnabled
-                $mockDynamicMessageForwardingSize = $mockSsbrMessageForwardingSize
+                $mockDynamicIsMessageForwardingEnabled = $false
+                $mockDynamicMessageForwardingSize = 1
                 $mockDynamicEndpointState = 'Started'
 
                 $testParameters = $defaultSsbrParameters
@@ -467,6 +467,18 @@ try
                         $testParameters = $defaultSsbrParameters.Clone()
                         $testParameters.Add('Ensure', 'Present')
                         $testParameters.Add('IsMessageForwardingEnabled', $mockSsbrIsMessageForwardingEnabled)
+
+                        $result = Test-TargetResource @testParameters
+                        $result | Should -Be $false
+
+                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context 'When ServiceBroker message forwarding size is not in desired state' {
+                    It 'Should return that desired state is absent' {
+                        $testParameters = $defaultSsbrParameters.Clone()
+                        $testParameters.Add('Ensure', 'Present')
                         $testParameters.Add('MessageForwardingSize', $mockSsbrMessageForwardingSize)
 
 
@@ -710,6 +722,7 @@ try
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             Ensure = 'Present'
+                            IsMessageForwardingEnabled = $False
                         }
                     } -Verifiable
                     $testParameters.EndpointName = $mockSsbrEndpointName
@@ -737,6 +750,7 @@ try
                         return @{
                             Ensure = 'Present'
                             IsMessageForwardingEnabled = $true
+                            MessageForwardingSize = 1
                         }
                     } -Verifiable
                     $testParameters.EndpointName = $mockSsbrEndpointName
@@ -898,14 +912,15 @@ try
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             Ensure = 'Present'
-                            Port = $mockEndpointListenerPort
-                            IpAddress = $mockEndpointListenerIpAddress
+                            #Port = $mockEndpointListenerPort
+                            #IpAddress = $mockEndpointListenerIpAddress
+                            Owner = $mockEndpointOwner
                         }
                     } -Verifiable
 
                     $testParameters.Add('Ensure', 'Present')
-                    $testParameters.Add('Port', $mockEndpointListenerPort)
-                    $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
+                    #$testParameters.Add('Port', $mockEndpointListenerPort)
+                    #$testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
                     $testParameters.Add('Owner', $mockOtherEndpointOwner)
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
@@ -930,8 +945,8 @@ try
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             Ensure = 'Present'
-                            Port = $mockEndpointListenerPort
-                            IpAddress = $mockEndpointListenerIpAddress
+#                            Port = $mockEndpointListenerPort
+#                            IpAddress = $mockEndpointListenerIpAddress
                             State = 'Stopped'
                         }
                     } -Verifiable
@@ -964,8 +979,8 @@ try
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             Ensure = 'Present'
-                            Port = $mockEndpointListenerPort
-                            IpAddress = $mockEndpointListenerIpAddress
+#                            Port = $mockEndpointListenerPort
+#                            IpAddress = $mockEndpointListenerIpAddress
                             State = 'Running'
                         }
                     } -Verifiable
@@ -998,8 +1013,8 @@ try
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             Ensure = 'Present'
-                            Port = $mockEndpointListenerPort
-                            IpAddress = $mockEndpointListenerIpAddress
+#                            Port = $mockEndpointListenerPort
+#                            IpAddress = $mockEndpointListenerIpAddress
                             State = 'Running'
                         }
                     } -Verifiable
@@ -1027,9 +1042,9 @@ try
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
                                 Ensure = 'Present'
-                                Port = $mockEndpointListenerPort
-                                IpAddress = $mockEndpointListenerIpAddress
-                                Owner = $mockEndpointOwner
+#                                Port = $mockEndpointListenerPort
+#                                IpAddress = $mockEndpointListenerIpAddress
+#                                Owner = $mockEndpointOwner
                             }
                         } -Verifiable
 
@@ -1042,9 +1057,9 @@ try
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
                                 Ensure = 'Present'
-                                Port = $mockEndpointListenerPort
-                                IpAddress = $mockEndpointListenerIpAddress
-                                Owner = $mockEndpointOwner
+#                                Port = $mockEndpointListenerPort
+#                                IpAddress = $mockEndpointListenerIpAddress
+#                                Owner = $mockEndpointOwner
                             }
                         } -Verifiable
 
@@ -1086,6 +1101,8 @@ try
                             Port = $mockEndpointListenerPort
                             IpAddress = $mockEndpointListenerIpAddress
                             Owner = $mockEndpointOwner
+                            IsMessageForwardingEnabled = $mockSsbrIsMessageForwardingEnabled
+                            MessageForwardingSize = $mockSsbrMessageForwardingSize
                         }
                     } -Verifiable
 
@@ -1093,6 +1110,8 @@ try
                     $testParameters.Add('Port', $mockEndpointListenerPort)
                     $testParameters.Add('IpAddress', $mockEndpointListenerIpAddress)
                     $testParameters.Add('Owner', $mockEndpointOwner)
+                    $testParameters.Add('IsMessageForwardingEnabled', $mockSsbrIsMessageForwardingEnabled)
+                    $testParameters.Add('MessageForwardingSize', $mockSsbrMessageForwardingSize)
 
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                     $script:mockMethodCreateRan | Should -Be $false
