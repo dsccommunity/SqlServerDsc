@@ -100,10 +100,10 @@ function Get-TargetResource
             if ($endpointObject.EndpointType -eq 'ServiceBroker')
             {
                 $getTargetResourceReturnValues.IsMessageForwardingEnabled = $endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled
-                if ($endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled -eq $true)
-                {
+#                if ($endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled -eq $true)
+#                {
                     $getTargetResourceReturnValues.MessageForwardingSize = $endpointObject.Payload.ServiceBroker.MessageForwardingSize
-                }
+#                }
             }
         }
     }
@@ -264,12 +264,6 @@ function Set-TargetResource
                             $endpointObject.EndpointType = [Microsoft.SqlServer.Management.Smo.EndpointType]::ServiceBroker
                             $endpointObject.Payload.ServiceBroker.EndpointEncryption = [Microsoft.SqlServer.Management.Smo.EndpointEncryption]::Required
                             $endpointObject.Payload.ServiceBroker.EndpointEncryptionAlgorithm = [Microsoft.SqlServer.Management.Smo.EndpointEncryptionAlgorithm]::Aes
-#Moved down to support parameter section.
-#                            $endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled = $IsMessageForwardingEnabled
-#                            if ($IsMessageForwardingEnabled -eq $true)
-#                            {
-#                                $endpointObject.Payload.ServiceBroker.MessageForwardingSize = $MessageForwardingSize
-#                            }
                             $endpointObject.Create()
                         }
                     }
@@ -373,6 +367,17 @@ function Set-TargetResource
                     $endpointObject.Alter()
                 }
             }
+
+#Set-TargetResource                            402 Write-Verbose -Message (...
+#Set-TargetResource                            403 $script:localizedData.UpdatingEndpointMessageForwardingSize -f $MessageForwardingSize
+#Set-TargetResource                            406 $endpointObject.Payload.ServiceBroker.MessageForwardingSize = $MessageForwardingSize
+#Set-TargetResource                            407 $endpointObject.Alter()
+#Test-TargetResource                           576 if ($getTargetResourceResult.IsMessageForwardingEnabled -ne $IsMessageForwardingEnabled)...
+#Test-TargetResource                           578 $result = $false
+#Test-TargetResource                           580 if ($getTargetResourceResult.IsMessageForwardingEnabled -eq $true)...
+#Test-TargetResource                           582 if ($getTargetResourceResult.MessageForwardingSize -ne $MessageForwardingSize)...
+#Test-TargetResource                           584 $result = $false
+
             # Individual endpoint type properties.
             switch ($EndpointType)
             {
@@ -397,7 +402,7 @@ function Set-TargetResource
 
                     if ($PSBoundParameters.ContainsKey('MessageForwardingSize'))
                     {
-                        if (($endpointObject.Payload.ServiceBroker.MessageForwardingSize -ne $MessageForwardingSize) -and ($endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled -eq $true))
+                        if (($endpointObject.Payload.ServiceBroker.MessageForwardingSize -ne $MessageForwardingSize) )#-and ($endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled -eq $true))
                         {
                             Write-Verbose -Message (
                                 $script:localizedData.UpdatingEndpointMessageForwardingSize -f $MessageForwardingSize
@@ -577,12 +582,13 @@ function Test-TargetResource
             {
                 $result = $false
             }
-            if ($getTargetResourceResult.IsMessageForwardingEnabled -eq $true)
+        }
+
+        if ($PSBoundParameters.ContainsKey('MessageForwardingSize'))
+        {
+            if ($getTargetResourceResult.MessageForwardingSize -ne $MessageForwardingSize)
             {
-                if ($getTargetResourceResult.MessageForwardingSize -ne $MessageForwardingSize)
-                {
-                    $result = $false
-                }
+                $result = $false
             }
         }
 
