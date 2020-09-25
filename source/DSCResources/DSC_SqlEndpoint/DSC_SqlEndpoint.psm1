@@ -100,10 +100,7 @@ function Get-TargetResource
             if ($endpointObject.EndpointType -eq 'ServiceBroker')
             {
                 $getTargetResourceReturnValues.IsMessageForwardingEnabled = $endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled
-#                if ($endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled -eq $true)
-#                {
-                    $getTargetResourceReturnValues.MessageForwardingSize = $endpointObject.Payload.ServiceBroker.MessageForwardingSize
-#                }
+                $getTargetResourceReturnValues.MessageForwardingSize = $endpointObject.Payload.ServiceBroker.MessageForwardingSize
             }
         }
     }
@@ -368,16 +365,6 @@ function Set-TargetResource
                 }
             }
 
-#Set-TargetResource                            402 Write-Verbose -Message (...
-#Set-TargetResource                            403 $script:localizedData.UpdatingEndpointMessageForwardingSize -f $MessageForwardingSize
-#Set-TargetResource                            406 $endpointObject.Payload.ServiceBroker.MessageForwardingSize = $MessageForwardingSize
-#Set-TargetResource                            407 $endpointObject.Alter()
-#Test-TargetResource                           576 if ($getTargetResourceResult.IsMessageForwardingEnabled -ne $IsMessageForwardingEnabled)...
-#Test-TargetResource                           578 $result = $false
-#Test-TargetResource                           580 if ($getTargetResourceResult.IsMessageForwardingEnabled -eq $true)...
-#Test-TargetResource                           582 if ($getTargetResourceResult.MessageForwardingSize -ne $MessageForwardingSize)...
-#Test-TargetResource                           584 $result = $false
-
             # Individual endpoint type properties.
             switch ($EndpointType)
             {
@@ -402,7 +389,7 @@ function Set-TargetResource
 
                     if ($PSBoundParameters.ContainsKey('MessageForwardingSize'))
                     {
-                        if (($endpointObject.Payload.ServiceBroker.MessageForwardingSize -ne $MessageForwardingSize) )#-and ($endpointObject.Payload.ServiceBroker.IsMessageForwardingEnabled -eq $true))
+                        if ($endpointObject.Payload.ServiceBroker.MessageForwardingSize -ne $MessageForwardingSize)
                         {
                             Write-Verbose -Message (
                                 $script:localizedData.UpdatingEndpointMessageForwardingSize -f $MessageForwardingSize
