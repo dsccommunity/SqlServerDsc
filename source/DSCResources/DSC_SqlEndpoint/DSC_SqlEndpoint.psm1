@@ -234,7 +234,7 @@ function Set-TargetResource
                     $script:localizedData.CreateEndpoint -f $EndpointName, $InstanceName
                 )
 
-                if (($EndpointType -eq 'DatabaseMirroring')  -or ($EndpointType -eq 'ServiceBroker'))
+                if ($EndpointType -in @('DatabaseMirroring', 'ServiceBroker'))
                 {
                     $endpointObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Endpoint' -ArgumentList @($sqlServerObject, $EndpointName)
 
@@ -246,6 +246,7 @@ function Set-TargetResource
                     {
                         $endpointObject.Owner = $Owner
                     }
+
                     switch ($EndpointType)
                     {
                         'DatabaseMirroring'
@@ -256,6 +257,7 @@ function Set-TargetResource
                             $endpointObject.Payload.DatabaseMirroring.EndpointEncryptionAlgorithm = [Microsoft.SqlServer.Management.Smo.EndpointEncryptionAlgorithm]::Aes
                             $endpointObject.Create()
                         }
+
                         'ServiceBroker'
                         {
                             $endpointObject.EndpointType = [Microsoft.SqlServer.Management.Smo.EndpointType]::ServiceBroker
@@ -264,6 +266,7 @@ function Set-TargetResource
                             $endpointObject.Create()
                         }
                     }
+
                     <#
                         If endpoint state is not specified, then default to
                         starting the endpoint. If state is specified then
@@ -325,7 +328,7 @@ function Set-TargetResource
                 }
             }
 
-            #These are for ServiceBroker and DatabaseMirroring
+            #These are for all endpoints
             if ($PSBoundParameters.ContainsKey('IpAddress'))
             {
                 if ($endpointObject.Protocol.Tcp.ListenerIPAddress -ne $IpAddress)
@@ -372,6 +375,7 @@ function Set-TargetResource
                 {
                     break
                 }
+
                 'ServiceBroker'
                 {
                     if ($PSBoundParameters.ContainsKey('IsMessageForwardingEnabled'))
@@ -563,19 +567,22 @@ function Test-TargetResource
             }
         }
 
-        if ($PSBoundParameters.ContainsKey('IsMessageForwardingEnabled'))
+        if ($getTargetResourceResult.EndpointType -in @('DatabaseMirroring','ServiceBroker'))
         {
-            if ($getTargetResourceResult.IsMessageForwardingEnabled -ne $IsMessageForwardingEnabled)
+            if ($PSBoundParameters.ContainsKey('IsMessageForwardingEnabled'))
             {
-                $result = $false
+                if ($getTargetResourceResult.IsMessageForwardingEnabled -ne $IsMessageForwardingEnabled)
+                {
+                    $result = $false
+                }
             }
-        }
 
-        if ($PSBoundParameters.ContainsKey('MessageForwardingSize'))
-        {
-            if ($getTargetResourceResult.MessageForwardingSize -ne $MessageForwardingSize)
+            if ($PSBoundParameters.ContainsKey('MessageForwardingSize'))
             {
-                $result = $false
+                if ($getTargetResourceResult.MessageForwardingSize -ne $MessageForwardingSize)
+                {
+                    $result = $false
+                }
             }
         }
 
