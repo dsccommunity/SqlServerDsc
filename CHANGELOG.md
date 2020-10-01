@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The resource are now using the helper function `Get-SqlInstanceMajorVersion`
     ([issue #1408](https://github.com/dsccommunity/SqlServerDsc/issues/1408)).
 
+### Fixed
+
+- SqlAlwaysOnService
+  - Updated Get-TargetResource to return all defined schema properties
+
 ## [14.2.1] - 2020-08-14
 
 ### Changed
