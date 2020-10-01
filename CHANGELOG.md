@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The resource are now using the helper function `Get-SqlInstanceMajorVersion`
     ([issue #1408](https://github.com/dsccommunity/SqlServerDsc/issues/1408)).
 
+### Fixed
+- SqlDatabaseRole
+  - Fixed check to see if the role and user existed in the database. The previous
+    logic would always indicate the role or user was not found unless the role
+    had the same name as the user.
+
 ## [14.2.1] - 2020-08-14
 
 ### Changed
