@@ -14,4 +14,6 @@ ConvertFrom-StringData @'
     TestingConfiguration = Determines if the endpoint with the name '{0}' for the instance '{1}' is in desired state.
     InDesiredState = The endpoint '{0}' is the desired state.
     NotInDesiredState = The endpoint '{0}' is not in the desired state.
+    UpdatingEndpointMessageForwardingSize = Updating the endpoint MessageForwardingSize to '{0}'.
+    UpdatingEndpointIsMessageForwardingEnabled = Updating the endpoint IsMessageForwardingEnabled to '{0}'.
 '@
