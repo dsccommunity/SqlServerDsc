@@ -1,7 +1,7 @@
 # Description
 
 The `SqlEndpoint` DSC resource is used to create an endpoint. Currently
-it only supports creating a database mirror endpoint. A database mirror
+it only supports creating a database mirror and a service broker endpoint. A database mirror
 endpoint can be used by AlwaysOn.
 
 >Note: The endpoint will be started after creation, but will not be enforced
