@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     previous logic would always indicate the role or user was not found unless
     the role had the same name as the user. Also updated the
     DesiredMembersNotPresent string to be more accurate when an extra user is
-    in the role.
+    in the role ([issue #1487](https://github.com/dsccommunity/SqlServerDsc/issues/1487)).
 
 ## [14.2.1] - 2020-08-14
 
