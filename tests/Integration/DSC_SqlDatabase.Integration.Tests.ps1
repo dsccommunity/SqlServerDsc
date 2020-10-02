@@ -80,6 +80,7 @@ try
                 $resourceCurrentState.Collation | Should -Be 'Finnish_Swedish_CI_AS'
                 $resourceCurrentState.RecoveryModel | Should -Be 'Full'
                 $resourceCurrentState.OwnerName | Should -Be ('{0}\SqlAdmin' -f $env:COMPUTERNAME)
+                $resourceCurrentState.SnapshotIsolation | Should -Be $true
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -280,6 +281,7 @@ try
                 $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                 $resourceCurrentState.InstanceName  | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.OwnerName | Should -Be $ConfigurationData.AllNodes.OwnerName
+                $resourceCurrentState.SnapshotIsolation | Should -Be $ConfigurationData.AllNodes.SnapshotIsolation
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -333,6 +335,7 @@ try
                 $resourceCurrentState.OwnerName | Should -BeNullOrEmpty
                 $resourceCurrentState.RecoveryModel | Should -BeNullOrEmpty
                 $resourceCurrentState.CompatibilityLevel | Should -BeNullOrEmpty
+                $resourceCurrentState.SnapshotIsolation | Should -BeNullOrEmpty
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
