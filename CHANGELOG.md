@@ -5,8 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- SqlServerDsc
-  - Added support for the Service Broker Endpoint in the SqlEndPoint
+### Added
+
+- SqlEndpoint
+  - Added support for the Service Broker Endpoint ([issue #498](https://github.com/dsccommunity/SqlServerDsc/issues/498)).
 
 ### Changed
 
