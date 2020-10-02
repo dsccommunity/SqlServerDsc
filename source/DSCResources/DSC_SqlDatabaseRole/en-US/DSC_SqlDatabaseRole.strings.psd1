@@ -4,7 +4,7 @@ ConvertFrom-StringData @'
     CreateDatabaseRole = Creating role '{0}' in database '{1}'.
     CreateDatabaseRoleError = Failed to create role '{0}' in database '{1}'.
     DatabaseNotFound = The database '{0}' does not exist.
-    DatabaseRoleOrUserNotFound = The role {0} or user '{1}' does not exist in database '{2}'.
+    DatabaseRoleOrUserNotFound = The role '{0}' or user '{1}' does not exist in database '{2}'.
     DesiredMembersNotPresent = One or more of the desired members are not present and/or are extraneous in the role '{0}' in database '{1}'.
     DropDatabaseRole = Removing role '{0}' from database '{1}'.
     DropDatabaseRoleError = Failed to drop the role '{0}' in database '{1}'.
