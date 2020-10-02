@@ -35,6 +35,7 @@ else
                 CompatibilityLevel = 'Version120'
                 RecoveryModel      = 'Simple'
                 OwnerName          = 'sa'
+                SnapshotIsolation  = $true
             }
         )
     }
@@ -156,6 +157,7 @@ Configuration DSC_SqlDatabase_AddDatabase5_Config
             InstanceName         = $Node.InstanceName
             Name                 = $Node.DatabaseName5
             OwnerName            = $Node.OwnerName
+            SnapshotIsolation    = $Node.SnapshotIsolation
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
