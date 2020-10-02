@@ -16,16 +16,21 @@ else
     $ConfigurationData = @{
         AllNodes = @(
             @{
-                NodeName             = 'localhost'
-                ServerName           = $env:COMPUTERNAME
-                InstanceName         = 'DSCSQLTEST'
+                NodeName                   = 'localhost'
+                ServerName                 = $env:COMPUTERNAME
+                InstanceName               = 'DSCSQLTEST'
 
-                EndpointName         = 'HADR'
-                Port                 = 5023
-                IpAddress            = '0.0.0.0'
-                Owner                = 'sa'
+                EndpointName               = 'HADR'
+                Port                       = 5022
+                SsbrPort                   = 5023
+                IpAddress                  = '0.0.0.0'
+                Owner                      = 'sa'
 
-                CertificateFile      = $env:DscPublicCertificatePath
+                CertificateFile            = $env:DscPublicCertificatePath
+
+                SsbrEndpointName           = 'Ssbr'
+                IsMessageForwardingEnabled = $true
+                MessageForwardingSize      = 2
             }
         )
     }
@@ -35,7 +40,7 @@ else
     .SYNOPSIS
         Configuration to ensure present and specify all the parameters
 #>
-Configuration DSC_SqlEndpoint_Add_Config
+Configuration DSC_SqlEndpoint_Add_HADR_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -62,7 +67,7 @@ Configuration DSC_SqlEndpoint_Add_Config
     .SYNOPSIS
         Configuration to ensure Absent and specify all the parameters
 #>
-Configuration DSC_SqlEndpoint_Remove_Config
+Configuration DSC_SqlEndpoint_Remove_HADR_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -81,4 +86,55 @@ Configuration DSC_SqlEndpoint_Remove_Config
     }
 }
 
+<#
+    .SYNOPSIS
+        Configuration to ensure present and specify all the parameters
+#>
+Configuration DSC_SqlEndpoint_Add_ServiceBroker_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
 
+    node $AllNodes.NodeName
+    {
+        SqlEndpoint 'Integration_Test'
+        {
+            Ensure                  = 'Present'
+
+            EndpointName            = $Node.SsbrEndpointName
+            EndpointType            = 'ServiceBroker'
+            Port                    = $Node.SsbrPort
+            IpAddress               = $Node.IpAddress
+            Owner                   = $Node.Owner
+            State                   = 'Started'
+
+            InstanceName            = $Node.InstanceName
+            ServerName              = $Node.ServerName
+
+            IsMessageForwardingEnabled = $Node.IsMessageForwardingEnabled
+            MessageForwardingSize   = $Node.MessageForwardingSize
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Configuration to ensure Absent and specify all the parameters
+#>
+Configuration DSC_SqlEndpoint_Remove_ServiceBroker_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlEndpoint 'Integration_Test'
+        {
+            Ensure               = 'Absent'
+
+            EndpointName         = $Node.SsbrEndpointName
+            EndpointType         = 'ServiceBroker'
+
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+        }
+    }
+}
