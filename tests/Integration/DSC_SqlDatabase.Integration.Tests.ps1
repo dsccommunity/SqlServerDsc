@@ -326,7 +326,7 @@ try
                 }
 
                 $resourceCurrentState.Ensure | Should -Be 'Present'
-                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DatabaseName5
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DatabaseName6
                 $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
                 $resourceCurrentState.InstanceName  | Should -Be $ConfigurationData.AllNodes.InstanceName
                 $resourceCurrentState.SnapshotIsolation | Should -Be $ConfigurationData.AllNodes.SnapshotIsolation
