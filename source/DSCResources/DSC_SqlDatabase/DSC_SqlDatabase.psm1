@@ -553,10 +553,10 @@ function Test-TargetResource
                     $isDatabaseInDesiredState = $false
                 }
 
-                if ($PSBoundParameters.ContainsKey('SnapshotIsolation') -and $getTargetResourceResult.SnapshotIsolationState -ne $SnapshotIsolation)
+                if ($PSBoundParameters.ContainsKey('SnapshotIsolation') -and $getTargetResourceResult.SnapshotIsolation -ne $SnapshotIsolation)
                 {
                     Write-Verbose -Message (
-                        $script:localizedData.SnapshotIsolationWrong -f $Name, $getTargetResourceResult.SnapshotIsolationState, $SnapshotIsolation
+                        $script:localizedData.SnapshotIsolationWrong -f $Name, $getTargetResourceResult.SnapshotIsolation, $SnapshotIsolation
                     )
 
                     $isDatabaseInDesiredState = $false
