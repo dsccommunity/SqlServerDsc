@@ -81,6 +81,16 @@ try
 
                 Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Connect-SQL -Scope It -Times 1 -Exactly
             }
+
+            It 'Should return the same values as passed as parameters' {
+                $result = Get-TargetResource @enableHadrNamedInstance
+
+                $result.ServerName | Should -Be $enableHadrNamedInstance.ServerName
+                $result.InstanceName | Should -Be $enableHadrNamedInstance.InstanceName
+                $result.Ensure | Should -Be $enableHadrNamedInstance.Ensure
+                $result.IsHadrEnabled | Should -Be $false
+                $result.RestartTimeout | Should -Not -BeNullOrEmpty
+            }
         }
 
         Context 'When HADR is enabled' {
@@ -104,6 +114,16 @@ try
                 $result.IsHadrEnabled | Should -Be $true
 
                 Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+            }
+
+            It 'Should return the same values as passed as parameters' {
+                $result = Get-TargetResource @enableHadrNamedInstance
+
+                $result.ServerName | Should -Be $enableHadrNamedInstance.ServerName
+                $result.InstanceName | Should -Be $enableHadrNamedInstance.InstanceName
+                $result.Ensure | Should -Be $enableHadrNamedInstance.Ensure
+                $result.IsHadrEnabled | Should -Be $true
+                $result.RestartTimeout | Should -Not -BeNullOrEmpty
             }
         }
 
