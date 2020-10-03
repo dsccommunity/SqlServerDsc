@@ -367,6 +367,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `build`) and fixed file pattern matching syntax.
 - Bump GitHub actions codeql-action/upload-sarif to v4
 - Bump GitHub actions checkout to v6
+- SqlDatabase
+  - Support enabling or disabling snapshot isolation
+    ([issue #845](https://github.com/dsccommunity/SqlServerDsc/issues/845)).
 
 ## [17.2.0] - 2025-09-16
 
