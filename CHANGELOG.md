@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SqlEndpoint
+  - Added support for the Service Broker Endpoint ([issue #498](https://github.com/dsccommunity/SqlServerDsc/issues/498)).
+
 ### Changed
 
 - SqlServerDsc
@@ -21,6 +26,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlDatabase
   - Support enabling or disabling snapshot isolation
     ([issue #845](https://github.com/dsccommunity/SqlServerDsc/issues/845)).
+
+### Fixed
+- SqlDatabaseRole
+  - Fixed check to see if the role and user existed in the database. The
+    previous logic would always indicate the role or user was not found unless
+    the role had the same name as the user. Also updated the
+    DesiredMembersNotPresent string to be more accurate when an extra user is
+    in the role ([issue #1487](https://github.com/dsccommunity/SqlServerDsc/issues/1487)).
+- SqlAlwaysOnService
+  - Updated Get-TargetResource to return all defined schema properties
+    ([issue #150](https://github.com/dsccommunity/SqlServerDsc/issues/1501)).
 
 ## [14.2.1] - 2020-08-14
 

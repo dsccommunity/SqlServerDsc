@@ -23,6 +23,12 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
     .PARAMETER InstanceName
         The name of the SQL instance to be configured.
+
+    .PARAMETER RestartTimeout
+        The length of time, in seconds, to wait for the service to restart. Default
+        is 120 seconds.
+
+        *** Not used in this function ***
 #>
 function Get-TargetResource
 {
@@ -42,7 +48,11 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName
+        $InstanceName,
+
+        [Parameter()]
+        [System.UInt32]
+        $RestartTimeout = 120
     )
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
@@ -62,7 +72,11 @@ function Get-TargetResource
     )
 
     return @{
-        IsHadrEnabled = $isAlwaysOnEnabled
+        InstanceName   = $InstanceName
+        Ensure         = $Ensure
+        ServerName     = $ServerName
+        RestartTimeout = $RestartTimeout
+        IsHadrEnabled  = $isAlwaysOnEnabled
     }
 }
 
