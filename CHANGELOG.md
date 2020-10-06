@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+-SqlRole
+  - Major overhaul of resource, added lots of tests.
+  - Added sanitize function for issue #550
+
 ### Added
 
 - SqlEndpoint
