@@ -76,7 +76,8 @@ try
                 $resourceCurrentState.Ensure | Should -Be 'Present'
                 $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role1Name
                 $resourceCurrentState.Members | Should -Be $ConfigurationData.AllNodes.User4Name
-                $resourceCurrentState.MembersToInclude | Should -Be $ConfigurationData.AllNodes.User4Name
+                $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
+                #$resourceCurrentState.MembersToInclude | Should -Be $ConfigurationData.AllNodes.User4Name
                 $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
             }
 
@@ -295,6 +296,7 @@ try
                     $ConfigurationData.AllNodes.User2Name
                     $ConfigurationData.AllNodes.User4Name
                 )
+                $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
                 $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
             }
 
@@ -346,10 +348,11 @@ try
                 $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role2Name
                 $resourceCurrentState.Members | Should -Be $ConfigurationData.AllNodes.User4Name
                 $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
-                $resourceCurrentState.MembersToExclude | Should -Be @(
-                    $ConfigurationData.AllNodes.User1Name
-                    $ConfigurationData.AllNodes.User2Name
-                )
+                $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
+                #$resourceCurrentState.MembersToExclude | Should -Be @(
+                #    $ConfigurationData.AllNodes.User1Name
+                #    $ConfigurationData.AllNodes.User2Name
+                #)
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -512,7 +515,8 @@ try
                 $currentState.Ensure | Should -Be 'Present'
                 $currentstate.Members | Should -BeNullOrEmpty
                 $currentState.MembersToInclude | Should -BeNullOrEmpty
-                $currentState.MembersToExclude | Should -Be $testMemberName
+                $currentState.MembersToExclude | Should -BeNullOrEmpty
+                #$currentState.MembersToExclude | Should -Be $testMemberName
             }
         }
     }
