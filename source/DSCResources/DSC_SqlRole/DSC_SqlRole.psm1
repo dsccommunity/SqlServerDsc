@@ -631,6 +631,7 @@ function Sanitize-InputObjects
         [System.String[]]
         $MembersToExclude,
 
+        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $ServerRoleName
