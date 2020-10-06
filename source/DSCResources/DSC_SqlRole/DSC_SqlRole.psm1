@@ -77,7 +77,9 @@ function Get-TargetResource
         Ensure             = $ensure
         ServerName         = $ServerName
         InstanceName       = $InstanceName
-        membersInRole      = $membersInRole
+        members            = $membersInRole
+        membersToInclude   = $null
+        membersToExclude   = $null
     }
 }
 
@@ -394,7 +396,7 @@ function Test-TargetResource
 
             if ($Members)
             {
-                if ( $null -ne (Compare-Object -ReferenceObject $getTargetResourceResult.membersInRole -DifferenceObject $saneInputParameters.Members))
+                if ( $null -ne (Compare-Object -ReferenceObject $getTargetResourceResult.members -DifferenceObject $saneInputParameters.Members))
                 {
                     Write-Verbose -Message (
                         $script:localizedData.DesiredMembersNotPresent `
@@ -410,7 +412,7 @@ function Test-TargetResource
                 {
                     foreach ($memberToInclude in $saneInputParameters.MembersToInclude)
                     {
-                        if ($getTargetResourceResult.membersInRole -notcontains $memberToInclude)
+                        if ($getTargetResourceResult.members -notcontains $memberToInclude)
                         {
                             Write-Verbose -Message (
                                 $script:localizedData.MemberNotPresent `
@@ -426,7 +428,7 @@ function Test-TargetResource
                 {
                     foreach ($memberToExclude in $saneInputParameters.MembersToExclude)
                     {
-                        if ($getTargetResourceResult.membersInRole -contains $memberToExclude)
+                        if ($getTargetResourceResult.members -contains $memberToExclude)
                         {
                             Write-Verbose -Message (
                                 $script:localizedData.MemberPresent `

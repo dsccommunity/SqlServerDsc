@@ -254,21 +254,11 @@ try
                     $result.Ensure | Should -Be 'Absent'
                 }
 
-#                It 'Should be executed once' {
-#                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
-#                }
-
                 It 'Should return the members as null' {
-#                    $result = Get-TargetResource @testParameters
                     $result.membersInRole | Should -Be $null
                 }
 
-#                It 'Should be executed once' {
-#                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
-#                }
-
                 It 'Should return the same values as passed as parameters' {
-#                    $result = Get-TargetResource @testParameters
                     $result.ServerName | Should -Be $testParameters.ServerName
                     $result.InstanceName | Should -Be $testParameters.InstanceName
                     $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
@@ -291,28 +281,14 @@ try
                     $result.Ensure | Should -Not -Be 'Absent'
                 }
 
-#                It 'Should be executed once' {
-#                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
-#                }
-
                 It 'Should return the members as not null' {
-#                    $result = Get-TargetResource @testParameters
-                    $result.membersInRole | Should -Not -Be $null
+                    $result.members | Should -Not -Be $null
                 }
-
-#                It 'Should be executed once' {
-#                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
-#                }
 
                 # Regression test for issue #790
                 It 'Should return the members as string array' {
-#                    $result = Get-TargetResource @testParameters
-                    ($result.membersInRole -is [System.String[]]) | Should -BeTrue
+                    ($result.members -is [System.String[]]) | Should -BeTrue
                 }
-
-#                It 'Should be executed once' {
-#                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
-#                }
 
                 It 'Should return the same values as passed as parameters' {
 #                    $result = Get-TargetResource @testParameters
