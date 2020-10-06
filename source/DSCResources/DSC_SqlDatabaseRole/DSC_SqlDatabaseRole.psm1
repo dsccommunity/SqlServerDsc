@@ -530,9 +530,9 @@ function Add-SqlDscDatabaseRoleMember
 
     $databaseName = $SqlDatabaseObject.Name
 
-    if (-not ($SqlDatabaseObject.Roles[$MemberName] -or $SqlDatabaseObject.Users[$MemberName]))
+    if (-not ($SqlDatabaseObject.Roles[$Name] -and $SqlDatabaseObject.Users[$MemberName]))
     {
-        $errorMessage = $script:localizedData.DatabaseRoleOrUserNotFound -f $MemberName, $databaseName
+        $errorMessage = $script:localizedData.DatabaseRoleOrUserNotFound -f $Name, $MemberName, $databaseName
         New-ObjectNotFoundException -Message $errorMessage
     }
 
