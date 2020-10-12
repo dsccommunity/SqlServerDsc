@@ -282,16 +282,15 @@ try
                 }
 
                 It 'Should return the members as not null' {
-                    $result.members | Should -Not -Be $null
+                    $result.Members | Should -Not -Be $null
                 }
 
                 # Regression test for issue #790
                 It 'Should return the members as string array' {
-                    ($result.members -is [System.String[]]) | Should -BeTrue
+                    ($result.Members -is [System.String[]]) | Should -BeTrue
                 }
 
                 It 'Should return the same values as passed as parameters' {
-#                    $result = Get-TargetResource @testParameters
                     $result.ServerName | Should -Be $testParameters.ServerName
                     $result.InstanceName | Should -Be $testParameters.InstanceName
                     $result.ServerRoleName | Should -Be $testParameters.ServerRoleName
@@ -399,7 +398,7 @@ try
                 }
             }
 
-            Context 'When the system is not in the desired state and ensure parameter is set to Present' {
+            Context 'When the system is not in the desired state and ensure is set to Present' {
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     Ensure         = 'Present'
@@ -407,7 +406,7 @@ try
                     Members        = @($mockSqlServerLoginThree, $mockSqlServerLoginFour)
                 }
 
-                $result = Test-TargetResource @testParameters
+                $result = Test-TargetResource @testParameters -verbose
 
                 It 'Should return false when desired members are not in desired server role' {
                     $result | Should -BeFalse
@@ -430,7 +429,7 @@ try
                 $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
 
                 It 'Should throw the correct error' {
-                    { Test-TargetResource @testParameters } | Should -Throw $errorMessage
+                    { Test-TargetResource @testParameters } | Should -Throw '(DRC0010)'
                 }
 
                 It 'Should not be executed' {
@@ -461,7 +460,7 @@ try
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     Ensure           = 'Present'
-                    ServerRoleName   = $mockSqlServerRole
+                    ServerRoleName   = 'RoleNotExist' # $mockSqlServerRole
                     MembersToInclude = $mockSqlServerLoginThree
                 }
 
@@ -488,7 +487,7 @@ try
                 $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
 
                 It 'Should throw the correct error' {
-                    {Test-TargetResource @testParameters}  | Should -Throw $errorMessage
+                    {Test-TargetResource @testParameters}  | Should -Throw '(DRC0010)'
                 }
 
                 It 'Should not be executed' {
@@ -497,33 +496,39 @@ try
             }
 
             Context 'When parameter MembersToExclude is assigned a value, parameter Members is not assigned a value, and ensure is set to Present' {
-                It 'Should return true when desired server role does not exist' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        Ensure           = 'Present'
-                        ServerRoleName   = $mockSqlServerRole
-                        MembersToExclude = $mockSqlServerLoginThree
-                    }
-                    $mockEnumMemberNames
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -BeTrue
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    Ensure           = 'Present'
+                    ServerRoleName   = $mockSqlServerRole
+                    MembersToExclude = $mockSqlServerLoginThree
+                }
+                $mockEnumMemberNames
+                $result = Test-TargetResource @testParameters
 
+                It 'Should return true when desired server role does not exist' {
+                    $result | Should -BeTrue
+                }
+
+                It 'Should be executed once' {
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
 
             Context 'When parameter MembersToExclude is assigned a value, parameter Members is not assigned a value, and ensure is set to Present' {
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    Ensure           = 'Present'
+                    ServerRoleName   = $mockSqlServerRole
+                    MembersToExclude = $mockSqlServerLoginTwo
+                }
+
+                $result = Test-TargetResource @testParameters
+
                 It 'Should return false when desired server role exist' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        Ensure           = 'Present'
-                        ServerRoleName   = $mockSqlServerRole
-                        MembersToExclude = $mockSqlServerLoginTwo
-                    }
-
-                    $result = Test-TargetResource @testParameters
                     $result | Should -BeFalse
+                }
 
+                It 'Should be executed once' {
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
             }
@@ -636,11 +641,13 @@ try
                         MembersToInclude = $mockSqlServerLoginThree
                     }
 
-                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
+                    #$errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
 
-                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
+                    { Set-TargetResource @testParameters } | Should -Throw '(DRC0010)'
+                }
 
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                It 'Should should not call Connect-SQL' {
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope Context
                 }
             }
 
@@ -656,9 +663,9 @@ try
 
                     $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
 
-                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
+                    { Set-TargetResource @testParameters } | Should -Throw '(DRC0010)'
 
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
                 }
             }
 
@@ -1041,43 +1048,14 @@ try
             }
         }
 
-        Describe 'DSC_SqlRole\Sanitize-InputObjects' -Tag 'Helper' {
-            Context 'When parameter Members is assigned a value, parameter MembersToInclude is assigned a value.' {
-                It 'Should throw the correct exception' {
-                    $testParameters = @{
-                        ServerRoleName   = $mockSqlServerRole
-                        Members          = $mockEnumMemberNames
-                        MembersToInclude = $mockSqlServerLoginOne
-                    }
-
-                    $testErrorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
-
-                    { Sanitize-InputObjects @testParameters } | Should -Throw -ExpectedMessage $testErrorMessage
-                }
-
-            }
-
-            Context 'When parameter Members is assigned a value, parameter MembersToExclude is assigned a value.' {
-                It 'Should throw the correct exception' {
-                    $testParameters = @{
-                        ServerRoleName   = $mockSqlServerRole
-                        Members          = $mockEnumMemberNames
-                        MembersToExclude = $mockSqlServerLoginOne
-                    }
-
-                    $testErrorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
-
-                    { Sanitize-InputObjects @testParameters } | Should -Throw -ExpectedMessage $testErrorMessage
-                }
-            }
-
+        Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
             Context 'When parameter Members is assigned a value and the role is not sysadmin, the output should be the same' {
                 $testParameters = @{
                     ServerRoleName   = $mockSqlServerRole
                     Members          = $mockEnumMemberNames
                 }
 
-                $result = Sanitize-InputObjects @testParameters
+                $result = Get-CorrectedMemberParameters @testParameters
 
                 It 'Should return an array with 2 elements' {
                     $result.Members | Should -HaveCount 2
@@ -1099,7 +1077,7 @@ try
                     Members          = $mockEnumMemberNamesSysAdmin
                 }
 
-                $result = Sanitize-InputObjects @testParameters
+                $result = Get-CorrectedMemberParameters @testParameters
 
                 It 'Should return an array with 3 elements' {
                     $result.Members | Should -HaveCount 3
@@ -1121,7 +1099,7 @@ try
                     Members          = $mockEnumMemberNames
                 }
 
-                $result = Sanitize-InputObjects @testParameters
+                $result = Get-CorrectedMemberParameters @testParameters
 
                 It 'Should return an array with 3 elements' {
                     $result.Members | Should -HaveCount 3
@@ -1143,7 +1121,7 @@ try
                     MembersToInclude = $mockEnumMemberNamesSysAdmin
                 }
 
-                $result = Sanitize-InputObjects @testParameters
+                $result = Get-CorrectedMemberParameters @testParameters
 
                 It 'Should return an array with 3 elements' {
                     $result.MembersToInclude | Should -HaveCount 3
@@ -1165,7 +1143,7 @@ try
                     MembersToInclude = $mockEnumMemberNames
                 }
 
-                $result = Sanitize-InputObjects @testParameters
+                $result = Get-CorrectedMemberParameters @testParameters
 
                 It 'Should return an array with 2 elements' {
                     $result.MembersToInclude | Should -HaveCount 2
@@ -1187,7 +1165,7 @@ try
                     MembersToInclude = $mockEnumMemberNames
                 }
 
-                $result = Sanitize-InputObjects @testParameters
+                $result = Get-CorrectedMemberParameters @testParameters
 
                 It 'Should return an array with 2 elements' {
                     $result.MembersToInclude | Should -HaveCount 2
@@ -1209,7 +1187,7 @@ try
                     MembersToInclude = $mockEnumMemberNamesSysAdmin
                 }
 
-                $result = Sanitize-InputObjects @testParameters
+                $result = Get-CorrectedMemberParameters @testParameters
 
                 It 'Should return an array with 3 elements' {
                     $result.MembersToInclude | Should -HaveCount 3
@@ -1231,7 +1209,7 @@ try
                     MembersToExclude = $mockEnumMemberNamesSysAdmin
                 }
 
-                $result = Sanitize-InputObjects @testParameters
+                $result = Get-CorrectedMemberParameters @testParameters
 
                 It 'Should return an array with 3 elements' {
                     $result.MembersToExclude | Should -HaveCount 3
@@ -1253,7 +1231,7 @@ try
                     MembersToExclude = $mockEnumMemberNames
                 }
 
-                $result = Sanitize-InputObjects @testParameters
+                $result = Get-CorrectedMemberParameters @testParameters
 
                 It 'Should return an array with 2 elements' {
                     $result.MembersToExclude | Should -HaveCount 2
@@ -1275,7 +1253,7 @@ try
                     MembersToExclude = $mockEnumMemberNames
                 }
 
-                $result = Sanitize-InputObjects @testParameters
+                $result = Get-CorrectedMemberParameters @testParameters
 
                 It 'Should return an array with 2 elements' {
                     $result.MembersToExclude | Should -HaveCount 2
@@ -1297,7 +1275,7 @@ try
                     MembersToExclude = $mockEnumMemberNamesSysAdmin
                 }
 
-                $result = Sanitize-InputObjects @testParameters
+                $result = Get-CorrectedMemberParameters @testParameters
 
                 It 'Should return an array with 2 elements' {
                     $result.MembersToExclude | Should -HaveCount 2

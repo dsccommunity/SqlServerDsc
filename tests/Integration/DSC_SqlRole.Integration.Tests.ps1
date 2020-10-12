@@ -148,6 +148,8 @@ try
                         ConfigurationData          = $ConfigurationData
                     }
 
+                    Write-verbose "Config parameters $configurationParameters"
+
                     & $configurationName @configurationParameters
 
                     $startDscConfigurationParameters = @{
@@ -158,6 +160,8 @@ try
                         Force        = $true
                         ErrorAction  = 'Stop'
                     }
+
+                    Write-Verbose "startDscConfigurationParameters $startDscConfigurationParameters"
 
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
