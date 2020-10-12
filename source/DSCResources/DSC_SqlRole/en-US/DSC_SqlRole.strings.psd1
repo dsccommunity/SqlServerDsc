@@ -1,6 +1,7 @@
 # Localized resources for SqlRole
 #MembersToIncludeAndExcludeParamMustBeNull = The parameter MembersToInclude and/or MembersToExclude must not be set, or be set to $null, when parameter Members are used.
 
+
 ConvertFrom-StringData @'
     GetProperties = Getting properties of the SQL Server role '{0}'.
     SetProperties = Setting properties of the SQL Server role '{0}'.
