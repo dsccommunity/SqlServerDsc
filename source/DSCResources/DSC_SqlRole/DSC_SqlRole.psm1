@@ -446,7 +446,6 @@ function Test-TargetResource
                     }
                 }
 
-
                 if ($MembersToExclude)
                 {
                     foreach ($memberToExclude in $correctedParameters.MembersToExclude)
