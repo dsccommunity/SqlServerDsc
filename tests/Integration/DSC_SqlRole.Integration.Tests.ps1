@@ -168,7 +168,7 @@ try
                     Write-Verbose "startDscConfigurationParameters $startDscConfigurationParameters"
 
                     Start-DscConfiguration @startDscConfigurationParameters
-                } | Should -Not -Throw
+                } | Should -Not -Throw -Verbose
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
