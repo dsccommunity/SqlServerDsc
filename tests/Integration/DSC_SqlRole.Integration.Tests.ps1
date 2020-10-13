@@ -174,7 +174,7 @@ try
             It 'Should be able to call Get-DscConfiguration without throwing' {
                 {
                     $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-                } | Should -Not -Throw
+                } | Should -Not -Throw -Verbose
             }
 
             It 'Should have set the resource and all the parameters should match' {
