@@ -140,17 +140,12 @@ try
         $configurationName = "$($script:dscResourceName)_AddRole3_Config"
 
         Context ('When using configuration {0}' -f $configurationName){
-            Write-verbose "ConfigurationName $configurationName"
-            Write-verbose "TestDrive $TestDrive"
-            Write-verbose "ConfigurationData $ConfigurationData"
 
             $configurationParameters = @{
                 OutputPath                 = $TestDrive
                 # The variable $ConfigurationData was dot-sourced above.
                 ConfigurationData          = $ConfigurationData
             }
-
-            Write-verbose "Config parameters $configurationParameters"
 
             & $configurationName @configurationParameters
 
@@ -163,10 +158,13 @@ try
                 ErrorAction  = 'Stop'
             }
 
-            Write-Verbose "startDscConfigurationParameters $startDscConfigurationParameters"
-
             It 'Should compile and apply the MOF without throwing' {
                 {
+                    Write-verbose "ConfigurationName $configurationName"
+                    Write-verbose "TestDrive $TestDrive"
+                    Write-verbose "ConfigurationData $ConfigurationData"
+                    Write-verbose "Config parameters $configurationParameters"
+                    Write-Verbose "startDscConfigurationParameters $startDscConfigurationParameters"
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw -Verbose
             }
