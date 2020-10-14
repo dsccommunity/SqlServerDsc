@@ -161,20 +161,13 @@ try
 
             Write-Host "ConfigurationName $configurationName"
             Write-Host "TestDrive $TestDrive"
-            Write-Host "ConfigurationData $ConfigurationData"
-            Write-Host "Config parameters $configurationParameters"
-            Write-Host "startDscConfigurationParameters $startDscConfigurationParameters"
-
-            It 'Should compile and apply the MOF without throwing' {
-                Write-verbose "ConfigurationName $configurationName"
-                Write-verbose "TestDrive $TestDrive"
-                Write-verbose "ConfigurationData $ConfigurationData"
-                Write-verbose "Config parameters $configurationParameters"
-                Write-Verbose "startDscConfigurationParameters $startDscConfigurationParameters"
-                {
-                    return 1
-                } | Should -be 1 -Verbose
-            }
+#            Write-Host "ConfigurationData $ConfigurationData"
+#            Write-Host "Config parameters $configurationParameters"
+#            Write-Host "startDscConfigurationParameters $startDscConfigurationParameters"
+            $ConfigurationData
+            $ConfigurationData.AllNodes
+            $configurationParameters
+            $startDscConfigurationParameters
 
             It 'Should compile and apply the MOF without throwing' {
                 {
