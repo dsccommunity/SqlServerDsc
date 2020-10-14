@@ -165,14 +165,20 @@ try
                     Write-verbose "ConfigurationData $ConfigurationData"
                     Write-verbose "Config parameters $configurationParameters"
                     Write-Verbose "startDscConfigurationParameters $startDscConfigurationParameters"
+                    return 1
+                } | Should -be 1 -Verbose
+            }
+
+            It 'Should compile and apply the MOF without throwing' {
+                {
                     Start-DscConfiguration @startDscConfigurationParameters
-                } | Should -Not -Throw -Verbose
+                } | Should -Not -Throw
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing' {
                 {
                     $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-                } | Should -Not -Throw -Verbose
+                } | Should -Not -Throw
             }
 
             It 'Should have set the resource and all the parameters should match' {
