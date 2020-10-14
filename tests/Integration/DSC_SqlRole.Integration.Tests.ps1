@@ -139,7 +139,7 @@ try
 
         $configurationName = "$($script:dscResourceName)_AddRole3_Config"
 
-        Context ('When using configuration {0}' -f $configurationName)
+        Context ('When using configuration {0}' -f $configurationName){
             Write-verbose "ConfigurationName $configurationName"
             Write-verbose "TestDrive $TestDrive"
             Write-verbose "ConfigurationData $ConfigurationData"
