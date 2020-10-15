@@ -977,6 +977,15 @@ try
                     { Test-SqlSecurityPrincipal @testParameters } | Should -Throw -ExpectedMessage $testErrorMessage
                 }
 
+
+
+
+
+                <#
+                    @person doing the code review: This test should fail. the only reason $result is False, is because it is not filled.
+                    eg powershell evolves an empty variable to false. i vote to remove this test, but do not know the history of this test
+                    and why it is in here.
+                #>
                 It 'Should return false when ErrorAction is set to SilentlyContinue' {
                     $testSecurityPrincipal = 'Nabrond'
 
@@ -984,12 +993,6 @@ try
                         SqlServerObject = $testSqlServerObject
                         SecurityPrincipal = $testSecurityPrincipal
                     }
-
-                    <#
-                        @person doing the code review: This test should fail. the only reason $result is False, is because it is not filled.
-                        eg powershell evolves an empty variable to false. i vote to remove this test, but do not know the history of this test
-                        and why it is in here.
-                    #>
 
                     <#
                         Pester will still see the error on the stack regardless of the value used for ErrorAction
@@ -1006,6 +1009,12 @@ try
 
                     $result | Should -BeFalse
                 }
+
+
+
+
+
+
             }
 
             Context 'When the security principal exists.' {

@@ -226,39 +226,26 @@ function Set-TargetResource
                     MembersToExclude = $MembersToExclude
                 }
 
-                #$correctedParameters = Get-CorrectedMemberParameters @originalParameters
-                $correctedParameters = $originalParameters.Clone()
+                $correctedParameters = Get-CorrectedMemberParameters @originalParameters
 
                 if ($Members)
                 {
-                    Write-Verbose -Message "00"
-                    $cpm = $correctedParameters.Members  | Out-String
-                    Write-Verbose -Message "01 $cpm"
-
                     $memberNamesInRoleObject = $sqlServerObject.Roles[$ServerRoleName].EnumMemberNames()
-
-                    $mniro = $memberNamesInRoleObject | Out-String
-                    Write-Verbose -Message "02 $mniro"
 
                     foreach ($memberName in $memberNamesInRoleObject)
                     {
-                        Write-Verbose -Message "03 $memberName"
                         if ($correctedParameters.Members -notcontains $memberName)
                         {
-                            Write-Verbose -Message "04"
                             Remove-SqlDscServerRoleMember -SqlServerObject $sqlServerObject `
                                 -SecurityPrincipal $memberName `
                                 -ServerRoleName $ServerRoleName
                         }
                     }
 
-                    Write-Verbose -Message "05"
                     foreach ($memberToAdd in $correctedParameters.Members)
                     {
-                        Write-Verbose -Message "06 $memberToAdd"
                         if ($memberNamesInRoleObject -notcontains $memberToAdd)
                         {
-                            Write-Verbose -Message "07"
                             Add-SqlDscServerRoleMember -SqlServerObject $sqlServerObject `
                                 -SecurityPrincipal $memberToAdd `
                                 -ServerRoleName $ServerRoleName
@@ -630,7 +617,8 @@ function Test-SqlSecurityPrincipal
             # Principal is neither a Login nor a Server role, raise exception
             New-ObjectNotFoundException -Message $errorMessage
 
-            return $false
+            #this is never reached. Commented out; This should be removed togeter with row 979 till 1017 in DSC_SqlRole.Tests.ps1, but not my decision
+            #return $false
         }
     }
 
@@ -641,7 +629,7 @@ function Test-SqlSecurityPrincipal
     .SYNOPSIS
         This function sanitizes the parameters
         If Members is filled, MembersToInclude and MembersToExclude should be empty.
-        If ServerRoleName is sysadmin, make sure we dont try to alter SA.
+        If ServerRoleName is sysadmin, make sure we dont try to delete SA from it.
 
     .PARAMETER Members
         The members the server role should have.
@@ -655,7 +643,7 @@ function Test-SqlSecurityPrincipal
     .PARAMETER ServerRoleName
         The name of server role to be created or dropped.
 #>
-function Get-CorrectedMemberParameters # Sanitize-InputObjects
+function Get-CorrectedMemberParameters
 {
     param
     (
