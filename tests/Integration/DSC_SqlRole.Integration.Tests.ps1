@@ -164,10 +164,17 @@ try
 #            Write-Host "ConfigurationData $ConfigurationData"
 #            Write-Host "Config parameters $configurationParameters"
 #            Write-Host "startDscConfigurationParameters $startDscConfigurationParameters"
-            $ConfigurationData
-            $ConfigurationData.AllNodes
-            $configurationParameters
-            $startDscConfigurationParameters
+            $cd = $ConfigurationData | out-string
+            Write-Host "ConfigurationData $cd"
+
+            $cda = $ConfigurationData.AllNodes | out-string
+            Write-Host "ConfigurationData.AllNodes $cda"
+
+            $cp = $configurationParameters | out-string
+            Write-Host "configurationParameters $cp"
+
+            $sdcp = $startDscConfigurationParameters | out-string
+            Write-Host "startDscConfigurationParameters $sdcp"
 
             It 'Should compile and apply the MOF without throwing' {
                 {

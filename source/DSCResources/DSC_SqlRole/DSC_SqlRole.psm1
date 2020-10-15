@@ -226,7 +226,8 @@ function Set-TargetResource
                     MembersToExclude = $MembersToExclude
                 }
 
-                $correctedParameters = Get-CorrectedMemberParameters @originalParameters
+                #$correctedParameters = Get-CorrectedMemberParameters @originalParameters
+                $correctedParameters = $originalParameters.Clone()
 
                 if ($Members)
                 {
