@@ -428,50 +428,52 @@ function Test-TargetResource
 
                 $isServerRoleInDesiredState = $false
             }
-
-            if ($Members)
-            {
-                if ( $null -ne (Compare-Object -ReferenceObject $getTargetResourceResult.Members -DifferenceObject $correctedParameters.Members))
-                {
-                    Write-Verbose -Message (
-                        $script:localizedData.DesiredMembersNotPresent `
-                            -f $ServerRoleName
-                    )
-
-                    $isServerRoleInDesiredState = $false
-                }
-            }
             else
             {
-                if ($MembersToInclude)
+                if ($Members)
                 {
-                    foreach ($memberToInclude in $correctedParameters.MembersToInclude)
+                    if ( $null -ne (Compare-Object -ReferenceObject $getTargetResourceResult.Members -DifferenceObject $correctedParameters.Members))
                     {
-                        if ($getTargetResourceResult.Members -notcontains $memberToInclude)
-                        {
-                            Write-Verbose -Message (
-                                $script:localizedData.MemberNotPresent `
-                                    -f $ServerRoleName, $memberToInclude
-                            )
+                        Write-Verbose -Message (
+                            $script:localizedData.DesiredMembersNotPresent `
+                                -f $ServerRoleName
+                        )
 
-                            $isServerRoleInDesiredState = $false
+                        $isServerRoleInDesiredState = $false
+                    }
+                }
+                else
+                {
+                    if ($MembersToInclude)
+                    {
+                        foreach ($memberToInclude in $correctedParameters.MembersToInclude)
+                        {
+                            if ($getTargetResourceResult.Members -notcontains $memberToInclude)
+                            {
+                                Write-Verbose -Message (
+                                    $script:localizedData.MemberNotPresent `
+                                        -f $ServerRoleName, $memberToInclude
+                                )
+
+                                $isServerRoleInDesiredState = $false
+                            }
                         }
+
                     }
 
-                }
-
-                if ($MembersToExclude)
-                {
-                    foreach ($memberToExclude in $correctedParameters.MembersToExclude)
+                    if ($MembersToExclude)
                     {
-                        if ($getTargetResourceResult.Members -contains $memberToExclude)
+                        foreach ($memberToExclude in $correctedParameters.MembersToExclude)
                         {
-                            Write-Verbose -Message (
-                                $script:localizedData.MemberPresent `
-                                    -f $ServerRoleName, $memberToExclude
-                            )
+                            if ($getTargetResourceResult.Members -contains $memberToExclude)
+                            {
+                                Write-Verbose -Message (
+                                    $script:localizedData.MemberPresent `
+                                        -f $ServerRoleName, $memberToExclude
+                                )
 
-                            $isServerRoleInDesiredState = $false
+                                $isServerRoleInDesiredState = $false
+                            }
                         }
                     }
                 }
