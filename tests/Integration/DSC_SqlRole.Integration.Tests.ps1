@@ -475,7 +475,7 @@ try
 
                 $currentState.Ensure | Should -Be 'Present'
                 $currentState.Members | Should -Be @($testMemberName)
-                $currentState.MembersToInclude | Should -Be @($testMemberName)
+                $currentState.MembersToInclude | Should -BeNullOrEmpty
                 $currentState.MembersToExclude | Should -BeNullOrEmpty
             }
         }
