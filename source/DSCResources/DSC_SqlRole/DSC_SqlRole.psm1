@@ -231,22 +231,34 @@ function Set-TargetResource
 
                 if ($Members)
                 {
+                    Write-Verbose -Message "00"
+                    $cpm = $correctedParameters.Members  | Out-String
+                    Write-Verbose -Message "01 $cpm"
+
                     $memberNamesInRoleObject = $sqlServerObject.Roles[$ServerRoleName].EnumMemberNames()
+
+                    $mniro = $memberNamesInRoleObject | Out-String
+                    Write-Verbose -Message "02 $mniro"
 
                     foreach ($memberName in $memberNamesInRoleObject)
                     {
+                        Write-Verbose -Message "03 $memberName"
                         if ($correctedParameters.Members -notcontains $memberName)
                         {
+                            Write-Verbose -Message "04"
                             Remove-SqlDscServerRoleMember -SqlServerObject $sqlServerObject `
                                 -SecurityPrincipal $memberName `
                                 -ServerRoleName $ServerRoleName
                         }
                     }
 
+                    Write-Verbose -Message "05"
                     foreach ($memberToAdd in $correctedParameters.Members)
                     {
+                        Write-Verbose -Message "06 $memberToAdd"
                         if ($memberNamesInRoleObject -notcontains $memberToAdd)
                         {
+                            Write-Verbose -Message "07"
                             Add-SqlDscServerRoleMember -SqlServerObject $sqlServerObject `
                                 -SecurityPrincipal $memberToAdd `
                                 -ServerRoleName $ServerRoleName
