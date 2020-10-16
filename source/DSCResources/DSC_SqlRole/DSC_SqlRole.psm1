@@ -415,49 +415,52 @@ function Test-TargetResource
 
                 $isServerRoleInDesiredState = $false
             }
-
-            if ($Members)
-            {
-                if ( $null -ne (Compare-Object -ReferenceObject $getTargetResourceResult.Members -DifferenceObject $correctedParameters.Members))
-                {
-                    Write-Verbose -Message (
-                        $script:localizedData.DesiredMembersNotPresent `
-                            -f $ServerRoleName
-                    )
-
-                    $isServerRoleInDesiredState = $false
-                }
-            }
             else
             {
-                if ($MembersToInclude)
+                if ($Members)
                 {
-                    foreach ($memberToInclude in $correctedParameters.MembersToInclude)
+                    if ( $null -ne (Compare-Object -ReferenceObject $getTargetResourceResult.Members -DifferenceObject $correctedParameters.Members))
                     {
-                        if ($getTargetResourceResult.Members -notcontains $memberToInclude)
-                        {
-                            Write-Verbose -Message (
-                                $script:localizedData.MemberNotPresent `
-                                    -f $ServerRoleName, $memberToInclude
-                            )
+                        Write-Verbose -Message (
+                            $script:localizedData.DesiredMembersNotPresent `
+                                -f $ServerRoleName
+                        )
 
-                            $isServerRoleInDesiredState = $false
-                        }
+                        $isServerRoleInDesiredState = $false
                     }
                 }
-
-                if ($MembersToExclude)
+                else
                 {
-                    foreach ($memberToExclude in $correctedParameters.MembersToExclude)
+                    if ($MembersToInclude)
                     {
-                        if ($getTargetResourceResult.Members -contains $memberToExclude)
+                        foreach ($memberToInclude in $correctedParameters.MembersToInclude)
                         {
-                            Write-Verbose -Message (
-                                $script:localizedData.MemberPresent `
-                                    -f $ServerRoleName, $memberToExclude
-                            )
+                            if ($getTargetResourceResult.Members -notcontains $memberToInclude)
+                            {
+                                Write-Verbose -Message (
+                                    $script:localizedData.MemberNotPresent `
+                                        -f $ServerRoleName, $memberToInclude
+                                )
 
-                            $isServerRoleInDesiredState = $false
+                                $isServerRoleInDesiredState = $false
+                            }
+                        }
+
+                    }
+
+                    if ($MembersToExclude)
+                    {
+                        foreach ($memberToExclude in $correctedParameters.MembersToExclude)
+                        {
+                            if ($getTargetResourceResult.Members -contains $memberToExclude)
+                            {
+                                Write-Verbose -Message (
+                                    $script:localizedData.MemberPresent `
+                                        -f $ServerRoleName, $memberToExclude
+                                )
+
+                                $isServerRoleInDesiredState = $false
+                            }
                         }
                     }
                 }
@@ -614,7 +617,8 @@ function Test-SqlSecurityPrincipal
             # Principal is neither a Login nor a Server role, raise exception
             New-ObjectNotFoundException -Message $errorMessage
 
-            return $false
+            #this is never reached. Commented out; This should be removed togeter with row 979 till 1017 in DSC_SqlRole.Tests.ps1, but not my decision
+            #return $false
         }
     }
 
@@ -625,7 +629,7 @@ function Test-SqlSecurityPrincipal
     .SYNOPSIS
         This function sanitizes the parameters
         If Members is filled, MembersToInclude and MembersToExclude should be empty.
-        If ServerRoleName is sysadmin, make sure we dont try to alter SA.
+        If ServerRoleName is sysadmin, make sure we dont try to delete SA from it.
 
     .PARAMETER Members
         The members the server role should have.
@@ -639,7 +643,7 @@ function Test-SqlSecurityPrincipal
     .PARAMETER ServerRoleName
         The name of server role to be created or dropped.
 #>
-function Get-CorrectedMemberParameters # Sanitize-InputObjects
+function Get-CorrectedMemberParameters
 {
     param
     (

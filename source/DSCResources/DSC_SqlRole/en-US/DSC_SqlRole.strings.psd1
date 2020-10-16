@@ -1,11 +1,9 @@
 # Localized resources for SqlRole
-
 ConvertFrom-StringData @'
     GetProperties = Getting properties of the SQL Server role '{0}'.
     SetProperties = Setting properties of the SQL Server role '{0}'.
     TestProperties = Testing properties of the SQL Server role '{0}'.
     EnumMemberNamesServerRoleGetError = Failed to enumerate members of the server role named '{2}' on '{0}\\{1}'.
-    MembersToIncludeAndExcludeParamMustBeNull = The parameter MembersToInclude and/or MembersToExclude must not be set, or be set to $null, when parameter Members are used.
     DropServerRoleSetError = Failed to drop the server role named '{2}' on '{0}\\{1}'.
     CreateServerRoleSetError = Failed to create the server role named '{2}' on '{0}\\{1}'.
     AddMemberServerRoleSetError = Failed to add member '{3}' to the server role named '{2}' on '{0}\\{1}'.

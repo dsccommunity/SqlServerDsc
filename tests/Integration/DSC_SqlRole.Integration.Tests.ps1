@@ -77,7 +77,6 @@ try
                 $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role1Name
                 $resourceCurrentState.Members | Should -Be $ConfigurationData.AllNodes.User4Name
                 $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
-                #$resourceCurrentState.MembersToInclude | Should -Be $ConfigurationData.AllNodes.User4Name
                 $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
             }
 
@@ -89,25 +88,25 @@ try
         $configurationName = "$($script:dscResourceName)_AddRole2_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
+
+            & $configurationName @configurationParameters
+
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
+
             It 'Should compile and apply the MOF without throwing' {
                 {
-                    $configurationParameters = @{
-                        OutputPath                 = $TestDrive
-                        # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData          = $ConfigurationData
-                    }
-
-                    & $configurationName @configurationParameters
-
-                    $startDscConfigurationParameters = @{
-                        Path         = $TestDrive
-                        ComputerName = 'localhost'
-                        Wait         = $true
-                        Verbose      = $true
-                        Force        = $true
-                        ErrorAction  = 'Stop'
-                    }
-
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
@@ -124,7 +123,6 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-
                 $resourceCurrentState.Ensure | Should -Be 'Present'
                 $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role2Name
                 $resourceCurrentState.Members | Should -BeNullOrEmpty
@@ -139,30 +137,26 @@ try
 
         $configurationName = "$($script:dscResourceName)_AddRole3_Config"
 
-        Context ('When using configuration {0}' -f $configurationName) {
+        Context ('When using configuration {0}' -f $configurationName){
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
+
+            & $configurationName @configurationParameters
+
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
+
             It 'Should compile and apply the MOF without throwing' {
                 {
-                    $configurationParameters = @{
-                        OutputPath                 = $TestDrive
-                        # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData          = $ConfigurationData
-                    }
-
-                    Write-verbose "Config parameters $configurationParameters"
-
-                    & $configurationName @configurationParameters
-
-                    $startDscConfigurationParameters = @{
-                        Path         = $TestDrive
-                        ComputerName = 'localhost'
-                        Wait         = $true
-                        Verbose      = $true
-                        Force        = $true
-                        ErrorAction  = 'Stop'
-                    }
-
-                    Write-Verbose "startDscConfigurationParameters $startDscConfigurationParameters"
-
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
@@ -198,25 +192,25 @@ try
         $configurationName = "$($script:dscResourceName)_Role1_ChangeMembers_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
+            $configurationParameters = @{
+                OutputPath                 = $TestDrive
+                # The variable $ConfigurationData was dot-sourced above.
+                ConfigurationData          = $ConfigurationData
+            }
+
+            & $configurationName @configurationParameters
+
+            $startDscConfigurationParameters = @{
+                Path         = $TestDrive
+                ComputerName = 'localhost'
+                Wait         = $true
+                Verbose      = $true
+                Force        = $true
+                ErrorAction  = 'Stop'
+            }
+
             It 'Should compile and apply the MOF without throwing' {
                 {
-                    $configurationParameters = @{
-                        OutputPath                 = $TestDrive
-                        # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData          = $ConfigurationData
-                    }
-
-                    & $configurationName @configurationParameters
-
-                    $startDscConfigurationParameters = @{
-                        Path         = $TestDrive
-                        ComputerName = 'localhost'
-                        Wait         = $true
-                        Verbose      = $true
-                        Force        = $true
-                        ErrorAction  = 'Stop'
-                    }
-
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
@@ -287,15 +281,9 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-
                 $resourceCurrentState.Ensure | Should -Be 'Present'
                 $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role2Name
                 $resourceCurrentState.Members | Should -Be @(
-                    $ConfigurationData.AllNodes.User1Name
-                    $ConfigurationData.AllNodes.User2Name
-                    $ConfigurationData.AllNodes.User4Name
-                )
-                $resourceCurrentState.MembersToInclude | Should -Be @(
                     $ConfigurationData.AllNodes.User1Name
                     $ConfigurationData.AllNodes.User2Name
                     $ConfigurationData.AllNodes.User4Name
@@ -347,16 +335,11 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-
                 $resourceCurrentState.Ensure | Should -Be 'Present'
                 $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role2Name
                 $resourceCurrentState.Members | Should -Be $ConfigurationData.AllNodes.User4Name
                 $resourceCurrentState.MembersToInclude | Should -BeNullOrEmpty
                 $resourceCurrentState.MembersToExclude | Should -BeNullOrEmpty
-                #$resourceCurrentState.MembersToExclude | Should -Be @(
-                #    $ConfigurationData.AllNodes.User1Name
-                #    $ConfigurationData.AllNodes.User2Name
-                #)
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -401,7 +384,6 @@ try
                     $_.ConfigurationName -eq $configurationName `
                     -and $_.ResourceId -eq $resourceId
                 }
-
 
                 $resourceCurrentState.Ensure | Should -Be 'Absent'
                 $resourceCurrentState.ServerRoleName | Should -Be $ConfigurationData.AllNodes.Role3Name
@@ -472,7 +454,7 @@ try
 
                 $currentState.Ensure | Should -Be 'Present'
                 $currentState.Members | Should -Be @($testMemberName)
-                $currentState.MembersToInclude | Should -Be @($testMemberName)
+                $currentState.MembersToInclude | Should -BeNullOrEmpty
                 $currentState.MembersToExclude | Should -BeNullOrEmpty
             }
         }
@@ -520,7 +502,6 @@ try
                 $currentstate.Members | Should -BeNullOrEmpty
                 $currentState.MembersToInclude | Should -BeNullOrEmpty
                 $currentState.MembersToExclude | Should -BeNullOrEmpty
-                #$currentState.MembersToExclude | Should -Be $testMemberName
             }
         }
     }
