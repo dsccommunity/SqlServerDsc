@@ -228,7 +228,7 @@ try
                                                     } -PassThru
                                                 ))
                                         }
-                                    }-PassThru -Force
+                                    } -PassThru -Force
                                 ))
                         }
                     } -PassThru -Force |
@@ -1107,6 +1107,30 @@ try
             }
 
             Assert-VerifiableMock
+        }
+
+        Describe 'Add-SqlDscDatabaseRoleMember' -Tag 'Helper' {
+            BeforeAll {
+                $mockSqlDatabaseObject = @{
+                    Name = $mockSqlDatabaseName
+                    Roles = @{
+                        $mockSqlDatabaseRole1 = 'Role'
+                    }
+                    Users = @{
+                        $mockSqlServerLogin1 = 'User'
+                    }
+                }
+                $mockName = 'MissingRole'
+                $mockMemberName = 'MissingUser'
+
+            }
+            Context 'When calling with a role that does not exist' {
+                It 'Should throw the correct error' {
+                    {
+                        Add-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name $mockName -MemberName $mockMemberName
+                    } | Should -Throw ($script:localizedData.DatabaseRoleOrUserNotFound -f $mockName, $mockMemberName, $mockSqlDatabaseName)
+                }
+            }
         }
     }
 }
