@@ -88,21 +88,23 @@ try
         $configurationName = "$($script:dscResourceName)_AddRole2_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
-            $configurationParameters = @{
-                OutputPath                 = $TestDrive
-                # The variable $ConfigurationData was dot-sourced above.
-                ConfigurationData          = $ConfigurationData
-            }
+            BeforeAll {
+                $configurationParameters = @{
+                    OutputPath                 = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData          = $ConfigurationData
+                }
 
-            & $configurationName @configurationParameters
+                & $configurationName @configurationParameters
 
-            $startDscConfigurationParameters = @{
-                Path         = $TestDrive
-                ComputerName = 'localhost'
-                Wait         = $true
-                Verbose      = $true
-                Force        = $true
-                ErrorAction  = 'Stop'
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
             }
 
             It 'Should compile and apply the MOF without throwing' {
@@ -138,21 +140,23 @@ try
         $configurationName = "$($script:dscResourceName)_AddRole3_Config"
 
         Context ('When using configuration {0}' -f $configurationName){
-            $configurationParameters = @{
-                OutputPath                 = $TestDrive
-                # The variable $ConfigurationData was dot-sourced above.
-                ConfigurationData          = $ConfigurationData
-            }
+            BeforeAll {
+                $configurationParameters = @{
+                    OutputPath                 = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData          = $ConfigurationData
+                }
 
-            & $configurationName @configurationParameters
+                & $configurationName @configurationParameters
 
-            $startDscConfigurationParameters = @{
-                Path         = $TestDrive
-                ComputerName = 'localhost'
-                Wait         = $true
-                Verbose      = $true
-                Force        = $true
-                ErrorAction  = 'Stop'
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
             }
 
             It 'Should compile and apply the MOF without throwing' {
@@ -192,21 +196,23 @@ try
         $configurationName = "$($script:dscResourceName)_Role1_ChangeMembers_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
-            $configurationParameters = @{
-                OutputPath                 = $TestDrive
-                # The variable $ConfigurationData was dot-sourced above.
-                ConfigurationData          = $ConfigurationData
-            }
+            BeforeAll {
+                $configurationParameters = @{
+                    OutputPath                 = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData          = $ConfigurationData
+                }
 
-            & $configurationName @configurationParameters
+                & $configurationName @configurationParameters
 
-            $startDscConfigurationParameters = @{
-                Path         = $TestDrive
-                ComputerName = 'localhost'
-                Wait         = $true
-                Verbose      = $true
-                Force        = $true
-                ErrorAction  = 'Stop'
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
             }
 
             It 'Should compile and apply the MOF without throwing' {
@@ -246,25 +252,27 @@ try
         $configurationName = "$($script:dscResourceName)_Role2_AddMembers_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
+            BeforeAll {
+                    $configurationParameters = @{
+                    OutputPath                 = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData          = $ConfigurationData
+                }
+
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+            }
+
             It 'Should compile and apply the MOF without throwing' {
                 {
-                    $configurationParameters = @{
-                        OutputPath                 = $TestDrive
-                        # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData          = $ConfigurationData
-                    }
-
-                    & $configurationName @configurationParameters
-
-                    $startDscConfigurationParameters = @{
-                        Path         = $TestDrive
-                        ComputerName = 'localhost'
-                        Wait         = $true
-                        Verbose      = $true
-                        Force        = $true
-                        ErrorAction  = 'Stop'
-                    }
-
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
@@ -300,25 +308,27 @@ try
         $configurationName = "$($script:dscResourceName)_Role2_RemoveMembers_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
+            BeforeAll {
+                    $configurationParameters = @{
+                    OutputPath                 = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData          = $ConfigurationData
+                }
+
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+            }
+
             It 'Should compile and apply the MOF without throwing' {
                 {
-                    $configurationParameters = @{
-                        OutputPath                 = $TestDrive
-                        # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData          = $ConfigurationData
-                    }
-
-                    & $configurationName @configurationParameters
-
-                    $startDscConfigurationParameters = @{
-                        Path         = $TestDrive
-                        ComputerName = 'localhost'
-                        Wait         = $true
-                        Verbose      = $true
-                        Force        = $true
-                        ErrorAction  = 'Stop'
-                    }
-
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
@@ -350,25 +360,27 @@ try
         $configurationName = "$($script:dscResourceName)_RemoveRole3_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
+            BeforeAll {
+                $configurationParameters = @{
+                    OutputPath                 = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData          = $ConfigurationData
+                }
+
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+            }
+
             It 'Should compile and apply the MOF without throwing' {
                 {
-                    $configurationParameters = @{
-                        OutputPath                 = $TestDrive
-                        # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData          = $ConfigurationData
-                    }
-
-                    & $configurationName @configurationParameters
-
-                    $startDscConfigurationParameters = @{
-                        Path         = $TestDrive
-                        ComputerName = 'localhost'
-                        Wait         = $true
-                        Verbose      = $true
-                        Force        = $true
-                        ErrorAction  = 'Stop'
-                    }
-
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
@@ -485,8 +497,9 @@ try
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing an exception' {
-                { $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop } |
-                    Should -Not -Throw
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
             }
 
             It "Should have set the resource and all values should match for $($ConfigurationData.AllNodes.Role5Name)." {

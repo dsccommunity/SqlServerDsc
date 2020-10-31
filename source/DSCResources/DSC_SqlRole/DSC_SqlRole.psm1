@@ -616,9 +616,6 @@ function Test-SqlSecurityPrincipal
 
             # Principal is neither a Login nor a Server role, raise exception
             New-ObjectNotFoundException -Message $errorMessage
-
-            #this is never reached. Commented out; This should be removed togeter with row 979 till 1017 in DSC_SqlRole.Tests.ps1, but not my decision
-            #return $false
         }
     }
 
