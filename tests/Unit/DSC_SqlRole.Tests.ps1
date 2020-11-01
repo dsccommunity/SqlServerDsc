@@ -257,7 +257,7 @@ try
                 }
 
                 It 'Should return the members as null' {
-                    $result.membersInRole | Should -Be $null
+                    $result.membersInRole | Should -BeNullOrEmpty
                 }
 
                 It 'Should return the same values as passed as parameters' {
@@ -286,7 +286,7 @@ try
                 }
 
                 It 'Should return the members as not null' {
-                    $result.Members | Should -Not -Be $null
+                    $result.Members | Should -Not -BeNullOrEmpty
                 }
 
                 # Regression test for issue #790
