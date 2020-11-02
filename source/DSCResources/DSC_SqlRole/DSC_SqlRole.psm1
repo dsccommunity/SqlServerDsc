@@ -19,6 +19,13 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
     .PARAMETER ServerRoleName
         The name of server role to be created or dropped.
 
+    .Notes
+        Because the return of this function will always be the actual members in the role,
+        and not the desired members in a role, there is no point in returning $MembersToInclude and exclude.
+        You now get "present" if the role exists, and when it exists, you get the current members in that role.
+
+        The way it was: if a role does not exists, you still get $membersToInclude And $membersToExclude.
+        To me that seems like strange behavior.
 #>
 function Get-TargetResource
 {

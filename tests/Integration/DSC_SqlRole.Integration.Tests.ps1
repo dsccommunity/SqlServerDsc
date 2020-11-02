@@ -37,25 +37,29 @@ try
         $configurationName = "$($script:dscResourceName)_AddRole1_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
+            BeforeAll {
+                $configurationParameters = @{
+                    OutputPath                 = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData          = $ConfigurationData
+                }
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+            }
+
             It 'Should compile and apply the MOF without throwing' {
                 {
-                    $configurationParameters = @{
-                        OutputPath                 = $TestDrive
-                        # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData          = $ConfigurationData
-                    }
-
                     & $configurationName @configurationParameters
+                } | Should -Not -Throw
 
-                    $startDscConfigurationParameters = @{
-                        Path         = $TestDrive
-                        ComputerName = 'localhost'
-                        Wait         = $true
-                        Verbose      = $true
-                        Force        = $true
-                        ErrorAction  = 'Stop'
-                    }
-
+                {
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
             }
@@ -95,8 +99,6 @@ try
                     ConfigurationData          = $ConfigurationData
                 }
 
-                & $configurationName @configurationParameters
-
                 $startDscConfigurationParameters = @{
                     Path         = $TestDrive
                     ComputerName = 'localhost'
@@ -108,6 +110,10 @@ try
             }
 
             It 'Should compile and apply the MOF without throwing' {
+                {
+                    & $configurationName @configurationParameters
+                } | Should -Not -Throw
+
                 {
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
@@ -147,8 +153,6 @@ try
                     ConfigurationData          = $ConfigurationData
                 }
 
-                & $configurationName @configurationParameters
-
                 $startDscConfigurationParameters = @{
                     Path         = $TestDrive
                     ComputerName = 'localhost'
@@ -160,6 +164,10 @@ try
             }
 
             It 'Should compile and apply the MOF without throwing' {
+                {
+                    & $configurationName @configurationParameters
+                } | Should -Not -Throw
+
                 {
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
@@ -203,8 +211,6 @@ try
                     ConfigurationData          = $ConfigurationData
                 }
 
-                & $configurationName @configurationParameters
-
                 $startDscConfigurationParameters = @{
                     Path         = $TestDrive
                     ComputerName = 'localhost'
@@ -216,6 +222,10 @@ try
             }
 
             It 'Should compile and apply the MOF without throwing' {
+                {
+                    & $configurationName @configurationParameters
+                } | Should -Not -Throw
+
                 {
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
@@ -259,8 +269,6 @@ try
                     ConfigurationData          = $ConfigurationData
                 }
 
-                & $configurationName @configurationParameters
-
                 $startDscConfigurationParameters = @{
                     Path         = $TestDrive
                     ComputerName = 'localhost'
@@ -272,6 +280,10 @@ try
             }
 
             It 'Should compile and apply the MOF without throwing' {
+                {
+                    & $configurationName @configurationParameters
+                } | Should -Not -Throw
+
                 {
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
@@ -315,8 +327,6 @@ try
                     ConfigurationData          = $ConfigurationData
                 }
 
-                & $configurationName @configurationParameters
-
                 $startDscConfigurationParameters = @{
                     Path         = $TestDrive
                     ComputerName = 'localhost'
@@ -328,6 +338,10 @@ try
             }
 
             It 'Should compile and apply the MOF without throwing' {
+                {
+                    & $configurationName @configurationParameters
+                } | Should -Not -Throw
+
                 {
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
@@ -367,8 +381,6 @@ try
                     ConfigurationData          = $ConfigurationData
                 }
 
-                & $configurationName @configurationParameters
-
                 $startDscConfigurationParameters = @{
                     Path         = $TestDrive
                     ComputerName = 'localhost'
@@ -380,6 +392,10 @@ try
             }
 
             It 'Should compile and apply the MOF without throwing' {
+                {
+                    & $configurationName @configurationParameters
+                } | Should -Not -Throw
+
                 {
                     Start-DscConfiguration @startDscConfigurationParameters
                 } | Should -Not -Throw
@@ -412,16 +428,12 @@ try
         $configurationName = "$($script:dscResourceName)_AddNestedRole_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
-            It 'Should compile and apply the MOF without throwing an exception' {
+            BeforeAll {
                 $configurationParameters = @{
                     OutputPath = $TestDrive
                     ConfigurationData = $ConfigurationData
                 }
 
-                { & $configurationName @configurationParameters } | Should -Not -Throw
-            }
-
-            It 'Should apply the configuration successfully' {
                 $startDscConfigurationParameters = @{
                     Path = $TestDrive
                     ComputerName = 'localhost'
@@ -430,8 +442,16 @@ try
                     Force = $true
                     ErrorAction = 'Stop'
                 }
+            }
 
-                { Start-DscConfiguration @startDscConfigurationParameters } | Should -Not -Throw
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    & $configurationName @configurationParameters
+                } | Should -Not -Throw
+
+                {
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing an exception' {
@@ -474,16 +494,12 @@ try
         $configurationName = "$($script:dscResourceName)_RemoveNestedRole_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
-            It 'Should compile and apply the MOF without throwing an exception' {
+            BeforeAll {
                 $configurationParameters = @{
                     OutputPath = $TestDrive
                     ConfigurationData = $ConfigurationData
                 }
 
-                { & $configurationName @configurationParameters } | Should -Not -Throw
-            }
-
-            It 'Should apply the configuration successfully' {
                 $startDscConfigurationParameters = @{
                     Path = $TestDrive
                     ComputerName = 'localhost'
@@ -492,8 +508,16 @@ try
                     Force = $true
                     ErrorAction = 'Stop'
                 }
+            }
 
-                { Start-DscConfiguration @startDscConfigurationParameters } | Should -Not -Throw
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    & $configurationName @configurationParameters
+                } | Should -Not -Throw
+
+                {
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
             }
 
             It 'Should be able to call Get-DscConfiguration without throwing an exception' {
