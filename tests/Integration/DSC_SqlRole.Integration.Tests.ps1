@@ -32,9 +32,8 @@ try
     Describe "$($script:dscResourceName)_Integration" {
         BeforeAll {
             $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
+            $configurationName = "$($script:dscResourceName)_AddRole1_Config"
         }
-
-        $configurationName = "$($script:dscResourceName)_AddRole1_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             BeforeAll {
@@ -85,7 +84,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be 'True'
+                Test-DscConfiguration -Verbose | Should -BeTrue
             }
         }
 
@@ -97,15 +96,15 @@ try
                     OutputPath                 = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
                     ConfigurationData          = $ConfigurationData
-                }
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
                 }
             }
 
@@ -139,7 +138,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be 'True'
+                Test-DscConfiguration -Verbose | Should -BeTrue
             }
         }
 
@@ -151,15 +150,15 @@ try
                     OutputPath                 = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
                     ConfigurationData          = $ConfigurationData
-                }
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
                 }
             }
 
@@ -197,7 +196,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be 'True'
+                Test-DscConfiguration -Verbose | Should -BeTrue
             }
         }
 
@@ -209,15 +208,15 @@ try
                     OutputPath                 = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
                     ConfigurationData          = $ConfigurationData
-                }
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
                 }
             }
 
@@ -255,7 +254,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be 'True'
+                Test-DscConfiguration -Verbose | Should -BeTrue
             }
         }
 
@@ -263,19 +262,19 @@ try
 
         Context ('When using configuration {0}' -f $configurationName) {
             BeforeAll {
-                    $configurationParameters = @{
+                $configurationParameters = @{
                     OutputPath                 = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
                     ConfigurationData          = $ConfigurationData
-                }
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
                 }
             }
 
@@ -313,7 +312,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be 'True'
+                Test-DscConfiguration -Verbose | Should -BeTrue
             }
         }
 
@@ -325,15 +324,6 @@ try
                     OutputPath                 = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
                     ConfigurationData          = $ConfigurationData
-                }
-
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
                 }
             }
 
@@ -367,7 +357,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be 'True'
+                Test-DscConfiguration -Verbose | Should -BeTrue
             }
         }
 
@@ -379,15 +369,15 @@ try
                     OutputPath                 = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
                     ConfigurationData          = $ConfigurationData
-                }
 
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
                 }
             }
 
@@ -421,7 +411,7 @@ try
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be 'True'
+                Test-DscConfiguration -Verbose | Should -BeTrue
             }
         }
 
@@ -432,15 +422,15 @@ try
                 $configurationParameters = @{
                     OutputPath = $TestDrive
                     ConfigurationData = $ConfigurationData
-                }
 
-                $startDscConfigurationParameters = @{
-                    Path = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait = $true
-                    Verbose = $true
-                    Force = $true
-                    ErrorAction = 'Stop'
+                    $startDscConfigurationParameters = @{
+                        Path = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait = $true
+                        Verbose = $true
+                        Force = $true
+                        ErrorAction = 'Stop'
+                    }
                 }
             }
 
