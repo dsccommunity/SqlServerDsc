@@ -1,7 +1,6 @@
 <#
     .SYNOPSIS
         Automated unit test for DSC_SqlWaitForAG DSC resource.
-
 #>
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
@@ -11,8 +10,8 @@ if (-not (Test-BuildCategory -Type 'Unit'))
     return
 }
 
-$script:dscModuleName      = 'SqlServerDsc'
-$script:dscResourceName    = 'DSC_SqlWaitForAG'
+$script:dscModuleName   = 'SqlServerDsc'
+$script:dscResourceName = 'DSC_SqlWaitForAG'
 
 function Invoke-TestSetup
 {
@@ -30,6 +29,12 @@ function Invoke-TestSetup
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Unit'
+
+    # Loading mocked classes
+    Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
+
+    # Load the default SQL Module stub
+    Import-SQLModuleStub
 }
 
 function Invoke-TestCleanup
@@ -42,11 +47,15 @@ Invoke-TestSetup
 try
 {
     InModuleScope $script:dscResourceName {
+        $script:moduleRoot = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+        Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'CommonTestHelper.psm1'))) -Force
+
         $mockClusterGroupName = 'AGTest'
         $mockRetryInterval = 1
         $mockRetryCount = 2
 
         $mockOtherClusterGroupName = 'UnknownAG'
+        $mockIsHadrEnabled = $true
 
         # Function stub of Get-ClusterGroup (when we do not have Failover Cluster powershell module available)
         function Get-ClusterGroup {
@@ -82,15 +91,44 @@ try
 
         # Default parameters that are used for the It-blocks
         $mockDefaultParameters = @{
+            ServerName   = $env:COMPUTERNAME
+            InstanceName = 'MSSQLSERVER'
             Name = $mockClusterGroupName
             RetryIntervalSec = $mockRetryInterval
             RetryCount = $mockRetryCount
         }
 
-        Describe 'SqlWaitForAG\Get-TargetResource' -Tag 'Get' {
-            BeforeEach {
-                $testParameters = $mockDefaultParameters.Clone()
+        $mockConnectSql = {
+            param
+            (
+                [Parameter()]
+                [System.String]
+                $ServerName,
 
+                [Parameter()]
+                [System.String]
+                $InstanceName
+            )
+
+            $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+            $mockServerObject.IsHadrEnabled = $mockIsHadrEnabled
+            $mockServerObject.Name = $ServerName
+            $mockServerObject.ServiceName = $InstanceName
+
+            # Define the availability group object
+            $mockAvailabilityGroupObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+            $mockAvailabilityGroupObject.Name = $mockClusterGroupName
+
+            # Add the availability group to the server object
+            $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObject)
+
+            return $mockServerObject
+        }
+
+        Describe 'SqlWaitForAG\Get-TargetResource' -Tag 'Get' {
+            BeforeAll {
+                $testParameters = $mockDefaultParameters.Clone()
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
                 Mock -CommandName Get-ClusterGroup -MockWith $mockGetClusterGroup -ParameterFilter $mockGetClusterGroup_ParameterFilter_KnownGroup -Verifiable
                 Mock -CommandName Get-ClusterGroup -MockWith {
                     return $null
@@ -98,7 +136,9 @@ try
             }
 
             Context 'When the system is in the desired state' {
-                $mockExpectedClusterGroupName = $mockClusterGroupName
+                BeforeAll {
+                    $mockExpectedClusterGroupName = $mockClusterGroupName
+                }
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
@@ -116,16 +156,15 @@ try
 
                 It 'Should return that the group exist' {
                     $result = Get-TargetResource @testParameters
-                    $result.GroupExist | Should -Be $true
+                    $result.GroupExist | Should -BeTrue
                 }
             }
 
             Context 'When the system is not in the desired state' {
-                BeforeEach {
+                BeforeAll {
                     $testParameters.Name = $mockOtherClusterGroupName
+                    $mockExpectedClusterGroupName = $mockOtherClusterGroupName
                 }
-
-                $mockExpectedClusterGroupName = $mockOtherClusterGroupName
 
                 It 'Should return the same values as passed as parameters' {
                     $result = Get-TargetResource @testParameters
@@ -143,18 +182,18 @@ try
 
                 It 'Should return that the group does not exist' {
                     $result = Get-TargetResource @testParameters
-                    $result.GroupExist | Should -Be $false
+                    $result.GroupExist | Should -BeFalse
                 }
             }
 
             Assert-VerifiableMock
         }
 
-
         Describe 'SqlWaitForAG\Test-TargetResource' -Tag 'Test'{
-            BeforeEach {
+            BeforeAll {
                 $testParameters = $mockDefaultParameters.Clone()
 
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
                 Mock -CommandName Get-ClusterGroup -MockWith $mockGetClusterGroup -ParameterFilter $mockGetClusterGroup_ParameterFilter_KnownGroup -Verifiable
                 Mock -CommandName Get-ClusterGroup -MockWith {
                     return $null
@@ -162,11 +201,11 @@ try
             }
 
             Context 'When the system is in the desired state' {
-                $mockExpectedClusterGroupName = $mockClusterGroupName
-
                 It 'Should return that desired state is present ($true)' {
+                    $mockExpectedClusterGroupName = $mockClusterGroupName
+
                     $result = Test-TargetResource @testParameters
-                    $result | Should -Be $true
+                    $result | Should -BeTrue
 
                     Assert-MockCalled -CommandName Get-ClusterGroup `
                         -ParameterFilter $mockGetClusterGroup_ParameterFilter_KnownGroup `
@@ -179,13 +218,12 @@ try
             }
 
             Context 'When the system is not in the desired state' {
-                $mockExpectedClusterGroupName = $mockOtherClusterGroupName
-
                 It 'Should return that desired state is absent ($false)' {
+                    $mockExpectedClusterGroupName = $mockOtherClusterGroupName
                     $testParameters.Name = $mockOtherClusterGroupName
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should -Be $false
+                    $result | Should -BeFalse
 
                     Assert-MockCalled -CommandName Get-ClusterGroup `
                         -ParameterFilter $mockGetClusterGroup_ParameterFilter_KnownGroup `
@@ -201,9 +239,10 @@ try
         }
 
         Describe 'SqlWaitForAG\Set-TargetResource' -Tag 'Set'{
-            BeforeEach {
+            BeforeAll {
                 $testParameters = $mockDefaultParameters.Clone()
 
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
                 Mock -CommandName Start-Sleep
                 Mock -CommandName Get-ClusterGroup -MockWith $mockGetClusterGroup -ParameterFilter $mockGetClusterGroup_ParameterFilter_KnownGroup -Verifiable
                 Mock -CommandName Get-ClusterGroup -MockWith {
@@ -212,9 +251,8 @@ try
             }
 
             Context 'When the system is in the desired state' {
-                $mockExpectedClusterGroupName = $mockClusterGroupName
-
                 It 'Should find the cluster group and return without throwing' {
+                    $mockExpectedClusterGroupName = $mockClusterGroupName
                      { Set-TargetResource @testParameters } | Should -Not -Throw
 
                     Assert-MockCalled -CommandName Get-ClusterGroup `
@@ -227,9 +265,8 @@ try
             }
 
             Context 'When the system is not in the desired state' {
-                $mockExpectedClusterGroupName = $mockOtherClusterGroupName
-
                 It 'Should throw the correct error message' {
+                    $mockExpectedClusterGroupName = $mockOtherClusterGroupName
                     $testParameters.Name = $mockOtherClusterGroupName
 
                     { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.FailedMessage -f $mockOtherClusterGroupName)

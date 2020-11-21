@@ -20,6 +20,7 @@ Configuration Example
             Name                 = 'AGTest1'
             RetryIntervalSec     = 20
             RetryCount           = 30
+            InstanceName         = 'MSSQLSERVER'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
