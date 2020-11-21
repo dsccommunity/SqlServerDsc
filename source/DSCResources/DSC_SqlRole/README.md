@@ -5,6 +5,10 @@ The `SqlRole` DSC resource is used to create a server role, when
 is set to `'Absent'`. The resource also manages members in both built-in
 and user created server roles.
 
+When the target role is sysadmin the DSC resource will prevent the user 
+'sa' from being removed. This is done to keep the DSC resource from 
+throwing an error since SQL Server does not allow this user to be removed.
+
 For more information about server roles, please read the below articles.
 
 * [Create a Server Role](https://msdn.microsoft.com/en-us/library/ee677627.aspx)
