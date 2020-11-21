@@ -968,5 +968,15 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
         NotificationServer = 8
     }
 
+    // TypeName: Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType
+    // Used by:
+    //  DSC_SqlDatabaseEngineTraceFlag.Tests.ps1
+    public class ManagedComputer
+    {
+        public string Name;
+        public string State;
+        public ArrayList ServerInstances;
+        public ArrayList Services;
+    }
     #endregion
 }
