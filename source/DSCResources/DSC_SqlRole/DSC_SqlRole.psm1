@@ -669,19 +669,16 @@ function Get-CorrectedMemberParameters
         $ServerRoleName
     )
 
-    if ($Members)
+    if ($ServerRoleName -eq 'sysadmin')
     {
-        if ($ServerRoleName -eq 'sysadmin')
+        if ($Members)
         {
             if ($Members -notcontains 'SA')
             {
                 $Members += 'SA'
             }
         }
-    }
-    else
-    {
-        if ($ServerRoleName -eq 'sysadmin')
+        else
         {
             if ($MembersToExclude -contains 'SA')
             {

@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlRole
   - Major overhaul of resource
-  - Removed decision making from get-TargetResource; this prevented a simple solution for
+  - BREAKING CHANGE: Removed decision making from get-TargetResource; this prevented a simple solution for
     issue #550. it now just tels if a role exists or not. And what members are in that 
     role. MembersToInclude and MembersToExclude now always return $null
   - Added sanitize function (Get-CorrectedMemberParameters) to make it so for the
