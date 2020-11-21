@@ -2,7 +2,7 @@
 class DSC_SqlWaitForAG : OMI_BaseResource
 {
     [Key, Description("The name of the _SQL Server_ instance to be configured.")] String InstanceName;
-    [Key, Description("The host name of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
+    [Write, Description("The host name of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
     [Key, Description("Name of the cluster role/group to look for (normally the same as the _Availability Group_ name).")] String Name;
     [Write, Description("The interval, in seconds, to check for the presence of the cluster role/group. Default value is `20` seconds. When the cluster role/group has been found the resource will wait for this amount of time once more before returning.")] UInt64 RetryIntervalSec;
     [Write, Description("Maximum number of retries until the resource will timeout and throw an error. Default values is `30` times.")] UInt32 RetryCount;
