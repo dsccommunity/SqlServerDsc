@@ -5,30 +5,33 @@ The `SqlSetup` DSC resource installs SQL Server on the target node.
 ## Requirements
 
 - Target machine must be running Windows Server 2012 or later.
-- For configurations that utilize the 'InstallFailoverCluster' action, the following
+- For configurations that utilize the `'InstallFailoverCluster'` action, the following
   parameters are required (beyond those required for the standalone installation).
-  See the article [Install SQL Server from the Command Prompt](https://msdn.microsoft.com/en-us/library/ms144259.aspx)
-  under the section [Failover Cluster Parameters](https://msdn.microsoft.com/en-us/library/ms144259.aspx#Anchor_8)
+  See the article [Install SQL Server from the Command Prompt](https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt)
+  under the section [Failover Cluster Parameters](https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt#ClusterInstall)
   for more information.
-  - InstanceName (can be MSSQLSERVER if you want to install a default clustered
-    instance).
-  - FailoverClusterNetworkName
-  - FailoverClusterIPAddress
+  - `InstanceName` (can be `'MSSQLSERVER'` if you want to install a default
+    clustered instance).
+  - `FailoverClusterNetworkName`
+  - `FailoverClusterIPAddress`
   - Additional parameters needed when installing Database Engine.
-    - InstallSQLDataDir
-    - AgtSvcAccount
-    - SQLSvcAccount
-    - SQLSysAdminAccounts
+    - `InstallSQLDataDir`
+    - `AgtSvcAccount`
+    - `SQLSvcAccount`
+    - `SQLSysAdminAccounts`
   - Additional parameters needed when installing Analysis Services.
-    - ASSysAdminAccounts
-    - AsSvcAccount
+    - `ASSysAdminAccounts`
+    - `AsSvcAccount`
+- These parameters cannot be used for configurations that utilize the
+  `'InstallFailoverCluster'` action:
+  - `BrowserSvcStartupType`
 - The parameters below can only be used when installing SQL Server 2016 or
   later:
-  - SqlTempdbFileCount
-  - SqlTempdbFileSize
-  - SqlTempdbFileGrowth
-  - SqlTempdbLogFileSize
-  - SqlTempdbLogFileGrowth
+  - `SqlTempDbFileCount`
+  - `SqlTempDbFileSize`
+  - `SqlTempDbFileGrowth`
+  - `SqlTempDbLogFileSize`
+  - `SqlTempDbLogFileGrowth`
 - When installing _SQL Server Analysis Services_ the account used to start
   the service must have the correct permissions in directory tree for the
   data folders. If not the service can fail with an access denied error.
