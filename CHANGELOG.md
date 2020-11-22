@@ -6,13 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - SqlRole
-  - Major overhaul of resource
-  - BREAKING CHANGE: Removed decision making from get-TargetResource; this prevented a simple solution for
-    issue #550. it now just tels if a role exists or not. And what members are in that 
-    role. MembersToInclude and MembersToExclude now always return $null
-  - Added sanitize function (Get-CorrectedMemberParameters) to make it so for the
-    sysadmin role SA does not get altered. ([issue #550](https://github.com/dsccommunity/SqlServerDsc/issues/550))
-  - added lots of tests.
+  - Major overhaul of resource.
+  - BREAKING CHANGE: Removed decision making from get-TargetResource; this
+    prevented a simple solution for issue #550. it now just tels if a role
+    exists or not. And what members are in that role. MembersToInclude and
+    MembersToExclude now always return $null.
+  - Added sanitize function (`Get-CorrectedMemberParameters`) to make it
+    so for the sysadmin role SA does not get altered ([issue #550](https://github.com/dsccommunity/SqlServerDsc/issues/550)).
+  - Added lots of tests.
+- SqlSetup
+  - Added a note to the documentation that the parameter `BrowserSvcStartupType`
+    cannot be used for configurations that utilize the `'InstallFailoverCluster'`
+    action ([issue #1627](https://github.com/dsccommunity/SqlServerDsc/issues/1627)).
+  - Minor change to the evaluation of the parameter `BrowserSvcStartupType`,
+    if it has an assigned a value or not.
 
 ### Added
 
