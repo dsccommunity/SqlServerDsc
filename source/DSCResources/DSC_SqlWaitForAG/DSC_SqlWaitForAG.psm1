@@ -84,7 +84,7 @@ function Get-TargetResource
         # Connect to the instance
         $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
 
-        if($serverObject -ne $null)
+        if ($serverObject -ne $null)
         {
             Write-Verbose -Message (
                 $serverObject
