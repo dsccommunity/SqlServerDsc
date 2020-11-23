@@ -1,8 +1,8 @@
 # Description
 
 The `SqlWaitForAG` DSC resource will wait for a cluster role/group to be
-created. This is used to wait for an Availability Group to create the
-cluster role/group in the cluster.
+created. When te cluster group is found, it wil search and wait for the Availability Group to
+become available. When the AG is found, it wil wait for one last TimeOut period.
 
 ## Requirements
 
@@ -16,14 +16,5 @@ cluster role/group in the cluster.
   to run the cmdlet Get-ClusterGroup.
 
 ## Known issues
-
-* This resource evaluates if the Windows Failover Cluster role/group
-  has been created. But the Windows Failover Cluster role/group is created
-  before the Availability Group is in a ready state. When the Windows Failover
-  Cluster role/group is found the resource will wait one more time
-  according to the value of `RetryIntervalSec` before returning. There is
-  currently no check to validate that the Availability Group was successfully
-  created and is in a ready state. A workaround is instead use [`WaitForAny`](https://docs.microsoft.com/en-us/powershell/scripting/dsc/reference/resources/windows/waitforanyresource?view=powershell-7)
-  resource. This is being tracked in [issue #1569](https://github.com/dsccommunity/SqlServerDsc/issues/1569).
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlWaitForAG).

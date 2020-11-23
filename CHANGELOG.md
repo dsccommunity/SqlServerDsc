@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- WaitForAG
+  - Fix for issue ([issue #1569](https://github.com/dsccommunity/SqlServerDsc/issues/1569))
+    DSC now waits for the AG to become Available.
+    This is a breaking change. Two parameters where added to test get and set resource.
+
 - SqlRole
   - Major overhaul of resource
   - BREAKING CHANGE: Removed decision making from get-TargetResource; this prevented a simple solution for
