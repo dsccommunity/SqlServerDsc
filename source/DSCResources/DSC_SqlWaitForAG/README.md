@@ -1,8 +1,9 @@
 # Description
 
 The `SqlWaitForAG` DSC resource will wait for a cluster role/group to be
-created. When te cluster group is found, it wil search and wait for the Availability Group to
-become available. When the AG is found, it wil wait for one last TimeOut period.
+created. When the cluster group is found it will wait for the availability group to become available. 
+When the availability group has been found the resource will wait the amount of time specified 
+in the parameter RetryIntervalSec before returning.
 
 ## Requirements
 

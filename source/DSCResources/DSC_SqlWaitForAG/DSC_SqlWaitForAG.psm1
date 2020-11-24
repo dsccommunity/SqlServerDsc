@@ -24,8 +24,8 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
     .PARAMETER RetryIntervalSec
         The interval, in seconds, to check for the presence of the cluster role/group.
         Default value is 20 seconds. When the cluster role/group has been found the
-        resource will check if the AG group exist. When also the AG group has been
-        found, dsc wil wait for RetryIntervalSec amount of time once more before returning.
+        resource will check if the AG group exist. When the availability group has
+        been found the resource will also wait this amount of time before returning.
 
     .PARAMETER RetryCount
         Maximum number of retries until the resource will timeout and throw an error.
@@ -66,7 +66,7 @@ function Get-TargetResource
 
     $clusterGroupFound = $false
 
-    #No ClusterName specified, so defaults to cluster on this node.
+    # No ClusterName specified, so defaults to cluster on this node.
     $clusterGroup = Get-ClusterGroup -Name $Name -ErrorAction SilentlyContinue
 
     if ($null -ne $clusterGroup)
@@ -75,20 +75,11 @@ function Get-TargetResource
             $script:localizedData.FoundClusterGroup -f $Name
         )
 
-        Write-Verbose -Message (
-            $ServerName
-        )
-        Write-Verbose -Message (
-            $InstanceName
-        )
         # Connect to the instance
         $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
 
-        if ($serverObject -ne $null)
+        if ($serverObject)
         {
-            Write-Verbose -Message (
-                $serverObject
-            )
             # Determine if HADR is enabled on the instance. If not, AG group can not exist.
             if ($serverObject.IsHadrEnabled )
             {
@@ -98,6 +89,18 @@ function Get-TargetResource
                 {
                     $clusterGroupFound = $true
                 }
+                else
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.AGNotFound -f $name, $InstanceName, $RetryIntervalSec
+                    )
+                }
+            }
+            else
+            {
+                Write-Verbose -Message (
+                    $script:localizedData.HadrNotEnabled -f $InstanceName
+                )
             }
         }
     }
@@ -135,8 +138,8 @@ function Get-TargetResource
     .PARAMETER RetryIntervalSec
         The interval, in seconds, to check for the presence of the cluster role/group.
         Default value is 20 seconds. When the cluster role/group has been found the
-        resource will check if the AG group exist. When also the AG group has been
-        found, dsc wil wait for RetryIntervalSec amount of time once more before returning.
+        resource will check if the AG group exist. When the availability group has
+        been found the resource will also wait this amount of time before returning.
 
 
     .PARAMETER RetryCount
@@ -231,8 +234,8 @@ function Set-TargetResource
     .PARAMETER RetryIntervalSec
         The interval, in seconds, to check for the presence of the cluster role/group.
         Default value is 20 seconds. When the cluster role/group has been found the
-        resource will check if the AG group exist. When also the AG group has been
-        found, dsc wil wait for RetryIntervalSec amount of time once more before returning.
+        resource will check if the AG group exist. When the availability group has
+        been found the resource will also wait this amount of time before returning.
 
 
     .PARAMETER RetryCount

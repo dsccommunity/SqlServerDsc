@@ -7,4 +7,6 @@ ConvertFrom-StringData @'
     RetryMessage = Will retry again after {0} seconds.
     FailedMessage = Did not find the cluster group '{0}' within the timeout period.
     TestingConfiguration = Determines the current state of the Always On Availability Group with the cluster group name '{0}'.
+    HadrNotEnabled = Hadr is not enabled on the sql server instance '{0}'.
+    AGNotFound = Availibility Group '{0}' not found on instance '{1}'. Waiting an other {2} seconds.
 '@

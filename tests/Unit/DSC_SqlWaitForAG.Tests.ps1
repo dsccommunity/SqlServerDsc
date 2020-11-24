@@ -56,6 +56,7 @@ try
 
         $mockOtherClusterGroupName = 'UnknownAG'
         $mockIsHadrEnabled = $true
+        $mockIsHadrDisabled = $false
 
         # Function stub of Get-ClusterGroup (when we do not have Failover Cluster powershell module available)
         function Get-ClusterGroup {
@@ -124,7 +125,58 @@ try
 
             return $mockServerObject
         }
+        $mockConnectSqlDisabled = {
+            param
+            (
+                [Parameter()]
+                [System.String]
+                $ServerName,
 
+                [Parameter()]
+                [System.String]
+                $InstanceName
+            )
+
+            $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+            $mockServerObject.IsHadrEnabled = $mockIsHadrDisabled
+            $mockServerObject.Name = $ServerName
+            $mockServerObject.ServiceName = $InstanceName
+
+            # Define the availability group object
+            $mockAvailabilityGroupObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+            $mockAvailabilityGroupObject.Name = $mockClusterGroupName
+
+            # Add the availability group to the server object
+            $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObject)
+
+            return $mockServerObject
+        }
+        $mockConnectSqlWrongAG = {
+            param
+            (
+                [Parameter()]
+                [System.String]
+                $ServerName,
+
+                [Parameter()]
+                [System.String]
+                $InstanceName
+            )
+
+            $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+            $mockServerObject.IsHadrEnabled = $mockIsHadrEnabled
+            $mockServerObject.Name = $ServerName
+            $mockServerObject.ServiceName = $InstanceName
+
+            # Define the availability group object
+            $mockAvailabilityGroupObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+            $mockAvailabilityGroupObject.Name = 'OtherAG'
+
+            # Add the availability group to the server object
+            $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObject)
+
+            return $mockServerObject
+        }
         Describe 'SqlWaitForAG\Get-TargetResource' -Tag 'Get' {
             BeforeAll {
                 $testParameters = $mockDefaultParameters.Clone()
@@ -160,7 +212,7 @@ try
                 }
             }
 
-            Context 'When the system is not in the desired state' {
+            Context 'When the system is not in the desired state with good configuration' {
                 BeforeAll {
                     $testParameters.Name = $mockOtherClusterGroupName
                     $mockExpectedClusterGroupName = $mockOtherClusterGroupName
@@ -186,8 +238,37 @@ try
                 }
             }
 
+            Context 'When the system is not in the desired state with bad configuration' {
+                BeforeAll {
+                    $testParameters.Name = $mockClusterGroupName
+                    $mockExpectedClusterGroupName = $mockClusterGroupName
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlDisabled -Verifiable
+                }
+
+                It 'Should return that the group does not exist' {
+                    $result = Get-TargetResource @testParameters
+                    $result.GroupExist | Should -BeFalse
+                }
+            }
+            Assert-VerifiableMock
+
+            Context 'When the system is not in the desired state when Cluster Resource is there, but Availibility Group is not.' {
+                BeforeAll {
+                    $testParameters.Name = $mockClusterGroupName
+                    $mockExpectedClusterGroupName = $mockClusterGroupName
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSqlWrongAG -Verifiable
+                }
+
+                 It 'Should return that the group does not exist' {
+                    $result = Get-TargetResource @testParameters
+                    $result.GroupExist | Should -BeFalse
+                }
+            }
             Assert-VerifiableMock
         }
+
 
         Describe 'SqlWaitForAG\Test-TargetResource' -Tag 'Test'{
             BeforeAll {
