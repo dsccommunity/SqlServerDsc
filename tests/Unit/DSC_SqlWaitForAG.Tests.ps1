@@ -125,6 +125,7 @@ try
 
             return $mockServerObject
         }
+
         $mockConnectSqlDisabled = {
             param
             (
@@ -151,6 +152,7 @@ try
 
             return $mockServerObject
         }
+
         $mockConnectSqlWrongAG = {
             param
             (
@@ -177,6 +179,7 @@ try
 
             return $mockServerObject
         }
+
         Describe 'SqlWaitForAG\Get-TargetResource' -Tag 'Get' {
             BeforeAll {
                 $testParameters = $mockDefaultParameters.Clone()
@@ -251,6 +254,7 @@ try
                     $result.GroupExist | Should -BeFalse
                 }
             }
+
             Assert-VerifiableMock
 
             Context 'When the system is not in the desired state when Cluster Resource is there, but Availibility Group is not.' {
@@ -266,6 +270,7 @@ try
                     $result.GroupExist | Should -BeFalse
                 }
             }
+
             Assert-VerifiableMock
         }
 
