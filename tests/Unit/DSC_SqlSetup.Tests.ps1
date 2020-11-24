@@ -2145,6 +2145,7 @@ try
                                 SqlTempDbFileGrowth = 128
                                 SqlTempDbLogFileSize = 128
                                 SqlTempDbLogFileGrowth = 128
+                                BrowserSvcStartupType = 'Automatic'
                             }
 
                             if ( $mockSqlMajorVersion -in (13,14) )
@@ -2179,6 +2180,7 @@ try
                                 SqlTempDbFileGrowth = 128
                                 SqlTempDbLogFileSize = 128
                                 SqlTempDbLogFileGrowth = 128
+                                BrowserSvcStartupType = 'Automatic'
                             }
 
                             { Set-TargetResource @testParameters } | Should -Not -Throw
