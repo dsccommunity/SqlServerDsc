@@ -40,7 +40,7 @@ function Get-TargetResource
 
     $ServiceNames = Get-SqlServiceName -InstanceName $InstanceName
 
-    if($SQLManagement)
+    if ($SQLManagement)
     {
         $WMIService = $SQLManagement.Services |
         Where-Object -FilterScript { $PSItem.Name -eq $ServiceNames.SQLEngineName  }
@@ -214,21 +214,25 @@ function Set-TargetResource
         $WMIService = $SQLManagement.Services |
             Where-Object -FilterScript { $PSItem.Name -eq $ServiceNames.SQLEngineName }
 
-        if($WMIService)
+        if ($WMIService)
         {
             # Extract startup parameters
             [System.Collections.ArrayList]$parameterList = $wmiService.StartupParameters.Split(';')
 
             # Removing flags that are not wanted
-            foreach ($parameter in $wmiService.StartupParameters.Split(';')) {
-                if ($parameter -like '-T*' -and $parameter -notin $traceFlagList) {
+            foreach ($parameter in $wmiService.StartupParameters.Split(';'))
+            {
+                if ($parameter -like '-T*' -and $parameter -notin $traceFlagList)
+                {
                     $parameterList.Remove($parameter) | Out-Null
                 }
             }
 
             # Add missing flags
-            foreach ($Flag in $traceFlagList) {
-                if ($Flag -notin $parameterList) {
+            foreach ($Flag in $traceFlagList)
+            {
+                if ($Flag -notin $parameterList)
+                {
                     $parameterList.Add($Flag) | Out-Null
                 }
             }
@@ -409,9 +413,9 @@ Export-ModuleMember -Function *-TargetResource
     .SYNOPSIS
         This function returns the serviceNames of an sql instance.
 #>
-Function Get-SqlServiceName
+function Get-SqlServiceName
 {
-    Param
+    param
     (
         [Parameter(Position = 1)]
         [System.String]

@@ -20,7 +20,7 @@ Configuration Example
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            RestartService       = $true
+            RestartInstance       = $true
             Ensure               = 'Absent'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
