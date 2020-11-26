@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- SqlTraceFlag
+  - Added new resource to set or changes TraceFlags on Sql Server.
+  - This resource is based on zuldans code but with SqlServerDsc integrated SMO
+  - Credits:(https://github.com/Zuldan/cSQLServerTraceFlag)
+  - Added a lot of test scripts to validated the code.
 - WaitForAG
   - BREAKING CHANGE: Fix for issue ([issue #1569](https://github.com/dsccommunity/SqlServerDsc/issues/1569))
     The resource now waits for the Availability Group to become Available.
