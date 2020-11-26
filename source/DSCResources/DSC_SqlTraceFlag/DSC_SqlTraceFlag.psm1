@@ -405,7 +405,6 @@ function Test-TargetResource
 
 Export-ModuleMember -Function *-TargetResource
 
-
 <#
     .SYNOPSIS
         This function returns the serviceNames of an sql instance.
