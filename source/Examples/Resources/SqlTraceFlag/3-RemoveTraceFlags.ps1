@@ -16,7 +16,7 @@ Configuration Example
 
     node localhost
     {
-        SqlTraceFlag 'Set_SqlTraceFlagsRemove'
+        SqlTraceFlag 'Remove_SqlTraceFlags'
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'

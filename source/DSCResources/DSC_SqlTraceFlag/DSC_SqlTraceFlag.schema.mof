@@ -1,11 +1,11 @@
 [ClassVersion("1.0.0.0"), FriendlyName("SqlTraceFlag")]
 class DSC_SqlTraceFlag : OMI_BaseResource
 {
-    [Key, Description("The host name of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
+    [Write, Description("The host name of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
     [Key, Description("The name of the _SQL Server_ instance to be configured.")] String InstanceName;
-    [Write, Description("An array of trace flags that startup options should have")] Uint32[] TraceFlags;
-    [Write, Description("An array of trace flags to be added to the existing trace flags")] Uint32[] TraceFlagsToInclude;
-    [Write, Description("An array of trace flags to be removed from the existing trace flags")] Uint32[] TraceFlagsToExclude;
+    [Write, Description("An array of trace flags that startup options should have")] Uint32 TraceFlags[];
+    [Write, Description("An array of trace flags to be added to the existing trace flags")] Uint32 TraceFlagsToInclude[];
+    [Write, Description("An array of trace flags to be removed from the existing trace flags")] Uint32 TraceFlagsToExclude[];
     [Write, Description("Forces a restart of the Database Engine service and dependent services after the desired state is set. Default values is $false.")] Boolean RestartInstance;
     [Write, Description("When set to `'Present'`, the TraceFlags will be set. When set to `'Absent'`, All TraceFlags will be Removed. Default value is `'Present'`."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
 };
