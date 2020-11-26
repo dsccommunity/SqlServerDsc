@@ -1,4 +1,4 @@
-[ClassVersion("1.0.0.0"), FriendlyName("xSQLServerDatabaseEngineStartupOption")]
+[ClassVersion("1.0.0.0"), FriendlyName("SqlTraceFlag")]
 class DSC_SqlTraceFlag : OMI_BaseResource
 {
     [Key, Description("The host name of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
