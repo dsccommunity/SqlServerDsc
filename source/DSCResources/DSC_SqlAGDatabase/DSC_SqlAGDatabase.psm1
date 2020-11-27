@@ -422,7 +422,8 @@ function Set-TargetResource
                 }
             }
             #Determine whether SEEDING_MODE = AUTOMATIC or MANUAL. Rows 482-567 may not be executed if seeding is automatic.
-
+            #Hier een test of ALLE replicas op auto staan, wanneer dat zo is, geen backup maken.
+            #$sqlServerObject.AvailabilityGroups['AG01'].AvailabilityReplicas[0].SeedingMode
             if ( $prerequisiteCheckFailures.Count -eq 0 )
             {
                 if ( $seedingMode -eq 'AUTOMATIC')
@@ -493,6 +494,9 @@ function Set-TargetResource
                     continue
                 }
 
+
+#Hier een test of ALLE replicas op auto staan, wanneer dat zo is, geen Restore voorberijden maken.
+            #$sqlServerObject.AvailabilityGroups['AG01'].AvailabilityReplicas[0].SeedingMode
                 if ( $seedingMode -eq 'AUTOMATIC')
                 {
                     # Need to restore the database with a query in order to impersonate the correct login
@@ -561,6 +565,7 @@ function Set-TargetResource
                         $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
                         $currentReplicaAvailabilityGroupObject = $currentAvailabilityGroupReplicaServerObject.AvailabilityGroups[$AvailabilityGroupName]
 
+                        #Hier per replica kijken of er gerestored moet worden of dat het op automatic staat.
                         if ( $seedingMode -eq 'MANUAL')
                         {
                             # Restore the database
@@ -582,6 +587,7 @@ function Set-TargetResource
                 }
                 finally
                 {
+                    #Wanneer er een backup gemaakt is, moet die hier verwijderd worden.
                     if ( $seedingMode -eq 'MANUAL')
                     {
                         # Clean up the backup files
