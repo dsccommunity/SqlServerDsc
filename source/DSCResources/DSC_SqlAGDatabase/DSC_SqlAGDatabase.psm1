@@ -424,8 +424,10 @@ function Set-TargetResource
             #Determine whether SEEDING_MODE = AUTOMATIC or MANUAL. Rows 482-567 may not be executed if seeding is automatic.
             #Hier een test of ALLE replicas op auto staan, wanneer dat zo is, geen backup maken.
             #$sqlServerObject.AvailabilityGroups['AG01'].AvailabilityReplicas[0].SeedingMode
+            #$availabilityGroup
             if ( $prerequisiteCheckFailures.Count -eq 0 )
             {
+
                 if ( $seedingMode -eq 'AUTOMATIC')
                 {
                     $databaseFullBackupFile = Join-Path -Path $BackupPath -ChildPath "$($databaseObject.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak"
