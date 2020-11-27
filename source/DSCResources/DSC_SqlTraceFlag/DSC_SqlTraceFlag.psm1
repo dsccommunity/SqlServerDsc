@@ -36,22 +36,22 @@ function Get-TargetResource
         $script:localizedData.GetConfiguration -f $Name
     )
 
-    $SQLManagement = New-Object Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer $ServerName
+    $sqlManagement = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer' -ArgumentList $ServerName
 
-    $ServiceNames = Get-SqlServiceName -InstanceName $InstanceName
+    $serviceNames = Get-SqlServiceName -InstanceName $InstanceName
 
-    if ($SQLManagement)
+    if ($sqlManagement)
     {
-        $WMIService = $SQLManagement.Services |
-        Where-Object -FilterScript { $PSItem.Name -eq $ServiceNames.SQLEngineName  }
+        $wmiService = $sqlManagement.Services |
+            Where-Object -FilterScript { $PSItem.Name -eq $serviceNames.SQLEngineName }
 
-        if ($WMIService)
+        if ($wmiService)
         {
-            $ActualTraceFlags = $WMIService.StartupParameters.Split(';') |
+            $actualTraceFlags = $wmiService.StartupParameters.Split(';') |
                 Where-Object -FilterScript { $PSItem -like '-T*' } |
                 ForEach-Object {
                     $PSItem.TrimStart('-T')
-            }
+                }
         }
         else
         {
@@ -68,7 +68,7 @@ function Get-TargetResource
     return @{
         ServerName          = $ServerName
         InstanceName        = $InstanceName
-        ActualTraceFlags    = $ActualTraceFlags
+        ActualTraceFlags    = $actualTraceFlags
         TraceFlags          = $null
         TraceFlagsToInclude = $null
         TraceFlagsToExclude = $null
@@ -117,15 +117,15 @@ function Set-TargetResource
         $InstanceName,
 
         [Parameter()]
-        [System.Uint32[]]
+        [System.UInt32[]]
         $TraceFlags,
 
         [Parameter()]
-        [System.Uint32[]]
+        [System.UInt32[]]
         $TraceFlagsToInclude,
 
         [Parameter()]
-        [System.Uint32[]]
+        [System.UInt32[]]
         $TraceFlagsToExclude,
 
         [Parameter()]
@@ -144,7 +144,7 @@ function Set-TargetResource
     )
 
     $assertBoundParameterParameters = @{
-        BoundParameterList = $PSBoundParameters
+        BoundParameterList     = $PSBoundParameters
         MutuallyExclusiveList1 = @(
             'TraceFlags'
         )
@@ -171,6 +171,7 @@ function Set-TargetResource
         else
         {
             $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
             $wishTraceFlags.AddRange($getTargetResourceResult.ActualTraceFlags)
 
             if ($PSBoundParameters.ContainsKey('TraceFlagsToInclude'))
@@ -197,30 +198,33 @@ function Set-TargetResource
         }
 
         # Add '-T' dash to flag
-        $traceFlagList = $wishTraceFlags | ForEach-Object {
-            "-T$PSItem"
-        }
+        $traceFlagList = $wishTraceFlags |
+            ForEach-Object {
+                "-T$PSItem"
+            }
     }
     else
     {
-        #when ensure <> present, TraceFlagList should be empty,
-        #this wil remove all traceFlags from the startupParameters
+        <#
+            When ensure <> present, TraceFlagList should be empty,
+            this will remove all traceFlags from the startupParameters
+        #>
         $traceFlagList = $null
     }
 
-    $ServiceNames = Get-SqlServiceName -InstanceName $InstanceName
+    $serviceNames = Get-SqlServiceName -InstanceName $InstanceName
 
-    $SQLManagement = New-Object Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer $ServerName
+    $sqlManagement = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer' -ArgumentList $ServerName
 
-    if ($SQLManagement)
+    if ($sqlManagement)
     {
-        $WMIService = $SQLManagement.Services |
-            Where-Object -FilterScript { $PSItem.Name -eq $ServiceNames.SQLEngineName }
+        $wmiService = $sqlManagement.Services |
+            Where-Object -FilterScript { $PSItem.Name -eq $serviceNames.SQLEngineName }
 
-        if ($WMIService)
+        if ($wmiService)
         {
             # Extract startup parameters
-            [System.Collections.ArrayList]$parameterList = $wmiService.StartupParameters.Split(';')
+            [System.Collections.ArrayList] $parameterList = $wmiService.StartupParameters.Split(';')
 
             # Removing flags that are not wanted
             foreach ($parameter in $wmiService.StartupParameters.Split(';'))
@@ -232,11 +236,11 @@ function Set-TargetResource
             }
 
             # Add missing flags
-            foreach ($Flag in $traceFlagList)
+            foreach ($flag in $traceFlagList)
             {
-                if ($Flag -notin $parameterList)
+                if ($flag -notin $parameterList)
                 {
-                    $parameterList.Add($Flag) | Out-Null
+                    $parameterList.Add($flag) | Out-Null
                 }
             }
 
@@ -248,16 +252,24 @@ function Set-TargetResource
             {
                 if ($RestartInstance -eq $true)
                 {
-                    #Get the current status of the sql agent. After restart of the instance, the status of the agent should be the same.
-                    $AgentServiceStatus = ($sqlManagement.Services | Where-Object -FilterScript { $PSItem.Name -eq $ServiceNames.SQLAgentName }).ServiceState
+                    # Get the current status of the sql agent. After restart of the instance, the status of the agent should be the same.
+                    $agentServiceStatus = (
+                        $sqlManagement.Services |
+                            Where-Object -FilterScript { $PSItem.Name -eq $serviceNames.SQLAgentName }
+                    ).ServiceState
 
                     $wmiService.Stop()
+
                     Start-Sleep -Seconds 10
+
                     $wmiService.Start()
 
-                    if ($AgentServiceStatus -ne 'Stopped')
+                    if ($agentServiceStatus -ne 'Stopped')
                     {
-                        ($sqlManagement.Services | Where-Object -FilterScript { $PSItem.Name -eq $ServiceNames.SQLAgentName }).Start()
+                        (
+                            $sqlManagement.Services |
+                                Where-Object -FilterScript { $PSItem.Name -eq $serviceNames.SQLAgentName }
+                        ).Start()
                     }
                 }
             }
@@ -335,7 +347,7 @@ function Test-TargetResource
     )
 
     $assertBoundParameterParameters = @{
-        BoundParameterList = $PSBoundParameters
+        BoundParameterList     = $PSBoundParameters
         MutuallyExclusiveList1 = @(
             'TraceFlags'
         )
@@ -354,6 +366,7 @@ function Test-TargetResource
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
     $isInDesiredState = $true
+
     if ($Ensure -eq 'Present')
     {
         if ($PSBoundParameters.ContainsKey('TraceFlags'))
@@ -412,6 +425,7 @@ function Test-TargetResource
             $isInDesiredState = $false
         }
     }
+
     return $isInDesiredState
 }
 
@@ -433,17 +447,17 @@ function Get-SqlServiceName
 
     if ($InstanceName -eq 'MSSQLSERVER')
     {
-        $SQLEngineName = 'MSSQLSERVER'
-        $SQLAgentName = 'SQLSERVERAGENT'
+        $sqlEngineName = 'MSSQLSERVER'
+        $sqlAgentName = 'SQLSERVERAGENT'
     }
     else
     {
-        $SQLEngineName = 'MSSQL${0}' -f $InstanceName
-        $SQLAgentName = 'SQLAgent${0}' -f $InstanceName
+        $sqlEngineName = 'MSSQL${0}' -f $InstanceName
+        $sqlAgentName = 'SQLAgent${0}' -f $InstanceName
     }
 
     return @{
-        SQLEngineName     = $SQLEngineName
-        SQLAgentName      = $SQLAgentName
+        SQLEngineName = $sqlEngineName
+        SQLAgentName  = $sqlAgentName
     }
 }
