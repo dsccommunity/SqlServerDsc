@@ -426,6 +426,7 @@ function Get-SqlServiceName
 {
     param
     (
+        [Parameter()]
         [System.String]
         $InstanceName = 'MSSQLServer'
     )
