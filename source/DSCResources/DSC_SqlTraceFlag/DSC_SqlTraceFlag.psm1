@@ -66,9 +66,12 @@ function Get-TargetResource
     }
 
     return @{
-        ServerName         = $ServerName
-        InstanceName       = $InstanceName
-        ActualTraceFlags   = $ActualTraceFlags
+        ServerName          = $ServerName
+        InstanceName        = $InstanceName
+        ActualTraceFlags    = $ActualTraceFlags
+        TraceFlags          = $null
+        TraceFlagsToInclude = $null
+        TraceFlagsToExclude = $null
     }
 }
 
@@ -161,7 +164,7 @@ function Set-TargetResource
     {
         $wishTraceFlags = [System.Collections.ArrayList]::new()
 
-        if ($TraceFlags)
+        if ($PSBoundParameters.ContainsKey('TraceFlags'))
         {
             $wishTraceFlags.AddRange($TraceFlags)
         }
@@ -170,7 +173,7 @@ function Set-TargetResource
             $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
             $wishTraceFlags.AddRange($getTargetResourceResult.ActualTraceFlags)
 
-            if ($TraceFlagsToInclude)
+            if ($PSBoundParameters.ContainsKey('TraceFlagsToInclude'))
             {
                 foreach ($traceFlagToInclude in $TraceFlagsToInclude)
                 {
@@ -181,7 +184,7 @@ function Set-TargetResource
                 }
             }
 
-            if ($TraceFlagsToExclude)
+            if ($PSBoundParameters.ContainsKey('TraceFlagsToExclude'))
             {
                 foreach ($traceFlagToExclude in $TraceFlagsToExclude)
                 {
@@ -241,18 +244,21 @@ function Set-TargetResource
             $wmiService.StartupParameters = $parameterList -join ';'
             $wmiService.Alter()
 
-            if ($RestartInstance)
+            if ($PSBoundParameters.ContainsKey('RestartInstance'))
             {
-                #Get the current status of the sql agent. After restart of the instance, the status of the agent should be the same.
-                $AgentServiceStatus = ($sqlManagement.Services | Where-Object -FilterScript { $PSItem.Name -eq $ServiceNames.SQLAgentName }).ServiceState
-
-                $wmiService.Stop()
-                Start-Sleep -Seconds 10
-                $wmiService.Start()
-
-                if ($AgentServiceStatus -ne 'Stopped')
+                if ($RestartInstance -eq $true)
                 {
-                    ($sqlManagement.Services | Where-Object -FilterScript { $PSItem.Name -eq $ServiceNames.SQLAgentName }).Start()
+                    #Get the current status of the sql agent. After restart of the instance, the status of the agent should be the same.
+                    $AgentServiceStatus = ($sqlManagement.Services | Where-Object -FilterScript { $PSItem.Name -eq $ServiceNames.SQLAgentName }).ServiceState
+
+                    $wmiService.Stop()
+                    Start-Sleep -Seconds 10
+                    $wmiService.Start()
+
+                    if ($AgentServiceStatus -ne 'Stopped')
+                    {
+                        ($sqlManagement.Services | Where-Object -FilterScript { $PSItem.Name -eq $ServiceNames.SQLAgentName }).Start()
+                    }
                 }
             }
         }
@@ -350,9 +356,11 @@ function Test-TargetResource
     $isInDesiredState = $true
     if ($Ensure -eq 'Present')
     {
-        if ($TraceFlags)
+        if ($PSBoundParameters.ContainsKey('TraceFlags'))
         {
-            if ( $null -ne (Compare-Object -ReferenceObject $getTargetResourceResult.ActualTraceFlags -DifferenceObject $TraceFlags))
+            #Compare $TraceFlags to ActualTraceFlags to see if they are the same.
+            $nullIfTheSame = Compare-Object -ReferenceObject $getTargetResourceResult.ActualTraceFlags -DifferenceObject $TraceFlags
+            if ( $null -ne $nullIfTheSame)
             {
                 Write-Verbose -Message (
                     $script:localizedData.DesiredTraceFlagNotPresent `
@@ -364,7 +372,7 @@ function Test-TargetResource
         }
         else
         {
-            if ($TraceFlagsToInclude)
+            if ($PSBoundParameters.ContainsKey('TraceFlagsToInclude'))
             {
                 foreach ($traceFlagToInclude in $TraceFlagsToInclude)
                 {
@@ -380,7 +388,7 @@ function Test-TargetResource
                 }
             }
 
-            if ($TraceFlagsToExclude)
+            if ($PSBoundParameters.ContainsKey('TraceFlagsToExclude'))
             {
                 foreach ($traceFlagToExclude in $TraceFlagsToExclude)
                 {
@@ -407,17 +415,17 @@ function Test-TargetResource
     return $isInDesiredState
 }
 
-Export-ModuleMember -Function *-TargetResource
-
 <#
     .SYNOPSIS
         This function returns the serviceNames of an sql instance.
+
+    .PARAMETER InstanceName
+        The name of the SQL instance of whoose service names are beeing returned.
 #>
 function Get-SqlServiceName
 {
     param
     (
-        [Parameter(Position = 1)]
         [System.String]
         $InstanceName = 'MSSQLServer'
     )

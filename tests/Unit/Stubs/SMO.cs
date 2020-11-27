@@ -972,7 +972,7 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
 
     #region Public Classes
 
-    // TypeName: Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType
+    // TypeName: Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
     // Used by:
     //  DSC_SqlTraceFlag.Tests.ps1
     public class ManagedComputer
