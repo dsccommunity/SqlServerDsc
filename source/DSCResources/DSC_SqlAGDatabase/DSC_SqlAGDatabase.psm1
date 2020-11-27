@@ -421,58 +421,62 @@ function Set-TargetResource
                     }
                 }
             }
+            #Determine whether SEEDING_MODE = AUTOMATIC or MANUAL. Rows 482-567 may not be executed if seeding is automatic.
 
             if ( $prerequisiteCheckFailures.Count -eq 0 )
             {
-                $databaseFullBackupFile = Join-Path -Path $BackupPath -ChildPath "$($databaseObject.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak"
-                $databaseLogBackupFile = Join-Path -Path $BackupPath -ChildPath "$($databaseObject.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn"
-
-                # Build the backup parameters. If no backup was previously taken, a standard full will be taken. Otherwise a CopyOnly backup will be taken.
-                $backupSqlDatabaseParameters = @{
-                    DatabaseObject = $databaseObject
-                    BackupAction   = 'Database'
-                    BackupFile     = $databaseFullBackupFile
-                    ErrorAction    = 'Stop'
-                }
-
-                # If database object last backup data not equal to 0 then backup with CopyOnly.
-                if ( $databaseObject.LastBackupDate -ne 0 )
+                if ( $seedingMode -eq 'AUTOMATIC')
                 {
-                    $backupSqlDatabaseParameters.Add('CopyOnly', $true)
-                }
+                    $databaseFullBackupFile = Join-Path -Path $BackupPath -ChildPath "$($databaseObject.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak"
+                    $databaseLogBackupFile = Join-Path -Path $BackupPath -ChildPath "$($databaseObject.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn"
 
-                try
-                {
-                    Backup-SqlDatabase @backupSqlDatabaseParameters
-                }
-                catch
-                {
-                    # Log the failure
-                    $databasesToAddFailures.Add($databaseToAddToAvailabilityGroup, $_.Exception)
+                    # Build the backup parameters. If no backup was previously taken, a standard full will be taken. Otherwise a CopyOnly backup will be taken.
+                    $backupSqlDatabaseParameters = @{
+                        DatabaseObject = $databaseObject
+                        BackupAction   = 'Database'
+                        BackupFile     = $databaseFullBackupFile
+                        ErrorAction    = 'Stop'
+                    }
 
-                    # Move on to the next database
-                    continue
-                }
+                    # If database object last backup data not equal to 0 then backup with CopyOnly.
+                    if ( $databaseObject.LastBackupDate -ne 0 )
+                    {
+                        $backupSqlDatabaseParameters.Add('CopyOnly', $true)
+                    }
 
-                # Create the parameters to perform a transaction log backup
-                $backupSqlDatabaseLogParams = @{
-                    DatabaseObject = $databaseObject
-                    BackupAction   = 'Log'
-                    BackupFile     = $databaseLogBackupFile
-                    ErrorAction    = 'Stop'
-                }
+                    try
+                    {
+                        Backup-SqlDatabase @backupSqlDatabaseParameters
+                    }
+                    catch
+                    {
+                        # Log the failure
+                        $databasesToAddFailures.Add($databaseToAddToAvailabilityGroup, $_.Exception)
 
-                try
-                {
-                    Backup-SqlDatabase @backupSqlDatabaseLogParams
-                }
-                catch
-                {
-                    # Log the failure
-                    $databasesToAddFailures.Add($databaseToAddToAvailabilityGroup, $_.Exception)
+                        # Move on to the next database
+                        continue
+                    }
 
-                    # Move on to the next database
-                    continue
+                    # Create the parameters to perform a transaction log backup
+                    $backupSqlDatabaseLogParams = @{
+                        DatabaseObject = $databaseObject
+                        BackupAction   = 'Log'
+                        BackupFile     = $databaseLogBackupFile
+                        ErrorAction    = 'Stop'
+                    }
+
+                    try
+                    {
+                        Backup-SqlDatabase @backupSqlDatabaseLogParams
+                    }
+                    catch
+                    {
+                        # Log the failure
+                        $databasesToAddFailures.Add($databaseToAddToAvailabilityGroup, $_.Exception)
+
+                        # Move on to the next database
+                        continue
+                    }
                 }
 
                 # Add the database to the availability group on the primary instance
@@ -489,61 +493,64 @@ function Set-TargetResource
                     continue
                 }
 
-                # Need to restore the database with a query in order to impersonate the correct login
-                $restoreDatabaseQueryStringBuilder = New-Object -TypeName System.Text.StringBuilder
-
-                if ( $MatchDatabaseOwner )
+                if ( $seedingMode -eq 'AUTOMATIC')
                 {
-                    $restoreDatabaseQueryStringBuilder.Append('EXECUTE AS LOGIN = ''') | Out-Null
-                    $restoreDatabaseQueryStringBuilder.Append($databaseObject.Owner) | Out-Null
+                    # Need to restore the database with a query in order to impersonate the correct login
+                    $restoreDatabaseQueryStringBuilder = New-Object -TypeName System.Text.StringBuilder
+
+                    if ( $MatchDatabaseOwner )
+                    {
+                        $restoreDatabaseQueryStringBuilder.Append('EXECUTE AS LOGIN = ''') | Out-Null
+                        $restoreDatabaseQueryStringBuilder.Append($databaseObject.Owner) | Out-Null
+                        $restoreDatabaseQueryStringBuilder.AppendLine('''') | Out-Null
+                    }
+
+                    $restoreDatabaseQueryStringBuilder.Append('RESTORE DATABASE [') | Out-Null
+                    $restoreDatabaseQueryStringBuilder.Append($databaseToAddToAvailabilityGroup) | Out-Null
+                    $restoreDatabaseQueryStringBuilder.AppendLine(']') | Out-Null
+                    $restoreDatabaseQueryStringBuilder.Append('FROM DISK = ''') | Out-Null
+                    $restoreDatabaseQueryStringBuilder.Append($databaseFullBackupFile) | Out-Null
                     $restoreDatabaseQueryStringBuilder.AppendLine('''') | Out-Null
-                }
+                    $restoreDatabaseQueryStringBuilder.Append('WITH NORECOVERY') | Out-Null
 
-                $restoreDatabaseQueryStringBuilder.Append('RESTORE DATABASE [') | Out-Null
-                $restoreDatabaseQueryStringBuilder.Append($databaseToAddToAvailabilityGroup) | Out-Null
-                $restoreDatabaseQueryStringBuilder.AppendLine(']') | Out-Null
-                $restoreDatabaseQueryStringBuilder.Append('FROM DISK = ''') | Out-Null
-                $restoreDatabaseQueryStringBuilder.Append($databaseFullBackupFile) | Out-Null
-                $restoreDatabaseQueryStringBuilder.AppendLine('''') | Out-Null
-                $restoreDatabaseQueryStringBuilder.Append('WITH NORECOVERY') | Out-Null
+                    if ( $ReplaceExisting )
+                    {
+                        $restoreDatabaseQueryStringBuilder.Append(',REPLACE') | Out-Null
+                    }
 
-                if ( $ReplaceExisting )
-                {
-                    $restoreDatabaseQueryStringBuilder.Append(',REPLACE') | Out-Null
-                }
+                    if ( $MatchDatabaseOwner )
+                    {
+                        $restoreDatabaseQueryStringBuilder.AppendLine() | Out-Null
+                        $restoreDatabaseQueryStringBuilder.Append('REVERT') | Out-Null
+                    }
+                    $restoreDatabaseQueryString = $restoreDatabaseQueryStringBuilder.ToString()
 
-                if ( $MatchDatabaseOwner )
-                {
-                    $restoreDatabaseQueryStringBuilder.AppendLine() | Out-Null
-                    $restoreDatabaseQueryStringBuilder.Append('REVERT') | Out-Null
-                }
-                $restoreDatabaseQueryString = $restoreDatabaseQueryStringBuilder.ToString()
+                    # Need to restore the database with a query in order to impersonate the correct login
+                    $restoreLogQueryStringBuilder = New-Object -TypeName System.Text.StringBuilder
 
-                # Need to restore the database with a query in order to impersonate the correct login
-                $restoreLogQueryStringBuilder = New-Object -TypeName System.Text.StringBuilder
+                    if ( $MatchDatabaseOwner )
+                    {
+                        $restoreLogQueryStringBuilder.Append('EXECUTE AS LOGIN = ''') | Out-Null
+                        $restoreLogQueryStringBuilder.Append($databaseObject.Owner) | Out-Null
+                        $restoreLogQueryStringBuilder.AppendLine('''') | Out-Null
+                    }
 
-                if ( $MatchDatabaseOwner )
-                {
-                    $restoreLogQueryStringBuilder.Append('EXECUTE AS LOGIN = ''') | Out-Null
-                    $restoreLogQueryStringBuilder.Append($databaseObject.Owner) | Out-Null
+                    $restoreLogQueryStringBuilder.Append('RESTORE DATABASE [') | Out-Null
+                    $restoreLogQueryStringBuilder.Append($databaseToAddToAvailabilityGroup) | Out-Null
+                    $restoreLogQueryStringBuilder.AppendLine(']') | Out-Null
+                    $restoreLogQueryStringBuilder.Append('FROM DISK = ''') | Out-Null
+                    $restoreLogQueryStringBuilder.Append($databaseLogBackupFile) | Out-Null
                     $restoreLogQueryStringBuilder.AppendLine('''') | Out-Null
+                    $restoreLogQueryStringBuilder.Append('WITH NORECOVERY') | Out-Null
+
+                    if ( $MatchDatabaseOwner )
+                    {
+                        $restoreLogQueryStringBuilder.AppendLine() | Out-Null
+                        $restoreLogQueryStringBuilder.Append('REVERT') | Out-Null
+                    }
+
+                    $restoreLogQueryString = $restoreLogQueryStringBuilder.ToString()
                 }
-
-                $restoreLogQueryStringBuilder.Append('RESTORE DATABASE [') | Out-Null
-                $restoreLogQueryStringBuilder.Append($databaseToAddToAvailabilityGroup) | Out-Null
-                $restoreLogQueryStringBuilder.AppendLine(']') | Out-Null
-                $restoreLogQueryStringBuilder.Append('FROM DISK = ''') | Out-Null
-                $restoreLogQueryStringBuilder.Append($databaseLogBackupFile) | Out-Null
-                $restoreLogQueryStringBuilder.AppendLine('''') | Out-Null
-                $restoreLogQueryStringBuilder.Append('WITH NORECOVERY') | Out-Null
-
-                if ( $MatchDatabaseOwner )
-                {
-                    $restoreLogQueryStringBuilder.AppendLine() | Out-Null
-                    $restoreLogQueryStringBuilder.Append('REVERT') | Out-Null
-                }
-
-                $restoreLogQueryString = $restoreLogQueryStringBuilder.ToString()
 
                 try
                 {
@@ -554,9 +561,12 @@ function Set-TargetResource
                         $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
                         $currentReplicaAvailabilityGroupObject = $currentAvailabilityGroupReplicaServerObject.AvailabilityGroups[$AvailabilityGroupName]
 
-                        # Restore the database
-                        Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreDatabaseQueryString -StatementTimeout 0
-                        Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreLogQueryString -StatementTimeout 0
+                        if ( $seedingMode -eq 'MANUAL')
+                        {
+                            # Restore the database
+                            Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreDatabaseQueryString -StatementTimeout 0
+                            Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreLogQueryString -StatementTimeout 0
+                        }
 
                         # Add the database to the Availability Group
                         Add-SqlAvailabilityDatabase -InputObject $currentReplicaAvailabilityGroupObject -Database $databaseToAddToAvailabilityGroup
@@ -572,8 +582,11 @@ function Set-TargetResource
                 }
                 finally
                 {
-                    # Clean up the backup files
-                    Remove-Item -Path $databaseFullBackupFile, $databaseLogBackupFile -Force -ErrorAction Continue
+                    if ( $seedingMode -eq 'MANUAL')
+                    {
+                        # Clean up the backup files
+                        Remove-Item -Path $databaseFullBackupFile, $databaseLogBackupFile -Force -ErrorAction Continue
+                    }
                 }
             }
             else
