@@ -262,11 +262,11 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 Mock -CommandName New-Object -MockWith $mockSmoWmiManagedComputer -Verifiable
             }
 
-            Context 'When the system is not in the desired state and ensure is set to Absent' {
+            Context 'When the system is not in the desired state and TraceFlags is empty' {
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
-                        Ensure = 'Absent'
+                        TraceFlags = @()
                     }
 
                     $result = Test-TargetResource @testParameters
@@ -281,17 +281,18 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 }
             }
 
-            Context 'When the system is in the desired state and ensure is set to Absent' {
+            Context 'When the system is in the desired state and TraceFlags is empty' {
                 BeforeAll {
                     $testParameters = $mockInst00Parameters
                     $testParameters += @{
-                        Ensure = 'Absent'
+                        TraceFlags = @()
                     }
 
                     $result = Test-TargetResource @testParameters
                 }
 
                 It 'Should return true when no Traceflags on the instance exist' {
+
                     $result | Should -BeTrue
                 }
 
@@ -304,7 +305,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
-                        Ensure = 'Present'
                         TraceFlags = '3228'
                     }
 
@@ -324,7 +324,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
-                        Ensure              = 'Present'
                         TraceFlagsToInclude = '3228'
                     }
 
@@ -344,7 +343,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
-                        Ensure              = 'Present'
                         TraceFlagsToInclude = '3226'
                     }
 
@@ -364,7 +362,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
-                        Ensure              = 'Present'
                         TraceFlagsToExclude = '3226'
                     }
 
@@ -384,7 +381,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
-                        Ensure              = 'Present'
                         TraceFlagsToExclude = '3228'
                     }
 
@@ -405,7 +401,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
-                        Ensure              = 'Present'
                         TraceFlags          = '3228'
                         TraceFlagsToInclude = '3228'
                     }
@@ -424,7 +419,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
-                        Ensure              = 'Present'
                         TraceFlags          = '3228'
                         TraceFlagsToExclude = '3228'
                     }
@@ -441,15 +435,8 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
         }
 
-#DSCResources\DSC_SqlTraceFlag\DSC_SqlTraceFlag.psm1                                     Set-TargetResource                            259 $errorMessage = $script:localizedData...
-#DSCResources\DSC_SqlTraceFlag\DSC_SqlTraceFlag.psm1                                     Set-TargetResource                            260 New-InvalidOperationException -Messag...
-#DSCResources\DSC_SqlTraceFlag\DSC_SqlTraceFlag.psm1                                     Set-TargetResource                            265 $errorMessage = $script:localizedData...
-#DSCResources\DSC_SqlTraceFlag\DSC_SqlTraceFlag.psm1                                     Set-TargetResource                            266 New-InvalidOperationException -Messag...
-
-
          Describe "DSC_SqlTraceFlag\Set-TargetResource" -Tag 'Set' {
             BeforeAll {
-                #Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName New-Object -MockWith $mockSmoWmiManagedComputer -Verifiable
             }
 
@@ -457,7 +444,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
-                        Ensure         = 'Absent'
+                        TraceFlags = @()
                     }
                 }
 
@@ -481,7 +468,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
-                        Ensure = 'Present'
                         TraceFlags = '3228'
                     }
                 }
@@ -505,7 +491,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
-                        Ensure = 'Present'
                         TraceFlagsToInclude = '3228'
                     }
                 }
@@ -529,7 +514,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802;-T3228
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
-                        Ensure = 'Present'
                         TraceFlagsToExclude = '1802'
                     }
                 }
@@ -553,7 +537,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
-                        Ensure = 'Present'
                         TraceFlags = '3228'
                         RestartInstance = $true
                     }
@@ -578,7 +561,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
-                        Ensure              = 'Present'
                         TraceFlags          = '3228'
                         TraceFlagsToInclude = '3228'
                     }
@@ -597,7 +579,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
-                        Ensure              = 'Present'
                         TraceFlags          = '3228'
                         TraceFlagsToExclude = '3228'
                     }

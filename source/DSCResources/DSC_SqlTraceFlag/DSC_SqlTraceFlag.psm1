@@ -96,10 +96,6 @@ function Get-TargetResource
     .PARAMETER TraceFlagsToExclude
         The TraceFlags the SQL server engine startup parameters should exclude.
         This parameter can not be used together with TraceFlags.
-
-    .PARAMETER Ensure
-        When set to 'Present', the TraceFlags will be created/added.
-        When set to 'Absent', all the TraceFlags will be removed.
 #>
 function Set-TargetResource
 {
@@ -130,13 +126,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $RestartInstance = $false,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $Ensure = 'Present'
+        $RestartInstance = $false
     )
 
     Write-Verbose -Message (
@@ -160,55 +150,49 @@ function Set-TargetResource
         InstanceName = $InstanceName
     }
 
-    if ($Ensure -eq 'Present')
+    $wishTraceFlags = [System.Collections.ArrayList]::new()
+
+    if ($PSBoundParameters.ContainsKey('TraceFlags'))
     {
-        $wishTraceFlags = [System.Collections.ArrayList]::new()
-
-        if ($PSBoundParameters.ContainsKey('TraceFlags'))
-        {
-            $wishTraceFlags.AddRange($TraceFlags)
-        }
-        else
-        {
-            $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-
-            $wishTraceFlags.AddRange($getTargetResourceResult.ActualTraceFlags)
-
-            if ($PSBoundParameters.ContainsKey('TraceFlagsToInclude'))
-            {
-                foreach ($traceFlagToInclude in $TraceFlagsToInclude)
-                {
-                    if ($getTargetResourceResult.ActualTraceFlags -notcontains $traceFlagToInclude)
-                    {
-                        $wishTraceFlags.Add($traceFlagToInclude)
-                    }
-                }
-            }
-
-            if ($PSBoundParameters.ContainsKey('TraceFlagsToExclude'))
-            {
-                foreach ($traceFlagToExclude in $TraceFlagsToExclude)
-                {
-                    if ($getTargetResourceResult.ActualTraceFlags -contains $traceFlagToExclude)
-                    {
-                        $wishTraceFlags.Remove([string]$traceFlagToExclude)
-                    }
-                }
-            }
-        }
-
-        # Add '-T' dash to flag
-        $traceFlagList = $wishTraceFlags |
-            ForEach-Object {
-                "-T$PSItem"
-            }
+        $wishTraceFlags.AddRange($TraceFlags)
     }
     else
     {
-        <#
-            When ensure <> present, TraceFlagList should be empty,
-            this will remove all traceFlags from the startupParameters
-        #>
+        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
+        $wishTraceFlags.AddRange($getTargetResourceResult.ActualTraceFlags)
+
+        if ($PSBoundParameters.ContainsKey('TraceFlagsToInclude'))
+        {
+            foreach ($traceFlagToInclude in $TraceFlagsToInclude)
+            {
+                if ($getTargetResourceResult.ActualTraceFlags -notcontains $traceFlagToInclude)
+                {
+                    $wishTraceFlags.Add($traceFlagToInclude)
+                }
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('TraceFlagsToExclude'))
+        {
+            foreach ($traceFlagToExclude in $TraceFlagsToExclude)
+            {
+                if ($getTargetResourceResult.ActualTraceFlags -contains $traceFlagToExclude)
+                {
+                    $wishTraceFlags.Remove([string]$traceFlagToExclude)
+                }
+            }
+        }
+    }
+
+    # Add '-T' dash to flag
+    $traceFlagList = $wishTraceFlags |
+        ForEach-Object {
+            "-T$PSItem"
+        }
+
+    if ($traceFlagList -eq '')
+    {
         $traceFlagList = $null
     }
 
@@ -298,10 +282,6 @@ function Set-TargetResource
     .PARAMETER TraceFlagsToExclude
         The TraceFlags the SQL server engine startup parameters should exclude.
         This parameter can not be used together with TraceFlags.
-
-    .PARAMETER Ensure
-        When set to 'Present', the TraceFlags will be created/added.
-        When set to 'Absent', all TraceFlags will be removed.
 #>
 function Test-TargetResource
 {
@@ -333,13 +313,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $RestartInstance = $false,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $Ensure = 'Present'
+        $RestartInstance = $false
     )
 
     Write-Verbose -Message (
@@ -367,11 +341,18 @@ function Test-TargetResource
 
     $isInDesiredState = $true
 
-    if ($Ensure -eq 'Present')
+    if ($PSBoundParameters.ContainsKey('TraceFlags'))
     {
-        if ($PSBoundParameters.ContainsKey('TraceFlags'))
+        if ($TraceFlags.Length -eq 0)
         {
-            #Compare $TraceFlags to ActualTraceFlags to see if they are the same.
+            if ($getTargetResourceResult.ActualTraceFlags.Count -gt 0)
+            {
+                $isInDesiredState = $false
+            }
+        }
+        else
+        {
+            #Compare $TraceFlags to ActualTraceFlags to see if they contain the same values.
             $nullIfTheSame = Compare-Object -ReferenceObject $getTargetResourceResult.ActualTraceFlags -DifferenceObject $TraceFlags
             if ( $null -ne $nullIfTheSame)
             {
@@ -383,46 +364,39 @@ function Test-TargetResource
                 $isInDesiredState = $false
             }
         }
-        else
-        {
-            if ($PSBoundParameters.ContainsKey('TraceFlagsToInclude'))
-            {
-                foreach ($traceFlagToInclude in $TraceFlagsToInclude)
-                {
-                    if ($getTargetResourceResult.ActualTraceFlags -notcontains $traceFlagToInclude)
-                    {
-                        Write-Verbose -Message (
-                            $script:localizedData.TraceFlagNotPresent `
-                                -f $traceFlagToInclude
-                        )
-
-                        $isInDesiredState = $false
-                    }
-                }
-            }
-
-            if ($PSBoundParameters.ContainsKey('TraceFlagsToExclude'))
-            {
-                foreach ($traceFlagToExclude in $TraceFlagsToExclude)
-                {
-                    if ($getTargetResourceResult.ActualTraceFlags -contains $traceFlagToExclude)
-                    {
-                        Write-Verbose -Message (
-                            $script:localizedData.TraceFlagPresent `
-                                -f $traceFlagToExclude
-                        )
-
-                        $isInDesiredState = $false
-                    }
-                }
-            }
-        }
     }
     else
     {
-        if ($getTargetResourceResult.ActualTraceFlags.Count -gt 0)
+        if ($PSBoundParameters.ContainsKey('TraceFlagsToInclude'))
         {
-            $isInDesiredState = $false
+            foreach ($traceFlagToInclude in $TraceFlagsToInclude)
+            {
+                if ($getTargetResourceResult.ActualTraceFlags -notcontains $traceFlagToInclude)
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.TraceFlagNotPresent `
+                            -f $traceFlagToInclude
+                    )
+
+                    $isInDesiredState = $false
+                }
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('TraceFlagsToExclude'))
+        {
+            foreach ($traceFlagToExclude in $TraceFlagsToExclude)
+            {
+                if ($getTargetResourceResult.ActualTraceFlags -contains $traceFlagToExclude)
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.TraceFlagPresent `
+                            -f $traceFlagToExclude
+                    )
+
+                    $isInDesiredState = $false
+                }
+            }
         }
     }
 
