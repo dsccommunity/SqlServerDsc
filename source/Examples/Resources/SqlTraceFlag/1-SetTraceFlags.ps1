@@ -22,7 +22,6 @@ Configuration Example
             InstanceName         = 'DSC'
             TraceFlags           = 834, 1117, 1118, 2371, 3226
             RestartInstance      = $true
-            Ensure               = 'Present'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
         }

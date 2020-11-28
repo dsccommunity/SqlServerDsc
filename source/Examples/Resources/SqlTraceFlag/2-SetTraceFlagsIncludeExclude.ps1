@@ -23,7 +23,6 @@ Configuration Example
             TraceFlagsToInclude  = 834, 1117, 1118, 2371, 3226
             TraceFlagsToExclude  = 1112
             RestartInstance      = $true
-            Ensure               = 'Present'
 
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
