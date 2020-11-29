@@ -33,7 +33,7 @@ function Get-TargetResource
     )
 
     Write-Verbose -Message (
-        $script:localizedData.GetConfiguration -f $Name
+        $script:localizedData.GetConfiguration -f $InstanceName
     )
 
     $sqlManagement = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer' -ArgumentList $ServerName
@@ -42,12 +42,12 @@ function Get-TargetResource
 
     if ($sqlManagement)
     {
-        $wmiService = $sqlManagement.Services |
+        $databaseEngineService  = $sqlManagement.Services |
             Where-Object -FilterScript { $PSItem.Name -eq $serviceNames.SQLEngineName }
 
-        if ($wmiService)
+        if ($databaseEngineService)
         {
-            $actualTraceFlags = $wmiService.StartupParameters.Split(';') |
+            $actualTraceFlags = $databaseEngineService.StartupParameters.Split(';') |
                 Where-Object -FilterScript { $PSItem -like '-T*' } |
                 ForEach-Object {
                     $PSItem.TrimStart('-T')
@@ -72,6 +72,7 @@ function Get-TargetResource
         TraceFlags          = $null
         TraceFlagsToInclude = $null
         TraceFlagsToExclude = $null
+        RestartInstance     = $null
     }
 }
 
@@ -88,6 +89,7 @@ function Get-TargetResource
     .PARAMETER TraceFlags
         The TraceFlags the SQL server engine startup parameters should contain.
         This parameter can not be used together with TraceFlagsToInclude and TraceFlagsToExclude.
+        This parameter will replace all the current trace flags with the specified trace flags.
 
     .PARAMETER TraceFlagsToInclude
         The TraceFlags the SQL server engine startup parameters should include.
@@ -96,6 +98,10 @@ function Get-TargetResource
     .PARAMETER TraceFlagsToExclude
         The TraceFlags the SQL server engine startup parameters should exclude.
         This parameter can not be used together with TraceFlags.
+
+    .PARAMETER RestartInstance
+        If set, the sql server instance gets a reset after setting parameters.
+        after restart the sql server agent is in the original state as before restart.
 #>
 function Set-TargetResource
 {
@@ -130,7 +136,7 @@ function Set-TargetResource
     )
 
     Write-Verbose -Message (
-        $script:localizedData.SetConfiguration -f $Name, $RetryCount, ($RetryIntervalSec * $RetryCount)
+        $script:localizedData.SetConfiguration -f $InstanceName
     )
 
     $assertBoundParameterParameters = @{
@@ -185,7 +191,7 @@ function Set-TargetResource
         }
     }
 
-    # Add '-T' dash to flag
+    # Add '-T' dash to flag.
     $traceFlagList = $wishTraceFlags |
         ForEach-Object {
             "-T$PSItem"
@@ -202,16 +208,16 @@ function Set-TargetResource
 
     if ($sqlManagement)
     {
-        $wmiService = $sqlManagement.Services |
+        $databaseEngineService = $sqlManagement.Services |
             Where-Object -FilterScript { $PSItem.Name -eq $serviceNames.SQLEngineName }
 
-        if ($wmiService)
+        if ($databaseEngineService)
         {
-            # Extract startup parameters
-            [System.Collections.ArrayList] $parameterList = $wmiService.StartupParameters.Split(';')
+            # Extract startup parameters.
+            [System.Collections.ArrayList] $parameterList = $databaseEngineService.StartupParameters.Split(';')
 
             # Removing flags that are not wanted
-            foreach ($parameter in $wmiService.StartupParameters.Split(';'))
+            foreach ($parameter in $databaseEngineService.StartupParameters.Split(';'))
             {
                 if ($parameter -like '-T*' -and $parameter -notin $traceFlagList)
                 {
@@ -219,7 +225,7 @@ function Set-TargetResource
                 }
             }
 
-            # Add missing flags
+            # Add missing flags.
             foreach ($flag in $traceFlagList)
             {
                 if ($flag -notin $parameterList)
@@ -228,9 +234,9 @@ function Set-TargetResource
                 }
             }
 
-            # Merge flags back into startup parameters
-            $wmiService.StartupParameters = $parameterList -join ';'
-            $wmiService.Alter()
+            # Merge flags back into startup parameters.
+            $databaseEngineService.StartupParameters = $parameterList -join ';'
+            $databaseEngineService.Alter()
 
             if ($PSBoundParameters.ContainsKey('RestartInstance'))
             {
@@ -242,11 +248,11 @@ function Set-TargetResource
                             Where-Object -FilterScript { $PSItem.Name -eq $serviceNames.SQLAgentName }
                     ).ServiceState
 
-                    $wmiService.Stop()
+                    $databaseEngineService.Stop()
 
                     Start-Sleep -Seconds 10
 
-                    $wmiService.Start()
+                    $databaseEngineService.Start()
 
                     if ($agentServiceStatus -ne 'Stopped')
                     {
@@ -274,6 +280,7 @@ function Set-TargetResource
     .PARAMETER TraceFlags
         The TraceFlags the SQL server engine startup parameters should contain.
         This parameter can not be used together with TraceFlagsToInclude and TraceFlagsToExclude.
+        This parameter will replace all the current trace flags with the specified trace flags.
 
     .PARAMETER TraceFlagsToInclude
         The TraceFlags the SQL server engine startup parameters should include.
@@ -282,6 +289,10 @@ function Set-TargetResource
     .PARAMETER TraceFlagsToExclude
         The TraceFlags the SQL server engine startup parameters should exclude.
         This parameter can not be used together with TraceFlags.
+
+    .PARAMETER RestartInstance
+        If set, the sql server instance gets a reset after setting parameters.
+        after restart the sql server agent is in the original state as before restart.
 #>
 function Test-TargetResource
 {
@@ -352,9 +363,9 @@ function Test-TargetResource
         }
         else
         {
-            #Compare $TraceFlags to ActualTraceFlags to see if they contain the same values.
+            # Compare $TraceFlags to ActualTraceFlags to see if they contain the same values.
             $nullIfTheSame = Compare-Object -ReferenceObject $getTargetResourceResult.ActualTraceFlags -DifferenceObject $TraceFlags
-            if ( $null -ne $nullIfTheSame)
+            if ($null -ne $nullIfTheSame)
             {
                 Write-Verbose -Message (
                     $script:localizedData.DesiredTraceFlagNotPresent `

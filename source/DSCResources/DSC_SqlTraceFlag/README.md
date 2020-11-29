@@ -1,6 +1,6 @@
 # Description
 
-The `SqlTraceFlag` DSC resource will set TraceFlags on a sql server engine.
+The `SqlTraceFlag` DSC resource will remove or set one or more trace flags on a sql server engine.
 
 ## Requirements
 
@@ -9,7 +9,7 @@ The `SqlTraceFlag` DSC resource will set TraceFlags on a sql server engine.
 
 ## Security Requirements
 
-* Target machine must have admin access to the Windows Server.
+* The account running this resource must have admin access to the Windows Server.
 
 ## Known issues
 

@@ -1,7 +1,7 @@
 <#
     .DESCRIPTION
-        This example shows how to set TraceFlags where all existing
-        TraceFlags are overwriten by these
+        This example shows how to set TraceFlags while keeping all existing
+        traceflags. Also one existing traceflag is removed.
 #>
 Configuration Example
 {
