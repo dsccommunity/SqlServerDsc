@@ -39,8 +39,6 @@ function Invoke-TestCleanup
 
 Invoke-TestSetup
 
-Write-Host (Get-Module pester).Version
-
 try
 {
     InModuleScope $script:dscResourceName {
@@ -54,17 +52,14 @@ try
         $mockInstanceName3Agent = 'SQLAgent$INST01'
 
         $mockInvalidOperationForAlterMethod = $false
-        $mockInvalidOperationForStopMethod = $false
-        $mockInvalidOperationForStartMethod = $false
+#        $mockInvalidOperationForStopMethod = $false
+#        $mockInvalidOperationForStartMethod = $false
 
         $mockServerInstances = [System.Collections.ArrayList]::new()
         $mockServerInstances.Add($mockInstanceName1) | Out-Null
         $mockServerInstances.Add($mockInstanceName2) | Out-Null
 
-
-
-
-         #The Trailing spaces in this here string are ment to be there. Do not remove!
+         # The Trailing spaces in these here strings are ment to be there. Do not remove!
         $mockStartupParametersInstance1 = @"
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
@@ -106,8 +101,8 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
         }
 
         $script:mockMethodAlterRan = $false
-        $script:mockMethodStopRan = $false
-        $script:mockMethodStartRan = $false
+#        $script:mockMethodStopRan = $false
+#        $script:mockMethodStartRan = $false
         $script:mockMethodAlterValue = ''
 
         #region Function mocks
@@ -162,14 +157,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 $mockService | Add-Member -MemberType ScriptMethod -Name Alter -Value {
                     $script:mockMethodAlterRan = $true
                     $script:mockMethodAlterValue = $this.StartupParameters
-                } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name Stop -Value {
-                    $script:mockMethodStopRan = $true
-                } -PassThru |
-                Add-Member -MemberType ScriptMethod -Name Start -Value {
-                    $script:mockMethodStartRan = $true
-                }
-
+                } -PassThru
                 $ServerServices.Add( $mockService) | Out-Null
             }
 
@@ -189,20 +177,14 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
             Context 'For the default instance' {
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
-
+                }
+                It 'Should return a ManagedComputer object.' {
                     $result = Get-TargetResource @testParameters
-                }
-                It 'Should return a ManagedComputer object with the correct servername' {
-                    $result.ServerName | Should -Be $mockServerName
-                }
-                It 'Should return a ManagedComputer object with the correct InstanceName' {
-                    $result.InstanceName | Should -Be $mockInstanceName1
-                }
-                It 'Should return a ManagedComputer object with the correct TraceFlags' {
-                    $result.ActualTraceFlags | Should -Be '3226' ,'1802'
-                }
-                It 'Should return a ManagedComputer object with the correct number of TraceFlags' {
-                    $result.ActualTraceFlags.Count | Should -Be 2
+
+                    $result.ServerName | Should -Be $mockServerName -Because 'ServerName must be correct'
+                    $result.InstanceName | Should -Be $mockInstanceName1 -Because 'InstanceName must be correct'
+                    $result.TraceFlags | Should -Be '3226' ,'1802' -Because 'TraceFlags must be correct'
+                    $result.TraceFlags.Count | Should -Be 2 -Because 'number of TraceFlags must be correct'
                 }
                 It 'Should not throw' {
                     {Get-TargetResource @testParameters} | Should -Not -Throw
@@ -212,21 +194,16 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
             Context 'For a named instance' {
                 BeforeAll {
                     $testParameters = $mockInst00Parameters
-
+                }
+                It 'Should return a ManagedComputer object.' {
                     $result = Get-TargetResource @testParameters
+
+                    $result.ServerName | Should -Be $mockServerName -Because 'ServerName must be correct'
+                    $result.InstanceName | Should -Be $mockInstanceName2 -Because 'InstanceName must be correct'
+                    $result.TraceFlags | Should -BeNullOrEmpty -Because 'TraceFlags must be correct'
+                    $result.TraceFlags.Count | Should -Be 0 -Because 'number of TraceFlags must be correct'
                 }
-                It 'Should return a ManagedComputer object with the correct servername' {
-                    $result.ServerName | Should -Be $mockServerName
-                }
-                It 'Should return a ManagedComputer object with the correct InstanceName' {
-                    $result.InstanceName | Should -Be $mockInstanceName2
-                }
-                It 'Should return a ManagedComputer object with the correct TraceFlags' {
-                    $result.ActualTraceFlags | Should -BeNullOrEmpty
-                }
-                It 'Should return a ManagedComputer object with the correct number of TraceFlags' {
-                    $result.ActualTraceFlags.Count | Should -Be 0
-                }
+
                 It 'Should not throw' {
                     {Get-TargetResource @testParameters} | Should -Not -Throw
                 }
@@ -258,7 +235,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
         Describe "DSC_SqlTraceFlag\Test-TargetResource" -Tag 'Test' {
             BeforeAll {
-                #Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
                 Mock -CommandName New-Object -MockWith $mockSmoWmiManagedComputer -Verifiable
             }
 
@@ -268,11 +244,10 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                     $testParameters += @{
                         TraceFlags = @()
                     }
-
-                    $result = Test-TargetResource @testParameters
                 }
 
                 It 'Should return false when Traceflags on the instance exist' {
+                    $result = Test-TargetResource @testParameters
                     $result | Should -BeFalse
                 }
 
@@ -287,12 +262,10 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                     $testParameters += @{
                         TraceFlags = @()
                     }
-
-                    $result = Test-TargetResource @testParameters
                 }
 
                 It 'Should return true when no Traceflags on the instance exist' {
-
+                    $result = Test-TargetResource @testParameters
                     $result | Should -BeTrue
                 }
 
@@ -307,11 +280,10 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                     $testParameters += @{
                         TraceFlags = '3228'
                     }
-
-                    $result = Test-TargetResource @testParameters
                 }
 
                 It 'Should return false when Traceflags do not match the actual TraceFlags' {
+                    $result = Test-TargetResource @testParameters
                     $result | Should -BeFalse
                 }
 
@@ -326,11 +298,10 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                     $testParameters += @{
                         TraceFlagsToInclude = '3228'
                     }
-
-                    $result = Test-TargetResource @testParameters
                 }
 
                 It 'Should return false when TraceflagsToInclude are not in the actual TraceFlags' {
+                    $result = Test-TargetResource @testParameters
                     $result | Should -BeFalse
                 }
 
@@ -345,11 +316,10 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                     $testParameters += @{
                         TraceFlagsToInclude = '3226'
                     }
-
-                    $result = Test-TargetResource @testParameters
                 }
 
                 It 'Should return false when TraceflagsToInclude are in the actual TraceFlags' {
+                    $result = Test-TargetResource @testParameters
                     $result | Should -BeTrue
                 }
 
@@ -364,11 +334,10 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                     $testParameters += @{
                         TraceFlagsToExclude = '3226'
                     }
-
-                    $result = Test-TargetResource @testParameters
                 }
 
                 It 'Should return false when TraceflagsToExclude are in the actual TraceFlags' {
+                    $result = Test-TargetResource @testParameters
                     $result | Should -BeFalse
                 }
 
@@ -383,11 +352,10 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                     $testParameters += @{
                         TraceFlagsToExclude = '3228'
                     }
-
-                    $result = Test-TargetResource @testParameters
                 }
 
                 It 'Should return true when TraceflagsToExclude are not in the actual TraceFlags' {
+                    $result = Test-TargetResource @testParameters
                     $result | Should -BeTrue
                 }
 
@@ -438,6 +406,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
          Describe "DSC_SqlTraceFlag\Set-TargetResource" -Tag 'Set' {
             BeforeAll {
                 Mock -CommandName New-Object -MockWith $mockSmoWmiManagedComputer -Verifiable
+                Mock -CommandName Restart-SqlService -ModuleName $script:dscResourceName -Verifiable
             }
 
             Context 'When the system is not in the desired state and ensure is set to Absent' {
@@ -450,14 +419,12 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
                 It 'Should not throw when calling the alter method' {
                     { Set-TargetResource @testParameters } | Should -Not -Throw
-                    $script:mockMethodStopRan | Should -BeFalse
-                    $script:mockMethodStartRan | Should -BeFalse
-                    $script:mockMethodAlterRan | Should -BeTrue
+                    $script:mockMethodAlterRan | Should -BeTrue -Because 'Alter should run'
                     $script:mockMethodAlterValue | Should -Be @"
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
-"@
+"@ -Because 'Alter must change the value correct'
 
                     Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It
                 }
@@ -474,14 +441,12 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
                 It 'Should not throw when calling the alter method' {
                     { Set-TargetResource @testParameters } | Should -Not -Throw
-                    $script:mockMethodStopRan | Should -BeFalse
-                    $script:mockMethodStartRan | Should -BeFalse
-                    $script:mockMethodAlterRan | Should -BeTrue
+                    $script:mockMethodAlterRan | Should -BeTrue -Because 'Alter should run'
                     $script:mockMethodAlterValue | Should -Be @"
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
-"@
+"@ -Because 'Alter must change the value correct'
 
                     Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It
                 }
@@ -497,8 +462,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
 
                 It 'Should not throw when calling the alter method' {
                     { Set-TargetResource @testParameters } | Should -Not -Throw
-                    $script:mockMethodStopRan | Should -BeFalse
-                    $script:mockMethodStartRan | Should -BeFalse
                     $script:mockMethodAlterRan | Should -BeTrue
                     $script:mockMethodAlterValue | Should -Be @"
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
@@ -520,8 +483,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802;-T3228
 
                 It 'Should not throw when calling the alter method' {
                     { Set-TargetResource @testParameters } | Should -Not -Throw
-                    $script:mockMethodStopRan | Should -BeFalse
-                    $script:mockMethodStartRan | Should -BeFalse
                     $script:mockMethodAlterRan | Should -BeTrue
                     $script:mockMethodAlterValue | Should -Be @"
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
@@ -544,8 +505,6 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226
 
                 It 'Should not throw when calling the restart method' {
                     { Set-TargetResource @testParameters  } | Should -Not -Throw
-                    $script:mockMethodStopRan | Should -BeTrue
-                    $script:mockMethodStartRan | Should -BeTrue
                     $script:mockMethodAlterRan | Should -BeTrue
                     $script:mockMethodAlterValue | Should -Be @"
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
@@ -553,6 +512,7 @@ Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
 "@
 
+                    Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It
                 }
             }

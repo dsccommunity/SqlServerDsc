@@ -68,8 +68,7 @@ function Get-TargetResource
     return @{
         ServerName          = $ServerName
         InstanceName        = $InstanceName
-        ActualTraceFlags    = $actualTraceFlags
-        TraceFlags          = $null
+        TraceFlags          = $actualTraceFlags
         TraceFlagsToInclude = $null
         TraceFlagsToExclude = $null
         RestartInstance     = $null
@@ -165,14 +164,14 @@ function Set-TargetResource
     else
     {
         $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-
-        $wishTraceFlags.AddRange($getTargetResourceResult.ActualTraceFlags)
+        $actualTraceFlags = $getTargetResourceResult.TraceFlags
+        $wishTraceFlags.AddRange($actualTraceFlags)
 
         if ($PSBoundParameters.ContainsKey('TraceFlagsToInclude'))
         {
             foreach ($traceFlagToInclude in $TraceFlagsToInclude)
             {
-                if ($getTargetResourceResult.ActualTraceFlags -notcontains $traceFlagToInclude)
+                if ($actualTraceFlags -notcontains $traceFlagToInclude)
                 {
                     $wishTraceFlags.Add($traceFlagToInclude)
                 }
@@ -183,7 +182,7 @@ function Set-TargetResource
         {
             foreach ($traceFlagToExclude in $TraceFlagsToExclude)
             {
-                if ($getTargetResourceResult.ActualTraceFlags -contains $traceFlagToExclude)
+                if ($actualTraceFlags -contains $traceFlagToExclude)
                 {
                     $wishTraceFlags.Remove([string]$traceFlagToExclude)
                 }
@@ -242,25 +241,8 @@ function Set-TargetResource
             {
                 if ($RestartInstance -eq $true)
                 {
-                    # Get the current status of the sql agent. After restart of the instance, the status of the agent should be the same.
-                    $agentServiceStatus = (
-                        $sqlManagement.Services |
-                            Where-Object -FilterScript { $PSItem.Name -eq $serviceNames.SQLAgentName }
-                    ).ServiceState
-
-                    $databaseEngineService.Stop()
-
-                    Start-Sleep -Seconds 10
-
-                    $databaseEngineService.Start()
-
-                    if ($agentServiceStatus -ne 'Stopped')
-                    {
-                        (
-                            $sqlManagement.Services |
-                                Where-Object -FilterScript { $PSItem.Name -eq $serviceNames.SQLAgentName }
-                        ).Start()
-                    }
+                    $RestartTimeout = 10
+                    Restart-SqlService -ServerName $ServerName -InstanceName $InstanceName -Timeout $RestartTimeout
                 }
             }
         }
@@ -349,14 +331,14 @@ function Test-TargetResource
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-
+    $actualTraceFlags = $getTargetResourceResult.TraceFlags
     $isInDesiredState = $true
 
     if ($PSBoundParameters.ContainsKey('TraceFlags'))
     {
         if ($TraceFlags.Length -eq 0)
         {
-            if ($getTargetResourceResult.ActualTraceFlags.Count -gt 0)
+            if ($actualTraceFlags.Count -gt 0)
             {
                 $isInDesiredState = $false
             }
@@ -364,7 +346,7 @@ function Test-TargetResource
         else
         {
             # Compare $TraceFlags to ActualTraceFlags to see if they contain the same values.
-            $nullIfTheSame = Compare-Object -ReferenceObject $getTargetResourceResult.ActualTraceFlags -DifferenceObject $TraceFlags
+            $nullIfTheSame = Compare-Object -ReferenceObject $actualTraceFlags -DifferenceObject $TraceFlags
             if ($null -ne $nullIfTheSame)
             {
                 Write-Verbose -Message (
@@ -382,7 +364,7 @@ function Test-TargetResource
         {
             foreach ($traceFlagToInclude in $TraceFlagsToInclude)
             {
-                if ($getTargetResourceResult.ActualTraceFlags -notcontains $traceFlagToInclude)
+                if ($actualTraceFlags -notcontains $traceFlagToInclude)
                 {
                     Write-Verbose -Message (
                         $script:localizedData.TraceFlagNotPresent `
@@ -398,7 +380,7 @@ function Test-TargetResource
         {
             foreach ($traceFlagToExclude in $TraceFlagsToExclude)
             {
-                if ($getTargetResourceResult.ActualTraceFlags -contains $traceFlagToExclude)
+                if ($actualTraceFlags -contains $traceFlagToExclude)
                 {
                     Write-Verbose -Message (
                         $script:localizedData.TraceFlagPresent `
