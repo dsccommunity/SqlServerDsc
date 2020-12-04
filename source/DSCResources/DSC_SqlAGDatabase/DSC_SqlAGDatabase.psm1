@@ -234,7 +234,7 @@ function Set-TargetResource
     # Create a hash table to store the databases that failed to be added to the Availability Group
     $databasesToAddFailures = @{}
 
-    # Create a hash table to store the databases that failed to be added to the Availability Group
+    # Create a hash table to store the databases that failed to be Removed from the Availability Group
     $databasesToRemoveFailures = @{}
 
     if ( $databasesToAddToAvailabilityGroup.Count -gt 0 )
@@ -421,14 +421,36 @@ function Set-TargetResource
                     }
                 }
             }
-            #Determine whether SEEDING_MODE = AUTOMATIC or MANUAL. Rows 482-567 may not be executed if seeding is automatic.
-            #Hier een test of ALLE replicas op auto staan, wanneer dat zo is, geen backup maken.
-            #$sqlServerObject.AvailabilityGroups['AG01'].AvailabilityReplicas[0].SeedingMode
-            #$availabilityGroup
+
+            #Determine whether SEEDING_MODE = for all replicas is Automatic or Manual. If all replicas are Automatic, an backup is not needed.
+            $backupNeeded = $false
+            $restoreNeeded = $false
+            foreach ( $availabilityGroupReplica in $secondaryReplicas )
+            {
+                if ( $availabilityGroupReplica.SeedingMode -eq 'Manual')
+                {
+                    $backupNeeded = $true
+                    $restoreNeeded = $true
+                }
+            }
+
+            if ( $backupNeeded -eq $false)
+            {
+                try
+                {
+                    # If $DatabaseName  has no backups, a backup is needed before adding the database to an availibility group.
+                    $primaryServerObject.Databases[$databaseToAddToAvailabilityGroup].LastBackupDate.ToFileTimeUtc()  | Out-Null
+                }
+                catch
+                {
+                    $needsBackup = $true
+                }
+            }
+
             if ( $prerequisiteCheckFailures.Count -eq 0 )
             {
 
-                if ( $seedingMode -eq 'AUTOMATIC')
+                if ( $backupNeeded)
                 {
                     $databaseFullBackupFile = Join-Path -Path $BackupPath -ChildPath "$($databaseObject.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak"
                     $databaseLogBackupFile = Join-Path -Path $BackupPath -ChildPath "$($databaseObject.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn"
@@ -496,10 +518,7 @@ function Set-TargetResource
                     continue
                 }
 
-
-#Hier een test of ALLE replicas op auto staan, wanneer dat zo is, geen Restore voorberijden maken.
-            #$sqlServerObject.AvailabilityGroups['AG01'].AvailabilityReplicas[0].SeedingMode
-                if ( $seedingMode -eq 'AUTOMATIC')
+                if ( $restoreNeeded)
                 {
                     # Need to restore the database with a query in order to impersonate the correct login
                     $restoreDatabaseQueryStringBuilder = New-Object -TypeName System.Text.StringBuilder
@@ -567,8 +586,7 @@ function Set-TargetResource
                         $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
                         $currentReplicaAvailabilityGroupObject = $currentAvailabilityGroupReplicaServerObject.AvailabilityGroups[$AvailabilityGroupName]
 
-                        #Hier per replica kijken of er gerestored moet worden of dat het op automatic staat.
-                        if ( $seedingMode -eq 'MANUAL')
+                        if ( $availabilityGroupReplica.SeedingMode -eq 'MANUAL')
                         {
                             # Restore the database
                             Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreDatabaseQueryString -StatementTimeout 0
@@ -590,7 +608,7 @@ function Set-TargetResource
                 finally
                 {
                     #Wanneer er een backup gemaakt is, moet die hier verwijderd worden.
-                    if ( $seedingMode -eq 'MANUAL')
+                    if ( $backupNeeded)
                     {
                         # Clean up the backup files
                         Remove-Item -Path $databaseFullBackupFile, $databaseLogBackupFile -Force -ErrorAction Continue
