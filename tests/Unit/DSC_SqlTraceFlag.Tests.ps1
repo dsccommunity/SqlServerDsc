@@ -42,135 +42,130 @@ Invoke-TestSetup
 try
 {
     InModuleScope $script:dscResourceName {
-        $mockServerName = 'TestServer'
-        $mockFakeServerName = 'FakeServer'
-        $mockInstanceName1 = 'MSSQLSERVER'
-        $mockInstanceName1Agent = 'SQLSERVERAGENT'
-        $mockInstanceName2 = 'INST00'
-        $mockInstanceName2Agent = 'SQLAgent$INST00'
-        $mockInstanceName3 = 'INST01'
-        $mockInstanceName3Agent = 'SQLAgent$INST01'
+        Describe "DSC_SqlTraceFlag\Get-TargetResource" -Tag 'Get'  {
+            BeforeAll {
+                $mockServerName = 'TestServer'
+                $mockFakeServerName = 'FakeServer'
+                $mockInstanceName1 = 'MSSQLSERVER'
+                $mockInstanceName1Agent = 'SQLSERVERAGENT'
+                $mockInstanceName2 = 'INST00'
+                $mockInstanceName2Agent = 'SQLAgent$INST00'
+                $mockInstanceName3 = 'INST01'
+                $mockInstanceName3Agent = 'SQLAgent$INST01'
 
-        $mockInvalidOperationForAlterMethod = $false
-#        $mockInvalidOperationForStopMethod = $false
-#        $mockInvalidOperationForStartMethod = $false
+                $mockInvalidOperationForAlterMethod = $false
 
-        $mockServerInstances = [System.Collections.ArrayList]::new()
-        $mockServerInstances.Add($mockInstanceName1) | Out-Null
-        $mockServerInstances.Add($mockInstanceName2) | Out-Null
+                $mockServerInstances = [System.Collections.ArrayList]::new()
+                $mockServerInstances.Add($mockInstanceName1) | Out-Null
+                $mockServerInstances.Add($mockInstanceName2) | Out-Null
 
-         # The Trailing spaces in these here strings are ment to be there. Do not remove!
-        $mockStartupParametersInstance1 = @"
+                 # The Trailing spaces in these here strings are ment to be there. Do not remove!
+                $mockStartupParametersInstance1 = @"
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802
 "@
-        $mockStartupParametersInstance2 = @"
+                $mockStartupParametersInstance2 = @"
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 "@
 
-        # Default parameters that are used for the It-blocks
-        $mockDefaultParameters1 = @{
-            InstanceName = $mockInstanceName1
-            ServerName   = $mockServerName
-        }
+                # Default parameters that are used for the It-blocks
+                $mockDefaultParameters1 = @{
+                    InstanceName = $mockInstanceName1
+                    ServerName   = $mockServerName
+                }
 
-        $mockInst00Parameters = @{
-            InstanceName = $mockInstanceName2
-            ServerName   = $mockServerName
-        }
+                $mockInst00Parameters = @{
+                    InstanceName = $mockInstanceName2
+                    ServerName   = $mockServerName
+                }
 
-        $mockInst01Parameters = @{
-            InstanceName = $mockInstanceName3
-            ServerName   = $mockServerName
-        }
+                $mockInst01Parameters = @{
+                    InstanceName = $mockInstanceName3
+                    ServerName   = $mockServerName
+                }
 
-        $mockNonExistServerParameters = @{
-            InstanceName = $mockInstanceName1
-            ServerName   = $mockFakeServerName
-        }
+                $mockNonExistServerParameters = @{
+                    InstanceName = $mockInstanceName1
+                    ServerName   = $mockFakeServerName
+                }
 
-        $mockNewObject_ParameterFilter_RealServerName = {
-            $ServerName -eq $mockServerName
-        }
+                $mockNewObject_ParameterFilter_RealServerName = {
+                    $ServerName -eq $mockServerName
+                }
 
-        $mockNewObject_ParameterFilter_FakeServerName = {
-            $ServerName -eq $mockFakeServerName
-        }
+                $mockNewObject_ParameterFilter_FakeServerName = {
+                    $ServerName -eq $mockFakeServerName
+                }
 
-        $script:mockMethodAlterRan = $false
-#        $script:mockMethodStopRan = $false
-#        $script:mockMethodStartRan = $false
-        $script:mockMethodAlterValue = ''
+                $script:mockMethodAlterRan = $false
+                $script:mockMethodAlterValue = ''
 
-        #region Function mocks
-        $mockSmoWmiManagedComputer = {
-            $mockServerObjectHashtable = @{
-                State = "Existing"
-                Name = $mockServerName
-                ServerInstances = $mockServerInstances
-            }
+                #region Function mocks
+                $mockSmoWmiManagedComputer = {
+                    $mockServerObjectHashtable = @{
+                        State = "Existing"
+                        Name = $mockServerName
+                        ServerInstances = $mockServerInstances
+                    }
 
-            class service
-            {
-                [string]$Name
-                [string]$ServiceState
-                [string]$StartupParameters
-            }
+                    class service
+                    {
+                        [string]$Name
+                        [string]$ServiceState
+                        [string]$StartupParameters
+                    }
 
-            $Services = [System.Collections.ArrayList]::new()
+                    $Services = [System.Collections.ArrayList]::new()
 
-            $service1 = [service]::new()
-            $service1.Name = $mockInstanceName1
-            $service1.ServiceState = "Running"
-            $service1.StartupParameters = $mockStartupParametersInstance1
+                    $service1 = [service]::new()
+                    $service1.Name = $mockInstanceName1
+                    $service1.ServiceState = "Running"
+                    $service1.StartupParameters = $mockStartupParametersInstance1
 
-            $Services.Add($service1) | Out-Null
+                    $Services.Add($service1) | Out-Null
 
-            $service2 = [service]::new()
-            $service2.Name = $mockInstanceName1Agent
-            $service2.ServiceState = "Running"
-            $service2.StartupParameters = ""
+                    $service2 = [service]::new()
+                    $service2.Name = $mockInstanceName1Agent
+                    $service2.ServiceState = "Running"
+                    $service2.StartupParameters = ""
 
-            $Services.Add($service2) | Out-Null
+                    $Services.Add($service2) | Out-Null
 
-            $service3 = [service]::new()
-            $service3.Name = 'MSSQL${0}' -f $mockInstanceName2
-            $service3.ServiceState = "Running"
-            $service3.StartupParameters = $mockStartupParametersInstance2
+                    $service3 = [service]::new()
+                    $service3.Name = 'MSSQL${0}' -f $mockInstanceName2
+                    $service3.ServiceState = "Running"
+                    $service3.StartupParameters = $mockStartupParametersInstance2
 
-            $Services.Add($service3) | Out-Null
+                    $Services.Add($service3) | Out-Null
 
-            $service4 = [service]::new()
-            $service4.Name = 'SQLAgent${0}' -f $mockInstanceName2Agent
-            $service4.ServiceState = "Stopped"
-            $service4.StartupParameters = ""
+                    $service4 = [service]::new()
+                    $service4.Name = 'SQLAgent${0}' -f $mockInstanceName2Agent
+                    $service4.ServiceState = "Stopped"
+                    $service4.StartupParameters = ""
 
-            $Services.Add($service4) | Out-Null
+                    $Services.Add($service4) | Out-Null
 
-            $ServerServices = [System.Collections.ArrayList]::new()
+                    $ServerServices = [System.Collections.ArrayList]::new()
 
-            foreach ($mockService in $Services)
-            {
-                $mockService | Add-Member -MemberType ScriptMethod -Name Alter -Value {
-                    $script:mockMethodAlterRan = $true
-                    $script:mockMethodAlterValue = $this.StartupParameters
-                } -PassThru
-                $ServerServices.Add( $mockService) | Out-Null
-            }
+                    foreach ($mockService in $Services)
+                    {
+                        $mockService | Add-Member -MemberType ScriptMethod -Name Alter -Value {
+                            $script:mockMethodAlterRan = $true
+                            $script:mockMethodAlterValue = $this.StartupParameters
+                        } -PassThru
+                        $ServerServices.Add( $mockService) | Out-Null
+                    }
 
-            $mockServerObjectHashtable += @{
-                Services = $ServerServices
-            }
-            $mockServerObject = [PSCustomObject]$mockServerObjectHashtable
+                    $mockServerObjectHashtable += @{
+                        Services = $ServerServices
+                    }
+                    $mockServerObject = [PSCustomObject]$mockServerObjectHashtable
 
-            return @($mockServerObject)
-        }
-
-        Describe "DSC_SqlTraceFlag\Get-TargetResource" -Tag 'Get'  {
-            BeforeAll {
+                    return @($mockServerObject)
+                }
                 Mock -CommandName New-Object -MockWith $mockSmoWmiManagedComputer -ParameterFilter $mockNewObject_ParameterFilter_RealServerName -Verifiable
             }
 
@@ -235,6 +230,128 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
         Describe "DSC_SqlTraceFlag\Test-TargetResource" -Tag 'Test' {
             BeforeAll {
+                $mockServerName = 'TestServer'
+                $mockFakeServerName = 'FakeServer'
+                $mockInstanceName1 = 'MSSQLSERVER'
+                $mockInstanceName1Agent = 'SQLSERVERAGENT'
+                $mockInstanceName2 = 'INST00'
+                $mockInstanceName2Agent = 'SQLAgent$INST00'
+                $mockInstanceName3 = 'INST01'
+                $mockInstanceName3Agent = 'SQLAgent$INST01'
+
+                $mockInvalidOperationForAlterMethod = $false
+
+                $mockServerInstances = [System.Collections.ArrayList]::new()
+                $mockServerInstances.Add($mockInstanceName1) | Out-Null
+                $mockServerInstances.Add($mockInstanceName2) | Out-Null
+
+                # The Trailing spaces in these here strings are ment to be there. Do not remove!
+                $mockStartupParametersInstance1 = @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802
+"@
+                $mockStartupParametersInstance2 = @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
+"@
+
+                # Default parameters that are used for the It-blocks
+                $mockDefaultParameters1 = @{
+                    InstanceName = $mockInstanceName1
+                    ServerName   = $mockServerName
+                }
+
+                $mockInst00Parameters = @{
+                    InstanceName = $mockInstanceName2
+                    ServerName   = $mockServerName
+                }
+
+                $mockInst01Parameters = @{
+                    InstanceName = $mockInstanceName3
+                    ServerName   = $mockServerName
+                }
+
+                $mockNonExistServerParameters = @{
+                    InstanceName = $mockInstanceName1
+                    ServerName   = $mockFakeServerName
+                }
+
+                $mockNewObject_ParameterFilter_RealServerName = {
+                    $ServerName -eq $mockServerName
+                }
+
+                $mockNewObject_ParameterFilter_FakeServerName = {
+                    $ServerName -eq $mockFakeServerName
+                }
+
+                $script:mockMethodAlterRan = $false
+                $script:mockMethodAlterValue = ''
+
+                #region Function mocks
+                $mockSmoWmiManagedComputer = {
+                    $mockServerObjectHashtable = @{
+                        State = "Existing"
+                        Name = $mockServerName
+                        ServerInstances = $mockServerInstances
+                    }
+
+                    class service
+                    {
+                        [string]$Name
+                        [string]$ServiceState
+                        [string]$StartupParameters
+                    }
+
+                    $Services = [System.Collections.ArrayList]::new()
+
+                    $service1 = [service]::new()
+                    $service1.Name = $mockInstanceName1
+                    $service1.ServiceState = "Running"
+                    $service1.StartupParameters = $mockStartupParametersInstance1
+
+                    $Services.Add($service1) | Out-Null
+
+                    $service2 = [service]::new()
+                    $service2.Name = $mockInstanceName1Agent
+                    $service2.ServiceState = "Running"
+                    $service2.StartupParameters = ""
+
+                    $Services.Add($service2) | Out-Null
+
+                    $service3 = [service]::new()
+                    $service3.Name = 'MSSQL${0}' -f $mockInstanceName2
+                    $service3.ServiceState = "Running"
+                    $service3.StartupParameters = $mockStartupParametersInstance2
+
+                    $Services.Add($service3) | Out-Null
+
+                    $service4 = [service]::new()
+                    $service4.Name = 'SQLAgent${0}' -f $mockInstanceName2Agent
+                    $service4.ServiceState = "Stopped"
+                    $service4.StartupParameters = ""
+
+                    $Services.Add($service4) | Out-Null
+
+                    $ServerServices = [System.Collections.ArrayList]::new()
+
+                    foreach ($mockService in $Services)
+                    {
+                        $mockService | Add-Member -MemberType ScriptMethod -Name Alter -Value {
+                            $script:mockMethodAlterRan = $true
+                            $script:mockMethodAlterValue = $this.StartupParameters
+                        } -PassThru
+                        $ServerServices.Add( $mockService) | Out-Null
+                    }
+
+                    $mockServerObjectHashtable += @{
+                        Services = $ServerServices
+                    }
+                    $mockServerObject = [PSCustomObject]$mockServerObjectHashtable
+
+                    return @($mockServerObject)
+                }
                 Mock -CommandName New-Object -MockWith $mockSmoWmiManagedComputer -Verifiable
             }
 
@@ -405,6 +522,128 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
          Describe "DSC_SqlTraceFlag\Set-TargetResource" -Tag 'Set' {
             BeforeAll {
+                        $mockServerName = 'TestServer'
+                        $mockFakeServerName = 'FakeServer'
+                        $mockInstanceName1 = 'MSSQLSERVER'
+                        $mockInstanceName1Agent = 'SQLSERVERAGENT'
+                        $mockInstanceName2 = 'INST00'
+                        $mockInstanceName2Agent = 'SQLAgent$INST00'
+                        $mockInstanceName3 = 'INST01'
+                        $mockInstanceName3Agent = 'SQLAgent$INST01'
+
+                        $mockInvalidOperationForAlterMethod = $false
+
+                        $mockServerInstances = [System.Collections.ArrayList]::new()
+                        $mockServerInstances.Add($mockInstanceName1) | Out-Null
+                        $mockServerInstances.Add($mockInstanceName2) | Out-Null
+
+                         # The Trailing spaces in these here strings are ment to be there. Do not remove!
+                        $mockStartupParametersInstance1 = @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802
+"@
+                        $mockStartupParametersInstance2 = @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
+"@
+
+                        # Default parameters that are used for the It-blocks
+                        $mockDefaultParameters1 = @{
+                            InstanceName = $mockInstanceName1
+                            ServerName   = $mockServerName
+                        }
+
+                        $mockInst00Parameters = @{
+                            InstanceName = $mockInstanceName2
+                            ServerName   = $mockServerName
+                        }
+
+                        $mockInst01Parameters = @{
+                            InstanceName = $mockInstanceName3
+                            ServerName   = $mockServerName
+                        }
+
+                        $mockNonExistServerParameters = @{
+                            InstanceName = $mockInstanceName1
+                            ServerName   = $mockFakeServerName
+                        }
+
+                        $mockNewObject_ParameterFilter_RealServerName = {
+                            $ServerName -eq $mockServerName
+                        }
+
+                        $mockNewObject_ParameterFilter_FakeServerName = {
+                            $ServerName -eq $mockFakeServerName
+                        }
+
+                        $script:mockMethodAlterRan = $false
+                        $script:mockMethodAlterValue = ''
+
+                        #region Function mocks
+                        $mockSmoWmiManagedComputer = {
+                            $mockServerObjectHashtable = @{
+                                State = "Existing"
+                                Name = $mockServerName
+                                ServerInstances = $mockServerInstances
+                            }
+
+                            class service
+                            {
+                                [string]$Name
+                                [string]$ServiceState
+                                [string]$StartupParameters
+                            }
+
+                            $Services = [System.Collections.ArrayList]::new()
+
+                            $service1 = [service]::new()
+                            $service1.Name = $mockInstanceName1
+                            $service1.ServiceState = "Running"
+                            $service1.StartupParameters = $mockStartupParametersInstance1
+
+                            $Services.Add($service1) | Out-Null
+
+                            $service2 = [service]::new()
+                            $service2.Name = $mockInstanceName1Agent
+                            $service2.ServiceState = "Running"
+                            $service2.StartupParameters = ""
+
+                            $Services.Add($service2) | Out-Null
+
+                            $service3 = [service]::new()
+                            $service3.Name = 'MSSQL${0}' -f $mockInstanceName2
+                            $service3.ServiceState = "Running"
+                            $service3.StartupParameters = $mockStartupParametersInstance2
+
+                            $Services.Add($service3) | Out-Null
+
+                            $service4 = [service]::new()
+                            $service4.Name = 'SQLAgent${0}' -f $mockInstanceName2Agent
+                            $service4.ServiceState = "Stopped"
+                            $service4.StartupParameters = ""
+
+                            $Services.Add($service4) | Out-Null
+
+                            $ServerServices = [System.Collections.ArrayList]::new()
+
+                            foreach ($mockService in $Services)
+                            {
+                                $mockService | Add-Member -MemberType ScriptMethod -Name Alter -Value {
+                                    $script:mockMethodAlterRan = $true
+                                    $script:mockMethodAlterValue = $this.StartupParameters
+                                } -PassThru
+                                $ServerServices.Add( $mockService) | Out-Null
+                            }
+
+                            $mockServerObjectHashtable += @{
+                                Services = $ServerServices
+                            }
+                            $mockServerObject = [PSCustomObject]$mockServerObjectHashtable
+
+                            return @($mockServerObject)
+                        }
                 Mock -CommandName New-Object -MockWith $mockSmoWmiManagedComputer -Verifiable
                 Mock -CommandName Restart-SqlService -ModuleName $script:dscResourceName -Verifiable
             }

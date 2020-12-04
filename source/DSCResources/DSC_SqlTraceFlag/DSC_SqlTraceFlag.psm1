@@ -42,7 +42,7 @@ function Get-TargetResource
 
     if ($sqlManagement)
     {
-        $databaseEngineService  = $sqlManagement.Services |
+        $databaseEngineService = $sqlManagement.Services |
             Where-Object -FilterScript { $PSItem.Name -eq $serviceNames.SQLEngineName }
 
         if ($databaseEngineService)
@@ -310,7 +310,7 @@ function Test-TargetResource
     )
 
     Write-Verbose -Message (
-        $script:localizedData.TestConfiguration -f $Name
+        $script:localizedData.TestConfiguration -f $InstanceName
     )
 
     $assertBoundParameterParameters = @{
@@ -331,14 +331,14 @@ function Test-TargetResource
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-    $actualTraceFlags = $getTargetResourceResult.TraceFlags
+
     $isInDesiredState = $true
 
     if ($PSBoundParameters.ContainsKey('TraceFlags'))
     {
         if ($TraceFlags.Length -eq 0)
         {
-            if ($actualTraceFlags.Count -gt 0)
+            if ($getTargetResourceResult.TraceFlags.Count -gt 0)
             {
                 $isInDesiredState = $false
             }
@@ -346,7 +346,7 @@ function Test-TargetResource
         else
         {
             # Compare $TraceFlags to ActualTraceFlags to see if they contain the same values.
-            $nullIfTheSame = Compare-Object -ReferenceObject $actualTraceFlags -DifferenceObject $TraceFlags
+            $nullIfTheSame = Compare-Object -ReferenceObject $getTargetResourceResult.TraceFlags -DifferenceObject $TraceFlags
             if ($null -ne $nullIfTheSame)
             {
                 Write-Verbose -Message (
@@ -364,7 +364,7 @@ function Test-TargetResource
         {
             foreach ($traceFlagToInclude in $TraceFlagsToInclude)
             {
-                if ($actualTraceFlags -notcontains $traceFlagToInclude)
+                if ($getTargetResourceResult.TraceFlags -notcontains $traceFlagToInclude)
                 {
                     Write-Verbose -Message (
                         $script:localizedData.TraceFlagNotPresent `
@@ -380,7 +380,7 @@ function Test-TargetResource
         {
             foreach ($traceFlagToExclude in $TraceFlagsToExclude)
             {
-                if ($actualTraceFlags -contains $traceFlagToExclude)
+                if ($getTargetResourceResult.TraceFlags -contains $traceFlagToExclude)
                 {
                     Write-Verbose -Message (
                         $script:localizedData.TraceFlagPresent `
