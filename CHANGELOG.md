@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix for issue ([issue #1492](https://github.com/dsccommunity/SqlServerDsc/issues/1492))
     added AutomaticSeeding for this Resource. In ste-TargetResource added logic that looks 
     at all replicas of an availibility group. When automatic seedig is found, it wil use that.
-  - Lots of extra tests to check AutomaticSeeding  
+  - Lots of extra tests to check AutomaticSeeding.
+  - Backuppath is still needed just in case a database never has been backuped before.
 - WaitForAG
   - BREAKING CHANGE: Fix for issue ([issue #1569](https://github.com/dsccommunity/SqlServerDsc/issues/1569))
     The resource now waits for the Availability Group to become Available.
