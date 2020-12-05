@@ -71,7 +71,7 @@ function Get-TargetResource
         TraceFlags          = $traceFlags
         TraceFlagsToInclude = $null
         TraceFlagsToExclude = $null
-        RestartInstance     = $null
+        RestartService      = $null
     }
 }
 
@@ -98,9 +98,13 @@ function Get-TargetResource
         The TraceFlags the SQL server engine startup parameters should exclude.
         This parameter can not be used together with TraceFlags.
 
-    .PARAMETER RestartInstance
+    .PARAMETER RestartService
         If set, the sql server instance gets a reset after setting parameters.
         after restart the sql server agent is in the original state as before restart.
+
+    .PARAMETER RestartTimeout
+        The time the resource waits while the sql server services are restarted.
+        Defaults to 120 seconds.
 #>
 function Set-TargetResource
 {
@@ -131,7 +135,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $RestartService = $false
+        $RestartService = $false,
+
+        [Parameter()]
+        [System.UInt32]
+        $RestartTimeout = 120
     )
 
     Write-Verbose -Message (
@@ -241,7 +249,6 @@ function Set-TargetResource
             {
                 if ($RestartService -eq $true)
                 {
-                    $RestartTimeout = 120
                     Restart-SqlService -ServerName $ServerName -InstanceName $InstanceName -Timeout $RestartTimeout
                 }
             }
@@ -275,6 +282,10 @@ function Set-TargetResource
     .PARAMETER RestartService
         If set, the sql server instance gets a reset after setting parameters.
         after restart the sql server agent is in the original state as before restart.
+
+    .PARAMETER RestartTimeout
+        The time the resource waits while the sql server services are restarted.
+        Defaults to 120 seconds.
 #>
 function Test-TargetResource
 {
@@ -306,7 +317,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $RestartService = $false
+        $RestartService = $false,
+
+        [Parameter()]
+        [System.UInt32]
+        $RestartTimeout = 120
     )
 
     Write-Verbose -Message (

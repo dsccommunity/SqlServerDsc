@@ -738,7 +738,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
                         TraceFlags = '3228'
-                        RestartInstance = $true
+                        RestartService = $true
                     }
                 }
 
