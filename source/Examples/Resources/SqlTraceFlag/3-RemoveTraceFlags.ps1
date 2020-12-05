@@ -19,7 +19,7 @@ Configuration Example
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            RestartInstance      = $true
+            RestartService       = $true
             TraceFlags           = @()
 
             PsDscRunAsCredential = $SqlAdministratorCredential
