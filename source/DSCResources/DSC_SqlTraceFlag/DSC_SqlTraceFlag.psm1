@@ -47,7 +47,7 @@ function Get-TargetResource
 
         if ($databaseEngineService)
         {
-            $actualTraceFlags = $databaseEngineService.StartupParameters.Split(';') |
+            $traceFlags = $databaseEngineService.StartupParameters.Split(';') |
                 Where-Object -FilterScript { $PSItem -like '-T*' } |
                 ForEach-Object {
                     $PSItem.TrimStart('-T')
@@ -68,7 +68,7 @@ function Get-TargetResource
     return @{
         ServerName          = $ServerName
         InstanceName        = $InstanceName
-        TraceFlags          = $actualTraceFlags
+        TraceFlags          = $traceFlags
         TraceFlagsToInclude = $null
         TraceFlagsToExclude = $null
         RestartInstance     = $null
@@ -131,7 +131,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $RestartInstance = $false
+        $RestartService = $false
     )
 
     Write-Verbose -Message (
@@ -164,14 +164,14 @@ function Set-TargetResource
     else
     {
         $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-        $actualTraceFlags = $getTargetResourceResult.TraceFlags
-        $wishTraceFlags.AddRange($actualTraceFlags)
+
+        $wishTraceFlags.AddRange($getTargetResourceResult.TraceFlags)
 
         if ($PSBoundParameters.ContainsKey('TraceFlagsToInclude'))
         {
             foreach ($traceFlagToInclude in $TraceFlagsToInclude)
             {
-                if ($actualTraceFlags -notcontains $traceFlagToInclude)
+                if ($getTargetResourceResult.TraceFlags -notcontains $traceFlagToInclude)
                 {
                     $wishTraceFlags.Add($traceFlagToInclude)
                 }
@@ -182,7 +182,7 @@ function Set-TargetResource
         {
             foreach ($traceFlagToExclude in $TraceFlagsToExclude)
             {
-                if ($actualTraceFlags -contains $traceFlagToExclude)
+                if ($getTargetResourceResult.TraceFlags -contains $traceFlagToExclude)
                 {
                     $wishTraceFlags.Remove([string]$traceFlagToExclude)
                 }
@@ -237,11 +237,11 @@ function Set-TargetResource
             $databaseEngineService.StartupParameters = $parameterList -join ';'
             $databaseEngineService.Alter()
 
-            if ($PSBoundParameters.ContainsKey('RestartInstance'))
+            if ($PSBoundParameters.ContainsKey('RestartService'))
             {
-                if ($RestartInstance -eq $true)
+                if ($RestartService -eq $true)
                 {
-                    $RestartTimeout = 10
+                    $RestartTimeout = 120
                     Restart-SqlService -ServerName $ServerName -InstanceName $InstanceName -Timeout $RestartTimeout
                 }
             }
@@ -272,7 +272,7 @@ function Set-TargetResource
         The TraceFlags the SQL server engine startup parameters should exclude.
         This parameter can not be used together with TraceFlags.
 
-    .PARAMETER RestartInstance
+    .PARAMETER RestartService
         If set, the sql server instance gets a reset after setting parameters.
         after restart the sql server agent is in the original state as before restart.
 #>
@@ -306,7 +306,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $RestartInstance = $false
+        $RestartService = $false
     )
 
     Write-Verbose -Message (
@@ -345,13 +345,13 @@ function Test-TargetResource
         }
         else
         {
-            # Compare $TraceFlags to ActualTraceFlags to see if they contain the same values.
+            # Compare $TraceFlags to the Actual TraceFlags ($getTargetResourceResult.TraceFlags) to see if they contain the same values.
             $nullIfTheSame = Compare-Object -ReferenceObject $getTargetResourceResult.TraceFlags -DifferenceObject $TraceFlags
             if ($null -ne $nullIfTheSame)
             {
                 Write-Verbose -Message (
                     $script:localizedData.DesiredTraceFlagNotPresent `
-                        -f $ServerRoleName
+                        -f $($TraceFlags -join ','), $($getTargetResourceResult.TraceFlags -join ',')
                 )
 
                 $isInDesiredState = $false
