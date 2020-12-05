@@ -449,7 +449,6 @@ function Set-TargetResource
 
             if ( $prerequisiteCheckFailures.Count -eq 0 )
             {
-
                 if ( $backupNeeded)
                 {
                     $databaseFullBackupFile = Join-Path -Path $BackupPath -ChildPath "$($databaseObject.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak"
