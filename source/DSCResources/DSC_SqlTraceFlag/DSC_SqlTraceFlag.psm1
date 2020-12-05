@@ -72,6 +72,7 @@ function Get-TargetResource
         TraceFlagsToInclude = $null
         TraceFlagsToExclude = $null
         RestartService      = $null
+        RestartTimeout      = $null
     }
 }
 
