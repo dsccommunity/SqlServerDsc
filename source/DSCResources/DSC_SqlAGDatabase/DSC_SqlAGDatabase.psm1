@@ -436,12 +436,10 @@ function Set-TargetResource
 
             if ( $backupNeeded -eq $false)
             {
-                try
-                {
-                    # If $DatabaseName  has no backups, a backup is needed before adding the database to an availibility group.
-                    $primaryServerObject.Databases[$databaseToAddToAvailabilityGroup].LastBackupDate.ToFileTimeUtc()  | Out-Null
-                }
-                catch
+                # Because an availibility group can only be made when the database has at least one backup,
+                # if there is no backup, create one. This backup is not needed for restore, only the initial setup
+                # of the LSN in the database is needed
+                if ( $primaryServerObject.Databases[$databaseToAddToAvailabilityGroup].CreateDate -gt $primaryServerObject.Databases[$databaseToAddToAvailabilityGroup].LastBackupDate)
                 {
                     $needsBackup = $true
                 }
