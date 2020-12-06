@@ -74,6 +74,7 @@
         'SqlSecureConnection'
         'SqlServiceAccount'
         'SqlSetup'
+        'SqlTraceFlag'
         'SqlWaitForAG'
         'SqlWindowsFirewall'
     )
