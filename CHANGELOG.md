@@ -5,28 +5,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- WaitForAG
-  - BREAKING CHANGE: Fix for issue ([issue #1569](https://github.com/dsccommunity/SqlServerDsc/issues/1569))
-    The resource now waits for the Availability Group to become Available.
-  - Two parameters where added to test get and set resource at instance level.
-- SqlRole
-  - Major overhaul of resource.
-  - BREAKING CHANGE: Removed decision making from get-TargetResource; this
-    prevented a simple solution for issue #550. it now just tels if a role
-    exists or not. And what members are in that role. MembersToInclude and
-    MembersToExclude now always return $null.
-  - Added sanitize function (`Get-CorrectedMemberParameters`) to make it
-    so for the sysadmin role SA does not get altered ([issue #550](https://github.com/dsccommunity/SqlServerDsc/issues/550)).
-  - Added lots of tests.
-- SqlSetup
-  - Added a note to the documentation that the parameter `BrowserSvcStartupType`
-    cannot be used for configurations that utilize the `'InstallFailoverCluster'`
-    action ([issue #1627](https://github.com/dsccommunity/SqlServerDsc/issues/1627)).
-  - Minor change to the evaluation of the parameter `BrowserSvcStartupType`,
-    if it has an assigned a value or not.
+## [15.0.0] - 2020-12-06
 
 ### Added
 
+- SqlServerDsc
+  - Added new resource SqlTraceFlag to set or changes TraceFlags on SQL Server.
+    This resource is based on @Zuldans code but with SqlServerDsc integrated SMO.
+    Credits: https://github.com/Zuldan/cSQLServerTraceFlag
+  - Added a lot of test scripts to validated the code.
 - SqlEndpoint
   - Added support for the Service Broker Endpoint ([issue #498](https://github.com/dsccommunity/SqlServerDsc/issues/498)).
 - SqlDatabaseRole
@@ -46,8 +33,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlReplication
   - The resource are now using the helper function `Get-SqlInstanceMajorVersion`
     ([issue #1408](https://github.com/dsccommunity/SqlServerDsc/issues/1408)).
+- SqlRole
+  - Major overhaul of resource.
+  - BREAKING CHANGE: Removed decision making from get-TargetResource; this
+    prevented a simple solution for issue #550. it now just tels if a role
+    exists or not. And what members are in that role. MembersToInclude and
+    MembersToExclude now always return $null.
+  - Added sanitize function (`Get-CorrectedMemberParameters`) to make it
+    so for the sysadmin role SA does not get altered ([issue #550](https://github.com/dsccommunity/SqlServerDsc/issues/550)).
+  - Added lots of tests.
+- SqlWaitForAG
+  - BREAKING CHANGE: Fix for issue ([issue #1569](https://github.com/dsccommunity/SqlServerDsc/issues/1569))
+    The resource now waits for the Availability Group to become Available.
+  - Two parameters where added to test get and set resource at instance level.
+- SqlSetup
+  - Minor change to the evaluation of the parameter `BrowserSvcStartupType`,
+    if it has an assigned a value or not.
 
 ### Fixed
+
 - SqlDatabaseRole
   - Fixed check to see if the role and user existed in the database. The
     previous logic would always indicate the role or user was not found unless
@@ -57,6 +61,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlAlwaysOnService
   - Updated Get-TargetResource to return all defined schema properties
     ([issue #150](https://github.com/dsccommunity/SqlServerDsc/issues/1501)).
+- SqlSetup
+  - Added a note to the documentation that the parameter `BrowserSvcStartupType`
+    cannot be used for configurations that utilize the `'InstallFailoverCluster'`
+    action ([issue #1627](https://github.com/dsccommunity/SqlServerDsc/issues/1627)).
 
 ## [14.2.1] - 2020-08-14
 
