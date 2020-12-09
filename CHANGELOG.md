@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
 - SqlMaxDop
   - Fixes ([issue #396](https://github.com/dsccommunity/SqlServerDsc/issues/396)).
     Added three return values in Get-Target resource.
