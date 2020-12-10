@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- SqlProtocol
+  - Changed KeepAlive Type from UInt16 to Int32 to reflect te actual WMI.ManagementObject
+    Fixes #1645 ([issue #1645](https://github.com/dsccommunity/SqlServerDsc/issues/1645)).
+
 ## [15.0.0] - 2020-12-06
 
 ### Added
