@@ -125,6 +125,12 @@ try
                     $result.InstanceName | Should -Be $testParameters.InstanceName
                 }
 
+                It 'Should return $null for the remaining parameters' {
+                    $result.ProcessOnlyOnActiveNode | Should -BeNullOrEmpty
+                    $result.Ensure | Should -BeNullOrEmpty
+                    $result.DynamicAlloc | Should -BeNullOrEmpty
+                }
+
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
