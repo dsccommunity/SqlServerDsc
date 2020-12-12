@@ -9,10 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - AGDatabase
   - Fix for issue ([issue #1492](https://github.com/dsccommunity/SqlServerDsc/issues/1492))
-    added AutomaticSeeding for this Resource. In ste-TargetResource added logic that looks 
-    at all replicas of an availibility group. When automatic seedig is found, it wil use that.
+    added AutomaticSeeding for this resource. In set-TargetResource added logic that looks 
+    at all replicas of an availability group. When automatic seedig is found, it will use that.
   - Lots of extra tests to check AutomaticSeeding.
-  - Backuppath is still needed just in case a database never has been backuped before.
+  - $BackupPath is still needed just in case a database never has been backuped before.
 - SqlMaxDop
   - Fixes ([issue #396](https://github.com/dsccommunity/SqlServerDsc/issues/396)).
     Added three return values in Get-Target resource.

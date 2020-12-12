@@ -234,7 +234,7 @@ function Set-TargetResource
     # Create a hash table to store the databases that failed to be added to the Availability Group
     $databasesToAddFailures = @{}
 
-    # Create a hash table to store the databases that failed to be Removed from the Availability Group
+    # Create a hash table to store the databases that failed to be removed from the Availability Group
     $databasesToRemoveFailures = @{}
 
     if ( $databasesToAddToAvailabilityGroup.Count -gt 0 )
@@ -422,9 +422,13 @@ function Set-TargetResource
                 }
             }
 
-            #Determine whether SEEDING_MODE = for all replicas is Automatic or Manual. If all replicas are Automatic, an backup is not needed.
+            <#
+                Determine whether SEEDING_MODE = for all replicas is Automatic or Manual. If all replicas are Automatic, a restore is not needed.
+                When the database is fresh, and never backuped before, a backup is still needed.
+            #>
             $backupNeeded = $false
             $restoreNeeded = $false
+
             foreach ( $availabilityGroupReplica in $secondaryReplicas )
             {
                 if ( $availabilityGroupReplica.SeedingMode -eq 'Manual')
@@ -436,9 +440,11 @@ function Set-TargetResource
 
             if ( $backupNeeded -eq $false)
             {
-                # Because an availibility group can only be made when the database has at least one backup,
-                # if there is no backup, create one. This backup is not needed for restore, only the initial setup
-                # of the LSN in the database is needed
+                <#
+                    Because an availability group can only be made when the database has at least one backup,
+                    if there is no backup, create one. This backup is not needed for restore, only the initial setup
+                    of the LSN in the database is needed
+                #>
                 if ( $primaryServerObject.Databases[$databaseToAddToAvailabilityGroup].CreateDate -gt $primaryServerObject.Databases[$databaseToAddToAvailabilityGroup].LastBackupDate)
                 {
                     $needsBackup = $true
@@ -604,7 +610,7 @@ function Set-TargetResource
                 }
                 finally
                 {
-                    #Wanneer er een backup gemaakt is, moet die hier verwijderd worden.
+                    # When a backup was made, it should be removed.
                     if ( $backupNeeded)
                     {
                         # Clean up the backup files
