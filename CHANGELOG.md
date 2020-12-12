@@ -34,6 +34,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlAlwaysOnService
   - Updated Get-TargetResource to return all defined schema properties
     ([issue #150](https://github.com/dsccommunity/SqlServerDsc/issues/1501)).
+- SqlDatabaseObjectPermission
+  - Updated unit tests to remove errors relating to missing `Where()` method
+    ([issue #1648](https://github.com/dsccommunity/SqlServerDsc/issues/1648)).
 
 ## [14.2.1] - 2020-08-14
 
