@@ -1,6 +1,7 @@
 <#
     .DESCRIPTION
-        This example will wait for the cluster role/group 'AGTest1'.
+        This example shows how to set TraceFlags where all existing
+        TraceFlags are overwriten by these
 #>
 Configuration Example
 {
@@ -15,12 +16,12 @@ Configuration Example
 
     node localhost
     {
-        SqlWaitForAG 'SQLConfigureAG-WaitAGTest1'
+        SqlTraceFlag 'Set_SqlTraceFlags'
         {
-            Name                 = 'AGTest1'
-            RetryIntervalSec     = 20
-            RetryCount           = 30
-            InstanceName         = 'MSSQLSERVER'
+            ServerName           = 'sqltest.company.local'
+            InstanceName         = 'DSC'
+            TraceFlags           = 834, 1117, 1118, 2371, 3226
+            RestartService      = $true
 
             PsDscRunAsCredential = $SqlAdministratorCredential
         }

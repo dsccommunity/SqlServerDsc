@@ -11,6 +11,12 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         Returns the cluster role/group that is waiting to be created,
         along with the time and number of times to wait.
 
+    .PARAMETER ServerName
+        Hostname of the SQL Server to be configured.
+
+    .PARAMETER InstanceName
+        Name of the SQL instance to be configured.
+
     .PARAMETER Name
         Name of the cluster role/group to look for (normally the same as the
         Availability Group name).
@@ -18,7 +24,8 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
     .PARAMETER RetryIntervalSec
         The interval, in seconds, to check for the presence of the cluster role/group.
         Default value is 20 seconds. When the cluster role/group has been found the
-        resource will wait for this amount of time once more before returning.
+        resource will check if the AG group exist. When the availability group has
+        been found the resource will also wait this amount of time before returning.
 
     .PARAMETER RetryCount
         Maximum number of retries until the resource will timeout and throw an error.
@@ -30,6 +37,16 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ServerName = $env:COMPUTERNAME,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $InstanceName,
+
         [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
@@ -49,14 +66,43 @@ function Get-TargetResource
 
     $clusterGroupFound = $false
 
+    # No ClusterName specified, so defaults to cluster on this node.
     $clusterGroup = Get-ClusterGroup -Name $Name -ErrorAction SilentlyContinue
+
     if ($null -ne $clusterGroup)
     {
         Write-Verbose -Message (
             $script:localizedData.FoundClusterGroup -f $Name
         )
 
-        $clusterGroupFound = $true
+        # Connect to the instance
+        $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
+        if ($serverObject)
+        {
+            # Determine if HADR is enabled on the instance. If not, AG group can not exist.
+            if ($serverObject.IsHadrEnabled )
+            {
+                $availabilityGroup = $serverObject.AvailabilityGroups[$Name]
+
+                if ( $availabilityGroup )
+                {
+                    $clusterGroupFound = $true
+                }
+                else
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.AGNotFound -f $name, $InstanceName, $RetryIntervalSec
+                    )
+                }
+            }
+            else
+            {
+                Write-Verbose -Message (
+                    $script:localizedData.HadrNotEnabled -f $InstanceName
+                )
+            }
+        }
     }
     else
     {
@@ -66,6 +112,8 @@ function Get-TargetResource
     }
 
     return @{
+        ServerName       = $ServerName
+        InstanceName     = $InstanceName
         Name             = $Name
         RetryIntervalSec = $RetryIntervalSec
         RetryCount       = $RetryCount
@@ -77,14 +125,22 @@ function Get-TargetResource
     .SYNOPSIS
         Waits for a cluster role/group to be created
 
+    .PARAMETER ServerName
+        Hostname of the SQL Server to be configured.
+
+    .PARAMETER InstanceName
+        Name of the SQL instance to be configured.
+
     .PARAMETER Name
-        Name of the cluster role/group to look for (normally the same as the Availability
-        Group name).
+        Name of the cluster role/group to look for (normally the same as the
+        Availability Group name).
 
     .PARAMETER RetryIntervalSec
         The interval, in seconds, to check for the presence of the cluster role/group.
         Default value is 20 seconds. When the cluster role/group has been found the
-        resource will wait for this amount of time once more before returning.
+        resource will check if the AG group exist. When the availability group has
+        been found the resource will also wait this amount of time before returning.
+
 
     .PARAMETER RetryCount
         Maximum number of retries until the resource will timeout and throw an error.
@@ -95,6 +151,16 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ServerName = $env:COMPUTERNAME,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $InstanceName,
+
         [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
@@ -113,6 +179,8 @@ function Set-TargetResource
     )
 
     $getTargetResourceParameters = @{
+        ServerName       = $ServerName
+        InstanceName     = $InstanceName
         Name             = $Name
         RetryIntervalSec = $RetryIntervalSec
         RetryCount       = $RetryCount
@@ -153,14 +221,22 @@ function Set-TargetResource
     .SYNOPSIS
         Tests if the cluster role/group has been created.
 
+    .PARAMETER ServerName
+        Hostname of the SQL Server to be configured.
+
+    .PARAMETER InstanceName
+        Name of the SQL instance to be configured.
+
     .PARAMETER Name
-        Name of the cluster role/group to look for (normally the same as the Availability
-        Group name).
+        Name of the cluster role/group to look for (normally the same as the
+        Availability Group name).
 
     .PARAMETER RetryIntervalSec
         The interval, in seconds, to check for the presence of the cluster role/group.
         Default value is 20 seconds. When the cluster role/group has been found the
-        resource will wait for this amount of time once more before returning.
+        resource will check if the AG group exist. When the availability group has
+        been found the resource will also wait this amount of time before returning.
+
 
     .PARAMETER RetryCount
         Maximum number of retries until the resource will timeout and throw an error.
@@ -172,6 +248,16 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ServerName = $env:COMPUTERNAME,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $InstanceName,
+
         [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
@@ -190,6 +276,8 @@ function Test-TargetResource
     )
 
     $getTargetResourceParameters = @{
+        ServerName       = $ServerName
+        InstanceName     = $InstanceName
         Name             = $Name
         RetryIntervalSec = $RetryIntervalSec
         RetryCount       = $RetryCount

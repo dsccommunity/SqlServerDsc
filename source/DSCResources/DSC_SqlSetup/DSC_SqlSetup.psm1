@@ -1033,7 +1033,7 @@ function Set-TargetResource
 
     $setupArguments = @{}
 
-    if ($PSBoundParameters.ContainsKey('SkipRule') )
+    if ($PSBoundParameters.ContainsKey('SkipRule'))
     {
         $setupArguments['SkipRules'] = @($SkipRule)
     }
@@ -1237,7 +1237,7 @@ function Set-TargetResource
         )
     }
 
-    if ($null -ne $BrowserSvcStartupType)
+    if ($PSBoundParameters.ContainsKey('BrowserSvcStartupType'))
     {
         $argumentVars += 'BrowserSvcStartupType'
     }

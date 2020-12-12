@@ -47,10 +47,13 @@ function Get-TargetResource
     }
 
     $returnValue = @{
-        InstanceName = $InstanceName
-        ServerName   = $ServerName
-        MaxDop       = $currentMaxDop
-        IsActiveNode = $isActiveNode
+        InstanceName            = $InstanceName
+        ServerName              = $ServerName
+        MaxDop                  = $currentMaxDop
+        IsActiveNode            = $isActiveNode
+        ProcessOnlyOnActiveNode = $null
+        Ensure                  = $null
+        DynamicAlloc            = $null
     }
 
     $returnValue
@@ -358,4 +361,3 @@ function Get-SqlDscDynamicMaxDop
     $dynamicMaxDop
 }
 
-Export-ModuleMember -Function *-TargetResource

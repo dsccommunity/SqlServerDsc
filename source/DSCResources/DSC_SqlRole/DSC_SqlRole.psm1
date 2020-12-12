@@ -10,23 +10,22 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
     .SYNOPSIS
         This function gets the sql server role properties.
 
-    .PARAMETER Members
-        The members the server role should have.
-
-    .PARAMETER MembersToInclude
-        The members the server role should include.
-
-    .PARAMETER MembersToExclude
-        The members the server role should exclude.
-
-    .PARAMETER ServerRoleName
-        The name of server role to be created or dropped.
-
     .PARAMETER ServerName
         The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
 
     .PARAMETER InstanceName
         The name of the SQL instance to be configured.
+
+    .PARAMETER ServerRoleName
+        The name of server role to be created or dropped.
+
+    .Notes
+        Because the return of this function will always be the actual members in the role,
+        and not the desired members in a role, there is no point in returning $MembersToInclude and exclude.
+        You now get "present" if the role exists, and when it exists, you get the current members in that role.
+
+        The way it was: if a role does not exists, you still get $membersToInclude And $membersToExclude.
+        To me that seems like strange behavior.
 #>
 function Get-TargetResource
 {
@@ -35,23 +34,6 @@ function Get-TargetResource
     param
     (
         [Parameter()]
-        [System.String[]]
-        $Members,
-
-        [Parameter()]
-        [System.String[]]
-        $MembersToInclude,
-
-        [Parameter()]
-        [System.String[]]
-        $MembersToExclude,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $ServerRoleName,
-
-        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $ServerName = $env:COMPUTERNAME,
@@ -59,11 +41,17 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $InstanceName
+        $InstanceName,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ServerRoleName
     )
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
-    $ensure = 'Present'
+    $ensure = 'Absent'
+    $membersInRole = $null
 
     if ($sqlServerObject)
     {
@@ -77,6 +65,7 @@ function Get-TargetResource
             try
             {
                 [System.String[]] $membersInRole = $sqlServerRoleObject.EnumMemberNames()
+                $ensure = 'Present'
             }
             catch
             {
@@ -85,76 +74,18 @@ function Get-TargetResource
 
                 New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
             }
-
-            if ($Members)
-            {
-                if ($MembersToInclude -or $MembersToExclude)
-                {
-                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
-                    New-InvalidOperationException -Message $errorMessage
-                }
-
-                if ( $null -ne (Compare-Object -ReferenceObject $membersInRole -DifferenceObject $Members))
-                {
-                    Write-Verbose -Message (
-                        $script:localizedData.DesiredMembersNotPresent `
-                            -f $ServerRoleName
-                    )
-
-                    $ensure = 'Absent'
-                }
-            }
-            else
-            {
-                if ($MembersToInclude)
-                {
-                    foreach ($memberToInclude in $MembersToInclude)
-                    {
-                        if ($membersInRole -notcontains $memberToInclude)
-                        {
-                            Write-Verbose -Message (
-                                $script:localizedData.MemberNotPresent `
-                                    -f $ServerRoleName, $memberToInclude
-                            )
-
-                            $ensure = 'Absent'
-                        }
-                    }
-                }
-
-                if ($MembersToExclude)
-                {
-                    foreach ($memberToExclude in $MembersToExclude)
-                    {
-                        if ($membersInRole -contains $memberToExclude)
-                        {
-                            Write-Verbose -Message (
-                                $script:localizedData.MemberPresent `
-                                    -f $ServerRoleName, $memberToExclude
-                            )
-
-                            $ensure = 'Absent'
-                        }
-                    }
-                }
-            }
-        }
-        else
-        {
-            $ensure = 'Absent'
         }
     }
 
-    $returnValue = @{
-        Ensure           = $ensure
-        Members          = $membersInRole
-        MembersToInclude = $MembersToInclude
-        MembersToExclude = $MembersToExclude
-        ServerRoleName   = $ServerRoleName
-        ServerName       = $ServerName
-        InstanceName     = $InstanceName
+    return @{
+        ServerRoleName     = $ServerRoleName
+        Ensure             = $ensure
+        ServerName         = $ServerName
+        InstanceName       = $InstanceName
+        Members            = $membersInRole
+        MembersToInclude   = $null
+        MembersToExclude   = $null
     }
-    $returnValue
 }
 
 <#
@@ -221,6 +152,18 @@ function Set-TargetResource
         $InstanceName
     )
 
+    $assertBoundParameterParameters = @{
+        BoundParameterList = $PSBoundParameters
+        MutuallyExclusiveList1 = @(
+            'Members'
+        )
+        MutuallyExclusiveList2 = @(
+            'MembersToExclude', 'MembersToInclude'
+        )
+    }
+
+    Assert-BoundParameter @assertBoundParameterParameters
+
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
 
     if ($sqlServerObject)
@@ -283,19 +226,22 @@ function Set-TargetResource
                     }
                 }
 
+                $originalParameters = @{
+                    ServerRoleName   = $ServerRoleName
+                    Members          = $Members
+                    MembersToInclude = $MembersToInclude
+                    MembersToExclude = $MembersToExclude
+                }
+
+                $correctedParameters = Get-CorrectedMemberParameters @originalParameters
+
                 if ($Members)
                 {
-                    if ($MembersToInclude -or $MembersToExclude)
-                    {
-                        $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
-                        New-InvalidOperationException -Message $errorMessage
-                    }
-
                     $memberNamesInRoleObject = $sqlServerObject.Roles[$ServerRoleName].EnumMemberNames()
 
                     foreach ($memberName in $memberNamesInRoleObject)
                     {
-                        if ($Members -notcontains $memberName)
+                        if ($correctedParameters.Members -notcontains $memberName)
                         {
                             Remove-SqlDscServerRoleMember -SqlServerObject $sqlServerObject `
                                 -SecurityPrincipal $memberName `
@@ -303,7 +249,7 @@ function Set-TargetResource
                         }
                     }
 
-                    foreach ($memberToAdd in $Members)
+                    foreach ($memberToAdd in $correctedParameters.Members)
                     {
                         if ($memberNamesInRoleObject -notcontains $memberToAdd)
                         {
@@ -319,7 +265,7 @@ function Set-TargetResource
                     {
                         $memberNamesInRoleObject = $sqlServerObject.Roles[$ServerRoleName].EnumMemberNames()
 
-                        foreach ($memberToInclude in $MembersToInclude)
+                        foreach ($memberToInclude in $correctedParameters.MembersToInclude)
                         {
                             if ($memberNamesInRoleObject -notcontains $memberToInclude)
                             {
@@ -334,7 +280,7 @@ function Set-TargetResource
                     {
                         $memberNamesInRoleObject = $sqlServerObject.Roles[$ServerRoleName].EnumMemberNames()
 
-                        foreach ($memberToExclude in $MembersToExclude)
+                        foreach ($memberToExclude in $correctedParameters.MembersToExclude)
                         {
                             if ($memberNamesInRoleObject -contains $memberToExclude)
                             {
@@ -420,13 +366,31 @@ function Test-TargetResource
             -f $ServerRoleName
     )
 
+    $assertBoundParameterParameters = @{
+        BoundParameterList = $PSBoundParameters
+        MutuallyExclusiveList1 = @(
+            'Members'
+        )
+        MutuallyExclusiveList2 = @(
+            'MembersToExclude', 'MembersToInclude'
+        )
+    }
+
+    Assert-BoundParameter @assertBoundParameterParameters
+
+    $originalParameters = @{
+        ServerRoleName   = $ServerRoleName
+        Members          = $Members
+        MembersToInclude = $MembersToInclude
+        MembersToExclude = $MembersToExclude
+    }
+
+    $correctedParameters = Get-CorrectedMemberParameters @originalParameters
+
     $getTargetResourceParameters = @{
-        InstanceName     = $PSBoundParameters.InstanceName
+        InstanceName     = $InstanceName
         ServerName       = $ServerName
-        ServerRoleName   = $PSBoundParameters.ServerRoleName
-        Members          = $PSBoundParameters.Members
-        MembersToInclude = $PSBoundParameters.MembersToInclude
-        MembersToExclude = $PSBoundParameters.MembersToExclude
+        ServerRoleName   = $ServerRoleName
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
@@ -457,6 +421,56 @@ function Test-TargetResource
                 )
 
                 $isServerRoleInDesiredState = $false
+            }
+            else
+            {
+                if ($Members)
+                {
+                    if ( $null -ne (Compare-Object -ReferenceObject $getTargetResourceResult.Members -DifferenceObject $correctedParameters.Members))
+                    {
+                        Write-Verbose -Message (
+                            $script:localizedData.DesiredMembersNotPresent `
+                                -f $ServerRoleName
+                        )
+
+                        $isServerRoleInDesiredState = $false
+                    }
+                }
+                else
+                {
+                    if ($MembersToInclude)
+                    {
+                        foreach ($memberToInclude in $correctedParameters.MembersToInclude)
+                        {
+                            if ($getTargetResourceResult.Members -notcontains $memberToInclude)
+                            {
+                                Write-Verbose -Message (
+                                    $script:localizedData.MemberNotPresent `
+                                        -f $ServerRoleName, $memberToInclude
+                                )
+
+                                $isServerRoleInDesiredState = $false
+                            }
+                        }
+
+                    }
+
+                    if ($MembersToExclude)
+                    {
+                        foreach ($memberToExclude in $correctedParameters.MembersToExclude)
+                        {
+                            if ($getTargetResourceResult.Members -contains $memberToExclude)
+                            {
+                                Write-Verbose -Message (
+                                    $script:localizedData.MemberPresent `
+                                        -f $ServerRoleName, $memberToExclude
+                                )
+
+                                $isServerRoleInDesiredState = $false
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -609,12 +623,75 @@ function Test-SqlSecurityPrincipal
 
             # Principal is neither a Login nor a Server role, raise exception
             New-ObjectNotFoundException -Message $errorMessage
-
-            return $false
         }
     }
 
     return $true
+}
+
+<#
+    .SYNOPSIS
+        This function sanitizes the parameters
+        If Members is filled, MembersToInclude and MembersToExclude should be empty.
+        If ServerRoleName is sysadmin, make sure we dont try to delete SA from it.
+
+    .PARAMETER Members
+        The members the server role should have.
+
+    .PARAMETER MembersToInclude
+        The members the server role should include.
+
+    .PARAMETER MembersToExclude
+        The members the server role should exclude.
+
+    .PARAMETER ServerRoleName
+        The name of server role to be created or dropped.
+#>
+function Get-CorrectedMemberParameters
+{
+    param
+    (
+        [Parameter()]
+        [System.String[]]
+        $Members,
+
+        [Parameter()]
+        [System.String[]]
+        $MembersToInclude,
+
+        [Parameter()]
+        [System.String[]]
+        $MembersToExclude,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $ServerRoleName
+    )
+
+    if ($ServerRoleName -eq 'sysadmin')
+    {
+        if ($Members)
+        {
+            if ($Members -notcontains 'SA')
+            {
+                $Members += 'SA'
+            }
+        }
+        else
+        {
+            if ($MembersToExclude -contains 'SA')
+            {
+                $MembersToExclude = $MembersToExclude -ne 'SA'
+            }
+        }
+    }
+
+    return @{
+        Members          = [System.String[]]$Members
+        MembersToInclude = [System.String[]]$MembersToInclude
+        MembersToExclude = [System.String[]]$MembersToExclude
+    }
 }
 
 Export-ModuleMember -Function *-TargetResource

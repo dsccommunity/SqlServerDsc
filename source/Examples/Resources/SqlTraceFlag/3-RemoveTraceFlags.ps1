@@ -1,6 +1,6 @@
 <#
     .DESCRIPTION
-        This example will wait for the cluster role/group 'AGTest1'.
+        This example shows how to clear all TraceFlags.
 #>
 Configuration Example
 {
@@ -15,12 +15,12 @@ Configuration Example
 
     node localhost
     {
-        SqlWaitForAG 'SQLConfigureAG-WaitAGTest1'
+        SqlTraceFlag 'Remove_SqlTraceFlags'
         {
-            Name                 = 'AGTest1'
-            RetryIntervalSec     = 20
-            RetryCount           = 30
-            InstanceName         = 'MSSQLSERVER'
+            ServerName           = 'sqltest.company.local'
+            InstanceName         = 'DSC'
+            RestartService       = $true
+            TraceFlags           = @()
 
             PsDscRunAsCredential = $SqlAdministratorCredential
         }

@@ -969,4 +969,18 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
     }
 
     #endregion
+
+    #region Public Classes
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
+    // Used by:
+    //  DSC_SqlTraceFlag.Tests.ps1
+    public class ManagedComputer
+    {
+        public string Name;
+        public string State;
+        public ArrayList ServerInstances;
+        public ArrayList Services;
+    }
+    #endregion
 }
