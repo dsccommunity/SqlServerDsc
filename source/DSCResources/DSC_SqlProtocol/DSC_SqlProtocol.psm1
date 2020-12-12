@@ -208,7 +208,7 @@ function Set-TargetResource
         $ListenOnAllIpAddresses,
 
         [Parameter()]
-        [System.UInt16]
+        [System.Int32]
         $KeepAlive,
 
         [Parameter()]
@@ -429,7 +429,7 @@ function Test-TargetResource
         $ListenOnAllIpAddresses,
 
         [Parameter()]
-        [System.UInt16]
+        [System.Int32]
         $KeepAlive,
 
         [Parameter()]
@@ -541,7 +541,7 @@ function Compare-TargetResourceState
         $ListenOnAllIpAddresses,
 
         [Parameter()]
-        [System.UInt16]
+        [System.Int32]
         $KeepAlive,
 
         [Parameter()]
