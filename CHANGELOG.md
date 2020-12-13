@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- SqlServerDsc
+  - The module manifest property `DscResourcesToExport` now updates automatically
+    using the pipeline.
+
 ### Fixed
 
 - SqlMaxDop
