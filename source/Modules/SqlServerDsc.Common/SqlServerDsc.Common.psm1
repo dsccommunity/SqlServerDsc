@@ -2335,7 +2335,7 @@ function Get-ServerProtocolObject
     }
     else
     {
-        $errorMessage = $script:localizedData.FailedToObtainServerInstance -f $InstanceName
+        $errorMessage = $script:localizedData.FailedToObtainServerInstance -f $InstanceName, $ServerName
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
 
