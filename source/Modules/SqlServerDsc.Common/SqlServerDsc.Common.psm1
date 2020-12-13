@@ -2333,6 +2333,11 @@ function Get-ServerProtocolObject
 
         $serverProtocolProperties = $serverInstance.ServerProtocols[$protocolNameProperties.Name]
     }
+    else
+    {
+        $errorMessage = $script:localizedData.FailedToObtainServerInstance -f $InstanceName
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+    }
 
     return $serverProtocolProperties
 }
