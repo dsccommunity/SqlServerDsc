@@ -80,6 +80,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added a note to the documentation that the parameter `BrowserSvcStartupType`
     cannot be used for configurations that utilize the `'InstallFailoverCluster'`
     action ([issue #1627](https://github.com/dsccommunity/SqlServerDsc/issues/1627)).
+- SqlDatabaseObjectPermission
+  - Updated unit tests to remove errors relating to missing `Where()` method
+    ([issue #1648](https://github.com/dsccommunity/SqlServerDsc/issues/1648)).
 
 ## [14.2.1] - 2020-08-14
 
