@@ -228,6 +228,26 @@ Configuration DSC_SqlLogin_AddLoginDscUser4_Config
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
+
+        # Database user is also added so the connection into database (using the login) can be tested
+        SqlDatabaseUser 'Integration_Test_DatabaseUser'
+        {
+            ServerName                     = $Node.ServerName
+            InstanceName                   = $Node.InstanceName
+
+            DatabaseName                   = $Node.DefaultDbName
+            Name                           = $Node.DscUser4Name
+            UserType                       = 'Login'
+            LoginName                      = $Node.DscUser4Name
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+
+            DependsOn = @(
+                '[SqlLogin]Integration_Test'
+            )
+        }
     }
 }
 
@@ -250,7 +270,7 @@ Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config
             LoginPasswordExpirationEnabled = $false
             LoginPasswordPolicyEnforced    = $false
 
-            # Note: This credential uses a 'DscUser4Pass2' and not 'DscUser4Pass1' to test a password change
+            # Note: This login uses the 'DscUser4Pass2' property value (and not the 'DscUser4Pass1' property value) to validate/test a password change
             LoginCredential                = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.DscUser4Name, (ConvertTo-SecureString -String $Node.DscUser4Pass2 -AsPlainText -Force))
