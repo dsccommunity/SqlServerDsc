@@ -232,6 +232,40 @@ Configuration DSC_SqlLogin_AddLoginDscUser4_Config
 
 <#
     .SYNOPSIS
+        Updates a SQL login.
+#>
+Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlLogin 'Integration_Test'
+        {
+            Ensure                         = 'Present'
+            Name                           = $Node.DscUser4Name
+            LoginType                      = $Node.DscUser4Type
+            LoginMustChangePassword        = $true
+            LoginPasswordExpirationEnabled = $false
+            LoginPasswordPolicyEnforced    = $false
+
+            # Note: This credential uses a 'Admin_Password2' and not 'Admin_Password' to test a password change
+            LoginCredential                = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.DscUser4Name, (ConvertTo-SecureString -String $Node.Admin_Password2 -AsPlainText -Force))
+
+            ServerName                     = $Node.ServerName
+            InstanceName                   = $Node.InstanceName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
         Adds a Windows Group login.
 #>
 Configuration DSC_SqlLogin_AddLoginDscSqlUsers1_Config
