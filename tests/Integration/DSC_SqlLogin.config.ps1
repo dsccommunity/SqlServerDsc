@@ -20,6 +20,7 @@ else
 
                 Admin_UserName   = "$env:COMPUTERNAME\SqlAdmin"
                 Admin_Password   = 'P@ssw0rd1'
+                Admin_Password2  = 'P@ssw0rd2'
 
                 ServerName       = $env:COMPUTERNAME
                 InstanceName     = 'DSCSQLTEST'
@@ -217,7 +218,7 @@ Configuration DSC_SqlLogin_AddLoginDscUser4_Config
             LoginPasswordPolicyEnforced    = $true
             LoginCredential                = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+                -ArgumentList @($Node.DscUser4Name, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
 
             ServerName                     = $Node.ServerName
             InstanceName                   = $Node.InstanceName
