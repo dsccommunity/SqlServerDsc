@@ -264,6 +264,9 @@ try
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser4Name
                 $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser4Type
                 $resourceCurrentState.Disabled | Should -Be $false
+                $resourceCurrentState.LoginMustChangePassword | Should -Be $false
+                $resourceCurrentState.LoginPasswordExpirationEnabled | Should -Be $true
+                $resourceCurrentState.LoginPasswordPolicyEnforced | Should -Be $true
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
@@ -345,6 +348,9 @@ try
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser4Name
                 $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser4Type
                 $resourceCurrentState.Disabled | Should -Be $false
+                $resourceCurrentState.LoginMustChangePassword | Should -Be $true
+                $resourceCurrentState.LoginPasswordExpirationEnabled | Should -Be $false
+                $resourceCurrentState.LoginPasswordPolicyEnforced | Should -Be $false
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {
