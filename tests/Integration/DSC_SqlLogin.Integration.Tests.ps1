@@ -269,6 +269,36 @@ try
             It 'Should return $true when Test-DscConfiguration is run' {
                 Test-DscConfiguration -Verbose | Should -Be 'True'
             }
+
+            It 'Should allow SQL Server, login username and password to connect to SQL Instance' {
+                $serverName = $ConfigurationData.AllNodes.NodeName
+                $databaseName = $ConfigurationData.AllNodes.DefaultDbName
+                $userName = $ConfigurationData.AllNodes.DscUser4Name
+                $password = $ConfigurationData.AllNodes.DscUser4Pass1 # Original password
+
+                $sqlConnectionString = 'Data Source={0};User ID={1};Password={2};Connect Timeout=5;Database={3};' -f $serverName, $userName, $password, $databaseName
+                $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+
+                { $sqlConnection.Open() } | Should -Not -Throw
+            }
+
+            It 'Should allow SQL Server, login username and password to correct, SQL instance, default database' {
+                $serverName = $ConfigurationData.AllNodes.NodeName
+                $userName = $ConfigurationData.AllNodes.DscUser4Name
+                $password = $ConfigurationData.AllNodes.DscUser4Pass1 # Original password
+
+                $sqlConnectionString = 'Data Source={0};User ID={1};Password={2};Connect Timeout=5;' -f $serverName, $userName, $password # Note: Not providing a database name
+                $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+                $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $connection)
+
+                $sqlConnection.Open()
+                $sqlDataAdapter = New-Object System.Data.SqlClient.SqlDataAdapter $sqlCommand
+                $sqlDataSet = New-Object System.Data.DataSet
+                $sqlDataAdapter.Fill($sqlDataSet) | Out-Null
+                $sqlConnection.Close()
+
+                $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName | Should -Be $ConfigurationData.AllNodes.DefaultDbName
+            }
         }
 
         Wait-ForIdleLcm
