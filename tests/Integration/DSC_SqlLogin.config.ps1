@@ -217,9 +217,12 @@ Configuration DSC_SqlLogin_AddLoginDscUser4_Config
             LoginMustChangePassword        = $false
             LoginPasswordExpirationEnabled = $true
             LoginPasswordPolicyEnforced    = $true
+
             LoginCredential                = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.DscUser4Name, (ConvertTo-SecureString -String $Node.DscUser4Pass1 -AsPlainText -Force))
+
+            DefaultDatabase                = $Node.DefaultDbName
 
             ServerName                     = $Node.ServerName
             InstanceName                   = $Node.InstanceName
@@ -274,6 +277,8 @@ Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config
             LoginCredential                = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.DscUser4Name, (ConvertTo-SecureString -String $Node.DscUser4Pass2 -AsPlainText -Force))
+
+            DefaultDatabase                = $Node.DefaultDbName
 
             ServerName                     = $Node.ServerName
             InstanceName                   = $Node.InstanceName
