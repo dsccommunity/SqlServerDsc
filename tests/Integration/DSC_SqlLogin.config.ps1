@@ -20,7 +20,6 @@ else
 
                 Admin_UserName   = "$env:COMPUTERNAME\SqlAdmin"
                 Admin_Password   = 'P@ssw0rd1'
-                Admin_Password2  = 'P@ssw0rd2'
 
                 ServerName       = $env:COMPUTERNAME
                 InstanceName     = 'DSCSQLTEST'
@@ -37,6 +36,8 @@ else
                 DscUser3Type     = 'WindowsUser'
 
                 DscUser4Name     = 'DscUser4'
+                DscUser4Pass1    = 'P@ssw0rd10'
+                DscUser4Pass2    = 'P@ssw0rd20'
                 DscUser4Type     = 'SqlLogin'
 
                 DscSqlUsers1Name = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscSqlUsers1')
@@ -218,7 +219,7 @@ Configuration DSC_SqlLogin_AddLoginDscUser4_Config
             LoginPasswordPolicyEnforced    = $true
             LoginCredential                = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.DscUser4Name, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+                -ArgumentList @($Node.DscUser4Name, (ConvertTo-SecureString -String $Node.DscUser4Pass1 -AsPlainText -Force))
 
             ServerName                     = $Node.ServerName
             InstanceName                   = $Node.InstanceName
@@ -249,10 +250,10 @@ Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config
             LoginPasswordExpirationEnabled = $false
             LoginPasswordPolicyEnforced    = $false
 
-            # Note: This credential uses a 'Admin_Password2' and not 'Admin_Password' to test a password change
+            # Note: This credential uses a 'DscUser4Pass2' and not 'DscUser4Pass1' to test a password change
             LoginCredential                = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.DscUser4Name, (ConvertTo-SecureString -String $Node.Admin_Password2 -AsPlainText -Force))
+                -ArgumentList @($Node.DscUser4Name, (ConvertTo-SecureString -String $Node.DscUser4Pass2 -AsPlainText -Force))
 
             ServerName                     = $Node.ServerName
             InstanceName                   = $Node.InstanceName
