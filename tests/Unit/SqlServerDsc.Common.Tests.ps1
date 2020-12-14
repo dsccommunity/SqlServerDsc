@@ -3431,6 +3431,35 @@ InModuleScope $script:subModuleName {
             $result.ProtocolProperties.ListenOnAllIPs | Should -BeTrue
             $result.ProtocolProperties.KeepAlive | Should -Be 30000
         }
+
+        Context "When ManagedComputer object has an empty array, 'ServerInstances' value" {
+            BeforeAll {
+                $mockServerName = 'TestServerName'
+                $mockInstanceName = 'TestInstance'
+
+                Mock -CommandName New-Object -MockWith {
+                    return @{
+                        ServerInstances = @()
+                    }
+                }
+            }
+
+            It 'Should throw the correct error message' {
+                $mockGetServerProtocolObjectParameters = @{
+                    ServerName   = $mockServerName
+                    Instance     = $mockInstanceName
+                    ProtocolName = 'TcpIp'
+                }
+
+                $mockErrorRecord = Get-InvalidOperationRecord -Message (
+                    $script:localizedData.FailedToObtainServerInstance -f $mockInstanceName, $mockServerName
+                )
+
+                $mockErrorRecord.Exception.Message | Should -Not -BeNullOrEmpty
+
+                { Get-ServerProtocolObject @mockGetServerProtocolObjectParameters } | Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
+            }
+        }
     }
 
     Describe 'SqlServerDsc.Common\ConvertTo-ServerInstanceName' {

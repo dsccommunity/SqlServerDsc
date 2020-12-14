@@ -23,8 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixes ([issue #396](https://github.com/dsccommunity/SqlServerDsc/issues/396)).
     Added three return values in Get-Target resource.
 - SqlProtocol
-  - Changed KeepAlive Type from UInt16 to Int32 to reflect te actual WMI.ManagementObject
+  - Changed KeepAlive Type from UInt16 to Int32 to reflect the actual WMI.ManagementObject
     Fixes #1645 ([issue #1645](https://github.com/dsccommunity/SqlServerDsc/issues/1645)).
+- SqlServerDsc.Common
+  - Updated `Get-ServerProtocolObject`, helper function to ensure an exception is
+    thrown if the specified instance cannot be obtained ([issue #1628](https://github.com/dsccommunity/SqlServerDsc/issues/1628)).
 
 ## [15.0.0] - 2020-12-06
 
