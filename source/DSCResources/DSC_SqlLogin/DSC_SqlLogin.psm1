@@ -549,11 +549,11 @@ function Test-TargetResource
                 }
                 catch
                 {
-                    # Check to see if the parameter of $Disabled is true
-                    if ($Disabled)
+                    # Check to see if the existing login is disabled
+                    if ($loginInfo.Disabled)
                     {
                         <#
-                            An exception occurred and $Disabled is true, we neeed
+                            An exception occurred and $loginInfo.Disabled is true, we need
                             to check the error codes for expected error numbers.
                             Recursively search the Exception variable and inner
                             Exceptions for the specific numbers.
