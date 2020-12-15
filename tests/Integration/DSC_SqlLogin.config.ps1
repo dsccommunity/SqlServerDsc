@@ -39,6 +39,7 @@ else
                 DscUser4Pass1    = 'P@ssw0rd10'
                 DscUser4Pass2    = 'P@ssw0rd20'
                 DscUser4Type     = 'SqlLogin'
+                DscUser4DbRole   = 'db_owner'
 
                 DscSqlUsers1Name = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscSqlUsers1')
                 DscSqlUsers1Type = 'WindowsGroup'
@@ -249,6 +250,25 @@ Configuration DSC_SqlLogin_AddLoginDscUser4_Config
 
             DependsOn = @(
                 '[SqlLogin]Integration_Test'
+            )
+        }
+
+        SqlRole 'Integration_Test_SqlRole'
+        {
+            Ensure               = 'Present'
+            ServerRoleName       = $Node.DscUser4DbRole
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            MembersToInclude     = @(
+                $Node.DscUser4Name
+            )
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+
+            DependsOn = @(
+                '[SqlDatabaseUser]Integration_Test_DatabaseUser'
             )
         }
     }
