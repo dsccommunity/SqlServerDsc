@@ -289,7 +289,7 @@ Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config
             Ensure                         = 'Present'
             Name                           = $Node.DscUser4Name
             LoginType                      = $Node.DscUser4Type
-            LoginMustChangePassword        = $true
+            LoginMustChangePassword        = $false  # Left the same as this cannot be updated
             LoginPasswordExpirationEnabled = $false
             LoginPasswordPolicyEnforced    = $false
 
