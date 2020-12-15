@@ -353,7 +353,7 @@ try
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser4Name
                 $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser4Type
                 $resourceCurrentState.Disabled | Should -Be $false
-                $resourceCurrentState.LoginMustChangePassword | Should -Be $true
+                $resourceCurrentState.LoginMustChangePassword | Should -Be $false # Left the same as this cannot be updated
                 $resourceCurrentState.LoginPasswordExpirationEnabled | Should -Be $false
                 $resourceCurrentState.LoginPasswordPolicyEnforced | Should -Be $false
             }
