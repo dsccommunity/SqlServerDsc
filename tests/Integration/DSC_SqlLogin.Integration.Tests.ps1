@@ -273,18 +273,6 @@ try
                 Test-DscConfiguration -Verbose | Should -Be 'True'
             }
 
-            It 'Should allow SQL Server, login username and password to connect to SQL Instance (using Connect-SQL)' {
-                $serverName = $ConfigurationData.AllNodes.ServerName
-                $instanceName = $ConfigurationData.AllNodes.InstanceName
-                $userName = $ConfigurationData.AllNodes.DscUser4Name
-                $password = $ConfigurationData.AllNodes.DscUser4Pass1 # Original password
-                $sqlLoginCredential = New-Object `
-                    -TypeName System.Management.Automation.PSCredential `
-                    -ArgumentList @($userName, (ConvertTo-SecureString -String $password -AsPlainText -Force))
-
-                { Connect-SQL -ServerName $ServerName -InstanceName $instanceName -SetupCredential $sqlLoginCredential -LoginType 'SqlLogin' -StatementTimeout 5 } | Should -Not -Throw
-            }
-
             It 'Should allow SQL Server, login username and password to connect to SQL Instance (using SqlConnection.Open())' {
                 $serverName = $ConfigurationData.AllNodes.ServerName
                 $instanceName = $ConfigurationData.AllNodes.InstanceName
@@ -372,19 +360,6 @@ try
 
             It 'Should return $true when Test-DscConfiguration is run' {
                 Test-DscConfiguration -Verbose | Should -Be 'True'
-            }
-
-
-            It 'Should allow SQL Server, login username and (changed) password to connect to SQL Instance (using Connect-SQL)' {
-                $serverName = $ConfigurationData.AllNodes.ServerName
-                $instanceName = $ConfigurationData.AllNodes.InstanceName
-                $userName = $ConfigurationData.AllNodes.DscUser4Name
-                $password = $ConfigurationData.AllNodes.DscUser4Pass2 # Changed password
-                $sqlLoginCredential = New-Object `
-                    -TypeName System.Management.Automation.PSCredential `
-                    -ArgumentList @($userName, (ConvertTo-SecureString -String $password -AsPlainText -Force))
-
-                { Connect-SQL -ServerName $ServerName -InstanceName $instanceName -SetupCredential $sqlLoginCredential -LoginType 'SqlLogin' -StatementTimeout 5 } | Should -Not -Throw
             }
 
             It 'Should allow SQL Server, login username and (changed) password to connect to SQL Instance (using SqlConnection.Open())' {
