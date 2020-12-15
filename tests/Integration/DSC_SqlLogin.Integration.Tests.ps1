@@ -375,7 +375,7 @@ try
                 {
                     $sqlConnection.Open()
                     $sqlConnection.Close()
-                } | Should -Not -Throw | Should -Not -Throw
+                } | Should -Not -Throw
             }
 
             It 'Should allow SQL Server, login username and (changed) password to correct, SQL instance, default database' {
