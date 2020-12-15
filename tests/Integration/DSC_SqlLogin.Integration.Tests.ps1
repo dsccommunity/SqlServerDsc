@@ -295,7 +295,10 @@ try
                 $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database={4};' -f $serverName, $instanceName, $userName, $password, $databaseName
                 $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
 
-                { $sqlConnection.Open() } | Should -Not -Throw
+                {
+                    $sqlConnection.Open()
+                    $sqlConnection.Close()
+                } | Should -Not -Throw
             }
 
             It 'Should allow SQL Server, login username and password to correct, SQL instance, default database' {
@@ -394,7 +397,10 @@ try
                 $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database={4};' -f $serverName, $instanceName, $userName, $password, $databaseName
                 $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
 
-                { $sqlConnection.Open() } | Should -Not -Throw
+                {
+                    $sqlConnection.Open()
+                    $sqlConnection.Close()
+                } | Should -Not -Throw | Should -Not -Throw
             }
 
             It 'Should allow SQL Server, login username and (changed) password to correct, SQL instance, default database' {
