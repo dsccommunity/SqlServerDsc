@@ -304,9 +304,9 @@ try
                 $userName = $ConfigurationData.AllNodes.DscUser4Name
                 $password = $ConfigurationData.AllNodes.DscUser4Pass1 # Original password
 
-                $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database={4};' -f $serverName, $instanceName, $userName, $password # Note: Not providing a database name
+                $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;' -f $serverName, $instanceName, $userName, $password # Note: Not providing a database name
                 $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
-                $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $connection)
+                $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $sqlConnection)
 
                 $sqlConnection.Open()
                 $sqlDataAdapter = New-Object System.Data.SqlClient.SqlDataAdapter $sqlCommand
@@ -405,7 +405,7 @@ try
 
                 $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;' -f $serverName, $instanceName, $userName, $password # Note: Not providing a database name
                 $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
-                $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $connection)
+                $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $sqlConnection)
 
                 $sqlConnection.Open()
                 $sqlDataAdapter = New-Object System.Data.SqlClient.SqlDataAdapter $sqlCommand
