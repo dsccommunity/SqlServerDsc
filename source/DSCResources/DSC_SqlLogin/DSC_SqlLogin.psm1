@@ -192,6 +192,13 @@ function Set-TargetResource
 
                 if ( $login.LoginType -eq 'SqlLogin' )
                 {
+                    # There is no way to update 'MustChangePassword' on existing login so must explicitly throw exception to avoid this functionality being assumed
+                    if ( $login.MustChangePassword -ne $LoginMustChangePassword )
+                    {
+                        $errorMessage = $script:localizedData.MustChangePasswordCannotBeChanged
+                        New-InvalidOperationException -Message $errorMessage
+                    }
+
                     if ( $login.PasswordExpirationEnabled -ne $LoginPasswordExpirationEnabled )
                     {
                         Write-Verbose -Message (
