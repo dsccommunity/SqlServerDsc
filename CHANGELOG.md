@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlLogin
   - Updated `Test-TargetResource` to cater for scenario where `Get-TargetResource`
     returns a `$null` value ([issue #792](https://github.com/dsccommunity/SqlServerDsc/issues/792)).
+  - Added functionality to throw exception if an update to the `LoginMustChangePassword`
+    value on an existing SQL Login is attempted. This functionality is not supported.
 - SqlMaxDop
   - Fixes ([issue #396](https://github.com/dsccommunity/SqlServerDsc/issues/396)).
     Added three return values in Get-Target resource.
