@@ -66,7 +66,7 @@ try
             }
         }
 
-        Wait-ForIdleLcm
+        Wait-ForIdleLcm -Clear
 
         $configurationName = "$($script:dscResourceName)_AddLoginDscUser1_Config"
 
@@ -117,7 +117,7 @@ try
             }
         }
 
-        Wait-ForIdleLcm
+        Wait-ForIdleLcm -Clear
 
         $configurationName = "$($script:dscResourceName)_AddLoginDscUser2_Config"
 
@@ -169,7 +169,7 @@ try
             }
         }
 
-        Wait-ForIdleLcm
+        Wait-ForIdleLcm -Clear
 
         $configurationName = "$($script:dscResourceName)_AddLoginDscUser3_Disabled_Config"
 
@@ -220,7 +220,7 @@ try
             }
         }
 
-        Wait-ForIdleLcm
+        Wait-ForIdleLcm -Clear
 
         $configurationName = "$($script:dscResourceName)_AddLoginDscUser4_Config"
 
@@ -309,7 +309,7 @@ try
             }
         }
 
-        Wait-ForIdleLcm
+        Wait-ForIdleLcm -Clear
 
         $configurationName = "$($script:dscResourceName)_UpdateLoginDscUser4_Config"
 
@@ -398,7 +398,7 @@ try
             }
         }
 
-        Wait-ForIdleLcm
+        Wait-ForIdleLcm -Clear
 
         $configurationName = "$($script:dscResourceName)_AddLoginDscSqlUsers1_Config"
 
@@ -449,7 +449,7 @@ try
             }
         }
 
-        Wait-ForIdleLcm
+        Wait-ForIdleLcm -Clear
 
         $configurationName = "$($script:dscResourceName)_RemoveLoginDscUser3_Config"
 
@@ -499,7 +499,7 @@ try
             }
         }
 
-        Wait-ForIdleLcm
+        Wait-ForIdleLcm -Clear
 
         $configurationName = "$($script:dscResourceName)_CleanupDependencies_Config"
 
