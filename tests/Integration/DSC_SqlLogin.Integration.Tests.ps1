@@ -273,24 +273,38 @@ try
                 Test-DscConfiguration -Verbose | Should -Be 'True'
             }
 
-            It 'Should allow SQL Server, login username and password to connect to SQL Instance' {
-                $serverName = $ConfigurationData.AllNodes.NodeName
+            It 'Should allow SQL Server, login username and password to connect to SQL Instance (using Connect-SQL)' {
+                $serverName = $ConfigurationData.AllNodes.ServerName
+                $instanceName = $ConfigurationData.AllNodes.InstanceName
+                $userName = $ConfigurationData.AllNodes.DscUser4Name
+                $password = $ConfigurationData.AllNodes.DscUser4Pass1 # Original password
+                $sqlLoginCredential = New-Object `
+                    -TypeName System.Management.Automation.PSCredential `
+                    -ArgumentList @($userName, (ConvertTo-SecureString -String $password -AsPlainText -Force))
+
+                { Connect-SQL -ServerName $ServerName -InstanceName $instanceName -SetupCredential $sqlLoginCredential -LoginType 'SqlLogin' -StatementTimeout 5 } | Should -Not -Throw
+            }
+
+            It 'Should allow SQL Server, login username and password to connect to SQL Instance (using SqlConnection.Open())' {
+                $serverName = $ConfigurationData.AllNodes.ServerName
+                $instanceName = $ConfigurationData.AllNodes.InstanceName
                 $databaseName = $ConfigurationData.AllNodes.DefaultDbName
                 $userName = $ConfigurationData.AllNodes.DscUser4Name
                 $password = $ConfigurationData.AllNodes.DscUser4Pass1 # Original password
 
-                $sqlConnectionString = 'Data Source={0};User ID={1};Password={2};Connect Timeout=5;Database={3};' -f $serverName, $userName, $password, $databaseName
+                $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database={4};' -f $serverName, $instanceName, $userName, $password, $databaseName
                 $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
 
                 { $sqlConnection.Open() } | Should -Not -Throw
             }
 
             It 'Should allow SQL Server, login username and password to correct, SQL instance, default database' {
-                $serverName = $ConfigurationData.AllNodes.NodeName
+                $serverName = $ConfigurationData.AllNodes.ServerName
+                $instanceName = $ConfigurationData.AllNodes.InstanceName
                 $userName = $ConfigurationData.AllNodes.DscUser4Name
                 $password = $ConfigurationData.AllNodes.DscUser4Pass1 # Original password
 
-                $sqlConnectionString = 'Data Source={0};User ID={1};Password={2};Connect Timeout=5;' -f $serverName, $userName, $password # Note: Not providing a database name
+                $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database={4};' -f $serverName, $instanceName, $userName, $password # Note: Not providing a database name
                 $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
                 $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $connection)
 
@@ -357,24 +371,39 @@ try
                 Test-DscConfiguration -Verbose | Should -Be 'True'
             }
 
-            It 'Should allow SQL Server, login username and (changed) password to connect to SQL Instance' {
-                $serverName = $ConfigurationData.AllNodes.NodeName
+
+            It 'Should allow SQL Server, login username and (changed) password to connect to SQL Instance (using Connect-SQL)' {
+                $serverName = $ConfigurationData.AllNodes.ServerName
+                $instanceName = $ConfigurationData.AllNodes.InstanceName
                 $userName = $ConfigurationData.AllNodes.DscUser4Name
                 $password = $ConfigurationData.AllNodes.DscUser4Pass2 # Changed password
-                $databaseName = $ConfigurationData.AllNodes.DefaultDbName
+                $sqlLoginCredential = New-Object `
+                    -TypeName System.Management.Automation.PSCredential `
+                    -ArgumentList @($userName, (ConvertTo-SecureString -String $password -AsPlainText -Force))
 
-                $sqlConnectionString = 'Data Source={0};User ID={1};Password={2};Connect Timeout=5;Database={3};' -f $serverName, $userName, $password, $databaseName
+                { Connect-SQL -ServerName $ServerName -InstanceName $instanceName -SetupCredential $sqlLoginCredential -LoginType 'SqlLogin' -StatementTimeout 5 } | Should -Not -Throw
+            }
+
+            It 'Should allow SQL Server, login username and (changed) password to connect to SQL Instance (using SqlConnection.Open())' {
+                $serverName = $ConfigurationData.AllNodes.ServerName
+                $instanceName = $ConfigurationData.AllNodes.InstanceName
+                $databaseName = $ConfigurationData.AllNodes.DefaultDbName
+                $userName = $ConfigurationData.AllNodes.DscUser4Name
+                $password = $ConfigurationData.AllNodes.DscUser4Pass2 # Changed password
+
+                $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database={4};' -f $serverName, $instanceName, $userName, $password, $databaseName
                 $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
 
                 { $sqlConnection.Open() } | Should -Not -Throw
             }
 
             It 'Should allow SQL Server, login username and (changed) password to correct, SQL instance, default database' {
-                $serverName = $ConfigurationData.AllNodes.NodeName
+                $serverName = $ConfigurationData.AllNodes.ServerName
+                $instanceName = $ConfigurationData.AllNodes.InstanceName
                 $userName = $ConfigurationData.AllNodes.DscUser4Name
                 $password = $ConfigurationData.AllNodes.DscUser4Pass2 # Changed password
 
-                $sqlConnectionString = 'Data Source={0};User ID={1};Password={2};Connect Timeout=5;' -f $serverName, $userName, $password # Note: Not providing a database name
+                $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;' -f $serverName, $instanceName, $userName, $password # Note: Not providing a database name
                 $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
                 $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $connection)
 
