@@ -1139,6 +1139,25 @@ try
                     Assert-MockCalled -CommandName Remove-SQLServerLogin  -Scope It -Times 0 -Exactly
                     Assert-MockCalled -CommandName Set-SQLServerLoginPassword  -Scope It -Times 0 -Exactly
                 }
+
+                It 'Should throw the correct error when updating a SQL Login if MustChangePassword is different' {
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL_LoginMode -Verifiable
+
+                    $setTargetResource_SqlLoginPresent_EnsurePresent = $setTargetResource_SqlLoginPresent.Clone()
+                    $setTargetResource_SqlLoginPresent_EnsurePresent[ 'Ensure' ] = 'Present'
+                    $setTargetResource_SqlLoginPresent_EnsurePresent[ 'LoginCredential' ] = $mockSqlLoginCredential
+                    $setTargetResource_SqlLoginPresent_EnsurePresent[ 'LoginMustChangePassword' ] = $true
+
+                    $errorMessage = $script:localizedData.MustChangePasswordCannotBeChanged
+
+                    { Set-TargetResource @setTargetResource_SqlLoginPresent_EnsurePresent } | Should -Throw $errorMessage
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Update-SQLServerLogin  -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName New-SQLServerLogin  -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Remove-SQLServerLogin  -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Set-SQLServerLoginPassword  -Scope It -Times 0 -Exactly
+                }
             }
 
             It 'Should not throw an error when creating a SQL Login and the LoginMode is set to ''Normal''' {
