@@ -508,8 +508,8 @@ try
             # Close any existing connections into the database before it is dropped
             $serverName = $ConfigurationData.AllNodes.ServerName
             $instanceName = $ConfigurationData.AllNodes.InstanceName
-            $userName = Split-Path -Path $($ConfigurationData.AllNodes.Admin_UserName) -Leaf
-            $password = $ConfigurationData.AllNodes.Admin_Password
+            $userName = $ConfigurationData.AllNodes.DscUser4Name
+            $password = $ConfigurationData.AllNodes.DscUser4Pass2 # Using changed password
             $defaultDbName = $ConfigurationData.AllNodes.DefaultDbName
 
             $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database=master;' -f $serverName, $instanceName, $userName, $password
