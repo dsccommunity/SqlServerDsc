@@ -504,13 +504,19 @@ try
         $configurationName = "$($script:dscResourceName)_CleanupDependencies_Config"
 
         # Close any existing connections into the database before it is dropped
-        Import-Module 'SqlServer'
-        $server = New-Object 'Microsoft.SqlServer.Management.Smo.Server'
-        $server.ConnectionContext.ServerInstance = '{0}\{1}' -f $($ConfigurationData.AllNodes.ServerName), $($ConfigurationData.AllNodes.InstanceName)
-        $server.ConnectionContext.LoginSecure = $false
-        $server.ConnectionContext.Login = $ConfigurationData.AllNodes.Admin_UserName
-        $server.ConnectionContext.Password = $ConfigurationData.AllNodes.Admin_Password
-        $server.KillAllProcesses($($ConfigurationData.AllNodes.DefaultDbName))
+        $serverName = $ConfigurationData.AllNodes.ServerName
+        $instanceName = $ConfigurationData.AllNodes.InstanceName
+        $userName = $ConfigurationData.AllNodes.Admin_UserName
+        $password = $ConfigurationData.AllNodes.Admin_Password
+        $defaultDbName = $ConfigurationData.AllNodes.DefaultDbName
+
+        $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database=master;' -f $serverName, $instanceName, $userName, $password
+        $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+        $sqlStatement = "ALTER DATABASE [{0}] SET OFFLINE WITH ROLLBACK IMMEDIATE" -f $defaultDbName
+        $sqlCommand = New-Object System.Data.SqlClient.SqlCommand($sqlStatement, $sqlConnection)
+        $sqlConnection.Open()
+        $sqlCommand.ExecuteNonQuery()
+        $sqlConnection.Close()
 
         Context ('When using configuration {0}' -f $configurationName) {
 
