@@ -504,6 +504,7 @@ try
         $configurationName = "$($script:dscResourceName)_CleanupDependencies_Config"
 
         # Close any existing connections into the database before it is dropped
+        Import-Module 'SqlServer'
         $server = New-Object 'Microsoft.SqlServer.Management.Smo.Server'
         $server.ConnectionContext.ServerInstance = '{0}\{1}' -f $($ConfigurationData.AllNodes.ServerName), $($ConfigurationData.AllNodes.InstanceName)
         $server.ConnectionContext.LoginSecure = $false
