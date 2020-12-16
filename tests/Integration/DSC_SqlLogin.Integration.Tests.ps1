@@ -504,11 +504,11 @@ try
         $configurationName = "$($script:dscResourceName)_CleanupDependencies_Config"
 
         # Close any existing connections into the database before it is dropped
-        $userName = $ConfigurationData.AllNodes.Admin_UserName
-        $password = $ConfigurationData.AllNodes.Admin_Password
-        $serverInstance = '{0}\{1}' -f $($ConfigurationData.AllNodes.ServerName), $($ConfigurationData.AllNodes.InstanceName)
-        $serverConnection = New-Object 'Microsoft.SqlServer.Management.Smo.ServerConnection' -ArgumentList $serverInstance, $userName, $password
-        $server = New-Object 'Microsoft.SqlServer.Management.Smo.Server' -ArgumentList $serverConnection
+        $server = New-Object 'Microsoft.SqlServer.Management.Smo.Server'
+        $server.ConnectionContext.ServerInstance = '{0}\{1}' -f $($ConfigurationData.AllNodes.ServerName), $($ConfigurationData.AllNodes.InstanceName)
+        $server.ConnectionContext.LoginSecure = $false
+        $server.ConnectionContext.Login = $ConfigurationData.AllNodes.Admin_UserName
+        $server.ConnectionContext.Password = $ConfigurationData.AllNodes.Admin_Password
         $server.KillAllProcesses($($ConfigurationData.AllNodes.DefaultDbName))
 
         Context ('When using configuration {0}' -f $configurationName) {
