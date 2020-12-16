@@ -39,7 +39,7 @@ else
                 DscUser4Pass1    = 'P@ssw0rd10'
                 DscUser4Pass2    = 'P@ssw0rd20'
                 DscUser4Type     = 'SqlLogin'
-                DscUser4DbRole   = 'db_owner'
+                DscUser4Role     = 'sysadmin'
 
                 DscSqlUsers1Name = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscSqlUsers1')
                 DscSqlUsers1Type = 'WindowsGroup'
@@ -256,7 +256,7 @@ Configuration DSC_SqlLogin_AddLoginDscUser4_Config
         SqlRole 'Integration_Test_SqlRole'
         {
             Ensure               = 'Present'
-            ServerRoleName       = $Node.DscUser4DbRole
+            ServerRoleName       = $Node.DscUser4Role
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
             MembersToInclude     = @(
