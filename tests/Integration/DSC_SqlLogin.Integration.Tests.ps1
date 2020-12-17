@@ -503,7 +503,8 @@ try
 
         $configurationName = "$($script:dscResourceName)_CleanupDependencies_Config"
 
-        Context ('When using configuration {0}' -f $configurationName) {
+        Context ('When using configuration {0}' -f $configurationName)
+
 
             # Close any existing connections into the database before it is dropped
             $serverName = $ConfigurationData.AllNodes.ServerName
@@ -519,6 +520,7 @@ try
             $sqlConnection.Open()
             $sqlCommand.ExecuteNonQuery()
             $sqlConnection.Close()
+
 
             It 'Should compile and apply the MOF without throwing' {
                 {
