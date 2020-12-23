@@ -335,4 +335,3 @@ function Test-TargetResource
     $isOperatorInDesiredState
 }
 
-Export-ModuleMember -Function *-TargetResource

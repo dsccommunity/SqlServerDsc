@@ -891,4 +891,3 @@ function Get-SqlLocalServerName
     }
 }
 
-Export-ModuleMember -Function *-TargetResource

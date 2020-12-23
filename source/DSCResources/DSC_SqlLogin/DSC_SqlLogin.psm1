@@ -825,4 +825,3 @@ function Set-SQLServerLoginPassword
     }
 }
 
-Export-ModuleMember -Function *-TargetResource
