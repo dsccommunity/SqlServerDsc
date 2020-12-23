@@ -617,4 +617,3 @@ function Test-TargetResource
     return $result
 }
 
-Export-ModuleMember -Function *-TargetResource

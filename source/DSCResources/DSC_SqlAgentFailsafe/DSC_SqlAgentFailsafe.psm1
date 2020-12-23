@@ -291,4 +291,3 @@ function Test-TargetResource
     return $returnValue
 }
 
-Export-ModuleMember -Function *-TargetResource

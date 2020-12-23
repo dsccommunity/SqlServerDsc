@@ -523,4 +523,3 @@ function Test-TargetResource
     return $isDatabaseInDesiredState
 }
 
-Export-ModuleMember -Function *-TargetResource

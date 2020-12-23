@@ -694,4 +694,3 @@ function Get-CorrectedMemberParameters
     }
 }
 
-Export-ModuleMember -Function *-TargetResource

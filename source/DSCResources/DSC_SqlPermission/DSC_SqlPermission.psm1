@@ -377,4 +377,3 @@ function Merge-SQLPermissionSet
     return $baseObject
 }
 
-Export-ModuleMember -Function *-TargetResource

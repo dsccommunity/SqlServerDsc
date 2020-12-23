@@ -819,4 +819,3 @@ function Update-AvailabilityGroup
     }
 }
 
-Export-ModuleMember -Function *-TargetResource

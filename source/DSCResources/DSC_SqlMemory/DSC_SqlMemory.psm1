@@ -446,4 +446,3 @@ function Get-SqlDscDynamicMaxMemory
     $maxMemory
 }
 
-Export-ModuleMember -Function *-TargetResource

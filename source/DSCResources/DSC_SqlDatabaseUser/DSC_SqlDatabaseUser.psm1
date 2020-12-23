@@ -863,4 +863,3 @@ function Assert-DatabaseAsymmetricKey
     }
 }
 
-Export-ModuleMember -Function *-TargetResource

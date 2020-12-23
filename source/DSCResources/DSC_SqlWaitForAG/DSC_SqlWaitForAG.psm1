@@ -300,4 +300,3 @@ function Test-TargetResource
     return $clusterGroupFound
 }
 
-Export-ModuleMember -Function *-TargetResource

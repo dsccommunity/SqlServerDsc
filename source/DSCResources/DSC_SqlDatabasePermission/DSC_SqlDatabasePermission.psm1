@@ -389,4 +389,3 @@ function Test-TargetResource
         -TurnOffTypeChecking
 }
 
-Export-ModuleMember -Function *-TargetResource

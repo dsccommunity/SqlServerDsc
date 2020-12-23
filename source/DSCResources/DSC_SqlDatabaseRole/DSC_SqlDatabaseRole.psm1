@@ -600,4 +600,3 @@ function Remove-SqlDscDatabaseRoleMember
     }
 }
 
-Export-ModuleMember -Function *-TargetResource
