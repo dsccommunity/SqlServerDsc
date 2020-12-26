@@ -12,7 +12,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. Default value is
-        $env:COMPUTERNAME.
+        the current computer name.
 
     .PARAMETER InstanceName
         Specifies the name of the SQL instance to be configured.
@@ -42,7 +42,7 @@ function Get-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -174,7 +174,7 @@ function Get-TargetResource
 
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. Default value is
-        $env:COMPUTERNAME.
+        the current computer name.
 
     .PARAMETER InstanceName
         Specifies the name of the SQL instance to be configured.
@@ -207,7 +207,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -382,7 +382,7 @@ function Set-TargetResource
 
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. Default value is
-        $env:COMPUTERNAME.
+        the current computer name.
 
     .PARAMETER InstanceName
         Specifies the name of the SQL instance to be configured.
@@ -415,7 +415,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]

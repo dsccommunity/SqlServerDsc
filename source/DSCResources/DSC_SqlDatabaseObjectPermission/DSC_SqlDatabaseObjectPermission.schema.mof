@@ -8,7 +8,7 @@ class DSC_SqlDatabaseObjectPermission : OMI_BaseResource
     [Key, Description("Specifies the type of the database object specified in parameter **ObjectName**."), ValueMap{"Schema", "Table","View","StoredProcedure"}, Values{"Schema", "Table","View","StoredProcedure"}] String ObjectType;
     [Key, Description("Specifies the name of the database user, user-defined database role, or database application role that will have the permission.")] String Name;
     [Required, EmbeddedInstance("DSC_DatabaseObjectPermission"), Description("Specifies the permissions for the database object and the principal. The permissions is an array of embedded instances of the `DSC_DatabaseObjectPermission` CIM class.")] String Permission[];
-    [Write, Description("Specifies the host name of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
+    [Write, Description("Specifies the host name of the _SQL Server_ to be configured. Default value is the current computer name.")] String ServerName;
     [Write, Description("Specifies that permissions that has parameter **Ensure** set to `'Present'` (the default value for permissions) should always be enforced even if that encompasses cascading revocations. An example if the desired state is `'Grant'` but the current state is `'GrantWithGrant'`. If parameter **Force** is set to `$true` the _With Grant_ permission is revoked, if set to `$false` an exception is thrown since the desired state could not be set. Default is to throw an exception.")] Boolean Force;
 };
 

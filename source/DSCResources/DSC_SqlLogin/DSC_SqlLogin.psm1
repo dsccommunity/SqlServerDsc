@@ -14,7 +14,8 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         The name of the login to retrieve.
 
     .PARAMETER ServerName
-        Hostname of the SQL Server to retrieve the login from. Default value is $env:COMPUTERNAME.
+        Hostname of the SQL Server to retrieve the login from. Default value is
+        the current computer name.
 
     .PARAMETER InstanceName
         Name of the SQL instance to retrieve the login from.
@@ -32,7 +33,7 @@ function Get-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -96,7 +97,8 @@ function Get-TargetResource
         The type of login to create. Default is 'WindowsUser'
 
     .PARAMETER ServerName
-        Hostname of the SQL Server to create the login on. Default value is $env:COMPUTERNAME.
+        Hostname of the SQL Server to create the login on. Default value is the
+        current computer name.
 
     .PARAMETER InstanceName
         Name of the SQL instance to create the login on.
@@ -149,7 +151,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -349,7 +351,8 @@ function Set-TargetResource
         The type of login. Default is 'WindowsUser'
 
     .PARAMETER ServerName
-        Hostname of the SQL Server to create the login on. Default value is $env:COMPUTERNAME.
+        Hostname of the SQL Server to create the login on. Default value is the
+        current computer name.
 
     .PARAMETER InstanceName
         Name of the SQL instance.
@@ -402,7 +405,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [System.String]

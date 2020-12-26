@@ -23,7 +23,8 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         This is a list that represents a SQL Server set of database permissions.
 
     .PARAMETER ServerName
-        This is the SQL Server for the database. Default value is $env:COMPUTERNAME.
+        This is the SQL Server for the database. Default value is the current
+        computer name.
 
     .PARAMETER InstanceName
         This is the SQL instance for the database.
@@ -54,7 +55,7 @@ function Get-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
 
         [Parameter(Mandatory = $true)]
@@ -144,7 +145,8 @@ function Get-TargetResource
         Sets the permissions for the user in the database.
 
     .PARAMETER Ensure
-        This is The Ensure if the permission should be granted (Present) or revoked (Absent).
+        This is The Ensure if the permission should be granted (Present) or
+        revoked (Absent).
 
     .PARAMETER DatabaseName
         This is the SQL database
@@ -159,7 +161,8 @@ function Get-TargetResource
         This is a list that represents a SQL Server set of database permissions.
 
     .PARAMETER ServerName
-        This is the SQL Server for the database. Default value is $env:COMPUTERNAME.
+        This is the SQL Server for the database. Default value is the current
+        computer name.
 
     .PARAMETER InstanceName
         This is the SQL instance for the database.
@@ -194,7 +197,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -303,7 +306,8 @@ function Set-TargetResource
         Tests if the permissions is set for the user in the database.
 
     .PARAMETER Ensure
-        This is The Ensure if the permission should be granted (Present) or revoked (Absent).
+        This is The Ensure if the permission should be granted (Present) or
+        revoked (Absent).
 
     .PARAMETER DatabaseName
         This is the SQL database
@@ -318,7 +322,8 @@ function Set-TargetResource
         This is a list that represents a SQL Server set of database permissions.
 
     .PARAMETER ServerName
-        This is the SQL Server for the database. Default value is $env:COMPUTERNAME.
+        This is the SQL Server for the database. Default value is the current
+        computer name.
 
     .PARAMETER InstanceName
         This is the SQL instance for the database.
@@ -354,7 +359,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [System.String]

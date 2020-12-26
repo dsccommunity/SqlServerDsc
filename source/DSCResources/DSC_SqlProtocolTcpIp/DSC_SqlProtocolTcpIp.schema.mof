@@ -3,7 +3,7 @@ class DSC_SqlProtocolTcpIp : OMI_BaseResource
 {
     [Key, Description("Specifies the name of the _SQL Server_ instance to manage the IP address group for.")] String InstanceName;
     [Key, Description("Specifies the name of the IP address group in the TCP/IP protocol, e.g. `'IP1'`, `'IP2'` etc., or `'IPAll'`.")] String IpAddressGroup;
-    [Write, Description("Specifies the host name of the _SQL Server_ to be configured. If the _SQL Server_ belongs to a cluster or availability group specify the host name for the listener or cluster group. Default value is `$env:COMPUTERNAME`.")] String ServerName;
+    [Write, Description("Specifies the host name of the _SQL Server_ to be configured. If the _SQL Server_ belongs to a cluster or availability group specify the host name for the listener or cluster group. Default value is the current computer name.")] String ServerName;
     [Write, Description("Specified if the IP address group should be enabled or disabled. Only used if the parameter **IpAddressGroup** is _not_ set to `'IPAll'`. If not specified, the existing value will not be changed.")] Boolean Enabled;
     [Write, Description("Specifies the IP address for the IP address group. Only used if the parameter **IpAddressGroup** is _not_ set to `'IPAll'`. If not specified, the existing value will not be changed.")] String IpAddress;
     [Write, Description("Specifies whether the _SQL Server_ instance should use a dynamic port. If not specified, the existing value will not be changed. This parameter is not allowed to be used at the same time as the parameter **TcpPort**.")] Boolean UseTcpDynamicPort;
