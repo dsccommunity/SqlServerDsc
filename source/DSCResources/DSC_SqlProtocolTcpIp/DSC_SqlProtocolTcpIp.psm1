@@ -21,7 +21,8 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. If the
         SQL Server belongs to a cluster or availability group specify the host
-        name for the listener or cluster group. Default value is $env:COMPUTERNAME.
+        name for the listener or cluster group. Default value is the
+        current computer name.
 
     .PARAMETER SuppressRestart
         If set to $true then the any attempt by the resource to restart the service
@@ -61,7 +62,7 @@ function Get-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter()]
         [System.Boolean]
@@ -100,7 +101,7 @@ function Get-TargetResource
         to a cluster instance or availability group listener.
     #>
     $getServerProtocolObjectParameters = @{
-        ServerName   = $env:COMPUTERNAME
+        ServerName   = Get-ComputerName
         Instance     = $InstanceName
         ProtocolName = 'TcpIp'
     }
@@ -189,7 +190,8 @@ function Get-TargetResource
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. If the SQL
         Server belongs to a cluster or availability group specify the host name
-        for the listener or cluster group. Default value is `$env:COMPUTERNAME`.
+        for the listener or cluster group. Default value is the current computer
+        name.
 
     .PARAMETER Enabled
         Specified if the IP address group should be enabled or disabled. Only used if
@@ -238,7 +240,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter()]
         [System.Boolean]
@@ -288,7 +290,7 @@ function Set-TargetResource
             to a cluster instance or availability group listener.
         #>
         $getServerProtocolObjectParameters = @{
-            ServerName   = $env:COMPUTERNAME
+            ServerName   = Get-ComputerName
             Instance     = $InstanceName
             ProtocolName = 'TcpIp'
         }
@@ -411,7 +413,7 @@ function Set-TargetResource
                 ServerName   = $ServerName
                 InstanceName = $InstanceName
                 Timeout      = $RestartTimeout
-                OwnerNode    = $env:COMPUTERNAME
+                OwnerNode    = Get-ComputerName
             }
 
             Restart-SqlService @restartSqlServiceParameters
@@ -444,7 +446,8 @@ function Set-TargetResource
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. If the
         SQL Server belongs to a cluster or availability group specify the host
-        name for the listener or cluster group. Default value is $env:COMPUTERNAME.
+        name for the listener or cluster group. Default value is the current
+        computer name.
 
     .PARAMETER Enabled
         Specified if the IP address group should be enabled or disabled. Only used if
@@ -494,7 +497,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter()]
         [System.Boolean]
@@ -563,7 +566,8 @@ function Test-TargetResource
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. If the
         SQL Server belongs to a cluster or availability group specify the host
-        name for the listener or cluster group. Default value is $env:COMPUTERNAME.
+        name for the listener or cluster group. Default value is the current
+        computer name.
 
     .PARAMETER Enabled
         Specified if the IP address group should be enabled or disabled. Only used if
@@ -612,7 +616,7 @@ function Compare-TargetResourceState
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter()]
         [System.Boolean]

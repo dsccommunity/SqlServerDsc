@@ -11,7 +11,8 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         Gets the current value of a SQL configuration option.
 
     .PARAMETER ServerName
-        Hostname of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        Hostname of the SQL Server to be configured. Default value is the current
+        computer name.
 
     .PARAMETER InstanceName
         Name of the SQL instance to be configured. Default is 'MSSQLSERVER'.
@@ -41,7 +42,7 @@ function Get-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -96,7 +97,8 @@ function Get-TargetResource
         Sets the value of a SQL configuration option.
 
     .PARAMETER ServerName
-        Hostname of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        Hostname of the SQL Server to be configured. Default value is the current
+        computer name.
 
     .PARAMETER InstanceName
         Name of the SQL instance to be configured. Default is 'MSSQLSERVER'.
@@ -123,7 +125,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -193,7 +195,8 @@ function Set-TargetResource
         Determines whether a SQL configuration option value is properly set.
 
     .PARAMETER ServerName
-        Hostname of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        Hostname of the SQL Server to be configured. Default value is the current
+        computer name.
 
     .PARAMETER InstanceName
         Name of the SQL instance to be configured. Default is 'MSSQLSERVER'.
@@ -223,7 +226,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [System.String]

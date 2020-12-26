@@ -3,7 +3,7 @@ class DSC_SqlAlwaysOnService : OMI_BaseResource
 {
     [Key, Description("The name of the _SQL Server_ instance to be configured.")] String InstanceName;
     [Required, Description("An enumerated value that describes if the _SQL Server_ should have _Always On High Availability and Disaster Recovery_ (HADR) property enabled (`'Present'`) or disabled (`'Absent'`)."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
-    [Write, Description("The hostname of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
+    [Write, Description("The hostname of the _SQL Server_ to be configured. Default value is the current computer name.")] String ServerName;
     [Write, Description("The length of time, in seconds, to wait for the service to restart. Default value is `120` seconds.")] UInt32 RestartTimeout;
     [Read, Description("Returns the status of _AlwaysOn High Availability and Disaster Recovery_ (HADR).")] Boolean IsHadrEnabled;
 };
