@@ -883,11 +883,11 @@ function Get-SqlLocalServerName
 
     if ($InstanceName -eq 'MSSQLSERVER')
     {
-        return (Get-ComputerName)
+        return Get-ComputerName
     }
     else
     {
-        return "$((Get-ComputerName))\$InstanceName"
+        return "$(Get-ComputerName)\$InstanceName"
     }
 }
 

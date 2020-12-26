@@ -736,8 +736,7 @@ function Compare-TargetResourceState
         Returns the object class for the specified name och object type.
 
     .PARAMETER ServerName
-        Specifies the host name of the SQL Server to be configured. Default value
-        is the current computer name.
+        Specifies the host name of the SQL Server to be configured.
 
     .PARAMETER InstanceName
         Specifies the name of the SQL instance to be configured.

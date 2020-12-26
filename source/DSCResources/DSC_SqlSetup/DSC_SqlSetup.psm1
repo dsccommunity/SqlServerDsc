@@ -155,7 +155,7 @@ function Get-TargetResource
     }
     else
     {
-        $sqlHostName = (Get-ComputerName)
+        $sqlHostName = Get-ComputerName
     }
 
     # Force drive list update, to pick up any newly mounted volumes

@@ -101,7 +101,7 @@ function Get-TargetResource
         to a cluster instance or availability group listener.
     #>
     $getServerProtocolObjectParameters = @{
-        ServerName   = (Get-ComputerName)
+        ServerName   = Get-ComputerName
         Instance     = $InstanceName
         ProtocolName = 'TcpIp'
     }
@@ -290,7 +290,7 @@ function Set-TargetResource
             to a cluster instance or availability group listener.
         #>
         $getServerProtocolObjectParameters = @{
-            ServerName   = (Get-ComputerName)
+            ServerName   = Get-ComputerName
             Instance     = $InstanceName
             ProtocolName = 'TcpIp'
         }
@@ -413,7 +413,7 @@ function Set-TargetResource
                 ServerName   = $ServerName
                 InstanceName = $InstanceName
                 Timeout      = $RestartTimeout
-                OwnerNode    = (Get-ComputerName)
+                OwnerNode    = Get-ComputerName
             }
 
             Restart-SqlService @restartSqlServiceParameters
