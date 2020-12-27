@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlAGDatabase
   - Fix for issue ([issue #1492](https://github.com/dsccommunity/SqlServerDsc/issues/1492))
     added AutomaticSeeding for this resource. In Set-TargetResource added logic that looks
-    at all replicas of an availability group. When automatic seedig is found, it will use that.
+    at all replicas of an availability group. When automatic seeding is found, it will use that.
   - Lots of extra tests to check AutomaticSeeding.
   - The parameter `BackupPath` is still needed just in case a database never has been backuped before.
 - SqlMaxDop
@@ -30,6 +30,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlProtocol
   - Changed KeepAlive Type from UInt16 to Int32 to reflect the actual WMI.ManagementObject
     Fixes #1645 ([issue #1645](https://github.com/dsccommunity/SqlServerDsc/issues/1645)).
+  - The verbose messages now correctly show that `$env:COMPUTERNAME` is used
+    to get or set the configuration, while parameter **ServerName** is used
+    to restart the instance.
+- SqlProtocolTcpIp
+  - The verbose messages now correctly show that `$env:COMPUTERNAME` is used
+    to get or set the configuration, while parameter **ServerName** is used
+    to restart the instance.
 - SqlServerDsc.Common
   - Updated `Get-ServerProtocolObject`, helper function to ensure an exception is
     thrown if the specified instance cannot be obtained ([issue #1628](https://github.com/dsccommunity/SqlServerDsc/issues/1628)).

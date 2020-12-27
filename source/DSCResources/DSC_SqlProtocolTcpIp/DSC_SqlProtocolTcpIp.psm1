@@ -90,8 +90,11 @@ function Get-TargetResource
         TcpDynamicPort    = $null
     }
 
+    # Getting the server protocol properties by using the computer name.
+    $computerName = Get-ComputerName
+
     Write-Verbose -Message (
-        $script:localizedData.GetCurrentState -f $IpAddressGroup, $InstanceName, $ServerName
+        $script:localizedData.GetCurrentState -f $IpAddressGroup, $InstanceName, $computerName
     )
 
     Import-SQLPSModule
@@ -101,7 +104,7 @@ function Get-TargetResource
         to a cluster instance or availability group listener.
     #>
     $getServerProtocolObjectParameters = @{
-        ServerName   = Get-ComputerName
+        ServerName   = $computerName
         Instance     = $InstanceName
         ProtocolName = 'TcpIp'
     }
@@ -281,8 +284,11 @@ function Set-TargetResource
 
     if ($propertiesNotInDesiredState.Count -gt 0)
     {
+        # Getting the server protocol properties by using the computer name.
+        $computerName = Get-ComputerName
+
         Write-Verbose -Message (
-            $script:localizedData.SetDesiredState -f $IpAddressGroup, $InstanceName
+            $script:localizedData.SetDesiredState -f $IpAddressGroup, $InstanceName, $computerName
         )
 
         <#
@@ -290,7 +296,7 @@ function Set-TargetResource
             to a cluster instance or availability group listener.
         #>
         $getServerProtocolObjectParameters = @{
-            ServerName   = Get-ComputerName
+            ServerName   = $computerName
             Instance     = $InstanceName
             ProtocolName = 'TcpIp'
         }
@@ -409,6 +415,10 @@ function Set-TargetResource
 
         if (-not $SuppressRestart -and $isRestartNeeded)
         {
+            <#
+                This is using the $ServerName to be able to restart a cluster
+                instance or availability group listener.
+            #>
             $restartSqlServiceParameters = @{
                 ServerName   = $ServerName
                 InstanceName = $InstanceName
