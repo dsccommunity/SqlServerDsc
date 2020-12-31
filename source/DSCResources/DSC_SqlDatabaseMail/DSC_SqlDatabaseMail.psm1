@@ -385,7 +385,7 @@ function Set-TargetResource
                     )
 
                     $currentDisplayName = $databaseMailAccount.DisplayName
-                    if ($currentDisplayName -ne $DisplayName)
+                    if ($PSBoundParameters.ContainsKey('DisplayName') -and $currentDisplayName -ne $DisplayName)
                     {
                         Write-Verbose -Message (
                             $script:localizedData.UpdatingPropertyOfMailServer -f @(
@@ -400,7 +400,7 @@ function Set-TargetResource
                     }
 
                     $currentDescription = $databaseMailAccount.Description
-                    if ($currentDescription -ne $Description)
+                    if ($PSBoundParameters.ContainsKey('Description') -and $currentDescription -ne $Description)
                     {
                         Write-Verbose -Message (
                             $script:localizedData.UpdatingPropertyOfMailServer -f @(
@@ -415,7 +415,7 @@ function Set-TargetResource
                     }
 
                     $currentEmailAddress = $databaseMailAccount.EmailAddress
-                    if ($currentEmailAddress -ne $EmailAddress)
+                    if ($PSBoundParameters.ContainsKey('EmailAddress') -and $currentEmailAddress -ne $EmailAddress)
                     {
                         Write-Verbose -Message (
                             $script:localizedData.UpdatingPropertyOfMailServer -f @(
@@ -430,7 +430,7 @@ function Set-TargetResource
                     }
 
                     $currentReplyToAddress = $databaseMailAccount.ReplyToAddress
-                    if ($currentReplyToAddress -ne $ReplyToAddress)
+                    if ($PSBoundParameters.ContainsKey('ReplyToAddress') -and $currentReplyToAddress -ne $ReplyToAddress)
                     {
                         Write-Verbose -Message (
                             $script:localizedData.UpdatingPropertyOfMailServer -f @(
@@ -447,7 +447,7 @@ function Set-TargetResource
                     $mailServer = $databaseMailAccount.MailServers | Select-Object -First 1
 
                     $currentMailServerName = $mailServer.Name
-                    if ($currentMailServerName -ne $MailServerName)
+                    if ($PSBoundParameters.ContainsKey('MailServerName') -and $currentMailServerName -ne $MailServerName)
                     {
                         Write-Verbose -Message (
                             $script:localizedData.UpdatingPropertyOfMailServer -f @(
@@ -462,7 +462,7 @@ function Set-TargetResource
                     }
 
                     $currentTcpPort = $mailServer.Port
-                    if ($currentTcpPort -ne $TcpPort)
+                    if ($PSBoundParameters.ContainsKey('TcpPort') -and $currentTcpPort -ne $TcpPort)
                     {
                         Write-Verbose -Message (
                             $script:localizedData.UpdatingPropertyOfMailServer -f @(
