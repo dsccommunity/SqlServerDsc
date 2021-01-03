@@ -1,4 +1,6 @@
 BeforeDiscovery {
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
     <#
         Run only for standalone versions of Microsoft SQL Server Reporting Services.
         Older versions of Reporting Services (eg. 2016) are integration tested in
@@ -37,8 +39,6 @@ BeforeAll {
         -DSCResourceName $script:dscResourceName `
         -ResourceType 'Mof' `
         -TestType 'Integration'
-
-    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
     # Download Microsoft SQL Server Reporting Services (October 2017) executable
     if (-not (Test-Path -Path $ConfigurationData.AllNodes.SourcePath))
