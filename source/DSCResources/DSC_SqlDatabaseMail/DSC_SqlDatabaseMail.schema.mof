@@ -7,7 +7,7 @@ class DSC_SqlDatabaseMail : OMI_BaseResource
     [Required, Description("The fully qualified domain name (FQDN) of the mail server name to which e-mail are sent.")] String MailServerName;
     [Required, Description("The name of the _Database Mail_ profile.")] String ProfileName;
     [Write, Description("Specifies the desired state of the _Database Mail_ account. When set to `'Present'` the _Database Mail_ account will be created. When set to `'Absent'` the _Database Mail_ account will be removed. Default value is `'Present'`."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
-    [Write, Description("The hostname of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
+    [Write, Description("The hostname of the _SQL Server_ to be configured. Default value is the current computer name.")] String ServerName;
     [Write, Description("The display name of the originating email address. Default value is the same value assigned to the parameter **EmailAddress**.")] String DisplayName;
     [Write, Description("The e-mail address to which the receiver of e-mails will reply to. Default value is the same e-mail address assigned to parameter **EmailAddress**.")] String ReplyToAddress;
     [Write, Description("The description for the _Database Mail_ profile and account.")] String Description;

@@ -8,16 +8,19 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
-        Returns the current path to the the desired default location for the Data, Log, or Backup files.
+        Returns the current path to the the desired default location for the
+        Data, Log, or Backup files.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default value is the
+        current computer name.
 
     .PARAMETER InstanceName
         The name of the SQL instance to be configured.
 
     .PARAMETER Type
-        The type of database default location to be configured. { Data | Log | Backup }
+        The type of database default location to be configured.
+        { Data | Log | Backup }
 
     .PARAMETER Path
         The path to the default directory to be configured.
@@ -32,7 +35,7 @@ function Get-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -88,26 +91,30 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-        This function sets the current path for the default SQL Instance location for the Data, Log, or Backups files.
+        This function sets the current path for the default SQL Instance location
+        for the Data, Log, or Backups files.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default value is the
+        current computer name.
 
     .PARAMETER InstanceName
         The name of the SQL instance to be configured.
 
     .PARAMETER Type
-        The type of database default location to be configured. { Data | Log | Backup }
+        The type of database default location to be configured.
+        { Data | Log | Backup }
 
     .PARAMETER Path
         The path to the default directory to be configured.
 
     .PARAMETER RestartService
-        If set to $true then SQL Server and dependent services will be restarted if a change to the default location
-        is made.  The default value is $false.
+        If set to $true then SQL Server and dependent services will be restarted
+        if a change to the default location is made.  The default value is $false.
 
     .PARAMETER ProcessOnlyOnActiveNode
-        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+        Specifies that the resource will only determine if a change is needed if
+        the target node is the active host of the SQL Server Instance.
         Not used in Set-TargetResource.
 #>
 function Set-TargetResource
@@ -118,7 +125,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -210,26 +217,30 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-        This function tests the current path to the default database location for the Data, Log, or Backups files.
+        This function tests the current path to the default database location for
+        the Data, Log, or Backups files.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default value is the
+        current computer name.
 
     .PARAMETER InstanceName
         The name of the SQL instance to be configured.
 
     .PARAMETER Type
-        The type of database default location to be configured. { Data | Log | Backup }
+        The type of database default location to be configured.
+        { Data | Log | Backup }
 
     .PARAMETER Path
         The path to the default directory to be configured.
 
     .PARAMETER RestartService
-        If set to $true then SQL Server and dependent services will be restarted if a change to the default location
-        is made.  The default value is $false.
+        If set to $true then SQL Server and dependent services will be restarted
+        if a change to the default location is made.  The default value is $false.
 
     .PARAMETER ProcessOnlyOnActiveNode
-        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+        Specifies that the resource will only determine if a change is needed if
+        the target node is the active host of the SQL Server Instance.
 #>
 function Test-TargetResource
 {
@@ -240,7 +251,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -290,7 +301,7 @@ function Test-TargetResource
     #>
     if ( $ProcessOnlyOnActiveNode -and -not $getTargetResourceResult.IsActiveNode )
     {
-        Write-Verbose -Message ($script:localizedData.NotActiveClusterNode -f $env:COMPUTERNAME, $InstanceName )
+        Write-Verbose -Message ($script:localizedData.NotActiveClusterNode -f (Get-ComputerName), $InstanceName )
     }
     elseif ($getTargetResourceResult.Path -ne $Path)
     {

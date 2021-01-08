@@ -4,7 +4,7 @@ ConvertFrom-StringData @'
     TestDesiredState = Determining the current state of the TCP/IP address group '{0}' for the instance '{1}' on the server '{2}'. (SSPTI0003)
     NotInDesiredState = The TCP/IP address group '{0}' for the instance '{1}' is not in desired state. (SSPTI0004)
     InDesiredState = The TCP/IP address group '{0}' for the instance '{1}' is in desired state. (SSPTI0005)
-    SetDesiredState = Setting the desired state for the TCP/IP address group '{0}' for the instance '{1}'. (SSPTI0006)
+    SetDesiredState = Setting the desired state for the TCP/IP address group '{0}' for the instance '{1}' on the server '{2}'. (SSPTI0006)
     SetMissingIpAddressGroup = The specified IP address group '{0}' does not not exist. (SSPTI0007)
     TcpPortHasBeenSet = The TCP port(s) '{0}' has been set on the TCP/IP address group '{1}'. (SSPTI0008)
     TcpDynamicPortHasBeenSet = Dynamic TCP port has been enabled on the TCP/IP address group '{0}'. (SSPTI0009)

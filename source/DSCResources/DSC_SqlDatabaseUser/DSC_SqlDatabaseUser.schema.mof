@@ -4,7 +4,7 @@ class DSC_SqlDatabaseUser : OMI_BaseResource
     [Key, Description("Specifies the name of the database user to be added or removed.")] String Name;
     [Key, Description("Specifies the _SQL Server_ instance in which the database exist.")] String InstanceName;
     [Key, Description("Specifies the name of the database in which to configure the database user.")] String DatabaseName;
-    [Write, Description("Specifies the host name of the _SQL Server_ on which the instance exist. Default value is `$env:COMPUTERNAME`.")] String ServerName;
+    [Write, Description("Specifies the host name of the _SQL Server_ on which the instance exist. Default value is the current computer name.")] String ServerName;
     [Write, Description("Specifies the name of the login to associate with the database user. This must be specified if parameter **UserType** is set to `'Login'`.")] String LoginName;
     [Write, Description("Specifies the name of the asymmetric key to associate with the database user. This must be specified if parameter **UserType** is set to `'AsymmetricKey'`.")] String AsymmetricKeyName;
     [Write, Description("Specifies the name of the certificate to associate with the database user. This must be specified if parameter **UserType** is set to `'Certificate'`.")] String CertificateName;

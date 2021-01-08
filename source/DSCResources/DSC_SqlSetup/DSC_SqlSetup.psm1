@@ -155,7 +155,7 @@ function Get-TargetResource
     }
     else
     {
-        $sqlHostName = $env:COMPUTERNAME
+        $sqlHostName = Get-ComputerName
     }
 
     # Force drive list update, to pick up any newly mounted volumes
@@ -1096,7 +1096,7 @@ function Set-TargetResource
             # Determine whether the current node is a possible owner of the disk resource
             $possibleOwners = $diskResource | Get-CimAssociatedInstance -Association 'MSCluster_ResourceToPossibleOwner' -KeyOnly | Select-Object -ExpandProperty Name
 
-            if ($possibleOwners -icontains $env:COMPUTERNAME)
+            if ($possibleOwners -icontains (Get-ComputerName))
             {
                 $diskResource.IsPossibleOwner = $true
             }
