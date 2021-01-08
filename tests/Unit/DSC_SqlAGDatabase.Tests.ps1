@@ -1679,7 +1679,6 @@ REVERT'
                     $mockDatabaseEncryptionKeyObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.DatabaseEncryptionKey
                     $mockDatabaseEncryptionKeyObject.EncryptorName = 'TDE Cert'
                     $mockDatabaseEncryptionKeyObject.Thumbprint = $mockThumbprint1
-
                     #endregion Certificate Mocks
 
                     #region Database File Mocks
@@ -1834,7 +1833,6 @@ REVERT'
 
                     #endregion Invoke Query Mock
 
-
                     Mock -CommandName Get-PrimaryReplicaServerObject -MockWith { return $mockServerObject } -Verifiable -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
                     Mock -CommandName Get-PrimaryReplicaServerObject -MockWith { return $mockServer2Object } -Verifiable -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
                     Mock -CommandName Import-SQLPSModule -Verifiable
@@ -1873,7 +1871,7 @@ REVERT'
                 }
 
                 Context 'When Ensure is Present' {
-                    It 'Should add the specified databases to the availability group' {
+                     It 'Should add the specified databases to the availability group.' {
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
@@ -2280,7 +2278,8 @@ REVERT'
                     }
 
                     It 'Should add the specified databases to the availability group when the database has not been previously backed up' {
-                        $mockServerObject.Databases['DB1'].LastBackupDate = 0
+                        $mockServerObject.Databases['DB1'].CreateDate = '2020-10-20 10:00:00'
+                        $mockServerObject.Databases['DB1'].LastBackupDate = '2020-10-10 10:00:00'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
@@ -2288,8 +2287,8 @@ REVERT'
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
+                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
+                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
                         Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
                         Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
                         Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
@@ -2299,11 +2298,15 @@ REVERT'
                         Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
                         Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
                         Assert-MockCalled -CommandName Invoke-Query -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
+                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
                         Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
                         Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+
+                        #reset so others will not trip. Fix for pester 5
+                        $mockServerObject.Databases['DB1'].CreateDate = '2020-10-10 10:00:00'
+                        $mockServerObject.Databases['DB1'].LastBackupDate = '2020-10-20 10:00:00'
                     }
 
                     It 'Should throw the correct error when it fails to add the database to the primary replica' {
@@ -2730,6 +2733,8 @@ REVERT'
                 Mock -CommandName Test-ActiveNode -MockWith {
                     return -not $mockProcessOnlyOnActiveNode
                 } -Verifiable
+
+
             }
 
             BeforeEach {
@@ -2744,6 +2749,7 @@ REVERT'
                     MatchDatabaseOwner = $false
                     ProcessOnlyOnActiveNode = $false
                 }
+
             }
 
             Context 'When Ensure is Present' {

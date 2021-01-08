@@ -780,7 +780,20 @@ function Test-TargetResource
     #>
     if ( $ProcessOnlyOnActiveNode -and -not $currentConfiguration.IsActiveNode )
     {
-        Write-Verbose -Message ( $script:localizedData.NotActiveNode -f (Get-ComputerName), $InstanceName )
+        Write-Verbose -Message ( $script:localizedData.NotActiveNode -f ($ServerName), $InstanceName )
+
+
+        #@johlju with this line
+        #Write-Verbose -Message ( $script:localizedData.NotActiveNode -f (Get-ComputerName), $InstanceName )
+        #i just keep getting this message. and i dont know why. i think that with servername we get the same response, but i need help
+        #i says it needs an extra module, but why, i did not change this. what module am i missing?
+
+            #  [-] Should return $true when ProcessOnlyOnActiveNode is "$true" and the current node is not actively hosting the instance 196ms
+            #        CommandNotFoundException: The term 'Get-ComputerName' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name
+            #, or if a path was included, verify that the path is correct and try again.
+            #        at Test-TargetResource, D:\Repos\SqlServerDsc\output\SqlServerDsc\0.0.1\DSCResources\DSC_SqlAGDatabase\DSC_SqlAGDatabase.psm1: line 784
+            #        at <ScriptBlock>, D:\Repos\SqlServerDsc\tests\Unit\DSC_SqlAGDatabase.Tests.ps1: line 2816
+
         return $configurationInDesiredState
     }
 

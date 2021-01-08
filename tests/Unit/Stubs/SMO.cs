@@ -561,6 +561,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public string AvailabilityGroupName = "";
         public Certificate[] Certificates;
         public string ContainmentType = "None";
+        public DateTime CreateDate;
         public DatabaseEncryptionKey DatabaseEncryptionKey;
         public string DefaultFileStreamFileGroup;
         public bool EncryptionEnabled = false;
