@@ -447,7 +447,7 @@ function Set-TargetResource
                 #>
                 if ( $primaryServerObject.Databases[$databaseToAddToAvailabilityGroup].CreateDate -gt $primaryServerObject.Databases[$databaseToAddToAvailabilityGroup].LastBackupDate)
                 {
-                    $needsBackup = $true
+                    $backupNeeded = $true
                 }
             }
 
