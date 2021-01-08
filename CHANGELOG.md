@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     at all replicas of an availability group. When automatic seeding is found, it will use that.
   - Lots of extra tests to check AutomaticSeeding.
   - The parameter `BackupPath` is still needed just in case a database never has been backuped before.
+  - Fixed a typo.
 - SqlMaxDop
   - Fixes ([issue #396](https://github.com/dsccommunity/SqlServerDsc/issues/396)).
     Added three return values in Get-Target resource.
