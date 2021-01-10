@@ -568,7 +568,7 @@ try
             $serverName = $ConfigurationData.AllNodes.ServerName
             $instanceName = $ConfigurationData.AllNodes.InstanceName
             $userName = $ConfigurationData.AllNodes.DscUser4Name
-            $password = $ConfigurationData.AllNodes.DscUser4Pass2 # Using changed password
+            $password = $ConfigurationData.AllNodes.DscUser4Pass1 # Using original password
             $defaultDbName = $ConfigurationData.AllNodes.DefaultDbName
 
             $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database=master;' -f $serverName, $instanceName, $userName, $password
