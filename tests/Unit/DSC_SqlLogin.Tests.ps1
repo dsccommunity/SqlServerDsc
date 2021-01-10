@@ -342,16 +342,6 @@ try
         Describe 'DSC_SqlLogin\Test-TargetResource' {
             Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
-            Context 'When "Get-TargetResource" returns a $null value' {
-                Mock -CommandName Get-TargetResource -MockWith { return $null }
-
-                It 'Should return $false' {
-                    $setTargetResource_NullGetTargetResource = $setTargetResource_SqlLoginAbsent.Clone()
-
-                    ( Test-TargetResource @setTargetResource_NullGetTargetResource ) | Should -Be $false
-                }
-            }
-
             Context 'When the desired state is Absent' {
                 It 'Should return $true when the specified Windows user is Absent' {
                     $testTargetResource_WindowsUserAbsent_EnsureAbsent = $testTargetResource_WindowsUserAbsent.Clone()
