@@ -14,7 +14,8 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         The name of the SQL Agent Operator.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured. Default is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default is the current
+        computer name.
 
     .PARAMETER InstanceName
         The name of the SQL instance to be configured.
@@ -35,7 +36,7 @@ function Get-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -101,7 +102,8 @@ function Get-TargetResource
         The name of the SQL Agent Operator.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured. Default is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default is the current
+        computer name.
 
     .PARAMETER InstanceName
         The name of the SQL instance to be configured.
@@ -128,7 +130,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -244,7 +246,8 @@ function Set-TargetResource
         The name of the SQL Agent Operator.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured. Default is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default is the current
+        computer name.
 
     .PARAMETER InstanceName
         The name of the SQL instance to be configured.
@@ -272,7 +275,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -335,4 +338,3 @@ function Test-TargetResource
     $isOperatorInDesiredState
 }
 
-Export-ModuleMember -Function *-TargetResource

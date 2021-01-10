@@ -644,7 +644,7 @@ function Test-TargetResource
     if ( $ProcessOnlyOnActiveNode -and -not $getTargetResourceResult.IsActiveNode )
     {
         Write-Verbose -Message (
-            $script:localizedData.NotActiveNode -f $env:COMPUTERNAME, $InstanceName
+            $script:localizedData.NotActiveNode -f (Get-ComputerName), $InstanceName
         )
 
         return $result
@@ -765,4 +765,3 @@ function Test-TargetResource
     return $result
 }
 
-Export-ModuleMember -Function *-TargetResource

@@ -584,4 +584,3 @@ function Get-SQLAlwaysOnAvailabilityGroupListener
     return $availabilityGroupListener
 }
 
-Export-ModuleMember -Function *-TargetResource

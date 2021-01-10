@@ -864,4 +864,3 @@ function Test-IsFirewallRuleInDesiredState
     return $isRuleInDesiredState
 }
 
-Export-ModuleMember -Function *-TargetResource

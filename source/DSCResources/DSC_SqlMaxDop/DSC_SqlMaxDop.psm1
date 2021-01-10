@@ -30,7 +30,7 @@ function Get-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME
+        $ServerName = (Get-ComputerName)
     )
 
     Write-Verbose -Message (
@@ -104,7 +104,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -227,7 +227,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -269,7 +269,7 @@ function Test-TargetResource
     if ( $ProcessOnlyOnActiveNode -and -not $getTargetResourceResult.IsActiveNode )
     {
         Write-Verbose -Message (
-            $script:localizedData.NotActiveNode -f $env:COMPUTERNAME, $InstanceName
+            $script:localizedData.NotActiveNode -f (Get-ComputerName), $InstanceName
         )
 
         return $isMaxDopInDesiredState

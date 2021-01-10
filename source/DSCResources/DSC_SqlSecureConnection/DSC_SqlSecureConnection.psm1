@@ -618,4 +618,3 @@ function Test-CertificatePermission
     }
 }
 
-Export-ModuleMember -Function *-TargetResource

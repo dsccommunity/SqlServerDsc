@@ -36,7 +36,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. Default value
-        is $env:COMPUTERNAME.
+        is the current computer name.
 
     .PARAMETER Force
         Specifies that permissions that has parameter Ensure set to 'Present'
@@ -86,7 +86,7 @@ function Get-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter()]
         [System.Boolean]
@@ -224,7 +224,7 @@ function Get-TargetResource
 
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. Default value
-        is $env:COMPUTERNAME.
+        is the current computer name.
 
     .PARAMETER Force
         Specifies that permissions that has parameter Ensure set to 'Present'
@@ -273,7 +273,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter()]
         [System.Boolean]
@@ -505,7 +505,7 @@ function Set-TargetResource
 
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. Default value
-        is $env:COMPUTERNAME.
+        is the current computer name.
 
     .PARAMETER Force
         Specifies that permissions that has parameter Ensure set to 'Present'
@@ -555,7 +555,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter()]
         [System.Boolean]
@@ -626,7 +626,7 @@ function Test-TargetResource
 
     .PARAMETER ServerName
         Specifies the host name of the SQL Server to be configured. Default value
-        is $env:COMPUTERNAME.
+        is the current computer name.
 
     .PARAMETER Force
         Specifies that permissions that has parameter Ensure set to 'Present'
@@ -676,7 +676,7 @@ function Compare-TargetResourceState
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter()]
         [System.Boolean]
@@ -736,8 +736,7 @@ function Compare-TargetResourceState
         Returns the object class for the specified name och object type.
 
     .PARAMETER ServerName
-        Specifies the host name of the SQL Server to be configured. Default value
-        is $env:COMPUTERNAME.
+        Specifies the host name of the SQL Server to be configured.
 
     .PARAMETER InstanceName
         Specifies the name of the SQL instance to be configured.

@@ -3,7 +3,7 @@ class DSC_SqlAgentOperator : OMI_BaseResource
 {
     [Key, Description("The name of the _SQL Server Agent_ operator.")] String Name;
     [Write, Description("Specifies if the _SQL Server Agent_ operator should be present or absent. Default value is `'Present'`."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
-    [Write, Description("The host name of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
+    [Write, Description("The host name of the _SQL Server_ to be configured. Default value is the current computer name.")] String ServerName;
     [Key, Description("The name of the SQL Server instance to be configured.")] String InstanceName;
     [Write, Description("The email address to be used for the _SQL Server Agent_ operator.")] String EmailAddress;
 };

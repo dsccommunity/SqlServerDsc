@@ -447,7 +447,7 @@ function Set-TargetResource
                 #>
                 if ( $primaryServerObject.Databases[$databaseToAddToAvailabilityGroup].CreateDate -gt $primaryServerObject.Databases[$databaseToAddToAvailabilityGroup].LastBackupDate)
                 {
-                    $needsBackup = $true
+                    $backupNeeded = $true
                 }
             }
 
@@ -780,7 +780,7 @@ function Test-TargetResource
     #>
     if ( $ProcessOnlyOnActiveNode -and -not $currentConfiguration.IsActiveNode )
     {
-        Write-Verbose -Message ( $script:localizedData.NotActiveNode -f $env:COMPUTERNAME, $InstanceName )
+        Write-Verbose -Message ( $script:localizedData.NotActiveNode -f (Get-ComputerName), $InstanceName )
         return $configurationInDesiredState
     }
 

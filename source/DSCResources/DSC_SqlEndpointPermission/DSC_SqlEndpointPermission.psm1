@@ -14,7 +14,8 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         The name of the SQL instance to be configured.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default value is the
+        current computer name.
 
     .PARAMETER Name
         The name of the endpoint.
@@ -35,7 +36,7 @@ function Get-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -106,7 +107,8 @@ function Get-TargetResource
         The name of the SQL instance to be configured.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default value is the
+        current computer name.
 
     .PARAMETER Ensure
         If the permission should be present or absent. Default value is 'Present'.
@@ -132,7 +134,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -215,7 +217,8 @@ function Set-TargetResource
         The name of the SQL instance to be configured.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default value is the
+        current computer name.
 
     .PARAMETER Ensure
         If the permission should be present or absent. Default value is 'Present'.
@@ -242,7 +245,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -294,4 +297,3 @@ function Test-TargetResource
     return $isInDesiredState
 }
 
-Export-ModuleMember -Function *-TargetResource
