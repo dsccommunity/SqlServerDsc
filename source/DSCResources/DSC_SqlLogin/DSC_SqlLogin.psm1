@@ -458,11 +458,6 @@ function Test-TargetResource
 
     $loginInfo = Get-TargetResource @getParams
 
-    if ($null -eq $loginInfo)
-    {
-        $testPassed = $false
-    }
-
     if ( $Ensure -ne $loginInfo.Ensure )
     {
         Write-Verbose -Message (
