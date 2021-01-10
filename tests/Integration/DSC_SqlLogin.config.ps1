@@ -36,8 +36,8 @@ else
                 DscUser3Type     = 'WindowsUser'
 
                 DscUser4Name     = 'DscUser4'
-                DscUser4Pass1    = 'P@ssw0rd10'
-                DscUser4Pass2    = 'P@ssw0rd20'
+                DscUser4Pass1    = 'P@ssw0rd1'
+                DscUser4Pass2    = 'P@ssw0rd2'
                 DscUser4Type     = 'SqlLogin'
                 DscUser4Role     = 'sysadmin'
 
