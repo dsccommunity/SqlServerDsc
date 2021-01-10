@@ -289,7 +289,7 @@ try
                 } | Should -Not -Throw
             }
 
-            It 'Should allow SQL Server, login username and password to correct, SQL instance, default database' {
+            It 'Should allow SQL Server, login username and password to connect to correct, SQL instance, default database' {
                 $serverName = $ConfigurationData.AllNodes.ServerName
                 $instanceName = $ConfigurationData.AllNodes.InstanceName
                 $userName = $ConfigurationData.AllNodes.DscUser4Name
@@ -378,7 +378,7 @@ try
                 } | Should -Not -Throw
             }
 
-            It 'Should allow SQL Server, login username and (changed) password to correct, SQL instance, default database' {
+            It 'Should allow SQL Server, login username and (changed) password to connect to correct, SQL instance, default database' {
                 $serverName = $ConfigurationData.AllNodes.ServerName
                 $instanceName = $ConfigurationData.AllNodes.InstanceName
                 $userName = $ConfigurationData.AllNodes.DscUser4Name
