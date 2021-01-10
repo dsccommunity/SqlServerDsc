@@ -3,7 +3,7 @@ class DSC_SqlAgentAlert : OMI_BaseResource
 {
     [Key, Description("The name of the _SQL Server Agent_ alert.")] String Name;
     [Write, Description("Specifies if the _SQL Server Agent_ alert should be present or absent. Default value is `'Present'`."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
-    [Write, Description("The host name of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
+    [Write, Description("The host name of the _SQL Server_ to be configured. Default value is the current computer name.")] String ServerName;
     [Key, Description("The name of the _SQL Server_ instance to be configured.")] String InstanceName;
     [Write, Description("The severity of the _SQL Server Agent_ alert.")] String Severity;
     [Write, Description("The message id of the _SQL Server Agent_ alert.")] String MessageId;

@@ -1012,4 +1012,3 @@ function Invoke-RsCimMethod
     return $invokeCimMethodResult
 }
 
-Export-ModuleMember -Function *-TargetResource
