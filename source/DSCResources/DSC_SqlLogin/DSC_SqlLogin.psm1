@@ -201,16 +201,6 @@ function Set-TargetResource
                         New-InvalidOperationException -Message $errorMessage
                     }
 
-                    if ( $login.PasswordExpirationEnabled -ne $LoginPasswordExpirationEnabled )
-                    {
-                        Write-Verbose -Message (
-                            $script:localizedData.SetPasswordExpirationEnabled -f $LoginPasswordExpirationEnabled, $Name, $ServerName, $InstanceName
-                        )
-
-                        $login.PasswordExpirationEnabled = $LoginPasswordExpirationEnabled
-                        Update-SQLServerLogin -Login $login
-                    }
-
                     if ( $login.PasswordPolicyEnforced -ne $LoginPasswordPolicyEnforced )
                     {
                         Write-Verbose -Message (
@@ -218,6 +208,16 @@ function Set-TargetResource
                         )
 
                         $login.PasswordPolicyEnforced = $LoginPasswordPolicyEnforced
+                        Update-SQLServerLogin -Login $login
+                    }
+
+                    if ( $login.PasswordExpirationEnabled -ne $LoginPasswordExpirationEnabled )
+                    {
+                        Write-Verbose -Message (
+                            $script:localizedData.SetPasswordExpirationEnabled -f $LoginPasswordExpirationEnabled, $Name, $ServerName, $InstanceName
+                        )
+
+                        $login.PasswordExpirationEnabled = $LoginPasswordExpirationEnabled
                         Update-SQLServerLogin -Login $login
                     }
 
