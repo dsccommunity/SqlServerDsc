@@ -423,8 +423,10 @@ try
 
         Wait-ForIdleLcm -Clear
 
-        # Note that this configuration has already been run within these Integration tests but is
-        # executed once more to reset the password back to the original one provided.
+        <#
+          Note that this configuration has already been run within these Integration tests but is
+          executed once more to reset the password back to the original one provided.
+        #>
         $configurationName = "$($script:dscResourceName)_AddLoginDscUser4_Config"
 
         Context ('When using configuration {0} (to update back to original password)' -f $configurationName) {
