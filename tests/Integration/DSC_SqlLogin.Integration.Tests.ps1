@@ -290,22 +290,33 @@ try
             }
 
             It 'Should allow SQL Server, login username and password to connect to correct, SQL instance, default database' {
+                $script:CurrentDatabaseName = $null
+
                 $serverName = $ConfigurationData.AllNodes.ServerName
                 $instanceName = $ConfigurationData.AllNodes.InstanceName
                 $userName = $ConfigurationData.AllNodes.DscUser4Name
                 $password = $ConfigurationData.AllNodes.DscUser4Pass1 # Original password
 
                 $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;' -f $serverName, $instanceName, $userName, $password # Note: Not providing a database name
-                $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
-                $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $sqlConnection)
 
-                $sqlConnection.Open()
-                $sqlDataAdapter = New-Object System.Data.SqlClient.SqlDataAdapter $sqlCommand
-                $sqlDataSet = New-Object System.Data.DataSet
-                $sqlDataAdapter.Fill($sqlDataSet) | Out-Null
-                $sqlConnection.Close()
+                {
+                    $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+                    $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $sqlConnection)
 
-                $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName | Should -Be $ConfigurationData.AllNodes.DefaultDbName
+                    $sqlConnection.Open()
+                    $sqlDataAdapter = New-Object System.Data.SqlClient.SqlDataAdapter $sqlCommand
+                    $sqlDataSet = New-Object System.Data.DataSet
+                    $sqlDataAdapter.Fill($sqlDataSet) | Out-Null
+                    $sqlConnection.Close()
+
+                    $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName | Should -Be $ConfigurationData.AllNodes.DefaultDbName
+
+                    $script:CurrentDatabaseName = $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName
+                } | Should -Not -Throw
+
+                $script:CurrentDatabaseName | Should -Be $ConfigurationData.AllNodes.DefaultDbName
+
+                $script:CurrentDatabaseName = $null
             }
         }
 
@@ -379,22 +390,33 @@ try
             }
 
             It 'Should allow SQL Server, login username and (changed) password to connect to correct, SQL instance, default database' {
+                $script:CurrentDatabaseName = $null
+
                 $serverName = $ConfigurationData.AllNodes.ServerName
                 $instanceName = $ConfigurationData.AllNodes.InstanceName
                 $userName = $ConfigurationData.AllNodes.DscUser4Name
                 $password = $ConfigurationData.AllNodes.DscUser4Pass2 # Changed password
 
                 $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;' -f $serverName, $instanceName, $userName, $password # Note: Not providing a database name
-                $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
-                $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $sqlConnection)
 
-                $sqlConnection.Open()
-                $sqlDataAdapter = New-Object System.Data.SqlClient.SqlDataAdapter $sqlCommand
-                $sqlDataSet = New-Object System.Data.DataSet
-                $sqlDataAdapter.Fill($sqlDataSet) | Out-Null
-                $sqlConnection.Close()
+                {
+                    $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+                    $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $sqlConnection)
 
-                $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName | Should -Be $ConfigurationData.AllNodes.DefaultDbName
+                    $sqlConnection.Open()
+                    $sqlDataAdapter = New-Object System.Data.SqlClient.SqlDataAdapter $sqlCommand
+                    $sqlDataSet = New-Object System.Data.DataSet
+                    $sqlDataAdapter.Fill($sqlDataSet) | Out-Null
+                    $sqlConnection.Close()
+
+                    $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName | Should -Be $ConfigurationData.AllNodes.DefaultDbName
+
+                    $script:CurrentDatabaseName = $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName
+                } | Should -Not -Throw
+
+                $script:CurrentDatabaseName | Should -Be $ConfigurationData.AllNodes.DefaultDbName
+
+                $script:CurrentDatabaseName = $null
             }
         }
 
