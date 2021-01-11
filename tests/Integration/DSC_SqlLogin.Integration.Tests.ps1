@@ -583,7 +583,7 @@ try
 
         Wait-ForIdleLcm -Clear
 
-        Context ('When preparing database, dependencies cleanup') {
+        Context 'When preparing database, dependencies cleanup' {
 
             # Details used for database, dependency cleanup/preparation
             $serverName = $ConfigurationData.AllNodes.ServerName
