@@ -281,9 +281,9 @@ try
                 $password = $ConfigurationData.AllNodes.DscUser4Pass1 # Original password
 
                 $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database={4};' -f $serverName, $instanceName, $userName, $password, $databaseName
-                $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
 
                 {
+                    $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
                     $sqlConnection.Open()
                     $sqlConnection.Close()
                 } | Should -Not -Throw
@@ -370,9 +370,9 @@ try
                 $password = $ConfigurationData.AllNodes.DscUser4Pass2 # Changed password
 
                 $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database={4};' -f $serverName, $instanceName, $userName, $password, $databaseName
-                $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
 
                 {
+                    $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
                     $sqlConnection.Open()
                     $sqlConnection.Close()
                 } | Should -Not -Throw
@@ -447,9 +447,9 @@ try
                 $password = $ConfigurationData.AllNodes.DscUser4Pass1 # Original password
 
                 $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database={4};' -f $serverName, $instanceName, $userName, $password, $databaseName
-                $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
 
                 {
+                    $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
                     $sqlConnection.Open()
                     $sqlConnection.Close()
                 } | Should -Not -Throw
