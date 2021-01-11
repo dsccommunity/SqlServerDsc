@@ -201,6 +201,7 @@ function Set-TargetResource
                         New-InvalidOperationException -Message $errorMessage
                     }
 
+                    # This must always be updated before `PasswordExpirationEnabled`
                     if ( $login.PasswordPolicyEnforced -ne $LoginPasswordPolicyEnforced )
                     {
                         Write-Verbose -Message (
@@ -211,6 +212,7 @@ function Set-TargetResource
                         Update-SQLServerLogin -Login $login
                     }
 
+                    # This must always be updated after `PasswordPolicyEnforced`
                     if ( $login.PasswordExpirationEnabled -ne $LoginPasswordExpirationEnabled )
                     {
                         Write-Verbose -Message (
