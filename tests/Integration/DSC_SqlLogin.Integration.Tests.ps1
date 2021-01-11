@@ -583,26 +583,35 @@ try
 
         Wait-ForIdleLcm -Clear
 
-        $configurationName = "$($script:dscResourceName)_CleanupDependencies_Config"
+        Context ('When preparing database, dependencies cleanup') {
 
-        Context ('When using configuration {0}' -f $configurationName) {
-
-
-            # Close any existing connections into the database before it is dropped
+            # Details used for database, dependency cleanup/preparation
             $serverName = $ConfigurationData.AllNodes.ServerName
             $instanceName = $ConfigurationData.AllNodes.InstanceName
             $userName = $ConfigurationData.AllNodes.DscUser4Name
             $password = $ConfigurationData.AllNodes.DscUser4Pass1 # Using original password
             $defaultDbName = $ConfigurationData.AllNodes.DefaultDbName
 
-            $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database=master;' -f $serverName, $instanceName, $userName, $password
-            $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
-            $sqlStatement = 'ALTER DATABASE [{0}] SET OFFLINE WITH ROLLBACK IMMEDIATE' -f $defaultDbName
-            $sqlCommand = New-Object System.Data.SqlClient.SqlCommand($sqlStatement, $sqlConnection)
-            $sqlConnection.Open()
-            $sqlCommand.ExecuteNonQuery()
-            $sqlConnection.Close()
+            It ('Should be able to take the "{0}" database offline without throwing' -f $defaultDbName) {
 
+                {
+                    # Take database offline (closing any existing connections and transactions) before it is dropped in subsequent, 'CleanupDependencies' configuration/test
+                    $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database=master;' -f $serverName, $instanceName, $userName, $password
+                    $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+                    $sqlStatement = 'ALTER DATABASE [{0}] SET OFFLINE WITH ROLLBACK IMMEDIATE' -f $defaultDbName
+                    $sqlCommand = New-Object System.Data.SqlClient.SqlCommand($sqlStatement, $sqlConnection)
+                    $sqlConnection.Open()
+                    $sqlCommand.ExecuteNonQuery()
+                    $sqlConnection.Close()
+                } | Should -Not -Throw
+            }
+        }
+
+        Wait-ForIdleLcm -Clear
+
+        $configurationName = "$($script:dscResourceName)_CleanupDependencies_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
 
             It 'Should compile and apply the MOF without throwing' {
                 {
