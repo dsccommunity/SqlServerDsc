@@ -573,7 +573,7 @@ try
 
             $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database=master;' -f $serverName, $instanceName, $userName, $password
             $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
-            $sqlStatement = "ALTER DATABASE [{0}] SET OFFLINE WITH ROLLBACK IMMEDIATE" -f $defaultDbName
+            $sqlStatement = 'ALTER DATABASE [{0}] SET OFFLINE WITH ROLLBACK IMMEDIATE' -f $defaultDbName
             $sqlCommand = New-Object System.Data.SqlClient.SqlCommand($sqlStatement, $sqlConnection)
             $sqlConnection.Open()
             $sqlCommand.ExecuteNonQuery()
