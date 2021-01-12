@@ -7,7 +7,34 @@ Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\Co
 
 if (-not (Test-BuildCategory -Type 'Unit'))
 {
-    return
+    returnContext "When ManagedComputer object has an empty array, 'ServerInstances' value" {
+        BeforeAll {
+            $mockServerName = 'TestServerName'
+            $mockInstanceName = 'TestInstance'
+
+            Mock -CommandName New-Object -MockWith {
+                return @{
+                    ServerInstances = @()
+                }
+            }
+        }
+
+        It 'Should throw the correct error message' {
+            $mockGetServerProtocolObjectParameters = @{
+                ServerName   = $mockServerName
+                Instance     = $mockInstanceName
+                ProtocolName = 'TcpIp'
+            }
+
+            $mockErrorRecord = Get-InvalidOperationRecord -Message (
+                $script:localizedData.FailedToObtainServerInstance -f $mockInstanceName, $mockServerName
+            )
+
+            $mockErrorRecord.Exception.Message | Should -Not -BeNullOrEmpty
+
+            { Get-ServerProtocolObject @mockGetServerProtocolObjectParameters } | Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
+        }
+    }
 }
 
 $script:dscModuleName = 'SqlServerDsc'
@@ -3430,6 +3457,35 @@ InModuleScope $script:subModuleName {
             $result.HasMultiIPAddresses | Should -BeTrue
             $result.ProtocolProperties.ListenOnAllIPs | Should -BeTrue
             $result.ProtocolProperties.KeepAlive | Should -Be 30000
+        }
+
+        Context "When ManagedComputer object has an empty array, 'ServerInstances' value" {
+            BeforeAll {
+                $mockServerName = 'TestServerName'
+                $mockInstanceName = 'TestInstance'
+
+                Mock -CommandName New-Object -MockWith {
+                    return @{
+                        ServerInstances = @()
+                    }
+                }
+            }
+
+            It 'Should throw the correct error message' {
+                $mockGetServerProtocolObjectParameters = @{
+                    ServerName   = $mockServerName
+                    Instance     = $mockInstanceName
+                    ProtocolName = 'TcpIp'
+                }
+
+                $mockErrorRecord = Get-InvalidOperationRecord -Message (
+                    $script:localizedData.FailedToObtainServerInstance -f $mockInstanceName, $mockServerName
+                )
+
+                $mockErrorRecord.Exception.Message | Should -Not -BeNullOrEmpty
+
+                { Get-ServerProtocolObject @mockGetServerProtocolObjectParameters } | Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
+            }
         }
     }
 
