@@ -5,6 +5,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- SqlLogin
+  - Added functionality to throw exception if an update to the `LoginMustChangePassword`
+    value on an existing SQL Login is attempted. This functionality is not supported
+    by referenced, SQL Server Management Object (SMO), libraries and cannot be
+    supported directly by this module.
+  - Added integration tests to ensure that an added (or updated) `SqlLogin` can
+    connect into a SQL instance once added (or updated).
+  - Added integration tests to ensure that the default database connected to by
+    a `SqlLogin` is the same as specified in the resource's `DefaultDatabase`
+    property/parameter.
+  - Reversed order in which `PasswordExpirationEnabled` and `PasswordPolicyEnforced`
+    are updated within `SqlLogin` resource. `PasswordPolicyEnforced` is now updated
+    first.
+
+### Fixed
+
+- SqlLogin
+  - Added integration tests to assert `LoginPasswordExpirationEnabled`,
+  `LoginPasswordPolicyEnforced` and `LoginMustChangePassword` properties/parameters
+  are applied and updated correctly. Similar integration tests also added to ensure
+  the password of the `SqlLogin` is updated if the password within the `SqlCredential`
+  value/object is changed ([issue #361](https://github.com/dsccommunity/SqlServerDsc/issues/361),
+  [issue #1032](https://github.com/dsccommunity/SqlServerDsc/issues/1032) and
+  [issue #1050](https://github.com/dsccommunity/SqlServerDsc/issues/1050)).
+  - Updated `SqlLogin`, integration tests to make use of amended `Wait-ForIdleLcm`,
+    helper function, `-Clear` switch usage to remove intermittent, integration
+    test failures ([issue #1634](https://github.com/dsccommunity/SqlServerDsc/issues/1634)).
+
 ## [15.0.1] - 2021-01-09
 
 ### Changed

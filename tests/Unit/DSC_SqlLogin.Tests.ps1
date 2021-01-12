@@ -1049,6 +1049,7 @@ try
                     $setTargetResource_SqlLoginPresent_EnsurePresent = $setTargetResource_SqlLoginPresent.Clone()
                     $setTargetResource_SqlLoginPresent_EnsurePresent[ 'Ensure' ] = 'Present'
                     $setTargetResource_SqlLoginPresent_EnsurePresent[ 'LoginCredential' ] = $mockSqlLoginCredential
+                    $setTargetResource_SqlLoginPresent_EnsurePresent[ 'LoginMustChangePassword' ] = $false  # Stays the same
 
                     Set-TargetResource @setTargetResource_SqlLoginPresent_EnsurePresent
 
@@ -1065,6 +1066,7 @@ try
                     $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase = $setTargetResource_SqlLoginPresent.Clone()
                     $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase[ 'Ensure' ] = 'Present'
                     $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase[ 'LoginCredential' ] = $mockSqlLoginCredential
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase[ 'LoginMustChangePassword' ] = $false  # Stays the same
                     $setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase[ 'DefaultDatabase' ] = 'notmaster'
 
                     Set-TargetResource @setTargetResource_SqlLoginPresent_EnsurePresent_LoginDefaultDatabase
@@ -1079,6 +1081,7 @@ try
                     $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordExpirationEnabled = $setTargetResource_SqlLoginPresent.Clone()
                     $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordExpirationEnabled[ 'Ensure' ] = 'Present'
                     $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordExpirationEnabled[ 'LoginCredential' ] = $mockSqlLoginCredential
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordExpirationEnabled[ 'LoginMustChangePassword' ] = $false # Stays the same
                     $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordExpirationEnabled[ 'LoginPasswordExpirationEnabled' ] = $false
 
                     Set-TargetResource @setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordExpirationEnabled
@@ -1096,6 +1099,7 @@ try
                     $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordPolicyEnforced = $setTargetResource_SqlLoginPresent.Clone()
                     $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordPolicyEnforced[ 'Ensure' ] = 'Present'
                     $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordPolicyEnforced[ 'LoginCredential' ] = $mockSqlLoginCredential
+                    $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordPolicyEnforced[ 'LoginMustChangePassword' ] = $false # Stays the same
                     $setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordPolicyEnforced[ 'LoginPasswordPolicyEnforced' ] = $false
 
                     Set-TargetResource @setTargetResource_SqlLoginPresent_EnsurePresent_LoginPasswordPolicyEnforced
@@ -1122,6 +1126,25 @@ try
                         $mockLoginMode
 
                     { Set-TargetResource @setTargetResource_SqlLoginAbsent_EnsurePresent } | Should -Throw $errorMessage
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Update-SQLServerLogin  -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName New-SQLServerLogin  -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Remove-SQLServerLogin  -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Set-SQLServerLoginPassword  -Scope It -Times 0 -Exactly
+                }
+
+                It 'Should throw the correct error when updating a SQL Login if MustChangePassword is different' {
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL_LoginMode -Verifiable
+
+                    $setTargetResource_SqlLoginPresent_EnsurePresent = $setTargetResource_SqlLoginPresent.Clone()
+                    $setTargetResource_SqlLoginPresent_EnsurePresent[ 'Ensure' ] = 'Present'
+                    $setTargetResource_SqlLoginPresent_EnsurePresent[ 'LoginCredential' ] = $mockSqlLoginCredential
+                    $setTargetResource_SqlLoginPresent_EnsurePresent[ 'LoginMustChangePassword' ] = $true
+
+                    $errorMessage = $script:localizedData.MustChangePasswordCannotBeChanged
+
+                    { Set-TargetResource @setTargetResource_SqlLoginPresent_EnsurePresent } | Should -Throw $errorMessage
 
                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
                     Assert-MockCalled -CommandName Update-SQLServerLogin  -Scope It -Times 0 -Exactly

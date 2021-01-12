@@ -107,7 +107,7 @@ function Get-TargetResource
         The credential containing the password for a SQL Login. Only applies if the login type is SqlLogin.
 
     .PARAMETER LoginMustChangePassword
-        Specifies if the login is required to have its password change on the next login. Only applies to SQL Logins. Default is $true.
+        Specifies if the login is required to have its password change on the next login. Only applies to SQL Logins. Does not update pre-existing SQL Logins. Default is $true.
 
     .PARAMETER LoginPasswordExpirationEnabled
         Specifies if the login password is required to expire in accordance to the operating system security policy. Only applies to SQL Logins. Default is $true.
@@ -194,23 +194,27 @@ function Set-TargetResource
 
                 if ( $login.LoginType -eq 'SqlLogin' )
                 {
-                    if ( $login.PasswordExpirationEnabled -ne $LoginPasswordExpirationEnabled )
+                    # There is no way to update 'MustChangePassword' on existing login so must explicitly throw exception to avoid this functionality being assumed
+                    if ( $login.MustChangePassword -ne $LoginMustChangePassword )
                     {
-                        Write-Verbose -Message (
-                            $script:localizedData.SetPasswordExpirationEnabled -f $LoginPasswordExpirationEnabled, $Name, $ServerName, $InstanceName
-                        )
-
-                        $login.PasswordExpirationEnabled = $LoginPasswordExpirationEnabled
-                        Update-SQLServerLogin -Login $login
+                        $errorMessage = $script:localizedData.MustChangePasswordCannotBeChanged
+                        New-InvalidOperationException -Message $errorMessage
                     }
 
-                    if ( $login.PasswordPolicyEnforced -ne $LoginPasswordPolicyEnforced )
+                    # `PasswordPolicyEnforced and `PasswordExpirationEnabled` must be updated together (if one or both are not in the desired state)
+                    if ( $login.PasswordPolicyEnforced -ne $LoginPasswordPolicyEnforced -or
+                         $login.PasswordExpirationEnabled -ne $LoginPasswordExpirationEnabled )
                     {
                         Write-Verbose -Message (
                             $script:localizedData.SetPasswordPolicyEnforced -f $LoginPasswordPolicyEnforced, $Name, $ServerName, $InstanceName
                         )
+                        Write-Verbose -Message (
+                            $script:localizedData.SetPasswordExpirationEnabled -f $LoginPasswordExpirationEnabled, $Name, $ServerName, $InstanceName
+                        )
 
                         $login.PasswordPolicyEnforced = $LoginPasswordPolicyEnforced
+                        $login.PasswordExpirationEnabled = $LoginPasswordExpirationEnabled
+
                         Update-SQLServerLogin -Login $login
                     }
 
