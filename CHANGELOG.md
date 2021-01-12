@@ -17,9 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added integration tests to ensure that the default database connected to by
     a `SqlLogin` is the same as specified in the resource's `DefaultDatabase`
     property/parameter.
-  - Reversed order in which `PasswordExpirationEnabled` and `PasswordPolicyEnforced`
-    are updated within `SqlLogin` resource. `PasswordPolicyEnforced` is now updated
-    first.
+  - Amended how the interdependent, `PasswordExpirationEnabled` and `PasswordPolicyEnforced`
+    properties/parameters are updated within the `SqlLogin` resource - Both values
+    are now updated together if either one or both are not currently in the desired
+    state. This change avoids exceptions thrown by transitions to valid, combinations
+    of these properties that have to transition through an invalid combination (e.g.
+    where `PasswordExpirationEnabled` is `$true` but `PasswordPolicyEnforced` is
+    `$false`).
 
 ### Fixed
 
