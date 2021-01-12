@@ -202,8 +202,13 @@ Login | Type | Password | Permission
 DscUser4 | SQL | P@ssw0rd1 | *None*
 `$env:COMPUTERNAME`\DscSqlUsers1 | Windows Group | -- | *None*
 
+<!-- markdownlint-disable MD028 -->
 >**Note:** The `$env:COMPUTERNAME` is reference to the build workers computer
 >name. The SQL login could for example be 'APPVYR-WIN\DscUser1'.
+
+>**Note:** The password for `DscUser4` is changed to `P@ssw0rd2` during one of the
+>`SqlLogin`, integration tests and then set back again in a subsequent test.
+<!-- markdownlint-disable MD028 -->
 
 ## SqlAgentAlert
 

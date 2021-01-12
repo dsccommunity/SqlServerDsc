@@ -33,4 +33,5 @@ ConvertFrom-StringData @'
     DropLoginFailed = Removal of the login '{0}' failed.
     SetPasswordValidationFailed = Setting the password failed for the login '{0}' because of password validation error.
     SetPasswordFailed = Setting the password failed for the login '{0}'.
+    MustChangePasswordCannotBeChanged = The '(Login)MustChangePassword' parameter cannot be updated on a login that is already present.
 '@
