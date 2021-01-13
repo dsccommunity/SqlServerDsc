@@ -68,7 +68,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlProtocol
   - Changed KeepAlive Type from UInt16 to Int32 to reflect the actual WMI.ManagementObject
     Fixes #1645 ([issue #1645](https://github.com/dsccommunity/SqlServerDsc/issues/1645)).
-<<<<<<< HEAD
   - The verbose messages now correctly show that `$env:COMPUTERNAME` is used
     to get or set the configuration, while parameter **ServerName** is used
     to restart the instance.
@@ -86,8 +85,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlRSSetup
   - If parameter `EditionUpgrade` is set to `$false` the `/EditionUpgrade`
     argument is no longer wrongly added ([issue #1398](https://github.com/dsccommunity/SqlServerDsc/issues/1398)).
-=======
->>>>>>> fbcaf5b (Updated changelog to add issue #1628 fix comments (and correct typo))
 - SqlServerDsc.Common
   - Updated `Get-ServerProtocolObject`, helper function to ensure an exception is
     thrown if the specified instance cannot be obtained ([issue #1628](https://github.com/dsccommunity/SqlServerDsc/issues/1628)).
