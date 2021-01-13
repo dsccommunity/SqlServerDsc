@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SqlServerDsc
+  - Support for C# code scanning in the repository (SMO stubs are using C#).
+
 ### Changed
 
 - SqlLogin
