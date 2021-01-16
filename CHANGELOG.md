@@ -27,6 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- SqlServerDsc
+  - The component `gitversion` that is used in the pipeline was wrongly
+    configured when the repository moved to the new default branch `main`.
+    It no longer throws an error when using newer versions of GitVersion
+    ([issue #1674](https://github.com/dsccommunity/SqlServerDsc/issues/1674),
 - SqlLogin
   - Added integration tests to assert `LoginPasswordExpirationEnabled`,
   `LoginPasswordPolicyEnforced` and `LoginMustChangePassword` properties/parameters
