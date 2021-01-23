@@ -328,6 +328,10 @@ try
                     VersionName = "SQL Server Reporting Services 2017"
                     Version = 14
                 }
+                @{
+                    VersionName = "SQL Server Reporting Services 2019"
+                    Version = 15
+                }
             )
             foreach($sqlVersion in $sqlVersions)
             {
@@ -1004,11 +1008,19 @@ try
                     }
                 }
 
+                # TODO: Need to set $mockSql2019Version to correct version
+                $mockSql2019Version = '14.0.6514.11481'
+                $mockGetItemProperty_Sql2019 = {
+                    return @{
+                        CurrentVersion = $mockSql2019Version
+                    }
+                }
+
                 $mockGetItemProperty_Sql2014AndSql2016_ParameterFilter = {
                     $Path -eq ('HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\Setup' -f $mockInstanceId)
                 }
 
-                $mockGetItemProperty_Sql2017_ParameterFilter = {
+                $mockGetItemProperty_Sql2017AndSql2019_ParameterFilter = {
                     $Path -eq ('HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\MSSQLServer\CurrentVersion' -f $mockInstanceId)
                 }
 
@@ -1105,7 +1117,7 @@ try
 
                         Mock -CommandName Get-ItemProperty `
                             -MockWith $mockGetItemProperty_Sql2017 `
-                            -ParameterFilter $mockGetItemProperty_Sql2017_ParameterFilter
+                            -ParameterFilter $mockGetItemProperty_Sql2017AndSql2019_ParameterFilter
                     }
 
                     It 'Should return the correct information' {
@@ -1125,7 +1137,42 @@ try
                             -Exactly -Times 2 -Scope 'It'
 
                         Assert-MockCalled -CommandName Get-ItemProperty `
-                            -ParameterFilter $mockGetItemProperty_Sql2017_ParameterFilter `
+                            -ParameterFilter $mockGetItemProperty_Sql2017AndSql2019_ParameterFilter `
+                            -Exactly -Times 1 -Scope 'It'
+
+                        Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -Scope 'It'
+                    }
+                }
+
+                Context 'When the instance is SQL Server Reporting Services 2019' {
+                    BeforeEach {
+                        Mock -CommandName Test-Path -MockWith {
+                            return $true
+                        }
+
+                        Mock -CommandName Get-ItemProperty `
+                            -MockWith $mockGetItemProperty_Sql2019 `
+                            -ParameterFilter $mockGetItemProperty_Sql2017AndSql2019_ParameterFilter
+                    }
+
+                    It 'Should return the correct information' {
+                        $getReportingServicesDataResult = Get-ReportingServicesData -InstanceName $mockNamedInstanceName
+                        $getReportingServicesDataResult.Configuration | Should -BeOfType [Microsoft.Management.Infrastructure.CimInstance]
+                        $getReportingServicesDataResult.Configuration.InstanceName | Should -Be $mockNamedInstanceName
+                        $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName"
+                        $getReportingServicesDataResult.Configuration.IsInitialized | Should -Be $false
+                        $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be $mockVirtualDirectoryReportServerName
+                        $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be $mockVirtualDirectoryReportManagerName
+                        $getReportingServicesDataResult.Configuration.SecureConnectionLevel | Should -Be 0
+                        $getReportingServicesDataResult.ReportsApplicationName | Should -Be 'ReportServerWebApp'
+                        $getReportingServicesDataResult.SqlVersion | Should -Be $mockSql2019Version.Split('.')[0]
+
+                        Assert-MockCalled -CommandName Get-ItemProperty `
+                            -ParameterFilter $mockGetItemProperty_InstanceNames_ParameterFilter `
+                            -Exactly -Times 2 -Scope 'It'
+
+                        Assert-MockCalled -CommandName Get-ItemProperty `
+                            -ParameterFilter $mockGetItemProperty_Sql2017AndSql2019_ParameterFilter `
                             -Exactly -Times 1 -Scope 'It'
 
                         Assert-MockCalled -CommandName Get-CimInstance -Exactly -Times 1 -Scope 'It'
