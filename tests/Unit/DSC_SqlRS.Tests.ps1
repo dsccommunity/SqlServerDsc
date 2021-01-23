@@ -1008,8 +1008,7 @@ try
                     }
                 }
 
-                # TODO: Need to set $mockSql2019Version to correct version
-                $mockSql2019Version = '14.0.6514.11481'
+                $mockSql2019Version = '15.0.2000.5'
                 $mockGetItemProperty_Sql2019 = {
                     return @{
                         CurrentVersion = $mockSql2019Version
