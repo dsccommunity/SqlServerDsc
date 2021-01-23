@@ -1,6 +1,6 @@
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-# Run only for SQL 2017 integration testing.
+# Run only for SQL 2017 or SQL 2019 integration testing.
 if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2017','Integration_SQL2019')))
 {
     return
@@ -37,6 +37,7 @@ try
         $previousProgressPreference = $ProgressPreference
         $ProgressPreference = 'SilentlyContinue'
 
+        # TODO: Does this need to be different between SQL2017 and SQL2019?
         $script:mockSourceMediaDisplayName = 'Microsoft SQL Server Reporting Services (October 2017)'
         $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/E/6/4/E6477A2A-9B58-40F7-8AD6-62BB8491EA78/SQLServerReportingServices.exe'
 

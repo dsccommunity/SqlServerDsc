@@ -131,9 +131,9 @@ try
             }
 
             It 'Should be able to access the ReportServer site without any error' {
-                if($script:sqlVersion -eq '140')
+                if($script:sqlVersion -in @('150','140'))
                 {
-                    # SSRS 2017 does not support multiple instances
+                    # SSRS 2017 and 2019 do not support multiple instances
                     $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
                 }
                 else
@@ -161,9 +161,9 @@ try
             }
 
             It 'Should be able to access the Reports site without any error' {
-                if($script:sqlVersion -eq '140')
+                if($script:sqlVersion -in @('150','140'))
                 {
-                    # SSRS 2017 does not support multiple instances
+                    # SSRS 2017 and 2019 do not support multiple instances
                     $reportsUri = 'http://{0}/Reports' -f $env:COMPUTERNAME
                 }
                 else
@@ -243,9 +243,9 @@ try
                 as this without testing for the correct error message on purpose.
             #>
             It 'Should not be able to access the ReportServer site and throw an error message' {
-                if($script:sqlVersion -eq '140')
+                if($script:sqlVersion -in @('150','140'))
                 {
-                    # SSRS 2017 does not support multiple instances
+                    # SSRS 2017 and 2019 do not support multiple instances
                     $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
                 }
                 else
@@ -303,9 +303,9 @@ try
             }
 
             It 'Should be able to access the ReportServer site without any error' {
-                if($script:sqlVersion -eq '140')
+                if($script:sqlVersion -in @('150','140'))
                 {
-                    # SSRS 2017 does not support multiple instances
+                    # SSRS 2017 and 2019 do not support multiple instances
                     $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
                 }
                 else

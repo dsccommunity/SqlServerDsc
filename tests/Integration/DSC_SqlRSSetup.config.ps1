@@ -41,8 +41,8 @@ else
         If it exist, it will be upgraded.
 
         Uninstall is not tested, because when upgrading the existing Microsoft
-        SQL Server 2017 Reporting Services instance it requires a restart which
-        prevents uninstall until the node is rebooted.
+        SQL Server 2017 or SQL Server 2019 Reporting Services instance it requires
+        a restart which prevents uninstall until the node is rebooted.
 #>
 Configuration DSC_SqlRSSetup_InstallReportingServicesAsUser_Config
 {

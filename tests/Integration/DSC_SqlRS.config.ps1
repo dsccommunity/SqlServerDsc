@@ -17,7 +17,13 @@ else
     $mockLastDrive = ((Get-Volume).DriveLetter | Sort-Object | Select-Object -Last 1)
     $mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
 
-    if($script:sqlVersion -eq '140')
+    if($script:sqlVersion -eq '150')
+    {
+        # SQL2019
+        $instanceName = 'SSRS'
+        $isoImageName = 'SQL2019.iso'
+    }
+    elseif($script:sqlVersion -eq '140')
     {
         # SQL2017
         $instanceName = 'SSRS'
@@ -133,10 +139,10 @@ Configuration DSC_SqlRS_CreateDependencies_Config
             }
         }
         <#
-            DSC_SqlRSSetup.Integration.Tests.ps1 will have installed SSRS 2017.
+            DSC_SqlRSSetup.Integration.Tests.ps1 will have installed SSRS 2017 or 2019.
             We just need to start SSRS.
         #>
-        elseif($script:sqlVersion -eq '140')
+        elseif($script:sqlVersion -in @('150','140')
         {
             Service 'StartReportingServicesInstance'
             {
@@ -257,7 +263,7 @@ Configuration DSC_SqlRS_StopReportingServicesInstance_Config
                 State = 'Stopped'
             }
         }
-        elseif($script:sqlVersion -eq '140')
+        elseif($script:sqlVersion -in ('150','140'))
         {
             Service 'StopReportingServicesInstance'
             {
