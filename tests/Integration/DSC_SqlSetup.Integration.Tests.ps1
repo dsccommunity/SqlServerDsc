@@ -1,6 +1,6 @@
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2016','Integration_SQL2017')))
+if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2016','Integration_SQL2017','Integration_SQL2019')))
 {
     return
 }
@@ -66,7 +66,13 @@ function Show-SqlBootstrapLog
     to run the correct tests depending of what version of SQL Server is
     being tested in the current job.
 #>
-if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
+if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
+{
+    # TODO: Requires changing to update $script:mockSourceMediaUrl to the SQL2019 ISO
+    $script:sqlVersion = '150'
+    $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/E/F/2/EF23C21D-7860-4F05-88CE-39AA114B014B/SQLServer2017-x64-ENU.iso'
+}
+elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
 {
     $script:sqlVersion = '140'
     $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/E/F/2/EF23C21D-7860-4F05-88CE-39AA114B014B/SQLServer2017-x64-ENU.iso'

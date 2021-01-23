@@ -1,6 +1,6 @@
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2016','Integration_SQL2017')))
+if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2016','Integration_SQL2017','Integration_SQL2019')))
 {
     return
 }
@@ -29,7 +29,11 @@ $script:testEnvironment = Initialize-TestEnvironment `
     to run the correct tests depending of what version of SQL Server is
     being tested in the current job.
 #>
-if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
+if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
+{
+    $script:sqlVersion = '150'
+}
+elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
 {
     $script:sqlVersion = '140'
 }
