@@ -36,6 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `SqlRSSetup`, `SqlReplication`, `SqlRole`, `SqlScript`, `SqlScriptQuery`,
     `SqlSecureConnection`, `SqlServiceAccount` and `SqlSetup`.
 
+- SqlSetup
+  - Updated to `InstallSharedDir` property support when using SQL Server 2019.
+
 ### Fixed
 
 - SqlServerDsc
