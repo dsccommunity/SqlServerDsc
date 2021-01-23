@@ -29,6 +29,10 @@ else
                 SqlServerInstanceIdPrefix = 'MSSQL15'
                 AnalysisServiceInstanceIdPrefix = 'MSAS15'
                 IsoImageName = 'SQL2019.iso'
+
+                # Additional variables required as ISO is downloaded via additional EXE
+                DownloadExeName = 'SQL2019_Download.exe'
+                DownloadIsoName = 'SQLServer2019-x64-ENU-Dev.iso'
             }
         }
 
@@ -97,6 +101,10 @@ else
                 UpdateEnabled                           = 'False'
                 SuppressReboot                          = $true # Make sure we don't reboot during testing.
                 ForceReboot                             = $false
+
+                # Properties for downloading media
+                DownloadExePath                         = $(if($versionSpecificData.DownloadExeName){Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.DownloadExeName})
+                DownloadIsoPath                         = $(if($versionSpecificData.DownloadIsoName){Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.DownloadIsoName})
 
                 # Properties for mounting media
                 ImagePath                               = Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.IsoImageName
