@@ -690,7 +690,7 @@ try
 
                     It 'Should return correct names of installed features' {
                         $result = Get-TargetResource @testParameters
-                        if ($mockSqlMajorVersion -in (13,14))
+                        if ($mockSqlMajorVersion -in ('13', '14', '15'))
                         {
                             $result.Features | Should -Match 'SQLENGINE\b'
                             $result.Features | Should -Match 'REPLICATION\b'
@@ -822,7 +822,7 @@ try
 
                     It 'Should return correct names of installed features' {
                         $result = Get-TargetResource @testParameters
-                        if ($mockSqlMajorVersion -in (13,14))
+                        if ($mockSqlMajorVersion -in ('13', '14', '15'))
                         {
                             $result.Features | Should -Match 'SQLENGINE\b'
                             $result.Features | Should -Match 'REPLICATION\b'
@@ -1024,7 +1024,7 @@ try
 
                     It 'Should return correct names of installed features' {
                         $result = Get-TargetResource @testParameters
-                        if ($mockSqlMajorVersion -in (13,14))
+                        if ($mockSqlMajorVersion -in ('13', '14', '15'))
                         {
                             $result.Features | Should -Match 'SQLENGINE\b'
                             $result.Features | Should -Match 'REPLICATION\b'
@@ -1319,7 +1319,7 @@ try
 
                     It 'Should return correct names of installed features' {
                         $result = Get-TargetResource @testParameters
-                        if ($mockSqlMajorVersion -in (13,14))
+                        if ($mockSqlMajorVersion -in ('13', '14', '15'))
                         {
                             $result.Features | Should -Match 'SQLENGINE\b'
                             $result.Features | Should -Match 'REPLICATION\b'
@@ -2149,7 +2149,7 @@ try
                                 BrowserSvcStartupType = 'Automatic'
                             }
 
-                            if ( $mockSqlMajorVersion -in (13,14) )
+                            if ( $mockSqlMajorVersion -in ('13', '14', '15') )
                             {
                                 $testParameters.Features = $testParameters.Features -replace ',SSMS,ADV_SSMS',''
                             }
@@ -2544,7 +2544,7 @@ try
                             SqlTempDbLogFileGrowth = 128
                         }
 
-                        if ( $mockSqlMajorVersion -in (13,14) )
+                        if ( $mockSqlMajorVersion -in ('13', '14', '15') )
                         {
                             $testParameters.Features = $testParameters.Features -replace ',SSMS,ADV_SSMS',''
                         }
@@ -2587,7 +2587,7 @@ try
                         Assert-MockCalled -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
                     }
 
-                    if ($mockSqlMajorVersion -in (13,14,15))
+                    if ($mockSqlMajorVersion -in ('13', '14', '15'))
                     {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016, 2017 or 2019' {
                             $testParameters += @{
@@ -2685,7 +2685,7 @@ try
                             SourcePath = $mockSourcePathUNC
                         }
 
-                        if ( $mockSqlMajorVersion -in (13,14) )
+                        if ( $mockSqlMajorVersion -in ('13', '14', '15') )
                         {
                             $testParameters.Features = $testParameters.Features -replace ',SSMS,ADV_SSMS',''
                         }
@@ -2710,7 +2710,7 @@ try
                         Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                     }
 
-                    if ($mockSqlMajorVersion -in (13,14,15))
+                    if ($mockSqlMajorVersion -in ('13', '14', '15'))
                     {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016, 2017 or 2019' {
                             $testParameters.Features = 'SSMS'
@@ -2786,7 +2786,7 @@ try
                             SuppressReboot = $true
                         }
 
-                        if ( $mockSqlMajorVersion -in (13,14) )
+                        if ( $mockSqlMajorVersion -in ('13', '14', '15') )
                         {
                             $testParameters.Features = $testParameters.Features -replace ',SSMS,ADV_SSMS',''
                         }
@@ -2812,7 +2812,7 @@ try
                         Assert-MockCalled -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
                     }
 
-                    if( $mockSqlMajorVersion -in (13,14,15) )
+                    if( $mockSqlMajorVersion -in ('13', '14', '15') )
                     {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016, 2017 or 2019' {
                             $testParameters.Features = 'SSMS'
@@ -2894,7 +2894,7 @@ try
                             ForceReboot = $true
                         }
 
-                        if ( $mockSqlMajorVersion -in (13,14) )
+                        if ( $mockSqlMajorVersion -in ('13', '14', '15') )
                         {
                             $testParameters.Features = $testParameters.Features -replace ',SSMS,ADV_SSMS',''
                         }
@@ -2918,7 +2918,7 @@ try
                         Assert-MockCalled -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
                     }
 
-                    if( $mockSqlMajorVersion -in (13,14,15) )
+                    if( $mockSqlMajorVersion -in ('13', '14', '15') )
                     {
                         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016, 2017 or 2019' {
                             $testParameters.Features = $($testParameters.Features), 'SSMS' -join ','
