@@ -81,7 +81,7 @@ configuration name `'Integration_SQL2017'`.
 
 **Depends on:** SqlSetup (for the local installation account)
 
-The integration tests will install (or upgrade) seperate, Microsoft SQL Server
+The integration tests will install (or upgrade) separate, Microsoft SQL Server
 2017 and 2019, Reporting Services instances and leave them on the build server
 for other integration tests to use.
 
