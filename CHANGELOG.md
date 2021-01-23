@@ -36,9 +36,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `SqlRSSetup`, `SqlReplication`, `SqlRole`, `SqlScript`, `SqlScriptQuery`,
     `SqlSecureConnection`, `SqlServiceAccount` and `SqlSetup`.
 
-- SqlSetup
-  - Updated to `InstallSharedDir` property support when using SQL Server 2019.
-
 ### Fixed
 
 - SqlServerDsc
@@ -60,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlRSSetup
   - If parameter `SuppressRestart` is set to `$false` the `/norestart`
     argument is no longer wrongly added ([issue #1401](https://github.com/dsccommunity/SqlServerDsc/issues/1401)).
+- SqlSetup
+  - Added/corrected `InstallSharedDir`, property output when using SQL Server 2019.
 
 ## [15.0.1] - 2021-01-09
 
