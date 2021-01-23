@@ -28,13 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Added unit tests and integration tests for SQL Server 2019
     ([issue #1310](https://github.com/dsccommunity/SqlServerDsc/issues/1310)).
-    Additional tests apply to the following resources: `SqlAgentAlert`,
-    `SqlAgentFailsafe`, `SqlAgentOperator`,
-    `SqlDatabase`, `SqlDatabaseDefaultLocation`, `SqlDatabaseMail`,
-    `SqlDatabaseObjectPermission`, `SqlDatabasePermission`, `SqlDatabaseUser`,
-    `SqlEndpoint`, `SqlLogin`, `SqlProtocol`, `SqlProtocolTcpIp`, `SqlRS`,
-    `SqlRSSetup`, `SqlReplication`, `SqlRole`, `SqlScript`, `SqlScriptQuery`,
-    `SqlSecureConnection`, `SqlServiceAccount` and `SqlSetup`.
 
 ### Fixed
 
