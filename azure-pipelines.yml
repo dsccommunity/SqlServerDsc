@@ -49,7 +49,6 @@ stages:
   - stage: Test
     dependsOn: Build
     jobs:
-
       - job: Test_HQRM
         displayName: 'HQRM'
         pool:
