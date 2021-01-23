@@ -270,7 +270,7 @@ Configuration DSC_SqlRS_StopReportingServicesInstance_Config
                 State = 'Stopped'
             }
         }
-        elseif($script:sqlVersion -in ('150','140'))
+        elseif($script:sqlVersion -in @('150','140'))
         {
             Service 'StopReportingServicesInstance'
             {
