@@ -23,6 +23,15 @@ else
     #>
     switch ($script:sqlVersion)
     {
+        '150'
+        {
+            $versionSpecificData = @{
+                SqlServerInstanceIdPrefix = 'MSSQL15'
+                AnalysisServiceInstanceIdPrefix = 'MSAS15'
+                IsoImageName = 'SQL2019.iso'
+            }
+        }
+
         '140'
         {
             $versionSpecificData = @{
