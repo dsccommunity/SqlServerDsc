@@ -37,7 +37,6 @@ try
         $previousProgressPreference = $ProgressPreference
         $ProgressPreference = 'SilentlyContinue'
 
-        # TODO: Does this need to be different between SQL2017 and SQL2019?
         $script:mockSourceMediaDisplayName = 'Microsoft SQL Server Reporting Services (October 2017)'
         $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/E/6/4/E6477A2A-9B58-40F7-8AD6-62BB8491EA78/SQLServerReportingServices.exe'
 
