@@ -68,9 +68,8 @@ function Show-SqlBootstrapLog
 #>
 if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
 {
-    # TODO: Requires changing to update $script:mockSourceMediaUrl to the SQL2019 ISO
     $script:sqlVersion = '150'
-    $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/E/F/2/EF23C21D-7860-4F05-88CE-39AA114B014B/SQLServer2017-x64-ENU.iso'
+    $script:mockSourceDownloadExeUrl = 'https://download.microsoft.com/download/d/a/2/da259851-b941-459d-989c-54a18a5d44dd/SQL2019-SSEI-Dev.exe'
 }
 elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
 {
@@ -99,7 +98,28 @@ try
 
         Write-Verbose -Message "Start downloading the SQL Server media at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
 
-        Invoke-WebRequest -Uri $script:mockSourceMediaUrl -OutFile $ConfigurationData.AllNodes.ImagePath
+        if($script:mockSourceDownloadExeUrl)
+        {
+            # Download the EXE used to download the ISO
+            Invoke-WebRequest -Uri $script:mockSourceDownloadExeUrl -OutFile $ConfigurationData.AllNodes.DownloadExePath | Out-Null
+
+            # Download ISO using the EXE
+            $imageDirectoryPath = Split-Path -Path $ConfigurationData.AllNodes.ImagePath -Parent
+            $downloadExeArgumentList = '/ENU /Quiet /HideProgressBar /Action=Download /Language=en-US /MediaType=ISO /MediaPath={0}' -f $imageDirectoryPath
+            Start-Process -FilePath $ConfigurationData.AllNodes.DownloadExePath `
+                          -ArgumentList $downloadExeArgumentList `
+                          -Wait
+
+            # Rename the ISO to maintain consistency of names within integration tests
+            Rename-Item -Path $ConfigurationData.AllNodes.DownloadIsoPath `
+                        -NewName $(Split-Path -Path $ConfigurationData.AllNodes.ImagePath -Leaf) | Out-Null
+
+        }
+        else
+        {
+            # Direct ISO download
+            Invoke-WebRequest -Uri $script:mockSourceMediaUrl -OutFile $ConfigurationData.AllNodes.ImagePath
+        }
 
         Write-Verbose -Message ('SQL Server media file has SHA1 hash ''{0}''' -f (Get-FileHash -Path $ConfigurationData.AllNodes.ImagePath -Algorithm 'SHA1').Hash) -Verbose
 
