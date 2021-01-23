@@ -27,6 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- SqlServerDsc
+  - The component `gitversion` that is used in the pipeline was wrongly
+    configured when the repository moved to the new default branch `main`.
+    It no longer throws an error when using newer versions of GitVersion
+    ([issue #1674](https://github.com/dsccommunity/SqlServerDsc/issues/1674),
 - SqlLogin
   - Added integration tests to assert `LoginPasswordExpirationEnabled`,
   `LoginPasswordPolicyEnforced` and `LoginMustChangePassword` properties/parameters
@@ -38,6 +43,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated `SqlLogin`, integration tests to make use of amended `Wait-ForIdleLcm`,
     helper function, `-Clear` switch usage to remove intermittent, integration
     test failures ([issue #1634](https://github.com/dsccommunity/SqlServerDsc/issues/1634)).
+- SqlRSSetup
+  - If parameter `SuppressRestart` is set to `$false` the `/norestart`
+    argument is no longer wrongly added ([issue #1401](https://github.com/dsccommunity/SqlServerDsc/issues/1401)).
 
 ## [15.0.1] - 2021-01-09
 
@@ -52,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     hinders development and testing on macOS and Linux. Instead the
     resources have been update to use the helper function `Get-ComputerName`
     which returns the current computer name cross-plattform.
+  - Switch to GitHub Action Stale instead of GitHub App (Probot) Stale.
 
 ### Fixed
 
