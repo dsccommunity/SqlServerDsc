@@ -22,10 +22,6 @@ else
         # SQL2019
         $instanceName = 'SSRS'
         $isoImageName = 'SQL2019.iso'
-
-        # Additional variables required as ISO is downloaded via additional EXE
-        $downloadExeName = 'SQL2019_Download.exe'
-        $downloadIsoName = 'SQLServer2019-x64-ENU-Dev.iso'
     }
     elseif($script:sqlVersion -eq '140')
     {
@@ -57,9 +53,6 @@ else
                 UpdateEnabled        = 'False'
                 SuppressReboot       = $true # Make sure we don't reboot during testing.
                 ForceReboot          = $false
-
-                DownloadExePath      = "$env:TEMP\$downloadExeName"
-                DownloadIsoPath      = "$env:TEMP\$downloadIsoName"
 
                 ImagePath            = "$env:TEMP\$isoImageName"
                 DriveLetter          = $mockIsoMediaDriveLetter
