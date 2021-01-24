@@ -1247,7 +1247,7 @@ function Restart-ReportingServicesService
 
     if ($InstanceName -eq 'SSRS')
     {
-        # Check if we're dealing with SSRS 2017
+        # Check if we're dealing with SSRS 2017 or SQL2019
         $ServiceName = 'SQLServerReportingServices'
 
         Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose

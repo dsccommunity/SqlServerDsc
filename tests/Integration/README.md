@@ -16,11 +16,11 @@ to each other. Dependencies are made to speed up the testing.**
 
 ## SqlSetup
 
-Installs the Database Engine, Analysis Service for both SQL Server 2016
-and SQL Server 2017 in two different Azure Pipelines jobs with the configuration
-names `'Integration_SQL2016'` and `'Integration_SQL2017'`. It will also
-install the Reporting Services 2016 in the Azure Pipelines job with the configuration
-name `'Integration_SQL2016'`.
+Installs the Database Engine, Analysis Service for SQL Server 2016, SQL Server 2017
+and SQL Server 2019 in three different Azure Pipelines jobs with the configuration
+names `'Integration_SQL2016'`, `'Integration_SQL2017'` and `'Integration_SQL2019'`,
+respectively. It will also install the Reporting Services 2016 in the Azure Pipelines
+job with the configuration name `'Integration_SQL2016'`.
 
 **Run order:** 1
 
@@ -81,14 +81,13 @@ configuration name `'Integration_SQL2017'`.
 
 **Depends on:** SqlSetup (for the local installation account)
 
-The integration tests will install (or upgrade) a Microsoft SQL Server
-2017 Reporting Services instance and leave it on the AppVeyor build worker
+The integration tests will install (or upgrade) separate, Microsoft SQL Server
+2017 and 2019, Reporting Services instances and leave them on the build server
 for other integration tests to use.
 
 >**NOTE:** Uninstall is not tested, because when upgrading the existing
 >Microsoft SQL Server Reporting Services instance it requires a restart,
->that prevents uninstall until the node is restarted. AppVeyor build
->workers are not allowed to be restarted during testing phase.
+>that prevents uninstall until the node is restarted.
 
 Instance |  State
 --- | ---
@@ -257,18 +256,19 @@ worker.*
 
 ## SqlRS
 
-Configures _SQL Server Reporting Services 2016_ and _SQL Server Reporting_
-_Services 2017_ in two different Azure Pipelines jobs with the configuration
-names `'Integration_SQL2016'` and `'Integration_SQL2017'`.
+Configures _SQL Server Reporting Services 2016_,  _SQL Server Reporting_
+_Services 2017_ and _SQL Server Reporting_
+_Services 2019_ in three different Azure Pipelines jobs with the configuration
+names `'Integration_SQL2016'`, `'Integration_SQL2017'` and `'Integration_SQL2019'`.
 
 **Run order:** 3
 
 **Depends on:** SqlSetup, SqlRSSetup
 
 When running integration tests for SQL Server 2016 the integration tests
-will install the following instances and leave it on the AppVeyor build
-worker for other integration tests to use.
-When running integration tests for SQL Server 2017 the Reporting Services
+will install the following instances and leave it on the build server for other
+integration tests to use.
+When running integration tests for SQL Server 2017 and 2019, the Reporting Services
 instance installed by the resource SqlRSSetup is started, and then stopped
 again after the integration tests has run.
 

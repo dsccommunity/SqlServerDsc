@@ -248,6 +248,74 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration (Windows Server Core)'
 
+      - job: Test_Integration_SQL2019
+        displayName: 'Integration (SQL2019)'
+        pool:
+          vmImage: 'windows-2019'
+        timeoutInMinutes: 0
+        variables:
+          # This sets environment variable $env:CI.
+          CI: true
+          # This sets environment variable $env:CONFIGURATION.
+          configuration: Integration_SQL2019
+        steps:
+          - task: DownloadBuildArtifacts@0
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: $(buildArtifactName)
+              downloadPath: '$(Build.SourcesDirectory)'
+          - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Configure WinRM'
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
+          - powershell: |
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterScript @(
+                  # Run the integration tests in a specific group order.
+                  # Group 1
+                  'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
+                  # Group 2
+                  'tests/Integration/DSC_SqlAgentAlert.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlLogin.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabase.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlAlwaysOnService.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlAgentOperator.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlServiceAccount.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
+                  # Group 3
+                  'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
+                  # Group 4
+                  'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
+                  # Group 5
+                  'tests/Integration/DSC_SqlSecureConnection.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlProtocol.Integration.Tests.ps1'
+                  # Group 6 (tests makes changes that could make SQL Server to loose connectivity)
+                  'tests/Integration/DSC_SqlProtocolTcpIp.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabaseObjectPermission.Integration.Tests.ps1'
+              )
+            name: test
+            displayName: 'Run Integration Test'
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Integration (Windows Server Core)'
+
       - job: Code_Coverage
         displayName: 'Publish Code Coverage'
         dependsOn: Test_Unit

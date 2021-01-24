@@ -3086,7 +3086,7 @@ InModuleScope $script:subModuleName {
             }
         }
 
-        Context 'When restarting an SQL Server 2017 Report Services' {
+        Context 'When restarting a SQL Server 2017 (or newer) Report Services' {
             BeforeAll {
                 $mockServiceName = 'SQLServerReportingServices'
                 $mockDependedServiceName = 'DependentService'

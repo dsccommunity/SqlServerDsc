@@ -25,13 +25,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     where `PasswordExpirationEnabled` is `$true` but `PasswordPolicyEnforced` is
     `$false`).
 
+- SqlServerDsc
+  - Added unit tests and integration tests for SQL Server 2019
+    ([issue #1310](https://github.com/dsccommunity/SqlServerDsc/issues/1310)).
+
 ### Fixed
 
 - SqlServerDsc
   - The component `gitversion` that is used in the pipeline was wrongly
     configured when the repository moved to the new default branch `main`.
     It no longer throws an error when using newer versions of GitVersion
-    ([issue #1674](https://github.com/dsccommunity/SqlServerDsc/issues/1674),
+    ([issue #1674](https://github.com/dsccommunity/SqlServerDsc/issues/1674)).
 - SqlLogin
   - Added integration tests to assert `LoginPasswordExpirationEnabled`,
   `LoginPasswordPolicyEnforced` and `LoginMustChangePassword` properties/parameters
@@ -46,6 +50,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlRSSetup
   - If parameter `SuppressRestart` is set to `$false` the `/norestart`
     argument is no longer wrongly added ([issue #1401](https://github.com/dsccommunity/SqlServerDsc/issues/1401)).
+- SqlSetup
+  - Added/corrected `InstallSharedDir`, property output when using SQL Server 2019.
 
 ## [15.0.1] - 2021-01-09
 
