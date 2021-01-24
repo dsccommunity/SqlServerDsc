@@ -80,20 +80,6 @@ Configuration DSC_SqlRS_CreateDependencies_Config
 
     node $AllNodes.NodeName
     {
-        MountImage 'MountIsoMedia'
-        {
-            ImagePath   = $Node.ImagePath
-            DriveLetter = $Node.DriveLetter
-            Ensure      = 'Present'
-        }
-
-        WaitForVolume 'WaitForMountOfIsoMedia'
-        {
-            DriveLetter      = $Node.DriveLetter
-            RetryIntervalSec = 5
-            RetryCount       = 10
-        }
-
         User 'CreateReportingServicesServiceAccount'
         {
             Ensure   = 'Present'
@@ -111,6 +97,20 @@ Configuration DSC_SqlRS_CreateDependencies_Config
 
         if($script:sqlVersion -eq '130')
         {
+            MountImage 'MountIsoMedia'
+            {
+                ImagePath   = $Node.ImagePath
+                DriveLetter = $Node.DriveLetter
+                Ensure      = 'Present'
+            }
+
+            WaitForVolume 'WaitForMountOfIsoMedia'
+            {
+                DriveLetter      = $Node.DriveLetter
+                RetryIntervalSec = 5
+                RetryCount       = 10
+            }
+
             SqlSetup 'InstallReportingServicesInstance'
             {
                 InstanceName          = $Node.InstanceName
