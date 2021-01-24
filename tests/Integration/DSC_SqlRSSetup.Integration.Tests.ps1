@@ -1,7 +1,7 @@
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-# Run only for SQL 2017 or SQL 2019 integration testing.
-if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2017','Integration_SQL2019')))
+# Run only for SQL Server 2017, integration testing at present (not SQL Server 2019)
+if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2017')))
 {
     return
 }
