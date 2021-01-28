@@ -5,9 +5,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- SqlTraceFlag
-  - Fixed Assembly not loaded error
-   ([issue #1680](https://github.com/dsccommunity/SqlServerDsc/issues/1680)).
+### Added
+
+- SqlServerDsc
+  - A new script analyzer rule to verify that `Import-SQLPSModule` is
+    present in each *-TargetResource. If it is not needed then the analyzer
+    rule should be overridden.
+  - Added unit tests and integration tests for SQL Server 2019
+    ([issue #1310](https://github.com/dsccommunity/SqlServerDsc/issues/1310)).
 
 ### Changed
 
@@ -28,10 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     of these properties that have to transition through an invalid combination (e.g.
     where `PasswordExpirationEnabled` is `$true` but `PasswordPolicyEnforced` is
     `$false`).
-
-- SqlServerDsc
-  - Added unit tests and integration tests for SQL Server 2019
-    ([issue #1310](https://github.com/dsccommunity/SqlServerDsc/issues/1310)).
 
 ### Fixed
 
@@ -56,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     argument is no longer wrongly added ([issue #1401](https://github.com/dsccommunity/SqlServerDsc/issues/1401)).
 - SqlSetup
   - Added/corrected `InstallSharedDir`, property output when using SQL Server 2019.
+- SqlTraceFlag
+  - Fixed Assembly not loaded error ([issue #1680](https://github.com/dsccommunity/SqlServerDsc/issues/1680)).
 
 ## [15.0.1] - 2021-01-09
 
