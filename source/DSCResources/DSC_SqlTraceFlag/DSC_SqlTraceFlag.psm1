@@ -33,8 +33,8 @@ function Get-TargetResource
         $InstanceName
     )
 
-    #Import SqlServer module but suppress verbose message.
-    Import-SQLPSModule 4>$null
+    # Import SqlServer module.
+    Import-SQLPSModule
 
     Write-Verbose -Message (
         $script:localizedData.GetConfiguration -f $InstanceName
@@ -148,8 +148,8 @@ function Set-TargetResource
         $RestartTimeout = 120
     )
 
-    #Import SqlServer module but suppress verbose message.
-    Import-SQLPSModule 4>$null
+    # Import SqlServer module.
+    Import-SQLPSModule
 
     Write-Verbose -Message (
         $script:localizedData.SetConfiguration -f $InstanceName

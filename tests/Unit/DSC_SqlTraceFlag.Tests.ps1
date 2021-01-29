@@ -167,6 +167,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                     return @($mockServerObject)
                 }
                 Mock -CommandName New-Object -MockWith $mockSmoWmiManagedComputer -ParameterFilter $mockNewObject_ParameterFilter_RealServerName -Verifiable
+                Mock -CommandName Import-SQLPSModule -MockWith {return}
             }
 
             Context 'For the default instance' {
@@ -353,6 +354,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                     return @($mockServerObject)
                 }
                 Mock -CommandName New-Object -MockWith $mockSmoWmiManagedComputer -Verifiable
+                Mock -CommandName Import-SQLPSModule -MockWith {return}
             }
 
             Context 'When the system is not in the desired state and TraceFlags is empty' {
