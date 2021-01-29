@@ -244,7 +244,7 @@ function Set-TargetResource
                             )
 
                             # Assert that the login exist.
-                            Assert-SqlLogin @PSBoundParameters
+                            Assert-SqlLogin -ServerName $ServerName @PSBoundParameters
 
                             try
                             {
@@ -360,7 +360,7 @@ function Set-TargetResource
                 'Login'
                 {
                     # Assert that the login exist.
-                    Assert-SqlLogin @PSBoundParameters
+                    Assert-SqlLogin -ServerName $ServerName @PSBoundParameters
 
                     Invoke-Query @invokeQueryParameters -Query (
                         'CREATE USER [{0}] FOR LOGIN [{1}];' -f $Name, $LoginName
