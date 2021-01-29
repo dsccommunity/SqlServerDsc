@@ -1,7 +1,7 @@
 [ClassVersion("1.0.0.0"), FriendlyName("SqlTraceFlag")]
 class DSC_SqlTraceFlag : OMI_BaseResource
 {
-    [Write, Description("The host name of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
+    [Write, Description("The host name of the _SQL Server_ to be configured. Default value is the current computer name.")] String ServerName;
     [Key, Description("The name of the _SQL Server_ instance to be configured.")] String InstanceName;
     [Write, Description("An array of trace flags that startup options should have. This parameter will replace all the current trace flags with the specified trace flags.")] Uint32 TraceFlags[];
     [Write, Description("An array of trace flags to be added to the existing trace flags.")] Uint32 TraceFlagsToInclude[];

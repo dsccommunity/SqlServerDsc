@@ -2,6 +2,8 @@
 
 The `SqlAGDatabase` DSC resource is used to add databases or remove
 databases from a specified availability group.
+When a replica has Automatic seeding on Automatic, no restore is use for that replica.
+When all replicas are on automatic seeding, no backup is made, unless the database has never been backuped.
 
 ## Requirements
 

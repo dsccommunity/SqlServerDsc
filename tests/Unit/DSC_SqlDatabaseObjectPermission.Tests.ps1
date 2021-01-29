@@ -192,7 +192,7 @@ try
                     $getTargetResourceResult.Permission | Should -HaveCount 1
                     $getTargetResourceResult.Permission[0] | Should -BeOfType 'CimInstance'
 
-                    $grantPermission = $getTargetResourceResult.Permission.Where( { $_.State -eq 'Grant' })
+                    $grantPermission = $getTargetResourceResult.Permission | Where-Object -FilterScript { $_.State -eq 'Grant' }
                     $grantPermission | Should -Not -BeNullOrEmpty
                     $grantPermission.Ensure | Should -Be 'Present'
                     $grantPermission.Permission | Should -HaveCount 2
@@ -250,7 +250,7 @@ try
                         $getTargetResourceResult.Permission | Should -HaveCount 1
                         $getTargetResourceResult.Permission[0] | Should -BeOfType 'CimInstance'
 
-                        $grantPermission = $getTargetResourceResult.Permission.Where( { $_.State -eq 'Grant' })
+                        $grantPermission = $getTargetResourceResult.Permission | Where-Object -FilterScript { $_.State -eq 'Grant' }
                         $grantPermission | Should -Not -BeNullOrEmpty
                         $grantPermission.Ensure | Should -Be 'Absent'
                         $grantPermission.Permission | Should -HaveCount 1
@@ -306,7 +306,7 @@ try
                         $getTargetResourceResult.Permission | Should -HaveCount 1
                         $getTargetResourceResult.Permission[0] | Should -BeOfType 'CimInstance'
 
-                        $grantPermission = $getTargetResourceResult.Permission.Where( { $_.State -eq 'Deny' })
+                        $grantPermission = $getTargetResourceResult.Permission | Where-Object -FilterScript { $_.State -eq 'Deny' }
                         $grantPermission | Should -Not -BeNullOrEmpty
                         $grantPermission.Ensure | Should -Be 'Absent'
                         $grantPermission.Permission | Should -HaveCount 1
@@ -362,7 +362,7 @@ try
                         $getTargetResourceResult.Permission | Should -HaveCount 1
                         $getTargetResourceResult.Permission[0] | Should -BeOfType 'CimInstance'
 
-                        $grantPermission = $getTargetResourceResult.Permission.Where( { $_.State -eq 'Grant' })
+                        $grantPermission = $getTargetResourceResult.Permission | Where-Object -FilterScript { $_.State -eq 'Grant' }
                         $grantPermission | Should -Not -BeNullOrEmpty
                         $grantPermission.Ensure | Should -Be 'Present'
                         $grantPermission.Permission | Should -HaveCount 1
@@ -502,7 +502,7 @@ try
                     $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                     $compareTargetResourceStateResult | Should -HaveCount 1
 
-                    $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                    $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                     $comparedReturnValue | Should -Not -BeNullOrEmpty
                     $comparedReturnValue.InDesiredState | Should -BeTrue
 
@@ -512,20 +512,20 @@ try
                     $comparedReturnValue.Actual[1] | Should -BeOfType 'CimInstance'
                     $comparedReturnValue.Actual[2] | Should -BeOfType 'CimInstance'
 
-                    $grantPermission = $comparedReturnValue.Actual.Where( { $_.State -eq 'Grant' })
+                    $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Grant' }
                     $grantPermission | Should -Not -BeNullOrEmpty
                     $grantPermission.Ensure | Should -Be 'Present'
                     $grantPermission.Permission | Should -HaveCount 2
                     $grantPermission.Permission | Should -Contain @('Select')
                     $grantPermission.Permission | Should -Contain @('Update')
 
-                    $grantPermission = $comparedReturnValue.Actual.Where( { $_.State -eq 'Deny' })
+                    $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Deny' }
                     $grantPermission | Should -Not -BeNullOrEmpty
                     $grantPermission.Ensure | Should -Be 'Present'
                     $grantPermission.Permission | Should -HaveCount 1
                     $grantPermission.Permission | Should -Contain @('Delete')
 
-                    $grantPermission = $comparedReturnValue.Actual.Where( { $_.State -eq 'GrantWithGrant' })
+                    $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
                     $grantPermission | Should -Not -BeNullOrEmpty
                     $grantPermission.Ensure | Should -Be 'Absent'
                     $grantPermission.Permission | Should -HaveCount 1
@@ -537,20 +537,20 @@ try
                     $comparedReturnValue.Expected[1] | Should -BeOfType 'CimInstance'
                     $comparedReturnValue.Expected[2] | Should -BeOfType 'CimInstance'
 
-                    $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Grant' })
+                    $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
                     $grantPermission | Should -Not -BeNullOrEmpty
                     $grantPermission.Ensure | Should -Be 'Present'
                     $grantPermission.Permission | Should -HaveCount 2
                     $grantPermission.Permission | Should -Contain @('Select')
                     $grantPermission.Permission | Should -Contain @('Update')
 
-                    $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Deny' })
+                    $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
                     $grantPermission | Should -Not -BeNullOrEmpty
                     $grantPermission.Ensure | Should -Be 'Present'
                     $grantPermission.Permission | Should -HaveCount 1
                     $grantPermission.Permission | Should -Contain @('Delete')
 
-                    $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'GrantWithGrant' })
+                    $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
                     $grantPermission | Should -Not -BeNullOrEmpty
                     $grantPermission.Ensure | Should -Be 'Absent'
                     $grantPermission.Permission | Should -HaveCount 1
@@ -615,7 +615,7 @@ try
                         $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                         $compareTargetResourceStateResult | Should -HaveCount 1
 
-                        $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                        $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                         $comparedReturnValue | Should -Not -BeNullOrEmpty
 
                         $comparedReturnValue.Actual | Should -HaveCount 3
@@ -624,20 +624,20 @@ try
                         $comparedReturnValue.Actual[2] | Should -BeOfType 'CimInstance'
 
                         # Actual permissions
-                        $grantPermission = $comparedReturnValue.Actual.Where( { $_.State -eq 'Grant' })
+                        $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Grant' }
                         $grantPermission | Should -Not -BeNullOrEmpty
                         $grantPermission.Ensure | Should -Be 'Present'
                         $grantPermission.Permission | Should -HaveCount 2
                         $grantPermission.Permission | Should -Contain @('Select')
                         $grantPermission.Permission | Should -Contain @('Update')
 
-                        $grantPermission = $comparedReturnValue.Actual.Where( { $_.State -eq 'Deny' })
+                        $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Deny' }
                         $grantPermission | Should -Not -BeNullOrEmpty
                         $grantPermission.Ensure | Should -Be 'Present'
                         $grantPermission.Permission | Should -HaveCount 1
                         $grantPermission.Permission | Should -Contain @('Delete')
 
-                        $grantPermission = $comparedReturnValue.Actual.Where( { $_.State -eq 'GrantWithGrant' })
+                        $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
                         $grantPermission | Should -Not -BeNullOrEmpty
                         $grantPermission.Ensure | Should -Be 'Present'
                         $grantPermission.Permission | Should -HaveCount 1
@@ -683,7 +683,7 @@ try
                             $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                             $compareTargetResourceStateResult | Should -HaveCount 1
 
-                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                            $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
@@ -693,20 +693,20 @@ try
                             $comparedReturnValue.Expected[2] | Should -BeOfType 'CimInstance'
 
                             # Expected permissions
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Grant' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Absent'
                             $grantPermission.Permission | Should -HaveCount 2
                             $grantPermission.Permission | Should -Contain @('Select')
                             $grantPermission.Permission | Should -Contain @('Update')
 
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Deny' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
                             $grantPermission.Permission | Should -Contain @('Delete')
 
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'GrantWithGrant' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -753,7 +753,7 @@ try
                             $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                             $compareTargetResourceStateResult | Should -HaveCount 1
 
-                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                            $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
@@ -763,20 +763,20 @@ try
                             $comparedReturnValue.Expected[2] | Should -BeOfType 'CimInstance'
 
                             # Expected permissions
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Grant' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 2
                             $grantPermission.Permission | Should -Contain @('Select')
                             $grantPermission.Permission | Should -Contain @('Update')
 
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Deny' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
                             $grantPermission.Permission | Should -Contain @('Delete')
 
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'GrantWithGrant' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Absent'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -823,7 +823,7 @@ try
                             $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                             $compareTargetResourceStateResult | Should -HaveCount 1
 
-                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                            $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
@@ -833,20 +833,20 @@ try
                             $comparedReturnValue.Expected[2] | Should -BeOfType 'CimInstance'
 
                             # Expected permissions
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Grant' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 2
                             $grantPermission.Permission | Should -Contain @('Select')
                             $grantPermission.Permission | Should -Contain @('Update')
 
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Deny' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Absent'
                             $grantPermission.Permission | Should -HaveCount 1
                             $grantPermission.Permission | Should -Contain @('Delete')
 
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'GrantWithGrant' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -883,7 +883,7 @@ try
                             $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                             $compareTargetResourceStateResult | Should -HaveCount 1
 
-                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                            $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
@@ -891,7 +891,7 @@ try
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
 
                             # Expected permissions
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Grant' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -928,7 +928,7 @@ try
                             $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                             $compareTargetResourceStateResult | Should -HaveCount 1
 
-                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                            $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
@@ -936,7 +936,7 @@ try
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
 
                             # Expected permissions
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'GrantWithGrant' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -973,7 +973,7 @@ try
                             $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                             $compareTargetResourceStateResult | Should -HaveCount 1
 
-                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                            $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
@@ -981,7 +981,7 @@ try
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
 
                             # Expected permissions
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Deny' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -1036,7 +1036,7 @@ try
                             $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                             $compareTargetResourceStateResult | Should -HaveCount 1
 
-                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                            $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
@@ -1047,7 +1047,7 @@ try
                             $comparedReturnValue.Expected | Should -HaveCount 1
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
 
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Grant' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 2
@@ -1101,7 +1101,7 @@ try
                             $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                             $compareTargetResourceStateResult | Should -HaveCount 1
 
-                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                            $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
@@ -1112,7 +1112,7 @@ try
                             $comparedReturnValue.Expected | Should -HaveCount 1
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
 
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'GrantWithGrant' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 2
@@ -1166,7 +1166,7 @@ try
                             $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                             $compareTargetResourceStateResult | Should -HaveCount 1
 
-                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                            $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
@@ -1177,7 +1177,7 @@ try
                             $comparedReturnValue.Expected | Should -HaveCount 1
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
 
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Deny' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 2
@@ -1239,7 +1239,7 @@ try
                             $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                             $compareTargetResourceStateResult | Should -HaveCount 1
 
-                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                            $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
@@ -1247,7 +1247,7 @@ try
                             $comparedReturnValue.Actual | Should -HaveCount 1
                             $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
 
-                            $grantPermission = $comparedReturnValue.Actual.Where( { $_.State -eq 'Grant' })
+                            $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Grant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -1257,7 +1257,7 @@ try
                             $comparedReturnValue.Expected | Should -HaveCount 1
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
 
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Grant' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -1316,7 +1316,7 @@ try
                             $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                             $compareTargetResourceStateResult | Should -HaveCount 1
 
-                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                            $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
@@ -1324,7 +1324,7 @@ try
                             $comparedReturnValue.Actual | Should -HaveCount 1
                             $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
 
-                            $grantPermission = $comparedReturnValue.Actual.Where( { $_.State -eq 'GrantWithGrant' })
+                            $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -1334,7 +1334,7 @@ try
                             $comparedReturnValue.Expected | Should -HaveCount 1
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
 
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'GrantWithGrant' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -1393,7 +1393,7 @@ try
                             $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                             $compareTargetResourceStateResult | Should -HaveCount 1
 
-                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                            $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
@@ -1401,7 +1401,7 @@ try
                             $comparedReturnValue.Actual | Should -HaveCount 1
                             $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
 
-                            $grantPermission = $comparedReturnValue.Actual.Where( { $_.State -eq 'Deny' })
+                            $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Deny' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -1411,7 +1411,7 @@ try
                             $comparedReturnValue.Expected | Should -HaveCount 1
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
 
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Deny' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -1472,7 +1472,7 @@ try
                             $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                             $compareTargetResourceStateResult | Should -HaveCount 1
 
-                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                            $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
@@ -1480,7 +1480,7 @@ try
                             $comparedReturnValue.Actual | Should -HaveCount 1
                             $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
 
-                            $grantPermission = $comparedReturnValue.Actual.Where( { $_.State -eq 'Deny' })
+                            $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Deny' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -1490,7 +1490,7 @@ try
                             $comparedReturnValue.Expected | Should -HaveCount 1
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
 
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Grant' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -1549,7 +1549,7 @@ try
                             $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                             $compareTargetResourceStateResult | Should -HaveCount 1
 
-                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                            $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
@@ -1557,7 +1557,7 @@ try
                             $comparedReturnValue.Actual | Should -HaveCount 1
                             $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
 
-                            $grantPermission = $comparedReturnValue.Actual.Where( { $_.State -eq 'Deny' })
+                            $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Deny' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -1567,7 +1567,7 @@ try
                             $comparedReturnValue.Expected | Should -HaveCount 1
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
 
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'GrantWithGrant' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -1626,7 +1626,7 @@ try
                             $compareTargetResourceStateResult = Compare-TargetResourceState @compareTargetResourceParameters
                             $compareTargetResourceStateResult | Should -HaveCount 1
 
-                            $comparedReturnValue = $compareTargetResourceStateResult.Where( { $_.ParameterName -eq 'Permission' })
+                            $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
@@ -1634,7 +1634,7 @@ try
                             $comparedReturnValue.Actual | Should -HaveCount 1
                             $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
 
-                            $grantPermission = $comparedReturnValue.Actual.Where( { $_.State -eq 'Grant' })
+                            $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Grant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1
@@ -1644,7 +1644,7 @@ try
                             $comparedReturnValue.Expected | Should -HaveCount 1
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
 
-                            $grantPermission = $comparedReturnValue.Expected.Where( { $_.State -eq 'Deny' })
+                            $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
                             $grantPermission | Should -Not -BeNullOrEmpty
                             $grantPermission.Ensure | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 1

@@ -883,12 +883,11 @@ function Get-SqlLocalServerName
 
     if ($InstanceName -eq 'MSSQLSERVER')
     {
-        return $env:COMPUTERNAME
+        return Get-ComputerName
     }
     else
     {
-        return "$($env:COMPUTERNAME)\$InstanceName"
+        return "$(Get-ComputerName)\$InstanceName"
     }
 }
 
-Export-ModuleMember -Function *-TargetResource

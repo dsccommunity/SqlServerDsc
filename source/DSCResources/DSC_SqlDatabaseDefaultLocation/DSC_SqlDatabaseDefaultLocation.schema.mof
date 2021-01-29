@@ -4,7 +4,7 @@ class DSC_SqlDatabaseDefaultLocation : OMI_BaseResource
     [Key, Description("The name of the _SQL Server_ instance to be configured.")] String InstanceName;
     [Key, Description("The type of database default location to be configured."), ValueMap{"Data","Log","Backup"}, Values{"Data","Log","Backup"}] String Type;
     [Required, Description("The path to the default directory to be set for the type specified in the parameter **Type**.")] String Path;
-    [Write, Description("The host name of the _SQL Server_ to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
+    [Write, Description("The host name of the _SQL Server_ to be configured. Default value is the current computer name.")] String ServerName;
     [Write, Description("If set to `$true` then _SQL Server_ and dependent services will be restarted if a change to the configuration is made. The default value is `$false`.")] Boolean RestartService;
     [Write, Description("Specifies that the resource will only determine if a change is needed if the target node is the active host of the _SQL Server_ instance.")] Boolean ProcessOnlyOnActiveNode;
     [Read, Description("Returns if the current node is actively hosting the _SQL Server_ instance.")] Boolean IsActiveNode;

@@ -6,7 +6,108 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - SqlTraceFlag
-  - Fixed Assembly not loaded error #1680
+  - Fixed Assembly not loaded error. 
+   ([issue #1680](https://github.com/dsccommunity/SqlServerDsc/issues/1680)).
+### Changed
+
+- SqlLogin
+  - Added functionality to throw exception if an update to the `LoginMustChangePassword`
+    value on an existing SQL Login is attempted. This functionality is not supported
+    by referenced, SQL Server Management Object (SMO), libraries and cannot be
+    supported directly by this module.
+  - Added integration tests to ensure that an added (or updated) `SqlLogin` can
+    connect into a SQL instance once added (or updated).
+  - Added integration tests to ensure that the default database connected to by
+    a `SqlLogin` is the same as specified in the resource's `DefaultDatabase`
+    property/parameter.
+  - Amended how the interdependent, `PasswordExpirationEnabled` and `PasswordPolicyEnforced`
+    properties/parameters are updated within the `SqlLogin` resource - Both values
+    are now updated together if either one or both are not currently in the desired
+    state. This change avoids exceptions thrown by transitions to valid, combinations
+    of these properties that have to transition through an invalid combination (e.g.
+    where `PasswordExpirationEnabled` is `$true` but `PasswordPolicyEnforced` is
+    `$false`).
+
+- SqlServerDsc
+  - Added unit tests and integration tests for SQL Server 2019
+    ([issue #1310](https://github.com/dsccommunity/SqlServerDsc/issues/1310)).
+
+### Fixed
+
+- SqlServerDsc
+  - The component `gitversion` that is used in the pipeline was wrongly
+    configured when the repository moved to the new default branch `main`.
+    It no longer throws an error when using newer versions of GitVersion
+    ([issue #1674](https://github.com/dsccommunity/SqlServerDsc/issues/1674)).
+- SqlLogin
+  - Added integration tests to assert `LoginPasswordExpirationEnabled`,
+  `LoginPasswordPolicyEnforced` and `LoginMustChangePassword` properties/parameters
+  are applied and updated correctly. Similar integration tests also added to ensure
+  the password of the `SqlLogin` is updated if the password within the `SqlCredential`
+  value/object is changed ([issue #361](https://github.com/dsccommunity/SqlServerDsc/issues/361),
+  [issue #1032](https://github.com/dsccommunity/SqlServerDsc/issues/1032) and
+  [issue #1050](https://github.com/dsccommunity/SqlServerDsc/issues/1050)).
+  - Updated `SqlLogin`, integration tests to make use of amended `Wait-ForIdleLcm`,
+    helper function, `-Clear` switch usage to remove intermittent, integration
+    test failures ([issue #1634](https://github.com/dsccommunity/SqlServerDsc/issues/1634)).
+- SqlRSSetup
+  - If parameter `SuppressRestart` is set to `$false` the `/norestart`
+    argument is no longer wrongly added ([issue #1401](https://github.com/dsccommunity/SqlServerDsc/issues/1401)).
+- SqlSetup
+  - Added/corrected `InstallSharedDir`, property output when using SQL Server 2019.
+
+## [15.0.1] - 2021-01-09
+
+### Changed
+
+- SqlServerDsc
+  - Renamed `master` branch to `main` ([issue #1660](https://github.com/dsccommunity/SqlServerDsc/issues/1660)).
+  - The module manifest property `DscResourcesToExport` now updates automatically
+    using the pipeline.
+  - Removed `Export-ModuleMember` from DSC resource that still had it.
+  - The variable `$env:COMPUTERNAME` does not exist cross-platform which
+    hinders development and testing on macOS and Linux. Instead the
+    resources have been update to use the helper function `Get-ComputerName`
+    which returns the current computer name cross-plattform.
+  - Switch to GitHub Action Stale instead of GitHub App (Probot) Stale.
+
+### Fixed
+
+- SqlAGDatabase
+  - Fix for issue ([issue #1492](https://github.com/dsccommunity/SqlServerDsc/issues/1492))
+    added AutomaticSeeding for this resource. In Set-TargetResource added logic that looks
+    at all replicas of an availability group. When automatic seeding is found, it will use that.
+  - Lots of extra tests to check AutomaticSeeding.
+  - The parameter `BackupPath` is still needed just in case a database never has been backuped before.
+  - Fixed a typo.
+- SqlMaxDop
+  - Fixes ([issue #396](https://github.com/dsccommunity/SqlServerDsc/issues/396)).
+    Added three return values in Get-Target resource.
+- SqlProtocol
+  - Changed KeepAlive Type from UInt16 to Int32 to reflect the actual WMI.ManagementObject
+    Fixes #1645 ([issue #1645](https://github.com/dsccommunity/SqlServerDsc/issues/1645)).
+  - The verbose messages now correctly show that `$env:COMPUTERNAME` is used
+    to get or set the configuration, while parameter **ServerName** is used
+    to restart the instance.
+- SqlProtocolTcpIp
+  - The verbose messages now correctly show that `$env:COMPUTERNAME` is used
+    to get or set the configuration, while parameter **ServerName** is used
+    to restart the instance.
+- SqlDatabaseMail
+  - Now if a non-mandatory property is not part of the configuration it will
+    not be enforced ([issue #1661](https://github.com/dsccommunity/SqlServerDsc/issues/1661)).
+- SqlSetup
+  - When the SqlSetup detects that the expected components was not installed
+    and consequently throws an exception, that exception message now presents
+    a link to an article on how to find the SQL Server setup logs ([issue #1420](https://github.com/dsccommunity/SqlServerDsc/issues/1420)).
+- SqlRSSetup
+  - If parameter `EditionUpgrade` is set to `$false` the `/EditionUpgrade`
+    argument is no longer wrongly added ([issue #1398](https://github.com/dsccommunity/SqlServerDsc/issues/1398)).
+- SqlServerDsc.Common
+  - Updated `Get-ServerProtocolObject`, helper function to ensure an exception is
+    thrown if the specified instance cannot be obtained ([issue #1628](https://github.com/dsccommunity/SqlServerDsc/issues/1628)).
+
+## [15.0.0] - 2020-12-06
 
 ### Added
 
@@ -66,6 +167,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added a note to the documentation that the parameter `BrowserSvcStartupType`
     cannot be used for configurations that utilize the `'InstallFailoverCluster'`
     action ([issue #1627](https://github.com/dsccommunity/SqlServerDsc/issues/1627)).
+- SqlDatabaseObjectPermission
+  - Updated unit tests to remove errors relating to missing `Where()` method
+    ([issue #1648](https://github.com/dsccommunity/SqlServerDsc/issues/1648)).
 
 ## [14.2.1] - 2020-08-14
 

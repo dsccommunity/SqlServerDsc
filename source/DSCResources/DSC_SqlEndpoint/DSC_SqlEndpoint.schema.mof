@@ -6,7 +6,7 @@ class DSC_SqlEndpoint : OMI_BaseResource
     [Required, Description("Specifies the type of endpoint. Currently the only types that are supported are the _Database Mirroring_ and the _Service Broker_ type."), ValueMap{"DatabaseMirroring","ServiceBroker"}, Values{"DatabaseMirroring","ServiceBroker"}] String EndpointType;
     [Write, Description("If the endpoint should be present or absent. Default values is `'Present'`."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Write, Description("The network port the endpoint is listening on. Default value is `5022`, but default value is only used during endpoint creation, it is not enforce.")] Uint16 Port;
-    [Write, Description("The host name of the SQL Server to be configured. Default value is `$env:COMPUTERNAME`.")] String ServerName;
+    [Write, Description("The host name of the SQL Server to be configured. Default value is the current computer name.")] String ServerName;
     [Write, Description("The network IP address the endpoint is listening on. Default value is `'0.0.0.0'` which means listen on any valid IP address. The default value is only used during endpoint creation, it is not enforce.")] String IpAddress;
     [Write, Description("The owner of the endpoint. Default is the login used for the creation.")] String Owner;
     [Write, Description("Specifies whether messages received by this endpoint that are for services located elsewhere will be forwarded.")] Boolean IsMessageForwardingEnabled;

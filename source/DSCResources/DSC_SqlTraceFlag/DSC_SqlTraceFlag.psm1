@@ -11,7 +11,8 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         This function gets the actual sql server TraceFlags.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default value is the
+        current computer name.
 
     .PARAMETER InstanceName
         The name of the SQL instance to be configured.
@@ -25,15 +26,12 @@ function Get-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName
     )
-
-    #Import SqlServer module but suppress verbose message.
-    Import-SQLPSModule 4>$null
 
     Write-Verbose -Message (
         $script:localizedData.GetConfiguration -f $InstanceName
@@ -84,7 +82,8 @@ function Get-TargetResource
         This function sets the sql server TraceFlags.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default value is the
+        current computer name.
 
     .PARAMETER InstanceName
         The name of the SQL instance to be configured.
@@ -118,7 +117,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -145,9 +144,6 @@ function Set-TargetResource
         [System.UInt32]
         $RestartTimeout = 120
     )
-
-    #Import SqlServer module but suppress verbose message.
-    Import-SQLPSModule 4>$null
 
     Write-Verbose -Message (
         $script:localizedData.SetConfiguration -f $InstanceName
@@ -268,7 +264,8 @@ function Set-TargetResource
         This function tests the sql server TraceFlags.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+        The host name of the SQL Server to be configured. Default value is the
+        current computer name.
 
     .PARAMETER InstanceName
         The name of the SQL instance to be configured.
@@ -303,7 +300,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]

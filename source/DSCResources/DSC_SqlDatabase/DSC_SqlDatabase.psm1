@@ -29,7 +29,8 @@ $script:supportedCompatibilityLevels = @{
       The name of database to be created or dropped.
 
     .PARAMETER ServerName
-       The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+       The host name of the SQL Server to be configured. Default value is the
+       current computer name.
 
     .PARAMETER InstanceName
        The name of the SQL instance to be configured.
@@ -53,7 +54,7 @@ function Get-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -118,7 +119,8 @@ function Get-TargetResource
         The name of database to be created or dropped.
 
     .PARAMETER ServerName
-       The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+       The host name of the SQL Server to be configured. Default value is the
+       current computer name.
 
     .PARAMETER InstanceName
        The name of the SQL instance to be configured.
@@ -157,7 +159,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -374,7 +376,8 @@ function Set-TargetResource
        The name of database to be created or dropped.
 
     .PARAMETER ServerName
-       The host name of the SQL Server to be configured. Default value is $env:COMPUTERNAME.
+       The host name of the SQL Server to be configured. Default value is the
+       current computer name.
 
     .PARAMETER InstanceName
         The name of the SQL instance to be configured.
@@ -414,7 +417,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -523,4 +526,3 @@ function Test-TargetResource
     return $isDatabaseInDesiredState
 }
 
-Export-ModuleMember -Function *-TargetResource

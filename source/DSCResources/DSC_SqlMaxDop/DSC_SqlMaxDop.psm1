@@ -30,7 +30,7 @@ function Get-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME
+        $ServerName = (Get-ComputerName)
     )
 
     Write-Verbose -Message (
@@ -47,10 +47,13 @@ function Get-TargetResource
     }
 
     $returnValue = @{
-        InstanceName = $InstanceName
-        ServerName   = $ServerName
-        MaxDop       = $currentMaxDop
-        IsActiveNode = $isActiveNode
+        InstanceName            = $InstanceName
+        ServerName              = $ServerName
+        MaxDop                  = $currentMaxDop
+        IsActiveNode            = $isActiveNode
+        ProcessOnlyOnActiveNode = $null
+        Ensure                  = $null
+        DynamicAlloc            = $null
     }
 
     $returnValue
@@ -101,7 +104,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -224,7 +227,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -266,7 +269,7 @@ function Test-TargetResource
     if ( $ProcessOnlyOnActiveNode -and -not $getTargetResourceResult.IsActiveNode )
     {
         Write-Verbose -Message (
-            $script:localizedData.NotActiveNode -f $env:COMPUTERNAME, $InstanceName
+            $script:localizedData.NotActiveNode -f (Get-ComputerName), $InstanceName
         )
 
         return $isMaxDopInDesiredState
@@ -358,4 +361,3 @@ function Get-SqlDscDynamicMaxDop
     $dynamicMaxDop
 }
 
-Export-ModuleMember -Function *-TargetResource

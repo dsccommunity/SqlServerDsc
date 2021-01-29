@@ -35,49 +35,7 @@
     # Aliases to export from this module
     AliasesToExport    = @()
 
-    DscResourcesToExport = @(
-        'SqlAG'
-        'SqlAGDatabase'
-        'SqlAgentAlert'
-        'SqlAgentFailsafe'
-        'SqlAgentOperator'
-        'SqlAGListener'
-        'SqlAGReplica'
-        'SqlAlias'
-        'SqlAlwaysOnService'
-        'SqlDatabase'
-        'SqlDatabaseDefaultLocation'
-        'SqlDatabaseOwner'
-        'SqlDatabaseObjectPermission'
-        'SqlDatabasePermission'
-        'SqlDatabaseRecoveryModel'
-        'SqlDatabaseRole'
-        'SqlDatabaseUser'
-        'SqlRS'
-        'SqlRSSetup'
-        'SqlScript'
-        'SqlScriptQuery'
-        'SqlConfiguration'
-        'SqlDatabaseMail'
-        'SqlEndpoint'
-        'SqlEndpointPermission'
-        'SqlServerEndpointState'
-        'SqlLogin'
-        'SqlMaxDop'
-        'SqlMemory'
-        'SqlServerNetwork'
-        'SqlPermission'
-        'SqlProtocol'
-        'SqlProtocolTcpIp'
-        'SqlReplication'
-        'SqlRole'
-        'SqlSecureConnection'
-        'SqlServiceAccount'
-        'SqlSetup'
-        'SqlTraceFlag'
-        'SqlWaitForAG'
-        'SqlWindowsFirewall'
-    )
+    DscResourcesToExport = @()
 
     RequiredAssemblies = @()
 
@@ -92,7 +50,7 @@
             Tags         = @('DesiredStateConfiguration', 'DSC', 'DSCResourceKit', 'DSCResource')
 
             # A URL to the license for this module.
-            LicenseUri   = 'https://github.com/dsccommunity/SqlServerDsc/blob/master/LICENSE'
+            LicenseUri   = 'https://github.com/dsccommunity/SqlServerDsc/blob/main/LICENSE'
 
             # A URL to the main website for this project.
             ProjectUri   = 'https://github.com/dsccommunity/SqlServerDsc'

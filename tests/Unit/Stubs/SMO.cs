@@ -58,6 +58,15 @@ namespace Microsoft.SqlServer.Management.Smo
         Unknown
     }
 
+    // TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode
+    // Used by:
+    //  SqlAGDatabase
+    public enum AvailabilityReplicaSeedingMode
+    {
+        Automatic,
+        Manual
+    }
+
     // TypeName: Microsoft.SqlServer.Management.Smo.EndpointType
     // Used by:
     //  SqlEndpoint
@@ -552,6 +561,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public string AvailabilityGroupName = "";
         public Certificate[] Certificates;
         public string ContainmentType = "None";
+        public DateTime CreateDate;
         public DatabaseEncryptionKey DatabaseEncryptionKey;
         public string DefaultFileStreamFileGroup;
         public bool EncryptionEnabled = false;
@@ -699,6 +709,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // BaseType: Microsoft.SqlServer.Management.Smo.NamedSmoObject
     // Used by:
     //  SqlAG
+    //  SqlAGDatabase
     public class AvailabilityGroup
     {
         public AvailabilityGroup()
@@ -750,6 +761,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // BaseType: Microsoft.SqlServer.Management.Smo.NamedSmoObject
     // Used by:
     //  SqlAG
+    //  SqlAGDatabase
     public class AvailabilityReplica
     {
         public AvailabilityReplica()
@@ -764,6 +776,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public string ConnectionModeInSecondaryRole;
         public string EndpointUrl;
         public string FailoverMode;
+        public string SeedingMode;
         public string Name;
         public string ReadOnlyRoutingConnectionUrl;
         public System.Collections.Specialized.StringCollection ReadOnlyRoutingList;

@@ -424,7 +424,7 @@ function Start-SqlSetupProcess
 
     .PARAMETER ServerName
         String containing the host name of the SQL Server to connect to.
-        Default value is $env:COMPUTERNAME.
+        Default value is the current computer name.
 
     .PARAMETER InstanceName
         String containing the SQL Server Database Engine instance to connect to.
@@ -471,7 +471,7 @@ function Connect-SQL
         [Parameter(ParameterSetName = 'SqlServerWithCredential')]
         [ValidateNotNull()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(ParameterSetName = 'SqlServer')]
         [Parameter(ParameterSetName = 'SqlServerWithCredential')]
@@ -607,7 +607,7 @@ function Connect-SQLAnalysis
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -1201,7 +1201,7 @@ function Restart-SqlClusterService
                 else
                 {
                     Write-Verbose -Message (
-                        $script:localizedData.NotOwnerOfClusterResource -f $env:COMPUTERNAME, $agentService.Name, $agentService.OwnerNode
+                        $script:localizedData.NotOwnerOfClusterResource -f (Get-ComputerName), $agentService.Name, $agentService.OwnerNode
                     ) -Verbose
                 }
             }
@@ -1209,7 +1209,7 @@ function Restart-SqlClusterService
         else
         {
             Write-Verbose -Message (
-                $script:localizedData.NotOwnerOfClusterResource -f $env:COMPUTERNAME, $sqlService.Name, $sqlService.OwnerNode
+                $script:localizedData.NotOwnerOfClusterResource -f (Get-ComputerName), $sqlService.Name, $sqlService.OwnerNode
             ) -Verbose
         }
     }
@@ -1247,7 +1247,7 @@ function Restart-ReportingServicesService
 
     if ($InstanceName -eq 'SSRS')
     {
-        # Check if we're dealing with SSRS 2017
+        # Check if we're dealing with SSRS 2017 or SQL2019
         $ServiceName = 'SQLServerReportingServices'
 
         Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
@@ -1369,7 +1369,7 @@ function Invoke-Query
         [Parameter(ParameterSetName = 'SqlServer')]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = $env:COMPUTERNAME,
+        $ServerName = (Get-ComputerName),
 
         [Parameter(ParameterSetName = 'SqlServer')]
         [System.String]
@@ -2010,7 +2010,7 @@ function Test-ActiveNode
             If the current node name is the same as the name the instances is
             running on, then this is the active node
         #>
-        $result = $ServerObject.ComputerNamePhysicalNetBIOS -eq $env:COMPUTERNAME
+        $result = $ServerObject.ComputerNamePhysicalNetBIOS -eq (Get-ComputerName)
     }
     else
     {
@@ -2332,6 +2332,11 @@ function Get-ServerProtocolObject
         $protocolNameProperties = Get-ProtocolNameProperties -ProtocolName $ProtocolName
 
         $serverProtocolProperties = $serverInstance.ServerProtocols[$protocolNameProperties.Name]
+    }
+    else
+    {
+        $errorMessage = $script:localizedData.FailedToObtainServerInstance -f $InstanceName, $ServerName
+        New-InvalidOperationException -Message $errorMessage
     }
 
     return $serverProtocolProperties

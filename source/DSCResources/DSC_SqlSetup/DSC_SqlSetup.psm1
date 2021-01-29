@@ -155,7 +155,7 @@ function Get-TargetResource
     }
     else
     {
-        $sqlHostName = $env:COMPUTERNAME
+        $sqlHostName = Get-ComputerName
     }
 
     # Force drive list update, to pick up any newly mounted volumes
@@ -993,7 +993,7 @@ function Set-TargetResource
 
     foreach ($feature in $featuresArray)
     {
-        if (($sqlVersion -in ('13', '14')) -and ($feature -in ('ADV_SSMS', 'SSMS')))
+        if (($sqlVersion -in ('13', '14', '15')) -and ($feature -in ('ADV_SSMS', 'SSMS')))
         {
             $errorMessage = $script:localizedData.FeatureNotSupported -f $feature
             New-InvalidOperationException -Message $errorMessage
@@ -1017,7 +1017,7 @@ function Set-TargetResource
     # If SQL shared components already installed, clear InstallShared*Dir variables
     switch ($sqlVersion)
     {
-        { $_ -in ('10', '11', '12', '13', '14') }
+        { $_ -in ('10', '11', '12', '13', '14', '15') }
         {
             if ((Get-Variable -Name 'InstallSharedDir' -ErrorAction SilentlyContinue) -and (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Components\FEE2E540D20152D4597229B6CFBC0A69' -ErrorAction SilentlyContinue))
             {
@@ -1096,7 +1096,7 @@ function Set-TargetResource
             # Determine whether the current node is a possible owner of the disk resource
             $possibleOwners = $diskResource | Get-CimAssociatedInstance -Association 'MSCluster_ResourceToPossibleOwner' -KeyOnly | Select-Object -ExpandProperty Name
 
-            if ($possibleOwners -icontains $env:COMPUTERNAME)
+            if ($possibleOwners -icontains (Get-ComputerName))
             {
                 $diskResource.IsPossibleOwner = $true
             }
@@ -3247,7 +3247,7 @@ function Get-SqlSharedPaths
 
     switch ($SqlServerMajorVersion)
     {
-        { $_ -in ('10', '11', '12', '13', '14') }
+        { $_ -in ('10', '11', '12', '13', '14', '15') }
         {
             $registryKeySharedDir = 'FEE2E540D20152D4597229B6CFBC0A69'
             $registryKeySharedWOWDir = 'A79497A344129F64CA7D69C56F5DD8B4'

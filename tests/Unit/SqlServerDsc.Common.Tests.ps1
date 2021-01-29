@@ -3086,7 +3086,7 @@ InModuleScope $script:subModuleName {
             }
         }
 
-        Context 'When restarting an SQL Server 2017 Report Services' {
+        Context 'When restarting a SQL Server 2017 (or newer) Report Services' {
             BeforeAll {
                 $mockServiceName = 'SQLServerReportingServices'
                 $mockDependedServiceName = 'DependentService'
@@ -3430,6 +3430,35 @@ InModuleScope $script:subModuleName {
             $result.HasMultiIPAddresses | Should -BeTrue
             $result.ProtocolProperties.ListenOnAllIPs | Should -BeTrue
             $result.ProtocolProperties.KeepAlive | Should -Be 30000
+        }
+
+        Context "When ManagedComputer object has an empty array, 'ServerInstances' value" {
+            BeforeAll {
+                $mockServerName = 'TestServerName'
+                $mockInstanceName = 'TestInstance'
+
+                Mock -CommandName New-Object -MockWith {
+                    return @{
+                        ServerInstances = @()
+                    }
+                }
+            }
+
+            It 'Should throw the correct error message' {
+                $mockGetServerProtocolObjectParameters = @{
+                    ServerName   = $mockServerName
+                    Instance     = $mockInstanceName
+                    ProtocolName = 'TcpIp'
+                }
+
+                $mockErrorRecord = Get-InvalidOperationRecord -Message (
+                    $script:localizedData.FailedToObtainServerInstance -f $mockInstanceName, $mockServerName
+                )
+
+                $mockErrorRecord.Exception.Message | Should -Not -BeNullOrEmpty
+
+                { Get-ServerProtocolObject @mockGetServerProtocolObjectParameters } | Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
+            }
         }
     }
 
