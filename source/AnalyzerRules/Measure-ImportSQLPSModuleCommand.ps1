@@ -16,7 +16,7 @@
         [Microsoft.Windows.Powershell.ScriptAnalyzer.Generic.DiagnosticRecord[]]
 
    .NOTES
-        None
+        None.
 #>
 function Measure-ImportSQLPSModuleCommand
 {
@@ -25,9 +25,8 @@ function Measure-ImportSQLPSModuleCommand
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.Language.CommandAst]
-        $ImportSQLPSModuleCommandAst
+        $CommandAst
     )
 
     try
@@ -40,14 +39,13 @@ function Measure-ImportSQLPSModuleCommand
             Severity = 'Warning'
         }
 
-        Write-Verbose 'eh' -verbose
-        $diagnosticRecord['Extent'] = $ImportSQLPSModuleCommandAst.Extent
+        $diagnosticRecord['Extent'] = $CommandAst.Extent
         $diagnosticRecord['RuleName'] = $PSCmdlet.MyInvocation.InvocationName
 
-        if ($ImportSQLPSModuleCommandAst.CommandElements.Value -eq 'Get-ComputerName')
+        if ($CommandAst.CommandElements.Value -ne 'Import-SQLPSModule')
         {
-            $script:diagnosticRecord['Message'] = 'The function is not calling Import-SQLPSModule'
-            $script:diagnosticRecord -as $diagnosticRecordType
+            $diagnosticRecord['Message'] = 'The function is not calling Import-SQLPSModule'
+            $diagnosticRecord -as $diagnosticRecordType
         }
     }
     catch
