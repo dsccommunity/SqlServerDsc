@@ -53,7 +53,7 @@ Describe 'Script Analyzer Rules' {
             $pssaError = Invoke-ScriptAnalyzer -Path $ScriptPath -Settings $scriptAnalyzerSettingsPath
 
             $report = $pssaError | Format-Table -AutoSize | Out-String -Width 200
-            $pssaError | Should -HaveCount 0 -Because "all script analyzer rules should pass.`r`n`r`n ##vso[task.LogIssue type=error;]$report`r`n"
+            $pssaError | Should -HaveCount 0 -Because "all script analyzer rules should pass.`r`n`r`n $report`r`n"
         }
     }
 }
