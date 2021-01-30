@@ -571,7 +571,7 @@ function Test-TargetResource
             }
         }
 
-        if ($getTargetResourceResult.EndpointType -in @('DatabaseMirroring','ServiceBroker'))
+        if ($getTargetResourceResult.EndpointType -in @('DatabaseMirroring', 'ServiceBroker'))
         {
             if ($PSBoundParameters.ContainsKey('IsMessageForwardingEnabled'))
             {

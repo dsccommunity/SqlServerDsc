@@ -456,7 +456,6 @@ function Test-TargetResource
                                 $isServerRoleInDesiredState = $false
                             }
                         }
-
                     }
 
                     if ($MembersToExclude)

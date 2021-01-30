@@ -153,7 +153,7 @@ function Get-TargetResource
                     #>
                 }
 
-                Default
+                default
                 {
                     $returnValue.AddressFamily = $ipAddressGroupObject.IPAddress.AddressFamily
                     $returnValue.IpAddress = $ipAddressGroupObject.IPAddress.IPAddressToString
@@ -229,6 +229,7 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SQLPSModule is implicitly called when calling Compare-TargetResourceState')]
     [CmdletBinding()]
     param
     (
@@ -359,7 +360,7 @@ function Set-TargetResource
                         #>
                     }
 
-                    Default
+                    default
                     {
                         # Check if Enable property need updating.
                         if ($propertiesNotInDesiredState.Where( { $_.ParameterName -eq 'Enabled' }))
@@ -492,6 +493,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SQLPSModule is implicitly called when calling Compare-TargetResourceState')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -704,7 +706,7 @@ function Compare-TargetResourceState
             )
         }
 
-        Default
+        default
         {
             $propertiesToEvaluate = @(
                 'Enabled'

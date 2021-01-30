@@ -3,6 +3,8 @@
         This example shows one way to create the SQL script files and how to run
         those files.
 #>
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification='The variable $ConfigurationData is used by the HQRM test')]
+param ()
 
 $ConfigurationData = @{
     AllNodes = @(

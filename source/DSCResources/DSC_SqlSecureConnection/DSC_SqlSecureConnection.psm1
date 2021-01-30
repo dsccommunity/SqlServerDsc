@@ -119,7 +119,6 @@ function Get-TargetResource
                 $script:localizedData.CertificateSettings `
                     -f 'Not Configured'
             )
-
         }
     }
     else

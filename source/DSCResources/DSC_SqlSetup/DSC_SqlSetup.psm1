@@ -1512,7 +1512,6 @@ function Set-TargetResource
                     {
                         $setupArgumentValue = '"{0}"' -f $currentSetupArgument.Value
                     }
-
                 }
             }
 
@@ -2181,17 +2180,17 @@ function Test-TargetResource
     {
         Write-Verbose -Message $script:localizedData.EvaluatingClusterParameters
 
-        $boundParameters.Keys |
-            Where-Object -FilterScript { $_ -imatch "^FailoverCluster" } |
-            ForEach-Object -Process {
-                $variableName = $_
+        $variableNames = $boundParameters.Keys |
+            Where-Object -FilterScript { $_ -imatch "^FailoverCluster" }
 
-                if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName])
-                {
-                    Write-Verbose -Message ($script:localizedData.ClusterParameterIsNotInDesiredState -f $variableName, $($boundParameters[$variableName]))
-                    $result = $false
-                }
+        foreach ($variableName in $variableNames)
+        {
+            if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName])
+            {
+                Write-Verbose -Message ($script:localizedData.ClusterParameterIsNotInDesiredState -f $variableName, $($boundParameters[$variableName]))
+                $result = $false
             }
+        }
     }
 
     if ($getTargetResourceParameters.Action -eq 'Upgrade')

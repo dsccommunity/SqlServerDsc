@@ -145,6 +145,7 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     param
     (
@@ -310,7 +311,6 @@ function Set-TargetResource
 
                 $recreateDatabaseUser = $true
             }
-
         }
     }
 
@@ -444,6 +444,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -600,15 +601,14 @@ function ConvertTo-UserType
                     'NoLogin'
                 }
 
-                Default
+                default
                 {
                     $LoginType
                 }
             }
-
         }
 
-        Default
+        default
         {
             $errorMessage = $script:localizedData.UnknownAuthenticationType -f $AuthenticationType, $LoginType
             New-InvalidOperationException -Message $errorMessage
