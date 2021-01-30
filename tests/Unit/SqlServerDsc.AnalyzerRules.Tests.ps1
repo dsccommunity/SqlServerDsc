@@ -53,6 +53,10 @@ function Get-AstFromDefinition
 }
 
 Describe 'Measure-ImportSQLPSModuleCommand' {
+    BeforeAll {
+        $expectedErrorRecordMessage = 'The function is not calling Import-SQLPSModule or Connect-SQL.'
+    }
+
     Context 'When calling the function directly' {
         BeforeAll {
             $astType = 'System.Management.Automation.Language.FunctionDefinitionAst'
@@ -103,7 +107,7 @@ Describe 'Measure-ImportSQLPSModuleCommand' {
                 $record = Measure-ImportSQLPSModuleCommand -FunctionAst $mockAst[1]
 
                 ($record | Measure-Object).Count | Should -Be 1
-                $record.Message | Should -Be 'The function is not calling Import-SQLPSModule'
+                $record.Message | Should -Be $expectedErrorRecordMessage
                 $record.RuleName | Should -Be $ruleName
             }
         }
@@ -179,7 +183,7 @@ Describe 'Measure-ImportSQLPSModuleCommand' {
 
                 $record = Invoke-ScriptAnalyzer @invokeScriptAnalyzerParameters
                 ($record | Measure-Object).Count | Should -BeExactly 1
-                $record.Message | Should -Be 'The function is not calling Import-SQLPSModule'
+                $record.Message | Should -Be $expectedErrorRecordMessage
                 $record.RuleName | Should -Be $ruleName
             }
         }
@@ -206,7 +210,7 @@ Describe 'Measure-ImportSQLPSModuleCommand' {
 
                 $record = Invoke-ScriptAnalyzer @invokeScriptAnalyzerParameters
                 ($record | Measure-Object).Count | Should -BeExactly 1
-                $record.Message | Should -Be 'The function is not calling Import-SQLPSModule'
+                $record.Message | Should -Be $expectedErrorRecordMessage
                 $record.RuleName | Should -Be $ruleName
             }
         }

@@ -52,7 +52,10 @@ function Measure-ImportSQLPSModuleCommand
 
             $astFilter = {
                 $args[0] -is [System.Management.Automation.Language.CommandAst] `
-                -and $args[0].CommandElements.Value -eq 'Import-SQLPSModule'
+                -and (
+                    $args[0].CommandElements.Value -eq 'Import-SQLPSModule' `
+                    -or $args[0].CommandElements.Value -eq 'Connect-SQL'
+                )
             }
 
             # Find all command calls of Import-SQLPSModule in the function.
@@ -61,7 +64,7 @@ function Measure-ImportSQLPSModuleCommand
             # If no calls was found then an error record should be returned.
             if (-not $commandAsts)
             {
-                $diagnosticRecord['Message'] = 'The function is not calling Import-SQLPSModule'
+                $diagnosticRecord['Message'] = 'The function is not calling Import-SQLPSModule or Connect-SQL.'
                 $diagnosticRecord -as $diagnosticRecordType
             }
         }

@@ -8,9 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - SqlServerDsc
-  - A new script analyzer rule to verify that `Import-SQLPSModule` is
-    present in each *-TargetResource. If it is not needed then the analyzer
-    rule should be overridden.
+  - A new script analyzer rule to verify that `Import-SQLPSModule` or `Connect-SQL`
+    (that implicitly calls `Import-SQLPSModule`) is present in each `Get-`, `Test-`,
+    and `Set-TargetResource` function. If neither command is not needed then the
+    analyzer rule should be overridden.
   - Added unit tests and integration tests for SQL Server 2019
     ([issue #1310](https://github.com/dsccommunity/SqlServerDsc/issues/1310)).
 
