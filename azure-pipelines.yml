@@ -62,7 +62,7 @@ stages:
               downloadType: 'single'
               artifactName: 'output'
               downloadPath: '$(Build.SourcesDirectory)'
-          - powershell: |
+          - pwsh: |
               # Workaround for issue https://github.com/dsccommunity/DscResource.Test/issues/100
               ./build.ps1 -Task noop
               Invoke-Pester -Script .\tests\QA -EnableExit
