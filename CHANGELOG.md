@@ -8,11 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - SqlServerDsc
-  - A new script analyzer rule to verify that `Import-SQLPSModule` or `Connect-SQL`
+  - Added a new script analyzer rule to verify that `Import-SQLPSModule` or `Connect-SQL`
     (that implicitly calls `Import-SQLPSModule`) is present in each `Get-`, `Test-`,
     and `Set-TargetResource` function. If neither command is not needed then the
     analyzer rule should be overridden ([issue #1683](https://github.com/dsccommunity/SqlServerDsc/issues/1683)).
-  - Add a new pipeline job that runs Script Analyzer on all PowerShell scripts
+  - Added a new pipeline job that runs Script Analyzer on all PowerShell scripts
     in the source folder. The rules are defined by the Script Analyzer settings
     file `.vscode\analyzersettings.psd1` (which also the Visual Studio Code
     PowerShell extension uses).
@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- SqlServerDsc
+  - Suppressed new custom Script Analyzer rule `SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO`
+    for `Get-`, `Test-`, and `Set-TargetResource` functions in the resources.
 - SqlLogin
   - Added functionality to throw exception if an update to the `LoginMustChangePassword`
     value on an existing SQL Login is attempted. This functionality is not supported
@@ -38,6 +41,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     of these properties that have to transition through an invalid combination (e.g.
     where `PasswordExpirationEnabled` is `$true` but `PasswordPolicyEnforced` is
     `$false`).
+- SqlSetup
+  - Minor refactor due to source code lint errors. The loop what evaluates
+    the configuration parameters `*FailoverCluster` was change to a `foreach()`.
 
 ### Fixed
 
@@ -46,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     configured when the repository moved to the new default branch `main`.
     It no longer throws an error when using newer versions of GitVersion
     ([issue #1674](https://github.com/dsccommunity/SqlServerDsc/issues/1674)).
+  - Minor lint errors throughout the repository.
 - SqlLogin
   - Added integration tests to assert `LoginPasswordExpirationEnabled`,
   `LoginPasswordPolicyEnforced` and `LoginMustChangePassword` properties/parameters
