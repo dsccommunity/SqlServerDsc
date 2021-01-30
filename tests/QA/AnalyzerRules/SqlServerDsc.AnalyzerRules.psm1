@@ -7,7 +7,7 @@
         so that SMO assemblies are loaded into the PowerShell session.
 
     .EXAMPLE
-        Measure-ImportSQLPSModuleCommand -WhileStatementAst $ScriptBlockAst
+        Measure-CommandsNeededToLoadSMO -WhileStatementAst $ScriptBlockAst
 
     .INPUTS
         [System.Management.Automation.Language.CommandAst]
@@ -18,7 +18,7 @@
    .NOTES
         None.
 #>
-function Measure-ImportSQLPSModuleCommand
+function Measure-CommandsNeededToLoadSMO
 {
     [CmdletBinding()]
     [OutputType([Microsoft.Windows.Powershell.ScriptAnalyzer.Generic.DiagnosticRecord[]])]
@@ -64,7 +64,7 @@ function Measure-ImportSQLPSModuleCommand
             # If no calls was found then an error record should be returned.
             if (-not $commandAsts)
             {
-                $diagnosticRecord['Message'] = 'The function is not calling Import-SQLPSModule or Connect-SQL. If it is meant not to, then suppress the rule ''SqlServerDsc.AnalyzerRules\Measure-ImportSQLPSModuleCommand'' and add a justification. See https://github.com/PowerShell/PSScriptAnalyzer#suppressing-rules for more information.'
+                $diagnosticRecord['Message'] = 'The function is not calling Import-SQLPSModule or Connect-SQL. If it is meant not to, then suppress the rule ''SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO'' and add a justification. See https://github.com/PowerShell/PSScriptAnalyzer#suppressing-rules for more information.'
                 $diagnosticRecord -as $diagnosticRecordType
             }
         }

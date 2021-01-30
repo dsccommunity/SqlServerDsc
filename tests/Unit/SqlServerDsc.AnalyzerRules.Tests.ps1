@@ -59,15 +59,15 @@ function Get-AstFromDefinition
     return $foundAsts
 }
 
-Describe 'Measure-ImportSQLPSModuleCommand' {
+Describe 'Measure-CommandsNeededToLoadSMO' {
     BeforeAll {
-        $expectedErrorRecordMessage = 'The function is not calling Import-SQLPSModule or Connect-SQL. If it is meant not to, then suppress the rule ''SqlServerDsc.AnalyzerRules\Measure-ImportSQLPSModuleCommand'' and add a justification. See https://github.com/PowerShell/PSScriptAnalyzer#suppressing-rules for more information.'
+        $expectedErrorRecordMessage = 'The function is not calling Import-SQLPSModule or Connect-SQL. If it is meant not to, then suppress the rule ''SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO'' and add a justification. See https://github.com/PowerShell/PSScriptAnalyzer#suppressing-rules for more information.'
     }
 
     Context 'When calling the function directly' {
         BeforeAll {
             $astType = 'System.Management.Automation.Language.FunctionDefinitionAst'
-            $ruleName = 'Measure-ImportSQLPSModuleCommand'
+            $ruleName = 'Measure-CommandsNeededToLoadSMO'
 
             $testCases = @(
                 @{
@@ -82,7 +82,7 @@ Describe 'Measure-ImportSQLPSModuleCommand' {
             )
         }
 
-        Context 'When function is missing call to Import-SQLPSModule' {
+        Context 'When a function do not have a call to neither Import-SQLPSModule or Connect-SQL' {
             It 'Should write the correct error record for function <FunctionName>' -TestCases $testCases {
                 param
                 (
@@ -111,7 +111,7 @@ Describe 'Measure-ImportSQLPSModuleCommand' {
                 $mockAst | Should -Not -BeNullOrEmpty
 
                 # We should evaluate the second function in the script definition.
-                $record = Measure-ImportSQLPSModuleCommand -FunctionAst $mockAst[1]
+                $record = Measure-CommandsNeededToLoadSMO -FunctionAst $mockAst[1]
 
                 ($record | Measure-Object).Count | Should -Be 1
                 $record.Message | Should -Be $expectedErrorRecordMessage
@@ -119,7 +119,7 @@ Describe 'Measure-ImportSQLPSModuleCommand' {
             }
         }
 
-        Context 'When function have a call to Import-SQLPSModule' {
+        Context 'When a function have a call to Import-SQLPSModule' {
             It 'Should not return an error record for function <FunctionName>' -TestCases $testCases {
                 param
                 (
@@ -148,23 +148,58 @@ Describe 'Measure-ImportSQLPSModuleCommand' {
                 $mockAst | Should -Not -BeNullOrEmpty
 
                 # We should evaluate the second function in the script definition.
-                $record = Measure-ImportSQLPSModuleCommand -FunctionAst $mockAst[1]
+                $record = Measure-CommandsNeededToLoadSMO -FunctionAst $mockAst[1]
+
+                $record | Should -BeNullOrEmpty
+            }
+        }
+
+        Context 'When a function have a call to Connect-SQL' {
+            It 'Should not return an error record for function <FunctionName>' -TestCases $testCases {
+                param
+                (
+                    [Parameter()]
+                    [System.String]
+                    $FunctionName
+                )
+
+                $definition = "
+                    function Connect-SQL {}
+
+                    function $FunctionName
+                    {
+                        [CmdletBinding()]
+                        [OutputType([System.Collections.Hashtable])]
+                        param ()
+
+                        Connect-SQL
+
+                        return @{}
+                    }
+                "
+
+                $mockAst = Get-AstFromDefinition -ScriptDefinition $definition -AstType $astType
+
+                $mockAst | Should -Not -BeNullOrEmpty
+
+                # We should evaluate the second function in the script definition.
+                $record = Measure-CommandsNeededToLoadSMO -FunctionAst $mockAst[1]
 
                 $record | Should -BeNullOrEmpty
             }
         }
     }
 
-    Context 'When calling PSScriptAnalyzer' {
+    Context 'When using PSScriptAnalyzer' {
         BeforeAll {
             $invokeScriptAnalyzerParameters = @{
                 CustomRulePath = $customAnalyzerRulesModulePath
             }
 
-            $ruleName = 'SqlServerDsc.AnalyzerRules\Measure-ImportSQLPSModuleCommand'
+            $ruleName = 'SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO'
         }
 
-        Context 'When function is missing call to Import-SQLPSModule' {
+        Context 'When a function do not have a call to neither Import-SQLPSModule or Connect-SQL' {
             It 'Should write the correct error record for function <FunctionName>' -TestCases $testCases {
                 param
                 (
@@ -195,7 +230,7 @@ Describe 'Measure-ImportSQLPSModuleCommand' {
             }
         }
 
-        Context 'When function is not calling any commands' {
+        Context 'When a function is not calling any commands at all' {
             It 'Should write the correct error record for function <FunctionName>' -TestCases $testCases {
                 param
                 (
@@ -222,7 +257,7 @@ Describe 'Measure-ImportSQLPSModuleCommand' {
             }
         }
 
-        Context 'When function is missing call to Import-SQLPSModule' {
+        Context 'When a function have a call to Import-SQLPSModule' {
             It 'Should not write an error record for function <FunctionName>' -TestCases $testCases {
                 param
                 (
@@ -241,6 +276,35 @@ Describe 'Measure-ImportSQLPSModuleCommand' {
                         param ()
 
                         Import-SQLPSModule
+
+                        return @{}
+                    }
+                "
+
+                $record = Invoke-ScriptAnalyzer @invokeScriptAnalyzerParameters
+                $record | Should -BeNullOrEmpty
+            }
+        }
+
+        Context 'When a function have a call to Connect-SQL' {
+            It 'Should not write an error record for function <FunctionName>' -TestCases $testCases {
+                param
+                (
+                    [Parameter()]
+                    [System.String]
+                    $FunctionName
+                )
+
+                $invokeScriptAnalyzerParameters['ScriptDefinition'] = "
+                    function Connect-SQL {}
+
+                    function $FunctionName
+                    {
+                        [CmdletBinding()]
+                        [OutputType([System.Collections.Hashtable])]
+                        param ()
+
+                        Connect-SQL
 
                         return @{}
                     }
