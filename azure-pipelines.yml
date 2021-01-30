@@ -62,6 +62,16 @@ stages:
               downloadType: 'single'
               artifactName: 'output'
               downloadPath: '$(Build.SourcesDirectory)'
+          - powershell: |
+              # Workaround for issue https://github.com/dsccommunity/DscResource.Test/issues/100
+              Invoke-Pester -Script .\tests\QA #-EnableExit
+            name: qatest
+            displayName: 'Run SqlServerDsc QA Test'
+          - powershell: |
+              # Workaround for issue https://github.com/dsccommunity/DscResource.Test/issues/100
+              Invoke-ScriptAnalyzer -Path .\source -Recurse -Settings .\.vscode\analyzersettings.psd1 -EnableExit
+            name: testPSSA
+            displayName: 'Run Script Analyzer Test (SqlServerDsc)'
           - task: PowerShell@2
             name: test
             displayName: 'Run HQRM Test'
