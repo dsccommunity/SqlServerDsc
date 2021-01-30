@@ -18,7 +18,7 @@ Describe 'Script Analyzer Rules' {
         $scriptAnalyzerSettingsPath = Join-Path -Path $repositoryPath -ChildPath '.vscode\analyzersettings.psd1'
     }
 
-    Context 'When there are module files' {
+    Context 'When there are source files' {
         BeforeAll {
             $moduleFiles = Get-ChildItem -Path $sourcePath -Recurse -Include @('*.psm1', '*.ps1')
 
