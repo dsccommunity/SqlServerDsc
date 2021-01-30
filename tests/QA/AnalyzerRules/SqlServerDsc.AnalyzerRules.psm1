@@ -64,7 +64,7 @@ function Measure-CommandsNeededToLoadSMO
             # If no calls was found then an error record should be returned.
             if (-not $commandAsts)
             {
-                $diagnosticRecord['Message'] = 'The function is not calling Import-SQLPSModule or Connect-SQL. If it is meant not to, then suppress the rule ''SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO'' and add a justification. See https://github.com/PowerShell/PSScriptAnalyzer#suppressing-rules for more information.'
+                $diagnosticRecord['Message'] = 'The function is not calling Import-SQLPSModule or Connect-SQL. If it is meant not to, then suppress the rule ''SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO'' with a justification. See https://github.com/PowerShell/PSScriptAnalyzer#suppressing-rules for more information.'
                 $diagnosticRecord -as $diagnosticRecordType
             }
         }
