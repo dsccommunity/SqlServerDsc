@@ -18,6 +18,13 @@ Import-Module -Name $customAnalyzerRulesModulePath -Force
 
     .NOTES
         This is a helper function for the tests.
+
+        Run the custom rules directly bu running:
+
+        Invoke-ScriptAnalyzer `
+            -Path .\source\DSCResources\**\*.psm1 `
+            -CustomRulePath .\tests\QA\AnalyzerRules\SqlServerDsc.AnalyzerRules.psm1 `
+            -IncludeRule @('Measure-*')
 #>
 function Get-AstFromDefinition
 {
