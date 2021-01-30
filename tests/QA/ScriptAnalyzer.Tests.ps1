@@ -20,7 +20,7 @@ Describe 'Script Analyzer Rules' {
 
     Context 'When there are module files' {
         BeforeAll {
-            $moduleFiles = Get-ChildItem -Path $sourcePath -Recurse -Include '*.psm1'
+            $moduleFiles = Get-ChildItem -Path $sourcePath -Recurse -Include @('*.psm1', '*.ps1')
 
             $testCases = @()
 

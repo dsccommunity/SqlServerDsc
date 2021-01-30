@@ -65,15 +65,9 @@ stages:
           - powershell: |
               # Workaround for issue https://github.com/dsccommunity/DscResource.Test/issues/100
               ./build.ps1 -Task noop
-              Invoke-Pester -Script .\tests\QA #-EnableExit
+              Invoke-Pester -Script .\tests\QA -EnableExit
             name: qatest
             displayName: 'Run SqlServerDsc QA Test'
-          - powershell: |
-              # Workaround for issue https://github.com/dsccommunity/DscResource.Test/issues/100
-              ./build.ps1 -Task noop
-              Invoke-ScriptAnalyzer -Path .\source -Recurse -Settings .\.vscode\analyzersettings.psd1 -EnableExit
-            name: testPSSA
-            displayName: 'Run Script Analyzer Test (SqlServerDsc)'
           - task: PowerShell@2
             name: test
             displayName: 'Run HQRM Test'
