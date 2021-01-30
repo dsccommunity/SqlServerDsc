@@ -24,6 +24,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 #>
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-SQLAlwaysOnAvailabilityGroupListener is called')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -422,6 +423,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
