@@ -11,13 +11,6 @@
         https://github.com/dsccommunity/DscResource.Test/issues/100.
 #>
 
-Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
-
-if (-not (Test-BuildCategory -Type 'Unit'))
-{
-    return
-}
-
 Describe 'Script Analyzer Rules' {
     BeforeAll {
         $repositoryPath = Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../..')
