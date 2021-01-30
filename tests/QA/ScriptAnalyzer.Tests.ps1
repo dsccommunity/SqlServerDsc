@@ -6,7 +6,7 @@
     .NOTES
         In addition to the custom rules that are part of this repository's Script
         Analyzer settings file, it will also run the HQRM test that has been run by
-        the buold task 'DscResource_Tests_Stop_On_Fail'. When the issue in the
+        the build task 'DscResource_Tests_Stop_On_Fail'. When the issue in the
         repository DscResource.Test is resolved this should not be needed. See issue
         https://github.com/dsccommunity/DscResource.Test/issues/100.
 #>
@@ -53,7 +53,7 @@ Describe 'Script Analyzer Rules' {
             $pssaError = Invoke-ScriptAnalyzer -Path $ScriptPath -Settings $scriptAnalyzerSettingsPath
 
             $report = $pssaError | Format-Table -AutoSize | Out-String -Width 200
-            $pssaError | Should -HaveCount 0 -Because "all script analyzer rules should pass.`r`n`r`n $report`r`n"
+            $pssaError | Should -HaveCount 0 -Because "all script analyzer rules should pass.`r`n`r`n ##vso[task.LogIssue type=error;]$report`r`n"
         }
     }
 }
