@@ -61,6 +61,12 @@ function Get-AstFromDefinition
 
 Describe 'Measure-CommandsNeededToLoadSMO' {
     BeforeAll {
+        <#
+            Must import the PSScriptAnalyzer module so the the tests can use the type
+            [Microsoft.Windows.Powershell.ScriptAnalyzer.Generic.DiagnosticRecord]
+        #>
+        Import-Module -Name 'PSScriptAnalyzer'
+
         $expectedErrorRecordMessage = 'The function is not calling Import-SQLPSModule or Connect-SQL. If it is meant not to, then suppress the rule ''SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO'' with a justification. See https://github.com/PowerShell/PSScriptAnalyzer#suppressing-rules for more information.'
     }
 
