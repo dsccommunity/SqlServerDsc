@@ -1047,8 +1047,12 @@ try
 
             Context 'When the SQL login exist' {
                 BeforeAll {
-                    $assertSqlLoginParameters = $mockDefaultParameters.Clone()
-                    $assertSqlLoginParameters['LoginName'] = $mockLoginName
+                    $assertSqlLoginParameters = @{
+                        InstanceName = $mockInstanceName
+                        ServerName   = $mockServerName
+                        LoginName    = $mockLoginName
+                        Verbose      = $true
+                    }
                 }
 
                 It 'Should not throw any error' {
@@ -1058,8 +1062,12 @@ try
 
             Context 'When the SQL login does not exist' {
                 BeforeAll {
-                    $assertSqlLoginParameters = $mockDefaultParameters.Clone()
-                    $assertSqlLoginParameters['LoginName'] = 'AnyValue'
+                    $assertSqlLoginParameters = @{
+                        InstanceName = $mockInstanceName
+                        ServerName   = $mockServerName
+                        LoginName    = 'AnyValue'
+                        Verbose      = $true
+                    }
                 }
 
                 It 'Should throw the correct error' {
