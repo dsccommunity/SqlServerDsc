@@ -1,5 +1,9 @@
 @{
-    CustomRulePath      = '.\output\RequiredModules\DscResource.AnalyzerRules'
+    # There is a bug when using an array of paths here. No custom rules are used at all.
+    CustomRulePath      = @(
+        '.\output\RequiredModules\DscResource.AnalyzerRules'
+        '.\tests\QA\AnalyzerRules\SqlServerDsc.AnalyzerRules.psm1'
+    )
     IncludeDefaultRules = $true
     IncludeRules        = @(
         # DSC Resource Kit style guideline rules.

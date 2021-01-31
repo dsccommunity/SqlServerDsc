@@ -46,6 +46,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 #>
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='This resource explicitly loads assemblies from the GAC. This is being tracked in issue https://github.com/dsccommunity/SqlServerDsc/issues/1352')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -183,6 +184,7 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='This resource explicitly loads assemblies from the GAC. This is being tracked in issue https://github.com/dsccommunity/SqlServerDsc/issues/1352')]
     [CmdletBinding()]
     param
     (
@@ -345,6 +347,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='This resource explicitly loads assemblies from the GAC. This is being tracked in issue https://github.com/dsccommunity/SqlServerDsc/issues/1352')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param

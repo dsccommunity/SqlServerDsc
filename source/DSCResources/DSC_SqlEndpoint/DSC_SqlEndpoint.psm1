@@ -484,6 +484,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -570,7 +571,7 @@ function Test-TargetResource
             }
         }
 
-        if ($getTargetResourceResult.EndpointType -in @('DatabaseMirroring','ServiceBroker'))
+        if ($getTargetResourceResult.EndpointType -in @('DatabaseMirroring', 'ServiceBroker'))
         {
             if ($PSBoundParameters.ContainsKey('IsMessageForwardingEnabled'))
             {

@@ -62,6 +62,12 @@ stages:
               downloadType: 'single'
               artifactName: 'output'
               downloadPath: '$(Build.SourcesDirectory)'
+          - pwsh: |
+              # Workaround for issue https://github.com/dsccommunity/DscResource.Test/issues/100
+              ./build.ps1 -Task noop
+              Invoke-Pester -Script .\tests\QA -EnableExit
+            name: qualitytest
+            displayName: 'Run SqlServerDsc QA Test'
           - task: PowerShell@2
             name: test
             displayName: 'Run HQRM Test'

@@ -34,7 +34,6 @@ Configuration Example
             MessageForwardingSize      = 2
 
             PsDscRunAsCredential       = $SqlAdministratorCredential
-
         }
     }
 }

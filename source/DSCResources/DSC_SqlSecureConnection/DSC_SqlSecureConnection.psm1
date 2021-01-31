@@ -32,6 +32,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 #>
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='Neither command is needed for this resource')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -118,7 +119,6 @@ function Get-TargetResource
                 $script:localizedData.CertificateSettings `
                     -f 'Not Configured'
             )
-
         }
     }
     else
@@ -194,6 +194,7 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='Neither command is needed for this resource')]
     [CmdletBinding()]
     param
     (
@@ -313,6 +314,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='Neither command is needed for this resource')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
