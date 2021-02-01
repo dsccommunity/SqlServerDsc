@@ -523,19 +523,60 @@ try
                     }
 
                     Context 'When creating a database user with a login' {
-                        BeforeAll {
-                            $setTargetResourceParameters = $mockDefaultParameters.Clone()
-                            $setTargetResourceParameters['LoginName'] = $mockLoginName
-                            $setTargetResourceParameters['UserType'] = 'Login'
+                        Context 'When calling an using the default ServerName' {
+                            BeforeAll {
+                                $setTargetResourceParameters = $mockDefaultParameters.Clone()
+                                $setTargetResourceParameters['LoginName'] = $mockLoginName
+                                $setTargetResourceParameters['UserType'] = 'Login'
+
+                                <#
+                                    Make sure to use the default value for ServerName.
+                                    Regression test for issue #1647.
+                                #>
+                                $setTargetResourceParameters.Remove('ServerName')
+                            }
+
+                            It 'Should not throw and should call the correct mocks' {
+                                { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+
+                                Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                                Assert-MockCalled -CommandName Invoke-Query -ParameterFilter {
+                                    $Query -eq ('CREATE USER [{0}] FOR LOGIN [{1}];' -f $mockName, $mockLoginName)
+                                } -Exactly -Times 1 -Scope It
+
+                                Assert-MockCalled -CommandName Assert-SqlLogin -ParameterFilter {
+                                    $ServerName -eq (Get-ComputerName)
+                                } -Exactly -Times 1 -Scope It
+                            }
                         }
 
-                        It 'Should not throw and should call the correct mocks' {
-                            { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        Context 'When calling with an explicit ServerName' {
+                            BeforeAll {
+                                $expectedServerName = 'host.company.local'
 
-                            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                            Assert-MockCalled -CommandName Invoke-Query -ParameterFilter {
-                                $Query -eq ('CREATE USER [{0}] FOR LOGIN [{1}];' -f $mockName, $mockLoginName)
-                            } -Exactly -Times 1 -Scope It
+                                $setTargetResourceParameters = $mockDefaultParameters.Clone()
+                                $setTargetResourceParameters['LoginName'] = $mockLoginName
+                                $setTargetResourceParameters['UserType'] = 'Login'
+
+                                <#
+                                    Set an explicit value for ServerName.
+                                    Regression test for issue #1647.
+                                #>
+                                $setTargetResourceParameters['ServerName'] = $expectedServerName
+                            }
+
+                            It 'Should not throw and should call the correct mocks' {
+                                { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+
+                                Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                                Assert-MockCalled -CommandName Invoke-Query -ParameterFilter {
+                                    $Query -eq ('CREATE USER [{0}] FOR LOGIN [{1}];' -f $mockName, $mockLoginName)
+                                } -Exactly -Times 1 -Scope It
+
+                                Assert-MockCalled -CommandName Assert-SqlLogin -ParameterFilter {
+                                    $ServerName -eq $expectedServerName
+                                } -Exactly -Times 1 -Scope It
+                            }
                         }
                     }
 
@@ -628,23 +669,70 @@ try
                                     LoginType          = 'WindowsUser'
                                 }
                             }
-
-                            $setTargetResourceParameters = $mockDefaultParameters.Clone()
-                            $setTargetResourceParameters['LoginName'] = 'OtherLogin1'
-                            $setTargetResourceParameters['UserType'] = 'Login'
                         }
 
-                        It 'Should not throw and should call the correct mocks' {
-                            { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        Context 'When calling an using the default ServerName' {
+                            BeforeAll {
+                                $setTargetResourceParameters = $mockDefaultParameters.Clone()
+                                $setTargetResourceParameters['LoginName'] = 'OtherLogin1'
+                                $setTargetResourceParameters['UserType'] = 'Login'
 
-                            Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                            Assert-MockCalled -CommandName Invoke-Query -ParameterFilter {
-                                $Query -eq ('ALTER USER [{0}] WITH NAME = [{1}], LOGIN = [{2}];' -f $mockName, $mockName, 'OtherLogin1')
-                            } -Exactly -Times 1 -Scope It
+                                <#
+                                    Make sure to use the default value for ServerName.
+                                    Regression test for issue #1647.
+                                #>
+                                $setTargetResourceParameters.Remove('ServerName')
+                            }
+
+                            It 'Should not throw and should call the correct mocks' {
+                                { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+
+                                Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                                Assert-MockCalled -CommandName Invoke-Query -ParameterFilter {
+                                    $Query -eq ('ALTER USER [{0}] WITH NAME = [{1}], LOGIN = [{2}];' -f $mockName, $mockName, 'OtherLogin1')
+                                } -Exactly -Times 1 -Scope It
+
+                                Assert-MockCalled -CommandName Assert-SqlLogin -ParameterFilter {
+                                    $ServerName -eq (Get-ComputerName)
+                                } -Exactly -Times 1 -Scope It
+                            }
+                        }
+
+                        Context 'When calling with an explicit ServerName' {
+                            BeforeAll {
+                                $expectedServerName = 'host.company.local'
+
+                                $setTargetResourceParameters = $mockDefaultParameters.Clone()
+                                $setTargetResourceParameters['LoginName'] = 'OtherLogin1'
+                                $setTargetResourceParameters['UserType'] = 'Login'
+
+                                <#
+                                    Set an explicit value for ServerName.
+                                    Regression test for issue #1647.
+                                #>
+                                $setTargetResourceParameters['ServerName'] = $expectedServerName
+                            }
+
+                            It 'Should not throw and should call the correct mocks' {
+                                { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+
+                                Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                                Assert-MockCalled -CommandName Invoke-Query -ParameterFilter {
+                                    $Query -eq ('ALTER USER [{0}] WITH NAME = [{1}], LOGIN = [{2}];' -f $mockName, $mockName, 'OtherLogin1')
+                                } -Exactly -Times 1 -Scope It
+
+                                Assert-MockCalled -CommandName Assert-SqlLogin -ParameterFilter {
+                                    $ServerName -eq $expectedServerName
+                                } -Exactly -Times 1 -Scope It
+                            }
                         }
 
                         Context 'When trying to alter the login name but Invoke-Query fails' {
                             BeforeAll {
+                                $setTargetResourceParameters = $mockDefaultParameters.Clone()
+                                $setTargetResourceParameters['LoginName'] = 'OtherLogin1'
+                                $setTargetResourceParameters['UserType'] = 'Login'
+
                                 Mock -CommandName Invoke-Query -MockWith {
                                     throw
                                 }
@@ -657,7 +745,7 @@ try
 
                                 Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                                 Assert-MockCalled -CommandName Invoke-Query -Exactly -Times 1 -Scope It
-                            }
+                           }
                         }
                     }
 
@@ -959,8 +1047,12 @@ try
 
             Context 'When the SQL login exist' {
                 BeforeAll {
-                    $assertSqlLoginParameters = $mockDefaultParameters.Clone()
-                    $assertSqlLoginParameters['LoginName'] = $mockLoginName
+                    $assertSqlLoginParameters = @{
+                        InstanceName = $mockInstanceName
+                        ServerName   = $mockServerName
+                        LoginName    = $mockLoginName
+                        Verbose      = $true
+                    }
                 }
 
                 It 'Should not throw any error' {
@@ -970,8 +1062,12 @@ try
 
             Context 'When the SQL login does not exist' {
                 BeforeAll {
-                    $assertSqlLoginParameters = $mockDefaultParameters.Clone()
-                    $assertSqlLoginParameters['LoginName'] = 'AnyValue'
+                    $assertSqlLoginParameters = @{
+                        InstanceName = $mockInstanceName
+                        ServerName   = $mockServerName
+                        LoginName    = 'AnyValue'
+                        Verbose      = $true
+                    }
                 }
 
                 It 'Should throw the correct error' {

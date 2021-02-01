@@ -71,6 +71,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added/corrected `InstallSharedDir`, property output when using SQL Server 2019.
 - SqlTraceFlag
   - Fixed Assembly not loaded error ([issue #1680](https://github.com/dsccommunity/SqlServerDsc/issues/1680)).
+- SqlDatabaseUser
+  - Added parameter `ServerName` to the call of `Assert-SqlLogin`.
+    `@PSBoundParameters` doesn't capture the default value of `ServerName`
+    when it is not explicitly set by the caller ([issue #1647](https://github.com/dsccommunity/SqlServerDsc/issues/1647)).
 
 ## [15.0.1] - 2021-01-09
 
