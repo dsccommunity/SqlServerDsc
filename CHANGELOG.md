@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- SqlServerDsc
+  - Removed a left-over comment in the file `analyzersettings.psd1`.
+
 ## [15.1.0] - 2021-02-02
 
 ### Added
