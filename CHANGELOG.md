@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- SqlServerDsc
+  - Removed a left-over comment in the file `analyzersettings.psd1`.
+
 ## [15.1.0] - 2021-02-02
 
 ### Added
@@ -97,10 +102,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlAGDatabase
   - Fix for issue ([issue #1492](https://github.com/dsccommunity/SqlServerDsc/issues/1492))
-    added AutomaticSeeding for this resource. In Set-TargetResource added logic that looks
-    at all replicas of an availability group. When automatic seeding is found, it will use that.
+    added AutomaticSeeding for this resource. In Set-TargetResource added logic
+    that looks at all replicas of an availability group. When automatic seeding
+    is found, it will use that.
   - Lots of extra tests to check AutomaticSeeding.
-  - The parameter `BackupPath` is still needed just in case a database never has been backuped before.
+  - The parameter `BackupPath` is still needed just in case a database never has
+    been backed up before.
   - Fixed a typo.
 - SqlMaxDop
   - Fixes ([issue #396](https://github.com/dsccommunity/SqlServerDsc/issues/396)).
