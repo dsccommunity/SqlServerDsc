@@ -370,8 +370,20 @@ function Test-TargetResource
         }
         else
         {
+            $reference = [System.Collections.ArrayList]::new()
+
+            if ($getTargetResourceResult.TraceFlags -ne $null) {
+                $reference.AddRange($getTargetResourceResult.TraceFlags)
+            }
+
+            $difference = [System.Collections.ArrayList]::new()
+
+            if ($TraceFlags -ne $null) {
+                $difference.AddRange($TraceFlags)
+            }
+
             # Compare $TraceFlags to the Actual TraceFlags ($getTargetResourceResult.TraceFlags) to see if they contain the same values.
-            $nullIfTheSame = Compare-Object -ReferenceObject $getTargetResourceResult.TraceFlags -DifferenceObject $TraceFlags
+            $nullIfTheSame = Compare-Object -ReferenceObject $reference -DifferenceObject $difference
             if ($null -ne $nullIfTheSame)
             {
                 Write-Verbose -Message (
