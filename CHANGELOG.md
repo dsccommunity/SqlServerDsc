@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- SqlTraceFlag
+  - Fixed $nul reference error when no actual traceflags are present
+    ([issue #1688](https://github.com/dsccommunity/SqlServerDsc/issues/1688)).
+
 ### Changed
 
 - SqlServerDsc
