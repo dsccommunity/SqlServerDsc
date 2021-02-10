@@ -80,7 +80,7 @@ Pester:
   OutputFormat: NUnitXML
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
-  Script:
+  Path:
     - tests/Unit
   ExcludeTag:
   Tag:
