@@ -21,6 +21,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 #>
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='Neither command is needed for this function since it uses CIM methods when calling Get-ReportingServicesData')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -258,7 +259,6 @@ function Set-TargetResource
 
             $reportingServicesServiceName = 'SQLServerReportingServices'
             $reportingServicesDatabaseName = 'ReportServer'
-
         }
         elseif ( $InstanceName -eq 'MSSQLSERVER' )
         {
@@ -776,6 +776,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='Neither command is needed for this function since it uses CIM methods implicitly when calling Get-TargetResource')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param

@@ -5,14 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- SqlTraceFlag
-  - Fixed Assembly not loaded error
-   ([issue #1680](https://github.com/dsccommunity/SqlServerDsc/issues/1680)).
-  - Fixed $nul reference error when no actual traceflags are present
-  ([issue #1688](https://github.com/dsccommunity/SqlServerDsc/issues/1688)).
-
 ### Changed
 
+- SqlServerDsc
+  - Suppressed new custom Script Analyzer rule `SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO`
+    for `Get-`, `Test-`, and `Set-TargetResource` functions in the resources.
 - SqlLogin
   - Added functionality to throw exception if an update to the `LoginMustChangePassword`
     value on an existing SQL Login is attempted. This functionality is not supported
@@ -30,10 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     of these properties that have to transition through an invalid combination (e.g.
     where `PasswordExpirationEnabled` is `$true` but `PasswordPolicyEnforced` is
     `$false`).
-
-- SqlServerDsc
-  - Added unit tests and integration tests for SQL Server 2019
-    ([issue #1310](https://github.com/dsccommunity/SqlServerDsc/issues/1310)).
+- SqlSetup
+  - Minor refactor due to source code lint errors. The loop what evaluates
+    the configuration parameters `*FailoverCluster` was change to a `foreach()`.
 
 ### Fixed
 
@@ -42,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     configured when the repository moved to the new default branch `main`.
     It no longer throws an error when using newer versions of GitVersion
     ([issue #1674](https://github.com/dsccommunity/SqlServerDsc/issues/1674)).
+  - Minor lint errors throughout the repository.
 - SqlLogin
   - Added integration tests to assert `LoginPasswordExpirationEnabled`,
   `LoginPasswordPolicyEnforced` and `LoginMustChangePassword` properties/parameters
@@ -58,6 +55,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     argument is no longer wrongly added ([issue #1401](https://github.com/dsccommunity/SqlServerDsc/issues/1401)).
 - SqlSetup
   - Added/corrected `InstallSharedDir`, property output when using SQL Server 2019.
+- SqlTraceFlag
+  - Fixed Assembly not loaded error ([issue #1680](https://github.com/dsccommunity/SqlServerDsc/issues/1680)).
+- SqlDatabaseUser
+  - Added parameter `ServerName` to the call of `Assert-SqlLogin`.
+    `@PSBoundParameters` doesn't capture the default value of `ServerName`
+    when it is not explicitly set by the caller ([issue #1647](https://github.com/dsccommunity/SqlServerDsc/issues/1647)).
 
 ## [15.0.1] - 2021-01-09
 
@@ -78,10 +81,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlAGDatabase
   - Fix for issue ([issue #1492](https://github.com/dsccommunity/SqlServerDsc/issues/1492))
-    added AutomaticSeeding for this resource. In Set-TargetResource added logic that looks
-    at all replicas of an availability group. When automatic seeding is found, it will use that.
+    added AutomaticSeeding for this resource. In Set-TargetResource added logic
+    that looks at all replicas of an availability group. When automatic seeding
+    is found, it will use that.
   - Lots of extra tests to check AutomaticSeeding.
-  - The parameter `BackupPath` is still needed just in case a database never has been backuped before.
+  - The parameter `BackupPath` is still needed just in case a database never has
+    been backed up before.
   - Fixed a typo.
 - SqlMaxDop
   - Fixes ([issue #396](https://github.com/dsccommunity/SqlServerDsc/issues/396)).

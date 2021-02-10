@@ -4,6 +4,8 @@
         replica and an Always On secondary replica, and where each replica has
         a different SQL service account.
 #>
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification='The variable $ConfigurationData is used by the HQRM test')]
+param ()
 
 $ConfigurationData = @{
     AllNodes = @(
@@ -46,7 +48,7 @@ Configuration Example
 
     Import-DscResource -ModuleName 'SqlServerDsc'
 
-    node $AllNodes.Where{$_.Role -eq 'PrimaryReplica' }.NodeName
+    node $AllNodes.Where{ $_.Role -eq 'PrimaryReplica' }.NodeName
     {
         SqlEndpointPermission 'SQLConfigureEndpointPermissionPrimary'
         {

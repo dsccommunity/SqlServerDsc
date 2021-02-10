@@ -48,6 +48,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 #>
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called implicitly in several function, for example Get-SqlEngineProperties')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -1511,7 +1512,6 @@ function Set-TargetResource
                     {
                         $setupArgumentValue = '"{0}"' -f $currentSetupArgument.Value
                     }
-
                 }
             }
 
@@ -1864,6 +1864,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is implicitly called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -2179,17 +2180,17 @@ function Test-TargetResource
     {
         Write-Verbose -Message $script:localizedData.EvaluatingClusterParameters
 
-        $boundParameters.Keys |
-            Where-Object -FilterScript { $_ -imatch "^FailoverCluster" } |
-            ForEach-Object -Process {
-                $variableName = $_
+        $variableNames = $boundParameters.Keys |
+            Where-Object -FilterScript { $_ -imatch "^FailoverCluster" }
 
-                if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName])
-                {
-                    Write-Verbose -Message ($script:localizedData.ClusterParameterIsNotInDesiredState -f $variableName, $($boundParameters[$variableName]))
-                    $result = $false
-                }
+        foreach ($variableName in $variableNames)
+        {
+            if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName])
+            {
+                Write-Verbose -Message ($script:localizedData.ClusterParameterIsNotInDesiredState -f $variableName, $($boundParameters[$variableName]))
+                $result = $false
             }
+        }
     }
 
     if ($getTargetResourceParameters.Action -eq 'Upgrade')

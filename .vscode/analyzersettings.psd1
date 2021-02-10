@@ -1,5 +1,8 @@
 @{
-    CustomRulePath      = '.\output\RequiredModules\DscResource.AnalyzerRules'
+    CustomRulePath      = @(
+        '.\output\RequiredModules\DscResource.AnalyzerRules'
+        '.\tests\QA\AnalyzerRules\SqlServerDsc.AnalyzerRules.psm1'
+    )
     IncludeDefaultRules = $true
     IncludeRules        = @(
         # DSC Resource Kit style guideline rules.
