@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed $nul reference error when no actual traceflags are present.
     Added two arrays to prevent a $nul reference at compare-object.
     ([issue #1688](https://github.com/dsccommunity/SqlServerDsc/issues/1688)).
+- SqlServerDsc
+  - Removed a left-over comment in the file `analyzersettings.psd1`.
+
+## [15.1.0] - 2021-02-02
+
+### Added
+
+- SqlServerDsc
+  - Added a new script analyzer rule to verify that `Import-SQLPSModule` or `Connect-SQL`
+    (that implicitly calls `Import-SQLPSModule`) is present in each `Get-`, `Test-`,
+    and `Set-TargetResource` function. If neither command is not needed then the
+    analyzer rule should be overridden ([issue #1683](https://github.com/dsccommunity/SqlServerDsc/issues/1683)).
+  - Added a new pipeline job that runs Script Analyzer on all PowerShell scripts
+    in the source folder. The rules are defined by the Script Analyzer settings
+    file `.vscode\analyzersettings.psd1` (which also the Visual Studio Code
+    PowerShell extension uses).
+  - Added unit tests and integration tests for SQL Server 2019
+    ([issue #1310](https://github.com/dsccommunity/SqlServerDsc/issues/1310)).
 
 ### Changed
 
