@@ -176,13 +176,19 @@ function Set-TargetResource
 
     if ($PSBoundParameters.ContainsKey('TraceFlags'))
     {
-        $wishTraceFlags.AddRange($TraceFlags)
+        if ($null -ne $TraceFlags)
+        {
+            $wishTraceFlags.AddRange($TraceFlags)
+        }
     }
     else
     {
         $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-        $wishTraceFlags.AddRange($getTargetResourceResult.TraceFlags)
+        if ($null -ne $getTargetResourceResult.TraceFlags)
+        {
+            $wishTraceFlags.AddRange($getTargetResourceResult.TraceFlags)
+        }
 
         if ($PSBoundParameters.ContainsKey('TraceFlagsToInclude'))
         {
@@ -373,13 +379,15 @@ function Test-TargetResource
         {
             $reference = [System.Collections.ArrayList]::new()
 
-            if ($getTargetResourceResult.TraceFlags -ne $null) {
+            if ($null -ne $getTargetResourceResult.TraceFlags)
+            {
                 $reference.AddRange($getTargetResourceResult.TraceFlags)
             }
 
             $difference = [System.Collections.ArrayList]::new()
 
-            if ($TraceFlags -ne $null) {
+            if ($null -ne $TraceFlags)
+            {
                 $difference.AddRange($TraceFlags)
             }
 
