@@ -357,7 +357,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 Mock -CommandName Import-SQLPSModule
             }
 
-            Context 'When the system is not in the desired state and TraceFlags is empty' {
+            Context 'When the system is not in the desired state and TraceFlags is empty with existing traceflag' {
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
@@ -375,7 +375,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 }
             }
 
-            Context 'When the system is in the desired state and TraceFlags is empty' {
+            Context 'When the system is in the desired state and TraceFlags is empty without existing traceflag' {
                 BeforeAll {
                     $testParameters = $mockInst00Parameters
                     $testParameters += @{
@@ -393,7 +393,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 }
             }
 
-            Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlags does not match the actual TraceFlags' {
+            Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlags does not match the actual TraceFlags with existing traceflag' {
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
@@ -411,9 +411,45 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 }
             }
 
-            Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlagsToInclude are not in the actual TraceFlags' {
+            Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlags does not match the actual TraceFlags without existing traceflag' {
+                BeforeAll {
+                    $testParameters = $mockInst00Parameters
+                    $testParameters += @{
+                        TraceFlags = '3228'
+                    }
+                }
+
+                It 'Should return false when Traceflags do not match the actual TraceFlags' {
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -BeFalse
+                }
+
+                It 'Should be executed once' {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlagsToInclude are not in the actual TraceFlags with existing traceflag' {
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
+                    $testParameters += @{
+                        TraceFlagsToInclude = '3228'
+                    }
+                }
+
+                It 'Should return false when TraceflagsToInclude are not in the actual TraceFlags' {
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -BeFalse
+                }
+
+                It 'Should be executed once' {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlagsToInclude are not in the actual TraceFlags without existing traceflag' {
+                BeforeAll {
+                    $testParameters = $mockInst00Parameters
                     $testParameters += @{
                         TraceFlagsToInclude = '3228'
                     }
@@ -465,7 +501,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 }
             }
 
-            Context 'When the system is in the desired state and ensure is set to Present and `$TraceFlagsToExclude are not in the actual TraceFlags' {
+            Context 'When the system is in the desired state and ensure is set to Present and `$TraceFlagsToExclude are not in the actual TraceFlags with existing traceflag' {
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
@@ -483,6 +519,23 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 }
             }
 
+            Context 'When the system is in the desired state and ensure is set to Present and `$TraceFlagsToExclude are not in the actual TraceFlags without existing traceflag' {
+                BeforeAll {
+                    $testParameters = $mockInst00Parameters
+                    $testParameters += @{
+                        TraceFlagsToExclude = '3228'
+                    }
+                }
+
+                It 'Should return true when TraceflagsToExclude are not in the actual TraceFlags' {
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -BeTrue
+                }
+
+                It 'Should be executed once' {
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope Context
+                }
+            }
 
             Context 'When both the parameters TraceFlags and TraceFlagsToInclude are assigned a value.' {
                 BeforeAll {
@@ -651,7 +704,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 Mock -CommandName Import-SQLPSModule
             }
 
-            Context 'When the system is not in the desired state and ensure is set to Absent' {
+            Context 'When the system is not in the desired state and ensure is set to Absent with existing traceflag' {
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
@@ -670,10 +723,30 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
                     Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It
                 }
-
             }
 
-            Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlags does not match the actual TraceFlags' {
+            Context 'When the system is not in the desired state and ensure is set to Absent without existing traceflag' {
+                BeforeAll {
+                    $testParameters = $mockInst00Parameters
+                    $testParameters += @{
+                        TraceFlags = '3228'
+                    }
+                }
+
+                It 'Should not throw when calling the alter method' {
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodAlterRan | Should -BeTrue -Because 'Alter should run'
+                    $script:mockMethodAlterValue | Should -Be @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
+"@ -Because 'Alter must change the value correct'
+
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlags does not match the actual TraceFlags with existing traceflag' {
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
@@ -694,7 +767,28 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
                 }
             }
 
-            Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlagsToInclude is not in TraceFlags' {
+            Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlags does not match the actual TraceFlags without existing traceflag' {
+                BeforeAll {
+                    $testParameters = $mockInst00Parameters
+                    $testParameters += @{
+                        TraceFlags = '3228'
+                    }
+                }
+
+                It 'Should not throw when calling the alter method' {
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodAlterRan | Should -BeTrue -Because 'Alter should run'
+                    $script:mockMethodAlterValue | Should -Be @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
+"@ -Because 'Alter must change the value correct'
+
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlagsToInclude is not in TraceFlags with existing traceflag' {
                 BeforeAll {
                     $testParameters = $mockDefaultParameters1
                     $testParameters += @{
@@ -709,6 +803,27 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802;-T3228
+"@
+
+                    Assert-MockCalled -CommandName New-Object -Exactly -Times 2 -Scope It
+                }
+            }
+
+            Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlagsToInclude is not in TraceFlags without existing traceflag' {
+                BeforeAll {
+                    $testParameters = $mockInst00Parameters
+                    $testParameters += @{
+                        TraceFlagsToInclude = '3228'
+                    }
+                }
+
+                It 'Should not throw when calling the alter method' {
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    $script:mockMethodAlterRan | Should -BeTrue
+                    $script:mockMethodAlterValue | Should -Be @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
 "@
 
                     Assert-MockCalled -CommandName New-Object -Exactly -Times 2 -Scope It

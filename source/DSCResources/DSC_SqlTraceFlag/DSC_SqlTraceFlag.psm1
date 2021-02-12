@@ -176,13 +176,19 @@ function Set-TargetResource
 
     if ($PSBoundParameters.ContainsKey('TraceFlags'))
     {
-        $wishTraceFlags.AddRange($TraceFlags)
+        if ($null -ne $TraceFlags)
+        {
+            $wishTraceFlags.AddRange($TraceFlags)
+        }
     }
     else
     {
         $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-        $wishTraceFlags.AddRange($getTargetResourceResult.TraceFlags)
+        if ($null -ne $getTargetResourceResult.TraceFlags)
+        {
+            $wishTraceFlags.AddRange($getTargetResourceResult.TraceFlags)
+        }
 
         if ($PSBoundParameters.ContainsKey('TraceFlagsToInclude'))
         {
@@ -371,8 +377,22 @@ function Test-TargetResource
         }
         else
         {
+            $reference = [System.Collections.ArrayList]::new()
+
+            if ($null -ne $getTargetResourceResult.TraceFlags)
+            {
+                $reference.AddRange($getTargetResourceResult.TraceFlags)
+            }
+
+            $difference = [System.Collections.ArrayList]::new()
+
+            if ($null -ne $TraceFlags)
+            {
+                $difference.AddRange($TraceFlags)
+            }
+
             # Compare $TraceFlags to the Actual TraceFlags ($getTargetResourceResult.TraceFlags) to see if they contain the same values.
-            $nullIfTheSame = Compare-Object -ReferenceObject $getTargetResourceResult.TraceFlags -DifferenceObject $TraceFlags
+            $nullIfTheSame = Compare-Object -ReferenceObject $reference -DifferenceObject $difference
             if ($null -ne $nullIfTheSame)
             {
                 Write-Verbose -Message (
