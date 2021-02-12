@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - SqlTraceFlag
-  - Fixed $nul reference error when no actual traceflags are present.
-    Added two arrays to prevent a $nul reference at compare-object.
+  - Fixed `$null` reference error when no actual trace flags are present.
+    Added two arrays to prevent a `$null` reference at compare-object
     ([issue #1688](https://github.com/dsccommunity/SqlServerDsc/issues/1688)).
 - SqlServerDsc
   - Removed a left-over comment in the file `analyzersettings.psd1`.
