@@ -65,7 +65,7 @@ else
 
                 # Database Engine properties.
                 DatabaseEngineNamedInstanceName         = 'DSCSQLTEST'
-                DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,REPLICATION,AS,CONN,BC,SDK'
+                DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
                 <#
                     Analysis Services Multi-dimensional properties.
@@ -425,7 +425,7 @@ Configuration DSC_SqlSetup_StopSqlServerDefaultInstance_Config
     .NOTES
         This is needed to install SQL Server Analysis Services instances.
 #>
-Configuration MSFT_SqlSetup_InstallSqlServerModule_Config
+Configuration DSC_SqlSetup_InstallSqlServerModule_Config
 {
     Import-DscResource -ModuleName 'PowerShellGet' -ModuleVersion '2.1.2'
 
@@ -444,7 +444,7 @@ Configuration MSFT_SqlSetup_InstallSqlServerModule_Config
     .SYNOPSIS
         Installs a named instance of Analysis Services in multi-dimensional mode.
 #>
-Configuration MSFT_SqlSetup_InstallMultiDimensionalAnalysisServicesAsSystem_Config
+Configuration DSC_SqlSetup_InstallMultiDimensionalAnalysisServicesAsSystem_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -479,7 +479,7 @@ Configuration MSFT_SqlSetup_InstallMultiDimensionalAnalysisServicesAsSystem_Conf
         Stopping the Analysis Services multi-dimensional named instance to save
         memory on the build worker.
 #>
-Configuration MSFT_SqlSetup_StopMultiDimensionalAnalysisServices_Config
+Configuration DSC_SqlSetup_StopMultiDimensionalAnalysisServices_Config
 {
     Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
@@ -554,7 +554,7 @@ Configuration DSC_SqlSetup_StopTabularAnalysisServices_Config
     .NOTES
         This is needed to install SQL Server Analysis Services instances.
 #>
-Configuration MSFT_SqlSetup_UninstallSqlServerModule_Config
+Configuration DSC_SqlSetup_UninstallSqlServerModule_Config
 {
     Import-DscResource -ModuleName 'PowerShellGet' -ModuleVersion '2.1.2'
 
