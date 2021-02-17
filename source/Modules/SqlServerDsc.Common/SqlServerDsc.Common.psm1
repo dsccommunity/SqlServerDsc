@@ -653,6 +653,7 @@ function Connect-SQLAnalysis
             Import-SQLPSModule
 
             $analysisServicesObject = New-Object -TypeName 'Microsoft.AnalysisServices.Server'
+
             if ($analysisServicesObject)
             {
                 $analysisServicesObject.Connect($analysisServicesDataSource)
@@ -661,6 +662,7 @@ function Connect-SQLAnalysis
             if ((-not $analysisServicesObject) -or ($analysisServicesObject -and $analysisServicesObject.Connected -eq $false))
             {
                 $errorMessage = $script:localizedData.FailedToConnectToAnalysisServicesInstance -f $analysisServiceInstance
+
                 New-InvalidOperationException -Message $errorMessage
             }
             else
@@ -670,9 +672,10 @@ function Connect-SQLAnalysis
         }
         else
         {
-            $null = [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.AnalysisServices')
+            $null = Import-Assembly -Name 'Microsoft.AnalysisServices' -LoadWithPartialName
 
-            $analysisServicesObject = New-Object -TypeName Microsoft.AnalysisServices.Server
+            $analysisServicesObject = New-Object -TypeName 'Microsoft.AnalysisServices.Server'
+
             if ($analysisServicesObject)
             {
                 $analysisServicesObject.Connect($analysisServicesDataSource)
@@ -680,6 +683,7 @@ function Connect-SQLAnalysis
             else
             {
                 $errorMessage = $script:localizedData.FailedToConnectToAnalysisServicesInstance -f $analysisServiceInstance
+
                 New-InvalidOperationException -Message $errorMessage
             }
 
