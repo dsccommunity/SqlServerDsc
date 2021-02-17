@@ -265,6 +265,30 @@ Configuration DSC_SqlSetup_CreateDependencies_Config
 
 <#
     .SYNOPSIS
+        Installing the latest SqlServer module from PowerShell Gallery.
+
+    .NOTES
+        This module might already be installed on the build worker. This is needed
+        to install SQL Server Analysis Services instances.
+
+#>
+Configuration DSC_SqlSetup_InstallSqlServerModule_Config
+{
+    Import-DscResource -ModuleName 'PowerShellGet' -ModuleVersion '2.1.2'
+
+    node $AllNodes.NodeName
+    {
+        PSModule 'InstallSqlServerModule'
+        {
+            Name               = 'SqlServer'
+            InstallationPolicy = 'Trusted'
+            AllowClobber       = $true
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
         Installs a named instance of Database Engine and Analysis Services.
 
     .NOTES
@@ -420,28 +444,6 @@ Configuration DSC_SqlSetup_StopSqlServerDefaultInstance_Config
 
 <#
     .SYNOPSIS
-        Installing the latest SqlServer module from PowerShell Gallery.
-
-    .NOTES
-        This is needed to install SQL Server Analysis Services instances.
-#>
-Configuration DSC_SqlSetup_InstallSqlServerModule_Config
-{
-    Import-DscResource -ModuleName 'PowerShellGet' -ModuleVersion '2.1.2'
-
-    node $AllNodes.NodeName
-    {
-        PSModule 'InstallSqlServerModule'
-        {
-            Name               = 'SqlServer'
-            InstallationPolicy = 'Trusted'
-            AllowClobber       = $true
-        }
-    }
-}
-
-<#
-    .SYNOPSIS
         Installs a named instance of Analysis Services in multi-dimensional mode.
 #>
 Configuration DSC_SqlSetup_InstallMultiDimensionalAnalysisServicesAsSystem_Config
@@ -552,21 +554,22 @@ Configuration DSC_SqlSetup_StopTabularAnalysisServices_Config
         Installing the latest SqlServer module from PowerShell Gallery.
 
     .NOTES
-        This is needed to install SQL Server Analysis Services instances.
+        Returns the error:
+        Expected no exception to be thrown, but an exception "Access to the path 'DataSec.PAL.Interfaces.dll' is denied." was thrown from D:\a\1\s\tests\Integration\DSC_SqlSetup.Integration.Tests.ps1:779 char:21
 #>
-Configuration DSC_SqlSetup_UninstallSqlServerModule_Config
-{
-    Import-DscResource -ModuleName 'PowerShellGet' -ModuleVersion '2.1.2'
+# Configuration DSC_SqlSetup_UninstallSqlServerModule_Config
+# {
+#     Import-DscResource -ModuleName 'PowerShellGet' -ModuleVersion '2.1.2'
 
-    node $AllNodes.NodeName
-    {
-        PSModule 'UninstallSqlServerModule'
-        {
-            Ensure = 'Absent'
-            Name   = 'SqlServer'
-        }
-    }
-}
+#     node $AllNodes.NodeName
+#     {
+#         PSModule 'UninstallSqlServerModule'
+#         {
+#             Ensure = 'Absent'
+#             Name   = 'SqlServer'
+#         }
+#     }
+# }
 
 <#
     .SYNOPSIS

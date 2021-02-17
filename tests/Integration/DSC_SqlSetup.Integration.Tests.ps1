@@ -173,6 +173,39 @@ try
             }
         }
 
+
+        $configurationName = "$($script:dscResourceName)_InstallSqlServerModule_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath        = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+
+            # Make sure the module was installed.
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be 'True'
+            }
+        }
+
         $configurationName = "$($script:dscResourceName)_InstallDatabaseEngineNamedInstanceAsSystem_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
@@ -458,38 +491,6 @@ try
             }
         }
 
-        $configurationName = "$($script:dscResourceName)_InstallSqlServerModule_Config"
-
-        Context ('When using configuration {0}' -f $configurationName) {
-            It 'Should compile and apply the MOF without throwing' {
-                {
-                    $configurationParameters = @{
-                        OutputPath        = $TestDrive
-                        # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData = $ConfigurationData
-                    }
-
-                    & $configurationName @configurationParameters
-
-                    $startDscConfigurationParameters = @{
-                        Path         = $TestDrive
-                        ComputerName = 'localhost'
-                        Wait         = $true
-                        Verbose      = $true
-                        Force        = $true
-                        ErrorAction  = 'Stop'
-                    }
-
-                    Start-DscConfiguration @startDscConfigurationParameters
-                } | Should -Not -Throw
-            }
-
-            # Make sure the module was installed.
-            It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be 'True'
-            }
-        }
-
         $configurationName = "$($script:dscResourceName)_InstallMultiDimensionalAnalysisServicesAsSystem_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
@@ -534,7 +535,7 @@ try
                     -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.Action                     | Should -BeNullOrEmpty
+                $resourceCurrentState.Action                     | Should -Be 'Install'
                 $resourceCurrentState.AgtSvcAccount              | Should -BeNullOrEmpty
                 $resourceCurrentState.AgtSvcAccountUsername      | Should -BeNullOrEmpty
                 $resourceCurrentState.ASServerMode               | Should -Be $ConfigurationData.AllNodes.AnalysisServicesMultiServerMode
@@ -754,37 +755,37 @@ try
             }
         }
 
-        $configurationName = "$($script:dscResourceName)_UninstallSqlServerModule_Config"
+        # $configurationName = "$($script:dscResourceName)_UninstallSqlServerModule_Config"
 
-        Context ('When using configuration {0}' -f $configurationName) {
-            It 'Should compile and apply the MOF without throwing' {
-                {
-                    $configurationParameters = @{
-                        OutputPath        = $TestDrive
-                        # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData = $ConfigurationData
-                    }
+        # Context ('When using configuration {0}' -f $configurationName) {
+        #     It 'Should compile and apply the MOF without throwing' {
+        #         {
+        #             $configurationParameters = @{
+        #                 OutputPath        = $TestDrive
+        #                 # The variable $ConfigurationData was dot-sourced above.
+        #                 ConfigurationData = $ConfigurationData
+        #             }
 
-                    & $configurationName @configurationParameters
+        #             & $configurationName @configurationParameters
 
-                    $startDscConfigurationParameters = @{
-                        Path         = $TestDrive
-                        ComputerName = 'localhost'
-                        Wait         = $true
-                        Verbose      = $true
-                        Force        = $true
-                        ErrorAction  = 'Stop'
-                    }
+        #             $startDscConfigurationParameters = @{
+        #                 Path         = $TestDrive
+        #                 ComputerName = 'localhost'
+        #                 Wait         = $true
+        #                 Verbose      = $true
+        #                 Force        = $true
+        #                 ErrorAction  = 'Stop'
+        #             }
 
-                    Start-DscConfiguration @startDscConfigurationParameters
-                } | Should -Not -Throw
-            }
+        #             Start-DscConfiguration @startDscConfigurationParameters
+        #         } | Should -Not -Throw
+        #     }
 
-            # Make sure the SqlServer module is uninstalled for all the other tests.
-            It 'Should return $true when Test-DscConfiguration is run' {
-                Test-DscConfiguration -Verbose | Should -Be 'True'
-            }
-        }
+        #     # Make sure the SqlServer module is uninstalled for all the other tests.
+        #     It 'Should return $true when Test-DscConfiguration is run' {
+        #         Test-DscConfiguration -Verbose | Should -Be 'True'
+        #     }
+        # }
 
         $configurationName = "$($script:dscResourceName)_StartServicesInstance_Config"
 
