@@ -339,12 +339,10 @@ function Get-TargetResource
 
         $serviceAnalysisService = Get-ServiceProperties -ServiceName $serviceNames.AnalysisService
 
-        $analysisServer = Connect-SQLAnalysis -SQLServer $sqlHostName -SQLInstanceName $InstanceName -FeatureFlag $FeatureFlag
-
         $getTargetResourceReturnValue.ASSvcAccountUsername = $serviceAnalysisService.UserName
         $getTargetResourceReturnValue.AsSvcStartupType = $serviceAnalysisService.StartupType
 
-        $analysisServer = Connect-SQLAnalysis -ServerName $sqlHostName -InstanceName $InstanceName
+        $analysisServer = Connect-SQLAnalysis -ServerName $sqlHostName -InstanceName $InstanceName -FeatureFlag $FeatureFlag
 
         $getTargetResourceReturnValue.ASCollation = $analysisServer.ServerProperties['CollationName'].Value
         $getTargetResourceReturnValue.ASDataDir = $analysisServer.ServerProperties['DataDir'].Value
