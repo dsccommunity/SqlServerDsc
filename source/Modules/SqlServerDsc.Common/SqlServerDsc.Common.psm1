@@ -2459,5 +2459,3 @@ function Test-FeatureFlag
 
     return $flagEnabled
 }
-
-$script:localizedData = Get-LocalizedData -ResourceName 'SqlServerDsc.Common' -ScriptRoot $PSScriptRoot
