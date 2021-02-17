@@ -333,7 +333,7 @@ Configuration DSC_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
 #>
 Configuration DSC_SqlSetup_StopServicesInstance_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
     node $AllNodes.NodeName
     {
@@ -481,7 +481,7 @@ Configuration MSFT_SqlSetup_InstallMultiDimensionalAnalysisServicesAsSystem_Conf
 #>
 Configuration MSFT_SqlSetup_StopMultiDimensionalAnalysisServices_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
     node $AllNodes.NodeName
     {
