@@ -98,7 +98,7 @@ try
 
         Write-Verbose -Message "Start downloading the SQL Server media at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
 
-        if($script:mockSourceDownloadExeUrl)
+        if ($script:mockSourceDownloadExeUrl)
         {
             # Download the EXE used to download the ISO
             Invoke-WebRequest -Uri $script:mockSourceDownloadExeUrl -OutFile $ConfigurationData.AllNodes.DownloadExePath | Out-Null

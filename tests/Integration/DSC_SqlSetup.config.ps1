@@ -278,7 +278,7 @@ Configuration DSC_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
     {
         SqlSetup 'Integration_Test'
         {
-            FeatureFlag            = @('DetectionSharedFeatures')
+            FeatureFlag            = @()
 
             InstanceName           = $Node.DatabaseEngineNamedInstanceName
             Features               = $Node.DatabaseEngineNamedInstanceFeatures
@@ -333,7 +333,7 @@ Configuration DSC_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
 #>
 Configuration DSC_SqlSetup_StopServicesInstance_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'PSDscResources'
 
     node $AllNodes.NodeName
     {
@@ -371,7 +371,7 @@ Configuration DSC_SqlSetup_InstallDatabaseEngineDefaultInstanceAsUser_Config
     {
         SqlSetup 'Integration_Test'
         {
-            FeatureFlag          = @('DetectionSharedFeatures')
+            FeatureFlag          = @()
 
             InstanceName         = $Node.DatabaseEngineDefaultInstanceName
             Features             = $Node.DatabaseEngineDefaultInstanceFeatures
@@ -452,7 +452,7 @@ Configuration MSFT_SqlSetup_InstallMultiDimensionalAnalysisServicesAsSystem_Conf
     {
         SqlSetup 'Integration_Test'
         {
-            FeatureFlag         = @('DetectionSharedFeatures','AnalysisServicesConnection')
+            FeatureFlag         = @('AnalysisServicesConnection')
 
             InstanceName        = $Node.AnalysisServicesMultiInstanceName
             Features            = $Node.AnalysisServicesMultiFeatures
@@ -506,7 +506,7 @@ Configuration DSC_SqlSetup_InstallTabularAnalysisServicesAsSystem_Config
     {
         SqlSetup 'Integration_Test'
         {
-            FeatureFlag         = @('DetectionSharedFeatures','AnalysisServicesConnection')
+            FeatureFlag         = @('AnalysisServicesConnection')
 
             InstanceName        = $Node.AnalysisServicesTabularInstanceName
             Features            = $Node.AnalysisServicesTabularFeatures
