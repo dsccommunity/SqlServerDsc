@@ -85,8 +85,16 @@ function Get-TargetResource
         This is the minimum amount of memory, in MB, in the buffer pool used by
         the instance of SQL Server.
 
+    .PARAMETER MinMemoryPercent
+        This is the minimum amount of memory, as a percentage of total server memory, in the buffer pool used by
+        the instance of SQL Server.
+
     .PARAMETER MaxMemory
         This is the maximum amount of memory, in MB, in the buffer pool used by
+        the instance of SQL Server.
+
+    .PARAMETER MaxMemoryPercent
+        This is the maximum amount of memory, as a percentage of total server memory, in the buffer pool used by
         the instance of SQL Server.
 
     .PARAMETER ProcessOnlyOnActiveNode
@@ -125,7 +133,15 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Int32]
+        $MinMemoryPercent,
+
+        [Parameter()]
+        [System.Int32]
         $MaxMemory,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxMemoryPercent,
 
         [Parameter()]
         [System.Boolean]
@@ -238,8 +254,16 @@ function Set-TargetResource
         This is the minimum amount of memory, in MB, in the buffer pool used by
         the instance of SQL Server.
 
+    .PARAMETER MinMemoryPercent
+        This is the minimum amount of memory, as a percentage of total server memory, in the buffer pool used by
+        the instance of SQL Server.
+
     .PARAMETER MaxMemory
         This is the maximum amount of memory, in MB, in the buffer pool used by
+        the instance of SQL Server.
+
+    .PARAMETER MaxMemoryPercent
+        This is the maximum amount of memory, as a percentage of total server memory, in the buffer pool used by
         the instance of SQL Server.
 
     .PARAMETER ProcessOnlyOnActiveNode
@@ -278,7 +302,15 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Int32]
+        $MinMemoryPercent,
+
+        [Parameter()]
+        [System.Int32]
         $MaxMemory,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxMemoryPercent,
 
         [Parameter()]
         [System.Boolean]
