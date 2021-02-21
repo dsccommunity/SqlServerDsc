@@ -555,28 +555,6 @@ Configuration DSC_SqlSetup_StopTabularAnalysisServices_Config
 
 <#
     .SYNOPSIS
-        Installing the latest SqlServer module from PowerShell Gallery.
-
-    .NOTES
-        Returns the error:
-        Expected no exception to be thrown, but an exception "Access to the path 'DataSec.PAL.Interfaces.dll' is denied." was thrown from D:\a\1\s\tests\Integration\DSC_SqlSetup.Integration.Tests.ps1:779 char:21
-#>
-# Configuration DSC_SqlSetup_UninstallSqlServerModule_Config
-# {
-#     Import-DscResource -ModuleName 'PowerShellGet' -ModuleVersion '2.1.2'
-
-#     node $AllNodes.NodeName
-#     {
-#         PSModule 'UninstallSqlServerModule'
-#         {
-#             Ensure = 'Absent'
-#             Name   = 'SqlServer'
-#         }
-#     }
-# }
-
-<#
-    .SYNOPSIS
         Restarting the Database Engine named instance.
 
     .NOTES
