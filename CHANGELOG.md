@@ -5,17 +5,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [15.1.1] - 2021-02-12
-
-### Fixed
-
-- SqlTraceFlag
-  - Fixed `$null` reference error when no actual trace flags are present.
-    Added two arrays to prevent a `$null` reference at compare-object
-    ([issue #1688](https://github.com/dsccommunity/SqlServerDsc/issues/1688)).
-- SqlServerDsc
-  - Removed a left-over comment in the file `analyzersettings.psd1`.
-
 ### Changed
 
 - SqlSetup
@@ -38,12 +27,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     module (v21.1.18080 and above) does. The new functionality is used
     when the parameter `FeatureFlag` is set to `'AnalysisServicesConnection'`.
     This functionality will be the default in a future breaking release.
-  - Under a feature flag; `'AnalysisServicesConnection'`. The detection of
+  - Under a feature flag `'AnalysisServicesConnection'`. The detection of
     a successful connection to the SQL Server Analysis Services has also been
     changed. Now it actually evaluates the property `Connected` of the returned
     `Microsoft.AnalysisServices.Server` object. The new functionality is used
     when the parameter `FeatureFlag` is set to `'AnalysisServicesConnection'`.
     This functionality will be the default in a future breaking release.
+
+## [15.1.1] - 2021-02-12
+
+### Fixed
+
+- SqlTraceFlag
+  - Fixed `$null` reference error when no actual trace flags are present.
+    Added two arrays to prevent a `$null` reference at compare-object
+    ([issue #1688](https://github.com/dsccommunity/SqlServerDsc/issues/1688)).
+- SqlServerDsc
+  - Removed a left-over comment in the file `analyzersettings.psd1`.
 
 ## [15.1.0] - 2021-02-02
 
