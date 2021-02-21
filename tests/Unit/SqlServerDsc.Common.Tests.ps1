@@ -1401,7 +1401,7 @@ InModuleScope $script:subModuleName {
 
             $mockNewObject_MicrosoftAnalysisServicesServer = {
                 return New-Object -TypeName Object |
-                            Add-Member -MemberType 'NoteProperty' -Name 'Connected' -Value $mockDynamicConnectedStatus |
+                            Add-Member -MemberType 'NoteProperty' -Name 'Connected' -Value $mockDynamicConnectedStatus -PassThru |
                             Add-Member -MemberType 'ScriptMethod' -Name 'Connect' -Value {
                                 param
                                 (
@@ -1413,7 +1413,7 @@ InModuleScope $script:subModuleName {
 
                                 if ($DataSource -ne $mockExpectedDataSource)
                                 {
-                                    throw ("Datasource was expected to be '{0}', but was '{1}'." -f $mockExpectedDataSource,$dataSource)
+                                    throw ("Datasource was expected to be '{0}', but was '{1}'." -f $mockExpectedDataSource, $dataSource)
                                 }
 
                                 if ($mockThrowInvalidOperation)
@@ -1445,6 +1445,8 @@ InModuleScope $script:subModuleName {
             $mockFqdnSqlCredentialPassword = 'StrongOne7.'
             $mockFqdnSqlCredentialSecurePassword = ConvertTo-SecureString -String $mockFqdnSqlCredentialPassword -AsPlainText -Force
             $mockFqdnSqlCredential = New-Object -TypeName PSCredential -ArgumentList ($mockFqdnSqlCredentialUserName, $mockFqdnSqlCredentialSecurePassword)
+
+            $mockComputerName = Get-ComputerName
         }
 
         BeforeEach {
@@ -1458,7 +1460,7 @@ InModuleScope $script:subModuleName {
             BeforeAll {
                 Mock -CommandName Import-SQLPSModule
 
-                $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME"
+                $mockExpectedDataSource = "Data Source=$mockComputerName"
             }
 
             Context 'When connecting to the default instance using Windows Authentication' {
@@ -1480,7 +1482,7 @@ InModuleScope $script:subModuleName {
                     }
 
                     It 'Should throw the correct error' {
-                        $mockExpectedErrorMessage = $script:localizedData.FailedToConnectToAnalysisServicesInstance -f $env:COMPUTERNAME
+                        $mockExpectedErrorMessage = $script:localizedData.FailedToConnectToAnalysisServicesInstance -f $mockComputerName
 
                         { Connect-SQLAnalysis -FeatureFlag 'AnalysisServicesConnection' } | Should -Throw
                     }
@@ -1489,7 +1491,7 @@ InModuleScope $script:subModuleName {
 
             Context 'When connecting to the named instance using Windows Authentication' {
                 It 'Should not throw when connecting' {
-                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName"
+                    $mockExpectedDataSource = "Data Source=$mockComputerName\$mockInstanceName"
 
                     { Connect-SQLAnalysis -InstanceName $mockInstanceName -FeatureFlag 'AnalysisServicesConnection' } | Should -Not -Throw
                 }
@@ -1497,7 +1499,7 @@ InModuleScope $script:subModuleName {
 
             Context 'When connecting to the named instance using Windows Authentication impersonation' {
                 It 'Should not throw when connecting' {
-                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockSqlCredentialUserName;Password=$mockSqlCredentialPassword"
+                    $mockExpectedDataSource = "Data Source=$mockComputerName\$mockInstanceName;User ID=$mockSqlCredentialUserName;Password=$mockSqlCredentialPassword"
 
                     { Connect-SQLAnalysis -InstanceName $mockInstanceName -SetupCredential $mockSqlCredential -FeatureFlag 'AnalysisServicesConnection' } | Should -Not -Throw
                 }
@@ -1511,7 +1513,7 @@ InModuleScope $script:subModuleName {
 
             Context 'When connecting to the default instance using Windows Authentication' {
                 It 'Should not throw when connecting' {
-                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME"
+                    $mockExpectedDataSource = "Data Source=$mockComputerName"
 
                     { Connect-SQLAnalysis } | Should -Not -Throw
 
@@ -1522,7 +1524,7 @@ InModuleScope $script:subModuleName {
 
             Context 'When connecting to the named instance using Windows Authentication' {
                 It 'Should not throw when connecting' {
-                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName"
+                    $mockExpectedDataSource = "Data Source=$mockComputerName\$mockInstanceName"
 
                     { Connect-SQLAnalysis -InstanceName $mockInstanceName } | Should -Not -Throw
 
@@ -1534,7 +1536,7 @@ InModuleScope $script:subModuleName {
             Context 'When connecting to the named instance using Windows Authentication impersonation' {
                 Context 'When authentication without NetBIOS domain and Fully Qualified Domain Name (FQDN)' {
                     It 'Should not throw when connecting' {
-                        $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockSqlCredentialUserName;Password=$mockSqlCredentialPassword"
+                        $mockExpectedDataSource = "Data Source=$mockComputerName\$mockInstanceName;User ID=$mockSqlCredentialUserName;Password=$mockSqlCredentialPassword"
 
                         { Connect-SQLAnalysis -InstanceName $mockInstanceName -SetupCredential $mockSqlCredential } | Should -Not -Throw
 
@@ -1545,7 +1547,7 @@ InModuleScope $script:subModuleName {
 
                 Context 'When authentication using NetBIOS domain' {
                     It 'Should not throw when connecting' {
-                        $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockNetBiosSqlCredentialUserName;Password=$mockNetBiosSqlCredentialPassword"
+                        $mockExpectedDataSource = "Data Source=$mockComputerName\$mockInstanceName;User ID=$mockNetBiosSqlCredentialUserName;Password=$mockNetBiosSqlCredentialPassword"
 
                         { Connect-SQLAnalysis -InstanceName $mockInstanceName -SetupCredential $mockNetBiosSqlCredential } | Should -Not -Throw
 
@@ -1556,7 +1558,7 @@ InModuleScope $script:subModuleName {
 
                 Context 'When authentication using Fully Qualified Domain Name (FQDN)' {
                     It 'Should not throw when connecting' {
-                        $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockFqdnSqlCredentialUserName;Password=$mockFqdnSqlCredentialPassword"
+                        $mockExpectedDataSource = "Data Source=$mockComputerName\$mockInstanceName;User ID=$mockFqdnSqlCredentialUserName;Password=$mockFqdnSqlCredentialPassword"
 
                         { Connect-SQLAnalysis -InstanceName $mockInstanceName -SetupCredential $mockFqdnSqlCredential } | Should -Not -Throw
 
@@ -1573,7 +1575,7 @@ InModuleScope $script:subModuleName {
                     Mock -CommandName New-Object `
                         -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
 
-                    $mockErrorMessage = ($script:localizedData.FailedToConnectToAnalysisServicesInstance -f $env:COMPUTERNAME)
+                    $mockErrorMessage = ($script:localizedData.FailedToConnectToAnalysisServicesInstance -f $mockComputerName)
 
                     $mockErrorMessage | Should -Not -BeNullOrEmpty
 
@@ -1586,12 +1588,12 @@ InModuleScope $script:subModuleName {
 
             Context 'When connecting to the default instance using a Analysis Service instance that does not exist' {
                 It 'Should throw the correct error' {
-                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME"
+                    $mockExpectedDataSource = "Data Source=$mockComputerName"
 
                     # Force the mock of Connect() method to throw 'Unable to connect.'
                     $mockThrowInvalidOperation = $true
 
-                    $mockErrorMessage = ($script:localizedData.FailedToConnectToAnalysisServicesInstance -f $env:COMPUTERNAME)
+                    $mockErrorMessage = ($script:localizedData.FailedToConnectToAnalysisServicesInstance -f $mockComputerName)
 
                     $mockErrorMessage | Should -Not -BeNullOrEmpty
 
