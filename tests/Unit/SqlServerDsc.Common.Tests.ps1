@@ -1397,9 +1397,11 @@ InModuleScope $script:subModuleName {
     Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
         BeforeAll {
             $mockInstanceName = 'TEST'
+            $mockDynamicConnectedStatus = $true
 
             $mockNewObject_MicrosoftAnalysisServicesServer = {
                 return New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'Connected' -Value $mockDynamicConnectedStatus |
                             Add-Member -MemberType 'ScriptMethod' -Name 'Connect' -Value {
                                 param
                                 (
@@ -1455,17 +1457,33 @@ InModuleScope $script:subModuleName {
         Context 'When using feature flag ''AnalysisServicesConnection''' {
             BeforeAll {
                 Mock -CommandName Import-SQLPSModule
+
+                $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME"
             }
 
             Context 'When connecting to the default instance using Windows Authentication' {
                 It 'Should not throw when connecting' {
-                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME"
-
                     { Connect-SQLAnalysis -FeatureFlag 'AnalysisServicesConnection' } | Should -Not -Throw
 
                     Assert-MockCalled -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
                     Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It `
                         -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
+                }
+
+                Context 'When Connected status is $false' {
+                    BeforeAll {
+                        $mockDynamicConnectedStatus = $false
+                    }
+
+                    AfterAll {
+                        $mockDynamicConnectedStatus = $true
+                    }
+
+                    It 'Should throw the correct error' {
+                        $mockExpectedErrorMessage = $script:localizedData.FailedToConnectToAnalysisServicesInstance -f $env:COMPUTERNAME
+
+                        { Connect-SQLAnalysis -FeatureFlag 'AnalysisServicesConnection' } | Should -Throw
+                    }
                 }
             }
 
