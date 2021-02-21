@@ -19,28 +19,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - SqlSetup
-  - The helper function `Connect-SqlAnalysis` is using `LoadWithPartial()`
-    to load the assembly **`Microsoft.AnalysisServices`**. On a node where multiple
+  - The helper function `Connect-SqlAnalysis` was using `LoadWithPartial()`
+    to load the assembly _Microsoft.AnalysisServices_. On a node where multiple
     instances with different versions of SQL Server (regardless of features)
     is installed, this will result in the first assembly found in the
-    GAC will be loaded into the session, regardless of version. This can
-    result in an assembly being loaded that is not compatible with the
-    version of SQL Server it should be used to connect to.
-    A new method of loading the assembly **`Microsoft.AnalysisServices`** was
+    GAC will be loaded into the session, not taking versions into account.
+    This can result in an assembly version being loaded that is not compatible
+    with the version of SQL Server it was meant to be used with.
+    A new method of loading the assembly _Microsoft.AnalysisServices_ was
     introduced under a feature flag; `'AnalysisServicesConnection'`.
-    This new functionality depends on the SqlServer module, and must be
-    present on the node. The [SqlServer module](https://www.powershellgallery.com/packages/SqlServer)
-    can be installed on the node by leveraging the new DSC resources in the
-    [PowerShellGet (v2.1.2)](https://www.powershellgallery.com/packages/PowerShellGet/2.1.2)
-    module. This new method does not work with the SQLPS module due to
-    the SQLPS module does not load the correct assembly, while
-    [SqlServer module](https://www.powershellgallery.com/packages/SqlServer)
-    (v21.1.18080 and above) does.
-    The detection of a successful connection to the Sql Server Analysis
-    Services has also been changed. Now it actually evaluates the property
-    `Connected` of the returned `Microsoft.AnalysisServices.Server` object.
-    The new functionality is used when the parameter `FeatureFlag` is set
-    to `'AnalysisServicesConnection'`.
+    This new functionality depends on the [SqlServer](https://www.powershellgallery.com/packages/SqlServer)
+    module, and must be present on the node. The [SqlServer](https://www.powershellgallery.com/packages/SqlServer)
+    module can be installed on the node by leveraging the new DSC resource
+    `PSModule` in the [PowerShellGet](https://www.powershellgallery.com/packages/PowerShellGet/2.1.2)
+    module (v2.1.2 and higher). This new method does not work with the
+    SQLPS module due to the SQLPS module does not load the correct assembly,
+    while [SqlServer](https://www.powershellgallery.com/packages/SqlServer)
+    module (v21.1.18080 and above) does. The new functionality is used
+    when the parameter `FeatureFlag` is set to `'AnalysisServicesConnection'`.
+    This functionality will be the default in a future breaking release.
+  - Under a feature flag; `'AnalysisServicesConnection'`. The detection of
+    a successful connection to the SQL Server Analysis Services has also been
+    changed. Now it actually evaluates the property `Connected` of the returned
+    `Microsoft.AnalysisServices.Server` object. The new functionality is used
+    when the parameter `FeatureFlag` is set to `'AnalysisServicesConnection'`.
     This functionality will be the default in a future breaking release.
 
 ## [15.1.0] - 2021-02-02
