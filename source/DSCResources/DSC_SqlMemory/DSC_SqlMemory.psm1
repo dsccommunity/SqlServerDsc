@@ -132,6 +132,7 @@ function Set-TargetResource
         $MinMemory,
 
         [Parameter()]
+        [ValidateRange(1, 100)]
         [System.Int32]
         $MinMemoryPercent,
 
@@ -140,6 +141,7 @@ function Set-TargetResource
         $MaxMemory,
 
         [Parameter()]
+        [ValidateRange(1, 100)]
         [System.Int32]
         $MaxMemoryPercent,
 
@@ -167,6 +169,12 @@ function Set-TargetResource
                         New-InvalidArgumentException -ArgumentName 'MaxMemory' -Message $errorMessage
                     }
 
+                    if ($MaxMemoryPercent)
+                    {
+                        $errorMessage = $script:localizedData.MaxMemoryPercentParamMustBeNull
+                        New-InvalidArgumentException -ArgumentName 'MaxMemoryPercent' -Message $errorMessage
+                    }
+
                     $MaxMemory = Get-SqlDscDynamicMaxMemory
 
                     Write-Verbose -Message (
@@ -175,21 +183,56 @@ function Set-TargetResource
                 }
                 else
                 {
-                    if (-not $MaxMemory)
+                    if (-not $MaxMemory -and -not $MaxMemoryPercent)
                     {
                         $errorMessage = $script:localizedData.MaxMemoryParamMustNotBeNull
                         New-InvalidArgumentException -ArgumentName 'MaxMemory' -Message $errorMessage
                     }
                 }
 
-                Write-Verbose -Message (
-                    $script:localizedData.MaximumMemoryLimited -f $InstanceName, $MaxMemory
-                )
+                if ($MaxMemory)
+                {
+                    if ($MaxMemoryPercent)
+                    {
+                        $errorMessage = $script:localizedData.MaxMemoryPercentParamMustBeNull
+                        New-InvalidArgumentException -ArgumentName 'MaxMemoryPercent' -Message $errorMessage
+                    }
 
-                $sqlServerObject.Configuration.MaxServerMemory.ConfigValue = $MaxMemory
+                    $sqlServerObject.Configuration.MaxServerMemory.ConfigValue = $MaxMemory
+
+                    Write-Verbose -Message (
+                        $script:localizedData.MaximumMemoryLimited -f $InstanceName, $MaxMemory
+                    )
+                }
+                elseif ($MaxMemoryPercent)
+                {
+                    $MaxMemory = Get-SqlDscPercentMemory -PercentMemory $MaxMemoryPercent
+
+                    $sqlServerObject.Configuration.MaxServerMemory.ConfigValue = $MaxMemory
+
+                    Write-Verbose -Message (
+                        $script:localizedData.MaximumMemoryLimited -f $InstanceName, $MaxMemory
+                    )
+                }
 
                 if ($MinMemory)
                 {
+                    if ($MinMemoryPercent)
+                    {
+                        $errorMessage = $script:localizedData.MinMemoryPercentParamMustBeNull
+                        New-InvalidArgumentException -ArgumentName 'MinMemoryPercent' -Message $errorMessage
+                    }
+
+                    $sqlServerObject.Configuration.MinServerMemory.ConfigValue = $MinMemory
+
+                    Write-Verbose -Message (
+                        $script:localizedData.MinimumMemoryLimited -f $InstanceName, $MinMemory
+                    )
+                }
+                elseif ($MinMemoryPercent)
+                {
+                    $MinMemory = Get-SqlDscPercentMemory -PercentMemory $MinMemoryPercent
+
                     $sqlServerObject.Configuration.MinServerMemory.ConfigValue = $MinMemory
 
                     Write-Verbose -Message (
@@ -301,6 +344,7 @@ function Test-TargetResource
         $MinMemory,
 
         [Parameter()]
+        [ValidateRange(1, 100)]
         [System.Int32]
         $MinMemoryPercent,
 
@@ -309,6 +353,7 @@ function Test-TargetResource
         $MaxMemory,
 
         [Parameter()]
+        [ValidateRange(1, 100)]
         [System.Int32]
         $MaxMemoryPercent,
 
@@ -479,3 +524,32 @@ function Get-SqlDscDynamicMaxMemory
     $maxMemory
 }
 
+<#
+    .SYNOPSIS
+        This function returns the amount of memory in MB, calculated from the input percentage of total server memory.
+
+    .PARAMETER MemoryPercent
+        This is the percentage of total server memory to calculate.
+#>
+function Get-SqlDscPercentMemory
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateRange(1, 100)]
+        [System.Int32]
+        $PercentMemory
+    )
+
+    try {
+        $physicalMemory = (Get-CimInstance -ClassName Win32_ComputerSystem).TotalPhysicalMemory
+        $memoryInMegaBytes = [Math]::Round(($physicalMemory * ($PercentMemory/100)) / 1MB)
+    }
+    catch {
+        $errorMessage = $script:localizedData.ErrorGetPercentMemory
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+    }
+
+    $memoryInMegaBytes
+}
