@@ -423,6 +423,12 @@ function Test-TargetResource
                     New-InvalidArgumentException -ArgumentName 'MaxMemory' -Message $errorMessage
                 }
 
+                if ($MaxMemoryPercent)
+                {
+                    $errorMessage = $script:localizedData.MaxMemoryPercentParamMustBeNull
+                    New-InvalidArgumentException -ArgumentName 'MaxMemoryPercent' -Message $errorMessage
+                }
+
                 $MaxMemory = Get-SqlDscDynamicMaxMemory
 
                 Write-Verbose -Message (
@@ -431,11 +437,24 @@ function Test-TargetResource
             }
             else
             {
-                if (-not $MaxMemory)
+                if (-not $MaxMemory -and -not $MaxMemoryPercent)
                 {
                     $errorMessage = $script:localizedData.MaxMemoryParamMustNotBeNull
                     New-InvalidArgumentException -ArgumentName 'MaxMemory' -Message $errorMessage
                 }
+            }
+
+            if ($MaxMemory)
+            {
+                if ($MaxMemoryPercent)
+                {
+                    $errorMessage = $script:localizedData.MaxMemoryPercentParamMustBeNull
+                    New-InvalidArgumentException -ArgumentName 'MaxMemoryPercent' -Message $errorMessage
+                }
+            }
+            elseif ($MaxMemoryPercent)
+            {
+                $MaxMemory = Get-SqlDscPercentMemory -PercentMemory $MaxMemoryPercent
             }
 
             if ($MaxMemory -ne $currentMaxMemory)
@@ -447,8 +466,21 @@ function Test-TargetResource
                 $isServerMemoryInDesiredState = $false
             }
 
-            if ($MinMemory)
+            if ($MinMemory -or $MinMemoryPercent)
             {
+                if ($MinMemory)
+                {
+                    if ($MinMemoryPercent)
+                    {
+                        $errorMessage = $script:localizedData.MinMemoryPercentParamMustBeNull
+                        New-InvalidArgumentException -ArgumentName 'MinMemoryPercent' -Message $errorMessage
+                    }
+                }
+                elseif ($MinMemoryPercent)
+                {
+                    $MinMemory = Get-SqlDscPercentMemory -PercentMemory $MinMemoryPercent
+                }
+
                 if ($MinMemory -ne $currentMinMemory)
                 {
                     Write-Verbose -Message (
