@@ -618,10 +618,12 @@ function Connect-SQLAnalysis
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
-        $SetupCredential
-    )
+        $SetupCredential,
 
-    $null = Import-Assembly -Name 'Microsoft.AnalysisServices' -LoadWithPartialName
+        [Parameter()]
+        [System.String[]]
+        $FeatureFlag
+    )
 
     if ($InstanceName -eq 'MSSQLSERVER')
     {
@@ -646,20 +648,47 @@ function Connect-SQLAnalysis
 
     try
     {
-        $analysisServicesObject = New-Object -TypeName 'Microsoft.AnalysisServices.Server'
-
-        if ($analysisServicesObject)
+        if ((Test-FeatureFlag -FeatureFlag $FeatureFlag -TestFlag 'AnalysisServicesConnection'))
         {
-            $analysisServicesObject.Connect($analysisServicesDataSource)
+            Import-SQLPSModule
+
+            $analysisServicesObject = New-Object -TypeName 'Microsoft.AnalysisServices.Server'
+
+            if ($analysisServicesObject)
+            {
+                $analysisServicesObject.Connect($analysisServicesDataSource)
+            }
+
+            if ((-not $analysisServicesObject) -or ($analysisServicesObject -and $analysisServicesObject.Connected -eq $false))
+            {
+                $errorMessage = $script:localizedData.FailedToConnectToAnalysisServicesInstance -f $analysisServiceInstance
+
+                New-InvalidOperationException -Message $errorMessage
+            }
+            else
+            {
+                Write-Verbose -Message ($script:localizedData.ConnectedToAnalysisServicesInstance -f $analysisServiceInstance) -Verbose
+            }
         }
         else
         {
-            $errorMessage = $script:localizedData.FailedToConnectToAnalysisServicesInstance -f $analysisServiceInstance
+            $null = Import-Assembly -Name 'Microsoft.AnalysisServices' -LoadWithPartialName
 
-            New-InvalidOperationException -Message $errorMessage
+            $analysisServicesObject = New-Object -TypeName 'Microsoft.AnalysisServices.Server'
+
+            if ($analysisServicesObject)
+            {
+                $analysisServicesObject.Connect($analysisServicesDataSource)
+            }
+            else
+            {
+                $errorMessage = $script:localizedData.FailedToConnectToAnalysisServicesInstance -f $analysisServiceInstance
+
+                New-InvalidOperationException -Message $errorMessage
+            }
+
+            Write-Verbose -Message ($script:localizedData.ConnectedToAnalysisServicesInstance -f $analysisServiceInstance) -Verbose
         }
-
-        Write-Verbose -Message ($script:localizedData.ConnectedToAnalysisServicesInstance -f $analysisServiceInstance) -Verbose
     }
     catch
     {
@@ -2399,4 +2428,34 @@ function Get-FilePathMajorVersion
     )
 
     (Get-Item -Path $Path).VersionInfo.ProductVersion.Split('.')[0]
+}
+
+<#
+    .SYNOPSIS
+        Test if the specific feature flag should be enabled.
+
+    .PARAMETER FeatureFlag
+        An array of feature flags that should be compared against.
+
+    .PARAMETER TestFlag
+        The feature flag that is being check if it should be enabled.
+#>
+function Test-FeatureFlag
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter()]
+        [System.String[]]
+        $FeatureFlag,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $TestFlag
+    )
+
+    $flagEnabled = $FeatureFlag -and ($FeatureFlag -and $FeatureFlag.Contains($TestFlag))
+
+    return $flagEnabled
 }

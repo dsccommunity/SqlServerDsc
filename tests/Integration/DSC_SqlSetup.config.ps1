@@ -65,8 +65,18 @@ else
 
                 # Database Engine properties.
                 DatabaseEngineNamedInstanceName         = 'DSCSQLTEST'
-                DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,REPLICATION,AS,CONN,BC,SDK'
-                AnalysisServicesMultiServerMode         = 'MULTIDIMENSIONAL'
+                DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+
+                <#
+                    Analysis Services Multi-dimensional properties.
+                    The features CONN,BC,SDK is installed with the DSCSQLTEST so those
+                    features will found for DSCTABULAR instance as well.
+                    The features is added here so the same property can be used to
+                    evaluate the result in the test.
+                #>
+                AnalysisServicesMultiInstanceName     = 'DSCMULTI'
+                AnalysisServicesMultiFeatures         = 'AS,CONN,BC,SDK'
+                AnalysisServicesMultiServerMode       = 'MULTIDIMENSIONAL'
 
                 <#
                     Analysis Services Tabular properties.
@@ -255,6 +265,34 @@ Configuration DSC_SqlSetup_CreateDependencies_Config
 
 <#
     .SYNOPSIS
+        Installing the latest SqlServer module from PowerShell Gallery.
+
+    .NOTES
+        This module might already be installed on the build worker. This is needed
+        to install SQL Server Analysis Services instances.
+
+        Thre SqlServer module is purposely not added to 'RequiredModule.psd1' so
+        that it does not conflict with the SqlServerStubs module that is used by
+        unit tests.
+#>
+Configuration DSC_SqlSetup_InstallSqlServerModule_Config
+{
+    Import-DscResource -ModuleName 'PowerShellGet' -ModuleVersion '2.1.2'
+
+    node $AllNodes.NodeName
+    {
+        PSModule 'InstallSqlServerModule'
+        {
+            Name               = 'SqlServer'
+            MinimumVersion     = '21.1.18235' # Analysis Services works at least with this version.
+            InstallationPolicy = 'Trusted'
+            AllowClobber       = $true
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
         Installs a named instance of Database Engine and Analysis Services.
 
     .NOTES
@@ -268,7 +306,7 @@ Configuration DSC_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
     {
         SqlSetup 'Integration_Test'
         {
-            FeatureFlag            = @('DetectionSharedFeatures')
+            FeatureFlag            = @()
 
             InstanceName           = $Node.DatabaseEngineNamedInstanceName
             Features               = $Node.DatabaseEngineNamedInstanceFeatures
@@ -281,10 +319,6 @@ Configuration DSC_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             SQLCollation           = $Node.Collation
             SQLSvcAccount          = $SqlServicePrimaryCredential
             AgtSvcAccount          = $SqlAgentServicePrimaryCredential
-            ASServerMode           = $Node.AnalysisServicesMultiServerMode
-            AsSvcStartupType       = 'Automatic'
-            ASCollation            = $Node.Collation
-            ASSvcAccount           = $SqlServicePrimaryCredential
             InstanceDir            = $Node.InstanceDir
             InstallSharedDir       = $Node.InstallSharedDir
             InstallSharedWOWDir    = $Node.InstallSharedWOWDir
@@ -313,11 +347,6 @@ Configuration DSC_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
                     IsHadrEnable for SqlAlwaysOnService.
                 #>
                 Split-Path -Path $SqlInstallCredential.UserName -Leaf
-            )
-
-            # This must be set if using SYSTEM account to install.
-            ASSysAdminAccounts    = @(
-                Split-Path -Path $SqlAdministratorCredential.UserName -Leaf
             )
         }
     }
@@ -355,12 +384,6 @@ Configuration DSC_SqlSetup_StopServicesInstance_Config
             Name   = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
             State  = 'Stopped'
         }
-
-        Service ('StopMultiAnalysisServicesInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
-        {
-            Name  = ('MSOLAP${0}' -f $Node.DatabaseEngineNamedInstanceName)
-            State = 'Stopped'
-        }
     }
 }
 
@@ -376,7 +399,7 @@ Configuration DSC_SqlSetup_InstallDatabaseEngineDefaultInstanceAsUser_Config
     {
         SqlSetup 'Integration_Test'
         {
-            FeatureFlag            = @('DetectionSharedFeatures')
+            FeatureFlag          = @()
 
             InstanceName         = $Node.DatabaseEngineDefaultInstanceName
             Features             = $Node.DatabaseEngineDefaultInstanceFeatures
@@ -425,6 +448,60 @@ Configuration DSC_SqlSetup_StopSqlServerDefaultInstance_Config
 
 <#
     .SYNOPSIS
+        Installs a named instance of Analysis Services in multi-dimensional mode.
+#>
+Configuration DSC_SqlSetup_InstallMultiDimensionalAnalysisServicesAsSystem_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlSetup 'Integration_Test'
+        {
+            FeatureFlag         = @('AnalysisServicesConnection')
+
+            InstanceName        = $Node.AnalysisServicesMultiInstanceName
+            Features            = $Node.AnalysisServicesMultiFeatures
+            SourcePath          = "$($Node.DriveLetter):\"
+            ASServerMode        = $Node.AnalysisServicesMultiServerMode
+            ASCollation         = $Node.Collation
+            ASSvcAccount        = $SqlServicePrimaryCredential
+            InstallSharedDir    = $Node.InstallSharedDir
+            InstallSharedWOWDir = $Node.InstallSharedWOWDir
+            UpdateEnabled       = $Node.UpdateEnabled
+            SuppressReboot      = $Node.SuppressReboot
+            ForceReboot         = $Node.ForceReboot
+
+            # This must be set if using SYSTEM account to install.
+            ASSysAdminAccounts  = @(
+                Split-Path -Path $SqlAdministratorCredential.UserName -Leaf
+            )
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Stopping the Analysis Services multi-dimensional named instance to save
+        memory on the build worker.
+#>
+Configuration DSC_SqlSetup_StopMultiDimensionalAnalysisServices_Config
+{
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+
+    node $AllNodes.NodeName
+    {
+        Service ('StopMultiDimensionalAnalysisServicesInstance{0}' -f $Node.AnalysisServicesMultiInstanceName)
+        {
+            Name  = ('MSOLAP${0}' -f $Node.AnalysisServicesMultiInstanceName)
+            State = 'Stopped'
+        }
+    }
+}
+
+
+<#
+    .SYNOPSIS
         Installs a named instance of Analysis Services in tabular mode.
 #>
 Configuration DSC_SqlSetup_InstallTabularAnalysisServicesAsSystem_Config
@@ -435,7 +512,7 @@ Configuration DSC_SqlSetup_InstallTabularAnalysisServicesAsSystem_Config
     {
         SqlSetup 'Integration_Test'
         {
-            FeatureFlag            = @('DetectionSharedFeatures')
+            FeatureFlag         = @('AnalysisServicesConnection')
 
             InstanceName        = $Node.AnalysisServicesTabularInstanceName
             Features            = $Node.AnalysisServicesTabularFeatures
@@ -470,7 +547,7 @@ Configuration DSC_SqlSetup_StopTabularAnalysisServices_Config
     {
         Service ('StopTabularAnalysisServicesInstance{0}' -f $Node.AnalysisServicesTabularInstanceName)
         {
-            Name  = ('MSOLAP${0}' -f $Node.DatabaseEngineNamedInstanceName)
+            Name  = ('MSOLAP${0}' -f $Node.AnalysisServicesTabularInstanceName)
             State = 'Stopped'
         }
     }
