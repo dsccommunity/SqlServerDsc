@@ -574,11 +574,13 @@ function Get-SqlDscPercentMemory
         $PercentMemory
     )
 
-    try {
+    try
+    {
         $physicalMemory = (Get-CimInstance -ClassName Win32_ComputerSystem).TotalPhysicalMemory
         $memoryInMegaBytes = [Math]::Round(($physicalMemory * ($PercentMemory/100)) / 1MB)
     }
-    catch {
+    catch
+    {
         $errorMessage = $script:localizedData.ErrorGetPercentMemory
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }

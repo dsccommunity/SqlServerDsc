@@ -7,6 +7,8 @@ class DSC_SqlMemory : OMI_BaseResource
     [Write, Description("If set to `$true` then max memory will be dynamically configured. When this parameter is set to `$true`, the parameter **MaxMemory** must be set to `$null` or not be configured. Default value is `$false`.")] Boolean DynamicAlloc;
     [Write, Description("Minimum amount of memory, in MB, in the buffer pool used by the instance of _SQL Server_.")] SInt32 MinMemory;
     [Write, Description("Maximum amount of memory, in MB, in the buffer pool used by the instance of _SQL Server_.")] SInt32 MaxMemory;
+    [Write, Description("Minimum amount of memory, as a percentage of total server memory, in the buffer pool used by the instance of _SQL Server_.")] SInt32 MinMemoryPercent;
+    [Write, Description("Maximum amount of memory, as a percentage of total server memory, in the buffer pool used by the instance of _SQL Server_.")] SInt32 MaxMemoryPercent;
     [Write, Description("Specifies that the resource will only determine if a change is needed if the target node is the active host of the _SQL Server_ instance.")] Boolean ProcessOnlyOnActiveNode;
     [Read, Description("Returns if the current node is actively hosting the _SQL Server_ instance.")] Boolean IsActiveNode;
 };
