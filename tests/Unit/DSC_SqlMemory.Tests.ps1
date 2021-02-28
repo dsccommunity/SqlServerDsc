@@ -752,18 +752,19 @@ try
                         $result | Should -Be 762
                     }
                 }
+            }
 
-                Context 'When percentage of physical memory fails to be calculated' {
-                    BeforeAll {
-                        Mock -CommandName Get-CimInstance -MockWith {
-                            throw 'mocked unkown error'
-                        }
-                    }
-
-                    It 'Should throw the correct error' {
-                        { Get-SqlDscPercentMemory -PercentMemory 80 } | Should -Throw $script:localizedData.ErrorGetPercentMemory
+            Context 'When percentage of physical memory fails to be calculated' {
+                BeforeAll {
+                    Mock -CommandName Get-CimInstance -MockWith {
+                        throw 'mocked unkown error'
                     }
                 }
+
+                It 'Should throw the correct error' {
+                    { Get-SqlDscPercentMemory -PercentMemory 80 } | Should -Throw $script:localizedData.ErrorGetPercentMemory
+                }
+            }
         }
     }
 }
