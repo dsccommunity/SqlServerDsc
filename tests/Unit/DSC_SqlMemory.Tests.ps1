@@ -723,6 +723,48 @@ try
                 }
             }
         }
+
+        Describe 'DSC_SqlMemory\Get-SqlDscPercentMemory' -Tag 'Helper' {
+            Context 'When the physical memory should be calculated' {
+                BeforeEach {
+                    Mock -CommandName Get-CimInstance -MockWith {
+                        return New-Object -TypeName PSObject -Property @{
+                            TotalPhysicalMemory = $mockTotalPhysicalMemory
+                        }
+                    } -ParameterFilter { $ClassName -eq 'Win32_ComputerSystem' }
+                }
+            }
+
+            Context 'When physical memory is equal to 20480MB' {
+                $mockTotalPhysicalMemory = 21474836480
+
+                It 'Should return the correct memory (in megabytes) value' {
+                    $result = Get-SqlDscPercentMemory -PercentMemory 80
+                    $result | Should -Be 16384
+                }
+            }
+
+            Context 'When physical memory is equal to 1218.4MB' {
+                $mockTotalPhysicalMemory = 1596981248
+
+                It 'Should return the correct rounded memory (in megabytes) value' {
+                    $result = Get-SqlDscPercentMemory -PercentMemory 50
+                    $result | Should -Be 762
+                }
+            }
+
+            Context 'When percentage of physical memory fails to be calculated' {
+                BeforeAll {
+                    Mock -CommandName Get-CimInstance -MockWith {
+                        throw 'mocked unkown error'
+                    }
+                }
+
+                It 'Should throw the correct error' {
+                    { Get-SqlDscPercentMemory -PercentMemory 80 } | Should -Throw $script:localizedData.ErrorGetPercentMemory
+                }
+            }
+        }
     }
 }
 finally
