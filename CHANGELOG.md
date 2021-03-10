@@ -5,6 +5,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- SqlLogin
+  - `LoginMustChangePassword`, `LoginPasswordExpirationEnabled` and `LoginPasswordPolicyEnforced`
+    parameters no longer enforce default values [issue #1669](https://github.com/dsccommunity/SqlServerDsc/issues/1669).
+
+
+
 ## [15.2.0] - 2021-09-01
 
 ### Changed
