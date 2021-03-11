@@ -1493,6 +1493,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
 Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
     BeforeAll {
         $mockInstanceName = 'TEST'
+        $mockDynamicConnectedStatus = $true
 
         $mockNewObject_MicrosoftAnalysisServicesServer = {
             return New-Object -TypeName Object |
@@ -1537,7 +1538,7 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
         $mockFqdnSqlCredentialSecurePassword = ConvertTo-SecureString -String $mockFqdnSqlCredentialPassword -AsPlainText -Force
         $mockFqdnSqlCredential = New-Object -TypeName PSCredential -ArgumentList ($mockFqdnSqlCredentialUserName, $mockFqdnSqlCredentialSecurePassword)
 
-        Mock -CommandName Import-Assembly
+        $mockComputerName = Get-ComputerName
     }
 
     BeforeEach {
@@ -1572,9 +1573,15 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
                 }
 
                 It 'Should throw the correct error' {
-                    $mockExpectedErrorMessage = $script:localizedData.FailedToConnectToAnalysisServicesInstance -f $mockComputerName
+                    $mockLocalizedString = InModuleScope -ScriptBlock {
+                        $script:localizedData.FailedToConnectToAnalysisServicesInstance
+                    }
 
-                    { Connect-SQLAnalysis -FeatureFlag 'AnalysisServicesConnection' } | Should -Throw
+                    $mockErrorRecord = Get-InvalidOperationRecord -Message (
+                        $mockLocalizedString -f $mockComputerName
+                    )
+
+                    { Connect-SQLAnalysis -FeatureFlag 'AnalysisServicesConnection' } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
                 }
             }
         }
@@ -1603,7 +1610,7 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
 
         Context 'When connecting to the default instance using Windows Authentication' {
             It 'Should not throw when connecting' {
-                $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME"
+                $mockExpectedDataSource = "Data Source=$mockComputerName"
 
                 { Connect-SQLAnalysis } | Should -Not -Throw
 
@@ -1614,7 +1621,7 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
 
         Context 'When connecting to the named instance using Windows Authentication' {
             It 'Should not throw when connecting' {
-                $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName"
+                $mockExpectedDataSource = "Data Source=$mockComputerName\$mockInstanceName"
 
                 { Connect-SQLAnalysis -InstanceName $mockInstanceName } | Should -Not -Throw
 
@@ -1626,7 +1633,7 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
         Context 'When connecting to the named instance using Windows Authentication impersonation' {
             Context 'When authentication without NetBIOS domain and Fully Qualified Domain Name (FQDN)' {
                 It 'Should not throw when connecting' {
-                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockSqlCredentialUserName;Password=$mockSqlCredentialPassword"
+                    $mockExpectedDataSource = "Data Source=$mockComputerName\$mockInstanceName;User ID=$mockSqlCredentialUserName;Password=$mockSqlCredentialPassword"
 
                     { Connect-SQLAnalysis -InstanceName $mockInstanceName -SetupCredential $mockSqlCredential } | Should -Not -Throw
 
@@ -1637,7 +1644,7 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
 
             Context 'When authentication using NetBIOS domain' {
                 It 'Should not throw when connecting' {
-                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockNetBiosSqlCredentialUserName;Password=$mockNetBiosSqlCredentialPassword"
+                    $mockExpectedDataSource = "Data Source=$mockComputerName\$mockInstanceName;User ID=$mockNetBiosSqlCredentialUserName;Password=$mockNetBiosSqlCredentialPassword"
 
                     { Connect-SQLAnalysis -InstanceName $mockInstanceName -SetupCredential $mockNetBiosSqlCredential } | Should -Not -Throw
 
@@ -1648,7 +1655,7 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
 
             Context 'When authentication using Fully Qualified Domain Name (FQDN)' {
                 It 'Should not throw when connecting' {
-                    $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME\$mockInstanceName;User ID=$mockFqdnSqlCredentialUserName;Password=$mockFqdnSqlCredentialPassword"
+                    $mockExpectedDataSource = "Data Source=$mockComputerName\$mockInstanceName;User ID=$mockFqdnSqlCredentialUserName;Password=$mockFqdnSqlCredentialPassword"
 
                     { Connect-SQLAnalysis -InstanceName $mockInstanceName -SetupCredential $mockFqdnSqlCredential } | Should -Not -Throw
 
@@ -1670,7 +1677,7 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
                 }
 
                 $mockErrorRecord = Get-InvalidOperationRecord -Message (
-                    $mockLocalizedString -f $env:COMPUTERNAME
+                    $mockLocalizedString -f $mockComputerName
                 )
 
                 { Connect-SQLAnalysis } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
@@ -1682,7 +1689,7 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
 
         Context 'When connecting to the default instance using a Analysis Service instance that does not exist' {
             It 'Should throw the correct error' {
-                $mockExpectedDataSource = "Data Source=$env:COMPUTERNAME"
+                $mockExpectedDataSource = "Data Source=$mockComputerName"
 
                 # Force the mock of Connect() method to throw 'Unable to connect.'
                 $mockThrowInvalidOperation = $true
@@ -1692,7 +1699,7 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
                 }
 
                 $mockErrorRecord = Get-InvalidOperationRecord -Message (
-                    $mockLocalizedString -f $env:COMPUTERNAME
+                    $mockLocalizedString -f $mockComputerName
                 )
 
                 { Connect-SQLAnalysis } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
