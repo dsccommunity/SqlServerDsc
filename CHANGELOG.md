@@ -33,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `Microsoft.AnalysisServices.Server` object. The new functionality is used
     when the parameter `FeatureFlag` is set to `'AnalysisServicesConnection'`.
     This functionality will be the default in a future breaking release.
+  - Changed to the new GitHub deploy tasks that is required for the latest
+    version of the Sampler module.
 
 ## [15.1.1] - 2021-02-12
 
