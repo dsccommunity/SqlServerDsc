@@ -31,7 +31,8 @@ AppVeyor build worker for other integration tests to use.
 
 Instance | Feature | AS server mode | State
 --- | --- | --- | ---
-DSCSQLTEST | SQLENGINE,AS,CONN,BC,SDK | MULTIDIMENSIONAL | Running
+DSCSQLTEST | SQLENGINE,AS,CONN,BC,SDK | - | Running
+DSCMULTI | AS,CONN,BC,SDK | MULTIDIMENSIONAL | Stopped
 DSCTABULAR | AS,CONN,BC,SDK | TABULAR | Stopped
 MSSQLSERVER | SQLENGINE,CONN,BC,SDK | - | Stopped
 

@@ -14,7 +14,7 @@ ConvertFrom-StringData @'
     ConnectedToDatabaseEngineInstance = Connected to SQL instance '{0}'. (SQLCOMMON0018)
     FailedToConnectToDatabaseEngineInstance = Failed to connect to SQL instance '{0}'. (SQLCOMMON0019)
     ConnectedToAnalysisServicesInstance = Connected to Analysis Services instance '{0}'. (SQLCOMMON0020)
-    FailedToConnectToAnalysisServicesInstance = Failed to connected to Analysis Services instance '{0}'. (SQLCOMMON0021)
+    FailedToConnectToAnalysisServicesInstance = Failed to connect to Analysis Services instance '{0}'. (SQLCOMMON0021)
     SqlServerVersionIsInvalid = Could not get the SQL version for the instance '{0}'. (SQLCOMMON0022)
     PreferredModuleFound = Preferred module SqlServer found. (SQLCOMMON0023)
     PreferredModuleNotFound = Information: PowerShell module SqlServer not found, trying to use older SQLPS module. (SQLCOMMON0024)
