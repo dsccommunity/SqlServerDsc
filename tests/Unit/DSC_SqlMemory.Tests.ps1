@@ -145,6 +145,9 @@ try
                 Mock -CommandName Get-SqlDscDynamicMaxMemory -MockWith {
                     return 8192 # MB
                 }
+                Mock -CommandName Get-SqlDscPercentMemory -MockWith {
+                    return 8192 # MB
+                }
 
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
@@ -166,6 +169,21 @@ try
                     Ensure       = 'Present'
                     MinMemory    = 1024
                     MaxMemory    = 8192
+                    DynamicAlloc = $false
+                }
+
+                It 'Should return the state as false when desired MinMemory and MaxMemory are not present' {
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $false
+                }
+            }
+
+            Context 'When the system percent memory is not in the desired state and DynamicAlloc is set to false' {
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    Ensure       = 'Present'
+                    MinMemoryPercent    = 80
+                    MaxMemoryPercent    = 80
                     DynamicAlloc = $false
                 }
 
@@ -217,7 +235,34 @@ try
                 }
             }
 
-            Context 'When the MaxMemory parameter is null and DynamicAlloc is set to false' {
+            Context 'When the MaxMemoryPercent parameter is not null and DynamicAlloc is set to true' {
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    MaxMemoryPercent = 80
+                    DynamicAlloc = $true
+                    Ensure       = 'Present'
+                }
+
+                It 'Should throw the correct error' {
+                    { Test-TargetResource @testParameters } | Should -Throw $script:localizedData.MaxMemoryPercentParamMustBeNull
+                }
+            }
+
+            Context 'When the MaxMemoryPercent and MaxMemory parameters are not null and DynamicAlloc is set to false' {
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    MaxMemory        = 8192
+                    MaxMemoryPercent = 80
+                    DynamicAlloc = $false
+                    Ensure       = 'Present'
+                }
+
+                It 'Should throw the correct error' {
+                    { Test-TargetResource @testParameters } | Should -Throw $script:localizedData.MaxMemoryPercentParamMustBeNull
+                }
+            }
+
+            Context 'When the MaxMemory and MaxMemoryPercent parameters are null and DynamicAlloc is set to false' {
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     DynamicAlloc = $false
@@ -226,6 +271,20 @@ try
 
                 It 'Should throw the correct error' {
                     {Test-TargetResource @testParameters } | Should -Throw $script:localizedData.MaxMemoryParamMustNotBeNull
+                }
+            }
+
+            Context 'When the MinMemoryPercent and MinMemory parameters are not null and DynamicAlloc is set to true' {
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    MinMemory        = 1024
+                    MinMemoryPercent = 80
+                    DynamicAlloc = $true
+                    Ensure       = 'Present'
+                }
+
+                It 'Should throw the correct error' {
+                    { Test-TargetResource @testParameters } | Should -Throw $script:localizedData.MinMemoryPercentParamMustBeNull
                 }
             }
 
@@ -264,8 +323,26 @@ try
                 }
             }
 
+            $mockMinServerMemory = 8192
+            $mockMaxServerMemory = 8192
+
+            Context 'When the system percent memory is in the desired state and DynamicAlloc is set to false' {
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    Ensure       = 'Present'
+                    MinMemoryPercent    = 80
+                    MaxMemoryPercent    = 80
+                    DynamicAlloc = $false
+                }
+
+                It 'Should return the state as true when desired MinMemory and MaxMemory are present' {
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $true
+                }
+            }
+
             $mockMinServerMemory = 0
-            $mockMaxServerMemory = 12083
+            $mockMaxServerMemory = 8192
 
             Context 'When the system is in the desired state and DynamicAlloc is set to true' {
                 $testParameters = $mockDefaultParameters
@@ -274,9 +351,9 @@ try
                     DynamicAlloc = $true
                 }
 
-                It 'Should return the state as false when desired MinMemory and MaxMemory are wrong values' {
+                It 'Should return the state as true when desired MinMemory and MaxMemory are present' {
                     $result = Test-TargetResource @testParameters
-                    $result | Should -Be $false
+                    $result | Should -Be $true
                 }
             }
 
@@ -334,6 +411,9 @@ try
             Mock -CommandName Get-SqlDscDynamicMaxMemory -MockWith {
                 return 16384 # MB
             }
+            Mock -CommandName Get-SqlDscPercentMemory -MockWith {
+                return 16384 # MB
+            }
 
             Context 'When the MaxMemory parameter is not null and DynamicAlloc is set to true' {
                 $testParameters = $mockDefaultParameters
@@ -356,7 +436,76 @@ try
                 }
             }
 
-            Context 'When the MaxMemory parameter is null and DynamicAlloc is set to false' {
+            Context 'When the MaxMemoryPercent parameter is not null and DynamicAlloc is set to true' {
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    MaxMemoryPercent = 80
+                    DynamicAlloc = $true
+                    Ensure       = 'Present'
+                }
+
+                It 'Should throw the correct error' {
+                    { Set-TargetResource @testParameters } | Should -Throw $script:localizedData.MaxMemoryPercentParamMustBeNull
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should not call the mock function Get-SqlDscPercentMemory' {
+                    Assert-MockCalled -CommandName Get-SqlDscPercentMemory -Exactly -Times 0 -Scope Context
+                }
+            }
+
+            Context 'When the MaxMemoryPercent and MaxMemory parameters are not null and DynamicAlloc is set to false' {
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    MaxMemory = 8192
+                    MaxMemoryPercent = 80
+                    DynamicAlloc = $false
+                    Ensure       = 'Present'
+                }
+
+                It 'Should throw the correct error' {
+                    { Set-TargetResource @testParameters } | Should -Throw $script:localizedData.MaxMemoryPercentParamMustBeNull
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should not call the mock function Get-SqlDscPercentMemory' {
+                    Assert-MockCalled -CommandName Get-SqlDscPercentMemory -Exactly -Times 0 -Scope Context
+                }
+
+                It 'Should not call the mock function Get-SqlDscDynamicMaxMemory' {
+                    Assert-MockCalled -CommandName Get-SqlDscDynamicMaxMemory -Exactly -Times 0 -Scope Context
+                }
+            }
+
+            Context 'When the MinMemoryPercent and MinMemory parameters are not null and MaxMemory is not null' {
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    MinMemory = 1024
+                    MinMemoryPercent = 80
+                    MaxMemory = 8192
+                    Ensure       = 'Present'
+                }
+
+                It 'Should throw the correct error' {
+                    { Set-TargetResource @testParameters } | Should -Throw $script:localizedData.MinMemoryPercentParamMustBeNull
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should not call the mock function Get-SqlDscPercentMemory' {
+                    Assert-MockCalled -CommandName Get-SqlDscPercentMemory -Exactly -Times 0 -Scope Context
+                }
+            }
+
+            Context 'When the parameters MaxMemory and MaxMemoryPercent are null and DynamicAlloc is set to false' {
                 $testParameters = $mockDefaultParameters
                 $testParameters += @{
                     DynamicAlloc = $false
@@ -373,6 +522,10 @@ try
 
                 It 'Should not call the mock function Get-SqlDscDynamicMaxMemory' {
                     Assert-MockCalled -CommandName Get-SqlDscDynamicMaxMemory -Exactly -Times 0 -Scope Context
+                }
+
+                It 'Should not call the mock function Get-SqlDscPercentMemory' {
+                    Assert-MockCalled -CommandName Get-SqlDscPercentMemory -Exactly -Times 0 -Scope Context
                 }
             }
 
@@ -422,6 +575,28 @@ try
 
                 It 'Should not call the mock function Get-SqlDscDynamicMaxMemory' {
                     Assert-MockCalled -CommandName Get-SqlDscDynamicMaxMemory -Exactly -Times 0 -Scope Context
+                }
+            }
+
+            Context 'When the system is not in the desired state and Ensure is set to Present, Max/MinMemoryPercent specified and DynamicAlloc is set to false' {
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    DynamicAlloc = $false
+                    Ensure       = 'Present'
+                    MaxMemoryPercent = 80
+                    MinMemoryPercent = 80
+                }
+
+                It 'Should set the MaxMemoryPercent and MinMemoryPercent to the correct values when Ensure parameter is set to Present and DynamicAlloc is set to false' {
+                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should call the mock function Get-SqlDscPercentMemory' {
+                    Assert-MockCalled -CommandName Get-SqlDscPercentMemory -Exactly -Times 2 -Scope Context
                 }
             }
 
@@ -493,6 +668,32 @@ try
 
                 It 'Should not call the mock function Get-SqlDscDynamicMaxMemory' {
                     Assert-MockCalled -CommandName Get-SqlDscDynamicMaxMemory -Exactly -Times 0 -Scope Context
+                }
+            }
+
+            Context 'When the desired MinMemoryPercent and MaxMemoryPercent fails to be set' {
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    MaxMemoryPercent    = 80
+                    MinMemoryPercent    = 80
+                    DynamicAlloc = $false
+                    Ensure       = 'Present'
+                }
+
+                It 'Should throw the correct error' {
+                    { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.AlterServerMemoryFailed -f $env:COMPUTERNAME, $mockInstanceName)
+                }
+
+                It 'Should call the mock function Connect-SQL' {
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should not call the mock function Get-SqlDscDynamicMaxMemory' {
+                    Assert-MockCalled -CommandName Get-SqlDscDynamicMaxMemory -Exactly -Times 0 -Scope Context
+                }
+
+                It 'Should call the mock function Get-SqlDscPercentMemory' {
+                    Assert-MockCalled -CommandName Get-SqlDscPercentMemory -Exactly -Times 2 -Scope Context
                 }
             }
 
@@ -720,6 +921,49 @@ try
 
                 It 'Should throw the correct error' {
                     { Get-SqlDscDynamicMaxMemory } | Should -Throw $script:localizedData.ErrorGetDynamicMaxMemory
+                }
+            }
+        }
+
+        Describe 'DSC_SqlMemory\Get-SqlDscPercentMemory' -Tag 'Helper' {
+            Context 'When the physical memory should be calculated' {
+                BeforeEach {
+                    Mock -CommandName Get-CimInstance -MockWith {
+                        return New-Object -TypeName PSObject -Property @{
+                            TotalPhysicalMemory = $mockTotalPhysicalMemory
+                        }
+                    } -ParameterFilter { $ClassName -eq 'Win32_ComputerSystem' }
+                }
+
+
+                Context 'When physical memory is equal to 20480MB' {
+                    $mockTotalPhysicalMemory = 21474836480
+
+                    It 'Should return the correct memory (in megabytes) value' {
+                        $result = Get-SqlDscPercentMemory -PercentMemory 80
+                        $result | Should -Be 16384
+                    }
+                }
+
+                Context 'When physical memory is equal to 1218.4MB' {
+                    $mockTotalPhysicalMemory = 1596981248
+
+                    It 'Should return the correct rounded memory (in megabytes) value' {
+                        $result = Get-SqlDscPercentMemory -PercentMemory 50
+                        $result | Should -Be 762
+                    }
+                }
+            }
+
+            Context 'When percentage of physical memory fails to be calculated' {
+                BeforeAll {
+                    Mock -CommandName Get-CimInstance -MockWith {
+                        throw 'mocked unkown error'
+                    }
+                }
+
+                It 'Should throw the correct error' {
+                    { Get-SqlDscPercentMemory -PercentMemory 80 } | Should -Throw $script:localizedData.ErrorGetPercentMemory
                 }
             }
         }

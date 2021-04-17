@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- SqlServerDsc
+  - Changed to the new GitHub deploy tasks that is required for the latest
+    version of the Sampler module.
 - SqlSetup
   - The helper function `Connect-SqlAnalysis` was using `LoadWithPartial()`
     to load the assembly _Microsoft.AnalysisServices_. On a node where multiple
@@ -33,8 +36,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `Microsoft.AnalysisServices.Server` object. The new functionality is used
     when the parameter `FeatureFlag` is set to `'AnalysisServicesConnection'`.
     This functionality will be the default in a future breaking release.
-  - Changed to the new GitHub deploy tasks that is required for the latest
-    version of the Sampler module.
+   
+### Added
+
+- SqlMemory
+  - Added two new optional parameters MinMemoryPercent and MaxMemoryPercent.
+    Provides the ability to set the minimum and/or maximum buffer pool used by
+    the SQL Server instance as a percentage of total server memory.
+    ([issue #1397](https://github.com/dsccommunity/SqlServerDsc/issues/1397)).
 
 ## [15.1.1] - 2021-02-12
 
