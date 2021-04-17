@@ -14,6 +14,7 @@
     ModuleBuilder               = 'latest'
     ChangelogManagement         = 'latest'
     Sampler                     = 'latest'
+    'Sampler.GitHubTasks'       = 'latest'
     MarkdownLinkCheck           = 'latest'
     'DscResource.Test'          = 'latest'
     'DscResource.AnalyzerRules' = 'latest'
