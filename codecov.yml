@@ -34,7 +34,7 @@ flags:
     carryforward: true
 
 fixes:
-  - '\d+\.\d+\.\d+\/::source/'  # move path "X.Y.Z/" => "source/"
+  - '^\d+\.\d+\.\d+::source'  # move path "X.Y.Z" => "source"
 
 # Deprecated resources
 ignore:
