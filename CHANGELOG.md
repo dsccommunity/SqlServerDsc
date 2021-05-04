@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Changed to the new GitHub deploy tasks that is required for the latest
     version of the Sampler module.
+  - Updated pipeline configuration to align with the latest changes in [Sampler](https://github.com/gaelcolas/Sampler).
 - SqlSetup
   - The helper function `Connect-SqlAnalysis` was using `LoadWithPartial()`
     to load the assembly _Microsoft.AnalysisServices_. On a node where multiple
@@ -36,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `Microsoft.AnalysisServices.Server` object. The new functionality is used
     when the parameter `FeatureFlag` is set to `'AnalysisServicesConnection'`.
     This functionality will be the default in a future breaking release.
-   
+
 ### Added
 
 - SqlMemory

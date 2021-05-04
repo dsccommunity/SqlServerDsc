@@ -15,6 +15,7 @@ variables:
   buildArtifactName: output
   testResultFolderName: testResults
   testArtifactName: testResults
+  sourceFolderName: source
 
 stages:
   - stage: Build
@@ -39,12 +40,13 @@ stages:
               pwsh: true
             env:
               ModuleVersion: $(gitVersion.NuGetVersionV2)
-          - task: PublishBuildArtifacts@1
+          - task: PublishPipelineArtifact@1
             displayName: 'Publish Build Artifact'
             inputs:
-              pathToPublish: '$(buildFolderName)/'
-              artifactName: $(buildArtifactName)
-              publishLocation: 'Container'
+              targetPath: '$(buildFolderName)/'
+              artifact: $(buildArtifactName)
+              publishLocation: 'pipeline'
+              parallel: true
 
   - stage: Test
     dependsOn: Build
@@ -55,13 +57,12 @@ stages:
           vmImage: 'windows-2019'
         timeoutInMinutes: 0
         steps:
-          - task: DownloadBuildArtifacts@0
+          - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
             inputs:
               buildType: 'current'
-              downloadType: 'single'
-              artifactName: 'output'
-              downloadPath: '$(Build.SourcesDirectory)'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
           - pwsh: |
               # Workaround for issue https://github.com/dsccommunity/DscResource.Test/issues/100
               ./build.ps1 -Task noop
@@ -89,13 +90,12 @@ stages:
           vmImage: 'windows-2019'
         timeoutInMinutes: 0
         steps:
-          - task: DownloadBuildArtifacts@0
+          - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
             inputs:
               buildType: 'current'
-              downloadType: 'single'
               artifactName: $(buildArtifactName)
-              downloadPath: '$(Build.SourcesDirectory)'
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
           - task: PowerShell@2
             name: test
             displayName: 'Run Unit Test'
@@ -109,13 +109,13 @@ stages:
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-              testRunTitle: 'Unit (Windows Server Core)'
-          - task: PublishBuildArtifacts@1
+              testRunTitle: 'Unit (Windows Server 2019)'
+          - task: PublishPipelineArtifact@1
             displayName: 'Publish Test Artifact'
             inputs:
-              pathToPublish: '$(buildFolderName)/$(testResultFolderName)/'
+              targetPath: '$(buildFolderName)/$(testResultFolderName)/'
               artifactName: $(testArtifactName)
-              publishLocation: 'Container'
+              parallel: true
 
       - job: Test_Integration_SQL2016
         displayName: 'Integration (SQL2016)'
@@ -128,13 +128,12 @@ stages:
           # This sets environment variable $env:CONFIGURATION.
           configuration: Integration_SQL2016
         steps:
-          - task: DownloadBuildArtifacts@0
+          - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
             inputs:
               buildType: 'current'
-              downloadType: 'single'
               artifactName: $(buildArtifactName)
-              downloadPath: '$(Build.SourcesDirectory)'
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
           - task: PowerShell@2
             name: configureWinRM
             displayName: 'Configure WinRM'
@@ -197,13 +196,12 @@ stages:
           # This sets environment variable $env:CONFIGURATION.
           configuration: Integration_SQL2017
         steps:
-          - task: DownloadBuildArtifacts@0
+          - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
             inputs:
               buildType: 'current'
-              downloadType: 'single'
               artifactName: $(buildArtifactName)
-              downloadPath: '$(Build.SourcesDirectory)'
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
           - task: PowerShell@2
             name: configureWinRM
             displayName: 'Configure WinRM'
@@ -252,7 +250,7 @@ stages:
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-              testRunTitle: 'Integration (Windows Server Core)'
+              testRunTitle: 'Integration (SQL Server 2017 / Windows Server 2019)'
 
       - job: Test_Integration_SQL2019
         displayName: 'Integration (SQL2019)'
@@ -265,13 +263,12 @@ stages:
           # This sets environment variable $env:CONFIGURATION.
           configuration: Integration_SQL2019
         steps:
-          - task: DownloadBuildArtifacts@0
+          - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
             inputs:
               buildType: 'current'
-              downloadType: 'single'
               artifactName: $(buildArtifactName)
-              downloadPath: '$(Build.SourcesDirectory)'
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
           - task: PowerShell@2
             name: configureWinRM
             displayName: 'Configure WinRM'
@@ -320,7 +317,7 @@ stages:
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-              testRunTitle: 'Integration (Windows Server Core)'
+              testRunTitle: 'Integration (SQL Server 2019 / Windows Server 2019)'
 
       - job: Code_Coverage
         displayName: 'Publish Code Coverage'
@@ -335,31 +332,27 @@ stages:
               echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
             name: dscBuildVariable
             displayName: 'Set Environment Variables'
-          - task: DownloadBuildArtifacts@0
+          - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
             inputs:
               buildType: 'current'
-              downloadType: 'single'
               artifactName: $(buildArtifactName)
-              downloadPath: '$(Build.SourcesDirectory)'
-          - task: DownloadBuildArtifacts@0
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
+          - task: DownloadPipelineArtifact@2
             displayName: 'Download Test Artifact'
             inputs:
               buildType: 'current'
-              downloadType: 'single'
               artifactName: $(testArtifactName)
-              downloadPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
           - task: PublishCodeCoverageResults@1
-            displayName: 'Publish Azure Code Coverage'
-            condition: succeededOrFailed()
+            displayName: 'Publish Code Coverage to Azure DevOps'
             inputs:
               codeCoverageTool: 'JaCoCo'
-              summaryFileLocation: '$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
-              pathToSources: '$(Build.SourcesDirectory)/$(buildFolderName)/$(dscBuildVariable.RepositoryName)'
+              summaryFileLocation: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
+              pathToSources: '$(Build.SourcesDirectory)/$(sourceFolderName)/'
           - script: |
               bash <(curl -s https://codecov.io/bash) -f "./$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml" -F unit
-            displayName: 'Upload to Codecov.io'
-            condition: succeededOrFailed()
+            displayName: 'Publish Code Coverage to Codecov.io'
 
   - stage: Deploy
     dependsOn: Test
@@ -378,13 +371,12 @@ stages:
         pool:
           vmImage: 'ubuntu 16.04'
         steps:
-          - task: DownloadBuildArtifacts@0
+          - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
             inputs:
               buildType: 'current'
-              downloadType: 'single'
               artifactName: $(buildArtifactName)
-              downloadPath: '$(Build.SourcesDirectory)'
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
           - task: PowerShell@2
             name: publishRelease
             displayName: 'Publish Release'
