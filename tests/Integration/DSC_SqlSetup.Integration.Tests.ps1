@@ -98,6 +98,8 @@ try
 
         Write-Verbose -Message "Start downloading the SQL Server media at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')" -Verbose
 
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
         if ($script:mockSourceDownloadExeUrl)
         {
             # Download the EXE used to download the ISO
