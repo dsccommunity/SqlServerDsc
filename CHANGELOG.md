@@ -38,6 +38,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `Microsoft.AnalysisServices.Server` object. The new functionality is used
     when the parameter `FeatureFlag` is set to `'AnalysisServicesConnection'`.
     This functionality will be the default in a future breaking release.
+- SqlAgentAlert
+  - Switched README file with SqlAgentFailsafe. [Issue #1709](https://github.com/dsccommunity/SqlServerDsc/issues/1397).
+- SqlAgentFailsafe
+  - Switched README file with SqlAgentAlert. [Issue #1709](https://github.com/dsccommunity/SqlServerDsc/issues/1397).
 
 ### Added
 
