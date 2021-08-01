@@ -11,10 +11,12 @@
     "powershell.codeFormatting.preset": "Custom",
     "powershell.codeFormatting.alignPropertyValuePairs": true,
     "powershell.codeFormatting.useConstantStrings": true,
-    "files.trimTrailingWhitespace": true,
-    "files.insertFinalNewline": true,
+    "powershell.developer.bundledModulesPath": "${cwd}/output/RequiredModules",
     "powershell.scriptAnalysis.settingsPath": ".vscode\\analyzersettings.psd1",
     "powershell.scriptAnalysis.enable": true,
+    "files.trimTrailingWhitespace": true,
+    "files.trimFinalNewlines": true,
+    "files.insertFinalNewline": true,
     "files.associations": {
         "*.ps1xml": "xml"
     },
@@ -34,6 +36,7 @@
         "steppable"
     ],
     "[markdown]": {
+        "files.trimTrailingWhitespace": true,
         "files.encoding": "utf8"
     }
 }

@@ -30,6 +30,7 @@ BuildWorkflow:
     - Publish_Release_To_GitHub
     - Publish_Module_To_gallery
     - Publish_GitHub_Wiki_Content
+    - Create_ChangeLog_GitHub_PR
 
 ####################################################
 #           ModuleBuilder Configuration            #

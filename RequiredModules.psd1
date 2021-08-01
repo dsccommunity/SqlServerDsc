@@ -3,7 +3,7 @@
         AddToPath  = $true
         Target     = 'output\RequiredModules'
         Parameters = @{
-            Repository = ''
+            Repository = 'PSGallery'
         }
     }
 
@@ -16,11 +16,11 @@
     Sampler                     = 'latest'
     'Sampler.GitHubTasks'       = 'latest'
     MarkdownLinkCheck           = 'latest'
+    'DscResource.Common'        = 'latest'
     'DscResource.Test'          = 'latest'
     'DscResource.AnalyzerRules' = 'latest'
     xDscResourceDesigner        = 'latest'
     'DscResource.DocGenerator'  = 'latest'
-    'DscResource.Common'        = 'latest'
 
     # Dependency for integration tests
     LoopbackAdapter             = 'latest'
@@ -32,4 +32,3 @@
     NetworkingDsc               = '7.4.0.0'
     PowerShellGet               = '2.1.2'
 }
-

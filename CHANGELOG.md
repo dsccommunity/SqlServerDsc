@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     version of the Sampler module.
   - Updated pipeline configuration to align with the latest changes in [Sampler](https://github.com/gaelcolas/Sampler).
   - Update codecov.yml to support carry forward flags.
+  - Updated pipelines files to latest from Sampler project.
+  - Updated GitHub issue templates.
 - SqlSetup
   - The helper function `Connect-SqlAnalysis` was using `LoadWithPartial()`
     to load the assembly _Microsoft.AnalysisServices_. On a node where multiple
