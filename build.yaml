@@ -81,10 +81,15 @@ Pester:
     Run:
       Path:
         - tests/Unit
+    Output:
+      Verbosity: Detailed
+      StackTraceVerbosity: Full
+      CIFormat: Auto
     CodeCoverage:
       CoveragePercentTarget: 85
       OutputPath: JaCoCo_coverage.xml
       OutputEncoding: ascii
+      UseBreakpoints: false
     TestResult:
       OutputFormat: NUnitXML
       OutputEncoding: ascii
