@@ -1,3 +1,4 @@
+
 {
     "powershell.codeFormatting.openBraceOnSameLine": false,
     "powershell.codeFormatting.newLineAfterOpenBrace": true,
