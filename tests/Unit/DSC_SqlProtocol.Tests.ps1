@@ -3,10 +3,7 @@
         Unit test for DSC_SqlProtocol DSC resource.
 #>
 
-BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
-    $script:dscResourceName = 'DSC_SqlProtocol'
-
+BeforeDiscovery {
     try
     {
         Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
@@ -15,6 +12,11 @@ BeforeAll {
     {
         throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
     }
+}
+
+BeforeAll {
+    $script:dscModuleName = 'SqlServerDsc'
+    $script:dscResourceName = 'DSC_SqlProtocol'
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
