@@ -11,6 +11,15 @@ BeforeDiscovery {
         return
     }
 
+    try
+    {
+        Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+    }
+
     <#
         Need to define that variables here to be used in the Pester Discover to
         build the ForEach-blocks.
@@ -24,15 +33,6 @@ BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
     $script:dscResourceFriendlyName = 'SqlRSSetup'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
-
-    try
-    {
-        Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
-    }
-    catch [System.IO.FileNotFoundException]
-    {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
-    }
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `

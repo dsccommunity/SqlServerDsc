@@ -2,10 +2,8 @@
     .SYNOPSIS
         Unit test for DSC_SqlProtocolTcpIp DSC resource.
 #>
-BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
-    $script:dscResourceName = 'DSC_SqlProtocolTcpIp'
 
+BeforeDiscovery {
     try
     {
         Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
@@ -14,6 +12,11 @@ BeforeAll {
     {
         throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
     }
+}
+
+BeforeAll {
+    $script:dscModuleName = 'SqlServerDsc'
+    $script:dscResourceName = 'DSC_SqlProtocolTcpIp'
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
