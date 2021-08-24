@@ -64,6 +64,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added an alias `Get-ObjectNotFoundRecord` to the helper function
     `Get-InvalidResultRecord` since both use the same code to generate
     a mocked error record.
+  - Added recommended VS Code extensions.
+    - Added settings for VS Code extension _Pester Test Adapter_.
 
 ## [15.2.0] - 2021-09-01
 
