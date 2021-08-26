@@ -28,6 +28,7 @@ coverage:
         threshold: 5
         flags:
           - unit
+        carryforwardlastbasereport: true
 flags:
   unit:
     paths:
