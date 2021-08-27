@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     version of the Sampler module.
   - Updated pipeline configuration to align with the latest changes in [Sampler](https://github.com/gaelcolas/Sampler).
   - Update codecov.yml to support carry forward flags.
+  - Updated pipelines files to latest from Sampler project.
+  - Updated GitHub issue templates.
 - SqlSetup
   - The helper function `Connect-SqlAnalysis` was using `LoadWithPartial()`
     to load the assembly _Microsoft.AnalysisServices_. On a node where multiple
@@ -38,6 +40,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `Microsoft.AnalysisServices.Server` object. The new functionality is used
     when the parameter `FeatureFlag` is set to `'AnalysisServicesConnection'`.
     This functionality will be the default in a future breaking release.
+- SqlAgentAlert
+  - Switched README file with SqlAgentFailsafe. [Issue #1709](https://github.com/dsccommunity/SqlServerDsc/issues/1397).
+- SqlAgentFailsafe
+  - Switched README file with SqlAgentAlert. [Issue #1709](https://github.com/dsccommunity/SqlServerDsc/issues/1397).
 
 ### Added
 
@@ -51,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlSetup
   - Fixed integration tests for SQL Server 2016 and SQL Server 2017.
+- SqlServerDsc
+  - Fixed Issue# 1712 CredScan password false-positive
 
 ## [15.1.1] - 2021-02-12
 
