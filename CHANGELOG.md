@@ -55,6 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlRSSetup
   - Integration tests now install _Microsoft SQL Server 2019 Reporting Services_
     ([issue #1717](https://github.com/dsccommunity/SqlServerDsc/issues/1717)).
+- SqlRS
+  - Integration tests now configures _Microsoft SQL Server 2019 Reporting Services_.
 
 ### Fixed
 
