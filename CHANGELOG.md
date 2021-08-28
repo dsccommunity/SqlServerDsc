@@ -53,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the SQL Server instance as a percentage of total server memory.
     ([issue #1397](https://github.com/dsccommunity/SqlServerDsc/issues/1397)).
 - SqlRSSetup
-  - Integration tests is now installing _Microsoft SQL Server 2019 Reporting Services_.
+  - Integration tests is now installing _Microsoft SQL Server 2019 Reporting Services_
     ([issue #1717](https://github.com/dsccommunity/SqlServerDsc/issues/1717)).
 
 ### Fixed
