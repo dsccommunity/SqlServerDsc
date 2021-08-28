@@ -115,7 +115,7 @@ SSRS | Stopped
 ### Properties for the instance SSRS 2019
 
 - **InstanceName:** SSRS
-- **CurrentVersion:** ^15.0.1102.911 (depends on the version downloaded)
+- **CurrentVersion:** ^15.0.7842.32355 (depends on the version downloaded)
 - **ErrorDumpDirectory:** C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles
 - **LogPath:** Unknown
 - **InstallFolder:** C:\Program Files\Microsoft SQL Server Reporting Services
