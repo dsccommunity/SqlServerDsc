@@ -1,7 +1,7 @@
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
 # Not currently run for SQL Server 2019
-if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2016','Integration_SQL2017')))
+if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019')))
 {
     return
 }
@@ -30,7 +30,11 @@ $script:testEnvironment = Initialize-TestEnvironment `
     to run the correct tests depending of what version of SQL Server is
     being tested in the current job.
 #>
-if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
+if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
+{
+    $script:sqlVersion = '150'
+}
+elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
 {
     $script:sqlVersion = '140'
 }
@@ -158,7 +162,7 @@ try
             }
 
             It 'Should be able to access the Reports site without any error' {
-                if($script:sqlVersion -eq '140')
+                if($script:sqlVersion -in @('140', '150'))
                 {
                     # SSRS 2017 and 2019 do not support multiple instances
                     $reportsUri = 'http://{0}/Reports' -f $env:COMPUTERNAME
@@ -240,7 +244,7 @@ try
                 as this without testing for the correct error message on purpose.
             #>
             It 'Should not be able to access the ReportServer site and throw an error message' {
-                if($script:sqlVersion -eq '140')
+                if($script:sqlVersion -in @('140', '150'))
                 {
                     # SSRS 2017 and 2019 do not support multiple instances
                     $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
@@ -300,7 +304,7 @@ try
             }
 
             It 'Should be able to access the ReportServer site without any error' {
-                if($script:sqlVersion -eq '140')
+                if($script:sqlVersion -in @('140', '150'))
                 {
                     # SSRS 2017 and 2019 do not support multiple instances
                     $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME

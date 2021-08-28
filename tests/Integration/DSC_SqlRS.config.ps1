@@ -142,7 +142,7 @@ Configuration DSC_SqlRS_CreateDependencies_Config
             DSC_SqlRSSetup.Integration.Tests.ps1 will have installed SSRS 2017 or 2019.
             We just need to start SSRS.
         #>
-        elseif($script:sqlVersion -in @('150','140'))
+        elseif($script:sqlVersion -in @('140', '150'))
         {
             Service 'StartReportingServicesInstance'
             {
