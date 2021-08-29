@@ -132,7 +132,7 @@ try
             }
 
             It 'Should be able to access the ReportServer site without any error' {
-                if($script:sqlVersion -eq '140')
+                if ($script:sqlVersion -in @('140', '150')
                 {
                     # SSRS 2017 and 2019 do not support multiple instances
                     $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
