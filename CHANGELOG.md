@@ -57,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlSetup
   - Fixed integration tests for SQL Server 2016 and SQL Server 2017.
+- SqlServerDsc
+  - Fixed Issue# 1712 CredScan password false-positive
 
 ## [15.1.1] - 2021-02-12
 
