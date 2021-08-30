@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update codecov.yml to support carry forward flags.
   - Updated pipelines files to latest from Sampler project.
   - Updated GitHub issue templates.
+  - Remove pipeline jobs `Test_Integration_SQL2016`, `Test_Integration_SQL2017`,
+    and `Test_Integration_SQL2019` and raplaced with a single job
+    `Test_Integration` ([issue #1713](https://github.com/dsccommunity/SqlServerDsc/issues/1713)).
+  - Update HQRM tests to run on the VM image `windows-2022`.
+  - Update unit tests to run on the VM image `windows-2022`.
+  - Update integration tests to run both on Windows Server 2019 and Windows
+    Server 2022 ([issue #1713](https://github.com/dsccommunity/SqlServerDsc/issues/1713)).
 - SqlSetup
   - The helper function `Connect-SqlAnalysis` was using `LoadWithPartial()`
     to load the assembly _Microsoft.AnalysisServices_. On a node where multiple
@@ -2817,8 +2824,3 @@ in a future release.
   - xSQLServerSetup
   - xSQLServerFirewall
   - xSQLServerRSSecureConnectionLevel
-
-
-### Changed
-- Update VImage from 'windows-2019' to 'windows-2022'
-- Remove Jobs Test_Integration_SQL2016, Test_Integration_SQL2017, Test_Integration_SQL2019 with a single job Test_Integration
