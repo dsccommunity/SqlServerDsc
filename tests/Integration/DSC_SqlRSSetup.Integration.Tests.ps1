@@ -1,6 +1,10 @@
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-# Run only for version of Microsoft SQL Server Reporting Services.
+<#
+    Run only for standalone versions of Microsoft SQL Server Reporting Services.
+    Older versions of Reporting Services (eg. 2016) are integration tested in
+    separate tests (part of resource SqlSetup).
+#>
 if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2017', 'Integration_SQL2019')))
 {
     return
