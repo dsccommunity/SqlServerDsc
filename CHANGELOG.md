@@ -2807,3 +2807,8 @@ in a future release.
   - xSQLServerSetup
   - xSQLServerFirewall
   - xSQLServerRSSecureConnectionLevel
+
+
+### Changed
+- Update VImage from 'windows-2019' to 'windows-2022'
+- Remove Jobs Test_Integration_SQL2016, Test_Integration_SQL2017, Test_Integration_SQL2019 with a single job Test_Integration
