@@ -133,7 +133,7 @@ try
 
             It 'Should be able to access the ReportServer site without any error' {
                 # Wait for 1 minute for the ReportServer to be ready.
-                Start-Sleep -Seconds 60
+                Start-Sleep -Seconds 30
 
                 if ($script:sqlVersion -in @('140', '150'))
                 {
@@ -178,40 +178,6 @@ try
                 try
                 {
                     $webRequestReportServer = Invoke-WebRequest -Uri $reportsUri -UseDefaultCredentials
-                    # if the request finishes successfully this should return status code 200.
-                    $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
-                }
-                catch
-                {
-                    <#
-                        If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
-                        we can pull the status code from the Exception.Response property.
-                    #>
-                    $webRequestResponse = $_.Exception.Response
-                    $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
-                }
-
-                $webRequestStatusCode | Should -BeExactly 200
-            }
-
-            # TODO: Debug only
-            It 'Should be able to access the ReportServer site without any error' {
-                # Wait for 1 minute for the ReportServer to be ready.
-                Start-Sleep -Seconds 60
-
-                if ($script:sqlVersion -in @('140', '150'))
-                {
-                    # SSRS 2017 and 2019 do not support multiple instances
-                    $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
-                }
-                else
-                {
-                    $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
-                }
-
-                try
-                {
-                    $webRequestReportServer = Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials
                     # if the request finishes successfully this should return status code 200.
                     $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
                 }
