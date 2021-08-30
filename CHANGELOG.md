@@ -63,9 +63,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlSetup
   - Fixed integration tests for SQL Server 2016 and SQL Server 2017.
 - SqlServerDsc.Common
-  - Fixed so that _CredScan_ no longer reports a password false-positive ([issue #1712](https://github.com/dsccommunity/SqlServerDsc/issues/1712)).
+  - Fixed so that _CredScan_ no longer reports a password false-positive
+    ([issue #1712](https://github.com/dsccommunity/SqlServerDsc/issues/1712)).
 - SqlRS
-  - Fixed SSRS 2019 initialisation [issue #1509](https://github.com/dsccommunity/SqlServerDsc/issues/1509).
+  - Fixed SSRS 2019 initialization ([issue #1509](https://github.com/dsccommunity/SqlServerDsc/issues/1509)).
+  - Fix a problem that did not correctly evaluate the `UseSSL` property against
+    the current state.
 
 ## [15.1.1] - 2021-02-12
 
