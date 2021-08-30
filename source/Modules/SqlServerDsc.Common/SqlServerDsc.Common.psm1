@@ -1386,8 +1386,8 @@ function Restart-ReportingServicesService
 
     .EXAMPLE
         Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database MyDatabase `
-            -Query "select * from MyTable where password = 'Pa\ssw0rd1' and password = 'secret passphrase'" `
-            -WithResults -RedactText @('Pa\sSw0rd1','Secret PassPhrase') -Verbose
+             -Query "select * from MyTable where password = 'PlaceholderPa\ssw0rd1' and password = 'placeholder secret passphrase'" `
+             -WithResults -RedactText @('PlaceholderPa\sSw0rd1','Placeholder Secret PassPhrase') -Verbose
 
 #>
 function Invoke-Query
