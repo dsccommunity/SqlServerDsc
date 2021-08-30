@@ -473,7 +473,7 @@ function Set-TargetResource
             #>
             if ($reportingServicesData.SqlVersion -ge 15)
             {
-                Write-Verbose -Message $script:localizedData.Restart
+                Write-Verbose -Message $script:localizedData.RestartToFinishInitialization
 
                 Restart-ReportingServicesService -InstanceName $InstanceName -WaitTime 30
 
@@ -503,7 +503,7 @@ function Set-TargetResource
                 Invoke-RsCimMethod @invokeRsCimMethodParameters
             }
 
-            if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl )
+            if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $reportingServicesData.Configuration.SecureConnectionLevel )
             {
                 Write-Verbose -Message "Changing value for using SSL to '$UseSsl'."
 
