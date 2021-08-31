@@ -41,9 +41,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     when the parameter `FeatureFlag` is set to `'AnalysisServicesConnection'`.
     This functionality will be the default in a future breaking release.
 - SqlAgentAlert
-  - Switched README file with SqlAgentFailsafe. [Issue #1709](https://github.com/dsccommunity/SqlServerDsc/issues/1397).
+  - Switched README file with SqlAgentFailsafe ([issue #1709](https://github.com/dsccommunity/SqlServerDsc/issues/1397)).
 - SqlAgentFailsafe
-  - Switched README file with SqlAgentAlert. [Issue #1709](https://github.com/dsccommunity/SqlServerDsc/issues/1397).
+  - Switched README file with SqlAgentAlert ([issue #1709](https://github.com/dsccommunity/SqlServerDsc/issues/1397)).
 
 ### Added
 
@@ -52,13 +52,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Provides the ability to set the minimum and/or maximum buffer pool used by
     the SQL Server instance as a percentage of total server memory.
     ([issue #1397](https://github.com/dsccommunity/SqlServerDsc/issues/1397)).
+- SqlRSSetup
+  - Integration tests now install _Microsoft SQL Server 2019 Reporting Services_
+    ([issue #1717](https://github.com/dsccommunity/SqlServerDsc/issues/1717)).
 
 ### Fixed
 
 - SqlSetup
   - Fixed integration tests for SQL Server 2016 and SQL Server 2017.
-- SqlServerDsc
-  - Fixed Issue# 1712 CredScan password false-positive
+- SqlServerDsc.Common
+  - Fixed so that _CredScan_ no longer reports a password false-positive ([issue #1712](https://github.com/dsccommunity/SqlServerDsc/issues/1712)).
 
 ## [15.1.1] - 2021-02-12
 

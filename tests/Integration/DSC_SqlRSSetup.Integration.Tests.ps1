@@ -1,7 +1,11 @@
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-# Run only for SQL Server 2017, integration testing at present (not SQL Server 2019)
-if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2017')))
+<#
+    Run only for standalone versions of Microsoft SQL Server Reporting Services.
+    Older versions of Reporting Services (eg. 2016) are integration tested in
+    separate tests (part of resource SqlSetup).
+#>
+if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2017', 'Integration_SQL2019')))
 {
     return
 }
@@ -37,8 +41,21 @@ try
         $previousProgressPreference = $ProgressPreference
         $ProgressPreference = 'SilentlyContinue'
 
-        $script:mockSourceMediaDisplayName = 'Microsoft SQL Server Reporting Services (October 2017)'
-        $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/E/6/4/E6477A2A-9B58-40F7-8AD6-62BB8491EA78/SQLServerReportingServices.exe'
+        if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
+        {
+            $script:mockSourceMediaDisplayName = 'Microsoft SQL Server Reporting Services (October 2017)'
+            $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/E/6/4/E6477A2A-9B58-40F7-8AD6-62BB8491EA78/SQLServerReportingServices.exe'
+        }
+
+        if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
+        {
+            <#
+                The version below is what the MS download page said, but the .exe is
+                reporting 15.0.7842.32355 when used in the integration test.
+            #>
+            $script:mockSourceMediaDisplayName = 'Microsoft SQL Server 2019 Reporting Services (15.0.1102.911 - 6/24/2021)'
+            $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/1/a/a/1aaa9177-3578-4931-b8f3-373b24f63342/SQLServerReportingServices.exe'
+        }
 
         Write-Verbose -Message ('Start downloading the {1} executable at {0}.' -f (Get-Date -Format 'yyyy-MM-dd hh:mm:ss'), $script:mockSourceMediaDisplayName) -Verbose
 
@@ -75,9 +92,9 @@ try
             It 'Should compile and apply the MOF without throwing' {
                 {
                     $configurationParameters = @{
-                        OutputPath                       = $TestDrive
+                        OutputPath        = $TestDrive
                         # The variable $ConfigurationData was dot-sourced above.
-                        ConfigurationData                = $ConfigurationData
+                        ConfigurationData = $ConfigurationData
                     }
 
                     & $configurationName @configurationParameters
@@ -104,14 +121,23 @@ try
             It 'Should have set the resource and all the parameters should match' {
                 $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
                     $_.ConfigurationName -eq $configurationName `
-                    -and $_.ResourceId -eq $resourceId
+                        -and $_.ResourceId -eq $resourceId
                 }
 
-                $resourceCurrentState.InstanceName       | Should -Be $ConfigurationData.AllNodes.InstanceName
-                $resourceCurrentState.InstallFolder      | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services'
-                $resourceCurrentState.ServiceName        | Should -Be 'SQLServerReportingServices'
+                $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+                $resourceCurrentState.InstallFolder | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services'
+                $resourceCurrentState.ServiceName | Should -Be 'SQLServerReportingServices'
                 $resourceCurrentState.ErrorDumpDirectory | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles'
-                $resourceCurrentState.CurrentVersion     | Should -BeGreaterThan ([System.Version] '14.0.0.0')
+
+                if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
+                {
+                    $resourceCurrentState.CurrentVersion | Should -BeGreaterThan ([System.Version] '14.0.0.0')
+                }
+
+                if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
+                {
+                    $resourceCurrentState.CurrentVersion | Should -BeGreaterThan ([System.Version] '15.0.0.0')
+                }
             }
 
             It 'Should return $true when Test-DscConfiguration is run' {

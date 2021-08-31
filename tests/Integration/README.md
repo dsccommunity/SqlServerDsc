@@ -75,8 +75,11 @@ properties `IsClustered` and `IsHadrEnable`.*
 
 ## SqlRSSetup
 
-Installs SQL Server 2017 Reporting Services in Azure Pipelines job with the
-configuration name `'Integration_SQL2017'`.
+Installs _Microsoft SQL Server 2017 Reporting Services_ in Azure Pipelines job
+when the configuration name is `'Integration_SQL2017'`.
+
+Installs _Microsoft SQL Server 2019 Reporting Services_ in Azure Pipelines job
+when the configuration name is `'Integration_SQL2019'`.
 
 **Run order:** 2
 
@@ -99,12 +102,22 @@ SSRS | Stopped
 >Services installed on the build worker, it could have been configured.
 >Other integration tests need to take that into consideration.
 
-### Properties for the instance SSRS
+### Properties for the instance SSRS 2017
 
 - **InstanceName:** SSRS
 - **CurrentVersion:** ^14.0.6981.38291 (depends on the version downloaded)
 - **ErrorDumpDirectory:** C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles
-- **LogPath:** C:\Users\appveyor\AppData\Local\Temp\SSRS
+- **LogPath:** Unknown
+- **InstallFolder:** C:\Program Files\Microsoft SQL Server Reporting Services
+- **ServiceName:** SQLServerReportingServices
+- **Edition:** Developer
+
+### Properties for the instance SSRS 2019
+
+- **InstanceName:** SSRS
+- **CurrentVersion:** ^15.0.7842.32355 (depends on the version downloaded)
+- **ErrorDumpDirectory:** C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles
+- **LogPath:** Unknown
 - **InstallFolder:** C:\Program Files\Microsoft SQL Server Reporting Services
 - **ServiceName:** SQLServerReportingServices
 - **Edition:** Developer
