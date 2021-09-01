@@ -1,7 +1,7 @@
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
 # Not currently run for SQL Server 2019
-if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2016','Integration_SQL2017')))
+if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019')))
 {
     return
 }
@@ -30,7 +30,11 @@ $script:testEnvironment = Initialize-TestEnvironment `
     to run the correct tests depending of what version of SQL Server is
     being tested in the current job.
 #>
-if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
+if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
+{
+    $script:sqlVersion = '150'
+}
+elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
 {
     $script:sqlVersion = '140'
 }
@@ -128,7 +132,10 @@ try
             }
 
             It 'Should be able to access the ReportServer site without any error' {
-                if($script:sqlVersion -eq '140')
+                # Wait for 1 minute for the ReportServer to be ready.
+                Start-Sleep -Seconds 30
+
+                if ($script:sqlVersion -in @('140', '150'))
                 {
                     # SSRS 2017 and 2019 do not support multiple instances
                     $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
@@ -158,7 +165,37 @@ try
             }
 
             It 'Should be able to access the Reports site without any error' {
-                if($script:sqlVersion -eq '140')
+                if ($script:sqlVersion -in @('140', '150'))
+                {
+                    # SSRS 2017 and 2019 do not support multiple instances
+                    $reportsUri = 'http://{0}/Reports' -f $env:COMPUTERNAME
+                }
+                else
+                {
+                    $reportsUri = 'http://{0}/Reports_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                }
+
+                try
+                {
+                    $webRequestReportServer = Invoke-WebRequest -Uri $reportsUri -UseDefaultCredentials
+                    # if the request finishes successfully this should return status code 200.
+                    $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
+                }
+                catch
+                {
+                    <#
+                        If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
+                        we can pull the status code from the Exception.Response property.
+                    #>
+                    $webRequestResponse = $_.Exception.Response
+                    $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
+                }
+
+                $webRequestStatusCode | Should -BeExactly 200
+            }
+
+            It 'Should be able to access the Reports site without any error' {
+                if ($script:sqlVersion -in @('140', '150'))
                 {
                     # SSRS 2017 and 2019 do not support multiple instances
                     $reportsUri = 'http://{0}/Reports' -f $env:COMPUTERNAME
@@ -240,7 +277,7 @@ try
                 as this without testing for the correct error message on purpose.
             #>
             It 'Should not be able to access the ReportServer site and throw an error message' {
-                if($script:sqlVersion -eq '140')
+                if ($script:sqlVersion -in @('140', '150'))
                 {
                     # SSRS 2017 and 2019 do not support multiple instances
                     $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
@@ -300,7 +337,7 @@ try
             }
 
             It 'Should be able to access the ReportServer site without any error' {
-                if($script:sqlVersion -eq '140')
+                if ($script:sqlVersion -in @('140', '150'))
                 {
                     # SSRS 2017 and 2019 do not support multiple instances
                     $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
@@ -313,6 +350,36 @@ try
                 try
                 {
                     $webRequestReportServer = Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials
+                    # if the request finishes successfully this should return status code 200.
+                    $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
+                }
+                catch
+                {
+                    <#
+                        If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
+                        we can pull the status code from the Exception.Response property.
+                    #>
+                    $webRequestResponse = $_.Exception.Response
+                    $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
+                }
+
+                $webRequestStatusCode | Should -BeExactly 200
+            }
+
+            It 'Should be able to access the Reports site without any error' {
+                if ($script:sqlVersion -in @('140', '150'))
+                {
+                    # SSRS 2017 and 2019 do not support multiple instances
+                    $reportsUri = 'http://{0}/Reports' -f $env:COMPUTERNAME
+                }
+                else
+                {
+                    $reportsUri = 'http://{0}/Reports_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
+                }
+
+                try
+                {
+                    $webRequestReportServer = Invoke-WebRequest -Uri $reportsUri -UseDefaultCredentials
                     # if the request finishes successfully this should return status code 200.
                     $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
                 }

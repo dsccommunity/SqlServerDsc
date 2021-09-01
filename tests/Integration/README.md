@@ -282,13 +282,20 @@ names `'Integration_SQL2016'`, `'Integration_SQL2017'` and `'Integration_SQL2019
 When running integration tests for SQL Server 2016 the integration tests
 will install the following instances and leave it on the build server for other
 integration tests to use.
-When running integration tests for SQL Server 2017 and 2019, the Reporting Services
-instance installed by the resource SqlRSSetup is started, and then stopped
-again after the integration tests has run.
+When running integration tests the Reporting Services instance is started, and
+then stopped again after the integration tests has run.
+
+For `'Integration_SQL2016'`:
 
 Instance | Feature | Description
 --- | --- | ---
-DSCRS2016 | RS | The Reporting Services is initialized, and in a working state.
+DSCRS2016 | RS | The Reporting Services 2016 is initialized, and in a working state.
+
+For `'Integration_SQL2017'` and `'Integration_SQL2019'`:
+
+Instance | Feature | Description
+--- | --- | ---
+SSRS | - | The Reporting Services (2017 or 2019) is initialized, and in a working state.
 
 >**Note:** The Reporting Services service is stopped to save memory on the build
 >worker.

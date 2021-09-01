@@ -21,19 +21,16 @@ else
     {
         # SQL2019
         $instanceName = 'SSRS'
-        $isoImageName = 'SQL2019.iso'
     }
     elseif($script:sqlVersion -eq '140')
     {
         # SQL2017
         $instanceName = 'SSRS'
-        $isoImageName = 'SQL2017.iso'
     }
     else
     {
         # SQL2016
         $instanceName = 'DSCRS2016'
-        $isoImageName = 'SQL2016.iso'
     }
 
     $ConfigurationData = @{
@@ -54,7 +51,7 @@ else
                 SuppressReboot       = $true # Make sure we don't reboot during testing.
                 ForceReboot          = $false
 
-                ImagePath            = "$env:TEMP\$isoImageName"
+                ImagePath            = "$env:TEMP\SQL2016.iso"
                 DriveLetter          = $mockIsoMediaDriveLetter
 
                 DatabaseServerName   = $env:COMPUTERNAME
@@ -95,7 +92,7 @@ Configuration DSC_SqlRS_CreateDependencies_Config
             Ensure = 'Present'
         }
 
-        if($script:sqlVersion -eq '130')
+        if ($script:sqlVersion -eq '130')
         {
             MountImage 'MountIsoMedia'
             {
@@ -142,7 +139,7 @@ Configuration DSC_SqlRS_CreateDependencies_Config
             DSC_SqlRSSetup.Integration.Tests.ps1 will have installed SSRS 2017 or 2019.
             We just need to start SSRS.
         #>
-        elseif($script:sqlVersion -in @('150','140'))
+        elseif ($script:sqlVersion -in @('140', '150'))
         {
             Service 'StartReportingServicesInstance'
             {

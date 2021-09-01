@@ -116,7 +116,7 @@ stages:
               targetPath: '$(buildFolderName)/$(testResultFolderName)/'
               artifactName: $(testArtifactName)
               parallel: true
-              
+
       - job: Test_Integration
         displayName: 'Integration'
         strategy:

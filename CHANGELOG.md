@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update codecov.yml to support carry forward flags.
   - Updated pipelines files to latest from Sampler project.
   - Updated GitHub issue templates.
+  - Remove pipeline jobs `Test_Integration_SQL2016`, `Test_Integration_SQL2017`,
+    and `Test_Integration_SQL2019` and raplaced with a single job
+    `Test_Integration` ([issue #1713](https://github.com/dsccommunity/SqlServerDsc/issues/1713)).
+  - Update HQRM tests to run on the VM image `windows-2022`.
+  - Update unit tests to run on the VM image `windows-2022`.
+  - Update integration tests to run both on Windows Server 2019 and Windows
+    Server 2022 ([issue #1713](https://github.com/dsccommunity/SqlServerDsc/issues/1713)).
 - SqlSetup
   - The helper function `Connect-SqlAnalysis` was using `LoadWithPartial()`
     to load the assembly _Microsoft.AnalysisServices_. On a node where multiple
@@ -55,13 +62,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlRSSetup
   - Integration tests now install _Microsoft SQL Server 2019 Reporting Services_
     ([issue #1717](https://github.com/dsccommunity/SqlServerDsc/issues/1717)).
+- SqlRS
+  - Integration tests now configures _Microsoft SQL Server 2019 Reporting Services_.
 
 ### Fixed
 
 - SqlSetup
   - Fixed integration tests for SQL Server 2016 and SQL Server 2017.
 - SqlServerDsc.Common
-  - Fixed so that _CredScan_ no longer reports a password false-positive ([issue #1712](https://github.com/dsccommunity/SqlServerDsc/issues/1712)).
+  - Fixed so that _CredScan_ no longer reports a password false-positive
+    ([issue #1712](https://github.com/dsccommunity/SqlServerDsc/issues/1712)).
+- SqlRS
+  - Fixed SSRS 2019 initialization ([issue #1509](https://github.com/dsccommunity/SqlServerDsc/issues/1509)).
+  - Fix a problem that did not correctly evaluate the `UseSSL` property against
+    the current state.
 
 ## [15.1.1] - 2021-02-12
 
@@ -2810,8 +2824,3 @@ in a future release.
   - xSQLServerSetup
   - xSQLServerFirewall
   - xSQLServerRSSecureConnectionLevel
-
-
-### Changed
-- Update VImage from 'windows-2019' to 'windows-2022'
-- Remove Jobs Test_Integration_SQL2016, Test_Integration_SQL2017, Test_Integration_SQL2019 with a single job Test_Integration
