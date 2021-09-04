@@ -40,6 +40,9 @@ BeforeAll {
         -ResourceType 'Mof' `
         -TestType 'Integration'
 
+    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
+    . $configFile
+
     # Download Microsoft SQL Server Reporting Services (October 2017) executable
     if (-not (Test-Path -Path $ConfigurationData.AllNodes.SourcePath))
     {
@@ -86,9 +89,6 @@ BeforeAll {
     {
         Write-Verbose -Message ('{0} executable is already downloaded' -f $script:mockSourceMediaDisplayName) -Verbose
     }
-
-    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
-    . $configFile
 }
 
 AfterAll {
