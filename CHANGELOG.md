@@ -59,13 +59,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - SqlServerDsc
-  - Added a new helper function `Remove-SqlModuleStub` for tests to remove
-    the PowerShell SqlServer stub module when a test has ran.
-  - Added an alias `Get-ObjectNotFoundRecord` to the helper function
-    `Get-InvalidResultRecord` since both use the same code to generate
-    a mocked error record.
   - Added recommended VS Code extensions.
     - Added settings for VS Code extension _Pester Test Adapter_.
+- CommonTestHelper
+  - `Import-SqlModuleStub`
+    - Added the optional parameter **PasThru** that, if used, will return the
+      name of the stub module.
+    - When removing stub modules from the session that is not supposed to
+      be loaded, it uses `Get-Module -All` to look for previously loaded
+      stub modules.
+  - `Remove-SqlModuleStub`
+    - Added a new helper function `Remove-SqlModuleStub` for tests to remove
+      the PowerShell SqlServer stub module when a test has run.
+
+### Removed
+
+- CommonTestHelper
+  - Remove the helper function `Wait-ForIdleLcm` since it has been moved
+    to the module _DscResource.Test_.
+  - Remove the helper function `Get-InvalidOperationRecord` since it has
+    been moved to the module _DscResource.Test_.
+  - Remove the helper function `Get-InvalidResultRecord` since it has been
+    moved to the module _DscResource.Test_.
+
+### Changed
+
+- SqlServerDsc
+  - All tests have been converted to run in Pester 5 (Pester 4 can no
+    longer be supported) ([issue #1654](https://github.com/dsccommunity/SqlServerDsc/issues/1654)).
+- SqlRs
+  - Minor refactor to support running unit test with strict mode enabled.
 
 ## [15.2.0] - 2021-09-01
 
@@ -175,8 +198,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Suppressed new custom Script Analyzer rule `SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO`
     for `Get-`, `Test-`, and `Set-TargetResource` functions in the resources.
 - SqlLogin
-  - All tests have been converted to run in Pester 5 (Pester 4 can no
-    longer be supported) ([issue #1654](https://github.com/dsccommunity/SqlServerDsc/issues/1654)).
   - Added functionality to throw exception if an update to the `LoginMustChangePassword`
     value on an existing SQL Login is attempted. This functionality is not supported
     by referenced, SQL Server Management Object (SMO), libraries and cannot be

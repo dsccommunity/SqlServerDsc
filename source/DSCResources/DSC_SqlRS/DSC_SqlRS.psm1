@@ -43,36 +43,50 @@ function Get-TargetResource
         $script:localizedData.GetConfiguration -f $InstanceName
     )
 
+    $getTargetResourceResult = @{
+        InstanceName                 = $InstanceName
+        DatabaseServerName           = $DatabaseServerName
+        DatabaseInstanceName         = $DatabaseInstanceName
+        ReportServerVirtualDirectory = $null
+        ReportsVirtualDirectory      = $null
+        ReportServerReservedUrl      = $null
+        ReportsReservedUrl           = $null
+        UseSsl                       = $false
+        IsInitialized                = $false
+    }
+
     $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
 
     if ( $null -ne $reportingServicesData.Configuration )
     {
         if ( $reportingServicesData.Configuration.DatabaseServerName.Contains('\') )
         {
-            $DatabaseServerName = $reportingServicesData.Configuration.DatabaseServerName.Split('\')[0]
-            $DatabaseInstanceName = $reportingServicesData.Configuration.DatabaseServerName.Split('\')[1]
+            $getTargetResourceResult.DatabaseServerName = $reportingServicesData.Configuration.DatabaseServerName.Split('\')[0]
+            $getTargetResourceResult.DatabaseInstanceName = $reportingServicesData.Configuration.DatabaseServerName.Split('\')[1]
         }
         else
         {
-            $DatabaseServerName = $reportingServicesData.Configuration.DatabaseServerName
-            $DatabaseInstanceName = 'MSSQLSERVER'
+            $getTargetResourceResult.DatabaseServerName = $reportingServicesData.Configuration.DatabaseServerName
+            $getTargetResourceResult.DatabaseInstanceName = 'MSSQLSERVER'
         }
 
         $isInitialized = $reportingServicesData.Configuration.IsInitialized
+
+        [System.Boolean] $getTargetResourceResult.IsInitialized = $isInitialized
 
         if ( $isInitialized )
         {
             if ( $reportingServicesData.Configuration.SecureConnectionLevel )
             {
-                $isUsingSsl = $true
+                $getTargetResourceResult.UseSsl = $true
             }
             else
             {
-                $isUsingSsl = $false
+                $getTargetResourceResult.UseSsl = $false
             }
 
-            $reportServerVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportServer
-            $reportsVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportManager
+            $getTargetResourceResult.ReportServerVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportServer
+            $getTargetResourceResult.ReportsVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportManager
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
@@ -96,6 +110,9 @@ function Get-TargetResource
                     $reportsReservedUrl += $reservedUrls.UrlString[$i]
                 }
             }
+
+            $getTargetResourceResult.ReportServerReservedUrl = $reportServerReservedUrl
+            $getTargetResourceResult.ReportsReservedUrl = $reportsReservedUrl
         }
         else
         {
@@ -103,26 +120,17 @@ function Get-TargetResource
                 Make sure the value returned is false, if the value returned was
                 either empty, $null or $false. Fic for issue #822.
             #>
-            [System.Boolean] $isInitialized = $false
+            [System.Boolean] $getTargetResourceResult.IsInitialized = $false
         }
     }
     else
     {
         $errorMessage = $script:localizedData.ReportingServicesNotFound -f $InstanceName
+
         New-ObjectNotFoundException -Message $errorMessage
     }
 
-    return @{
-        InstanceName                 = $InstanceName
-        DatabaseServerName           = $DatabaseServerName
-        DatabaseInstanceName         = $DatabaseInstanceName
-        ReportServerVirtualDirectory = $reportServerVirtualDirectory
-        ReportsVirtualDirectory      = $reportsVirtualDirectory
-        ReportServerReservedUrl      = $reportServerReservedUrl
-        ReportsReservedUrl           = $reportsReservedUrl
-        UseSsl                       = $isUsingSsl
-        IsInitialized                = $isInitialized
-    }
+    return $getTargetResourceResult
 }
 
 <#
