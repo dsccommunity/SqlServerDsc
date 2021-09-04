@@ -1,8 +1,23 @@
-$customAnalyzerRulesModulePath = Join-Path -Path $PSScriptRoot -ChildPath '\..\QA\AnalyzerRules\SqlServerDsc.AnalyzerRules.psm1'
+BeforeDiscovery {
+    $testCase = @(
+        @{
+            FunctionName = 'Get-TargetResource'
+        }
+        @{
+            FunctionName = 'Test-TargetResource'
+        }
+        @{
+            FunctionName = 'Set-TargetResource'
+        }
+    )
+}
 
-Import-Module -Name $customAnalyzerRulesModulePath -Force
+BeforeAll {
+    $customAnalyzerRulesModulePath = Join-Path -Path $PSScriptRoot -ChildPath '\..\QA\AnalyzerRules\SqlServerDsc.AnalyzerRules.psm1'
 
-<#
+    Import-Module -Name $customAnalyzerRulesModulePath -Force
+
+    <#
     .SYNOPSIS
         Helper function to return Ast objects,
         to be able to test custom rules.
@@ -25,38 +40,39 @@ Import-Module -Name $customAnalyzerRulesModulePath -Force
             -Path .\source\DSCResources\**\*.psm1 `
             -CustomRulePath .\tests\QA\AnalyzerRules\SqlServerDsc.AnalyzerRules.psm1 `
             -IncludeRule @('Measure-*')
-#>
-function Get-AstFromDefinition
-{
-    [CmdletBinding()]
-    [OutputType([System.Management.Automation.Language.Ast[]])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ScriptDefinition,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $AstType
-    )
-
-    $parseErrors = $null
-
-    $definitionAst = [System.Management.Automation.Language.Parser]::ParseInput($ScriptDefinition, [ref] $null, [ref] $parseErrors)
-
-    if ($parseErrors)
+    #>
+    function Get-AstFromDefinition
     {
-        throw $parseErrors
+        [CmdletBinding()]
+        [OutputType([System.Management.Automation.Language.Ast[]])]
+        param
+        (
+            [Parameter(Mandatory = $true)]
+            [System.String]
+            $ScriptDefinition,
+
+            [Parameter(Mandatory = $true)]
+            [System.String]
+            $AstType
+        )
+
+        $parseErrors = $null
+
+        $definitionAst = [System.Management.Automation.Language.Parser]::ParseInput($ScriptDefinition, [ref] $null, [ref] $parseErrors)
+
+        if ($parseErrors)
+        {
+            throw $parseErrors
+        }
+
+        $astFilter = {
+            $args[0] -is $AstType
+        }
+
+        $foundAsts = $definitionAst.FindAll($astFilter, $true)
+
+        return $foundAsts
     }
-
-    $astFilter = {
-        $args[0] -is $AstType
-    }
-
-    $foundAsts = $definitionAst.FindAll($astFilter, $true)
-
-    return $foundAsts
 }
 
 Describe 'Measure-CommandsNeededToLoadSMO' {
@@ -74,29 +90,10 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
         BeforeAll {
             $astType = 'System.Management.Automation.Language.FunctionDefinitionAst'
             $ruleName = 'Measure-CommandsNeededToLoadSMO'
-
-            $testCases = @(
-                @{
-                    FunctionName = 'Get-TargetResource'
-                }
-                @{
-                    FunctionName = 'Test-TargetResource'
-                }
-                @{
-                    FunctionName = 'Set-TargetResource'
-                }
-            )
         }
 
         Context 'When a function do not have a call to neither Import-SQLPSModule or Connect-SQL' {
-            It 'Should write the correct error record for function <FunctionName>' -TestCases $testCases {
-                param
-                (
-                    [Parameter()]
-                    [System.String]
-                    $FunctionName
-                )
-
+            It 'Should write the correct error record for function <FunctionName>' -ForEach $testCase {
                 $definition = "
                     function Get-Something {}
 
@@ -126,14 +123,7 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
         }
 
         Context 'When a function have a call to Import-SQLPSModule' {
-            It 'Should not return an error record for function <FunctionName>' -TestCases $testCases {
-                param
-                (
-                    [Parameter()]
-                    [System.String]
-                    $FunctionName
-                )
-
+            It 'Should not return an error record for function <FunctionName>' -ForEach $testCase {
                 $definition = "
                     function Import-SQLPSModule {}
 
@@ -161,14 +151,7 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
         }
 
         Context 'When a function have a call to Connect-SQL' {
-            It 'Should not return an error record for function <FunctionName>' -TestCases $testCases {
-                param
-                (
-                    [Parameter()]
-                    [System.String]
-                    $FunctionName
-                )
-
+            It 'Should not return an error record for function <FunctionName>' -ForEach $testCase {
                 $definition = "
                     function Connect-SQL {}
 
@@ -206,14 +189,7 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
         }
 
         Context 'When a function do not have a call to neither Import-SQLPSModule or Connect-SQL' {
-            It 'Should write the correct error record for function <FunctionName>' -TestCases $testCases {
-                param
-                (
-                    [Parameter()]
-                    [System.String]
-                    $FunctionName
-                )
-
+            It 'Should write the correct error record for function <FunctionName>' -ForEach $testCase {
                 $invokeScriptAnalyzerParameters['ScriptDefinition'] = "
                     function Get-Something {}
 
@@ -237,14 +213,7 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
         }
 
         Context 'When a function is not calling any commands at all' {
-            It 'Should write the correct error record for function <FunctionName>' -TestCases $testCases {
-                param
-                (
-                    [Parameter()]
-                    [System.String]
-                    $FunctionName
-                )
-
+            It 'Should write the correct error record for function <FunctionName>' -ForEach $testCase {
                 $invokeScriptAnalyzerParameters['ScriptDefinition'] = "
                     function $FunctionName
                     {
@@ -264,14 +233,7 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
         }
 
         Context 'When a function have a call to Import-SQLPSModule' {
-            It 'Should not write an error record for function <FunctionName>' -TestCases $testCases {
-                param
-                (
-                    [Parameter()]
-                    [System.String]
-                    $FunctionName
-                )
-
+            It 'Should not write an error record for function <FunctionName>' -ForEach $testCase {
                 $invokeScriptAnalyzerParameters['ScriptDefinition'] = "
                     function Import-SQLPSModule {}
 
@@ -293,14 +255,7 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
         }
 
         Context 'When a function have a call to Connect-SQL' {
-            It 'Should not write an error record for function <FunctionName>' -TestCases $testCases {
-                param
-                (
-                    [Parameter()]
-                    [System.String]
-                    $FunctionName
-                )
-
+            It 'Should not write an error record for function <FunctionName>' -ForEach $testCase {
                 $invokeScriptAnalyzerParameters['ScriptDefinition'] = "
                     function Connect-SQL {}
 
