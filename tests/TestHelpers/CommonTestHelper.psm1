@@ -7,10 +7,16 @@
 
     .PARAMETER ModuleName
         The name of the module to load the stubs for. Default is 'SqlServer'.
+
+    .OUTPUTS
+        [System.String]
+
+        The name of the module that was imported if the parameter PassThru was specified.
 #>
 function Import-SqlModuleStub
 {
     [CmdletBinding(DefaultParameterSetName = 'Module')]
+    [OutputType([System.String])]
     param
     (
         [Parameter(Mandatory = $true, ParameterSetName = 'Version')]
@@ -20,7 +26,11 @@ function Import-SqlModuleStub
         [Parameter(ParameterSetName = 'Module')]
         [ValidateSet('SQLPS', 'SqlServer')]
         [System.String]
-        $ModuleName = 'SqlServer'
+        $ModuleName = 'SqlServer',
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $PassThru
     )
 
     # Translate the module names to their appropriate stub name
@@ -50,10 +60,7 @@ function Import-SqlModuleStub
         $_ -ne $stubModuleName
     }
 
-    if ( Get-Module -Name $otherStubModules )
-    {
-        Remove-Module -Name $otherStubModules
-    }
+    Get-Module -Name $otherStubModules -All | Remove-Module -Force
 
     # If the desired module is not loaded, load it now
     if ( -not ( Get-Module -Name $stubModuleName ) )
@@ -62,6 +69,11 @@ function Import-SqlModuleStub
         $moduleStubPath = Join-Path -Path ( Join-Path -Path ( Join-Path -Path ( Split-Path -Path $PSScriptRoot -Parent ) -ChildPath Unit ) -ChildPath Stubs ) -ChildPath "$($stubModuleName).psm1"
 
         Import-Module -Name $moduleStubPath -Force -Global -WarningAction 'SilentlyContinue'
+    }
+
+    if ($PassThru.IsPresent)
+    {
+        return $stubModuleName
     }
 }
 
@@ -72,15 +84,19 @@ function Import-SqlModuleStub
 function Remove-SqlModuleStub
 {
     [CmdletBinding()]
-    param ()
-
-    # Possible stub modules.
-    $modulesAndStubs = @(
-        'SQLPSStub'
-        'SqlServerStub'
+    param
+    (
+        [Parameter()]
+        [ValidateSet('SQLPSStub', 'SqlServerStub')]
+        [System.String[]]
+        $Name = @(
+            # Possible stub modules.
+            'SQLPSStub'
+            'SqlServerStub'
+        )
     )
 
-    Get-Module $modulesAndStubs | Remove-Module -Force
+    Get-Module $Name -All | Remove-Module -Force
 }
 
 <#
@@ -400,161 +416,6 @@ function Test-ContinuousIntegrationTaskCategory
     }
 
     return $result
-}
-
-<#
-    .SYNOPSIS
-        Waits for LCM to become idle.
-
-    .PARAMETER Clear
-        If specified, the LCM will also be cleared of DSC configurations.
-
-    .NOTES
-        Used in integration test where integration tests run to quickly before
-        LCM have time to cool down.
-#>
-function Wait-ForIdleLcm
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Clear
-    )
-
-    while ((Get-DscLocalConfigurationManager).LCMState -ne 'Idle')
-    {
-        Write-Verbose -Message 'Waiting for the LCM to become idle'
-
-        Start-Sleep -Seconds 2
-    }
-
-    if ($Clear)
-    {
-        Clear-DscLcmConfiguration
-    }
-}
-
-<#
-    .SYNOPSIS
-        Returns an invalid operation exception object
-
-    .PARAMETER Message
-        The message explaining why this error is being thrown
-
-    .PARAMETER ErrorRecord
-        The error record containing the exception that is causing this terminating
-        error
-#>
-function Get-InvalidOperationRecord
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $Message,
-
-        [Parameter()]
-        [ValidateNotNull()]
-        [System.Management.Automation.ErrorRecord]
-        $ErrorRecord
-    )
-
-    $newObjectParameters = @{
-        TypeName = 'System.InvalidOperationException'
-    }
-
-    if ($PSBoundParameters.ContainsKey('Message') -and $PSBoundParameters.ContainsKey('ErrorRecord'))
-    {
-        $newObjectParameters['ArgumentList'] = @(
-            $Message,
-            $ErrorRecord.Exception
-        )
-    }
-    elseif ($PSBoundParameters.ContainsKey('Message'))
-    {
-        $newObjectParameters['ArgumentList'] = @(
-            $Message
-        )
-    }
-
-    $invalidOperationException = New-Object @newObjectParameters
-
-    $newObjectParameters = @{
-        TypeName     = 'System.Management.Automation.ErrorRecord'
-        ArgumentList = @(
-            $invalidOperationException.ToString(),
-            'MachineStateIncorrect',
-            'InvalidOperation',
-            $null
-        )
-    }
-
-    return New-Object @newObjectParameters
-}
-
-<#
-    .SYNOPSIS
-        Returns an invalid result exception object
-
-    .PARAMETER Message
-        The message explaining why this error is being thrown
-
-    .PARAMETER ErrorRecord
-        The error record containing the exception that is causing this terminating
-        error
-#>
-function Get-InvalidResultRecord
-{
-    [CmdletBinding()]
-    [Alias('Get-ObjectNotFoundRecord')]
-    param
-    (
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $Message,
-
-        [Parameter()]
-        [ValidateNotNull()]
-        [System.Management.Automation.ErrorRecord]
-        $ErrorRecord
-    )
-
-    $newObjectParameters = @{
-        TypeName = 'System.Exception'
-    }
-
-    if ($PSBoundParameters.ContainsKey('Message') -and $PSBoundParameters.ContainsKey('ErrorRecord'))
-    {
-        $newObjectParameters['ArgumentList'] = @(
-            $Message,
-            $ErrorRecord.Exception
-        )
-    }
-    elseif ($PSBoundParameters.ContainsKey('Message'))
-    {
-        $newObjectParameters['ArgumentList'] = @(
-            $Message
-        )
-    }
-
-    $invalidOperationException = New-Object @newObjectParameters
-
-    $newObjectParameters = @{
-        TypeName     = 'System.Management.Automation.ErrorRecord'
-        ArgumentList = @(
-            $invalidOperationException.ToString(),
-            'MachineStateIncorrect',
-            'InvalidOperation',
-            $null
-        )
-    }
-
-    return New-Object @newObjectParameters
 }
 
 <#
