@@ -37,6 +37,9 @@ BeforeAll {
         -ResourceType 'Mof' `
         -TestType 'Integration'
 
+    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
+    . $configFile
+
     # These sets variables used for verification from the dot-sourced $ConfigurationData variable.
     $mockLoopbackAdapterName = $ConfigurationData.AllNodes.LoopbackAdapterName
 
@@ -48,9 +51,6 @@ BeforeAll {
         configuration.
     #>
     New-IntegrationLoopbackAdapter -AdapterName $mockLoopbackAdapterName
-
-    $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
-    . $configFile
 }
 
 AfterAll {
