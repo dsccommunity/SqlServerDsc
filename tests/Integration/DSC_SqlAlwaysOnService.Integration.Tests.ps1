@@ -1,9 +1,15 @@
 BeforeDiscovery {
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-    if (-not (Test-BuildCategory -Type 'Integration' -Category @('Skipped')))
+    if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019')))
     {
         return
+    }
+
+    # TODO: This has temporarily been disabled as the test is not passing.
+    if ((Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019')))
+    {
+        $skipIntegrationTest = $false
     }
 
     try
@@ -59,7 +65,7 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Describe "$($script:dscResourceName)_Integration" {
+Describe "$($script:dscResourceName)_Integration" -Skip:$skipIntegrationTest {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
