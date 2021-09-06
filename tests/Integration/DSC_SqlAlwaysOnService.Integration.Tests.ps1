@@ -1,10 +1,9 @@
 BeforeDiscovery {
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-    # TODO: Maybe we should skip here instead? In each integration test.
     if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019')))
     {
-        return
+        $skipIntegrationTest = $true
     }
 
     # TODO: This has temporarily been disabled as the test is not passing.
