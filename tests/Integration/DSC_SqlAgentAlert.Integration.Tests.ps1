@@ -3,7 +3,7 @@ BeforeDiscovery {
 
     if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019')))
     {
-        return
+        $skipIntegrationTest = $true
     }
 
     try
@@ -45,7 +45,7 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Describe "<dscResourceFriendlyName>_Integration" {
+Describe "<dscResourceFriendlyName>_Integration" -Skip:$skipIntegrationTest {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
