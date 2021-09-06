@@ -29,6 +29,11 @@ BeforeDiscovery {
 }
 
 BeforeAll {
+    if ($skipIntegrationTest)
+    {
+        return
+    }
+
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
     # Need to define the variables here which will be used in Pester Run.
@@ -94,6 +99,11 @@ BeforeAll {
 }
 
 AfterAll {
+    if ($skipIntegrationTest)
+    {
+        return
+    }
+
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
