@@ -6,11 +6,6 @@
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-if (-not (Test-BuildCategory -Type 'Unit'))
-{
-    return
-}
-
 $script:dscModuleName = 'SqlServerDsc'
 $script:dscResourceName = 'DSC_SqlTraceFlag'
 
@@ -61,13 +56,13 @@ try
 
                  # The Trailing spaces in these here strings are ment to be there. Do not remove!
                 $mockStartupParametersInstance1 = @"
--dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
-Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802
 "@
                 $mockStartupParametersInstance2 = @"
--dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
-Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 "@
 
@@ -248,13 +243,13 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
                 # The Trailing spaces in these here strings are ment to be there. Do not remove!
                 $mockStartupParametersInstance1 = @"
--dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
-Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802
 "@
                 $mockStartupParametersInstance2 = @"
--dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
-Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 "@
 
@@ -594,13 +589,13 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
                          # The Trailing spaces in these here strings are ment to be there. Do not remove!
                         $mockStartupParametersInstance1 = @"
--dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
-Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802
 "@
                         $mockStartupParametersInstance2 = @"
--dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
-Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 "@
 
@@ -716,8 +711,8 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'Alter should run'
                     $script:mockMethodAlterValue | Should -Be @"
--dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
-Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 "@ -Because 'Alter must change the value correct'
 
@@ -737,8 +732,8 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'Alter should run'
                     $script:mockMethodAlterValue | Should -Be @"
--dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
-Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
 "@ -Because 'Alter must change the value correct'
 
@@ -758,8 +753,8 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'Alter should run'
                     $script:mockMethodAlterValue | Should -Be @"
--dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
-Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
 "@ -Because 'Alter must change the value correct'
 
@@ -779,8 +774,8 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                     $script:mockMethodAlterRan | Should -BeTrue -Because 'Alter should run'
                     $script:mockMethodAlterValue | Should -Be @"
--dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
-Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
 "@ -Because 'Alter must change the value correct'
 
@@ -800,8 +795,8 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                     $script:mockMethodAlterRan | Should -BeTrue
                     $script:mockMethodAlterValue | Should -Be @"
--dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
-Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802;-T3228
 "@
 
@@ -821,8 +816,8 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802;-T3228
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                     $script:mockMethodAlterRan | Should -BeTrue
                     $script:mockMethodAlterValue | Should -Be @"
--dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
-Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
 "@
 
@@ -842,8 +837,8 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
                     { Set-TargetResource @testParameters } | Should -Not -Throw
                     $script:mockMethodAlterRan | Should -BeTrue
                     $script:mockMethodAlterValue | Should -Be @"
--dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
-Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226
 "@
 
@@ -864,8 +859,8 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226
                     { Set-TargetResource @testParameters  } | Should -Not -Throw
                     $script:mockMethodAlterRan | Should -BeTrue
                     $script:mockMethodAlterValue | Should -Be @"
--dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL 
-Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL 
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
 "@
 

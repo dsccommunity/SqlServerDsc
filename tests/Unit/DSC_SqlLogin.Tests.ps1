@@ -10,11 +10,6 @@ param()
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-if (-not (Test-BuildCategory -Type 'Unit'))
-{
-    return
-}
-
 $script:dscModuleName = 'SqlServerDsc'
 $script:dscResourceName = 'DSC_SqlLogin'
 

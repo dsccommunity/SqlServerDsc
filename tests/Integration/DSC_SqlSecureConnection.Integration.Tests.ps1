@@ -1,11 +1,4 @@
 BeforeDiscovery {
-    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
-
-    if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019')))
-    {
-        $skipIntegrationTest = $true
-    }
-
     try
     {
         Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
@@ -57,7 +50,7 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Describe "$($script:dscResourceName)_Integration" -Skip:$skipIntegrationTest {
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019') {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
