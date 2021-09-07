@@ -1,16 +1,4 @@
 BeforeDiscovery {
-    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
-
-    <#
-        Run only for standalone versions of Microsoft SQL Server Reporting Services.
-        Older versions of Reporting Services (eg. 2016) are integration tested in
-        separate tests (part of resource SqlSetup).
-    #>
-    if (-not (Test-BuildCategory -Type 'Integration' -Category @('Integration_SQL2017', 'Integration_SQL2019')))
-    {
-        $skipIntegrationTest = $true
-    }
-
     try
     {
         Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
@@ -29,11 +17,6 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    if ($skipIntegrationTest)
-    {
-        return
-    }
-
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
     # Need to define the variables here which will be used in Pester Run.
@@ -99,17 +82,17 @@ BeforeAll {
 }
 
 AfterAll {
-    if ($skipIntegrationTest)
-    {
-        return
-    }
-
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Describe "$($script:dscResourceName)_Integration" -Skip:$skipIntegrationTest {
+<#
+    Run only for standalone versions of Microsoft SQL Server Reporting Services.
+    Older versions of Reporting Services (eg. 2016) are integration tested in
+    separate tests (part of resource SqlSetup).
+#>
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019') {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
