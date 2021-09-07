@@ -87,6 +87,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - All tests have been converted to run in Pester 5 (Pester 4 can no
     longer be supported) ([issue #1654](https://github.com/dsccommunity/SqlServerDsc/issues/1654)).
+  - Pipeline build and deploy now runs on Ubuntu 18.04, see more information
+    in https://github.com/actions/virtual-environments/issues/3287.
 - SqlRs
   - Minor refactor to support running unit test with strict mode enabled.
 
