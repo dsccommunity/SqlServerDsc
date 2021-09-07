@@ -95,13 +95,6 @@ Pester:
       OutputEncoding: ascii
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
-  Path:
-    - tests/Unit
-  ExcludeTag:
-  Tag:
-  CodeCoverageThreshold: 85
-  CodeCoverageOutputFile: JaCoCo_coverage.xml
-  CodeCoverageOutputFileEncoding: ascii
 
 ####################################################
 #      Pester Configuration (DscResource.Test)     #
@@ -117,18 +110,8 @@ DscTest:
   Script:
     ExcludeSourceFile:
       - output
-      # Deprecated resources
-      - DSCResources/MSFT_SqlServerNetwork
-      - DSCResources/MSFT_SqlDatabaseOwner
-      - DSCResources/MSFT_SqlDatabaseRecoveryModel
-      - DSCResources/MSFT_SqlServerEndpointState
     ExcludeModuleFile:
       - Modules/DscResource.Common
-      # Deprecated resources
-      - DSCResources/MSFT_SqlServerNetwork
-      - DSCResources/MSFT_SqlDatabaseOwner
-      - DSCResources/MSFT_SqlDatabaseRecoveryModel
-      - DSCResources/MSFT_SqlServerEndpointState
     MainGitBranch: main
 
 ####################################################
