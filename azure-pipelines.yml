@@ -1,7 +1,15 @@
+variables:
+  buildFolderName: output
+  buildArtifactName: output
+  testResultFolderName: testResults
+  testArtifactName: testResults
+  sourceFolderName: source
+  defaultBranch: main
+
 trigger:
   branches:
     include:
-    - main
+    - $(defaultBranch)
   paths:
     include:
     - source/*
@@ -10,12 +18,6 @@ trigger:
     - "v*"
     exclude:
     - "*-*"
-variables:
-  buildFolderName: output
-  buildArtifactName: output
-  testResultFolderName: testResults
-  testArtifactName: testResults
-  sourceFolderName: source
 
 stages:
   - stage: Build
@@ -248,7 +250,7 @@ stages:
       and(
         succeeded(),
         or(
-          eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+          eq(variables['Build.SourceBranch'], 'refs/heads/$(defaultBranch)'),
           startsWith(variables['Build.SourceBranch'], 'refs/tags/')
         ),
         contains(variables['System.TeamFoundationCollectionUri'], 'dsccommunity')
@@ -275,8 +277,8 @@ stages:
             env:
               GitHubToken: $(GitHubToken)
               GalleryApiToken: $(GalleryApiToken)
-              ReleaseBranch: main
-              MainGitBranch: main
+              ReleaseBranch: $(defaultBranch)
+              MainGitBranch: $(defaultBranch)
           - task: PowerShell@2
             name: sendChangelogPR
             displayName: 'Send Changelog PR'
@@ -286,5 +288,5 @@ stages:
               pwsh: true
             env:
               GitHubToken: $(GitHubToken)
-              ReleaseBranch: main
-              MainGitBranch: main
+              ReleaseBranch: $(defaultBranch)
+              MainGitBranch: $(defaultBranch)
