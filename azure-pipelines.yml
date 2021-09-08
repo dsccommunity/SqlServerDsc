@@ -23,7 +23,7 @@ stages:
       - job: Package_Module
         displayName: 'Package Module'
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: 'ubuntu 16.04'
         steps:
           - pwsh: |
               dotnet tool install --global GitVersion.Tool
@@ -257,7 +257,7 @@ stages:
       - job: Deploy_Module
         displayName: 'Deploy Module'
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: 'ubuntu 16.04'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
