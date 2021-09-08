@@ -89,6 +89,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     longer be supported) ([issue #1654](https://github.com/dsccommunity/SqlServerDsc/issues/1654)).
   - Pipeline build and deploy now runs on Ubuntu 18.04, see more information
     in https://github.com/actions/virtual-environments/issues/3287.
+  - Update the pipeline file _azure-pipelines.yml_ to use the latest version
+    from the Sampler project.
 - SqlRs
   - Minor refactor to support running unit test with strict mode enabled.
 
