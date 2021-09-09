@@ -1,15 +1,7 @@
-variables:
-  buildFolderName: output
-  buildArtifactName: output
-  testResultFolderName: testResults
-  testArtifactName: testResults
-  sourceFolderName: source
-  defaultBranch: main
-
 trigger:
   branches:
     include:
-    - $(defaultBranch)
+    - main
   paths:
     include:
     - source/*
@@ -18,6 +10,14 @@ trigger:
     - "v*"
     exclude:
     - "*-*"
+
+variables:
+  buildFolderName: output
+  buildArtifactName: output
+  testResultFolderName: testResults
+  testArtifactName: testResults
+  sourceFolderName: source
+  defaultBranch: main
 
 stages:
   - stage: Build
@@ -250,7 +250,7 @@ stages:
       and(
         succeeded(),
         or(
-          eq(variables['Build.SourceBranch'], 'refs/heads/$(defaultBranch)'),
+          eq(variables['Build.SourceBranch'], 'refs/heads/main'),
           startsWith(variables['Build.SourceBranch'], 'refs/tags/')
         ),
         contains(variables['System.TeamFoundationCollectionUri'], 'dsccommunity')
