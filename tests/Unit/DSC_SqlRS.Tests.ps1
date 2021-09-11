@@ -60,16 +60,11 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
         $mockReportingServicesDatabaseDefaultInstanceName = $mockDefaultInstanceName
 
         $mockReportsApplicationName = 'ReportServerWebApp'
-        $mockReportsApplicationNameLegacy = 'ReportManager'
         $mockReportServerApplicationName = 'ReportServerWebService'
         $mockReportsApplicationUrl = 'http://+:80'
         $mockReportServerApplicationUrl = 'http://+:80'
         $mockVirtualDirectoryReportManagerName = 'Reports_SQL2016'
         $mockVirtualDirectoryReportServerName = 'ReportServer_SQL2016'
-
-        $mockInvokeCimMethod = {
-            throw 'Should not call Invoke-CimMethod directly, should call the wrapper Invoke-RsCimMethod.'
-        }
 
         $mockInvokeRsCimMethod_ListReservedUrls = {
             return New-Object -TypeName Object |
@@ -85,18 +80,6 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                     $mockDynamicReportServerApplicationUrlString
                 )
             } -PassThru -Force
-        }
-
-        $mockInvokeRsCimMethod_GenerateDatabaseCreationScript = {
-            return @{
-                Script = 'select * from something'
-            }
-        }
-
-        $mockInvokeRsCimMethod_GenerateDatabaseRightsScript = {
-            return @{
-                Script = 'select * from something'
-            }
         }
 
         $mockGetCimInstance_ConfigurationSetting_NamedInstance = {
@@ -134,29 +117,9 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                 Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force
         }
 
-        $mockGetCimInstance_ConfigurationSetting_ParameterFilter = {
-            $ClassName -eq 'MSReportServer_ConfigurationSetting'
-        }
-
-        $mockGetCimInstance_Language = {
-            return @{
-                Language = '1033'
-            }
-        }
-
-        $mockGetCimInstance_OperatingSystem_ParameterFilter = {
-            $ClassName -eq 'Win32_OperatingSystem'
-        }
-
         Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_ListReservedUrls -ParameterFilter {
             $MethodName -eq 'ListReservedUrls'
         }
-
-        <#
-            This is mocked here so that no calls are made to it directly,
-            or if any mock of Invoke-RsCimMethod are wrong.
-        #>
-        Mock -CommandName Invoke-CimMethod -MockWith $mockInvokeCimMethod
 
         InModuleScope -ScriptBlock {
             $script:mockNamedInstanceName = 'INSTANCE'
