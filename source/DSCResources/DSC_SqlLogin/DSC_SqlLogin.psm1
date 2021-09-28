@@ -205,20 +205,27 @@ function Set-TargetResource
                     if ( ( $PSBoundParameters.ContainsKey('LoginPasswordPolicyEnforced') -and $login.PasswordPolicyEnforced -ne $LoginPasswordPolicyEnforced ) -or
                          ( $PSBoundParameters.ContainsKey('LoginPasswordExpirationEnabled') -and $login.PasswordExpirationEnabled -ne $LoginPasswordExpirationEnabled ) )
                     {
-                        Write-Verbose -Message (
-                            $script:localizedData.SetPasswordPolicyEnforced -f $LoginPasswordPolicyEnforced, $Name, $ServerName, $InstanceName
-                        )
-                        Write-Verbose -Message (
-                            $script:localizedData.SetPasswordExpirationEnabled -f $LoginPasswordExpirationEnabled, $Name, $ServerName, $InstanceName
-                        )
-
                         if ( $PSBoundParameters.ContainsKey('LoginPasswordPolicyEnforced') )
                         {
+                            Write-Verbose -Message (
+                                $script:localizedData.SetPasswordPolicyEnforced -f $LoginPasswordPolicyEnforced, $Name, $ServerName, $InstanceName
+                            )
+                            Write-Verbose -Message (
+                                $script:localizedData.SetPasswordExpirationEnabled -f $LoginPasswordExpirationEnabled, $Name, $ServerName, $InstanceName
+                            )
+
                             $login.PasswordPolicyEnforced = $LoginPasswordPolicyEnforced
                         }
 
                         if ( $PSBoundParameters.ContainsKey('LoginPasswordExpirationEnabled') )
                         {
+                            Write-Verbose -Message (
+                                $script:localizedData.SetPasswordPolicyEnforced -f $LoginPasswordPolicyEnforced, $Name, $ServerName, $InstanceName
+                            )
+                            Write-Verbose -Message (
+                                $script:localizedData.SetPasswordExpirationEnabled -f $LoginPasswordExpirationEnabled, $Name, $ServerName, $InstanceName
+                            )
+
                             $login.PasswordExpirationEnabled = $LoginPasswordExpirationEnabled
                         }
 
@@ -838,4 +845,3 @@ function Set-SQLServerLoginPassword
         $ErrorActionPreference = $originalErrorActionPreference
     }
 }
-
