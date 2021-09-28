@@ -312,6 +312,58 @@ Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config
 
 <#
     .SYNOPSIS
+        Updates a SQL login, sets LoginPasswordExpirationEnabled to $true
+#>
+Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config_LoginPasswordExpirationEnabled
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlLogin 'Integration_Test'
+        {
+            Ensure                         = 'Present'
+            Name                           = $Node.DscUser4Name
+            LoginPasswordExpirationEnabled = $true
+
+            ServerName                     = $Node.ServerName
+            InstanceName                   = $Node.InstanceName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Updates a SQL login, sets LoginPasswordPolicyEnforced to $true
+#>
+Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config_LoginPasswordPolicyEnforced
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlLogin 'Integration_Test'
+        {
+            Ensure                         = 'Present'
+            Name                           = $Node.DscUser4Name
+            LoginPasswordPolicyEnforced    = $true
+
+            ServerName                     = $Node.ServerName
+            InstanceName                   = $Node.InstanceName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
         Adds a Windows Group login.
 #>
 Configuration DSC_SqlLogin_AddLoginDscSqlUsers1_Config
