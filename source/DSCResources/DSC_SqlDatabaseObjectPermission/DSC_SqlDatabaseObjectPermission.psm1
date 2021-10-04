@@ -832,8 +832,15 @@ function Get-DatabaseObject
     .SYNOPSIS
         Converts permission names to DSC_DatabaseObjectPermission CIM class.
 
-    .PARAMETER PermissionName
-        Specifies array of permission names.
+    .PARAMETER Permissions
+        This represents a SQL Server database object permission.
+
+    .PARAMETER PermissionState
+        This is the state of permission set. Valid values are 'Grant', 'Deny', or 'GrantWithGrant'.
+
+    .PARAMETER Ensure
+        Ensure if the permission should be granted (Present) or revoked (Absent).
+        Default value is 'Present'.
 #>
 function ConvertTo-CimDatabaseObjectPermission
 {
@@ -844,7 +851,7 @@ function ConvertTo-CimDatabaseObjectPermission
         [Parameter(Mandatory = $true)]
         [AllowEmptyCollection()]
         [AllowNull()]
-        [System.String[]]
+        [System.String]
         $Permission,
 
         [Parameter(Mandatory = $true)]
