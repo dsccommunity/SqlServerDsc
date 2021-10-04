@@ -832,7 +832,7 @@ function Get-DatabaseObject
     .SYNOPSIS
         Converts permission names to DSC_DatabaseObjectPermission CIM class.
 
-    .PARAMETER Permissions
+    .PARAMETER Permission
         This represents a SQL Server database object permission.
 
     .PARAMETER PermissionState
