@@ -210,18 +210,12 @@ function Set-TargetResource
                             Write-Verbose -Message (
                                 $script:localizedData.SetPasswordPolicyEnforced -f $LoginPasswordPolicyEnforced, $Name, $ServerName, $InstanceName
                             )
-                            Write-Verbose -Message (
-                                $script:localizedData.SetPasswordExpirationEnabled -f $LoginPasswordExpirationEnabled, $Name, $ServerName, $InstanceName
-                            )
 
                             $login.PasswordPolicyEnforced = $LoginPasswordPolicyEnforced
                         }
 
                         if ( $PSBoundParameters.ContainsKey('LoginPasswordExpirationEnabled') )
                         {
-                            Write-Verbose -Message (
-                                $script:localizedData.SetPasswordPolicyEnforced -f $LoginPasswordPolicyEnforced, $Name, $ServerName, $InstanceName
-                            )
                             Write-Verbose -Message (
                                 $script:localizedData.SetPasswordExpirationEnabled -f $LoginPasswordExpirationEnabled, $Name, $ServerName, $InstanceName
                             )
