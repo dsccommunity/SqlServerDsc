@@ -127,7 +127,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Single_GrantWithGrant_Config
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'GrantWithGrant'
-                    Permission = @('Select')
+                    Permission = 'Select'
                 }
             )
 
@@ -169,7 +169,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Single_Grant_Config
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'Grant'
-                    Permission = @('Select')
+                    Permission = 'Select'
                 }
             )
             Force                = $true
@@ -207,7 +207,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Single_Revoke_Config
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'Grant'
-                    Permission = @('Select')
+                    Permission = 'Select'
                     Ensure     = 'Absent'
                 }
             )
@@ -244,13 +244,19 @@ Configuration DSC_SqlDatabaseObjectPermission_Multiple_Grant_Config
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'Grant'
-                    Permission = @('Select')
+                    Permission = 'Select'
                 }
 
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'Deny'
-                    Permission = @('Delete', 'Alter')
+                    Permission = 'Delete'
+                }
+
+                DSC_DatabaseObjectPermission
+                {
+                    State      = 'Deny'
+                    Permission = 'Alter'
                 }
             )
 
@@ -287,7 +293,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Multiple_Revoke_Config
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'Grant'
-                    Permission = @('Select')
+                    Permission = 'Select'
                     # Intentionally leaving this permission on the node.
                     Ensure     = 'Present'
                 }
@@ -295,7 +301,14 @@ Configuration DSC_SqlDatabaseObjectPermission_Multiple_Revoke_Config
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'Deny'
-                    Permission = @('Delete', 'Alter')
+                    Permission = 'Delete'
+                    Ensure     = 'Absent'
+                }
+
+                DSC_DatabaseObjectPermission
+                {
+                    State      = 'Deny'
+                    Permission = 'Alter'
                     Ensure     = 'Absent'
                 }
             )
