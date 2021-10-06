@@ -727,7 +727,7 @@ function Compare-TargetResourceState
             the values to compare against in the current state.
         #>
         CimInstanceKeyProperties = @{
-            Permission = 'State'
+            Permission = @('Permission', 'State')
         }
     }
 
