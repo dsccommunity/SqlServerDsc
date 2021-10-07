@@ -314,7 +314,8 @@ try
 
                 $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Deny' })
                 $grantPermission | Should -Not -BeNullOrEmpty
-                $grantPermission.Ensure | Should -Be 'Present'
+                $grantPermission.Ensure[0] | Should -Be 'Present'
+                $grantPermission.Ensure[1] | Should -Be 'Present'
                 $grantPermission.Permission | Should -HaveCount 2
                 $grantPermission.Permission | Should -Contain @('Delete')
                 $grantPermission.Permission | Should -Contain @('Alter')
@@ -384,7 +385,8 @@ try
 
                 $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Deny' })
                 $grantPermission | Should -Not -BeNullOrEmpty
-                $grantPermission.Ensure | Should -Be 'Absent'
+                $grantPermission.Ensure[0] | Should -Be 'Absent'
+                $grantPermission.Ensure[1] | Should -Be 'Absent'
                 $grantPermission.Permission | Should -HaveCount 2
                 $grantPermission.Permission | Should -Contain @('Delete')
                 $grantPermission.Permission | Should -Contain @('Alter')
