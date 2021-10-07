@@ -5,6 +5,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- SqlDatabaseObjectPermission
+  - BREAKING CHANGE: Changed the definition of Permission member of the
+    DatabaseObjectPermission class to a string.  When compiling multiple
+    resources with different permissions, the build would fail referencing a
+    conflict in resources.
+
 ## [15.2.0] - 2021-09-01
 
 ### Changed
