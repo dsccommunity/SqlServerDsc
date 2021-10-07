@@ -301,9 +301,10 @@ try
                 $resourceCurrentState.ObjectType | Should -Be 'Table'
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
 
-                $resourceCurrentState.Permission | Should -HaveCount 2
+                $resourceCurrentState.Permission | Should -HaveCount 3
                 $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
                 $resourceCurrentState.Permission[1] | Should -BeOfType 'CimInstance'
+                $resourceCurrentState.Permission[2] | Should -BeOfType 'CimInstance'
 
                 $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Grant' })
                 $grantPermission | Should -Not -BeNullOrEmpty
@@ -370,9 +371,10 @@ try
                 $resourceCurrentState.ObjectType | Should -Be 'Table'
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
 
-                $resourceCurrentState.Permission | Should -HaveCount 2
+                $resourceCurrentState.Permission | Should -HaveCount 3
                 $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
                 $resourceCurrentState.Permission[1] | Should -BeOfType 'CimInstance'
+                $resourceCurrentState.Permission[2] | Should -BeOfType 'CimInstance'
 
                 $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Grant' })
                 $grantPermission | Should -Not -BeNullOrEmpty
