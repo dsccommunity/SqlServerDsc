@@ -5,6 +5,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- The deprecated DSC resource SqlDatabaseOwner have been removed _(and replaced_
+  _by a property in [**SqlDatabase**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqldatabase))_.
+- The deprecated DSC resource SqlDatabaseRecoveryModel have been removed _(and_
+  _replaced by a property in [**SqlDatabase**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqldatabase))_.
+- The deprecated DSC resource SqlServerEndpointState have been removed _(and_
+  _replaced by a property in [**SqlEndpoint**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlendpoint))_.
+- The deprecated DSC resource SqlServerNetwork have been removed _(and replaced by_
+  _[**SqlProtocol**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocol)_
+  _and [**SqlProtocolTcpIp**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocoltcpip))_.
+
 ## [15.2.0] - 2021-09-01
 
 ### Changed
