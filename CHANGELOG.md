@@ -8,10 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - SqlDatabaseObjectPermission
-  - BREAKING CHANGE: Changed the definition of Permission member of the
-    DatabaseObjectPermission class to a string.  When compiling multiple
-    resources with different permissions, the build would fail referencing a
-    conflict in resources.
+  - Fix for issue ([issue #1724](https://github.com/dsccommunity/SqlServerDsc/issues/1724)).
+    - BREAKING CHANGE: Updated class DSC_DatabaseObjectPermission.
+      - Changed Permission from an array to a string.
+      - Updated Permission to a key property.
 
 ## [15.2.0] - 2021-09-01
 
