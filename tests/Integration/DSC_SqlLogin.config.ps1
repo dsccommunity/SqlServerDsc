@@ -324,6 +324,7 @@ Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config_LoginPasswordExpirationEna
         {
             Ensure                         = 'Present'
             Name                           = $Node.DscUser4Name
+            LoginType                      = $Node.DscUser4Type
             LoginPasswordExpirationEnabled = $true
 
             ServerName                     = $Node.ServerName
@@ -350,6 +351,7 @@ Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config_LoginPasswordPolicyEnforce
         {
             Ensure                         = 'Present'
             Name                           = $Node.DscUser4Name
+            LoginType                      = $Node.DscUser4Type
             LoginPasswordPolicyEnforced    = $true
 
             ServerName                     = $Node.ServerName
