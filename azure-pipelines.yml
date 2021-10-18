@@ -168,7 +168,6 @@ stages:
                   'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
                   # Group 2
                   'tests/Integration/DSC_SqlAgentAlert.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServerNetwork.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlLogin.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
