@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - BREAKING CHANGE: Updated class DSC_DatabaseObjectPermission.
       - Changed Permission from an array to a string.
       - Updated Permission to a key property.
+      - Updated Integration Tests to test permission grants on multiple objects.
 
 ## [15.2.0] - 2021-09-01
 

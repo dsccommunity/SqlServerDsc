@@ -34,7 +34,7 @@ else
                 SchemaName      = 'dbo'
                 TableName       = 'Table1'
 
-                GetQuery        = @'
+                TableGetQuery        = @'
 select b.name + '.' + a.name As ObjectName
 from [$(DatabaseName)].sys.objects a
 inner join [$(DatabaseName)].sys.schemas b
@@ -43,7 +43,7 @@ where a.name = '$(TableName)'
 FOR JSON AUTO
 '@
 
-                TestQuery       = @'
+                TableTestQuery       = @'
 if (select count(name) from [$(DatabaseName)].sys.objects where name = '$(TableName)') = 0
 BEGIN
     RAISERROR ('Did not find table [$(TableName)] in database [$(DatabaseName)].', 16, 1)
@@ -54,10 +54,42 @@ BEGIN
 END
 '@
 
-                SetQuery        = @'
-CREATE TABLE [$(DatabaseName)].[dbo].[$(TableName)](
+                TableSetQuery        = @'
+CREATE TABLE [$(DatabaseName)].[$(SchemaName)].[$(TableName)](
     [Name] [nchar](10) NULL
 ) ON [PRIMARY]
+'@
+
+                ProcedureName       = 'Procedure1'
+
+                ProcedureGetQuery        = @'
+select b.name + '.' + a.name As ObjectName
+from [$(DatabaseName)].sys.objects a
+inner join [$(DatabaseName)].sys.schemas b
+    on a.schema_id = b.schema_id
+where a.name = '$(ProcedureName)'
+FOR JSON AUTO
+'@
+
+                ProcedureTestQuery       = @'
+if (select count(name) from [$(DatabaseName)].sys.objects where name = '$(ProcedureName)') = 0
+BEGIN
+    RAISERROR ('Did not find procedure [$(ProcedureName)] in database [$(DatabaseName)].', 16, 1)
+END
+ELSE
+BEGIN
+    PRINT 'Found procedure [$(ProcedureName)] in database [$(DatabaseName)].'
+END
+'@
+
+                ProcedureSetQuery        = @'
+USE [$(DatabaseName)]
+GO
+CREATE PROCEDURE [$(SchemaName)].[$(ProcedureName)]
+AS
+BEGIN
+    SELECT @@SERVERNAME
+END
 '@
 
             }
@@ -67,7 +99,7 @@ CREATE TABLE [$(DatabaseName)].[dbo].[$(TableName)](
 
 <#
     .SYNOPSIS
-        Create a table in the database to use for the tests.
+        Create a table and a procedure in the database to use for the tests.
 #>
 Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Config
 {
@@ -80,12 +112,34 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Config
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
 
-            GetQuery             = $Node.GetQuery
-            TestQuery            = $Node.TestQuery
-            SetQuery             = $Node.SetQuery
+            GetQuery             = $Node.TableGetQuery
+            TestQuery            = $Node.TableTestQuery
+            SetQuery             = $Node.TableSetQuery
             QueryTimeout         = 30
             Variable             = @(
                 ('TableName={0}' -f $Node.TableName)
+                ('DatabaseName={0}' -f $Node.DatabaseName)
+            )
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @(
+                    $Node.Username,
+                    (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
+                )
+        }
+
+        SqlScriptQuery 'CreateProcedure'
+        {
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+
+            GetQuery             = $Node.ProcedureGetQuery
+            TestQuery            = $Node.ProcedureTestQuery
+            SetQuery             = $Node.ProcedureSetQuery
+            QueryTimeout         = 30
+            Variable             = @(
+                ('ProcedureName={0}' -f $Node.ProcedureName)
                 ('DatabaseName={0}' -f $Node.DatabaseName)
             )
 
@@ -257,6 +311,31 @@ Configuration DSC_SqlDatabaseObjectPermission_Multiple_Grant_Config
                 {
                     State      = 'Deny'
                     Permission = 'Alter'
+                }
+            )
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @(
+                    $Node.UserName,
+                    (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
+                )
+        }
+
+        SqlDatabaseObjectPermission 'Integration_Test_Compile'
+        {
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            DatabaseName         = $Node.DatabaseName
+            SchemaName           = $Node.SchemaName
+            ObjectName           = $Node.ProcedureName
+            ObjectType           = 'Procedure'
+            Name                 = $Node.User1_Name
+            Permission           = @(
+                DSC_DatabaseObjectPermission
+                {
+                    State      = 'Grant'
+                    Permission = 'Execute'
                 }
             )
 
