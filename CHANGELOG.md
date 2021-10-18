@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update unit tests to run on the VM image `windows-2022`.
   - Update integration tests to run both on Windows Server 2019 and Windows
     Server 2022 ([issue #1713](https://github.com/dsccommunity/SqlServerDsc/issues/1713)).
+  - Switched to a new Linux build worker for the pipeline ([issue #1729](https://github.com/dsccommunity/SqlServerDsc/issues/1729)).
 - SqlSetup
   - The helper function `Connect-SqlAnalysis` was using `LoadWithPartial()`
     to load the assembly _Microsoft.AnalysisServices_. On a node where multiple

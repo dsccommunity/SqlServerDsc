@@ -23,7 +23,7 @@ stages:
       - job: Package_Module
         displayName: 'Package Module'
         pool:
-          vmImage: 'ubuntu 16.04'
+          vmImage: 'ubuntu 18.04'
         steps:
           - task: GitVersion@5
             name: gitVersion
@@ -208,7 +208,7 @@ stages:
         displayName: 'Publish Code Coverage'
         dependsOn: Test_Unit
         pool:
-          vmImage: 'ubuntu 16.04'
+          vmImage: 'ubuntu 18.04'
         timeoutInMinutes: 0
         steps:
           - pwsh: |
@@ -254,7 +254,7 @@ stages:
       - job: Deploy_Module
         displayName: 'Deploy Module'
         pool:
-          vmImage: 'ubuntu 16.04'
+          vmImage: 'ubuntu 18.04'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
