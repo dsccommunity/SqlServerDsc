@@ -60,7 +60,8 @@ CREATE TABLE [$(DatabaseName)].[$(SchemaName)].[$(TableName)](
 ) ON [PRIMARY]
 '@
 
-                ProcedureName       = 'Procedure1'
+                ProcedureName1       = 'Procedure1'
+                ProcedureName2       = 'Procedure2'
 
                 ProcedureGetQuery        = @'
 select b.name + '.' + a.name As ObjectName
@@ -129,7 +130,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Config
                 )
         }
 
-        SqlScriptQuery 'CreateProcedure'
+        SqlScriptQuery 'CreateProcedure1'
         {
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
@@ -139,7 +140,29 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Config
             SetQuery             = $Node.ProcedureSetQuery
             QueryTimeout         = 30
             Variable             = @(
-                ('ProcedureName={0}' -f $Node.ProcedureName)
+                ('ProcedureName={0}' -f $Node.ProcedureName1)
+                ('DatabaseName={0}' -f $Node.DatabaseName)
+            )
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @(
+                    $Node.Username,
+                    (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
+                )
+        }
+
+        SqlScriptQuery 'CreateProcedure2'
+        {
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+
+            GetQuery             = $Node.ProcedureGetQuery
+            TestQuery            = $Node.ProcedureTestQuery
+            SetQuery             = $Node.ProcedureSetQuery
+            QueryTimeout         = 30
+            Variable             = @(
+                ('ProcedureName={0}' -f $Node.ProcedureName2)
                 ('DatabaseName={0}' -f $Node.DatabaseName)
             )
 
@@ -322,13 +345,38 @@ Configuration DSC_SqlDatabaseObjectPermission_Multiple_Grant_Config
                 )
         }
 
-        SqlDatabaseObjectPermission 'Integration_Test_Compile'
+        SqlDatabaseObjectPermission 'Integration_Test_Compile1'
         {
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
             DatabaseName         = $Node.DatabaseName
             SchemaName           = $Node.SchemaName
-            ObjectName           = $Node.ProcedureName
+            ObjectName           = $Node.ProcedureName1
+            ObjectType           = 'Procedure'
+            Name                 = $Node.User1_Name
+            Permission           = @(
+                DSC_DatabaseObjectPermission
+                {
+                    State      = 'Grant'
+                    Permission = 'Execute'
+                }
+            )
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @(
+                    $Node.UserName,
+                    (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
+                )
+        }
+
+        SqlDatabaseObjectPermission 'Integration_Test_Compile2'
+        {
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            DatabaseName         = $Node.DatabaseName
+            SchemaName           = $Node.SchemaName
+            ObjectName           = $Node.ProcedureName2
             ObjectType           = 'Procedure'
             Name                 = $Node.User1_Name
             Permission           = @(
