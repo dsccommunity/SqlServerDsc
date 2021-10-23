@@ -5,6 +5,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- The deprecated DSC resource SqlDatabaseOwner have been removed _(and replaced_
+  _by a property in [**SqlDatabase**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqldatabase))_
+  ([issue #1725](https://github.com/dsccommunity/SqlServerDsc/issues/1725)).
+- The deprecated DSC resource SqlDatabaseRecoveryModel have been removed _(and_
+  _replaced by a property in [**SqlDatabase**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqldatabase))_
+  ([issue #1725](https://github.com/dsccommunity/SqlServerDsc/issues/1725)).
+- The deprecated DSC resource SqlServerEndpointState have been removed _(and_
+  _replaced by a property in [**SqlEndpoint**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlendpoint))_
+  ([issue #1725](https://github.com/dsccommunity/SqlServerDsc/issues/1725)).
+- The deprecated DSC resource SqlServerNetwork have been removed _(and replaced by_
+  _[**SqlProtocol**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocol)_
+  _and [**SqlProtocolTcpIp**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocoltcpip))_
+  ([issue #1725](https://github.com/dsccommunity/SqlServerDsc/issues/1725)).
+
 ### Fixed
 
 - SqlDatabaseObjectPermission
@@ -32,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update unit tests to run on the VM image `windows-2022`.
   - Update integration tests to run both on Windows Server 2019 and Windows
     Server 2022 ([issue #1713](https://github.com/dsccommunity/SqlServerDsc/issues/1713)).
+  - Switched to a new Linux build worker for the pipeline ([issue #1729](https://github.com/dsccommunity/SqlServerDsc/issues/1729)).
 - SqlSetup
   - The helper function `Connect-SqlAnalysis` was using `LoadWithPartial()`
     to load the assembly _Microsoft.AnalysisServices_. On a node where multiple

@@ -78,11 +78,6 @@ Pester:
   OutputFormat: NUnitXML
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
-    # Deprecated resources
-    - source/DSCResources/MSFT_SqlServerNetwork
-    - source/DSCResources/MSFT_SqlDatabaseOwner
-    - source/DSCResources/MSFT_SqlDatabaseRecoveryModel
-    - source/DSCResources/MSFT_SqlServerEndpointState
   Script:
     - tests/Unit
   ExcludeTag:
@@ -100,18 +95,10 @@ DscTest:
   Tag:
   ExcludeSourceFile:
     - output
-    # Deprecated resources
-    - source/DSCResources/MSFT_SqlServerNetwork
-    - source/DSCResources/MSFT_SqlDatabaseOwner
-    - source/DSCResources/MSFT_SqlDatabaseRecoveryModel
-    - source/DSCResources/MSFT_SqlServerEndpointState
+
   ExcludeModuleFile:
     - Modules/DscResource.Common
-    # Deprecated resources
-    - DSCResources/MSFT_SqlServerNetwork
-    - DSCResources/MSFT_SqlDatabaseOwner
-    - DSCResources/MSFT_SqlDatabaseRecoveryModel
-    - DSCResources/MSFT_SqlServerEndpointState
+
   MainGitBranch: main
 
 ####################################################
