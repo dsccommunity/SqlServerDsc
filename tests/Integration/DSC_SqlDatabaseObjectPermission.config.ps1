@@ -100,9 +100,9 @@ END
 
 <#
     .SYNOPSIS
-        Create a table and a procedure in the database to use for the tests.
+        Create a table in the database to use for the tests.
 #>
-Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Config
+Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Table1_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -129,7 +129,19 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Config
                     (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
                 )
         }
+    }
+}
 
+<#
+    .SYNOPSIS
+        Create a procedure in the database to use for the tests.
+#>
+Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Procedure1_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
         SqlScriptQuery 'CreateProcedure1'
         {
             ServerName           = $Node.ServerName
@@ -151,7 +163,19 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Config
                     (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
                 )
         }
+    }
+}
 
+<#
+    .SYNOPSIS
+        Create a procedure in the database to use for the tests.
+#>
+Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Procedure2_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
         SqlScriptQuery 'CreateProcedure2'
         {
             ServerName           = $Node.ServerName
