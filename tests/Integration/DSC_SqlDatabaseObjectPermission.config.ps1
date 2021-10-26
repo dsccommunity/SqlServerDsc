@@ -118,8 +118,9 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Table1_Config
             SetQuery             = $Node.TableSetQuery
             QueryTimeout         = 30
             Variable             = @(
-                ('TableName={0}' -f $Node.TableName)
                 ('DatabaseName={0}' -f $Node.DatabaseName)
+                ('SchemaName={0}' -f $Node.SchemaName)
+                ('TableName={0}' -f $Node.TableName)
             )
 
             PsDscRunAsCredential = New-Object `
@@ -152,8 +153,9 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Procedure1_Config
             SetQuery             = $Node.ProcedureSetQuery
             QueryTimeout         = 30
             Variable             = @(
-                ('ProcedureName={0}' -f $Node.ProcedureName1)
                 ('DatabaseName={0}' -f $Node.DatabaseName)
+                ('SchemaName={0}' -f $Node.SchemaName)
+                ('ProcedureName={0}' -f $Node.ProcedureName1)
             )
 
             PsDscRunAsCredential = New-Object `
@@ -186,8 +188,9 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Procedure2_Config
             SetQuery             = $Node.ProcedureSetQuery
             QueryTimeout         = 30
             Variable             = @(
-                ('ProcedureName={0}' -f $Node.ProcedureName2)
                 ('DatabaseName={0}' -f $Node.DatabaseName)
+                ('SchemaName={0}' -f $Node.SchemaName)
+                ('ProcedureName={0}' -f $Node.ProcedureName2)
             )
 
             PsDscRunAsCredential = New-Object `
