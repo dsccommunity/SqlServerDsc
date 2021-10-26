@@ -379,7 +379,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Multiple_Grant_Config
             DatabaseName         = $Node.DatabaseName
             SchemaName           = $Node.SchemaName
             ObjectName           = $Node.ProcedureName1
-            ObjectType           = 'Procedure'
+            ObjectType           = 'StoredProcedure'
             Name                 = $Node.User1_Name
             Permission           = @(
                 DSC_DatabaseObjectPermission
@@ -404,7 +404,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Multiple_Grant_Config
             DatabaseName         = $Node.DatabaseName
             SchemaName           = $Node.SchemaName
             ObjectName           = $Node.ProcedureName2
-            ObjectType           = 'Procedure'
+            ObjectType           = 'StoredProcedure'
             Name                 = $Node.User1_Name
             Permission           = @(
                 DSC_DatabaseObjectPermission
