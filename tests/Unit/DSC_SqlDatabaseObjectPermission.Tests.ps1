@@ -158,7 +158,17 @@ try
                         -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                         -Property @{
                             State      = 'Grant'
-                            Permission = @('Select', 'Update')
+                            Permission = 'Select'
+                            Ensure     = '' # Must be empty string to hit a line in the code.
+                        } `
+                        -ClientOnly
+
+                    $cimInstancePermissionCollection += New-CimInstance `
+                        -ClassName 'DSC_DatabaseObjectPermission' `
+                        -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
+                        -Property @{
+                            State      = 'Grant'
+                            Permission = 'Update'
                             Ensure     = '' # Must be empty string to hit a line in the code.
                         } `
                         -ClientOnly
@@ -189,12 +199,14 @@ try
                 It 'Should return the correct metadata for the permission state' {
                     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                    $getTargetResourceResult.Permission | Should -HaveCount 1
+                    $getTargetResourceResult.Permission | Should -HaveCount 2
                     $getTargetResourceResult.Permission[0] | Should -BeOfType 'CimInstance'
+                    $getTargetResourceResult.Permission[1] | Should -BeOfType 'CimInstance'
 
                     $grantPermission = $getTargetResourceResult.Permission | Where-Object -FilterScript { $_.State -eq 'Grant' }
                     $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
+                    $grantPermission.Ensure[0] | Should -Be 'Present'
+                    $grantPermission.Ensure[1] | Should -Be 'Present'
                     $grantPermission.Permission | Should -HaveCount 2
                     $grantPermission.Permission | Should -Contain @('Select')
                     $grantPermission.Permission | Should -Contain @('Update')
@@ -216,7 +228,7 @@ try
                             -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                             -Property @{
                                 State      = 'Grant'
-                                Permission = @('Delete')
+                                Permission = 'Delete'
                                 Ensure     = 'Present'
                             } `
                             -ClientOnly
@@ -272,7 +284,7 @@ try
                             -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                             -Property @{
                                 State      = 'Deny'
-                                Permission = @('Delete')
+                                Permission = 'Delete'
                                 Ensure     = 'Present'
                             } `
                             -ClientOnly
@@ -328,7 +340,7 @@ try
                             -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                             -Property @{
                                 State      = 'Grant'
-                                Permission = @('Select')
+                                Permission = 'Select'
                                 Ensure     = 'Absent'
                             } `
                             -ClientOnly
@@ -377,9 +389,14 @@ try
             BeforeAll {
                 $cimInstancePermissionCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection`1[Microsoft.Management.Infrastructure.CimInstance]'
 
+                $cimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
+                    -Permission 'Select' `
+                    -PermissionState 'Grant' `
+                    -Ensure 'Present'
+
                 # Using all lower-case on 'update' intentionally.
                 $cimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                    -Permission @('Select', 'update') `
+                    -Permission 'update' `
                     -PermissionState 'Grant' `
                     -Ensure 'Present'
 
@@ -445,13 +462,17 @@ try
                     # Create an empty collection of CimInstance that we can return.
                     $cimInstancePermissionCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection`1[Microsoft.Management.Infrastructure.CimInstance]'
 
+                    $cimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
+                        -Permission 'Select' `
+                        -PermissionState 'Grant'
+
                     <#
                         Using all lower-case on 'update' intentionally.
                         Intentionally not providing the CIM instance property
                         'Ensure' on this CIM instance.
                     #>
                     $cimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                        -Permission @('Select', 'update') `
+                        -Permission 'update' `
                         -PermissionState 'Grant'
 
                     <#
@@ -463,13 +484,13 @@ try
                         -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                         -Property @{
                             State      = 'Deny'
-                            Permission = @('Delete')
+                            Permission = 'Delete'
                             Ensure     = '' # Must be empty string to hit a line in the code.
                         } `
                         -ClientOnly
 
                     $cimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                        -Permission @('Drop') `
+                        -Permission 'Drop' `
                         -PermissionState 'GrantWithGrant' `
                         -Ensure 'Absent'
 
@@ -507,14 +528,16 @@ try
                     $comparedReturnValue.InDesiredState | Should -BeTrue
 
                     # Actual permissions
-                    $comparedReturnValue.Actual | Should -HaveCount 3
+                    $comparedReturnValue.Actual | Should -HaveCount 4
                     $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
                     $comparedReturnValue.Actual[1] | Should -BeOfType 'CimInstance'
                     $comparedReturnValue.Actual[2] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Actual[3] | Should -BeOfType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Grant' }
                     $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
+                    $grantPermission.Ensure[0] | Should -Be 'Present'
+                    $grantPermission.Ensure[1] | Should -Be 'Present'
                     $grantPermission.Permission | Should -HaveCount 2
                     $grantPermission.Permission | Should -Contain @('Select')
                     $grantPermission.Permission | Should -Contain @('Update')
@@ -532,14 +555,16 @@ try
                     $grantPermission.Permission | Should -Contain @('Drop')
 
                     # Expected permissions
-                    $comparedReturnValue.Expected | Should -HaveCount 3
+                    $comparedReturnValue.Expected | Should -HaveCount 4
                     $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
                     $comparedReturnValue.Expected[1] | Should -BeOfType 'CimInstance'
                     $comparedReturnValue.Expected[2] | Should -BeOfType 'CimInstance'
+                    $comparedReturnValue.Expected[3] | Should -BeOfType 'CimInstance'
 
                     $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
                     $grantPermission | Should -Not -BeNullOrEmpty
-                    $grantPermission.Ensure | Should -Be 'Present'
+                    $grantPermission.Ensure[0] | Should -Be 'Present'
+                    $grantPermission.Ensure[1] | Should -Be 'Present'
                     $grantPermission.Permission | Should -HaveCount 2
                     $grantPermission.Permission | Should -Contain @('Select')
                     $grantPermission.Permission | Should -Contain @('Update')
@@ -566,19 +591,24 @@ try
                         # Holds the current permissions.
                         $currentCimInstancePermissionCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection`1[Microsoft.Management.Infrastructure.CimInstance]'
 
+                        $currentCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
+                            -Permission 'Select' `
+                            -PermissionState 'Grant' `
+                            -Ensure 'Present'
+
                         # Using all lower-case on 'update' intentionally.
                         $currentCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                            -Permission @('Select', 'update') `
+                            -Permission 'update' `
                             -PermissionState 'Grant' `
                             -Ensure 'Present'
 
                         $currentCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                            -Permission @('Delete') `
+                            -Permission 'Delete' `
                             -PermissionState 'Deny' `
                             -Ensure 'Present'
 
                         $currentCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                            -Permission @('Drop') `
+                            -Permission 'Drop' `
                             -PermissionState 'GrantWithGrant' `
                             -Ensure 'Present'
 
@@ -618,15 +648,17 @@ try
                         $comparedReturnValue = $compareTargetResourceStateResult | Where-Object -FilterScript { $_.ParameterName -eq 'Permission' }
                         $comparedReturnValue | Should -Not -BeNullOrEmpty
 
-                        $comparedReturnValue.Actual | Should -HaveCount 3
+                        $comparedReturnValue.Actual | Should -HaveCount 4
                         $comparedReturnValue.Actual[0] | Should -BeOfType 'CimInstance'
                         $comparedReturnValue.Actual[1] | Should -BeOfType 'CimInstance'
                         $comparedReturnValue.Actual[2] | Should -BeOfType 'CimInstance'
+                        $comparedReturnValue.Actual[3] | Should -BeOfType 'CimInstance'
 
                         # Actual permissions
                         $grantPermission = $comparedReturnValue.Actual | Where-Object -FilterScript { $_.State -eq 'Grant' }
                         $grantPermission | Should -Not -BeNullOrEmpty
-                        $grantPermission.Ensure | Should -Be 'Present'
+                        $grantPermission.Ensure[0] | Should -Be 'Present'
+                        $grantPermission.Ensure[1] | Should -Be 'Present'
                         $grantPermission.Permission | Should -HaveCount 2
                         $grantPermission.Permission | Should -Contain @('Select')
                         $grantPermission.Permission | Should -Contain @('Update')
@@ -651,19 +683,24 @@ try
                             # Holds the desired permissions.
                             $desiredCimInstancePermissionCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection`1[Microsoft.Management.Infrastructure.CimInstance]'
 
+                            $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
+                                -Permission 'Select' `
+                                -PermissionState 'Grant' `
+                                -Ensure 'Absent'
+
                             # Using all lower-case on 'update' intentionally.
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Select', 'update') `
+                                -Permission 'update' `
                                 -PermissionState 'Grant' `
                                 -Ensure 'Absent'
 
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Delete') `
+                                -Permission 'Delete' `
                                 -PermissionState 'Deny' `
                                 -Ensure 'Present'
 
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Drop') `
+                                -Permission 'Drop' `
                                 -PermissionState 'GrantWithGrant' `
                                 -Ensure 'Present'
                         }
@@ -687,15 +724,17 @@ try
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
-                            $comparedReturnValue.Expected | Should -HaveCount 3
+                            $comparedReturnValue.Expected | Should -HaveCount 4
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
                             $comparedReturnValue.Expected[1] | Should -BeOfType 'CimInstance'
                             $comparedReturnValue.Expected[2] | Should -BeOfType 'CimInstance'
+                            $comparedReturnValue.Expected[3] | Should -BeOfType 'CimInstance'
 
                             # Expected permissions
                             $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
-                            $grantPermission.Ensure | Should -Be 'Absent'
+                            $grantPermission.Ensure[0] | Should -Be 'Absent'
+                            $grantPermission.Ensure[1] | Should -Be 'Absent'
                             $grantPermission.Permission | Should -HaveCount 2
                             $grantPermission.Permission | Should -Contain @('Select')
                             $grantPermission.Permission | Should -Contain @('Update')
@@ -721,19 +760,24 @@ try
                             # Holds the desired permissions.
                             $desiredCimInstancePermissionCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection`1[Microsoft.Management.Infrastructure.CimInstance]'
 
+                            $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
+                                -Permission 'Select' `
+                                -PermissionState 'Grant' `
+                                -Ensure 'Present'
+
                             # Using all lower-case on 'update' intentionally.
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Select', 'update') `
+                                -Permission 'update' `
                                 -PermissionState 'Grant' `
                                 -Ensure 'Present'
 
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Delete') `
+                                -Permission 'Delete' `
                                 -PermissionState 'Deny' `
                                 -Ensure 'Present'
 
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Drop') `
+                                -Permission 'Drop' `
                                 -PermissionState 'GrantWithGrant' `
                                 -Ensure 'Absent'
                         }
@@ -757,15 +801,17 @@ try
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
-                            $comparedReturnValue.Expected | Should -HaveCount 3
+                            $comparedReturnValue.Expected | Should -HaveCount 4
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
                             $comparedReturnValue.Expected[1] | Should -BeOfType 'CimInstance'
                             $comparedReturnValue.Expected[2] | Should -BeOfType 'CimInstance'
+                            $comparedReturnValue.Expected[3] | Should -BeOfType 'CimInstance'
 
                             # Expected permissions
                             $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
-                            $grantPermission.Ensure | Should -Be 'Present'
+                            $grantPermission.Ensure[0] | Should -Be 'Present'
+                            $grantPermission.Ensure[1] | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 2
                             $grantPermission.Permission | Should -Contain @('Select')
                             $grantPermission.Permission | Should -Contain @('Update')
@@ -791,19 +837,24 @@ try
                             # Holds the desired permissions.
                             $desiredCimInstancePermissionCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection`1[Microsoft.Management.Infrastructure.CimInstance]'
 
+                            $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
+                                -Permission 'Select' `
+                                -PermissionState 'Grant' `
+                                -Ensure 'Present'
+
                             # Using all lower-case on 'update' intentionally.
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Select', 'update') `
+                                -Permission 'update' `
                                 -PermissionState 'Grant' `
                                 -Ensure 'Present'
 
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Delete') `
+                                -Permission 'Delete' `
                                 -PermissionState 'Deny' `
                                 -Ensure 'Absent'
 
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Drop') `
+                                -Permission 'Drop' `
                                 -PermissionState 'GrantWithGrant' `
                                 -Ensure 'Present'
                         }
@@ -827,15 +878,17 @@ try
                             $comparedReturnValue | Should -Not -BeNullOrEmpty
                             $comparedReturnValue.InDesiredState | Should -BeFalse
 
-                            $comparedReturnValue.Expected | Should -HaveCount 3
+                            $comparedReturnValue.Expected | Should -HaveCount 4
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
                             $comparedReturnValue.Expected[1] | Should -BeOfType 'CimInstance'
                             $comparedReturnValue.Expected[2] | Should -BeOfType 'CimInstance'
+                            $comparedReturnValue.Expected[3] | Should -BeOfType 'CimInstance'
 
                             # Expected permissions
                             $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
-                            $grantPermission.Ensure | Should -Be 'Present'
+                            $grantPermission.Ensure[0] | Should -Be 'Present'
+                            $grantPermission.Ensure[1] | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 2
                             $grantPermission.Permission | Should -Contain @('Select')
                             $grantPermission.Permission | Should -Contain @('Update')
@@ -863,7 +916,7 @@ try
 
                             # Using all lower-case on 'update' intentionally.
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('CreateTable') `
+                                -Permission 'CreateTable' `
                                 -PermissionState 'Grant' `
                                 -Ensure 'Present'
                         }
@@ -908,7 +961,7 @@ try
 
                             # Using all lower-case on 'update' intentionally.
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('CreateTable') `
+                                -Permission 'CreateTable' `
                                 -PermissionState 'GrantWithGrant' `
                                 -Ensure 'Present'
                         }
@@ -953,7 +1006,7 @@ try
 
                             # Using all lower-case on 'update' intentionally.
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('CreateTable') `
+                                -Permission 'CreateTable' `
                                 -PermissionState 'Deny' `
                                 -Ensure 'Present'
                         }
@@ -1014,9 +1067,14 @@ try
                             # Holds the desired permissions.
                             $desiredCimInstancePermissionCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection`1[Microsoft.Management.Infrastructure.CimInstance]'
 
+                            $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
+                                -Permission 'Select' `
+                                -PermissionState 'Grant' `
+                                -Ensure 'Present'
+
                             # Using all lower-case on 'update' intentionally.
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Select', 'update') `
+                                -Permission 'update' `
                                 -PermissionState 'Grant' `
                                 -Ensure 'Present'
                         }
@@ -1044,12 +1102,14 @@ try
                             $comparedReturnValue.Actual | Should -BeNullOrEmpty
 
                             # Expected permissions
-                            $comparedReturnValue.Expected | Should -HaveCount 1
+                            $comparedReturnValue.Expected | Should -HaveCount 2
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
+                            $comparedReturnValue.Expected[1] | Should -BeOfType 'CimInstance'
 
                             $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Grant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
-                            $grantPermission.Ensure | Should -Be 'Present'
+                            $grantPermission.Ensure[0] | Should -Be 'Present'
+                            $grantPermission.Ensure[1] | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 2
                             $grantPermission.Permission | Should -Contain @('Select')
                             $grantPermission.Permission | Should -Contain @('Update')
@@ -1079,9 +1139,14 @@ try
                             # Holds the desired permissions.
                             $desiredCimInstancePermissionCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection`1[Microsoft.Management.Infrastructure.CimInstance]'
 
+                            $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
+                                -Permission 'Select' `
+                                -PermissionState 'GrantWithGrant' `
+                                -Ensure 'Present'
+
                             # Using all lower-case on 'update' intentionally.
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Select', 'update') `
+                                -Permission 'update' `
                                 -PermissionState 'GrantWithGrant' `
                                 -Ensure 'Present'
                         }
@@ -1109,12 +1174,14 @@ try
                             $comparedReturnValue.Actual | Should -BeNullOrEmpty
 
                             # Expected permissions
-                            $comparedReturnValue.Expected | Should -HaveCount 1
+                            $comparedReturnValue.Expected | Should -HaveCount 2
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
+                            $comparedReturnValue.Expected[1] | Should -BeOfType 'CimInstance'
 
                             $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'GrantWithGrant' }
                             $grantPermission | Should -Not -BeNullOrEmpty
-                            $grantPermission.Ensure | Should -Be 'Present'
+                            $grantPermission.Ensure[0] | Should -Be 'Present'
+                            $grantPermission.Ensure[1] | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 2
                             $grantPermission.Permission | Should -Contain @('Select')
                             $grantPermission.Permission | Should -Contain @('Update')
@@ -1144,9 +1211,14 @@ try
                             # Holds the desired permissions.
                             $desiredCimInstancePermissionCollection = New-Object -TypeName 'System.Collections.ObjectModel.Collection`1[Microsoft.Management.Infrastructure.CimInstance]'
 
+                            $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
+                                -Permission 'Select' `
+                                -PermissionState 'Deny' `
+                                -Ensure 'Present'
+
                             # Using all lower-case on 'update' intentionally.
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Select', 'update') `
+                                -Permission 'update' `
                                 -PermissionState 'Deny' `
                                 -Ensure 'Present'
                         }
@@ -1174,12 +1246,14 @@ try
                             $comparedReturnValue.Actual | Should -BeNullOrEmpty
 
                             # Expected permissions
-                            $comparedReturnValue.Expected | Should -HaveCount 1
+                            $comparedReturnValue.Expected | Should -HaveCount 2
                             $comparedReturnValue.Expected[0] | Should -BeOfType 'CimInstance'
+                            $comparedReturnValue.Expected[1] | Should -BeOfType 'CimInstance'
 
                             $grantPermission = $comparedReturnValue.Expected | Where-Object -FilterScript { $_.State -eq 'Deny' }
                             $grantPermission | Should -Not -BeNullOrEmpty
-                            $grantPermission.Ensure | Should -Be 'Present'
+                            $grantPermission.Ensure[0] | Should -Be 'Present'
+                            $grantPermission.Ensure[1] | Should -Be 'Present'
                             $grantPermission.Permission | Should -HaveCount 2
                             $grantPermission.Permission | Should -Contain @('Select')
                             $grantPermission.Permission | Should -Contain @('Update')
@@ -1197,7 +1271,7 @@ try
 
                             # Using all lower-case on 'update' intentionally.
                             $currentCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Select') `
+                                -Permission 'Select' `
                                 -PermissionState 'Grant' `
                                 -Ensure 'Present'
 
@@ -1219,7 +1293,7 @@ try
 
                             # Using all lower-case on 'update' intentionally.
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Update') `
+                                -Permission 'Update' `
                                 -PermissionState 'Grant' `
                                 -Ensure 'Present'
                         }
@@ -1274,7 +1348,7 @@ try
 
                             # Using all lower-case on 'update' intentionally.
                             $currentCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Select') `
+                                -Permission 'Select' `
                                 -PermissionState 'GrantWithGrant' `
                                 -Ensure 'Present'
 
@@ -1296,7 +1370,7 @@ try
 
                             # Using all lower-case on 'update' intentionally.
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Update') `
+                                -Permission 'Update' `
                                 -PermissionState 'GrantWithGrant' `
                                 -Ensure 'Present'
                         }
@@ -1351,7 +1425,7 @@ try
 
                             # Using all lower-case on 'update' intentionally.
                             $currentCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Select') `
+                                -Permission 'Select' `
                                 -PermissionState 'Deny' `
                                 -Ensure 'Present'
 
@@ -1373,7 +1447,7 @@ try
 
                             # Using all lower-case on 'update' intentionally.
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Update') `
+                                -Permission 'Update' `
                                 -PermissionState 'Deny' `
                                 -Ensure 'Present'
                         }
@@ -1430,7 +1504,7 @@ try
 
                             # Using all lower-case on 'update' intentionally.
                             $currentCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Update') `
+                                -Permission 'Update' `
                                 -PermissionState 'Deny' `
                                 -Ensure 'Present'
 
@@ -1452,7 +1526,7 @@ try
 
                             # Using all lower-case on 'update' intentionally.
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Select') `
+                                -Permission 'Select' `
                                 -PermissionState 'Grant' `
                                 -Ensure 'Present'
                         }
@@ -1507,7 +1581,7 @@ try
 
                             # Using all lower-case on 'update' intentionally.
                             $currentCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Update') `
+                                -Permission 'Update' `
                                 -PermissionState 'Deny' `
                                 -Ensure 'Present'
 
@@ -1529,7 +1603,7 @@ try
 
                             # Using all lower-case on 'update' intentionally.
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Select') `
+                                -Permission 'Select' `
                                 -PermissionState 'GrantWithGrant' `
                                 -Ensure 'Present'
                         }
@@ -1584,7 +1658,7 @@ try
 
                             # Using all lower-case on 'update' intentionally.
                             $currentCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Select') `
+                                -Permission 'Select' `
                                 -PermissionState 'Grant' `
                                 -Ensure 'Present'
 
@@ -1606,7 +1680,7 @@ try
 
                             # Using all lower-case on 'update' intentionally.
                             $desiredCimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
-                                -Permission @('Update') `
+                                -Permission 'Update' `
                                 -PermissionState 'Deny' `
                                 -Ensure 'Present'
                         }
@@ -1687,7 +1761,17 @@ try
                         -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                         -Property @{
                             State      = 'Grant'
-                            Permission = @('Select', 'Update')
+                            Permission = 'Select'
+                            Ensure     = '' # Must be empty string to hit a line in the code.
+                        } `
+                        -ClientOnly
+
+                    $cimInstancePermissionCollection += New-CimInstance `
+                        -ClassName 'DSC_DatabaseObjectPermission' `
+                        -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
+                        -Property @{
+                            State      = 'Grant'
+                            Permission = 'Update'
                             Ensure     = '' # Must be empty string to hit a line in the code.
                         } `
                         -ClientOnly
@@ -1736,7 +1820,17 @@ try
                             -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                             -Property @{
                                 State      = 'Grant'
-                                Permission = @('Select', 'Update')
+                                Permission = 'Select'
+                                Ensure     = '' # Must be empty string to hit a line in the code.
+                            } `
+                            -ClientOnly
+
+                        $cimInstancePermissionCollection += New-CimInstance `
+                            -ClassName 'DSC_DatabaseObjectPermission' `
+                            -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
+                            -Property @{
+                                State      = 'Grant'
+                                Permission = 'Update'
                                 Ensure     = '' # Must be empty string to hit a line in the code.
                             } `
                             -ClientOnly
@@ -1836,7 +1930,7 @@ try
                                 -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                                 -Property @{
                                     State      = 'Grant'
-                                    Permission = @('Delete')
+                                    Permission = 'Delete'
                                     Ensure     = 'Present'
                                 } `
                                 -ClientOnly
@@ -1962,7 +2056,7 @@ try
                                 -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                                 -Property @{
                                     State      = 'GrantWithGrant'
-                                    Permission = @('Delete')
+                                    Permission = 'Delete'
                                     Ensure     = 'Present'
                                 } `
                                 -ClientOnly
@@ -2027,7 +2121,7 @@ try
                                 -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                                 -Property @{
                                     State      = 'Deny'
-                                    Permission = @('Delete')
+                                    Permission = 'Delete'
                                     Ensure     = 'Present'
                                 } `
                                 -ClientOnly
@@ -2095,7 +2189,7 @@ try
                                 -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                                 -Property @{
                                     State      = 'Grant'
-                                    Permission = @('Delete')
+                                    Permission = 'Delete'
                                     Ensure     = 'Present'
                                 } `
                                 -ClientOnly
@@ -2105,7 +2199,7 @@ try
                                 -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                                 -Property @{
                                     State      = 'Deny'
-                                    Permission = @('Delete')
+                                    Permission = 'Delete'
                                     Ensure     = 'Present'
                                 } `
                                 -ClientOnly
@@ -2197,7 +2291,7 @@ try
                                 -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                                 -Property @{
                                     State      = 'Grant'
-                                    Permission = @('Delete')
+                                    Permission = 'Delete'
                                     Ensure     = 'Absent'
                                 } `
                                 -ClientOnly
@@ -2251,7 +2345,7 @@ try
                                 -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                                 -Property @{
                                     State      = 'GrantWithGrant'
-                                    Permission = @('Delete')
+                                    Permission = 'Delete'
                                     Ensure     = 'Absent'
                                 } `
                                 -ClientOnly
@@ -2304,7 +2398,7 @@ try
                                 -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                                 -Property @{
                                     State      = 'Deny'
-                                    Permission = @('Delete')
+                                    Permission = 'Delete'
                                     Ensure     = 'Absent'
                                 } `
                                 -ClientOnly
@@ -2383,7 +2477,7 @@ try
                             -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
                             -Property @{
                                 State      = 'Grant'
-                                Permission = @('Delete')
+                                Permission = 'Delete'
                                 Ensure     = 'Absent'
                             } `
                             -ClientOnly

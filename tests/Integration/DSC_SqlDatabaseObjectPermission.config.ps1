@@ -34,7 +34,7 @@ else
                 SchemaName      = 'dbo'
                 TableName       = 'Table1'
 
-                GetQuery        = @'
+                TableGetQuery        = @'
 select b.name + '.' + a.name As ObjectName
 from [$(DatabaseName)].sys.objects a
 inner join [$(DatabaseName)].sys.schemas b
@@ -43,7 +43,7 @@ where a.name = '$(TableName)'
 FOR JSON AUTO
 '@
 
-                TestQuery       = @'
+                TableTestQuery       = @'
 if (select count(name) from [$(DatabaseName)].sys.objects where name = '$(TableName)') = 0
 BEGIN
     RAISERROR ('Did not find table [$(TableName)] in database [$(DatabaseName)].', 16, 1)
@@ -54,10 +54,43 @@ BEGIN
 END
 '@
 
-                SetQuery        = @'
-CREATE TABLE [$(DatabaseName)].[dbo].[$(TableName)](
+                TableSetQuery        = @'
+CREATE TABLE [$(DatabaseName)].[$(SchemaName)].[$(TableName)](
     [Name] [nchar](10) NULL
 ) ON [PRIMARY]
+'@
+
+                ProcedureName1       = 'Procedure1'
+                ProcedureName2       = 'Procedure2'
+
+                ProcedureGetQuery        = @'
+select b.name + '.' + a.name As ObjectName
+from [$(DatabaseName)].sys.objects a
+inner join [$(DatabaseName)].sys.schemas b
+    on a.schema_id = b.schema_id
+where a.name = '$(ProcedureName)'
+FOR JSON AUTO
+'@
+
+                ProcedureTestQuery       = @'
+if (select count(name) from [$(DatabaseName)].sys.objects where name = '$(ProcedureName)') = 0
+BEGIN
+    RAISERROR ('Did not find procedure [$(ProcedureName)] in database [$(DatabaseName)].', 16, 1)
+END
+ELSE
+BEGIN
+    PRINT 'Found procedure [$(ProcedureName)] in database [$(DatabaseName)].'
+END
+'@
+
+                ProcedureSetQuery        = @'
+USE [$(DatabaseName)]
+GO
+CREATE PROCEDURE [$(SchemaName)].[$(ProcedureName)]
+AS
+BEGIN
+    SELECT @@SERVERNAME
+END
 '@
 
             }
@@ -69,7 +102,7 @@ CREATE TABLE [$(DatabaseName)].[dbo].[$(TableName)](
     .SYNOPSIS
         Create a table in the database to use for the tests.
 #>
-Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Config
+Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Table1_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -80,13 +113,84 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Config
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
 
-            GetQuery             = $Node.GetQuery
-            TestQuery            = $Node.TestQuery
-            SetQuery             = $Node.SetQuery
+            GetQuery             = $Node.TableGetQuery
+            TestQuery            = $Node.TableTestQuery
+            SetQuery             = $Node.TableSetQuery
             QueryTimeout         = 30
             Variable             = @(
-                ('TableName={0}' -f $Node.TableName)
                 ('DatabaseName={0}' -f $Node.DatabaseName)
+                ('SchemaName={0}' -f $Node.SchemaName)
+                ('TableName={0}' -f $Node.TableName)
+            )
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @(
+                    $Node.Username,
+                    (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
+                )
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Create a procedure in the database to use for the tests.
+#>
+Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Procedure1_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlScriptQuery 'CreateProcedure1'
+        {
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+
+            GetQuery             = $Node.ProcedureGetQuery
+            TestQuery            = $Node.ProcedureTestQuery
+            SetQuery             = $Node.ProcedureSetQuery
+            QueryTimeout         = 30
+            Variable             = @(
+                ('DatabaseName={0}' -f $Node.DatabaseName)
+                ('SchemaName={0}' -f $Node.SchemaName)
+                ('ProcedureName={0}' -f $Node.ProcedureName1)
+            )
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @(
+                    $Node.Username,
+                    (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
+                )
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Create a procedure in the database to use for the tests.
+#>
+Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Procedure2_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlScriptQuery 'CreateProcedure2'
+        {
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+
+            GetQuery             = $Node.ProcedureGetQuery
+            TestQuery            = $Node.ProcedureTestQuery
+            SetQuery             = $Node.ProcedureSetQuery
+            QueryTimeout         = 30
+            Variable             = @(
+                ('DatabaseName={0}' -f $Node.DatabaseName)
+                ('SchemaName={0}' -f $Node.SchemaName)
+                ('ProcedureName={0}' -f $Node.ProcedureName2)
             )
 
             PsDscRunAsCredential = New-Object `
@@ -127,7 +231,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Single_GrantWithGrant_Config
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'GrantWithGrant'
-                    Permission = @('Select')
+                    Permission = 'Select'
                 }
             )
 
@@ -169,7 +273,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Single_Grant_Config
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'Grant'
-                    Permission = @('Select')
+                    Permission = 'Select'
                 }
             )
             Force                = $true
@@ -207,7 +311,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Single_Revoke_Config
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'Grant'
-                    Permission = @('Select')
+                    Permission = 'Select'
                     Ensure     = 'Absent'
                 }
             )
@@ -244,13 +348,69 @@ Configuration DSC_SqlDatabaseObjectPermission_Multiple_Grant_Config
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'Grant'
-                    Permission = @('Select')
+                    Permission = 'Select'
                 }
 
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'Deny'
-                    Permission = @('Delete', 'Alter')
+                    Permission = 'Delete'
+                }
+
+                DSC_DatabaseObjectPermission
+                {
+                    State      = 'Deny'
+                    Permission = 'Alter'
+                }
+            )
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @(
+                    $Node.UserName,
+                    (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
+                )
+        }
+
+        SqlDatabaseObjectPermission 'Integration_Test_Compile1'
+        {
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            DatabaseName         = $Node.DatabaseName
+            SchemaName           = $Node.SchemaName
+            ObjectName           = $Node.ProcedureName1
+            ObjectType           = 'StoredProcedure'
+            Name                 = $Node.User1_Name
+            Permission           = @(
+                DSC_DatabaseObjectPermission
+                {
+                    State      = 'Grant'
+                    Permission = 'Execute'
+                }
+            )
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @(
+                    $Node.UserName,
+                    (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force)
+                )
+        }
+
+        SqlDatabaseObjectPermission 'Integration_Test_Compile2'
+        {
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            DatabaseName         = $Node.DatabaseName
+            SchemaName           = $Node.SchemaName
+            ObjectName           = $Node.ProcedureName2
+            ObjectType           = 'StoredProcedure'
+            Name                 = $Node.User1_Name
+            Permission           = @(
+                DSC_DatabaseObjectPermission
+                {
+                    State      = 'Grant'
+                    Permission = 'Execute'
                 }
             )
 
@@ -287,7 +447,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Multiple_Revoke_Config
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'Grant'
-                    Permission = @('Select')
+                    Permission = 'Select'
                     # Intentionally leaving this permission on the node.
                     Ensure     = 'Present'
                 }
@@ -295,7 +455,14 @@ Configuration DSC_SqlDatabaseObjectPermission_Multiple_Revoke_Config
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'Deny'
-                    Permission = @('Delete', 'Alter')
+                    Permission = 'Delete'
+                    Ensure     = 'Absent'
+                }
+
+                DSC_DatabaseObjectPermission
+                {
+                    State      = 'Deny'
+                    Permission = 'Alter'
                     Ensure     = 'Absent'
                 }
             )

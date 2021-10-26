@@ -29,19 +29,25 @@ Configuration Example
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'GrantWithGrant'
-                    Permission = @('Select')
+                    Permission = 'Select'
                 }
 
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'Grant'
-                    Permission = @('Update')
+                    Permission = 'Update'
                 }
 
                 DSC_DatabaseObjectPermission
                 {
                     State      = 'Deny'
-                    Permission = @('Delete', 'Alter')
+                    Permission = 'Delete'
+                }
+
+                DSC_DatabaseObjectPermission
+                {
+                    State      = 'Deny'
+                    Permission = 'Alter'
                 }
             )
 

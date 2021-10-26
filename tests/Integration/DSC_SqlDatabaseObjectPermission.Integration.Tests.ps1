@@ -34,7 +34,61 @@ try
             $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
         }
 
-        $configurationName = "$($script:dscResourceName)_Prerequisites_Config"
+        $configurationName = "$($script:dscResourceName)_Prerequisites_Table1_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath           = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData    = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+        }
+
+        $configurationName = "$($script:dscResourceName)_Prerequisites_Procedure1_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath           = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData    = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+        }
+
+        $configurationName = "$($script:dscResourceName)_Prerequisites_Procedure2_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
             It 'Should compile and apply the MOF without throwing' {
@@ -301,9 +355,10 @@ try
                 $resourceCurrentState.ObjectType | Should -Be 'Table'
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
 
-                $resourceCurrentState.Permission | Should -HaveCount 2
+                $resourceCurrentState.Permission | Should -HaveCount 3
                 $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
                 $resourceCurrentState.Permission[1] | Should -BeOfType 'CimInstance'
+                $resourceCurrentState.Permission[2] | Should -BeOfType 'CimInstance'
 
                 $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Grant' })
                 $grantPermission | Should -Not -BeNullOrEmpty
@@ -313,7 +368,8 @@ try
 
                 $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Deny' })
                 $grantPermission | Should -Not -BeNullOrEmpty
-                $grantPermission.Ensure | Should -Be 'Present'
+                $grantPermission.Ensure[0] | Should -Be 'Present'
+                $grantPermission.Ensure[1] | Should -Be 'Present'
                 $grantPermission.Permission | Should -HaveCount 2
                 $grantPermission.Permission | Should -Contain @('Delete')
                 $grantPermission.Permission | Should -Contain @('Alter')
@@ -370,9 +426,10 @@ try
                 $resourceCurrentState.ObjectType | Should -Be 'Table'
                 $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
 
-                $resourceCurrentState.Permission | Should -HaveCount 2
+                $resourceCurrentState.Permission | Should -HaveCount 3
                 $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
                 $resourceCurrentState.Permission[1] | Should -BeOfType 'CimInstance'
+                $resourceCurrentState.Permission[2] | Should -BeOfType 'CimInstance'
 
                 $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Grant' })
                 $grantPermission | Should -Not -BeNullOrEmpty
@@ -382,7 +439,8 @@ try
 
                 $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Deny' })
                 $grantPermission | Should -Not -BeNullOrEmpty
-                $grantPermission.Ensure | Should -Be 'Absent'
+                $grantPermission.Ensure[0] | Should -Be 'Absent'
+                $grantPermission.Ensure[1] | Should -Be 'Absent'
                 $grantPermission.Permission | Should -HaveCount 2
                 $grantPermission.Permission | Should -Contain @('Delete')
                 $grantPermission.Permission | Should -Contain @('Alter')

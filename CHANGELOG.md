@@ -21,6 +21,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   _and [**SqlProtocolTcpIp**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocoltcpip))_
   ([issue #1725](https://github.com/dsccommunity/SqlServerDsc/issues/1725)).
 
+### Fixed
+
+- SqlDatabaseObjectPermission
+  - Fix for issue ([issue #1724](https://github.com/dsccommunity/SqlServerDsc/issues/1724)).
+    - BREAKING CHANGE: Updated class DSC_DatabaseObjectPermission.
+      - Changed Permission from an array to a string.
+      - Updated Permission to a key property.
+      - Updated Integration Tests to test permission grants on multiple objects.
+
 ## [15.2.0] - 2021-09-01
 
 ### Changed
