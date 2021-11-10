@@ -23,7 +23,7 @@ stages:
       - job: Package_Module
         displayName: 'Package Module'
         pool:
-          vmImage: 'ubuntu-latest
+          vmImage: 'ubuntu-latest'
         steps:
           - pwsh: |
               dotnet tool install --global GitVersion.Tool
@@ -211,7 +211,7 @@ stages:
         displayName: 'Publish Code Coverage'
         dependsOn: Test_Unit
         pool:
-          vmImage: 'ubuntu-latest
+          vmImage: 'ubuntu-latest'
         timeoutInMinutes: 0
         steps:
           - pwsh: |
@@ -257,7 +257,7 @@ stages:
       - job: Deploy_Module
         displayName: 'Deploy Module'
         pool:
-          vmImage: 'ubuntu-latest
+          vmImage: 'ubuntu-latest'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
