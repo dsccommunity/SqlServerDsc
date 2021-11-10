@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   _and [**SqlProtocolTcpIp**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocoltcpip))_
   ([issue #1725](https://github.com/dsccommunity/SqlServerDsc/issues/1725)).
 
+### Changed
+
+- SqlServerDsc
+  - Updated pipeline to use the build worker image 'ubuntu-latest'.
+  - Switch to installing GitVersion using 'dotnet tool install' ([issue #1732](https://github.com/dsccommunity/SqlServerDsc/issues/1732)).
+
 ### Fixed
 
 - SqlDatabaseObjectPermission
