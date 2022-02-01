@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- SqlServerDsc
+  - URLs the referenced TechNet in the documentation has been update to link to
+    new pages at docs.microsoft.com.
 - SqlDatabaseObjectPermission
   - Fix for issue ([issue #1724](https://github.com/dsccommunity/SqlServerDsc/issues/1724)).
     - BREAKING CHANGE: Updated class DSC_DatabaseObjectPermission.
@@ -1637,7 +1640,7 @@ in a future release.
     ([issue #308](https://github.com/dsccommunity/SqlServerDsc/issues/308)).
   - BREAKING CHANGE: The read-only property SQLServerNetName was removed in favor
     of EndpointHostName ([issue #924](https://github.com/dsccommunity/SqlServerDsc/issues/924)).
-    Get-TargetResource will now return the value of property [NetName](https://technet.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.server.netname(v=sql.105).aspx)
+    Get-TargetResource will now return the value of property [NetName](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.server.netname)
     for the property EndpointHostName.
 - Changes to SqlAGDatabase
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed
@@ -1657,7 +1660,7 @@ in a future release.
     respectively ([issue #922](https://github.com/dsccommunity/SqlServerDsc/issues/922)).
   - BREAKING CHANGE: The read-only property SQLServerNetName was removed in favor
     of EndpointHostName ([issue #924](https://github.com/dsccommunity/SqlServerDsc/issues/924)).
-    Get-TargetResource will now return the value of property [NetName](https://technet.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.server.netname(v=sql.105).aspx)
+    Get-TargetResource will now return the value of property [NetName](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.server.netname)
     for the property EndpointHostName.
 - Changes to SqlAlwaysOnService
   - BREAKING CHANGE: Parameters SQLServer and SQLInstanceName has been renamed

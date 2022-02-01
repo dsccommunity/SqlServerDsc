@@ -3,7 +3,7 @@
 The `SqlDatabaseDefaultLocation` DSC resource is used to configure default
 locations for user databases. The types of default locations that can be
 changed are Data, Log, and Backup. For more information about database
-default locations, please read the article [Changing the Database Default Locations](https://technet.microsoft.com/en-us/library/dd206993.aspx).
+default locations, please read the article [View or Change the Default Locations for Data and Log Files](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/view-or-change-the-default-locations-for-data-and-log-files?view=sql-server-ver15).
 
 ## Requirements
 

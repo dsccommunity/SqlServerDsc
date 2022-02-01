@@ -58,7 +58,7 @@ prestaging the Cluster Named Object (CNO) computer object becomes necessary.
 It is also possible to prestage the Virtual Computer Objects (VCO).
 
 Read more about it here
-[Prestage Cluster Computer Objects in Active Directory Domain Services](https://technet.microsoft.com/en-us/library/dn466519(v=ws.11).aspx).
+[Prestage Cluster Computer Objects in Active Directory Domain Services](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/dn466519(v=ws.11)).
 
 #### Prestage the Cluster Named Object (CNO) computer object
 
