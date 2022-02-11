@@ -47,10 +47,22 @@ Get-DscResource -Module SqlServerDsc
 
 ## Prerequisites
 
+* Familiarity with Powershell DSC Framework
+* Powershell 5.0 or higher
+* SqlServer powershell module (optional)
+
+### Familiarity with Powershell DSC Framework
+
+SqlServerDSC implements configuration management for MS SQL using the [Powershell DSC](https://docs.microsoft.com/en-us/search/?terms=Desired%20State%20Configuration&scope=PowerShell) technology developed by Microsoft.  A [community](https://dsccommunity.org/) maintains resources related to these [tools](https://dsccommunity.org/configmgt/).
+
+### Powershell
+
 The minimum Windows Management Framework (PowerShell) version required is 5.0
 or higher, which ships with Windows 10 or Windows Server 2016,
 but can also be installed on Windows 7 SP1, Windows 8.1, Windows Server 2012,
 and Windows Server 2012 R2.
+
+### SqlServer powershell module (optional)
 
 Optionally the PowerShell Module [_SqlServer_](https://www.powershellgallery.com/packages/SqlServer)
 can be installed which then will be used instead of the PowerShell module
