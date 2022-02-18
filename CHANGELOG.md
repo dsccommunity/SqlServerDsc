@@ -28,6 +28,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   _[**SqlProtocol**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocol)_
   _and [**SqlProtocolTcpIp**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocoltcpip))_
   ([issue #1725](https://github.com/dsccommunity/SqlServerDsc/issues/1725)).
+- CommonTestHelper
+  - Remove the helper function `Wait-ForIdleLcm` since it has been moved
+    to the module _DscResource.Test_.
+  - Remove the helper function `Get-InvalidOperationRecord` since it has
+    been moved to the module _DscResource.Test_.
+  - Remove the helper function `Get-InvalidResultRecord` since it has been
+    moved to the module _DscResource.Test_.
 
 ### Changed
 
@@ -40,6 +47,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlLogin
   - BREAKING CHANGE: `LoginMustChangePassword`, `LoginPasswordExpirationEnabled` and `LoginPasswordPolicyEnforced`
     parameters no longer enforce default values ([issue #1669](https://github.com/dsccommunity/SqlServerDsc/issues/1669)).
+- SqlServerDsc
+  - All tests have been converted to run in Pester 5 (Pester 4 can no
+    longer be supported) ([issue #1654](https://github.com/dsccommunity/SqlServerDsc/issues/1654)).
+  - Pipeline build and deploy now runs on Ubuntu 18.04, see more information
+    in https://github.com/actions/virtual-environments/issues/3287.
+  - Update the pipeline file _azure-pipelines.yml_ to use the latest version
+    from the Sampler project.
+- SqlRs
+  - Minor refactor to support running unit test with strict mode enabled.
 
 ### Fixed
 
@@ -71,28 +87,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Remove-SqlModuleStub`
     - Added a new helper function `Remove-SqlModuleStub` for tests to remove
       the PowerShell SqlServer stub module when a test has run.
-
-### Removed
-
-- CommonTestHelper
-  - Remove the helper function `Wait-ForIdleLcm` since it has been moved
-    to the module _DscResource.Test_.
-  - Remove the helper function `Get-InvalidOperationRecord` since it has
-    been moved to the module _DscResource.Test_.
-  - Remove the helper function `Get-InvalidResultRecord` since it has been
-    moved to the module _DscResource.Test_.
-
-### Changed
-
-- SqlServerDsc
-  - All tests have been converted to run in Pester 5 (Pester 4 can no
-    longer be supported) ([issue #1654](https://github.com/dsccommunity/SqlServerDsc/issues/1654)).
-  - Pipeline build and deploy now runs on Ubuntu 18.04, see more information
-    in https://github.com/actions/virtual-environments/issues/3287.
-  - Update the pipeline file _azure-pipelines.yml_ to use the latest version
-    from the Sampler project.
-- SqlRs
-  - Minor refactor to support running unit test with strict mode enabled.
 
 ## [15.2.0] - 2021-09-01
 
