@@ -597,7 +597,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                             UseSsl               = $true
                         }
 
-                        { Set-TargetResource @mockDefaultParameters } | Should -Throw ('*' + $script:localizedData.TestFailedAfterSet)
+                        { Set-TargetResource @mockDefaultParameters } | Should -Throw -ExpectedMessage ('*' + $script:localizedData.TestFailedAfterSet)
                     }
                 }
             }
