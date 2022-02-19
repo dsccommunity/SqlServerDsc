@@ -2,6 +2,9 @@
     .SYNOPSIS
         Unit test for DSC_SqlRSSetup DSC resource.
 #>
+# Suppressing this rule because ConvertTo-SecureString is used to simplify the tests.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
+param ()
 
 BeforeDiscovery {
     try
