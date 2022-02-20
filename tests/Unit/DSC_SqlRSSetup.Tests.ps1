@@ -1103,7 +1103,7 @@ Describe "DSC_SqlRSSetup\Convert-EditionName" -Tag 'Helper' {
             )
         }
 
-        It 'Should return the value <OutputName> when converting from value <InputName>' -TestCases $testCases {
+        It 'Should return the value <OutputName> when converting from value <InputName>' -ForEach $testCases {
             InModuleScope -Parameters @{
                 InputName = $InputName
                 OutputName = $OutputName
