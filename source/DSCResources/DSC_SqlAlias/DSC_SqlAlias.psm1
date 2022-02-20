@@ -47,6 +47,8 @@ function Get-TargetResource
         -Name $Name `
         -ErrorAction SilentlyContinue
 
+    $isWow6432Node = $false
+
     if (((Get-CimInstance -ClassName win32_OperatingSystem).OSArchitecture) -eq '64-bit')
     {
         Write-Verbose -Message (
@@ -364,4 +366,3 @@ function Test-TargetResource
 
     return $result
 }
-
