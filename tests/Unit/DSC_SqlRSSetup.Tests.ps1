@@ -4,6 +4,10 @@
 #>
 # Suppressing this rule because ConvertTo-SecureString is used to simplify the tests.
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
+# Suppressing this rule because we verify that restart will happen using a global variable.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 param ()
 
 BeforeDiscovery {
@@ -491,7 +495,7 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
                 if ($_ -imatch '(\w+)="?([^\/]+)"?')
                 {
                     $key = $Matches[1]
-                    $value = ($Matches[2] -replace '" "',' ') -replace '"',''
+                    $value = ($Matches[2] -replace '" "', ' ') -replace '"', ''
 
                     $argumentHashTable.Add($key, $value)
                 }
