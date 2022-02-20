@@ -55,14 +55,14 @@
     Rules               = @{
         PSUseConsistentWhitespace  = @{
             Enable                          = $true
-            CheckOpenBrace                  = $false
+            CheckOpenBrace                  = $true
             CheckInnerBrace                 = $true
             CheckOpenParen                  = $true
             CheckOperator                   = $false
             CheckSeparator                  = $true
             CheckPipe                       = $true
             CheckPipeForRedundantWhitespace = $true
-            CheckParameter                  = $false
+            CheckParameter                  = $true
         }
 
         PSPlaceOpenBrace           = @{
