@@ -34,7 +34,8 @@
         "keepachangelog",
         "notin",
         "pscmdlet",
-        "steppable"
+        "steppable",
+        "SSRS"
     ],
     "[markdown]": {
         "files.trimTrailingWhitespace": true,
