@@ -71,6 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlProtocolTcpIp
   - Output verbose information in integration tests so it is shown what NICs
     are available and what IP address the tests will use.
+- SqlAlias
+  - Now the code passes strict mode during unit testing.
 
 ### Added
 
