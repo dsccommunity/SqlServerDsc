@@ -3,6 +3,10 @@
         Unit test for DSC_SqlAlias DSC resource.
 #>
 
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
+
 BeforeDiscovery {
     try
     {
@@ -41,33 +45,6 @@ AfterAll {
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscResourceName -All | Remove-Module -Force
 }
-
-# $name = 'MyAlias'
-# $serverNameTcp = 'sqlnode.company.local'
-# $tcpPort = 1433
-# $UseDynamicTcpPort = $false
-# $serverNameNamedPipes = 'sqlnode'
-# $pipeName = "\\$serverNameNamedPipes\PIPE\sql\query"
-
-# $unknownName = 'UnknownAlias'
-# $unknownServerName = 'unknownserver'
-
-# $nameDifferentTcpPort = 'DifferentTcpPort'
-# $nameDifferentServerNameTcp = 'DifferentServerNameTcp'
-# $nameDifferentPipeName = 'DifferentPipeName'
-# $differentTcpPort = 1500
-# $differentServerNameTcp = "$unknownServerName.company.local"
-# $differentPipeName = "\\$unknownServerName\PIPE\sql\query"
-
-# $nameWow6432NodeDifferFrom64BitOS = 'Wow6432NodeDifferFrom64BitOS'
-
-# $defaultParameters = @{
-#     Name = $name
-#     ServerName = $serverNameTcp
-#     Protocol = 'TCP'
-#     TcpPort = '1433'
-#     Ensure = 'Present'
-# }
 
 Describe 'SqlAlias\Get-TargetResource' {
     BeforeAll {
@@ -110,13 +87,13 @@ Describe 'SqlAlias\Get-TargetResource' {
                     # Mocking for protocol TCP
                     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $mockRegistryPath } -MockWith {
                         return @{
-                            'MyAlias' = 'DBMSSOCN,sqlnode.company.local,1433'
+                            'MyAlias' = 'DBMSSOCN,SqlNode.company.local,1433'
                         }
                     }
 
                     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $mockRegistryPathWow6432Node } -MockWith {
                         return @{
-                            'MyAlias' = 'DBMSSOCN,sqlnode.company.local,1433'
+                            'MyAlias' = 'DBMSSOCN,SqlNode.company.local,1433'
                         }
                     }
                 }
@@ -129,7 +106,7 @@ Describe 'SqlAlias\Get-TargetResource' {
 
                         $result.Ensure | Should -Be 'Present'
                         $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                        $result.ServerName | Should -Be 'sqlnode.company.local'
+                        $result.ServerName | Should -Be 'SqlNode.company.local'
                         $result.Protocol | Should -Be 'TCP'
                         $result.TcpPort | Should -BeExactly 1433
                         $result.UseDynamicTcpPort | Should -Be $false
@@ -220,13 +197,13 @@ Describe 'SqlAlias\Get-TargetResource' {
                     # Mocking for protocol TCP
                     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $mockRegistryPath } -MockWith {
                         return @{
-                            'MyAlias' = 'DBMSSOCN,sqlnode.company.local'
+                            'MyAlias' = 'DBMSSOCN,SqlNode.company.local'
                         }
                     }
 
                     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $mockRegistryPathWow6432Node } -MockWith {
                         return @{
-                            'MyAlias' = 'DBMSSOCN,sqlnode.company.local'
+                            'MyAlias' = 'DBMSSOCN,SqlNode.company.local'
                         }
                     }
                 }
@@ -239,7 +216,7 @@ Describe 'SqlAlias\Get-TargetResource' {
 
                         $result.Ensure | Should -Be 'Present'
                         $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                        $result.ServerName | Should -Be 'sqlnode.company.local'
+                        $result.ServerName | Should -Be 'SqlNode.company.local'
                         $result.Protocol | Should -Be 'TCP'
                         $result.TcpPort | Should -BeExactly 0
                         $result.UseDynamicTcpPort | Should -Be $true
@@ -347,13 +324,13 @@ Describe 'SqlAlias\Get-TargetResource' {
                     # Mocking for protocol TCP
                     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $mockRegistryPath } -MockWith {
                         return @{
-                            'MyAlias' = 'DBNMPNTW,\\sqlnode\PIPE\sql\query'
+                            'MyAlias' = 'DBNMPNTW,\\SqlNode\PIPE\sql\query'
                         }
                     }
 
                     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $mockRegistryPathWow6432Node } -MockWith {
                         return @{
-                            'MyAlias' = 'DBNMPNTW,\\sqlnode\PIPE\sql\query'
+                            'MyAlias' = 'DBNMPNTW,\\SqlNode\PIPE\sql\query'
                         }
                     }
                 }
@@ -370,7 +347,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                         $result.Protocol | Should -Be 'NP'
                         $result.TcpPort | Should -BeExactly 0
                         $result.UseDynamicTcpPort | Should -Be $false
-                        $result.PipeName | Should -Be '\\sqlnode\PIPE\sql\query'
+                        $result.PipeName | Should -Be '\\SqlNode\PIPE\sql\query'
                     }
                 }
 
@@ -464,7 +441,7 @@ Describe 'SqlAlias\Get-TargetResource' {
                 # Mocking for protocol TCP
                 Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $mockRegistryPath } -MockWith {
                     return @{
-                        'MyAlias' = 'DBNMPNTW,\\sqlnode\PIPE\sql\query'
+                        'MyAlias' = 'DBNMPNTW,\\SqlNode\PIPE\sql\query'
                     }
                 }
 
@@ -554,6 +531,510 @@ Describe 'SqlAlias\Get-TargetResource' {
                 Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
                     $Path -eq $mockRegistryPathWow6432Node
                 } -Exactly -Times 1 -Scope Context
+            }
+        }
+    }
+}
+
+Describe 'SqlAlias\Test-TargetResource' {
+    BeforeAll {
+        $mockRegistryPath = 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo'
+        $mockRegistryPathWow6432Node = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo'
+
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                Name = 'MyAlias'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockTestTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        Context 'When node is using TCP' {
+            Context 'When the alias that using a specific TCP port already exist' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            Name = 'MyAlias'
+                            ServerName = 'SqlNode.company.local'
+                            Protocol = 'TCP'
+                            TcpPort = 1433
+                            UseDynamicTcpPort = $false
+                            PipeName = ''
+                        }
+                    }
+                }
+
+                It 'Should return $true' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockTestTargetResourceParameters.Name = 'MyAlias'
+                        $script:mockTestTargetResourceParameters.Protocol = 'TCP'
+                        $script:mockTestTargetResourceParameters.TcpPort = 1433
+                        $script:mockTestTargetResourceParameters.ServerName = 'SqlNode.company.local'
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeTrue
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the alias that using dynamic TCP port already exist' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            Name = 'MyAlias'
+                            ServerName = 'SqlNode.company.local'
+                            Protocol = 'TCP'
+                            TcpPort = 0
+                            UseDynamicTcpPort = $true
+                            PipeName = ''
+                        }
+                    }
+                }
+
+                It 'Should return $true' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockTestTargetResourceParameters.Name = 'MyAlias'
+                        $script:mockTestTargetResourceParameters.Protocol = 'TCP'
+                        $script:mockTestTargetResourceParameters.UseDynamicTcpPort = $true
+                        $script:mockTestTargetResourceParameters.ServerName = 'SqlNode.company.local'
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeTrue
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the alias should not exist' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Absent'
+                            Name = 'MyAlias'
+                            ServerName = ''
+                            Protocol = ''
+                            TcpPort = 0
+                            UseDynamicTcpPort = $false
+                            PipeName = ''
+                        }
+                    }
+                }
+
+                It 'Should return $true' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockTestTargetResourceParameters.Ensure = 'Absent'
+                        $script:mockTestTargetResourceParameters.Name = 'MyAlias'
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeTrue
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                }
+            }
+        }
+
+        Context 'When node is using Named Pipes' {
+            Context 'When the alias already exist' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            Name = 'MyAlias'
+                            ServerName = 'SqlNode.company.local'
+                            Protocol = 'NP'
+                            TcpPort = 0
+                            UseDynamicTcpPort = $false
+                            PipeName = '\\SqlNode.company.local\PIPE\sql\query'
+                        }
+                    }
+                }
+
+                It 'Should return $true' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockTestTargetResourceParameters.Name = 'MyAlias'
+                        $script:mockTestTargetResourceParameters.Protocol = 'NP'
+                        $script:mockTestTargetResourceParameters.UseDynamicTcpPort = $false
+                        $script:mockTestTargetResourceParameters.ServerName = 'SqlNode.company.local'
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeTrue
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                }
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        Context 'When alias should not exist' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                        Name = 'MyAlias'
+                        ServerName = 'SqlNode.company.local'
+                        Protocol = 'TCP'
+                        TcpPort = 1433
+                        UseDynamicTcpPort = $false
+                        PipeName = ''
+                    }
+                }
+            }
+
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $script:mockTestTargetResourceParameters.Ensure = 'Absent'
+                    $script:mockTestTargetResourceParameters.Name = 'MyAlias'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse
+                }
+            }
+
+            It 'Should call the correct mocks' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+
+        Context 'When node should be using TCP' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Absent'
+                        Name = 'MyAlias'
+                        ServerName = ''
+                        Protocol = ''
+                        TcpPort = 0
+                        UseDynamicTcpPort = $false
+                        PipeName = ''
+                    }
+                }
+            }
+
+            Context 'When the alias that using a specific TCP port does not exist' {
+                It 'Should return $false' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockTestTargetResourceParameters.Name = 'MyAlias'
+                        $script:mockTestTargetResourceParameters.Protocol = 'TCP'
+                        $script:mockTestTargetResourceParameters.TcpPort = 1433
+                        $script:mockTestTargetResourceParameters.ServerName = 'SqlNode.company.local'
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeFalse
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the alias that using dynamic TCP port does not exist' {
+                It 'Should return $false' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockTestTargetResourceParameters.Name = 'MyAlias'
+                        $script:mockTestTargetResourceParameters.Protocol = 'TCP'
+                        $script:mockTestTargetResourceParameters.UseDynamicTcpPort = $true
+                        $script:mockTestTargetResourceParameters.ServerName = 'SqlNode.company.local'
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeFalse
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the alias exist but has wrong port number' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            Name = 'MyAlias'
+                            ServerName = 'SqlNode.company.local'
+                            Protocol = 'TCP'
+                            TcpPort = 1433
+                            UseDynamicTcpPort = $false
+                            PipeName = ''
+                        }
+                    }
+                }
+
+                It 'Should return $true' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockTestTargetResourceParameters.Name = 'MyAlias'
+                        $script:mockTestTargetResourceParameters.Protocol = 'TCP'
+                        $script:mockTestTargetResourceParameters.TcpPort = 1500
+                        $script:mockTestTargetResourceParameters.ServerName = 'SqlNode.company.local'
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeFalse
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the alias already exist but does not use dynamic TCP port' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            Name = 'MyAlias'
+                            ServerName = 'SqlNode.company.local'
+                            Protocol = 'TCP'
+                            TcpPort = 1433
+                            UseDynamicTcpPort = $false
+                            PipeName = ''
+                        }
+                    }
+                }
+
+                It 'Should return $false' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockTestTargetResourceParameters.Name = 'MyAlias'
+                        $script:mockTestTargetResourceParameters.Protocol = 'TCP'
+                        $script:mockTestTargetResourceParameters.UseDynamicTcpPort = $true
+                        $script:mockTestTargetResourceParameters.ServerName = 'SqlNode.company.local'
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeFalse
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the alias already exist but does not use static TCP port' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            Name = 'MyAlias'
+                            ServerName = 'SqlNode.company.local'
+                            Protocol = 'TCP'
+                            TcpPort = 0
+                            UseDynamicTcpPort = $true
+                            PipeName = ''
+                        }
+                    }
+                }
+
+                It 'Should return $false' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockTestTargetResourceParameters.Name = 'MyAlias'
+                        $script:mockTestTargetResourceParameters.Protocol = 'TCP'
+                        $script:mockTestTargetResourceParameters.TcpPort = '1433'
+                        $script:mockTestTargetResourceParameters.UseDynamicTcpPort = $false
+                        $script:mockTestTargetResourceParameters.ServerName = 'SqlNode.company.local'
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeFalse
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the alias already exist but does not use TCP protocol' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            Name = 'MyAlias'
+                            ServerName = 'SqlNode.company.local'
+                            Protocol = 'NP'
+                            TcpPort = 0
+                            UseDynamicTcpPort = $false
+                            PipeName = '\\SqlNode.company.local\PIPE\sql\query'
+                        }
+                    }
+                }
+
+                It 'Should return $false' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockTestTargetResourceParameters.Name = 'MyAlias'
+                        $script:mockTestTargetResourceParameters.Protocol = 'TCP'
+                        $script:mockTestTargetResourceParameters.TcpPort = '1433'
+                        $script:mockTestTargetResourceParameters.UseDynamicTcpPort = $false
+                        $script:mockTestTargetResourceParameters.ServerName = 'SqlNode.company.local'
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeFalse
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                }
+            }
+        }
+
+        Context 'When node should be using Named Pipes' {
+            Context 'When the alias does not exist' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Absent'
+                            Name = 'MyAlias'
+                            ServerName = ''
+                            Protocol = ''
+                            TcpPort = 0
+                            UseDynamicTcpPort = $false
+                            PipeName = ''
+                        }
+                    }
+                }
+
+                It 'Should return $false' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockTestTargetResourceParameters.Name = 'MyAlias'
+                        $script:mockTestTargetResourceParameters.Protocol = 'NP'
+                        $script:mockTestTargetResourceParameters.UseDynamicTcpPort = $false
+                        $script:mockTestTargetResourceParameters.ServerName = 'SqlNode.company.local'
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeFalse
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the alias already exist but has wrong server name' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            Name = 'MyAlias'
+                            ServerName = 'SqlNode.company.local'
+                            Protocol = 'NP'
+                            TcpPort = 0
+                            UseDynamicTcpPort = $false
+                            PipeName = '\\SqlNode.company.local\PIPE\sql\query'
+                        }
+                    }
+                }
+
+                It 'Should return $false' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockTestTargetResourceParameters.Name = 'MyAlias'
+                        $script:mockTestTargetResourceParameters.Protocol = 'NP'
+                        $script:mockTestTargetResourceParameters.ServerName = 'NewSqlNode.company.local'
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeFalse
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the alias already exist but does not use Named Pipes protocol' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            Name = 'MyAlias'
+                            ServerName = 'SqlNode.company.local'
+                            Protocol = 'TCP'
+                            TcpPort = 1433
+                            UseDynamicTcpPort = $false
+                            PipeName = ''
+                        }
+                    }
+                }
+
+                It 'Should return $false' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockTestTargetResourceParameters.Name = 'MyAlias'
+                        $script:mockTestTargetResourceParameters.Protocol = 'NP'
+                        $script:mockTestTargetResourceParameters.ServerName = 'SqlNode.company.local'
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeFalse
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                }
             }
         }
     }
@@ -775,13 +1256,13 @@ Describe 'SqlAlias\Get-TargetResource' {
 # Describe 'SqlAlias\Test-TargetResource' {
 #     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $name } -MockWith {
 #         return @{
-#             'MyAlias' = 'DBMSSOCN,sqlnode.company.local,1433'
+#             'MyAlias' = 'DBMSSOCN,SqlNode.company.local,1433'
 #         }
 #     }
 
 #     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node -and $Name -eq $name } -MockWith {
 #         return @{
-#             'MyAlias' = 'DBMSSOCN,sqlnode.company.local,1433'
+#             'MyAlias' = 'DBMSSOCN,SqlNode.company.local,1433'
 #         }
 #     }
 
@@ -907,13 +1388,13 @@ Describe 'SqlAlias\Get-TargetResource' {
 
 #     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $name } -MockWith {
 #         return @{
-#             'MyAlias' = 'DBNMPNTW,\\sqlnode\PIPE\sql\query'
+#             'MyAlias' = 'DBNMPNTW,\\SqlNode\PIPE\sql\query'
 #         }
 #     }
 
 #     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node -and $Name -eq $name } -MockWith {
 #         return @{
-#             'MyAlias' = 'DBNMPNTW,\\sqlnode\PIPE\sql\query'
+#             'MyAlias' = 'DBNMPNTW,\\SqlNode\PIPE\sql\query'
 #         }
 #     }
 
