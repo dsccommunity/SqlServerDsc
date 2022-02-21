@@ -336,12 +336,14 @@ function Test-TargetResource
                 }
                 elseif ($Protocol -eq 'TCP' -and
                     $UseDynamicTcpPort -and
+                    $currentValues.UseDynamicTcpPort -eq $UseDynamicTcpPort -and
                     $currentValues.ServerName -eq $ServerName)
                 {
                     $result = $true
                 }
                 elseif ($Protocol -eq 'TCP' -and
                     -not $UseDynamicTcpPort -and
+                    $currentValues.UseDynamicTcpPort -eq $UseDynamicTcpPort -and
                     $currentValues.ServerName -eq $ServerName -and
                     $currentValues.TcpPort -eq $TcpPort)
                 {
