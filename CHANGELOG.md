@@ -73,6 +73,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     are available and what IP address the tests will use.
 - SqlAlias
   - Now the code passes strict mode during unit testing.
+  - When an existing alias existed with a static TCP port but the desired
+    state was to have a dynamic port, the function `Test-TargetResource` did
+    not correctly return `$false`. Same for an alias that existed with a
+    dynamic port but the desired state was to have a static port. Now the
+    function `Test-TargetResource` returns `$false` in both these scenarios.
 
 ### Added
 
