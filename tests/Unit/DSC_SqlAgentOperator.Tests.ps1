@@ -161,6 +161,29 @@ Describe 'DSC_SqlAgentOperator\Get-TargetResource' -Tag 'Get' {
         }
     }
 
+    Context 'When the SQL Server instance is not found' {
+        BeforeAll {
+            Mock -CommandName Connect-SQL -MockWith {
+                return $null
+            } -Verifiable
+        }
+
+        It 'Should return the same values as passed as parameters' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    Name = 'Nancy'
+                }
+
+                $errorMessage = $script:localizedData.ConnectServerFailed -f $mockServerName, $mockInstanceName
+
+                { Get-TargetResource @testParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+            }
+        }
+    }
+
     It 'Should call all verifiable mocks' {
         Should -InvokeVerifiable
     }
@@ -185,7 +208,7 @@ Describe 'DSC_SqlAgentOperator\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        Name         = $null
+                        Name         = 'MissingOperator'
                         Ensure       = 'Absent'
                         ServerName   = $ServerName
                         InstanceName = $mockInstanceName
@@ -345,7 +368,7 @@ Describe 'DSC_SqlAgentOperator\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        Name         = $null
+                        Name         = 'UnknownOperator'
                         Ensure       = 'Absent'
                         ServerName   = $ServerName
                         InstanceName = $mockInstanceName
@@ -437,6 +460,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                     New-Object -TypeName 'Object' |
                         # Using the value from the second property passed in the parameter ArgumentList of the cmdlet New-Object.
                         Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value $ArgumentList[1] -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'EmailAddress' -Value $null -PassThru |
                         Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
                             if ($mockInvalidOperationForCreateMethod)
                             {
@@ -467,13 +491,13 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
+                    $setParameters = $mockDefaultParameters
+                    $setParameters += @{
                         Name   = 'Bob'
                         Ensure = 'Present'
                     }
 
-                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    { Set-TargetResource @setParameters } | Should -Not -Throw
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -483,19 +507,48 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
             }
         }
 
+        Context 'When creating a sql agent operator with email address' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Name         = 'Operator'
+                        Ensure       = 'Absent'
+                        ServerName   = $ServerName
+                        InstanceName = $mockInstanceName
+                        EmailAddress = ''
+                    }
+                }
+            }
+
+            It 'Should return the state as true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $setParameters = $mockDefaultParameters
+                    $setParameters += @{
+                        Name   = 'Bob'
+                        EmailAddress = 'my@email'
+                        Ensure = 'Present'
+                    }
+
+                    { Set-TargetResource @setParameters } | Should -Not -Throw
+                }
+            }
+        }
+
         Context 'When changing the email address' {
             It 'Should not throw' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
+                    $setParameters = $mockDefaultParameters
+                    $setParameters += @{
                         Name         = 'Nancy'
                         Ensure       = 'Present'
                         EmailAddress = 'newemail@contoso.com'
                     }
 
-                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    { Set-TargetResource @setParameters } | Should -Not -Throw
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -511,13 +564,13 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
+                    $setParameters = $mockDefaultParameters
+                    $setParameters += @{
                         Name   = 'Bill'
                         Ensure = 'Absent'
                     }
 
-                    { Set-TargetResource @testParameters } | Should -Not -Throw
+                    { Set-TargetResource @setParameters } | Should -Not -Throw
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -531,21 +584,21 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
+                    $setParameters = $mockDefaultParameters
+                    $setParameters += @{
                         Name   = 'NewOperator'
                         Ensure = 'Present'
                     }
 
                     $mockErrorRecord = Get-InvalidOperationRecord -Message (
-                        $script:localizedData.CreateOperatorSetError -f $testParameters.Name, $testParameters.ServerName, $testParameters.InstanceName
+                        $script:localizedData.CreateOperatorSetError -f $setParameters.Name, $setParameters.ServerName, $setParameters.InstanceName
                     )
 
                     <#
                         Using wildcard for comparison due to that the mock throws and adds
                         the mocked exception message on top of the original message.
                     #>
-                    { Set-TargetResource @testParameters } |
+                    { Set-TargetResource @setParameters } |
                         Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
                 }
 
@@ -560,22 +613,22 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
+                    $setParameters = $mockDefaultParameters
+                    $setParameters += @{
                         Name         = 'Nancy'
                         Ensure       = 'Present'
                         EmailAddress = 'newemail@contoso.com'
                     }
 
                     $mockErrorRecord = Get-InvalidOperationRecord -Message (
-                        $script:localizedData.UpdateOperatorSetError -f $testParameters.ServerName, $testParameters.InstanceName, $testParameters.Name, $testParameters.EmailAddress
+                        $script:localizedData.UpdateOperatorSetError -f $setParameters.ServerName, $setParameters.InstanceName, $setParameters.Name, $setParameters.EmailAddress
                     )
 
                     <#
                         Using wildcard for comparison due to that the mock throws and adds
                         the mocked exception message on top of the original message.
                     #>
-                    { Set-TargetResource @testParameters } |
+                    { Set-TargetResource @setParameters } |
                         Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
                 }
 
@@ -590,25 +643,48 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
+                    $setParameters = $mockDefaultParameters
+                    $setParameters += @{
                         Name   = 'Nancy'
                         Ensure = 'Absent'
                     }
 
                     $mockErrorRecord = Get-InvalidOperationRecord -Message (
-                        $script:localizedData.DropOperatorSetError -f $testParameters.Name, $testParameters.ServerName, $testParameters.InstanceName
+                        $script:localizedData.DropOperatorSetError -f $setParameters.Name, $setParameters.ServerName, $setParameters.InstanceName
                     )
 
                     <#
                         Using wildcard for comparison due to that the mock throws and adds
                         the mocked exception message on top of the original message.
                     #>
-                    { Set-TargetResource @testParameters } |
+                    { Set-TargetResource @setParameters } |
                         Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
                 }
 
                 $mockInvalidOperationForDropMethod = $false
+            }
+        }
+
+        Context 'When the SQL Server instance is not found' {
+            BeforeAll {
+                Mock -CommandName Connect-SQL -MockWith {
+                    return $null
+                } -Verifiable
+            }
+
+            It 'Should return the same values as passed as parameters' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $setParameters = $mockDefaultParameters
+                    $setParameters += @{
+                        Name = 'Nancy'
+                    }
+
+                    $errorMessage = $script:localizedData.ConnectServerFailed -f $mockServerName, $mockInstanceName
+
+                    { Set-TargetResource @setParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+                }
             }
         }
 
