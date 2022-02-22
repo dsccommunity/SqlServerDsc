@@ -44,6 +44,9 @@ AfterAll {
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscResourceName -All | Remove-Module -Force
+
+    # Remove module common test helper.
+    Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
 Describe 'SqlAlias\Get-TargetResource' {
@@ -73,7 +76,7 @@ Describe 'SqlAlias\Get-TargetResource' {
             @{
                 OSArchitecture = '32-bit'
             }
-         ) {
+        ) {
             BeforeAll {
                 # Mocking OSArchitecture
                 Mock -CommandName Get-CimInstance -MockWith {
@@ -310,7 +313,7 @@ Describe 'SqlAlias\Get-TargetResource' {
             @{
                 OSArchitecture = '32-bit'
             }
-         ) {
+        ) {
             BeforeAll {
                 # Mocking OSArchitecture
                 Mock -CommandName Get-CimInstance -MockWith {
@@ -561,13 +564,13 @@ Describe 'SqlAlias\Test-TargetResource' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Present'
-                            Name = 'MyAlias'
-                            ServerName = 'SqlNode.company.local'
-                            Protocol = 'TCP'
-                            TcpPort = 1433
+                            Ensure            = 'Present'
+                            Name              = 'MyAlias'
+                            ServerName        = 'SqlNode.company.local'
+                            Protocol          = 'TCP'
+                            TcpPort           = 1433
                             UseDynamicTcpPort = $false
-                            PipeName = ''
+                            PipeName          = ''
                         }
                     }
                 }
@@ -596,13 +599,13 @@ Describe 'SqlAlias\Test-TargetResource' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Present'
-                            Name = 'MyAlias'
-                            ServerName = 'SqlNode.company.local'
-                            Protocol = 'TCP'
-                            TcpPort = 0
+                            Ensure            = 'Present'
+                            Name              = 'MyAlias'
+                            ServerName        = 'SqlNode.company.local'
+                            Protocol          = 'TCP'
+                            TcpPort           = 0
                             UseDynamicTcpPort = $true
-                            PipeName = ''
+                            PipeName          = ''
                         }
                     }
                 }
@@ -631,13 +634,13 @@ Describe 'SqlAlias\Test-TargetResource' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Absent'
-                            Name = 'MyAlias'
-                            ServerName = ''
-                            Protocol = ''
-                            TcpPort = 0
+                            Ensure            = 'Absent'
+                            Name              = 'MyAlias'
+                            ServerName        = ''
+                            Protocol          = ''
+                            TcpPort           = 0
                             UseDynamicTcpPort = $false
-                            PipeName = ''
+                            PipeName          = ''
                         }
                     }
                 }
@@ -666,13 +669,13 @@ Describe 'SqlAlias\Test-TargetResource' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Present'
-                            Name = 'MyAlias'
-                            ServerName = 'SqlNode.company.local'
-                            Protocol = 'NP'
-                            TcpPort = 0
+                            Ensure            = 'Present'
+                            Name              = 'MyAlias'
+                            ServerName        = 'SqlNode.company.local'
+                            Protocol          = 'NP'
+                            TcpPort           = 0
                             UseDynamicTcpPort = $false
-                            PipeName = '\\SqlNode.company.local\PIPE\sql\query'
+                            PipeName          = '\\SqlNode.company.local\PIPE\sql\query'
                         }
                     }
                 }
@@ -704,13 +707,13 @@ Describe 'SqlAlias\Test-TargetResource' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        Ensure = 'Present'
-                        Name = 'MyAlias'
-                        ServerName = 'SqlNode.company.local'
-                        Protocol = 'TCP'
-                        TcpPort = 1433
+                        Ensure            = 'Present'
+                        Name              = 'MyAlias'
+                        ServerName        = 'SqlNode.company.local'
+                        Protocol          = 'TCP'
+                        TcpPort           = 1433
                         UseDynamicTcpPort = $false
-                        PipeName = ''
+                        PipeName          = ''
                     }
                 }
             }
@@ -737,13 +740,13 @@ Describe 'SqlAlias\Test-TargetResource' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        Ensure = 'Absent'
-                        Name = 'MyAlias'
-                        ServerName = ''
-                        Protocol = ''
-                        TcpPort = 0
+                        Ensure            = 'Absent'
+                        Name              = 'MyAlias'
+                        ServerName        = ''
+                        Protocol          = ''
+                        TcpPort           = 0
                         UseDynamicTcpPort = $false
-                        PipeName = ''
+                        PipeName          = ''
                     }
                 }
             }
@@ -794,13 +797,13 @@ Describe 'SqlAlias\Test-TargetResource' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Present'
-                            Name = 'MyAlias'
-                            ServerName = 'SqlNode.company.local'
-                            Protocol = 'TCP'
-                            TcpPort = 1433
+                            Ensure            = 'Present'
+                            Name              = 'MyAlias'
+                            ServerName        = 'SqlNode.company.local'
+                            Protocol          = 'TCP'
+                            TcpPort           = 1433
                             UseDynamicTcpPort = $false
-                            PipeName = ''
+                            PipeName          = ''
                         }
                     }
                 }
@@ -829,13 +832,13 @@ Describe 'SqlAlias\Test-TargetResource' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Present'
-                            Name = 'MyAlias'
-                            ServerName = 'SqlNode.company.local'
-                            Protocol = 'TCP'
-                            TcpPort = 1433
+                            Ensure            = 'Present'
+                            Name              = 'MyAlias'
+                            ServerName        = 'SqlNode.company.local'
+                            Protocol          = 'TCP'
+                            TcpPort           = 1433
                             UseDynamicTcpPort = $false
-                            PipeName = ''
+                            PipeName          = ''
                         }
                     }
                 }
@@ -864,13 +867,13 @@ Describe 'SqlAlias\Test-TargetResource' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Present'
-                            Name = 'MyAlias'
-                            ServerName = 'SqlNode.company.local'
-                            Protocol = 'TCP'
-                            TcpPort = 0
+                            Ensure            = 'Present'
+                            Name              = 'MyAlias'
+                            ServerName        = 'SqlNode.company.local'
+                            Protocol          = 'TCP'
+                            TcpPort           = 0
                             UseDynamicTcpPort = $true
-                            PipeName = ''
+                            PipeName          = ''
                         }
                     }
                 }
@@ -900,13 +903,13 @@ Describe 'SqlAlias\Test-TargetResource' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Present'
-                            Name = 'MyAlias'
-                            ServerName = 'SqlNode.company.local'
-                            Protocol = 'NP'
-                            TcpPort = 0
+                            Ensure            = 'Present'
+                            Name              = 'MyAlias'
+                            ServerName        = 'SqlNode.company.local'
+                            Protocol          = 'NP'
+                            TcpPort           = 0
                             UseDynamicTcpPort = $false
-                            PipeName = '\\SqlNode.company.local\PIPE\sql\query'
+                            PipeName          = '\\SqlNode.company.local\PIPE\sql\query'
                         }
                     }
                 }
@@ -938,13 +941,13 @@ Describe 'SqlAlias\Test-TargetResource' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Absent'
-                            Name = 'MyAlias'
-                            ServerName = ''
-                            Protocol = ''
-                            TcpPort = 0
+                            Ensure            = 'Absent'
+                            Name              = 'MyAlias'
+                            ServerName        = ''
+                            Protocol          = ''
+                            TcpPort           = 0
                             UseDynamicTcpPort = $false
-                            PipeName = ''
+                            PipeName          = ''
                         }
                     }
                 }
@@ -973,13 +976,13 @@ Describe 'SqlAlias\Test-TargetResource' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Present'
-                            Name = 'MyAlias'
-                            ServerName = 'SqlNode.company.local'
-                            Protocol = 'NP'
-                            TcpPort = 0
+                            Ensure            = 'Present'
+                            Name              = 'MyAlias'
+                            ServerName        = 'SqlNode.company.local'
+                            Protocol          = 'NP'
+                            TcpPort           = 0
                             UseDynamicTcpPort = $false
-                            PipeName = '\\SqlNode.company.local\PIPE\sql\query'
+                            PipeName          = '\\SqlNode.company.local\PIPE\sql\query'
                         }
                     }
                 }
@@ -1007,13 +1010,13 @@ Describe 'SqlAlias\Test-TargetResource' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Present'
-                            Name = 'MyAlias'
-                            ServerName = 'SqlNode.company.local'
-                            Protocol = 'TCP'
-                            TcpPort = 1433
+                            Ensure            = 'Present'
+                            Name              = 'MyAlias'
+                            ServerName        = 'SqlNode.company.local'
+                            Protocol          = 'TCP'
+                            TcpPort           = 1433
                             UseDynamicTcpPort = $false
-                            PipeName = ''
+                            PipeName          = ''
                         }
                     }
                 }
@@ -1040,410 +1043,217 @@ Describe 'SqlAlias\Test-TargetResource' {
     }
 }
 
-# Describe 'SqlAlias\Set-TargetResource' {
-#     Mock -CommandName New-Item
-#     Mock -CommandName Set-ItemProperty
-#     Mock -CommandName Remove-ItemProperty
-#     Mock -CommandName Test-Path -MockWith {
-#         return $false
-#     }
-
-#     # Mocking 64-bit OS
-#     Mock -CommandName Get-CimInstance -MockWith {
-#         return New-Object -TypeName Object |
-#             Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
-#     } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' }
-
-#     Context 'When the system is not in the desired state for 64-bit OS using TCP' {
-#         It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty twice each when desired state should be present for protocol TCP' {
-#             $testParameters = @{
-#                 Name = $name
-#                 Protocol = 'TCP'
-#                 ServerName = $serverNameTcp
-#                 TcpPort = $tcpPort
-#             }
-
-#             Set-TargetResource @testParameters
-
-#             Should -Invoke -CommandName Test-Path -Exactly 2 -Scope It
-#             Should -Invoke -CommandName New-Item -Exactly 2 -Scope It
-#             Should -Invoke -CommandName Set-ItemProperty -Exactly 2 -Scope It
-#         }
-
-#         It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty twice each when desired state should be present for protocol Named Pipes' {
-#             $testParameters = @{
-#                 Name = $name
-#                 Protocol = 'NP'
-#                 ServerName = $serverNameNamedPipes
-#             }
-
-#             Set-TargetResource @testParameters
-
-#             Should -Invoke -CommandName Test-Path -Exactly 2 -Scope It
-#             Should -Invoke -CommandName New-Item -Exactly 2 -Scope It
-#             Should -Invoke -CommandName Set-ItemProperty -Exactly 2 -Scope It
-#         }
-
-#         It 'Should call mocked functions Test-Path and Remove-ItemProperty twice each when desired state should be absent for 64-bit OS' {
-#             Mock -CommandName Test-Path -MockWith {
-#                 return $true
-#             }
-
-#             $testParameters = @{
-#                 Ensure = 'Absent'
-#                 Name = $name
-#                 ServerName = $serverNameTcp
-#             }
-
-#             Set-TargetResource @testParameters
-
-#             Should -Invoke -CommandName Test-Path -Exactly 2 -Scope It
-#             Should -Invoke -CommandName Remove-ItemProperty -Exactly 2 -Scope It
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state for 64-bit OS using UseDynamicTcpPort' {
-#         It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty twice each when desired state should be present for protocol TCP' {
-#             $testParameters = @{
-#                 Name = $name
-#                 Protocol = 'TCP'
-#                 ServerName = $serverNameTcp
-#                 UseDynamicTcpPort = $true
-#             }
-
-#             Set-TargetResource @testParameters
-
-#             Should -Invoke -CommandName Test-Path -Exactly 2 -Scope It
-#             Should -Invoke -CommandName New-Item -Exactly 2 -Scope It
-#             Should -Invoke -CommandName Set-ItemProperty -Exactly 2 -Scope It
-#         }
-
-#         It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty twice each when desired state should be present for protocol Named Pipes' {
-#             $testParameters = @{
-#                 Name = $name
-#                 Protocol = 'NP'
-#                 ServerName = $serverNameNamedPipes
-#             }
-
-#             Set-TargetResource @testParameters
-
-#             Should -Invoke -CommandName Test-Path -Exactly 2 -Scope It
-#             Should -Invoke -CommandName New-Item -Exactly 2 -Scope It
-#             Should -Invoke -CommandName Set-ItemProperty -Exactly 2 -Scope It
-#         }
-
-#         It 'Should call mocked functions Test-Path and Remove-ItemProperty twice each when desired state should be absent for 64-bit OS' {
-#             Mock -CommandName Test-Path -MockWith {
-#                 return $true
-#             }
-
-#             $testParameters = @{
-#                 Ensure = 'Absent'
-#                 Name = $name
-#                 ServerName = $serverNameTcp
-#             }
-
-#             Set-TargetResource @testParameters
-
-#             Should -Invoke -CommandName Test-Path -Exactly 2 -Scope It
-#             Should -Invoke -CommandName Remove-ItemProperty -Exactly 2 -Scope It
-#         }
-#     }
-
-#     # Mocking 32-bit OS
-#     Mock -CommandName Get-CimInstance -MockWith {
-#         return New-Object -TypeName Object |
-#             Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '32-bit' -PassThru -Force
-#     } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' }
-
-#     Context 'When the system is not in the desired state for 32-bit OS using TCP' {
-#         It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty once each when desired state should be present for protocol TCP' {
-#             $testParameters = @{
-#                 Name = $name
-#                 Protocol = 'TCP'
-#                 ServerName = $serverNameTcp
-#                 TcpPort = $tcpPort
-#             }
-
-#             Set-TargetResource @testParameters
-
-#             Should -Invoke -CommandName Test-Path -Exactly 1 -Scope It
-#             Should -Invoke -CommandName New-Item -Exactly 1 -Scope It
-#             Should -Invoke -CommandName Set-ItemProperty -Exactly 1 -Scope It
-#         }
-
-#         It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty once each when desired state should be present for protocol Named Pipes' {
-#             $testParameters = @{
-#                 Name = $name
-#                 Protocol = 'NP'
-#                 ServerName = $serverNameNamedPipes
-#             }
-
-#             Set-TargetResource @testParameters
-
-#             Should -Invoke -CommandName Test-Path -Exactly 1 -Scope It
-#             Should -Invoke -CommandName New-Item -Exactly 1 -Scope It
-#             Should -Invoke -CommandName Set-ItemProperty -Exactly 1 -Scope It
-#         }
-
-#         It 'Should call mocked functions Test-Path and Remove-ItemProperty once each when desired state should be absent for 32-bit OS' {
-#             Mock -CommandName Test-Path -MockWith {
-#                 return $true
-#             }
-
-#             $testParameters = @{
-#                 Ensure = 'Absent'
-#                 Name = $name
-#                 ServerName = $serverNameNamedPipes
-#             }
-
-#             Set-TargetResource @testParameters
-
-#             Should -Invoke -CommandName Test-Path -Exactly 1 -Scope It
-#             Should -Invoke -CommandName Remove-ItemProperty -Exactly 1 -Scope It
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state for 32-bit OS using UseDynamicTcpPort' {
-#         It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty once each when desired state should be present for protocol TCP' {
-#             $testParameters = @{
-#                 Name = $name
-#                 Protocol = 'TCP'
-#                 ServerName = $serverNameTcp
-#                 UseDynamicTcpPort = $true
-#             }
-
-#             Set-TargetResource @testParameters
-
-#             Should -Invoke -CommandName Test-Path -Exactly 1 -Scope It
-#             Should -Invoke -CommandName New-Item -Exactly 1 -Scope It
-#             Should -Invoke -CommandName Set-ItemProperty -Exactly 1 -Scope It
-#         }
-
-#         It 'Should call mocked functions Test-Path, New-Item and Set-ItemProperty once each when desired state should be present for protocol Named Pipes' {
-#             $testParameters = @{
-#                 Name = $name
-#                 Protocol = 'NP'
-#                 ServerName = $serverNameNamedPipes
-#             }
-
-#             Set-TargetResource @testParameters
-
-#             Should -Invoke -CommandName Test-Path -Exactly 1 -Scope It
-#             Should -Invoke -CommandName New-Item -Exactly 1 -Scope It
-#             Should -Invoke -CommandName Set-ItemProperty -Exactly 1 -Scope It
-#         }
-
-#         It 'Should call mocked functions Test-Path and Remove-ItemProperty once each when desired state should be absent for 32-bit OS' {
-#             Mock -CommandName Test-Path -MockWith {
-#                 return $true
-#             }
-
-#             $testParameters = @{
-#                 Ensure = 'Absent'
-#                 Name = $name
-#                 ServerName = $serverNameNamedPipes
-#             }
-
-#             Set-TargetResource @testParameters
-
-#             Should -Invoke -CommandName Test-Path -Exactly 1 -Scope It
-#             Should -Invoke -CommandName Remove-ItemProperty -Exactly 1 -Scope It
-#         }
-#     }
-# }
-
-# Describe 'SqlAlias\Test-TargetResource' {
-#     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $name } -MockWith {
-#         return @{
-#             'MyAlias' = 'DBMSSOCN,SqlNode.company.local,1433'
-#         }
-#     }
-
-#     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node -and $Name -eq $name } -MockWith {
-#         return @{
-#             'MyAlias' = 'DBMSSOCN,SqlNode.company.local,1433'
-#         }
-#     }
-
-#     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $unknownName } -MockWith {
-#         return $null
-#     }
-
-#     # Mocking 64-bit OS
-#     Mock -CommandName Get-CimInstance -MockWith {
-#         return New-Object -TypeName Object |
-#             Add-Member -MemberType NoteProperty -Name OSArchitecture -Value '64-bit' -PassThru -Force
-#     } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' }
-
-#     Context 'When the system is in the desired state (Absent)' {
-#         BeforeAll {
-#             Mock -CommandName Get-TargetResource -MockWith {
-#                 return @{
-#                     Ensure = 'Absent'
-#                 }
-#             }
-
-#             $testParameters = @{
-#                 Ensure = 'Absent'
-#                 Name = $name
-#                 ServerName = $serverNameTcp
-#             }
-#         }
-
-#         It "Should return true from the test method" {
-#             Test-TargetResource @testParameters | Should -Be $true
-
-#             Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-#         }
-#     }
-
-#     Context 'When the system is in the desired state (when using TCP)' {
-#         $testParameters = @{
-#             Name = $name
-#             ServerName = $serverNameTcp
-#         }
-
-#         It "Should return true from the test method" {
-#             Test-TargetResource @testParameters | Should -Be $true
-#         }
-
-#         It 'Should call the mocked functions exactly 1 time each' {
-#             Should -Invoke -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
-#                 -Exactly -Times 1 -Scope Context
-
-#             Should -Invoke -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
-#                 -Exactly -Times 1 -Scope Context
-
-#             Should -Invoke -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
-#                 -Exactly -Times 1 -Scope Context
-#         }
-#     }
-
-#     Context 'When the system is in the desired state (when using UseDynamicTcpPort)' {
-#         $testParameters = @{
-#             Name = $name
-#             ServerName = $serverNameTcp
-#         }
-
-#         It "Should return true from the test method" {
-#             Test-TargetResource @testParameters | Should -Be $true
-#         }
-
-#         It 'Should call the mocked functions exactly 1 time each' {
-#             Should -Invoke -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
-#                 -Exactly -Times 1 -Scope Context
-
-#             Should -Invoke -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
-#                 -Exactly -Times 1 -Scope Context
-
-#             Should -Invoke -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
-#                 -Exactly -Times 1 -Scope Context
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state (when using TCP)' {
-#         $testParameters = @{
-#             Name = $unknownName
-#             ServerName = $serverNameTcp
-#         }
-
-#         It "Should return false from the test method" {
-#             Test-TargetResource @testParameters | Should -Be $false
-#         }
-
-#         It 'Should call the mocked functions exactly 1 time each' {
-#             Should -Invoke -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
-#                 -Exactly -Times 1 -Scope Context
-
-#             Should -Invoke -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
-#                 -Exactly -Times 1 -Scope Context
-
-#             Should -Invoke -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
-#                 -Exactly -Times 1 -Scope Context
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state (when using UseDynamicTcpPort)' {
-#         $testParameters = @{
-#             Name = $unknownName
-#             ServerName = $serverNameTcp
-#         }
-
-#         It "Should return false from the test method" {
-#             Test-TargetResource @testParameters | Should -Be $false
-#         }
-
-#         It 'Should call the mocked functions exactly 1 time each' {
-#             Should -Invoke -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
-#                 -Exactly -Times 1 -Scope Context
-
-#             Should -Invoke -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
-#                 -Exactly -Times 1 -Scope Context
-
-#             Should -Invoke -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
-#                 -Exactly -Times 1 -Scope Context
-#         }
-#     }
-
-#     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $name } -MockWith {
-#         return @{
-#             'MyAlias' = 'DBNMPNTW,\\SqlNode\PIPE\sql\query'
-#         }
-#     }
-
-#     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node -and $Name -eq $name } -MockWith {
-#         return @{
-#             'MyAlias' = 'DBNMPNTW,\\SqlNode\PIPE\sql\query'
-#         }
-#     }
-
-#     Mock -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath -and $Name -eq $unknownName } -MockWith {
-#         return $null
-#     }
-
-#     Context 'When the system is in the desired state (when using Named Pipes)' {
-#         $testParameters = @{
-#             Name = $name
-#             ServerName = $serverNameNamedPipes
-#         }
-
-#         It "Should return true from the test method" {
-#             $testParameters.Add('Protocol','NP')
-#             Test-TargetResource @testParameters | Should -Be $true
-#         }
-
-#         It 'Should call the mocked functions exactly 1 time each' {
-#             Should -Invoke -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
-#                 -Exactly -Times 1 -Scope Context
-
-#             Should -Invoke -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
-#                 -Exactly -Times 1 -Scope Context
-
-#             Should -Invoke -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
-#                 -Exactly -Times 1 -Scope Context
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state (when using Named Pipes)' {
-#         $testParameters = @{
-#             Name = $unknownName
-#             ServerName = $unknownServerName
-#         }
-
-#         It "Should return false from the test method" {
-#             Test-TargetResource @testParameters | Should -Be $false
-#         }
-
-#         It 'Should call the mocked functions exactly 1 time each' {
-#             Should -Invoke -CommandName Get-CimInstance -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' } `
-#                 -Exactly -Times 1 -Scope Context
-
-#             Should -Invoke -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPath } `
-#                 -Exactly -Times 1 -Scope Context
-
-#             Should -Invoke -CommandName Get-ItemProperty -ParameterFilter { $Path -eq $registryPathWow6432Node } `
-#                 -Exactly -Times 1 -Scope Context
-#         }
-#     }
-# }
+Describe 'SqlAlias\Set-TargetResource' {
+    BeforeAll {
+        $mockRegistryPath = 'HKLM:\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo'
+        $mockRegistryPathWow6432Node = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSSQLServer\Client\ConnectTo'
+
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                Name = 'MyAlias'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockSetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            Mock -CommandName New-Item
+            Mock -CommandName Set-ItemProperty
+            Mock -CommandName Remove-ItemProperty
+            Mock -CommandName Test-Path -MockWith {
+                return $false
+            }
+        }
+
+        Context 'When <OSArchitecture> node is using TCP' -ForEach @(
+            @{
+                OSArchitecture = '64-bit'
+            }
+            @{
+                OSArchitecture = '32-bit'
+            }
+        ) {
+            BeforeAll {
+                # Mocking OSArchitecture
+                Mock -CommandName Get-CimInstance -MockWith {
+                    return New-Object -TypeName 'Object' |
+                        Add-Member -MemberType NoteProperty -Name 'OSArchitecture' -Value $OSArchitecture -PassThru -Force
+                } -ParameterFilter { $ClassName -eq 'win32_OperatingSystem' }
+            }
+
+            Context 'When the alias should use static TCP port' {
+                It 'Should return $true' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockSetTargetResourceParameters.Name = 'MyAlias'
+                        $script:mockSetTargetResourceParameters.Protocol = 'TCP'
+                        $script:mockSetTargetResourceParameters.TcpPort = 1433
+                        $script:mockSetTargetResourceParameters.ServerName = 'SqlNode.company.local'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                        $ClassName -eq 'win32_OperatingSystem'
+                    } -Exactly -Times 1 -Scope Context
+
+                    Should -Invoke -CommandName Remove-ItemProperty -Exactly -Times 0 -Scope Context
+
+                    Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                        $Path -eq $mockRegistryPath
+                    } -Exactly -Times 1 -Scope Context
+
+                    if ($OSArchitecture -eq '64-bit')
+                    {
+                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                            $Path -eq $mockRegistryPathWow6432Node
+                        } -Exactly -Times 1 -Scope Context
+                    }
+                    else
+                    {
+                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                            $Path -eq $mockRegistryPathWow6432Node
+                        } -Exactly -Times 0 -Scope Context
+                    }
+                }
+            }
+
+            Context 'When the alias should use dynamic TCP port' {
+                It 'Should return $true' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockSetTargetResourceParameters.Name = 'MyAlias'
+                        $script:mockSetTargetResourceParameters.Protocol = 'TCP'
+                        $script:mockSetTargetResourceParameters.UseDynamicTcpPort = $true
+                        $script:mockSetTargetResourceParameters.ServerName = 'SqlNode.company.local'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                        $ClassName -eq 'win32_OperatingSystem'
+                    } -Exactly -Times 1 -Scope Context
+
+                    Should -Invoke -CommandName Remove-ItemProperty -Exactly -Times 0 -Scope Context
+
+                    Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                        $Path -eq $mockRegistryPath
+                    } -Exactly -Times 1 -Scope Context
+
+                    if ($OSArchitecture -eq '64-bit')
+                    {
+                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                            $Path -eq $mockRegistryPathWow6432Node
+                        } -Exactly -Times 1 -Scope Context
+                    }
+                    else
+                    {
+                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                            $Path -eq $mockRegistryPathWow6432Node
+                        } -Exactly -Times 0 -Scope Context
+                    }
+                }
+            }
+
+            Context 'When the alias should use Named Pipes' {
+                It 'Should return $true' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockSetTargetResourceParameters.Name = 'MyAlias'
+                        $script:mockSetTargetResourceParameters.Protocol = 'NP'
+                        $script:mockSetTargetResourceParameters.ServerName = 'SqlNode.company.local'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                        $ClassName -eq 'win32_OperatingSystem'
+                    } -Exactly -Times 1 -Scope Context
+
+                    Should -Invoke -CommandName Remove-ItemProperty -Exactly -Times 0 -Scope Context
+
+                    Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                        $Path -eq $mockRegistryPath
+                    } -Exactly -Times 1 -Scope Context
+
+                    if ($OSArchitecture -eq '64-bit')
+                    {
+                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                            $Path -eq $mockRegistryPathWow6432Node
+                        } -Exactly -Times 1 -Scope Context
+                    }
+                    else
+                    {
+                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                            $Path -eq $mockRegistryPathWow6432Node
+                        } -Exactly -Times 0 -Scope Context
+                    }
+                }
+            }
+
+            Context 'When the alias should not exist' {
+                BeforeAll {
+                    # Override the mock above that return $false.
+                    Mock -CommandName Test-Path -MockWith {
+                        return $true
+                    }
+                }
+
+                It 'Should return $true' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $script:mockSetTargetResourceParameters.Ensure = 'Absent'
+                        $script:mockSetTargetResourceParameters.Name = 'MyAlias'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+                }
+
+                It 'Should call the correct mocks' {
+                    Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                        $ClassName -eq 'win32_OperatingSystem'
+                    } -Exactly -Times 1 -Scope Context
+
+
+                    Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                        $Path -eq $mockRegistryPath
+                    } -Exactly -Times 0 -Scope Context
+
+                    if ($OSArchitecture -eq '64-bit')
+                    {
+                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                            $Path -eq $mockRegistryPathWow6432Node
+                        } -Exactly -Times 0 -Scope Context
+
+                        Should -Invoke -CommandName Remove-ItemProperty -Exactly -Times 2 -Scope Context
+                    }
+                    else
+                    {
+                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                            $Path -eq $mockRegistryPathWow6432Node
+                        } -Exactly -Times 0 -Scope Context
+
+                        Should -Invoke -CommandName Remove-ItemProperty -Exactly -Times 1 -Scope Context
+                    }
+                }
+            }
+        }
+    }
+}
