@@ -19,6 +19,12 @@
         test.
 #>
 
+# Suppressing this rule because ConvertTo-SecureString is used to simplify the tests.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
+
 BeforeDiscovery {
     try
     {
@@ -242,7 +248,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
             { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
 
             Should -Invoke -CommandName Get-Command -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Start-Process  -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
         }
 
         It 'Should not use Unbuffered IO when copying' {
@@ -448,7 +454,6 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
             }
 
             { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
-
         }
 
         It 'Should finish successfully with exit code 2' {
@@ -460,7 +465,6 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
             }
 
             { Copy-ItemWithRobocopy @copyItemWithRobocopyParameter } | Should -Not -Throw
-
         }
 
         It 'Should finish successfully with exit code 3' {
@@ -835,7 +839,6 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
                 Should -Invoke -CommandName Get-Service -Scope It -Exactly -Times 1
                 Should -Invoke -CommandName Restart-Service -Scope It -Exactly -Times 1
                 Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 1
-
             }
 
             Context 'When skipping the cluster check' {
@@ -1108,7 +1111,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
     Context 'When clustered instance is offline' {
         BeforeAll {
             Mock -CommandName Get-CimInstance -MockWith {
-                $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+                $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource', 'root/MSCluster'
 
                 $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (MSSQLSERVER)' -TypeName 'String'
                 $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
@@ -1144,10 +1147,10 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
     }
 
     Context 'When restarting a Sql Server clustered instance' {
-        Context 'When it is the default instance'{
+        Context 'When it is the default instance' {
             BeforeAll {
                 Mock -CommandName Get-CimInstance -MockWith {
-                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource', 'root/MSCluster'
 
                     $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (MSSQLSERVER)' -TypeName 'String'
                     $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
@@ -1161,7 +1164,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
                 }
 
                 Mock -CommandName Get-CimAssociatedInstance -MockWith {
-                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource', 'root/MSCluster'
 
                     $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server Agent ($($InputObject.PrivateProperties.InstanceName))" -TypeName 'String'
                     $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server Agent' -TypeName 'String'
@@ -1196,10 +1199,10 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
             }
         }
 
-        Context 'When it is a named instance'{
+        Context 'When it is a named instance' {
             BeforeAll {
                 Mock -CommandName Get-CimInstance -MockWith {
-                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource', 'root/MSCluster'
 
                     $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (DSCTEST)' -TypeName 'String'
                     $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
@@ -1213,7 +1216,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
                 }
 
                 Mock -CommandName Get-CimAssociatedInstance -MockWith {
-                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource', 'root/MSCluster'
 
                     $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server Agent ($($InputObject.PrivateProperties.InstanceName))" -TypeName 'String'
                     $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server Agent' -TypeName 'String'
@@ -1252,7 +1255,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
     Context 'When restarting a Sql Server clustered instance and the SQL Agent is offline' {
         BeforeAll {
             Mock -CommandName Get-CimInstance -MockWith {
-                $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+                $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource', 'root/MSCluster'
 
                 $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (MSSQLSERVER)' -TypeName 'String'
                 $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
@@ -1266,7 +1269,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
             }
 
             Mock -CommandName Get-CimAssociatedInstance -MockWith {
-                $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+                $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource', 'root/MSCluster'
 
                 $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server Agent ($($InputObject.PrivateProperties.InstanceName))" -TypeName 'String'
                 $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server Agent' -TypeName 'String'
@@ -1301,7 +1304,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
         Context 'When both the SQL Server and SQL Agent cluster resources is owned by the current node' {
             BeforeAll {
                 Mock -CommandName Get-CimInstance -MockWith {
-                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource', 'root/MSCluster'
 
                     $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (MSSQLSERVER)' -TypeName 'String'
                     $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
@@ -1316,7 +1319,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
                 }
 
                 Mock -CommandName Get-CimAssociatedInstance -MockWith {
-                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource', 'root/MSCluster'
 
                     $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server Agent ($($InputObject.PrivateProperties.InstanceName))" -TypeName 'String'
                     $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server Agent' -TypeName 'String'
@@ -1355,7 +1358,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
         Context 'When both the SQL Server and SQL Agent cluster resources is owned by the current node but the SQL Agent cluster resource is offline' {
             BeforeAll {
                 Mock -CommandName Get-CimInstance -MockWith {
-                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource', 'root/MSCluster'
 
                     $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (MSSQLSERVER)' -TypeName 'String'
                     $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
@@ -1370,7 +1373,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
                 }
 
                 Mock -CommandName Get-CimAssociatedInstance -MockWith {
-                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource', 'root/MSCluster'
 
                     $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server Agent ($($InputObject.PrivateProperties.InstanceName))" -TypeName 'String'
                     $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server Agent' -TypeName 'String'
@@ -1409,7 +1412,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
         Context 'When only the SQL Server cluster resources is owned by the current node' {
             BeforeAll {
                 Mock -CommandName Get-CimInstance -MockWith {
-                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource', 'root/MSCluster'
 
                     $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (MSSQLSERVER)' -TypeName 'String'
                     $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
@@ -1424,7 +1427,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
                 }
 
                 Mock -CommandName Get-CimAssociatedInstance -MockWith {
-                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource', 'root/MSCluster'
 
                     $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value "SQL Server Agent ($($InputObject.PrivateProperties.InstanceName))" -TypeName 'String'
                     $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server Agent' -TypeName 'String'
@@ -1463,7 +1466,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlCluster
         Context 'When the SQL Server cluster resources is not owned by the current node' {
             BeforeAll {
                 Mock -CommandName Get-CimInstance -MockWith {
-                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource','root/MSCluster'
+                    $mock = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList 'MSCluster_Resource', 'root/MSCluster'
 
                     $mock | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQL Server (MSSQLSERVER)' -TypeName 'String'
                     $mock | Add-Member -MemberType NoteProperty -Name 'Type' -Value 'SQL Server' -TypeName 'String'
@@ -1520,7 +1523,7 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
 
                             if ($DataSource -ne $mockExpectedDataSource)
                             {
-                                throw ("Datasource was expected to be '{0}', but was '{1}'." -f $mockExpectedDataSource,$dataSource)
+                                throw ("Datasource was expected to be '{0}', but was '{1}'." -f $mockExpectedDataSource, $dataSource)
                             }
 
                             if ($mockThrowInvalidOperation)
@@ -1887,7 +1890,7 @@ Describe 'SqlServerDsc.Common\Invoke-Query' -Tag 'InvokeQuery' {
                 $mockExpectedQuery = $queryParameters.Query.Clone()
 
                 # The `Secret PassPhrase` is using the casing like this to test case-insensitive replace.
-                { Invoke-Query @queryParameters -RedactText @('Pa\sSw0rd1','Secret PassPhrase') } | Should -Not -Throw
+                { Invoke-Query @queryParameters -RedactText @('Pa\sSw0rd1', 'Secret PassPhrase') } | Should -Not -Throw
             }
         }
     }
@@ -1975,7 +1978,7 @@ Describe 'SqlServerDsc.Common\Invoke-Query' -Tag 'InvokeQuery' {
                 $mockExpectedQuery = $queryParameters.Query.Clone()
 
                 # The `Secret PassPhrase` is using the casing like this to test case-insensitive replace.
-                { Invoke-Query @queryParameters -RedactText @('Pa\sSw0rd1','Secret PassPhrase') -WithResults } | Should -Not -Throw
+                { Invoke-Query @queryParameters -RedactText @('Pa\sSw0rd1', 'Secret PassPhrase') -WithResults } | Should -Not -Throw
             }
         }
     }
@@ -2071,7 +2074,6 @@ Describe 'SqlServerDsc.Common\Update-AvailabilityGroupReplica' -Tag 'UpdateAvail
             $availabilityReplica = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
 
             { Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityReplica } | Should -Not -Throw
-
         }
 
         It 'Should throw the correct error, AlterAvailabilityGroupReplicaFailed, when altering the Availability Group Replica fails' {
@@ -2608,7 +2610,7 @@ Describe 'SqlServerDsc.Common\Get-PrimaryReplicaServerObject' -Tag 'GetPrimaryRe
             )
 
             # Type the mock as a server object
-            $mock.PSObject.TypeNames.Insert(0,'Microsoft.SqlServer.Management.Smo.Server')
+            $mock.PSObject.TypeNames.Insert(0, 'Microsoft.SqlServer.Management.Smo.Server')
 
             return $mock
         }
@@ -2663,7 +2665,7 @@ Describe 'SqlServerDsc.Common\Test-AvailabilityReplicaSeedingModeAutomatic' -Tag
             )
 
             # Type the mock as a server object
-            $mock.PSObject.TypeNames.Insert(0,'Microsoft.SqlServer.Management.Smo.Server')
+            $mock.PSObject.TypeNames.Insert(0, 'Microsoft.SqlServer.Management.Smo.Server')
 
             return $mock
         }
@@ -2825,7 +2827,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                 But since the mock New-Object will also be called without arguments, we first
                 have to evaluate if $ArgumentList contains values.
             #>
-            if( $ArgumentList.Count -gt 0)
+            if ( $ArgumentList.Count -gt 0)
             {
                 $serverInstance = $ArgumentList[0]
             }
@@ -3146,8 +3148,8 @@ Describe 'SqlServerDsc.Common\Test-ClusterPermissions' -Tag 'TestClusterPermissi
         $mockServerObject.ServiceName = 'MSSQLSERVER'
 
         $mockLogins = @{
-            $clusterServiceName = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $mockServerObject,$clusterServiceName
-            $systemAccountName = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $mockServerObject,$systemAccountName
+            $clusterServiceName = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $mockServerObject, $clusterServiceName
+            $systemAccountName = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $mockServerObject, $systemAccountName
         }
 
         $mockServerObject.Logins = $mockLogins
@@ -3160,7 +3162,7 @@ Describe 'SqlServerDsc.Common\Test-ClusterPermissions' -Tag 'TestClusterPermissi
         It "Should throw the correct error when the logins '$($clusterServiceName)' or '$($systemAccountName)' are absent" {
             $mockServerObject.Logins = @{}
 
-            { Test-ClusterPermissions -ServerObject $mockServerObject } | Should -Throw -ExpectedMessage ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'. (SQLCOMMON0049)" -f $mockServerObject.NetName,$mockServerObject.ServiceName )
+            { Test-ClusterPermissions -ServerObject $mockServerObject } | Should -Throw -ExpectedMessage ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'. (SQLCOMMON0049)" -f $mockServerObject.NetName, $mockServerObject.ServiceName )
 
             Should -Invoke -CommandName Test-LoginEffectivePermissions -Scope It -Times 0 -Exactly -ParameterFilter {
                 $LoginName -eq $clusterServiceName
@@ -3171,7 +3173,7 @@ Describe 'SqlServerDsc.Common\Test-ClusterPermissions' -Tag 'TestClusterPermissi
         }
 
         It "Should throw the correct error when the logins '$($clusterServiceName)' and '$($systemAccountName)' do not have permissions to manage availability groups" {
-            { Test-ClusterPermissions -ServerObject $mockServerObject } | Should -Throw -ExpectedMessage ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'. (SQLCOMMON0049)" -f $mockServerObject.NetName,$mockServerObject.ServiceName )
+            { Test-ClusterPermissions -ServerObject $mockServerObject } | Should -Throw -ExpectedMessage ( "The cluster does not have permissions to manage the Availability Group on '{0}\{1}'. Grant 'Connect SQL', 'Alter Any Availability Group', and 'View Server State' to either '$($clusterServiceName)' or '$($systemAccountName)'. (SQLCOMMON0049)" -f $mockServerObject.NetName, $mockServerObject.ServiceName )
 
             Should -Invoke -CommandName Test-LoginEffectivePermissions -Scope It -Times 1 -Exactly -ParameterFilter {
                 $LoginName -eq $clusterServiceName
@@ -3226,7 +3228,6 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
                 )
             }
         }
-
     }
 
     Context 'When restarting a Report Services default instance' {
@@ -3521,7 +3522,7 @@ Describe 'SqlServerDsc.Common\Find-ExceptionByNumber' -Tag 'FindExceptionByNumbe
         $mockException | Add-Member -Name 'Number' -Value 1 -MemberType NoteProperty
     }
 
-    Context 'When searching Exception objects'{
+    Context 'When searching Exception objects' {
         It 'Should return true for main exception' {
             Find-ExceptionByNumber -ExceptionToSearch $mockException -ErrorNumber 1 | Should -Be $true
         }
@@ -3557,7 +3558,7 @@ Describe 'SqlServerDsc.Common\Get-ProtocolNameProperties' -Tag 'GetProtocolNameP
         $result = Get-ProtocolNameProperties -ProtocolName $ParameterValue
 
         $result.DisplayName | Should -Be $DisplayName
-        $result.Name | Should -Be  $Name
+        $result.Name | Should -Be $Name
     }
 }
 
@@ -3683,7 +3684,7 @@ Describe 'Test-FeatureFlag' -Tag 'TestFeatureFlag' {
 
     Context 'When feature flags was provided' {
         It 'Should return $true' {
-            Test-FeatureFlag -FeatureFlag @('FirstFlag','SecondFlag') -TestFlag 'SecondFlag' | Should -Be $true
+            Test-FeatureFlag -FeatureFlag @('FirstFlag', 'SecondFlag') -TestFlag 'SecondFlag' | Should -Be $true
         }
     }
 

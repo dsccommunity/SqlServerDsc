@@ -3,6 +3,10 @@
         Unit test for DSC_SqlAgentAlert DSC resource.
 #>
 
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
+
 BeforeDiscovery {
     try
     {
@@ -602,7 +606,7 @@ Describe 'DSC_SqlAgentAlert\Set-TargetResource' -Tag 'Set' {
         }
     }
 
-    Context 'When the system is not in the desired state and Ensure is set to Present'{
+    Context 'When the system is not in the desired state and Ensure is set to Present' {
         BeforeAll {
             Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             Mock -CommandName New-Object -MockWith $mockNewSqlAgentAlert -ParameterFilter {
