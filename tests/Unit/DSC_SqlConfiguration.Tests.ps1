@@ -259,12 +259,22 @@ Describe 'SqlConfiguration\Set-TargetResource' {
                     }
 
                     # Add the Alter method.
-                    $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
+                    $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {
+                        InModuleScope -ScriptBlock {
+                            $script:mockAlterMethodCallCount += 1
+                        }
+                    }
 
                     return $mock
                 }
             }
 
+            BeforeEach {
+                InModuleScope -ScriptBlock {
+                    # Reset method call count before each It-block.
+                    $script:mockAlterMethodCallCount = 0
+                }
+            }
 
             It 'Should call the correct mocks and mocked methods for setting <OptionName>' {
                 InModuleScope -Parameters $_ -ScriptBlock {
@@ -280,6 +290,8 @@ Describe 'SqlConfiguration\Set-TargetResource' {
                     }
 
                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockAlterMethodCallCount | Should -Be 1
                 }
 
                 Should -Invoke -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
