@@ -3,6 +3,10 @@
         Unit test for DSC_SqlRS DSC resource.
 #>
 
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
+
 BeforeDiscovery {
     try
     {
@@ -606,7 +610,8 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 BeforeEach {
                     Mock -CommandName Get-CimInstance -MockWith {
                         return $null
-                    } -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter                         }
+                    } -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter
+                }
 
                 It 'Should throw the correct error message' {
                     InModuleScope -ScriptBlock {

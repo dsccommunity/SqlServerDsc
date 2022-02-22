@@ -3,6 +3,10 @@
         Unit test for DSC_SqlAgentFailsafe DSC resource.
 #>
 
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
+
 BeforeDiscovery {
     try
     {
@@ -473,7 +477,7 @@ Describe 'DSC_SqlAgentFailsafe\Set-TargetResource' -Tag 'Set' {
         }
     }
 
-    Context 'When the system is not in the desired state and Ensure is set to Present'{
+    Context 'When the system is not in the desired state and Ensure is set to Present' {
         BeforeAll {
             Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
         }
@@ -499,7 +503,7 @@ Describe 'DSC_SqlAgentFailsafe\Set-TargetResource' -Tag 'Set' {
             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
         }
 
-        It 'Should not throw when changing the severity'  {
+        It 'Should not throw when changing the severity' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
