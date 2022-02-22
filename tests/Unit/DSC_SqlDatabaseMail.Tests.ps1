@@ -351,6 +351,36 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
             }
         }
     }
+
+    Context 'When the database mail account is not found' {
+        BeforeAll {
+            $mockDynamicDatabaseMailEnabledRunValue = $mockDatabaseMailEnabledConfigValue
+
+            $inModuleScopeParameters = @{
+                MockEmailAddress   = $mockEmailAddress
+                MockMailServerName = $mockMailServerName
+                MockProfileName    = $mockProfileName
+            }
+
+            InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
+                $script:mockGetTargetResourceParameters = $mockDefaultParameters.Clone()
+                $script:mockGetTargetResourceParameters.AccountName = 'UnknownAccount'
+                $script:mockGetTargetResourceParameters.EmailAddress = $MockEmailAddress
+                $script:mockGetTargetResourceParameters.MailServerName = $MockMailServerName
+                $script:mockGetTargetResourceParameters.ProfileName = $MockProfileName
+            }
+
+            Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
+        }
+
+        It 'Should return ''Absent'' for property Ensure' {
+            InModuleScope -ScriptBlock {
+                $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
+
+                $getTargetResourceResult.Ensure | Should -Be 'Absent'
+            }
+        }
+    }
 }
 
 Describe 'DSC_SqlDatabaseMail\Test-TargetResource' -Tag 'Test' {
@@ -926,6 +956,8 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                         $setTargetResourceParameters = $mockDefaultParameters.Clone()
                         $setTargetResourceParameters['AccountName'] = 'MissingAccount'
                         $setTargetResourceParameters['ProfileName'] = 'MissingProfile'
+                        # Also passing TcpPort when passing in MailServerName to add to code coverage
+                        $setTargetResourceParameters['TcpPort'] = 2525
 
                         { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
 
