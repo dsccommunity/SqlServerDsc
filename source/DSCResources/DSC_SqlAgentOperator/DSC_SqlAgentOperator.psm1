@@ -300,6 +300,7 @@ function Test-TargetResource
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
     $isOperatorInDesiredState = $true
 
     switch ($Ensure)
@@ -312,30 +313,33 @@ function Test-TargetResource
                     $script:localizedData.SqlAgentOperatorExistsButShouldNot `
                         -f $Name
                 )
+
                 $isOperatorInDesiredState = $false
             }
         }
 
         'Present'
         {
-            if ($getTargetResourceResult.EmailAddress -ne $EmailAddress -and $PSBoundParameters.ContainsKey('EmailAddress'))
-            {
-                Write-Verbose -Message (
-                    $script:localizedData.SqlAgentOperatorExistsButEmailWrong `
-                        -f $Name, $getTargetResourceResult.EmailAddress, $EmailAddress
-                )
-                $isOperatorInDesiredState = $false
-            }
-            elseif ($getTargetResourceResult.Ensure -ne 'Present')
+            if ($getTargetResourceResult.Ensure -ne 'Present')
             {
                 Write-Verbose -Message (
                     $script:localizedData.SqlAgentOperatorDoesNotExistButShould `
                         -f $Name
                 )
+
+                $isOperatorInDesiredState = $false
+            }
+            elseif ($PSBoundParameters.ContainsKey('EmailAddress') -and $getTargetResourceResult.EmailAddress -ne $EmailAddress)
+            {
+                Write-Verbose -Message (
+                    $script:localizedData.SqlAgentOperatorExistsButEmailWrong `
+                        -f $Name, $getTargetResourceResult.EmailAddress, $EmailAddress
+                )
+
                 $isOperatorInDesiredState = $false
             }
         }
     }
-    $isOperatorInDesiredState
-}
 
+    return $isOperatorInDesiredState
+}

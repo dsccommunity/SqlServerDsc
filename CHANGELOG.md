@@ -78,6 +78,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     not correctly return `$false`. Same for an alias that existed with a
     dynamic port but the desired state was to have a static port. Now the
     function `Test-TargetResource` returns `$false` in both these scenarios.
+- SqlAgentOperator
+  - In a certain case the `Test-TargetResource` function returned the wrong
+    verbose message. If passing an e-mail address and the operator did not
+    exist it would wrongly say operator exist but had wrong e-mail address.
+    Truth was that the operator did not exist at all.
 
 ### Added
 
