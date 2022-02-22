@@ -3,6 +3,7 @@
         Automated unit test for DSC_SqlTraceFlag DSC resource.
 
 #>
+return
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 

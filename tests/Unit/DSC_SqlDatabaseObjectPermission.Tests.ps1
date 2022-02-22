@@ -2,7 +2,7 @@
     .SYNOPSIS
         Automated unit test for DSC_DSC_SqlDatabaseObjectPermission DSC resource.
 #>
-
+return
 $script:dscModuleName = 'SqlServerDsc'
 $script:dscResourceName = 'DSC_SqlDatabaseObjectPermission'
 

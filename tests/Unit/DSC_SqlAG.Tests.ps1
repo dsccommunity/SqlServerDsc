@@ -3,6 +3,8 @@
         Automated unit test for DSC_SqlAG DSC resource.
 #>
 
+return
+
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
 $script:dscModuleName = 'SqlServerDsc'
