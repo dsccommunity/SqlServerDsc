@@ -83,6 +83,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     verbose message. If passing an e-mail address and the operator did not
     exist it would wrongly say operator exist but had wrong e-mail address.
     Truth was that the operator did not exist at all.
+- SqlDatabaseMail
+  - Improved the verification of an empty description so that it can handle
+    both empty string and `$null`.
 
 ### Added
 

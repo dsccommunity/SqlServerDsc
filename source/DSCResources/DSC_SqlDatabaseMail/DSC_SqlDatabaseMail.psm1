@@ -148,7 +148,7 @@ function Get-TargetResource
                 $returnValue['ProfileName'] = $databaseMail.Profiles | Select-Object -First 1 -ExpandProperty Name
 
                 # SQL Server returns '' for Description property when value is not set.
-                if ($databaseMailAccount.Description -eq '')
+                if ([System.String]::IsNullOrEmpty($databaseMailAccount.Description))
                 {
                     # Convert empty value to $null
                     $returnValue['Description'] = $null
