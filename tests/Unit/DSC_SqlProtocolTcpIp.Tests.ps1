@@ -3,6 +3,10 @@
         Unit test for DSC_SqlProtocolTcpIp DSC resource.
 #>
 
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
+
 BeforeDiscovery {
     try
     {
@@ -538,12 +542,6 @@ Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
                     }
 
                     InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
-                        # This should be able to be removed in a future version of Pester.
-                        param
-                        (
-                            $MockIPAddress
-                        )
-
                         Set-StrictMode -Version 1.0
 
                         $compareTargetResourceParameters = @{
@@ -602,12 +600,6 @@ Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
                     }
 
                     InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
-                        # This should be able to be removed in a future version of Pester.
-                        param
-                        (
-                            $MockIPAddress
-                        )
-
                         Set-StrictMode -Version 1.0
 
                         $compareTargetResourceParameters = @{
@@ -748,12 +740,6 @@ Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
                     }
 
                     InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
-                        # This should be able to be removed in a future version of Pester.
-                        param
-                        (
-                            $MockIPAddress
-                        )
-
                         Set-StrictMode -Version 1.0
 
                         $compareTargetResourceParameters = @{
@@ -812,12 +798,6 @@ Describe 'SqlProtocolTcpIp\Compare-TargetResourceState' -Tag 'Compare' {
                     }
 
                     InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
-                        # This should be able to be removed in a future version of Pester.
-                        param
-                        (
-                            $MockIPAddress
-                        )
-
                         Set-StrictMode -Version 1.0
 
                         $compareTargetResourceParameters = @{
@@ -1399,12 +1379,6 @@ Describe 'SqlProtocolTcpIp\Set-TargetResource' -Tag 'Set' {
                     }
 
                     InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
-                        # This should be able to be removed in a future version of Pester.
-                        param
-                        (
-                            $MockExpectedIpAddress
-                        )
-
                         Set-StrictMode -Version 1.0
 
                         $setTargetResourceParameters = @{

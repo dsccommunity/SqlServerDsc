@@ -2,6 +2,7 @@
     .SYNOPSIS
         Unit test for DSC_SqlRSSetup DSC resource.
 #>
+
 # Suppressing this rule because ConvertTo-SecureString is used to simplify the tests.
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 # Suppressing this rule because we verify that restart will happen using a global variable.

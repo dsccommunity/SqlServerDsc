@@ -3,6 +3,11 @@
         Unit test for DSC_SqlDatabaseMail DSC resource.
 
 #>
+
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
+
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlDatabaseMail'
@@ -136,14 +141,6 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
                 }
 
                 InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
-                    # This should be able to be removed in a future version of Pester.
-                    param
-                    (
-                        $MockEmailAddress,
-                        $MockMailServerName,
-                        $MockProfileName
-                    )
-
                     $script:mockGetTargetResourceParameters = $mockDefaultParameters.Clone()
                     $script:mockGetTargetResourceParameters.AccountName = 'MissingAccount'
                     $script:mockGetTargetResourceParameters.EmailAddress = $MockEmailAddress
@@ -212,15 +209,6 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
                 }
 
                 InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
-                    # This should be able to be removed in a future version of Pester.
-                    param
-                    (
-                        $MockAccountName,
-                        $MockEmailAddress,
-                        $MockMailServerName,
-                        $MockProfileName
-                    )
-
                     $script:mockGetTargetResourceParameters = $mockDefaultParameters.Clone()
                     $script:mockGetTargetResourceParameters.AccountName = $MockAccountName
                     $script:mockGetTargetResourceParameters.EmailAddress = $MockEmailAddress
@@ -264,20 +252,6 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
                 }
 
                 InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
-                    # This should be able to be removed in a future version of Pester.
-                    param
-                    (
-                        $MockAccountName,
-                        $MockEmailAddress,
-                        $MockMailServerName,
-                        $MockProfileName,
-                        $MockLoggingLevel,
-                        $MockDisplayName,
-                        $MockReplyToAddress,
-                        $MockDescription,
-                        $MockTcpPort
-                    )
-
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
                     $getTargetResourceResult.AccountName | Should -Be $MockAccountName
@@ -323,15 +297,6 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
                 }
 
                 InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
-                    # This should be able to be removed in a future version of Pester.
-                    param
-                    (
-                        $MockAccountName,
-                        $MockEmailAddress,
-                        $MockMailServerName,
-                        $MockProfileName
-                    )
-
                     $script:mockGetTargetResourceParameters = $mockDefaultParameters.Clone()
                     $script:mockGetTargetResourceParameters.AccountName = $MockAccountName
                     $script:mockGetTargetResourceParameters.EmailAddress = $MockEmailAddress
@@ -346,12 +311,6 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
                 }
 
                 InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
-                    # This should be able to be removed in a future version of Pester.
-                    param
-                    (
-                        $MockLoggingLevel
-                    )
-
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
                     $getTargetResourceResult.LoggingLevel | Should -Be $MockLoggingLevel
@@ -474,16 +433,6 @@ Describe 'DSC_SqlDatabaseMail\Test-TargetResource' -Tag 'Test' {
                 }
 
                 InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
-                    # This should be able to be removed in a future version of Pester.
-                    param
-                    (
-                        $MockLoggingLevel,
-                        $MockDisplayName,
-                        $MockReplyToAddress,
-                        $MockDescription,
-                        $MockTcpPort
-                    )
-
                     $testTargetResourceParameters = $script:mockDefaultParameters.Clone()
                     $testTargetResourceParameters.LoggingLevel = $MockLoggingLevel
                     $testTargetResourceParameters.DisplayName = $MockDisplayName
@@ -593,13 +542,6 @@ Describe 'DSC_SqlDatabaseMail\Test-TargetResource' -Tag 'Test' {
                 }
 
                 InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
-                    # This should be able to be removed in a future version of Pester.
-                    param
-                    (
-                        $Property,
-                        $PropertyValue
-                    )
-
                     $testTargetResourceParameters = $script:mockDefaultParameters.Clone()
                     $testTargetResourceParameters.$Property = $PropertyValue
 
@@ -617,13 +559,6 @@ Describe 'DSC_SqlDatabaseMail\Test-TargetResource' -Tag 'Test' {
                 }
 
                 InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
-                    # This should be able to be removed in a future version of Pester.
-                    param
-                    (
-                        $Property,
-                        $PropertyValue
-                    )
-
                     $testTargetResourceParameters = $script:mockDefaultParameters.Clone()
                     $testTargetResourceParameters.$Property = $PropertyValue
 
@@ -898,16 +833,6 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                 }
 
                 InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
-                    # This should be able to be removed in a future version of Pester.
-                    param
-                    (
-                        $MockLoggingLevel,
-                        $MockDisplayName,
-                        $MockReplyToAddress,
-                        $MockDescription,
-                        $MockTcpPort
-                    )
-
                     $setTargetResourceParameters = $mockDefaultParameters.Clone()
                     $setTargetResourceParameters['DisplayName'] = $MockDisplayName
                     $setTargetResourceParameters['ReplyToAddress'] = $MockReplyToAddress
@@ -1069,13 +994,6 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                     }
 
                     InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
-                        # This should be able to be removed in a future version of Pester.
-                        param
-                        (
-                            $Property,
-                            $PropertyValue
-                        )
-
                         $setTargetResourceParameters = $mockDefaultParameters.Clone()
 
                         $setTargetResourceParameters.$Property = $PropertyValue
