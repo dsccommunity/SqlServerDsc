@@ -3,6 +3,7 @@
         Automated unit test for DSC_SqlServiceAccount DSC resource.
 
 #>
+return
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
