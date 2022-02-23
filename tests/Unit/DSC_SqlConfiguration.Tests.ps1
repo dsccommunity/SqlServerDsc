@@ -184,52 +184,6 @@ Describe 'SqlConfiguration\Test-TargetResource' {
     }
 }
 
-# $defaultState = @{
-#     ServerName     = 'CLU01'
-#     InstanceName   = 'ClusteredInstance'
-#     OptionName     = 'user connections'
-#     OptionValue    = 0
-#     RestartService = $false
-#     RestartTimeout = 120
-# }
-
-# $desiredState = @{
-#     ServerName     = 'CLU01'
-#     InstanceName   = 'ClusteredInstance'
-#     OptionName     = 'user connections'
-#     OptionValue    = 500
-#     RestartService = $false
-#     RestartTimeout = 120
-# }
-
-# $desiredStateRestart = @{
-#     ServerName     = 'CLU01'
-#     InstanceName   = 'ClusteredInstance'
-#     OptionName     = 'user connections'
-#     OptionValue    = 5000
-#     RestartService = $true
-#     RestartTimeout = 120
-# }
-
-# $dynamicOption = @{
-#     ServerName     = 'CLU02'
-#     InstanceName   = 'ClusteredInstance'
-#     OptionName     = 'show advanced options'
-#     OptionValue    = 0
-#     RestartService = $false
-#     RestartTimeout = 120
-# }
-
-# $invalidOption = @{
-#     ServerName     = 'CLU01'
-#     InstanceName   = 'MSSQLSERVER'
-#     OptionName     = 'Does Not Exist'
-#     OptionValue    = 1
-#     RestartService = $false
-#     RestartTimeout = 120
-# }
-
-
 Describe 'SqlConfiguration\Set-TargetResource' {
     Context 'When the system is not in the desired state' {
         Context 'When setting option ''<OptionName>'' which has property IsDynamic set to <IsDynamic>' -ForEach @(
