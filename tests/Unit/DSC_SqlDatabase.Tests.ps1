@@ -61,7 +61,7 @@ Describe 'SqlDatabase\Get-TargetResource' {
             return @(
                 (
                     New-Object -TypeName Object |
-                        Add-Member -MemberType ScriptProperty -Name Databases -Value {
+                        Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
                             return @{
                                 'AdventureWorks' = New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty -Name 'Name' -Value 'AdventureWorks' -PassThru |
@@ -391,7 +391,7 @@ Describe 'SqlDatabase\Test-TargetResource' {
             }
             @{
                 PropertyName = 'OwnerName'
-                PropertyValue = 'dbowner1'
+                PropertyValue = 'dbOwner1'
             }
         ) {
             BeforeAll {
@@ -600,7 +600,7 @@ Describe 'SqlDatabase\Set-TargetResource' {
                 }
                 @{
                     PropertyName = 'OwnerName'
-                    PropertyValue = 'dbowner1'
+                    PropertyValue = 'dbOwner1'
                 }
             ) {
                 It 'Should call the correct method' {
@@ -699,7 +699,7 @@ Describe 'SqlDatabase\Set-TargetResource' {
             }
             @{
                 PropertyName = 'OwnerName'
-                PropertyValue = 'dbowner1'
+                PropertyValue = 'dbOwner1'
             }
         ) {
             It 'Should call the correct method' {
@@ -776,9 +776,9 @@ Describe 'SqlDatabase\Set-TargetResource' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $script:mockSetTargetResourceParameters['OwnerName'] = 'newowner'
+                    $script:mockSetTargetResourceParameters['OwnerName'] = 'NewOwner'
 
-                    $mockErrorMessage = $script:localizedData.FailedToUpdateOwner -f 'newowner', 'AdventureWorks'
+                    $mockErrorMessage = $script:localizedData.FailedToUpdateOwner -f 'NewOwner', 'AdventureWorks'
 
                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw ('*' + $mockErrorMessage + '*')
                 }
