@@ -1,16 +1,13 @@
 <#
     .SYNOPSIS
-        Automated unit test for DSC_SqlDatabaseDefaultLocation DSC resource.
-
+        Unit test for DSC_SqlDatabaseDefaultLocation DSC resource.
 #>
-return
-Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
-$script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlDatabaseDefaultLocation'
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
 
-function Invoke-TestSetup
-{
+BeforeDiscovery {
     try
     {
         Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
@@ -19,6 +16,11 @@ function Invoke-TestSetup
     {
         throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
     }
+}
+
+BeforeAll {
+    $script:dscModuleName = 'SqlServerDsc'
+    $script:dscResourceName = 'DSC_SqlDatabaseDefaultLocation'
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
@@ -26,329 +28,435 @@ function Invoke-TestSetup
         -ResourceType 'Mof' `
         -TestType 'Unit'
 
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
     # Loading mocked classes
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
 
-    # Load the default SQL Module stub
-    Import-SQLModuleStub
+    # Load the correct SQL Module stub
+    $script:stubModuleName = Import-SQLModuleStub -PassThru
+
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
 }
 
-function Invoke-TestCleanup
-{
+AfterAll {
+    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
+    $PSDefaultParameterValues.Remove('Mock:ModuleName')
+    $PSDefaultParameterValues.Remove('Should:ModuleName')
+
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+
+    # Unload the module being tested so that it doesn't impact any other tests.
+    Get-Module -Name $script:dscResourceName -All | Remove-Module -Force
+
+    # Unload the stub module.
+    Remove-SqlModuleStub -Name $script:stubModuleName
+
+    # Remove module common test helper.
+    Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Invoke-TestSetup
-
-try
-{
-    InModuleScope $script:dscResourceName {
-        $mockServerName = 'localhost'
-        $mockInstanceName = 'MSSQLSERVER'
-        $mockSQLDataPath = 'C:\Program Files\Data\'
-        $mockSqlLogPath = 'C:\Program Files\Log\'
-
-        # Ending backslash is regression test for issue #1307.
-        $mockSqlBackupPath = 'C:\Program Files\Backup\'
-
-        $mockSqlAlterDataPath = 'C:\Program Files\'
-        $mockSqlAlterLogPath = 'C:\Program Files\'
-        $mockSqlAlterBackupPath = 'C:\Program Files\'
-        $mockRestartService = $true
-        $mockExpectedAlterDataPath = $env:temp
-        $mockExpectedAlterLogPath = $env:temp
-        $mockExpectedAlterBackupPath = $env:temp
-        $mockInvalidPathForData = 'C:\InvalidPath'
-        $mockInvalidPathForLog = 'C:\InvalidPath'
-        $mockInvalidPathForBackup = 'C:\InvalidPath'
-        $mockInvalidOperationForAlterMethod = $false
-        $mockProcessOnlyOnActiveNode = $true
-
-        $script:WasMethodAlterCalled = $false
-
-        #region Function mocks
-
-        # Default parameters that are used for the It-blocks
-        $mockDefaultParameters = @{
-            InstanceName = $mockInstanceName
-            ServerName   = $mockServerName
-        }
-
+Describe 'SqlDatabaseDefaultLocation\Get-TargetResource' {
+    BeforeAll {
         $mockConnectSQL = {
-            return New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
-                Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru -Force |
-                Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru -Force |
-                Add-Member -MemberType NoteProperty -Name DefaultFile -Value $mockSqlDataPath -PassThru -Force |
-                Add-Member -MemberType NoteProperty -Name DefaultLog -Value $mockSqlLogPath -PassThru -Force |
-                # Ending backslash is removed because of regression test for issue #1307.
-                Add-Member -MemberType NoteProperty -Name BackupDirectory -Value $mockSqlBackupPath.TrimEnd('\') -PassThru -Force |
-                Add-Member -MemberType ScriptMethod -Name Alter -Value {
-                if ($mockInvalidOperationForAlterMethod)
-                {
-                    throw 'Mock Alter Method was called with invalid operation.'
-                }
-                $script:WasMethodAlterCalled = $true
-            } -PassThru -Force
+            $mockSmoServer = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+
+            $mockSmoServer.InstanceName = 'MSSQLSERVER'
+            $mockSmoServer.ComputerNamePhysicalNetBIOS = 'localhost'
+            $mockSmoServer.DefaultFile = 'C:\Program Files\Data\'
+            $mockSmoServer.DefaultLog = 'C:\Program Files\Log\'
+            <#
+                Ending backslash is not set on the backup directory path here
+                because of a regression test for issue #1307.
+            #>
+            $mockSmoServer.BackupDirectory = 'C:\Program Files\Backup'
+
+            return $mockSmoServer
         }
-        #endregion
 
-        Describe 'DSC_SqlDatabaseDefaultLocation\Get-TargetResource' -Tag 'Get' {
-            BeforeAll {
-                $testCases = @(
-                    @{
-                        Type               = 'Data'
-                        Path               = $mockSqlDataPath
-                    },
-                    @{
-                        Type               = 'Log'
-                        Path               = $mockSqlLogPath
-                    },
-                    @{
-                        Type               = 'Backup'
-                        # Ending backslash is removed because of regression test for issue #1307.
-                        Path               = $mockSqlBackupPath.TrimEnd('\')
-                    }
-                )
+        Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
             }
+        }
+    }
 
-            BeforeEach {
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
-                Mock -CommandName Test-ActiveNode -MockWith {
-                    param
-                    (
-                        [PSObject]
-                        $ServerObject
-                    )
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockGetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
 
-                    return $true
-                } -Verifiable
+    Context 'When the system is in the desired state' {
+        BeforeAll {
+            Mock -CommandName Test-ActiveNode -MockWith {
+                return $true
             }
+        }
 
-            Context 'When the system is either in the desired state or not in the desired state' {
-                It 'Should get the default path for <Type> with the value <Path>' -TestCases $testCases {
-                    param
-                    (
-                        $Type,
-                        $Path
-                    )
+        Context 'When passing the parameter Type with the value ''<Type>''' -ForEach @(
+            @{
+                Type               = 'Data'
+                Path               = 'C:\Program Files\Data\'
+            },
+            @{
+                Type               = 'Log'
+                Path               = 'C:\Program Files\Log\'
+            },
+            @{
+                Type               = 'Backup'
+                # Ending backslash is removed because of regression test for issue #1307.
+                Path               = 'C:\Program Files\Backup'
+            }
+        ) {
+            It 'Should return the correct values' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
 
-                    $getTargetResourceResult = Get-TargetResource @mockDefaultParameters -Type $Type -Path $Path
+                    $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters -Type $Type -Path $Path
 
+                    # Ending backslash is removed because of regression test for issue #1307.
                     $getTargetResourceResult.Path | Should -Be $Path
                     $getTargetResourceResult.Type | Should -Be $Type
-                    $getTargetResourceResult.ServerName | Should -Be $mockDefaultParameters.ServerName
-                    $getTargetResourceResult.InstanceName | Should -Be $mockDefaultParameters.InstanceName
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-        }
-
-        Describe 'DSC_SqlDatabaseDefaultLocation\Test-TargetResource' -Tag 'Test' {
-            BeforeAll {
-                $testCases = @(
-                    @{
-                        Type               = 'Data'
-                        Path               = $mockSqlDataPath
-                        AlterPath          = $mockSqlAlterDataPath
-                    },
-                    @{
-                        Type               = 'Log'
-                        Path               = $mockSqlLogPath
-                        AlterPath          = $mockSqlAlterLogPath
-                    },
-                    @{
-                        Type               = 'Backup'
-                        Path               = $mockSqlBackupPath
-                        AlterPath          = $mockSqlAlterBackupPath
-                    }
-                )
-            }
-            BeforeEach {
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
-                Mock -CommandName Test-ActiveNode -MockWith {
-                    $mockProcessOnlyOnActiveNode
-                } -Verifiable
-            }
-
-            Context 'When the system is in the desired state.' {
-                It 'Should return true when the desired state of the <Type> path has the value <Path>' -TestCases $testCases {
-                    param
-                    (
-                        $Type,
-                        $Path
-                    )
-
-                    $testTargetResourceResult = Test-TargetResource @mockDefaultParameters -Type $Type -Path $Path
-                    $testTargetResourceResult | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When the system is not in the desired state.' {
-                It 'Should return false when the desired state of the <Type> path does not equal <Path>' -TestCases $testCases {
-                    param
-                    (
-                        $Type,
-                        $Path,
-                        $AlterPath
-                    )
-
-                    $testTargetResourceResult = Test-TargetResource @mockDefaultParameters -Type $Type -Path $AlterPath
-                    $testTargetResourceResult | Should -Be $false
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-            Context 'When the ProcessOnlyOnActiveNode parameter is passed' {
-                AfterAll {
-                    $mockProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNodeOriginal
+                    $getTargetResourceResult.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                    $getTargetResourceResult.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                    $getTargetResourceResult.IsActiveNode | Should -BeTrue
                 }
 
-                BeforeAll {
-                    $mockProcessOnlyOnActiveNodeOriginal = $mockProcessOnlyOnActiveNode
-                    $mockProcessOnlyOnActiveNode = $false
-                }
-
-                It 'Should be "true" when ProcessOnlyOnActiveNode is <mockProcessOnlyOnActiveNode>.' {
-                    $testTargetResourceParameters = $mockDefaultParameters
-                    $testTargetResourceParameters += @{
-                        Path                    = $mockSqlDataPath
-                        Type                    = 'Data'
-                        ProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNode
-                    }
-
-                    Test-TargetResource @testTargetResourceParameters | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-                }
-
-                It 'Should be "true" when ProcessOnlyOnActiveNode is <mockProcessOnlyOnActiveNodeOriginal>.' {
-                    $testTargetResourceParameters = $mockDefaultParameters
-                    $testTargetResourceParameters += @{
-                        Path                    = $mockSqlDataPath
-                        Type                    = 'Data'
-                        ProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNodeOriginal
-                    }
-
-                    Test-TargetResource @testTargetResourceParameters | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-                }
-            }
-        }
-
-        Describe 'DSC_SqlDatabaseDefaultLocation\Set-TargetResource' -Tag 'Set' {
-            BeforeAll {
-                $testCases = @(
-                    @{
-                        Type               = 'Data'
-                        Path               = $mockSqlDataPath
-                        AlterPath          = $mockSqlAlterDataPath
-                        ExpectedAlterPath  = $mockExpectedAlterDataPath
-                        InvalidPath        = $mockInvalidPathForData
-                    },
-                    @{
-                        Type               = 'Log'
-                        Path               = $mockSqlLogPath
-                        AlterPath          = $mockSqlAlterLogPath
-                        ExpectedAlterPath  = $mockExpectedAlterLogPath
-                        InvalidPath        = $mockInvalidPathForLog
-                    },
-                    @{
-                        Type               = 'Backup'
-                        Path               = $mockSqlBackupPath
-                        AlterPath          = $mockSqlAlterBackupPath
-                        ExpectedAlterPath  = $mockExpectedAlterBackupPath
-                        InvalidPath        = $mockInvalidPathForBackup
-                    }
-                )
-            }
-
-            BeforeEach {
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
-                Mock -CommandName Restart-SqlService -Verifiable
-
-                # This is used to evaluate if mocked Alter() method was called.
-                $script:WasMethodAlterCalled = $false
-            }
-
-            Context 'When the system is not in the desired state.' {
-                It 'Should not throw when the path is successfully changed.' -TestCases $testCases {
-                    param
-                    (
-                        $Type,
-                        $Path,
-                        $AlterPath
-                    )
-
-                    $setTargetResourceParameters = @{
-                        Type           = $Type
-                        Path           = $AlterPath
-                        RestartService = $mockRestartService
-                    }
-
-
-                    {Set-TargetResource @mockDefaultParameters @setTargetResourceParameters} | Should -Not -Throw
-                    $script:WasMethodAlterCalled | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should throw when the path is invalid.' -TestCases $testCases {
-                    param
-                    (
-                        $Type,
-                        $InvalidPath
-                    )
-
-                    $setTargetResourceParameters = @{
-                        Type           = $Type
-                        Path           = $InvalidPath
-                        RestartService = $mockRestartService
-                    }
-
-                    $throwInvalidPath = "The path '$InvalidPath' does not exist."
-                    {Set-TargetResource @mockDefaultParameters @setTargetResourceParameters} | Should -Throw $throwInvalidPath
-                    $script:WasMethodAlterCalled | Should -Be $false
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 0 -Scope It
-                    Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
-                }
-            }
-
-            $mockInvalidOperationForAlterMethod = $true
-
-            It 'Should throw the correct error when Alter() method was called with invalid operation' -TestCases $testCases {
-                param
-                (
-                    $Type,
-                    $Path,
-                    $AlterPath,
-                    $ExpectedAlterPath
-                )
-
-                $throwInvalidOperation = "Changing the default path failed."
-
-                $setTargetResourceParameters = @{
-                    Type           = $Type
-                    Path           = $ExpectedAlterPath
-                    RestartService = $mockRestartService
-                }
-
-                {Set-TargetResource @mockDefaultParameters @setTargetResourceParameters} | Should -Throw $throwInvalidOperation
-
-                Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
             }
         }
     }
 }
-finally
-{
-    Invoke-TestCleanup
+
+Describe 'SqlDatabaseDefaultLocation\Test-TargetResource' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockTestTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        Context 'When passing the parameter Type with the value ''<Type>''' -ForEach @(
+            @{
+                Type               = 'Data'
+                Path               = 'C:\Program Files\Data\'
+            },
+            @{
+                Type               = 'Log'
+                Path               = 'C:\Program Files\Log\'
+            },
+            @{
+                Type               = 'Backup'
+                # Ending backslash is removed because of regression test for issue #1307.
+                Path               = 'C:\Program Files\Backup'
+            }
+        ) {
+            BeforeEach {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Type               = $Type
+                        Path               = $Path
+                        ServerName         = 'localhost'
+                        InstanceName       = 'MSSQLSERVER'
+                        IsActiveNode       = $true
+                    }
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters -Type $Type -Path $Path
+
+                    $testTargetResourceResult | Should -BeTrue
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When Get-TargetResource returns the property IsActiveNode as <IsActiveNode>' -ForEach @(
+            @{
+                IsActiveNode = $false
+            }
+            @{
+                IsActiveNode = $true
+            }
+        ) {
+            BeforeEach {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Type               = 'Data'
+                        Path               = 'C:\Program Files\Data\'
+                        ServerName         = 'localhost'
+                        InstanceName       = 'MSSQLSERVER'
+                        IsActiveNode       = $IsActiveNode
+                    }
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.ProcessOnlyOnActiveNode = $true
+                    $mockTestTargetResourceParameters.Type = 'Data'
+                    $mockTestTargetResourceParameters.Path = 'C:\Program Files\Data\'
+
+                    $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $testTargetResourceResult | Should -BeTrue
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        Context 'When passing the parameter Type with the value ''<Type>''' -ForEach @(
+            @{
+                Type               = 'Data'
+                Path               = 'C:\Program Files\Data\'
+            },
+            @{
+                Type               = 'Log'
+                Path               = 'C:\Program Files\Log\'
+            },
+            @{
+                Type               = 'Backup'
+                # Ending backslash is removed because of regression test for issue #1307.
+                Path               = 'C:\Program Files\Backup'
+            }
+        ) {
+            BeforeEach {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Type               = $Type
+                        Path               = 'C:\OtherPath'
+                        ServerName         = 'localhost'
+                        InstanceName       = 'MSSQLSERVER'
+                        IsActiveNode       = $true
+                    }
+                }
+            }
+
+            It 'Should return $false' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters -Type $Type -Path $Path
+
+                    $testTargetResourceResult | Should -BeFalse
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When Get-TargetResource returns the property IsActiveNode as <IsActiveNode>' -ForEach @(
+            @{
+                IsActiveNode = $false
+                ExpectedReturnValue = $true
+            }
+            @{
+                IsActiveNode = $true
+                ExpectedReturnValue = $false
+            }
+        ) {
+            BeforeEach {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Type               = 'Data'
+                        Path               = 'C:\OtherPath'
+                        ServerName         = 'localhost'
+                        InstanceName       = 'MSSQLSERVER'
+                        IsActiveNode       = $IsActiveNode
+                    }
+                }
+            }
+
+            It 'Should return <ExpectedReturnValue>' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.ProcessOnlyOnActiveNode = $true
+                    $mockTestTargetResourceParameters.Type = 'Data'
+                    $mockTestTargetResourceParameters.Path = 'C:\Program Files\Data\'
+
+                    $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $testTargetResourceResult | Should -Be $ExpectedReturnValue
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+}
+
+Describe 'SqlDatabaseDefaultLocation\Set-TargetResource' {
+    BeforeAll {
+        $mockConnectSQL = {
+            $mockSmoServer = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server |
+            Add-Member -MemberType ScriptMethod -Name Alter -Value {
+                if ($mockInvalidOperationForAlterMethod)
+                {
+                    throw 'Mock Alter Method was called with invalid operation.'
+                }
+
+                InModuleScope -ScriptBlock {
+                    $script:methodAlterWasCalled += 1
+                }
+            } -PassThru -Force
+
+            $mockSmoServer.InstanceName = 'MSSQLSERVER'
+            $mockSmoServer.ComputerNamePhysicalNetBIOS = 'localhost'
+            $mockSmoServer.DefaultFile = 'C:\Program Files\Data\'
+            $mockSmoServer.DefaultLog = 'C:\Program Files\Log\'
+            <#
+                Ending backslash is not set on the backup directory path here
+                because of a regression test for issue #1307.
+            #>
+            $mockSmoServer.BackupDirectory = 'C:\Program Files\Backup'
+
+            return $mockSmoServer
+        }
+
+        Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:methodAlterWasCalled = 0
+
+            $script:mockGetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            Mock -CommandName Test-Path -MockWith {
+                return $true
+            }
+        }
+
+        Context 'When passing the parameter Type with the value ''<Type>''' -ForEach @(
+            @{
+                Type               = 'Data'
+                Path               = 'C:\Program Files\NewData\'
+            },
+            @{
+                Type               = 'Log'
+                Path               = 'C:\Program Files\NewLog\'
+            },
+            @{
+                Type               = 'Backup'
+                # Ending backslash is present because of regression test for issue #1307.
+                Path               = 'C:\Program Files\NewBackup\'
+            }
+        ) {
+            It 'Should not throw and call the correct method and mock' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    { Set-TargetResource @mockGetTargetResourceParameters -Type $Type -Path $Path } | Should -Not -Throw
+
+                    $script:methodAlterWasCalled | Should -Be 1
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the method Alter() fails' {
+            It 'Should throw the correct error message' {
+                $mockInvalidOperationForAlterMethod = $true
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockErrorMessage = $script:localizedData.ChangingPathFailed
+
+                    { Set-TargetResource @mockGetTargetResourceParameters -Type 'Data' -Path 'C:\AnyPath' } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+
+                    $script:methodAlterWasCalled | Should -Be 0
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+
+                $mockInvalidOperationForAlterMethod = $false
+            }
+        }
+
+        Context 'When passing the parameter RestartService with the value $true' {
+            BeforeAll {
+                Mock -CommandName Restart-SqlService
+            }
+
+            It 'Should not throw and call the correct method and mock' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockGetTargetResourceParameters.Type = 'Data'
+                    $mockGetTargetResourceParameters.Path = 'C:\AnyPath'
+                    $mockGetTargetResourceParameters.RestartService = $true
+
+                    { Set-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:methodAlterWasCalled | Should -Be 1
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the path passed in the parameter Path does not exist' {
+            BeforeAll {
+                Mock -CommandName Test-Path -MockWith {
+                    return $false
+                }
+            }
+
+            It 'Should not throw and call the correct method and mock' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockErrorMessage = $script:localizedData.InvalidPath -f 'C:\AnyPath'
+
+                    { Set-TargetResource @mockGetTargetResourceParameters -Type 'Data' -Path 'C:\AnyPath' } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+
+                    $script:methodAlterWasCalled | Should -Be 0
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 0 -Scope It
+            }
+        }
+    }
 }
