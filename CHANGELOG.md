@@ -86,6 +86,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlDatabaseMail
   - Improved the verification of an empty description so that it can handle
     both empty string and `$null`.
+- SqlDatabaseRole
+  - Some variables where not initialized correctly which was discovered when
+    running the unit tests using strict mode. Now the variables are initialized
+    and should not cause any issues in the object returned from the function
+    `Get-TargetResource`.
 
 ### Added
 
