@@ -76,11 +76,14 @@ function Get-TargetResource
         $script:localizedData.GetDatabaseRoleProperties -f $Name
     )
 
+    $roleMembers = @()
+    $roleStatus = 'Absent'
+    $membersInDesiredState = $false
+
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
     if ($sqlServerObject)
     {
         $membersInDesiredState = $true
-        $roleStatus = 'Absent'
 
         # Check if database exists.
         if (-not ($sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName]))
@@ -600,4 +603,3 @@ function Remove-SqlDscDatabaseRoleMember
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
 }
-
