@@ -137,66 +137,6 @@ Describe 'SqlDatabasePermission\Get-TargetResource' -Tag 'Get' {
                                             {
                                                 return $null
                                             }
-                                        } -PassThru |
-                                        Add-Member -MemberType 'ScriptMethod' -Name 'Grant' -Value {
-                                            param
-                                            (
-                                                [Parameter()]
-                                                [System.Object]
-                                                $permissionSet,
-
-                                                [Parameter()]
-                                                [System.String]
-                                                $SqlServerLogin
-                                            )
-
-                                            $script:mockMethodGrantRan = $true
-
-                                            if ( $SqlServerLogin -ne 'Zebes\SamusAran' )
-                                            {
-                                                throw "Called mocked Grant() method without setting the right login name. Expected '{0}'. But was '{1}'." `
-                                                    -f 'Zebes\SamusAran', $SqlServerLogin
-                                            }
-                                        } -PassThru |
-                                        Add-Member -MemberType 'ScriptMethod' -Name 'Revoke' -Value {
-                                            param
-                                            (
-                                                [Parameter()]
-                                                [System.Object]
-                                                $permissionSet,
-
-                                                [Parameter()]
-                                                [System.String]
-                                                $SqlServerLogin
-                                            )
-
-                                            $script:mockMethodRevokeRan = $true
-
-                                            if ( $SqlServerLogin -ne 'Zebes\SamusAran' )
-                                            {
-                                                throw "Called mocked Revoke() method without setting the right login name. Expected '{0}'. But was '{1}'." `
-                                                    -f 'Zebes\SamusAran', $SqlServerLogin
-                                            }
-                                        } -PassThru |
-                                        Add-Member -MemberType 'ScriptMethod' -Name 'Deny' -Value {
-                                            param
-                                            (
-                                                [Parameter()]
-                                                [System.Object]
-                                                $permissionSet,
-
-                                                [Parameter()]
-                                                [System.String]
-                                                $SqlServerLogin
-                                            )
-
-                                            $script:mockMethodDenyRan = $true
-
-                                            if ( $SqlServerLogin -ne 'Zebes\SamusAran' )
-                                            {
-                                                throw "Called mocked Deny() method without setting the right login name. Expected '{0}'. But was '{1}'." `
-                                                    -f 'Zebes\SamusAran', $SqlServerLogin
-                                            }
                                         } -PassThru -Force
                                 )
                             )
@@ -543,6 +483,373 @@ Describe "SqlDatabasePermission\Test-TargetResource" -Tag 'Test' {
     }
 }
 
+Describe "DSC_SqlDatabasePermission\Set-TargetResource" -Tag 'Set' {
+    BeforeAll {
+        $mockConnectSQL = {
+            return @(
+                (
+                    New-Object -TypeName Object |
+                        Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                        return @{
+                            'AdventureWorks' = @(
+                                (
+                                    New-Object -TypeName Object |
+                                        Add-Member -MemberType 'NoteProperty' -Name Name -Value 'AdventureWorks' -PassThru |
+                                        Add-Member -MemberType 'ScriptProperty' -Name 'Users' -Value {
+                                            return @{
+                                                'Zebes\SamusAran' = @(
+                                                    (
+                                                        New-Object -TypeName Object |
+                                                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'Zebes\SamusAran' -PassThru -Force
+                                                    )
+                                                )
+                                            }
+                                        } -PassThru |
+                                        Add-Member -MemberType 'ScriptProperty' -Name 'ApplicationRoles' -Value {
+                                            return @{
+                                                'MyAppRole' = @(
+                                                    (
+                                                        New-Object -TypeName Object |
+                                                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'MyAppRole' -PassThru -Force
+                                                    )
+                                                )
+                                            }
+                                        } -PassThru |
+                                        Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
+                                            return @{
+                                                'public' = @(
+                                                    (
+                                                        New-Object -TypeName Object |
+                                                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'public' |
+                                                            Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -PassThru -Force
+                                                    )
+                                                )
+                                            }
+                                        } -PassThru |
+                                        Add-Member -MemberType 'ScriptMethod' -Name 'Grant' -Value {
+                                            param
+                                            (
+                                                [Parameter()]
+                                                [System.Object]
+                                                $permissionSet,
+
+                                                [Parameter()]
+                                                [System.String]
+                                                $SqlServerLogin
+                                            )
+
+                                            if ($mockInvalidOperationForGrantMethod)
+                                            {
+                                                throw 'Mocked InvalidOperationException'
+                                            }
+
+                                            InModuleScope -ScriptBlock {
+                                                $script:mockMethodGrantWasRan += 1
+                                            }
+
+                                            # Make sure the method is called with the expected login
+                                            if ( $SqlServerLogin -ne 'Zebes\SamusAran' )
+                                            {
+                                                throw "Called mocked Grant() method without setting the right login name. Expected '{0}'. But was '{1}'." `
+                                                    -f 'Zebes\SamusAran', $SqlServerLogin
+                                            }
+                                        } -PassThru |
+                                        Add-Member -MemberType 'ScriptMethod' -Name 'Revoke' -Value {
+                                            param
+                                            (
+                                                [Parameter()]
+                                                [System.Object]
+                                                $permissionSet,
+
+                                                [Parameter()]
+                                                [System.String]
+                                                $SqlServerLogin
+                                            )
+
+                                            if ($mockInvalidOperationForRevokeMethod)
+                                            {
+                                                throw 'Mocked InvalidOperationException'
+                                            }
+
+                                            InModuleScope -ScriptBlock {
+                                                $script:mockMethodRevokeWasRan += 1
+                                            }
+
+                                            # Make sure the method is called with the expected login
+                                            if ( $SqlServerLogin -ne 'Zebes\SamusAran' )
+                                            {
+                                                throw "Called mocked Revoke() method without setting the right login name. Expected '{0}'. But was '{1}'." `
+                                                    -f 'Zebes\SamusAran', $SqlServerLogin
+                                            }
+                                        } -PassThru |
+                                        Add-Member -MemberType 'ScriptMethod' -Name 'Deny' -Value {
+                                            param
+                                            (
+                                                [Parameter()]
+                                                [System.Object]
+                                                $permissionSet,
+
+                                                [Parameter()]
+                                                [System.String]
+                                                $SqlServerLogin
+                                            )
+
+                                            if ($mockInvalidOperationForDenyMethod)
+                                            {
+                                                throw 'Mocked InvalidOperationException'
+                                            }
+
+                                            InModuleScope -ScriptBlock {
+                                                $script:mockMethodDenyWasRan += 1
+                                            }
+
+                                            # Make sure the method is called with the expected login
+                                            if ( $SqlServerLogin -ne 'Zebes\SamusAran' )
+                                            {
+                                                throw "Called mocked Deny() method without setting the right login name. Expected '{0}'. But was '{1}'." `
+                                                    -f 'Zebes\SamusAran', $SqlServerLogin
+                                            }
+                                        } -PassThru -Force
+                                )
+                            )
+                        }
+                    } -PassThru -Force
+                )
+            )
+        }
+
+        Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockSetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+
+            $script:mockMethodGrantWasRan = 0
+            $script:mockMethodDenyWasRan = 0
+            $script:mockMethodRevokeWasRan = 0
+            $script:mockMethodCreateWasRan = 0
+        }
+    }
+
+    Context 'When passing values to parameters and database name does not exist' {
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters.DatabaseName    = 'unknownDatabaseName'
+                $mockSetTargetResourceParameters.Name            = 'Zebes\SamusAran'
+                $mockSetTargetResourceParameters.PermissionState = 'Grant'
+                $mockSetTargetResourceParameters.Permissions     = @( 'Connect', 'Update' )
+                $mockSetTargetResourceParameters.Ensure          = 'Present'
+
+                $errorMessage = $script:localizedData.DatabaseNotFound -f $mockSetTargetResourceParameters.DatabaseName
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw ('*' + $errorMessage)
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When passing values to parameters and database user does not exist' {
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters.DatabaseName    = 'AdventureWorks'
+                $mockSetTargetResourceParameters.Name            = 'unknownLoginNamen'
+                $mockSetTargetResourceParameters.PermissionState = 'Grant'
+                $mockSetTargetResourceParameters.Permissions     = @( 'Connect', 'Update' )
+                $mockSetTargetResourceParameters.Ensure          = 'Present'
+
+                $errorMessage = $script:localizedData.NameIsMissing -f $mockSetTargetResourceParameters.Name, 'AdventureWorks'
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw ('*' + $errorMessage)
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        Context 'When Ensure is set to Present' {
+            It 'Should call the method Grant() without throwing' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DatabaseName    = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name            = 'Zebes\SamusAran'
+                    $mockSetTargetResourceParameters.PermissionState = 'Grant'
+                    $mockSetTargetResourceParameters.Permissions     = @( 'Connect', 'Update' )
+                    $mockSetTargetResourceParameters.Ensure          = 'Present'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockMethodGrantWasRan | Should -Be 1
+                    $script:mockMethodDenyWasRan | Should -Be 0
+                    $script:mockMethodRevokeWasRan | Should -Be 0
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            }
+
+            It 'Should call the method Grant() (WithGrant) without throwing' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DatabaseName    = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name            = 'Zebes\SamusAran'
+                    $mockSetTargetResourceParameters.PermissionState = 'GrantWithGrant'
+                    $mockSetTargetResourceParameters.Permissions     = @( 'Connect', 'Update' )
+                    $mockSetTargetResourceParameters.Ensure          = 'Present'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockMethodGrantWasRan | Should -Be 1
+                    $script:mockMethodDenyWasRan | Should -Be 0
+                    $script:mockMethodRevokeWasRan | Should -Be 0
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            }
+
+            It 'Should call the method Deny() without throwing' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DatabaseName    = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name            = 'Zebes\SamusAran'
+                    $mockSetTargetResourceParameters.PermissionState = 'Deny'
+                    $mockSetTargetResourceParameters.Permissions     = @( 'Connect', 'Update' )
+                    $mockSetTargetResourceParameters.Ensure          = 'Present'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockMethodGrantWasRan | Should -Be 0
+                    $script:mockMethodDenyWasRan | Should -Be 1
+                    $script:mockMethodRevokeWasRan | Should -Be 0
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When Ensure is set to Absent' {
+            It 'Should call the method Revoke() for permission state ''Grant'' without throwing' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DatabaseName    = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name            = 'Zebes\SamusAran'
+                    $mockSetTargetResourceParameters.PermissionState = 'Grant'
+                    $mockSetTargetResourceParameters.Permissions     = @( 'Connect', 'Update' )
+                    $mockSetTargetResourceParameters.Ensure          = 'Absent'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockMethodGrantWasRan | Should -Be 0
+                    $script:mockMethodDenyWasRan | Should -Be 0
+                    $script:mockMethodRevokeWasRan | Should -Be 1
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            }
+
+            It 'Should call the method Revoke() for permission state ''GrantWithGrant'' without throwing' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DatabaseName    = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name            = 'Zebes\SamusAran'
+                    $mockSetTargetResourceParameters.PermissionState = 'GrantWithGrant'
+                    $mockSetTargetResourceParameters.Permissions     = @( 'Connect', 'Update' )
+                    $mockSetTargetResourceParameters.Ensure          = 'Absent'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockMethodGrantWasRan | Should -Be 0
+                    $script:mockMethodDenyWasRan | Should -Be 0
+                    $script:mockMethodRevokeWasRan | Should -Be 1
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            }
+
+            It 'Should call the method Revoke() for permission state ''Deny'' without throwing' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DatabaseName    = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name            = 'Zebes\SamusAran'
+                    $mockSetTargetResourceParameters.PermissionState = 'Deny'
+                    $mockSetTargetResourceParameters.Permissions     = @( 'Connect', 'Update' )
+                    $mockSetTargetResourceParameters.Ensure          = 'Absent'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockMethodGrantWasRan | Should -Be 0
+                    $script:mockMethodDenyWasRan | Should -Be 0
+                    $script:mockMethodRevokeWasRan | Should -Be 1
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When method <MockMethod> fails' -ForEach @(
+            @{
+                MockMethod = 'Grant'
+                MockVariableName = 'mockInvalidOperationForGrantMethod'
+                MockEnsure = 'Present'
+            }
+            @{
+                MockMethod = 'Grant'
+                MockVariableName = 'mockInvalidOperationForRevokeMethod'
+                MockEnsure = 'Absent'
+            }
+            @{
+                MockMethod = 'Deny'
+                MockVariableName = 'mockInvalidOperationForDenyMethod'
+                MockEnsure = 'Present'
+            }
+        ) {
+            BeforeAll {
+                Set-Variable -Name $MockVariableName -Value $true
+            }
+
+            AfterAll {
+                Set-Variable -Name $MockVariableName -Value $false
+            }
+
+            It 'Should throw a mocked invalid operation error' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DatabaseName    = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name            = 'Zebes\SamusAran'
+                    $mockSetTargetResourceParameters.PermissionState = $MockMethod
+                    $mockSetTargetResourceParameters.Permissions     = @( 'Connect', 'Update' )
+                    $mockSetTargetResourceParameters.Ensure          = $MockEnsure
+
+                    $errorMessage = $script:localizedData.FailedToSetPermissionDatabas -f 'Zebes\SamusAran', 'AdventureWorks'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage + '*')
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+}
 
 # try
 # {
@@ -563,10 +870,10 @@ Describe "SqlDatabasePermission\Test-TargetResource" -Tag 'Test' {
 #         $mockSqlPermissionType01 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($true, $false)
 #         $mockSqlPermissionType02 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $true)
 
-#         $script:mockMethodGrantRan = $false
-#         $script:mockMethodDenyRan = $false
-#         $script:mockMethodRevokeRan = $false
-#         $script:mockMethodCreateLoginRan = $false
+#         $script:mockMethodGrantWasRan = $false
+#         $script:mockMethodDenyWasRan = $false
+#         $script:mockMethodRevokeWasRan = $false
+#         $script:mockMethodCreateWasRan = $false
 
 #         # Default parameters that are used for the It-blocks
 #         $mockDefaultParameters = @{
@@ -665,7 +972,7 @@ Describe "SqlDatabasePermission\Test-TargetResource" -Tag 'Test' {
 #                                                 $SqlServerLogin
 #                                             )
 
-#                                             $script:mockMethodGrantRan = $true
+#                                             $script:mockMethodGrantWasRan = $true
 
 #                                             if ( $SqlServerLogin -ne $mockExpectedSqlServerLogin )
 #                                             {
@@ -685,7 +992,7 @@ Describe "SqlDatabasePermission\Test-TargetResource" -Tag 'Test' {
 #                                                 $SqlServerLogin
 #                                             )
 
-#                                             $script:mockMethodRevokeRan = $true
+#                                             $script:mockMethodRevokeWasRan = $true
 
 #                                             if ( $SqlServerLogin -ne $mockExpectedSqlServerLogin )
 #                                             {
@@ -705,7 +1012,7 @@ Describe "SqlDatabasePermission\Test-TargetResource" -Tag 'Test' {
 #                                                 $SqlServerLogin
 #                                             )
 
-#                                             $script:mockMethodDenyRan = $true
+#                                             $script:mockMethodDenyWasRan = $true
 
 #                                             if ( $SqlServerLogin -ne $mockExpectedSqlServerLogin )
 #                                             {
@@ -725,277 +1032,7 @@ Describe "SqlDatabasePermission\Test-TargetResource" -Tag 'Test' {
 #
 
 
-#         Describe "DSC_SqlDatabasePermission\Set-TargetResource" -Tag 'Set' {
-#             BeforeEach {
-#                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
-#                 $script:mockMethodGrantRan = $false
-#                 $script:mockMethodDenyRan = $false
-#                 $script:mockMethodRevokeRan = $false
-#                 $script:mockMethodCreateLoginRan = $false
-#             }
-
-#             Context 'When passing values to parameters and database name does not exist' {
-#                 It 'Should throw the correct error' {
-#                     $testParameters = $mockDefaultParameters
-#                     $testParameters += @{
-#                         DatabaseName    = 'unknownDatabaseName'
-#                         Name            = 'Zebes\SamusAran'
-#                         PermissionState = 'Grant'
-#                         Permissions     = @( 'Connect', 'Update' )
-#                         Ensure          = 'Present'
-#                     }
-
-#                     $errorMessage = $script:localizedData.DatabaseNotFound -f $testParameters.DatabaseName
-
-#                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
-
-#                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-#                 }
-#             }
-
-#             Context 'When passing values to parameters and database user does not exist' {
-#                 It 'Should throw the correct error' {
-#                     $testParameters = $mockDefaultParameters
-#                     $testParameters += @{
-#                         DatabaseName    = 'AdventureWorks'
-#                         Name            = 'unknownLoginName'
-#                         PermissionState = 'Grant'
-#                         Permissions     = @( 'Connect', 'Update' )
-#                         Ensure          = 'Present'
-#                     }
-
-
-#                     $errorMessage = $script:localizedData.NameIsMissing -f $testParameters.Name, 'AdventureWorks'
-
-#                     { Set-TargetResource @testParameters } | Should -Throw $errorMessage
-
-#                     Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-#                 }
-#             }
-
-#             Context 'When the system is not in the desired state' {
-#                 Context 'When the mock methods fail (testing the test)' {
-#                     BeforeAll {
-#                         $throwInvalidOperation = $script:localizedData.FailedToSetPermissionDatabase -f 'Zebes\SamusAran', 'AdventureWorks'
-
-#                         $mockExpectedSqlServerLogin = 'Zebes\SamusAran'Unknown
-#                     }
-
-#                     It 'Should throw the correct error when mock Grant() method is called' {
-#                         $testParameters = $mockDefaultParameters.Clone()
-#                         $testParameters += @{
-#                             DatabaseName    = 'AdventureWorks'
-#                             Name            = 'Zebes\SamusAran'
-#                             PermissionState = 'Grant'
-#                             Permissions     = @( 'Connect', 'Update' )
-#                             Ensure          = 'Present'
-#                         }
-
-#                         { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
-
-#                         $script:mockMethodGrantRan | Should -Be $true
-#                         $script:mockMethodDenyRan | Should -Be $false
-#                         $script:mockMethodRevokeRan | Should -Be $false
-#                     }
-
-#                     It 'Should throw the correct error when mock Grant() method is called (for GrantWithGrant)' {
-#                         $testParameters = $mockDefaultParameters.Clone()
-#                         $testParameters += @{
-#                             DatabaseName    = 'AdventureWorks'
-#                             Name            = 'Zebes\SamusAran'
-#                             PermissionState = 'GrantWithGrant'
-#                             Permissions     = @( 'Connect', 'Update' )
-#                             Ensure          = 'Present'
-#                         }
-
-#                         { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
-
-#                         $script:mockMethodGrantRan | Should -Be $true
-#                         $script:mockMethodDenyRan | Should -Be $false
-#                         $script:mockMethodRevokeRan | Should -Be $false
-#                     }
-
-
-#                     It 'Should throw the correct error when mock Deny() method is called' {
-#                         $testParameters = $mockDefaultParameters.Clone()
-#                         $testParameters += @{
-#                             DatabaseName    = 'AdventureWorks'
-#                             Name            = 'Zebes\SamusAran'
-#                             PermissionState = 'Deny'
-#                             Permissions     = @( 'Connect', 'Update' )
-#                             Ensure          = 'Present'
-#                         }
-
-#                         { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
-
-#                         $script:mockMethodGrantRan | Should -Be $false
-#                         $script:mockMethodDenyRan | Should -Be $true
-#                         $script:mockMethodRevokeRan | Should -Be $false
-#                     }
-
-#                     It 'Should throw the correct error when mock Revoke() method is called' {
-#                         $testParameters = $mockDefaultParameters.Clone()
-#                         $testParameters += @{
-#                             DatabaseName    = 'AdventureWorks'
-#                             Name            = 'Zebes\SamusAran'
-#                             PermissionState = 'Grant'
-#                             Permissions     = @( 'Connect', 'Update' )
-#                             Ensure          = 'Absent'
-#                         }
-
-#                         { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
-
-#                         $script:mockMethodGrantRan | Should -Be $false
-#                         $script:mockMethodDenyRan | Should -Be $false
-#                         $script:mockMethodRevokeRan | Should -Be $true
-#                     }
-
-#                     It 'Should throw the correct error when mock Revoke() method is called' {
-#                         $testParameters = $mockDefaultParameters.Clone()
-#                         $testParameters += @{
-#                             DatabaseName    = 'AdventureWorks'
-#                             Name            = 'Zebes\SamusAran'
-#                             PermissionState = 'GrantWithGrant'
-#                             Permissions     = @( 'Connect', 'Update' )
-#                             Ensure          = 'Absent'
-#                         }
-
-#                         { Set-TargetResource @testParameters } | Should -Throw $throwInvalidOperation
-
-#                         $script:mockMethodGrantRan | Should -Be $false
-#                         $script:mockMethodDenyRan | Should -Be $false
-#                         $script:mockMethodRevokeRan | Should -Be $true
-#                     }
-#                 }
-
-#                 Context 'When Ensure is set to Present' {
-#                     It 'Should call the method Grant() without throwing' {
-#                         $mockExpectedSqlServerLogin = 'Zebes\SamusAran'
-#                         $testParameters = $mockDefaultParameters
-#                         $testParameters += @{
-#                             DatabaseName    = 'AdventureWorks'
-#                             Name            = 'Zebes\SamusAran'
-#                             PermissionState = 'Grant'
-#                             Permissions     = @( 'Connect', 'Update' )
-#                             Ensure          = 'Present'
-#                         }
-
-#                         { Set-TargetResource @testParameters } | Should -Not -Throw
-
-#                         $script:mockMethodGrantRan | Should -Be $true
-#                         $script:mockMethodDenyRan | Should -Be $false
-#                         $script:mockMethodRevokeRan | Should -Be $false
-
-#                         Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-#                     }
-
-#                     It 'Should call the method Grant() (WithGrant) without throwing' {
-#                         $mockExpectedSqlServerLogin = 'Zebes\SamusAran'
-#                         $testParameters = $mockDefaultParameters
-#                         $testParameters += @{
-#                             DatabaseName    = 'AdventureWorks'
-#                             Name            = 'Zebes\SamusAran'
-#                             PermissionState = 'GrantWithGrant'
-#                             Permissions     = @( 'Connect', 'Update' )
-#                             Ensure          = 'Present'
-#                         }
-
-#                         { Set-TargetResource @testParameters } | Should -Not -Throw
-
-#                         $script:mockMethodGrantRan | Should -Be $true
-#                         $script:mockMethodDenyRan | Should -Be $false
-#                         $script:mockMethodRevokeRan | Should -Be $false
-
-#                         Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-#                     }
-
-#                     It 'Should call the method Deny() without throwing' {
-#                         $mockExpectedSqlServerLogin = 'Zebes\SamusAran'
-#                         $testParameters = $mockDefaultParameters
-#                         $testParameters += @{
-#                             DatabaseName    = 'AdventureWorks'
-#                             Name            = 'Zebes\SamusAran'
-#                             PermissionState = 'Deny'
-#                             Permissions     = @( 'Connect', 'Update' )
-#                             Ensure          = 'Present'
-#                         }
-
-#                         { Set-TargetResource @testParameters } | Should -Not -Throw
-
-#                         $script:mockMethodGrantRan | Should -Be $false
-#                         $script:mockMethodDenyRan | Should -Be $true
-#                         $script:mockMethodRevokeRan | Should -Be $false
-
-#                         Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-#                     }
-#                 }
-
-#                 Context 'When Ensure is set to Absent' {
-#                     It 'Should call the method Revoke() for permission state ''Grant'' without throwing' {
-#                         $mockExpectedSqlServerLogin = 'Zebes\SamusAran'
-#                         $testParameters = $mockDefaultParameters
-#                         $testParameters += @{
-#                             DatabaseName    = 'AdventureWorks'
-#                             Name            = 'Zebes\SamusAran'
-#                             PermissionState = 'Grant'
-#                             Permissions     = @( 'Connect', 'Update' )
-#                             Ensure          = 'Absent'
-#                         }
-
-#                         { Set-TargetResource @testParameters } | Should -Not -Throw
-
-#                         $script:mockMethodGrantRan | Should -Be $false
-#                         $script:mockMethodDenyRan | Should -Be $false
-#                         $script:mockMethodRevokeRan | Should -Be $true
-
-#                         Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-#                     }
-
-#                     It 'Should call the method Revoke() for permission state ''GrantWithGrant'' without throwing' {
-#                         $mockExpectedSqlServerLogin = 'Zebes\SamusAran'
-#                         $testParameters = $mockDefaultParameters
-#                         $testParameters += @{
-#                             DatabaseName    = 'AdventureWorks'
-#                             Name            = 'Zebes\SamusAran'
-#                             PermissionState = 'GrantWithGrant'
-#                             Permissions     = @( 'Connect', 'Update' )
-#                             Ensure          = 'Absent'
-#                         }
-
-#                         { Set-TargetResource @testParameters } | Should -Not -Throw
-
-#                         $script:mockMethodGrantRan | Should -Be $false
-#                         $script:mockMethodDenyRan | Should -Be $false
-#                         $script:mockMethodRevokeRan | Should -Be $true
-
-#                         Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-#                     }
-
-#                     It 'Should call the method Revoke() for permission state ''Deny'' without throwing' {
-#                         $mockExpectedSqlServerLogin = 'Zebes\SamusAran'
-#                         $testParameters = $mockDefaultParameters
-#                         $testParameters += @{
-#                             DatabaseName    = 'AdventureWorks'
-#                             Name            = 'Zebes\SamusAran'
-#                             PermissionState = 'Deny'
-#                             Permissions     = @( 'Connect', 'Update' )
-#                             Ensure          = 'Absent'
-#                         }
-
-#                         { Set-TargetResource @testParameters } | Should -Not -Throw
-
-#                         $script:mockMethodGrantRan | Should -Be $false
-#                         $script:mockMethodDenyRan | Should -Be $false
-#                         $script:mockMethodRevokeRan | Should -Be $true
-
-#                         Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-#                     }
-#                 }
-#             }
-
-#             Assert-VerifiableMock
-#         }
 #     }
 # }
 # finally
