@@ -8,7 +8,7 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/stale@v3
+    - uses: actions/stale@v5
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         stale-issue-message: 'This issue has been automatically marked as stale because it has not had activity from the community in the last 30 days. It will be closed if no further activity occurs within 40 days. If the issue is labelled with any of the work labels (e.g bug, enhancement, documentation, or tests) then the issue will not auto-close.'
