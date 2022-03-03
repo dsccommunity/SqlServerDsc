@@ -13,9 +13,20 @@ if (Test-Path -Path $configFile)
 }
 else
 {
-    $currentIp4Address = Get-NetIPAddress -AddressFamily 'IPv4' |
-        Where-Object -Property 'InterfaceAlias' -EQ 'Ethernet' |
-            Select-Object -FIrst 1 -ExpandProperty 'IPAddress'
+    $availableNic = Get-NetIPAddress -AddressFamily 'IPv4'
+
+    $availableNicString = $availableNic |
+        Format-Table -Property @('IPAddress', 'InterfaceAlias', 'AddressFamily') |
+        Out-String
+
+    Write-Verbose -Message ("Available IPv4 NICs on build worker:`n{0}" -f $availableNicString) -Verbose
+
+    $currentIp4Address = $availableNic |
+        Where-Object -Property 'InterfaceAlias' -Like 'Ethernet*' |
+        Select-Object -First 1 -ExpandProperty 'IPAddress'
+
+    # Pass to Out-String to handle $null value.
+    Write-Verbose -Message ('Tests will be using IP address: {0}' -f ($currentIp4Address | Out-String)) -Verbose
 
     $ConfigurationData = @{
         AllNodes = @(

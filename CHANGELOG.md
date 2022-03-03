@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Updated pipeline to use the build worker image 'ubuntu-latest'.
   - Switch to installing GitVersion using 'dotnet tool install' ([issue #1732](https://github.com/dsccommunity/SqlServerDsc/issues/1732)).
+  - Bumped Stale task to v5 in the GitHub workflow.
 - Wiki
   - add introduction and links to DSC technology
 
@@ -40,6 +41,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       - Changed Permission from an array to a string.
       - Updated Permission to a key property.
       - Updated Integration Tests to test permission grants on multiple objects.
+- SqlProtocolTcpIp
+  - Output verbose information in integration tests so it is shown what NICs
+    are available and what IP address the tests will use.
 
 ## [15.2.0] - 2021-09-01
 
