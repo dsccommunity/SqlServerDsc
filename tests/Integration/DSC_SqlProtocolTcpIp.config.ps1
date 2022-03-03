@@ -22,7 +22,7 @@ else
     Write-Verbose -Message ("Available IPv4 NICs on build worker:`n{0}" -f $availableNicString) -Verbose
 
     $currentIp4Address = $availableNic |
-        Where-Object -Property 'InterfaceAlias' -EQ 'Ethernet' |
+        Where-Object -Property 'InterfaceAlias' -Like 'Ethernet*' |
         Select-Object -First 1 -ExpandProperty 'IPAddress'
 
     # Pass to Out-String to handle $null value.
