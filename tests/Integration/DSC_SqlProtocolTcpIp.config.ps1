@@ -16,7 +16,7 @@ else
     $availableNic = Get-NetIPAddress -AddressFamily 'IPv4'
 
     $availableNicString = $availableNic |
-        Format-Table -Property @('IPAddress', 'InterfaceAlias', 'AddressFamily')
+        Format-Table -Property @('IPAddress', 'InterfaceAlias', 'AddressFamily') |
         Out-String
 
     Write-Verbose -Message ("Available IPv4 NICs on build worker:`n{0}" -f $availableNicString) -Verbose
