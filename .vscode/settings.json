@@ -44,6 +44,5 @@
     "powershell.pester.useLegacyCodeLens": false,
     "pester.testFilePath": [
         "[tT]ests/[uU]nit/*.[tT]ests.[pP][sS]1"
-    ],
-    "pester.autoRunOnSave": false
+    ]
 }
