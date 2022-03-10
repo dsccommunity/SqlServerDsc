@@ -72,14 +72,14 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
     }
 
     Context 'When the system is in the desired state' {
-        Context 'When using a <TitleText>' -ForEach @(
+        Context 'When using a <MockTitleText>' -ForEach @(
             @{
-                TitleText = 'default instance'
-                InstanceName = 'MSSQLSERVER'
+                MockTitleText = 'default instance'
+                MockInstanceName = 'MSSQLSERVER'
             }
             @{
-                TitleText = 'named instance'
-                InstanceName = 'NamedInstance'
+                MockTitleText = 'named instance'
+                MockInstanceName = 'NamedInstance'
             }
         ) {
             Context 'When HADR should be disabled' {
@@ -94,7 +94,7 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
                 BeforeEach {
                     InModuleScope -Parameters $_ -ScriptBlock {
                         $script:mockGetTargetResourceParameters['Ensure'] = 'Absent'
-                        $script:mockGetTargetResourceParameters['InstanceName'] = $InstanceName
+                        $script:mockGetTargetResourceParameters['InstanceName'] = $MockInstanceName
                     }
                 }
 
@@ -145,7 +145,7 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
                 BeforeEach {
                     InModuleScope -Parameters $_ -ScriptBlock {
                         $script:mockGetTargetResourceParameters['Ensure'] = 'Present'
-                        $script:mockGetTargetResourceParameters['InstanceName'] = $InstanceName
+                        $script:mockGetTargetResourceParameters['InstanceName'] = $MockInstanceName
                     }
                 }
 
@@ -197,7 +197,7 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
                 BeforeEach {
                     InModuleScope -Parameters $_ -ScriptBlock {
                         $script:mockGetTargetResourceParameters['Ensure'] = 'Present'
-                        $script:mockGetTargetResourceParameters['InstanceName'] = $InstanceName
+                        $script:mockGetTargetResourceParameters['InstanceName'] = $MockInstanceName
                     }
                 }
 
@@ -246,21 +246,21 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
     }
 
     Context 'When the system is in the desired state' {
-        Context 'When using a <TitleText>' -ForEach @(
+        Context 'When using a <MockTitleText>' -ForEach @(
             @{
-                TitleText = 'default instance'
-                InstanceName = 'MSSQLSERVER'
+                MockTitleText = 'default instance'
+                MockInstanceName = 'MSSQLSERVER'
             }
             @{
-                TitleText = 'named instance'
-                InstanceName = 'NamedInstance'
+                MockTitleText = 'named instance'
+                MockInstanceName = 'NamedInstance'
             }
         ) {
             Context 'When HADR is already disabled' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            InstanceName   = $InstanceName
+                            InstanceName   = $MockInstanceName
                             Ensure         = 'Absent'
                             ServerName     = 'Server01'
                             RestartTimeout = 120
@@ -274,7 +274,7 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
                         Set-StrictMode -Version 1.0
 
                         $script:mockTestTargetResourceParameters['Ensure'] = 'Absent'
-                        $script:mockTestTargetResourceParameters['InstanceName'] = $InstanceName
+                        $script:mockTestTargetResourceParameters['InstanceName'] = $MockInstanceName
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
@@ -289,7 +289,7 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            InstanceName   = $InstanceName
+                            InstanceName   = $MockInstanceName
                             Ensure         = 'Present'
                             ServerName     = 'Server01'
                             RestartTimeout = 120
@@ -303,7 +303,7 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
                         Set-StrictMode -Version 1.0
 
                         $script:mockTestTargetResourceParameters['Ensure'] = 'Present'
-                        $script:mockTestTargetResourceParameters['InstanceName'] = $InstanceName
+                        $script:mockTestTargetResourceParameters['InstanceName'] = $MockInstanceName
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
@@ -317,21 +317,21 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
     }
 
     Context 'When the system is not in the desired state' {
-        Context 'When using a <TitleText>' -ForEach @(
+        Context 'When using a <MockTitleText>' -ForEach @(
             @{
-                TitleText = 'default instance'
-                InstanceName = 'MSSQLSERVER'
+                MockTitleText = 'default instance'
+                MockInstanceName = 'MSSQLSERVER'
             }
             @{
-                TitleText = 'named instance'
-                InstanceName = 'NamedInstance'
+                MockTitleText = 'named instance'
+                MockInstanceName = 'NamedInstance'
             }
         ) {
             Context 'When HADR should be disabled' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            InstanceName   = $InstanceName
+                            InstanceName   = $MockInstanceName
                             Ensure         = 'Present'
                             ServerName     = 'Server01'
                             RestartTimeout = 120
@@ -345,7 +345,7 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
                         Set-StrictMode -Version 1.0
 
                         $script:mockTestTargetResourceParameters['Ensure'] = 'Absent'
-                        $script:mockTestTargetResourceParameters['InstanceName'] = $InstanceName
+                        $script:mockTestTargetResourceParameters['InstanceName'] = $MockInstanceName
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
@@ -360,7 +360,7 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            InstanceName   = $InstanceName
+                            InstanceName   = $MockInstanceName
                             Ensure         = 'Absent'
                             ServerName     = 'Server01'
                             RestartTimeout = 120
@@ -374,7 +374,7 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
                         Set-StrictMode -Version 1.0
 
                         $script:mockTestTargetResourceParameters['Ensure'] = 'Present'
-                        $script:mockTestTargetResourceParameters['InstanceName'] = $InstanceName
+                        $script:mockTestTargetResourceParameters['InstanceName'] = $MockInstanceName
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
@@ -410,14 +410,14 @@ Describe 'SqlAlwaysOnService\Set-TargetResource' {
             Mock -CommandName Restart-SqlService
         }
 
-        Context 'When using a <TitleText>' -ForEach @(
+        Context 'When using a <MockTitleText>' -ForEach @(
             @{
-                TitleText = 'default instance'
-                InstanceName = 'MSSQLSERVER'
+                MockTitleText = 'default instance'
+                MockInstanceName = 'MSSQLSERVER'
             }
             @{
-                TitleText = 'named instance'
-                InstanceName = 'NamedInstance'
+                MockTitleText = 'named instance'
+                MockInstanceName = 'NamedInstance'
             }
         ) {
             Context 'When HADR should be disabled' {
@@ -433,7 +433,7 @@ Describe 'SqlAlwaysOnService\Set-TargetResource' {
                         Set-StrictMode -Version 1.0
 
                         $script:mockSetTargetResourceParameters['Ensure'] = 'Absent'
-                        $script:mockSetTargetResourceParameters['InstanceName'] = $InstanceName
+                        $script:mockSetTargetResourceParameters['InstanceName'] = $MockInstanceName
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
                     }
@@ -457,7 +457,7 @@ Describe 'SqlAlwaysOnService\Set-TargetResource' {
                         Set-StrictMode -Version 1.0
 
                         $script:mockSetTargetResourceParameters['Ensure'] = 'Present'
-                        $script:mockSetTargetResourceParameters['InstanceName'] = $InstanceName
+                        $script:mockSetTargetResourceParameters['InstanceName'] = $MockInstanceName
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
                     }
@@ -481,7 +481,7 @@ Describe 'SqlAlwaysOnService\Set-TargetResource' {
                         Set-StrictMode -Version 1.0
 
                         $script:mockSetTargetResourceParameters['Ensure'] = 'Present'
-                        $script:mockSetTargetResourceParameters['InstanceName'] = $InstanceName
+                        $script:mockSetTargetResourceParameters['InstanceName'] = $MockInstanceName
 
                         $mockErrorMessage = $script:localizedData.AlterAlwaysOnServiceFailed -f @(
                             'enabled',
