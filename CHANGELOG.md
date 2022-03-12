@@ -62,6 +62,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - URLs the referenced TechNet in the documentation has been update to link to
     new pages at docs.microsoft.com.
+- CommonTestHelper
+  - The test helper function `Import-SqlModuleStub` was using wrong casing for
+    one of the stub  modules which failed test when running cross plattform.
 - SqlDatabaseObjectPermission
   - Fix for issue ([issue #1724](https://github.com/dsccommunity/SqlServerDsc/issues/1724)).
     - BREAKING CHANGE: Updated class DSC_DatabaseObjectPermission.
