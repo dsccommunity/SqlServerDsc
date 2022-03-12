@@ -33,10 +33,13 @@ function Import-SqlModuleStub
         $PassThru
     )
 
-    # Translate the module names to their appropriate stub name
+    <#
+        Translate the module names to their appropriate stub name.
+        This must be the correct casing to work cross-platform.
+    #>
     $modulesAndStubs = @{
         SQLPS     = 'SQLPSStub'
-        SqlServer = 'SqlServerStub'
+        SqlServer = 'SQLServerStub'
     }
 
     # Determine which module to ensure is loaded based on the parameters passed
