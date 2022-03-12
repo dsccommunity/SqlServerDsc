@@ -136,7 +136,6 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
                         $result.Ensure | Should -Be 'Absent'
@@ -193,7 +192,6 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
                 It 'Should have property Ensure set to present' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
-
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
@@ -320,7 +318,6 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
                 It 'Should have property Ensure set to absent' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
-
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
