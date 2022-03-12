@@ -48,7 +48,7 @@ function Get-TargetResource
     )
 
     Write-Verbose -Message (
-        $script:localizedData.GetEndpointPermission -f $EndpointName, $InstanceName
+        $script:localizedData.GetEndpointPermission -f $Name, $InstanceName
     )
 
     try
@@ -68,13 +68,13 @@ function Get-TargetResource
 
             if ($endpointPermission.Count -ne 0)
             {
-                $Ensure = 'Present'
-                $Permission = 'CONNECT'
+                $ensure = 'Present'
+                $permission = 'CONNECT'
             }
             else
             {
-                $Ensure = 'Absent'
-                $Permission = ''
+                $ensure = 'Absent'
+                $permission = ''
             }
         }
         else
@@ -92,10 +92,10 @@ function Get-TargetResource
     return @{
         InstanceName = [System.String] $InstanceName
         ServerName   = [System.String] $ServerName
-        Ensure       = [System.String] $Ensure
+        Ensure       = [System.String] $ensure
         Name         = [System.String] $Name
         Principal    = [System.String] $Principal
-        Permission   = [System.String] $Permission
+        Permission   = [System.String] $permission
     }
 }
 
@@ -166,7 +166,7 @@ function Set-TargetResource
     if ($getTargetResourceResult.Ensure -ne $Ensure)
     {
         Write-Verbose -Message (
-            $script:localizedData.SetEndpointPermission -f $EndpointName, $InstanceName
+            $script:localizedData.SetEndpointPermission -f $Name, $InstanceName
         )
 
         $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
@@ -297,4 +297,3 @@ function Test-TargetResource
 
     return $isInDesiredState
 }
-
