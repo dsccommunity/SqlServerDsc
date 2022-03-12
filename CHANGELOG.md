@@ -94,6 +94,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     running the unit tests using strict mode. Now the variables are initialized
     and should not cause any issues in the object returned from the function
     `Get-TargetResource`.
+- SqlEndpointPermission
+  - Verbose messages did not use the correct variable name, so the messages
+    did not contain the correct information.
+  - Minor style guideline changes.
 
 ### Added
 
