@@ -56,6 +56,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     from the Sampler project.
 - SqlRs
   - Minor refactor to support running unit test with strict mode enabled.
+- SqlLogin
+  - No longer evaluates optional parameter LoginType when it is not specified
+    in the configuration.
 
 ### Fixed
 

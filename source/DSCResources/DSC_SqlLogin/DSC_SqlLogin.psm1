@@ -475,7 +475,7 @@ function Test-TargetResource
 
     if ( $Ensure -eq 'Present' -and $($loginInfo.Ensure) -eq 'Present' )
     {
-        if ( $LoginType -ne $loginInfo.LoginType )
+        if ( $PSBoundParameters.ContainsKey('LoginType') -and $LoginType -ne $loginInfo.LoginType )
         {
             Write-Verbose -Message (
                 $script:localizedData.WrongLoginType -f $Name, $loginInfo.LoginType, $LoginType
@@ -564,7 +564,7 @@ function Test-TargetResource
                     if ($Disabled)
                     {
                         <#
-                            An exception occurred and $Disabled is true, we neeed
+                            An exception occurred and $Disabled is true, we need
                             to check the error codes for expected error numbers.
                             Recursively search the Exception variable and inner
                             Exceptions for the specific numbers.
