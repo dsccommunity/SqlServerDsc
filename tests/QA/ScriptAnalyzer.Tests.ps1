@@ -11,45 +11,36 @@
         https://github.com/dsccommunity/DscResource.Test/issues/100.
 #>
 
-Describe 'Script Analyzer Rules' {
-    BeforeAll {
-        $repositoryPath = Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../..')
-        $sourcePath = Join-Path -Path $repositoryPath -ChildPath 'source'
-        $scriptAnalyzerSettingsPath = Join-Path -Path $repositoryPath -ChildPath '.vscode\analyzersettings.psd1'
-    }
+BeforeDiscovery {
+    $repositoryPath = Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../..')
+    $sourcePath = Join-Path -Path $repositoryPath -ChildPath 'source'
 
+    $moduleFiles = Get-ChildItem -Path $sourcePath -Recurse -Include @('*.psm1', '*.ps1')
+
+    $testCases = @()
+
+    foreach ($moduleFile in $moduleFiles)
+    {
+        $moduleFilePathNormalized = $moduleFile.FullName -replace '\\', '/'
+        $repositoryPathNormalized = $repositoryPath -replace '\\', '/'
+        $escapedRepositoryPath = [System.Text.RegularExpressions.RegEx]::Escape($repositoryPathNormalized)
+        $relativePath = $moduleFilePathNormalized -replace ($escapedRepositoryPath + '/')
+
+        $testCases += @{
+            ScriptPath = $moduleFile.FullName
+            RelativePath = $relativePath
+        }
+    }
+}
+
+Describe 'Script Analyzer Rules' {
     Context 'When there are source files' {
         BeforeAll {
-            $moduleFiles = Get-ChildItem -Path $sourcePath -Recurse -Include @('*.psm1', '*.ps1')
-
-            $testCases = @()
-
-            foreach ($moduleFile in $moduleFiles)
-            {
-                $moduleFilePathNormalized = $moduleFile.FullName -replace '\\', '/'
-                $repositoryPathNormalized = $repositoryPath -replace '\\', '/'
-                $escapedRepositoryPath = [System.Text.RegularExpressions.RegEx]::Escape($repositoryPathNormalized)
-                $relativePath = $moduleFilePathNormalized -replace ($escapedRepositoryPath + '/')
-
-                $testCases += @{
-                    ScriptPath = $moduleFile.FullName
-                    RelativePath = $relativePath
-                }
-            }
+            $repositoryPath = Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../..')
+            $scriptAnalyzerSettingsPath = Join-Path -Path $repositoryPath -ChildPath '.vscode\analyzersettings.psd1'
         }
 
-        It 'Should pass all PS Script Analyzer rules for file ''<RelativePath>''' -TestCases $testCases {
-            param
-            (
-                [Parameter()]
-                [System.String]
-                $ScriptPath,
-
-                [Parameter()]
-                [System.String]
-                $RelativePath
-            )
-
+        It 'Should pass all PS Script Analyzer rules for file ''<RelativePath>''' -ForEach $testCases {
             $pssaError = Invoke-ScriptAnalyzer -Path $ScriptPath -Settings $scriptAnalyzerSettingsPath
 
             $report = $pssaError | Format-Table -AutoSize | Out-String -Width 200

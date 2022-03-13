@@ -71,7 +71,13 @@ stages:
           - pwsh: |
               # Workaround for issue https://github.com/dsccommunity/DscResource.Test/issues/100
               ./build.ps1 -Task noop
-              Invoke-Pester -Script .\tests\QA -EnableExit
+
+              $pesterConfig = New-PesterConfiguration
+              $pesterConfig.Run.Path = '.\tests\QA'
+              $pesterConfig.Run.Throw = $true
+              $pesterConfig.Output.Verbosity = 'Detailed'
+
+              Invoke-Pester -Configuration $pesterConfig
             name: qualitytest
             displayName: 'Run SqlServerDsc QA Test'
           - task: PowerShell@2
