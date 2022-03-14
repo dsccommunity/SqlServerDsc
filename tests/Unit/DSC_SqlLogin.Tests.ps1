@@ -302,6 +302,76 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
             }
         }
+
+        Context 'When evaluating the login credentials for a SQL login' {
+            Context 'When connection is successful for a SQL login''s credentials' {
+                BeforeAll {
+                    Mock -CommandName Connect-SQL
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure    = 'Present'
+                            LoginType = 'SqlLogin'
+                        }
+                    }
+                }
+
+                It 'Should return $true' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
+
+                        $mockTestTargetResourceParameters.Name = 'Login1'
+                        $mockTestTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockTestTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeTrue
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When the parmeter Disabled is set to True for a SQL login (and the account is disabled)' {
+                BeforeAll {
+                    Mock -CommandName Connect-SQL -MockWith {
+                        $mockAccountDisabledException = New-Object -TypeName 'System.Exception' -ArgumentList 'Account disabled'
+                        $mockAccountDisabledException | Add-Member -Name 'Number' -Value 18470 -MemberType 'NoteProperty'
+
+                        throw $mockAccountDisabledException
+                    }
+
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure    = 'Present'
+                            LoginType = 'SqlLogin'
+                            Disabled  = $true
+                        }
+                    }
+                }
+
+                It 'Should return $true' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
+
+                        $mockTestTargetResourceParameters.Name = 'Login1'
+                        $mockTestTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockTestTargetResourceParameters.Disabled = $true
+                        $mockTestTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeTrue
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                }
+            }
+        }
     }
 
     Context 'When the system is not in the desired state' {
@@ -354,7 +424,7 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
             }
         }
 
-        Context 'When the property <MockPropertyName> is not in desired state' -ForEach @(
+        Context 'When the property <MockPropertyName> is set to <MockPropertyValue> and is not in desired state' -ForEach @(
             @{
                 MockPropertyName = 'LoginType'
                 MockPropertyValue = 'WindowsGroup'
@@ -362,6 +432,10 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
             @{
                 MockPropertyName = 'Disabled'
                 MockPropertyValue = $true
+            }
+            @{
+                MockPropertyName = 'Disabled'
+                MockPropertyValue = $false
             }
             @{
                 MockPropertyName = 'DefaultDatabase'
@@ -372,8 +446,14 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
                         Ensure = 'Present'
-                        Disabled = $false
                         DefaultDatabase = 'master'
+                        <#
+                            Switch the value of the property to the opposite of what
+                            will be specified in the call to Test-TargetResource.
+                            The value will only be used when the property Disabled
+                            is passed to Test-TargetResource.
+                        #>
+                        Disabled = -not $MockPropertyValue
                     }
                 }
             }
@@ -391,6 +471,170 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
                 }
 
                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the property <MockPropertyName> is set to <MockPropertyValue> for a SQL login is not in desired state' -ForEach @(
+            @{
+                MockPropertyName = 'LoginPasswordExpirationEnabled'
+                MockPropertyValue = $true
+            }
+            @{
+                MockPropertyName = 'LoginPasswordPolicyEnforced'
+                MockPropertyValue = $true
+            }
+            @{
+                MockPropertyName = 'LoginPasswordExpirationEnabled'
+                MockPropertyValue = $false
+            }
+            @{
+                MockPropertyName = 'LoginPasswordPolicyEnforced'
+                MockPropertyValue = $false
+            }
+        ) {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                        <#
+                            Switch the value of the property to the opposite of what
+                            will be specified in the call to Test-TargetResource.
+                        #>
+                        LoginPasswordPolicyEnforced = -not $MockPropertyValue
+                        LoginPasswordExpirationEnabled = -not $MockPropertyValue
+                    }
+                }
+            }
+
+            It 'Should return $false' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.Name = 'Login1'
+                    $mockTestTargetResourceParameters.LoginType = 'SqlLogin'
+                    $mockTestTargetResourceParameters.$MockPropertyName = $MockPropertyValue
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When evaluating the login credentials for a SQL login' {
+            Context 'When the parmeter Disabled is set to True for a SQL login (if login fails the login credentials are not in desired state)' {
+                BeforeAll {
+                    Mock -CommandName Connect-SQL -MockWith {
+                        $mockLoginFailedException = New-Object System.Exception 'Login failed'
+                        $mockLoginFailedException | Add-Member -Name 'Number' -Value 18456 -MemberType NoteProperty
+
+                        throw $mockLoginFailedException
+                    }
+
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure    = 'Present'
+                            LoginType = 'SqlLogin'
+                            Disabled  = $true
+                        }
+                    }
+                }
+
+                It 'Should return $false' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
+
+                        $mockTestTargetResourceParameters.Name = 'Login1'
+                        $mockTestTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockTestTargetResourceParameters.Disabled = $true
+                        $mockTestTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeFalse
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When the parmeter Disabled is set to False for a SQL login (if login fails the login credentials are not in desired state)' {
+                BeforeAll {
+                    Mock -CommandName Connect-SQL -MockWith {
+                        $mockLoginFailedException = New-Object System.Exception 'Login failed'
+                        $mockLoginFailedException | Add-Member -Name 'Number' -Value 18456 -MemberType NoteProperty
+
+                        throw $mockLoginFailedException
+                    }
+
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure    = 'Present'
+                            LoginType = 'SqlLogin'
+                            Disabled  = $false
+                        }
+                    }
+                }
+
+                It 'Should return $false' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
+
+                        $mockTestTargetResourceParameters.Name = 'Login1'
+                        $mockTestTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockTestTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeFalse
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When the parmeter Disabled is set to True for a SQL login (and an unexpected exception is thrown)' {
+                BeforeAll {
+                    Mock -CommandName Connect-SQL -MockWith {
+                        $mockException = New-Object System.Exception 'Something went wrong'
+                        $mockException | Add-Member -Name 'Number' -Value 1 -MemberType NoteProperty
+
+                        throw $mockException
+                    }
+
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure    = 'Present'
+                            LoginType = 'SqlLogin'
+                            Disabled  = $true
+                        }
+                    }
+                }
+
+                It 'Should return $false' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
+
+                        $mockTestTargetResourceParameters.Name = 'Login1'
+                        $mockTestTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockTestTargetResourceParameters.Disabled = $true
+                        $mockTestTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+
+                        $mockErrorMessage = $script:localizedData.PasswordValidationError
+
+                        { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                }
             }
         }
     }
@@ -607,419 +851,7 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
 #         #endregion Pester Test Initialization
 
 
-#         Describe 'DSC_SqlLogin\Test-TargetResource' {
-#             Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
 
-#             Context 'When the desired state is Absent' {
-#                 It 'Should return $true when the specified Windows user is Absent' {
-#                     $testTargetResource_WindowsUserAbsent_EnsureAbsent = $testTargetResource_WindowsUserAbsent.Clone()
-#                     $testTargetResource_WindowsUserAbsent_EnsureAbsent[ 'Ensure' ] = 'Absent'
-
-#                     ( Test-TargetResource @testTargetResource_WindowsUserAbsent_EnsureAbsent ) | Should -Be $true
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should return $true when the specified Windows group is Absent' {
-#                     $testTargetResource_WindowsGroupAbsent_EnsureAbsent = $testTargetResource_WindowsGroupAbsent.Clone()
-#                     $testTargetResource_WindowsGroupAbsent_EnsureAbsent[ 'Ensure' ] = 'Absent'
-
-#                     ( Test-TargetResource @testTargetResource_WindowsGroupAbsent_EnsureAbsent ) | Should -Be $true
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should return $true when the specified SQL Login is Absent' {
-#                     $testTargetResource_SqlLoginAbsent_EnsureAbsent = $testTargetResource_SqlLoginAbsent.Clone()
-#                     $testTargetResource_SqlLoginAbsent_EnsureAbsent[ 'Ensure' ] = 'Absent'
-
-#                     ( Test-TargetResource @testTargetResource_SqlLoginAbsent_EnsureAbsent ) | Should -Be $true
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should return $false when the specified Windows user is Present' {
-#                     $testTargetResource_WindowsUserPresent_EnsureAbsent = $testTargetResource_WindowsUserPresent.Clone()
-#                     $testTargetResource_WindowsUserPresent_EnsureAbsent[ 'Ensure' ] = 'Absent'
-
-#                     ( Test-TargetResource @testTargetResource_WindowsUserPresent_EnsureAbsent ) | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should return $false when the specified Windows group is Present' {
-#                     $testTargetResource_WindowsGroupPresent_EnsureAbsent = $testTargetResource_WindowsGroupPresent.Clone()
-#                     $testTargetResource_WindowsGroupPresent_EnsureAbsent[ 'Ensure' ] = 'Absent'
-
-#                     ( Test-TargetResource @testTargetResource_WindowsGroupPresent_EnsureAbsent ) | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should return $false when the specified SQL Login is Present' {
-#                     $testTargetResource_SqlLoginPresentWithDefaultValues_EnsureAbsent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-#                     $testTargetResource_SqlLoginPresentWithDefaultValues_EnsureAbsent[ 'Ensure' ] = 'Absent'
-
-#                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithDefaultValues_EnsureAbsent ) | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should be return $false when a login should be disabled but are enabled' {
-#                     $mockTestTargetResourceParameters = $instanceParameters.Clone()
-#                     $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
-#                     $mockTestTargetResourceParameters[ 'Name' ] = 'Windows\User1'
-#                     $mockTestTargetResourceParameters[ 'Disabled' ] = $true
-
-#                     $result = Test-TargetResource @mockTestTargetResourceParameters
-#                     $result | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should be return $false when a login should be enabled but are disabled' {
-#                     $mockTestTargetResourceParameters = $instanceParameters.Clone()
-#                     $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
-#                     $mockTestTargetResourceParameters[ 'Name' ] = 'Windows\UserDisabled'
-#                     $mockTestTargetResourceParameters[ 'Disabled' ] = $false
-
-#                     $result = Test-TargetResource @mockTestTargetResourceParameters
-#                     $result | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should be return $true when a login should be present but disabled' {
-#                     $mockTestTargetResourceParameters = $getTargetResource_KnownSqlLogin.Clone()
-#                     $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
-#                     $mockTestTargetResourceParameters[ 'Disabled' ] = $true
-#                     $mockTestTargetResourceParameters[ 'LoginType' ] = 'SqlLogin'
-#                     $mockTestTargetResourceParameters[ 'LoginCredential' ] = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockSqlLoginPassword)
-
-#                     # Override mock declaration
-#                     Mock -CommandName Connect-SQL -MockWith {
-#                         $mockAccountDisabledException = New-Object System.Exception 'Account disabled'
-#                         $mockAccountDisabledException | Add-Member -Name 'Number' -Value 18470 -MemberType NoteProperty
-
-#                         throw $mockAccountDisabledException
-#                     }
-
-#                     # Override Get-TargetResource
-#                     Mock -CommandName Get-TargetResource {return New-Object PSObject -Property @{
-#                         Ensure          = 'Present'
-#                         Name            = $mockTestTargetResourceParameters.Name
-#                         LoginType       = $mockTestTargetResourceParameters.LoginType
-#                         ServerName      = 'Server1'
-#                         InstanceName    = 'MSSQLERVER'
-#                         Disabled        = $true
-#                         DefaultDatabase = 'master'
-#                         LoginMustChangePassword = $false
-#                         LoginPasswordPolicyEnforced = $true
-#                         LoginPasswordExpirationEnabled = $true
-#                       }
-#                     }
-
-#                     # Call the test target
-#                     $result = Test-TargetResource @mockTestTargetResourceParameters
-
-#                     Assert-MockCalled -CommandName Get-TargetResource -Scope It -Times 1 -Exactly
-#                     Assert-MockCAlled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-
-#                     # Should be true
-#                     $result | Should -Be $true
-#                 }
-
-#                 It 'Should be return $false when a login should be present but disabled and password incorrect' {
-#                     $mockTestTargetResourceParameters = $getTargetResource_KnownSqlLogin.Clone()
-#                     $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
-#                     $mockTestTargetResourceParameters[ 'Disabled' ] = $true
-#                     $mockTestTargetResourceParameters[ 'LoginType' ] = 'SqlLogin'
-#                     $mockTestTargetResourceParameters[ 'LoginCredential' ] = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockSqlLoginPassword)
-
-#                     # Override mock declaration
-#                     Mock -CommandName Connect-SQL -MockWith {
-#                         $mockLoginFailedException = New-Object System.Exception 'Login failed'
-#                         $mockLoginFailedException | Add-Member -Name 'Number' -Value 18456 -MemberType NoteProperty
-
-#                         throw $mockLoginFailedException
-#                     }
-
-#                     # Override Get-TargetResource
-#                     Mock -CommandName Get-TargetResource {return New-Object PSObject -Property @{
-#                         Ensure          = 'Present'
-#                         Name            = $mockTestTargetResourceParameters.Name
-#                         LoginType       = $mockTestTargetResourceParameters.LoginType
-#                         ServerName      = 'Server1'
-#                         InstanceName    = 'MSSQLERVER'
-#                         Disabled        = $true
-#                         DefaultDatabase = 'master'
-#                         LoginMustChangePassword = $false
-#                         LoginPasswordPolicyEnforced = $true
-#                         LoginPasswordExpirationEnabled = $true
-#                       }
-#                     }
-
-#                     # Call the test target
-#                     $result = Test-TargetResource @mockTestTargetResourceParameters
-
-#                     Assert-MockCalled -CommandName Get-TargetResource -Scope It -Times 1 -Exactly
-#                     Assert-MockCAlled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-
-#                     # Should be true
-#                     $result | Should -Be $false
-#                 }
-
-#                 It 'Should throw exception when unknown error occurred and account is disabled' {
-#                     $mockTestTargetResourceParameters = $getTargetResource_KnownSqlLogin.Clone()
-#                     $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
-#                     $mockTestTargetResourceParameters[ 'Disabled' ] = $true
-#                     $mockTestTargetResourceParameters[ 'LoginType' ] = 'SqlLogin'
-#                     $mockTestTargetResourceParameters[ 'LoginCredential' ] = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockSqlLoginPassword)
-
-#                     # Override mock declaration
-#                     Mock -CommandName Connect-SQL -MockWith {
-#                         $mockException = New-Object System.Exception 'Something went wrong'
-#                         $mockException | Add-Member -Name 'Number' -Value 1 -MemberType NoteProperty
-
-#                         throw $mockException
-#                     }
-
-#                     # Override Get-TargetResource
-#                     Mock -CommandName Get-TargetResource {return New-Object PSObject -Property @{
-#                         Ensure          = 'Present'
-#                         Name            = $mockTestTargetResourceParameters.Name
-#                         LoginType       = $mockTestTargetResourceParameters.LoginType
-#                         ServerName      = 'Server1'
-#                         InstanceName    = 'MSSQLERVER'
-#                         Disabled        = $true
-#                         DefaultDatabase = 'master'
-#                         LoginMustChangePassword = $false
-#                         LoginPasswordPolicyEnforced = $true
-#                         LoginPasswordExpirationEnabled = $true
-#                       }
-#                     }
-
-#                     # Call the test target
-#                     $errorMessage = $script:localizedData.PasswordValidationError
-#                     { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw $errorMessage
-
-#                     Assert-MockCalled -CommandName Get-TargetResource -Scope It -Times 1 -Exactly
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-#             }
-
-#             Context 'When the desired state is Present' {
-#                 It 'Should return $false when the specified Windows user is Absent' {
-#                     $testTargetResource_WindowsUserAbsent_EnsurePresent = $testTargetResource_WindowsUserAbsent.Clone()
-#                     $testTargetResource_WindowsUserAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
-
-#                     ( Test-TargetResource @testTargetResource_WindowsUserAbsent_EnsurePresent ) | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should not be checking login properties when Windows user is Absent' {
-#                     Mock -CommandName Write-Verbose -ParameterFilter {$message.contains('rather than WindowsUser')}
-
-#                     $testTargetResource_WindowsUserAbsent_EnsurePresent = $testTargetResource_WindowsUserAbsent.Clone()
-#                     $testTargetResource_WindowsUserAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
-
-#                     ( Test-TargetResource @testTargetResource_WindowsUserAbsent_EnsurePresent ) | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Write-Verbose -Scope It -Times 0 -Exactly
-#                 }
-
-#                 It 'Should return $false when the specified Windows group is Absent' {
-#                     $testTargetResource_WindowsGroupAbsent_EnsurePresent = $testTargetResource_WindowsGroupAbsent.Clone()
-#                     $testTargetResource_WindowsGroupAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
-
-#                     ( Test-TargetResource @testTargetResource_WindowsGroupAbsent_EnsurePresent ) | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should not be checking login properties when Windows group is Absent' {
-#                     Mock -CommandName Write-Verbose -ParameterFilter {$message.contains('rather than WindowsGroup')}
-
-#                     $testTargetResource_WindowsGroupAbsent_EnsurePresent = $testTargetResource_WindowsGroupAbsent.Clone()
-#                     $testTargetResource_WindowsGroupAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
-
-#                     ( Test-TargetResource @testTargetResource_WindowsGroupAbsent_EnsurePresent ) | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Write-Verbose -Scope It -Times 0 -Exactly
-#                 }
-
-#                 It 'Should return $false when the specified SQL Login is Absent' {
-#                     $testTargetResource_SqlLoginAbsent_EnsurePresent = $testTargetResource_SqlLoginAbsent.Clone()
-#                     $testTargetResource_SqlLoginAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
-
-#                     ( Test-TargetResource @testTargetResource_SqlLoginAbsent_EnsurePresent ) | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should not be checking login properties when SQL Login is Absent' {
-#                     Mock -CommandName Write-Verbose -ParameterFilter {$message.contains('rather than SqlLogin')}
-
-#                     $testTargetResource_SqlLoginAbsent_EnsurePresent = $testTargetResource_SqlLoginAbsent.Clone()
-#                     $testTargetResource_SqlLoginAbsent_EnsurePresent[ 'Ensure' ] = 'Present'
-
-#                     ( Test-TargetResource @testTargetResource_SqlLoginAbsent_EnsurePresent ) | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Write-Verbose -Scope It -Times 0 -Exactly
-#                 }
-
-#                 It 'Should return $true when the specified Windows user is Present' {
-#                     $testTargetResource_WindowsUserPresent_EnsurePresent = $testTargetResource_WindowsUserPresent.Clone()
-#                     $testTargetResource_WindowsUserPresent_EnsurePresent[ 'Ensure' ] = 'Present'
-
-#                     ( Test-TargetResource @testTargetResource_WindowsUserPresent_EnsurePresent ) | Should -Be $true
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should return $true when the specified Windows group is Present' {
-#                     $testTargetResource_WindowsGroupPresent_EnsurePresent = $testTargetResource_WindowsGroupPresent.Clone()
-#                     $testTargetResource_WindowsGroupPresent_EnsurePresent[ 'Ensure' ] = 'Present'
-
-#                     ( Test-TargetResource @testTargetResource_WindowsGroupPresent_EnsurePresent ) | Should -Be $true
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should return $true when the specified SQL Login is Present using default parameter values' {
-#                     $testTargetResource_SqlLoginPresentWithDefaultValues_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-#                     $testTargetResource_SqlLoginPresentWithDefaultValues_EnsurePresent[ 'Ensure' ] = 'Present'
-
-#                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithDefaultValues_EnsurePresent ) | Should -Be $true
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should return $true when the specified SQL Login is Present and DefaultDatabase is "master"' {
-#                     $testTargetResource_SqlLoginPresentWithDefaultDatabaseMaster_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-#                     $testTargetResource_SqlLoginPresentWithDefaultDatabaseMaster_EnsurePresent[ 'Ensure' ] = 'Present'
-#                     $testTargetResource_SqlLoginPresentWithDefaultDatabaseMaster_EnsurePresent[ 'DefaultDatabase' ] = 'master'
-
-#                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithDefaultDatabaseMaster_EnsurePresent ) | Should -Be $true
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should return $false when the specified SQL Login is Present and DefaultDatabase is not "master"' {
-#                     $testTargetResource_SqlLoginPresentWithDefaultDatabaseNotMaster_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-#                     $testTargetResource_SqlLoginPresentWithDefaultDatabaseNotMaster_EnsurePresent[ 'Ensure' ] = 'Present'
-#                     $testTargetResource_SqlLoginPresentWithDefaultDatabaseNotMaster_EnsurePresent[ 'DefaultDatabase' ] = 'notmaster'
-
-#                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithDefaultDatabaseNotMaster_EnsurePresent ) | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should return $true when the specified SQL Login is Present and PasswordExpirationEnabled is $true' {
-#                     $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledTrue_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-#                     $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledTrue_EnsurePresent[ 'Ensure' ] = 'Present'
-#                     $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledTrue_EnsurePresent[ 'LoginPasswordExpirationEnabled' ] = $true
-
-#                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledTrue_EnsurePresent ) | Should -Be $true
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should return $false when the specified SQL Login is Present and PasswordExpirationEnabled is $false' {
-#                     $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledFalse_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-#                     $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledFalse_EnsurePresent[ 'Ensure' ] = 'Present'
-#                     $testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledFalse_EnsurePresent[ 'LoginPasswordExpirationEnabled' ] = $false
-
-#                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithPasswordExpirationEnabledFalse_EnsurePresent ) | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should return $true when the specified SQL Login is Present and PasswordPolicyEnforced is $true' {
-#                     $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedTrue_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-#                     $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedTrue_EnsurePresent[ 'Ensure' ] = 'Present'
-#                     $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedTrue_EnsurePresent[ 'LoginPasswordPolicyEnforced' ] = $true
-
-#                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedTrue_EnsurePresent ) | Should -Be $true
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should return $false when the specified SQL Login is Present and PasswordPolicyEnforced is $false' {
-#                     $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedFalse_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-#                     $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedFalse_EnsurePresent[ 'Ensure' ] = 'Present'
-#                     $testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedFalse_EnsurePresent[ 'LoginPasswordPolicyEnforced' ] = $false
-
-#                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithPasswordPolicyEnforcedFalse_EnsurePresent ) | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should return $true when the specified SQL Login is Present using default parameter values and the password is properly configured.' {
-#                     $testTargetResource_SqlLoginPresentWithDefaultValuesGoodPw_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-#                     $testTargetResource_SqlLoginPresentWithDefaultValuesGoodPw_EnsurePresent[ 'Ensure' ] = 'Present'
-#                     $testTargetResource_SqlLoginPresentWithDefaultValuesGoodPw_EnsurePresent[ 'LoginCredential' ] = $mockSqlLoginCredential
-
-#                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithDefaultValuesGoodPw_EnsurePresent ) | Should -Be $true
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-#                 }
-
-#                 It 'Should return $false when the specified SQL Login is Present using default parameter values and the password is not properly configured.' {
-#                     Mock -CommandName Connect-SQL -MockWith { throw } -Verifiable -ParameterFilter { $SetupCredential }
-
-#                     $testTargetResource_SqlLoginPresentWithDefaultValuesBadPw_EnsurePresent = $testTargetResource_SqlLoginPresentWithDefaultValues.Clone()
-#                     $testTargetResource_SqlLoginPresentWithDefaultValuesBadPw_EnsurePresent[ 'Ensure' ] = 'Present'
-#                     $testTargetResource_SqlLoginPresentWithDefaultValuesBadPw_EnsurePresent[ 'LoginCredential' ] = $mockSqlLoginCredentialBadPassword
-
-#                     ( Test-TargetResource @testTargetResource_SqlLoginPresentWithDefaultValuesBadPw_EnsurePresent ) | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-#                 }
-
-#                 It 'Should be return $true when a login is enabled' {
-#                     $mockTestTargetResourceParameters = $instanceParameters.Clone()
-#                     $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
-#                     $mockTestTargetResourceParameters[ 'Name' ] = 'Windows\User1'
-#                     $mockTestTargetResourceParameters[ 'Disabled' ] = $false
-
-#                     $result = Test-TargetResource @mockTestTargetResourceParameters
-#                     $result | Should -Be $true
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should be return $true when a login is disabled' {
-#                     $mockTestTargetResourceParameters = $instanceParameters.Clone()
-#                     $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
-#                     $mockTestTargetResourceParameters[ 'Name' ] = 'Windows\UserDisabled'
-#                     $mockTestTargetResourceParameters[ 'Disabled' ] = $true
-
-#                     $result = Test-TargetResource @mockTestTargetResourceParameters
-#                     $result | Should -Be $true
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-
-#                 It 'Should be return $false when a login has the wrong login type' {
-#                     $mockTestTargetResourceParameters = $instanceParameters.Clone()
-#                     $mockTestTargetResourceParameters[ 'Ensure' ] = 'Present'
-#                     <#
-#                         Use WindowsLogin format here to be able to test the
-#                         specific property LoginType.
-#                     #>
-#                     $mockTestTargetResourceParameters[ 'Name' ] = 'Windows\UserDisabled'
-#                     $mockTestTargetResourceParameters[ 'LoginType' ] = 'SqlLogin'
-#                     $mockTestTargetResourceParameters[ 'Disabled' ] = $true
-
-#                     $result = Test-TargetResource @mockTestTargetResourceParameters
-#                     $result | Should -Be $false
-
-#                     Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 }
-#             }
-#         }
 
 #         Describe 'DSC_SqlLogin\Set-TargetResource' {
 #             Mock -CommandName Update-SQLServerLogin -ModuleName $script:dscResourceName
