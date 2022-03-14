@@ -224,7 +224,8 @@ function Set-TargetResource
                             $login.PasswordExpirationEnabled = $LoginPasswordExpirationEnabled
                         }
 
-                        Update-SQLServerLogin -Login $login
+                            Update-SQLServerLogin -Login $login
+                        }
                     }
 
                     # Set the password if it is specified
@@ -297,6 +298,7 @@ function Set-TargetResource
                             New-InvalidOperationException -Message $errorMessage
                         }
 
+                        # `PasswordPolicyEnforced` and `PasswordExpirationEnabled` must be updated together.
                         $login.PasswordPolicyEnforced = $LoginPasswordPolicyEnforced
                         $login.PasswordExpirationEnabled = $LoginPasswordExpirationEnabled
                         if ( $LoginMustChangePassword )
