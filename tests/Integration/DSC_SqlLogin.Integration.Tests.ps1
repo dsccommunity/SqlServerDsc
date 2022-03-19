@@ -531,6 +531,66 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
     }
 
     Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_AddLoginDscUser5_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterAll {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                $configurationParameters = @{
+                    OutputPath                 = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData          = $ConfigurationData
+                }
+
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                Start-DscConfiguration @startDscConfigurationParameters
+            } | Should -Not -Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            {
+                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+            } | Should -Not -Throw
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.Ensure | Should -Be 'Present'
+            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser5Name
+            $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser5Type
+            $resourceCurrentState.Disabled | Should -Be $false
+            $resourceCurrentState.LoginMustChangePassword | Should -BeFalse
+            $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeTrue
+            $resourceCurrentState.LoginPasswordPolicyEnforced | Should -BeTrue
+        }
+
+        It 'Should return $true when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose | Should -Be 'True'
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_AddLoginDscSqlUsers1_Config"
     ) {
         BeforeAll {
@@ -635,6 +695,62 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $resourceCurrentState.Ensure | Should -Be 'Absent'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser3Name
+            $resourceCurrentState.LoginType | Should -BeNullOrEmpty
+        }
+
+        It 'Should return $true when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose | Should -Be 'True'
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_RemoveLoginDscUser5_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterAll {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                $configurationParameters = @{
+                    OutputPath                 = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData          = $ConfigurationData
+                }
+
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                Start-DscConfiguration @startDscConfigurationParameters
+            } | Should -Not -Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            {
+                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+            } | Should -Not -Throw
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.Ensure | Should -Be 'Absent'
+            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser5Name
             $resourceCurrentState.LoginType | Should -BeNullOrEmpty
         }
 
