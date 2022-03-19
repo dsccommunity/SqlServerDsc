@@ -62,6 +62,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Only enforces optional parameters `LoginPasswordExpirationEnabled` and
     `LoginPasswordPolicyEnforced` for a SQL login when the parameters are
     specified in the configuration.
+  - A localized string for an error message was updated to correctly reflect
+    the code that says that to use a SQL login the authentication mode must
+    be either Mixed or Normal, prio it just stated Mixed.
 
 ### Fixed
 
