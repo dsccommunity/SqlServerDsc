@@ -319,7 +319,7 @@ function Set-TargetResource
                     }
                 }
 
-                # we can only disable the login once it's been created
+                # We can only disable the login once it's been created
                 if ( $Disabled )
                 {
                     Write-Verbose -Message (
@@ -329,7 +329,7 @@ function Set-TargetResource
                     $login.Disable()
                 }
 
-                # set the default database if specified
+                # Set the default database if specified
                 if ( $PSBoundParameters.ContainsKey('DefaultDatabase') )
                 {
                     $login.DefaultDatabase = $DefaultDatabase
