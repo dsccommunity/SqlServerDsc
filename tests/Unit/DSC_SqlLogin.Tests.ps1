@@ -264,7 +264,7 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
             }
 
             It 'Should return $true' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $mockTestTargetResourceParameters.Name = 'Windows\Login1'
@@ -288,7 +288,7 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
             }
 
             It 'Should return $true' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $mockTestTargetResourceParameters.Ensure = 'Absent'
@@ -385,7 +385,7 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
             }
 
             It 'Should return $false' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $mockTestTargetResourceParameters.Name = 'Windows\Login1'
@@ -409,7 +409,7 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
             }
 
             It 'Should return $false' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $mockTestTargetResourceParameters.Ensure = 'Absent'
@@ -634,6 +634,850 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+    }
+}
+
+Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockSetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        Context 'When the login should be present' {
+            Context 'When creating a new login of type <MockLoginType>' -ForEach @(
+                @{
+                    MockLoginType = 'WindowsUser'
+                    MockLoginName = 'Windows\User1'
+                }
+                @{
+                    MockLoginType = 'WindowsGroup'
+                    MockLoginName = 'Windows\Group1'
+                }
+            ) {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'LoginMode' -Value 'Integrated' -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                                # Mocks no existing logins.
+                                return @{}
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                    Mock -CommandName New-SQLServerLogin
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters.Name = $MockLoginName
+                        $mockSetTargetResourceParameters.LoginType = $MockLoginType
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        $Login.Name -eq $MockLoginName
+                    } -Exactly -Times 1 -Scope It
+
+                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        -not $PesterBoundParameters.ContainsKey('LoginCreateOptions')
+                    } -Exactly -Times 1 -Scope It
+
+                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        -not $PesterBoundParameters.ContainsKey('LoginCreateOptions')
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When creating a new login of type WindowsUser and specifying a default database' {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'LoginMode' -Value 'Integrated' -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                                # Mocks no existing logins.
+                                return @{}
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                    Mock -CommandName New-SQLServerLogin
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters.Name = 'Windows\Login1'
+                        $mockSetTargetResourceParameters.LoginType = 'WindowsUser'
+                        $mockSetTargetResourceParameters.DefaultDatabase = 'NewDatabase'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        $Login.Name -eq 'Windows\Login1' -and $Login.DefaultDatabase -eq 'NewDatabase'
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When creating a new login of type WindowsUser and specifying that it should be disabled' {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'LoginMode' -Value 'Integrated' -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                                # Mocks no existing logins.
+                                return @{}
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+
+                    $mockLoginObject = {
+                        # Using the stub class Login from the SMO.cs file.
+                        return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList ($null, 'Windows\Login1') |
+                                    Add-Member -MemberType ScriptMethod -Name 'Disable' -Value {
+                                        InModuleScope -ScriptBlock {
+                                            $script:mockMethodDisableWasRun += 1
+                                        }
+                                    } -PassThru -Force
+                    }
+
+                    Mock -CommandName New-Object -MockWith $mockLoginObject -ParameterFilter {
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Login'
+                    }
+
+                    Mock -CommandName New-SQLServerLogin
+                }
+
+                BeforeEach {
+                    InModuleScope -ScriptBlock {
+                        $script:mockMethodDisableWasRun = 0
+                    }
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters.Name = 'Windows\Login1'
+                        $mockSetTargetResourceParameters.LoginType = 'WindowsUser'
+                        $mockSetTargetResourceParameters.Disabled = $true
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                        $script:mockMethodDisableWasRun | Should -Be 1
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        $Login.Name -eq 'Windows\Login1'
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When creating a new login of type SqlLogin' {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'LoginMode' -Value 'Mixed' -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                                # Mocks no existing logins.
+                                return @{}
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                    Mock -CommandName New-SQLServerLogin
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
+
+                        $mockSetTargetResourceParameters.Name = 'SqlLogin1'
+                        $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        $Login.Name -eq 'SqlLogin1'
+                    } -Exactly -Times 1 -Scope It
+
+                    <#
+                        When a SqlLogin is created there are additional parameters used.
+                        This make sure the mock is called with the correct parameters.
+                    #>
+                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        $PesterBoundParameters.ContainsKey('LoginCreateOptions') -and $LoginCreateOptions -eq [Microsoft.SqlServer.Management.Smo.LoginCreateOptions]::MustChange
+                    } -Exactly -Times 1 -Scope It
+
+                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        $PesterBoundParameters.ContainsKey('SecureString')
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When creating a new login of type SqlLogin and specifying that the user do not need to change password' {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'LoginMode' -Value 'Mixed' -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                                # Mocks no existing logins.
+                                return @{}
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                    Mock -CommandName New-SQLServerLogin
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
+
+                        $mockSetTargetResourceParameters.Name = 'SqlLogin1'
+                        $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockSetTargetResourceParameters.LoginMustChangePassword = $false
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        $Login.Name -eq 'SqlLogin1'
+                    } -Exactly -Times 1 -Scope It
+
+                    <#
+                        When a SqlLogin is created there are additional parameters used.
+                        This make sure the mock is called with the correct parameters.
+                    #>
+                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        $PesterBoundParameters.ContainsKey('LoginCreateOptions') -and $LoginCreateOptions -eq [Microsoft.SqlServer.Management.Smo.LoginCreateOptions]::None
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When creating a new login of type SqlLogin and specifying a default database' {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'LoginMode' -Value 'Mixed' -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                                # Mocks no existing logins.
+                                return @{}
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                    Mock -CommandName New-SQLServerLogin
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
+
+                        $mockSetTargetResourceParameters.Name = 'SqlLogin1'
+                        $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockSetTargetResourceParameters.DefaultDatabase = 'NewDatabase'
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        $Login.Name -eq 'SqlLogin1' -and $Login.DefaultDatabase -eq 'NewDatabase'
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When creating a new login of type SqlLogin and specifying that it should be disabled' {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'LoginMode' -Value 'Mixed' -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                                # Mocks no existing logins.
+                                return @{}
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+
+                    $mockLoginObject = {
+                        # Using the stub class Login from the SMO.cs file.
+                        return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList ($null, 'SqlLogin1') |
+                                    Add-Member -MemberType ScriptMethod -Name 'Disable' -Value {
+                                        InModuleScope -ScriptBlock {
+                                            $script:mockMethodDisableWasRun += 1
+                                        }
+                                    } -PassThru -Force
+                    }
+
+                    Mock -CommandName New-Object -MockWith $mockLoginObject -ParameterFilter {
+                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Login'
+                    }
+
+                    Mock -CommandName New-SQLServerLogin
+                }
+
+                BeforeEach {
+                    InModuleScope -ScriptBlock {
+                        $script:mockMethodDisableWasRun = 0
+                    }
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
+
+                        $mockSetTargetResourceParameters.Name = 'SqlLogin1'
+                        $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockSetTargetResourceParameters.Disabled = $true
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                        $script:mockMethodDisableWasRun | Should -Be 1
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                        $Login.Name -eq 'SqlLogin1'
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When creating a new login of type SqlLogin and the login mode is wrong' {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'LoginMode' -Value 'Integrated' -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                                # Mocks no existing logins.
+                                return @{}
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
+
+                        $mockSetTargetResourceParameters.Name = 'SqlLogin1'
+                        $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+
+                        $mockErrorMessage = $script:localizedData.IncorrectLoginMode -f 'localhost', 'MSSQLSERVER', 'Integrated'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When creating a new login of type SqlLogin and not passing any credentials' {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'LoginMode' -Value 'Integrated' -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                                # Mocks no existing logins.
+                                return @{}
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters.Name = 'SqlLogin1'
+                        $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
+
+                        $mockErrorMessage = $script:localizedData.LoginCredentialNotFound -f 'SqlLogin1'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When creating a new login of type <MockLoginType>' -ForEach @(
+                @{
+                    MockLoginType = 'Certificate'
+                    MockLoginName = 'Certificate1'
+                }
+                @{
+                    MockLoginType = 'AsymmetricKey'
+                    MockLoginName = 'AsymmetricKey1'
+                }
+                @{
+                    MockLoginType = 'ExternalUser'
+                    MockLoginName = 'ExternalUser1'
+                }
+                @{
+                    MockLoginType = 'ExternalGroup'
+                    MockLoginName = 'ExternalGroup1'
+                }
+            ) {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'LoginMode' -Value 'Integrated' -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                                # Mocks no existing logins.
+                                return @{}
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                    Mock -CommandName New-SQLServerLogin
+                }
+
+                It 'Should throw the correct error message' {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters.Name = $MockLoginName
+                        $mockSetTargetResourceParameters.LoginType = $MockLoginType
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + ($script:localizedData.LoginTypeNotImplemented -f $MockLoginType))
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When the login should be absent' {
+            Context 'When removing an existing login' {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'LoginMode' -Value 'Mixed' -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                                return @{
+                                    # Using the stub class Login from the SMO.cs file.
+                                    'SqlLogin1' = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList ($null, 'SqlLogin1')
+                                }
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                    Mock -CommandName Remove-SQLServerLogin
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters.Ensure = 'Absent'
+                        $mockSetTargetResourceParameters.Name = 'SqlLogin1'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Remove-SQLServerLogin -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When updating a login of type WindowsUser' {
+            Context 'When the property ''Disabled'' is not in desired state' -ForEach @(
+                @{
+                    MockPropertyValue = $true
+                }
+                @{
+                    MockPropertyValue = $false
+                }
+            ) {
+                BeforeEach {
+                    InModuleScope -ScriptBlock {
+                        $script:mockMethodDisableWasRun = 0
+                        $script:mockMethodEnableWasRun = 0
+                    }
+
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType ScriptProperty -Name 'Logins' -Value {
+                                $mockLoginObject = New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Windows\Login1' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'WindowsUser' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'IsDisabled' -Value (-not $MockPropertyValue) -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'Disable' -Value {
+                                        InModuleScope -ScriptBlock {
+                                            $script:mockMethodDisableWasRun += 1
+                                        }
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'Enable' -Value {
+                                        InModuleScope -ScriptBlock {
+                                            $script:mockMethodEnableWasRun += 1
+                                        }
+                                    } -PassThru -Force
+
+                                return @{
+                                    'Windows\Login1' = $mockLoginObject
+                                }
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters.Name = 'Windows\Login1'
+                        $mockSetTargetResourceParameters.LoginType = 'WindowsUser'
+                        $mockSetTargetResourceParameters.Disabled = $MockPropertyValue
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                        if ($MockPropertyValue)
+                        {
+                            $script:mockMethodDisableWasRun | Should -Be 1
+                            $script:mockMethodEnableWasRun | Should -Be 0
+                        }
+                        else
+                        {
+                            $script:mockMethodDisableWasRun | Should -Be 0
+                            $script:mockMethodEnableWasRun | Should -Be 1
+                        }
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When the property <MockPropertyName> is not in desired state' -ForEach @(
+                @{
+                    MockPropertyName = 'DefaultDatabase'
+                    MockPropertyValue = 'Database1'
+                }
+            ) {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType ScriptProperty -Name 'Logins' -Value {
+                                # Using the stub class Login from the SMO.cs file.
+                                $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList ($null, 'Windows\Login1')
+                                $mockLoginObject.DefaultDatabase = 'master'
+
+                                return @{
+                                    'Windows\Login1' = $mockLoginObject
+                                }
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                    Mock -CommandName Update-SQLServerLogin
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters.Name = 'Windows\Login1'
+                        $mockSetTargetResourceParameters.LoginType = 'WindowsUser'
+                        $mockSetTargetResourceParameters.$MockPropertyName = $MockPropertyValue
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Update-SQLServerLogin -ParameterFilter {
+                        $Login.$MockPropertyName -eq $MockPropertyValue
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When updating a login of type SqlLogin' {
+            Context 'When the property <PropertyName> is set to <MockPropertyValue> and is not in desired state' -ForEach @(
+                @{
+                    MockPropertyName = 'LoginPasswordPolicyEnforced'
+                    MockPropertyValue = $true
+                }
+                @{
+                    MockPropertyName = 'LoginPasswordPolicyEnforced'
+                    MockPropertyValue = $false
+                }
+                @{
+                    MockPropertyName = 'LoginPasswordExpirationEnabled'
+                    MockPropertyValue = $true
+                }
+                @{
+                    MockPropertyName = 'LoginPasswordExpirationEnabled'
+                    MockPropertyValue = $false
+                }
+            ) {
+                BeforeEach {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType ScriptProperty -Name 'Logins' -Value {
+                                # Using the stub class Login from the SMO.cs file.
+                                $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList ($null, 'SqlLogin1')
+                                $mockLoginObject.LoginType = 'SqlLogin'
+                                $mockLoginObject.DefaultDatabase = 'master'
+                                # Switch the mock value to the opposite of what should be the desired state.
+                                $mockLoginObject.PasswordPolicyEnforced = -not $MockPropertyValue
+                                $mockLoginObject.PasswordExpirationEnabled = -not $MockPropertyValue
+
+                                return @{
+                                    'SqlLogin1' = $mockLoginObject
+                                }
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                    Mock -CommandName Update-SQLServerLogin
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters.Name = 'SqlLogin1'
+                        $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockSetTargetResourceParameters.$MockPropertyName = $MockPropertyValue
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Update-SQLServerLogin -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When the property ''Disabled'' is not in desired state' -ForEach @(
+                @{
+                    MockPropertyValue = $true
+                }
+                @{
+                    MockPropertyValue = $false
+                }
+            ) {
+                BeforeEach {
+                    InModuleScope -ScriptBlock {
+                        $script:mockMethodDisableWasRun = 0
+                        $script:mockMethodEnableWasRun = 0
+                    }
+
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType ScriptProperty -Name 'Logins' -Value {
+                                $mockLoginObject = New-Object -TypeName Object |
+                                    Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SqlLogin1' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'LoginType' -Value 'SqlLogin' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'IsDisabled' -Value (-not $MockPropertyValue) -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'Disable' -Value {
+                                        InModuleScope -ScriptBlock {
+                                            $script:mockMethodDisableWasRun += 1
+                                        }
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptMethod -Name 'Enable' -Value {
+                                        InModuleScope -ScriptBlock {
+                                            $script:mockMethodEnableWasRun += 1
+                                        }
+                                    } -PassThru -Force
+
+                                return @{
+                                    'SqlLogin1' = $mockLoginObject
+                                }
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters.Name = 'SqlLogin1'
+                        $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockSetTargetResourceParameters.Disabled = $MockPropertyValue
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                        if ($MockPropertyValue)
+                        {
+                            $script:mockMethodDisableWasRun | Should -Be 1
+                            $script:mockMethodEnableWasRun | Should -Be 0
+                        }
+                        else
+                        {
+                            $script:mockMethodDisableWasRun | Should -Be 0
+                            $script:mockMethodEnableWasRun | Should -Be 1
+                        }
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When the property ''<MockPropertyName>'' is not in desired state' -ForEach @(
+                @{
+                    MockPropertyName = 'DefaultDatabase'
+                    MockPropertyValue = 'Database1'
+                }
+            ) {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType ScriptProperty -Name 'Logins' -Value {
+                                # Using the stub class Login from the SMO.cs file.
+                                $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList ($null, 'SqlLogin1')
+                                $mockLoginObject.LoginType = 'SqlLogin'
+                                $mockLoginObject.DefaultDatabase = 'master'
+
+                                return @{
+                                    'SqlLogin1' = $mockLoginObject
+                                }
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                    Mock -CommandName Update-SQLServerLogin
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters.Name = 'SqlLogin1'
+                        $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockSetTargetResourceParameters.$MockPropertyName = $MockPropertyValue
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Update-SQLServerLogin -ParameterFilter {
+                        $Login.$MockPropertyName -eq $MockPropertyValue
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When the property ''MustChangePassword'' is not in desired state' {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType ScriptProperty -Name 'Logins' -Value {
+                                # Using the stub class Login from the SMO.cs file.
+                                $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList ($null, 'SqlLogin1')
+                                $mockLoginObject.LoginType = 'SqlLogin'
+                                $mockLoginObject.MustChangePassword = $false
+
+                                return @{
+                                    'SqlLogin1' = $mockLoginObject
+                                }
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                }
+
+                It 'Should throw the correct error message' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters.Name = 'SqlLogin1'
+                        $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockSetTargetResourceParameters.LoginMustChangePassword = $true
+
+                        $mockErrorMessage = $script:localizedData.MustChangePasswordCannotBeChanged
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When the property ''LoginCredential'' is passed' {
+                BeforeAll {
+                    $mockConnectSQL = {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType ScriptProperty -Name 'Logins' -Value {
+                                # Using the stub class Login from the SMO.cs file.
+                                $mockLoginObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList ($null, 'SqlLogin1')
+                                $mockLoginObject.LoginType = 'SqlLogin'
+
+                                return @{
+                                    'SqlLogin1' = $mockLoginObject
+                                }
+                            } -PassThru -Force
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+                    Mock -CommandName Set-SQLServerLoginPassword
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockPassword = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
+
+                        $mockSetTargetResourceParameters.Name = 'SqlLogin1'
+                        $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
+                        $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Set-SQLServerLoginPassword -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -1547,7 +2391,6 @@ Describe 'SqlLogin\Remove-SQLServerLogin' {
                 } -PassThru -Force
 
                 $mockLogin.LoginType = 'WindowsUser'
-                $mockLogin.MockLoginType = 'SqlLogin'
 
                 $mockErrorMessage = $script:localizedData.DropLoginFailed -f $mockLogin.Name
 
