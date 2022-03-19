@@ -41,7 +41,7 @@ else
                 DscUser4Type     = 'SqlLogin'
                 DscUser4Role     = 'sysadmin'
 
-                DscUser5Name     = 'DscUser4'
+                DscUser5Name     = 'DscUser5'
                 DscUser5Pass     = 'P@ssw0rd1'
                 DscUser5Type     = 'SqlLogin'
 
