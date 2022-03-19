@@ -11,7 +11,7 @@ ConvertFrom-StringData @'
     LoginTypeNotImplemented = The login type '{0}' is not implemented in this resource.
     LoginCredentialNotFound = To create the SQL login '{0}', the login credentials must also be provided.
     CreateLogin = Creating the login '{0}', with the login type '{1}', on the instance '{2}\\{3}'.
-    IncorrectLoginMode = The instance '{0}\\{1}' is currently in '{2}' authentication mode. To create a SQL Login, it must be set to 'Mixed' authentication mode.
+    IncorrectLoginMode = The instance '{0}\\{1}' is currently in '{2}' authentication mode. To create a SQL Login, it must be set to 'Mixed' or 'Normal' authentication mode.
     DropLogin = Removing the login '{0}' from the instance '{1}\\{2}'.
     TestingConfiguration = Determines if the login '{0}' at the instance '{1}\\{2}' has the correct state.
     WrongEnsureState = The login '{0}' is {1}, but expected it to be {2}.
