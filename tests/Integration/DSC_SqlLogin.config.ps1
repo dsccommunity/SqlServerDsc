@@ -433,7 +433,7 @@ Configuration DSC_SqlLogin_RemoveLoginDscUser5_Config
         {
             Ensure               = 'Absent'
             Name                 = $Node.DscUser5Name
-            LoginType            = $Node.DscUser5Name
+            LoginType            = $Node.DscUser5Type
 
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
