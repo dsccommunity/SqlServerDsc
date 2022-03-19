@@ -335,7 +335,7 @@ Configuration DSC_SqlLogin_AddLoginDscUser5_Config
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.DscUser4Name, (ConvertTo-SecureString -String $Node.DscUser4Pass1 -AsPlainText -Force))
 
-            DefaultDatabase                = $Node.DefaultDbName
+            DefaultDatabase                = 'master'
 
             ServerName                     = $Node.ServerName
             InstanceName                   = $Node.InstanceName
