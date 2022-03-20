@@ -316,7 +316,167 @@ Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config
 
 <#
     .SYNOPSIS
-        Adds a SQL login.
+        Adds a second SQL login to test LoginPasswordPolicyEnforced and LoginPasswordExpirationEnabled
+        with default values.
+#>
+Configuration DSC_SqlLogin_AddLoginDscUser5_DefaultValues_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlLogin 'Integration_Test'
+        {
+            Ensure                         = 'Present'
+            Name                           = $Node.DscUser5Name
+            LoginType                      = $Node.DscUser5Type
+            LoginMustChangePassword        = $false
+
+            LoginCredential                = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.DscUser4Name, (ConvertTo-SecureString -String $Node.DscUser4Pass1 -AsPlainText -Force))
+
+            <#
+                Must use a database that is available on the server,
+                and to which the login has access, otherwise the password
+                check will fail since it cannot connect to the database.
+            #>
+            DefaultDatabase                = 'master'
+
+            ServerName                     = $Node.ServerName
+            InstanceName                   = $Node.InstanceName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Adds a second SQL login to test LoginPasswordPolicyEnforced set to True, and
+        LoginPasswordExpirationEnabled using default value.
+#>
+Configuration DSC_SqlLogin_AddLoginDscUser5_Set_LoginPasswordPolicyEnforced_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlLogin 'Integration_Test'
+        {
+            Ensure                         = 'Present'
+            Name                           = $Node.DscUser5Name
+            LoginType                      = $Node.DscUser5Type
+            LoginMustChangePassword        = $false
+            LoginPasswordPolicyEnforced    = $false
+
+            LoginCredential                = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.DscUser4Name, (ConvertTo-SecureString -String $Node.DscUser4Pass1 -AsPlainText -Force))
+
+            <#
+                Must use a database that is available on the server,
+                and to which the login has access, otherwise the password
+                check will fail since it cannot connect to the database.
+            #>
+            DefaultDatabase                = 'master'
+
+            ServerName                     = $Node.ServerName
+            InstanceName                   = $Node.InstanceName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Adds a second SQL login to test LoginPasswordExpirationEnabled set to True, and
+        LoginPasswordPolicyEnforced using default value.
+#>
+Configuration DSC_SqlLogin_AddLoginDscUser5_Set_LoginPasswordExpirationEnabled_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlLogin 'Integration_Test'
+        {
+            Ensure                         = 'Present'
+            Name                           = $Node.DscUser5Name
+            LoginType                      = $Node.DscUser5Type
+            LoginMustChangePassword        = $false
+            LoginPasswordExpirationEnabled = $false
+
+            LoginCredential                = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.DscUser4Name, (ConvertTo-SecureString -String $Node.DscUser4Pass1 -AsPlainText -Force))
+
+            <#
+                Must use a database that is available on the server,
+                and to which the login has access, otherwise the password
+                check will fail since it cannot connect to the database.
+            #>
+            DefaultDatabase                = 'master'
+
+            ServerName                     = $Node.ServerName
+            InstanceName                   = $Node.InstanceName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Adds a second SQL login to test LoginPasswordExpirationEnabled set to True, and
+        LoginPasswordPolicyEnforced using default value.
+#>
+Configuration DSC_SqlLogin_AddLoginDscUser5_Set_LoginPasswordExpirationEnabled_LoginPasswordPolicyEnforced_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlLogin 'Integration_Test'
+        {
+            Ensure                         = 'Present'
+            Name                           = $Node.DscUser5Name
+            LoginType                      = $Node.DscUser5Type
+            LoginMustChangePassword        = $false
+            LoginPasswordPolicyEnforced    = $false
+            LoginPasswordExpirationEnabled = $false
+
+            LoginCredential                = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.DscUser4Name, (ConvertTo-SecureString -String $Node.DscUser4Pass1 -AsPlainText -Force))
+
+            <#
+                Must use a database that is available on the server,
+                and to which the login has access, otherwise the password
+                check will fail since it cannot connect to the database.
+            #>
+            DefaultDatabase                = 'master'
+
+            ServerName                     = $Node.ServerName
+            InstanceName                   = $Node.InstanceName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Updates the second SQL login to test LoginPasswordPolicyEnforced
 #>
 Configuration DSC_SqlLogin_AddLoginDscUser5_Config
 {
@@ -335,6 +495,11 @@ Configuration DSC_SqlLogin_AddLoginDscUser5_Config
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.DscUser4Name, (ConvertTo-SecureString -String $Node.DscUser4Pass1 -AsPlainText -Force))
 
+            <#
+                Must use a database that is available on the server,
+                otherwise the password check will fail since it cannot
+                connect to the database.
+            #>
             DefaultDatabase                = 'master'
 
             ServerName                     = $Node.ServerName
@@ -344,28 +509,9 @@ Configuration DSC_SqlLogin_AddLoginDscUser5_Config
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
-
-        # # Database user is also added so the connection into database (using the login) can be tested
-        # SqlDatabaseUser 'Integration_Test_DatabaseUser'
-        # {
-        #     ServerName                     = $Node.ServerName
-        #     InstanceName                   = $Node.InstanceName
-
-        #     DatabaseName                   = $Node.DefaultDbName
-        #     Name                           = $Node.DscUser5Name
-        #     UserType                       = 'Login'
-        #     LoginName                      = $Node.DscUser5Name
-
-        #     PsDscRunAsCredential = New-Object `
-        #         -TypeName System.Management.Automation.PSCredential `
-        #         -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
-
-        #     DependsOn = @(
-        #         '[SqlLogin]Integration_Test'
-        #     )
-        # }
     }
 }
+
 
 <#
     .SYNOPSIS
