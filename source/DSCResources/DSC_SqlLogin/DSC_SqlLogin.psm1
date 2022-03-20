@@ -206,6 +206,11 @@ function Set-TargetResource
                     if ( ( $PSBoundParameters.ContainsKey('LoginPasswordPolicyEnforced') -and $login.PasswordPolicyEnforced -ne $LoginPasswordPolicyEnforced ) -or
                          ( $PSBoundParameters.ContainsKey('LoginPasswordExpirationEnabled') -and $login.PasswordExpirationEnabled -ne $LoginPasswordExpirationEnabled ) )
                     {
+                        <#
+                            PasswordExpirationEnabled can only be set to $true if PasswordPolicyEnforced
+                            is also set or already set to $true. Otherwise the SQL Server will throw the
+                            exception "The CHECK_EXPIRATION option cannot be used when CHECK_POLICY is OFF".
+                        #>
                         if ( $PSBoundParameters.ContainsKey('LoginPasswordPolicyEnforced') )
                         {
                             Write-Verbose -Message (
@@ -224,8 +229,7 @@ function Set-TargetResource
                             $login.PasswordExpirationEnabled = $LoginPasswordExpirationEnabled
                         }
 
-                            Update-SQLServerLogin -Login $login
-                        }
+                        Update-SQLServerLogin -Login $login
                     }
 
                     # Set the password if it is specified
