@@ -37,6 +37,9 @@ function Get-TargetResource
         $script:localizedData.GetConfiguration -f $InstanceName
     )
 
+    $currentMaxDop = $null
+    $isActiveNode = $null
+
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
     if ($sqlServerObject)
     {
@@ -361,4 +364,3 @@ function Get-SqlDscDynamicMaxDop
 
     $dynamicMaxDop
 }
-
