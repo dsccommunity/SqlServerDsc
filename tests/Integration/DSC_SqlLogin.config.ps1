@@ -2,6 +2,12 @@
 # Integration Test Config Template Version: 1.2.0
 #endregion
 
+# Suppressing this rule because Script Analyzer does not understand DSC configuration syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+# Suppressing this rule because tests are mocking passwords in clear text.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
+param ()
+
 $configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
 if (Test-Path -Path $configFile)
 {
@@ -438,6 +444,11 @@ Configuration DSC_SqlLogin_AddLoginDscUser5_Set_LoginPasswordExpirationEnabled_L
     .SYNOPSIS
         Updates the second SQL login to test LoginPasswordPolicyEnforced set to True, and
         LoginPasswordExpirationEnabled using the previous set value.
+
+    .NOTES
+        This test must run before the test that sets LoginPasswordExpirationEnabled
+        to False below;
+        "DSC_SqlLogin_UpdateLoginDscUser5_Set_LoginPasswordExpirationEnabled_Config".
 #>
 Configuration DSC_SqlLogin_UpdateLoginDscUser5_Set_LoginPasswordPolicyEnforced_Config
 {
