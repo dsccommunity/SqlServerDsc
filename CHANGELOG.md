@@ -107,6 +107,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Verbose messages did not use the correct variable name, so the messages
     did not contain the correct information.
   - Minor style guideline changes.
+- SqlMaxDop
+  - The function `Get-TargetResource` did not initialize some of the variables
+    correctly which was discovered when running the unit tests using strict
+    mode.
 
 ### Added
 
