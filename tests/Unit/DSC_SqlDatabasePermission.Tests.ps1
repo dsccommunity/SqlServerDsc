@@ -175,7 +175,7 @@ Describe 'SqlDatabasePermission\Get-TargetResource' -Tag 'Get' {
     }
 
     Context 'When the system is in the desired state' {
-        Context 'When the desired permission does not exist' {
+        Context 'When the desired permission does exist' {
             BeforeEach {
                 InModuleScope -ScriptBlock {
                     $mockGetTargetResourceParameters.DatabaseName    = 'AdventureWorks'
