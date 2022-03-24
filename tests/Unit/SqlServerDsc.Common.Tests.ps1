@@ -3029,7 +3029,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             }
         }
 
-        Context 'When using the default login type' {
+        Context 'When using the WindowsUser login type' {
             Context 'When authenticating using NetBIOS domain' {
                 BeforeAll {
                     $testParameters = @{
