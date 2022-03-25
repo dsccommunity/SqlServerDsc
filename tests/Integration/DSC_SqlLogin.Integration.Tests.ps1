@@ -637,6 +637,106 @@ try
 
         Wait-ForIdleLcm -Clear
 
+        $configurationName = "$($script:dscResourceName)_AddLoginDscUser5_Config"
+
+        Context ('When using configuration {0}' -f $configurationName) {
+            It 'Should compile and apply the MOF without throwing' {
+                {
+                    $configurationParameters = @{
+                        OutputPath                 = $TestDrive
+                        # The variable $ConfigurationData was dot-sourced above.
+                        ConfigurationData          = $ConfigurationData
+                    }
+
+                    & $configurationName @configurationParameters
+
+                    $startDscConfigurationParameters = @{
+                        Path         = $TestDrive
+                        ComputerName = 'localhost'
+                        Wait         = $true
+                        Verbose      = $true
+                        Force        = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    Start-DscConfiguration @startDscConfigurationParameters
+                } | Should -Not -Throw
+            }
+
+            It 'Should be able to call Get-DscConfiguration without throwing' {
+                {
+                    $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                } | Should -Not -Throw
+            }
+
+            It 'Should have set the resource and all the parameters should match' {
+                $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                    $_.ConfigurationName -eq $configurationName `
+                    -and $_.ResourceId -eq $resourceId
+                }
+
+                $resourceCurrentState.Ensure | Should -Be 'Present'
+                $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.DscUser5Name
+                $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser5Type
+                $resourceCurrentState.Disabled | Should -Be $false
+                $resourceCurrentState.LoginMustChangePassword | Should -Be $false
+                $resourceCurrentState.LoginPasswordExpirationEnabled | Should -Be $false
+                $resourceCurrentState.LoginPasswordPolicyEnforced | Should -Be $true
+            }
+
+            It 'Should return $true when Test-DscConfiguration is run' {
+                Test-DscConfiguration -Verbose | Should -Be 'True'
+            }
+
+            It 'Should allow SQL Server, login username and password to connect to SQL Instance (using SqlConnection.Open())' {
+                $serverName = $ConfigurationData.AllNodes.ServerName
+                $instanceName = $ConfigurationData.AllNodes.InstanceName
+                $databaseName = $ConfigurationData.AllNodes.DefaultDbName
+                $userName = $ConfigurationData.AllNodes.DscUser5Name
+                $password = $ConfigurationData.AllNodes.DscUser5Pass
+
+                $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;Database={4};' -f $serverName, $instanceName, $userName, $password, $databaseName
+
+                {
+                    $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+                    $sqlConnection.Open()
+                    $sqlConnection.Close()
+                } | Should -Not -Throw
+            }
+
+            It 'Should allow SQL Server, login username and password to connect to correct, SQL instance, default database' {
+                $script:CurrentDatabaseName = $null
+
+                $serverName = $ConfigurationData.AllNodes.ServerName
+                $instanceName = $ConfigurationData.AllNodes.InstanceName
+                $userName = $ConfigurationData.AllNodes.DscUser5Name
+                $password = $ConfigurationData.AllNodes.DscUser5Pass
+
+                $sqlConnectionString = 'Data Source={0}\{1};User ID={2};Password={3};Connect Timeout=5;' -f $serverName, $instanceName, $userName, $password # Note: Not providing a database name
+
+                {
+                    $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $sqlConnectionString
+                    $sqlCommand = New-Object System.Data.SqlClient.SqlCommand('SELECT DB_NAME() as CurrentDatabaseName', $sqlConnection)
+
+                    $sqlConnection.Open()
+                    $sqlDataAdapter = New-Object System.Data.SqlClient.SqlDataAdapter $sqlCommand
+                    $sqlDataSet = New-Object System.Data.DataSet
+                    $sqlDataAdapter.Fill($sqlDataSet) | Out-Null
+                    $sqlConnection.Close()
+
+                    $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName | Should -Be $ConfigurationData.AllNodes.DefaultDbName
+
+                    $script:CurrentDatabaseName = $sqlDataSet.Tables[0].Rows[0].CurrentDatabaseName
+                } | Should -Not -Throw
+
+                $script:CurrentDatabaseName | Should -Be $ConfigurationData.AllNodes.DefaultDbName
+
+                $script:CurrentDatabaseName = $null
+            }
+        }
+
+        Wait-ForIdleLcm -Clear
+
         $configurationName = "$($script:dscResourceName)_AddLoginDscSqlUsers1_Config"
 
         Context ('When using configuration {0}' -f $configurationName) {
