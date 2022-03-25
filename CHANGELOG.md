@@ -111,6 +111,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The function `Get-TargetResource` did not initialize some of the variables
     correctly which was discovered when running the unit tests using strict
     mode.
+  - The function `Test-TargetResource` did not correctly evaluate if the
+    node was the active node..
 
 ### Added
 
