@@ -201,7 +201,8 @@ function Set-TargetResource
                         New-InvalidOperationException -Message $errorMessage
                     }
 
-                    # `PasswordPolicyEnforced and `PasswordExpirationEnabled` must be updated together (if one or both are not in the desired state)
+                    # Update SQL login data if either `PasswordPolicyEnforced or `PasswordExpirationEnabled` is specified and not in desired state.
+                    # Avoids executing `Update-SQLServerLogin` twice if both are not in desired state.
                     if ( ( $PSBoundParameters.ContainsKey('LoginPasswordPolicyEnforced') -and $login.PasswordPolicyEnforced -ne $LoginPasswordPolicyEnforced ) -or
                          ( $PSBoundParameters.ContainsKey('LoginPasswordExpirationEnabled') -and $login.PasswordExpirationEnabled -ne $LoginPasswordExpirationEnabled ) )
                     {
