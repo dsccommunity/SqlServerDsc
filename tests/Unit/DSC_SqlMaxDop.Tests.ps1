@@ -436,11 +436,21 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
                         Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru |
                         Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                            InModuleScope -ScriptBlock {
+                                $script:mockMethodAlterWasRun += 1
+                            }
+
                             throw 'Mock Alter Method was called with invalid operation.'
                         } -PassThru -Force
                 }
 
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+            }
+
+            BeforeEach {
+                InModuleScope -ScriptBlock {
+                    $script:mockMethodAlterWasRun = 0
+                }
             }
 
             It 'Should return the correct value for each property' {
@@ -452,6 +462,8 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     $mockErrorMessage = $script:localizedData.MaxDopSetError
 
                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*Mock Alter Method was called with invalid operation.*')
+
+                    $mockMethodAlterWasRun | Should -Be 1
                 }
             }
         }
@@ -475,6 +487,10 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
                         Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru |
                         Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                            InModuleScope -ScriptBlock {
+                                $script:mockMethodAlterWasRun += 1
+                            }
+
                             if ( $this.Configuration.MaxDegreeOfParallelism.ConfigValue -ne $mockExpectedMaxDopForAlterMethod )
                             {
                                 throw "Called mocked Alter() method without setting the right MaxDegreeOfParallelism. Expected '{0}'. But was '{1}'." `
@@ -486,6 +502,12 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
             }
 
+            BeforeEach {
+                InModuleScope -ScriptBlock {
+                    $script:mockMethodAlterWasRun = 0
+                }
+            }
+
             It 'Should return the correct value for each property' {
                 $mockExpectedMaxDopForAlterMethod = 0
 
@@ -495,6 +517,8 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.Ensure = 'Absent'
 
                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $mockMethodAlterWasRun | Should -Be 1
                 }
             }
         }
@@ -518,6 +542,10 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
                         Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru |
                         Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                            InModuleScope -ScriptBlock {
+                                $script:mockMethodAlterWasRun += 1
+                            }
+
                             if ( $this.Configuration.MaxDegreeOfParallelism.ConfigValue -ne $mockExpectedMaxDopForAlterMethod )
                             {
                                 throw "Called mocked Alter() method without setting the right MaxDegreeOfParallelism. Expected '{0}'. But was '{1}'." `
@@ -529,6 +557,12 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
             }
 
+            BeforeEach {
+                InModuleScope -ScriptBlock {
+                    $script:mockMethodAlterWasRun = 0
+                }
+            }
+
             It 'Should return the correct value for each property' {
                 $mockExpectedMaxDopForAlterMethod = 4
 
@@ -538,6 +572,8 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.MaxDop = 4
 
                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $mockMethodAlterWasRun | Should -Be 1
                 }
             }
         }
@@ -561,6 +597,10 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
                         Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru |
                         Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                            InModuleScope -ScriptBlock {
+                                $script:mockMethodAlterWasRun += 1
+                            }
+
                             if ( $this.Configuration.MaxDegreeOfParallelism.ConfigValue -ne $mockExpectedMaxDopForAlterMethod )
                             {
                                 throw "Called mocked Alter() method without setting the right MaxDegreeOfParallelism. Expected '{0}'. But was '{1}'." `
@@ -576,6 +616,12 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                 }
             }
 
+            BeforeEach {
+                InModuleScope -ScriptBlock {
+                    $script:mockMethodAlterWasRun = 0
+                }
+            }
+
             It 'Should return the correct value for each property' {
                 $mockExpectedMaxDopForAlterMethod = 2
 
@@ -585,6 +631,8 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.DynamicAlloc = $true
 
                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $mockMethodAlterWasRun | Should -Be 1
                 }
             }
         }
