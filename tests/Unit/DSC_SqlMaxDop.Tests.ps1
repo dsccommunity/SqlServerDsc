@@ -5,8 +5,6 @@
 
 # Suppressing this rule because Script Analyzer does not understand Pester's syntax.
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-# Suppressing this rule because tests are mocking passwords in clear text.
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param ()
 
 BeforeDiscovery {
@@ -90,7 +88,7 @@ Describe 'SqlMaxDop\Get-TargetResource' -Tag 'Get' {
 
     Context 'When the system is in the desired state' {
         Context 'When getting the current state of max degree of parallelism' {
-            BeforeEach {
+            BeforeAll {
                 $mockConnectSQL = {
                     return @(
                         (
@@ -98,31 +96,19 @@ Describe 'SqlMaxDop\Get-TargetResource' -Tag 'Get' {
                                 Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'MSSQLSERVER' -PassThru -Force |
                                 Add-Member -MemberType 'NoteProperty' -Name 'ComputerNamePhysicalNetBIOS' -Value 'localhost' -PassThru -Force |
                                 Add-Member -MemberType 'ScriptProperty' -Name 'Configuration' -Value {
-                                return @(
-                                    (New-Object -TypeName 'Object' |
-                                        Add-Member -MemberType 'ScriptProperty' -Name 'MaxDegreeOfParallelism' -Value {
-                                        return @(
-                                            (New-Object -TypeName Object |
-                                                Add-Member -MemberType 'NoteProperty' -Name 'DisplayName' -Value 'max degree of parallelism' -PassThru |
-                                                Add-Member -MemberType 'NoteProperty' -Name 'Description' -Value 'maximum degree of parallelism' -PassThru |
-                                                Add-Member -MemberType 'NoteProperty' -Name 'RunValue' -Value 4 -PassThru |
-                                                Add-Member -MemberType 'NoteProperty' -Name 'ConfigValue' -Value 4 -PassThru -Force)
-                                            )
-                                        } -PassThru -Force)
+                                    return @(
+                                        (New-Object -TypeName 'Object' |
+                                            Add-Member -MemberType 'ScriptProperty' -Name 'MaxDegreeOfParallelism' -Value {
+                                            return @(
+                                                (New-Object -TypeName Object |
+                                                    Add-Member -MemberType 'NoteProperty' -Name 'DisplayName' -Value 'max degree of parallelism' -PassThru |
+                                                    Add-Member -MemberType 'NoteProperty' -Name 'Description' -Value 'maximum degree of parallelism' -PassThru |
+                                                    Add-Member -MemberType 'NoteProperty' -Name 'RunValue' -Value 4 -PassThru |
+                                                    Add-Member -MemberType 'NoteProperty' -Name 'ConfigValue' -Value 4 -PassThru -Force)
+                                                )
+                                            } -PassThru -Force)
                                     )
-                            } -PassThru |
-                                Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
-                                if ( $this.Configuration.MaxDegreeOfParallelism.ConfigValue -ne $mockExpectedMaxDopForAlterMethod )
-                                {
-                                    throw "Called mocked Alter() method without setting the right MaxDegreeOfParallelism. Expected '{0}'. But was '{1}'." `
-                                        -f $mockExpectedMaxDopForAlterMethod, $this.Configuration.MaxDegreeOfParallelism.ConfigValue
-                                }
-
-                                if ($mockInvalidOperationForAlterMethod)
-                                {
-                                    throw 'Mock Alter Method was called with invalid operation.'
-                                }
-                            } -PassThru -Force
+                                } -PassThru -Force
                         )
                     )
                 }
@@ -134,7 +120,7 @@ Describe 'SqlMaxDop\Get-TargetResource' -Tag 'Get' {
             }
 
             It 'Should return the correct value for each property' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
@@ -162,7 +148,7 @@ Describe 'SqlMaxDop\Get-TargetResource' -Tag 'Get' {
             }
 
             It 'Should return the correct value for each property' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
@@ -209,7 +195,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
             }
 
             It 'Should return $true' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $mockTestTargetResourceParameters.Ensure = 'Absent'
@@ -232,7 +218,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
             }
 
             It 'Should return $true' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $mockTestTargetResourceParameters.MaxDop = 4
@@ -259,7 +245,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
             }
 
             It 'Should return $true' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $mockTestTargetResourceParameters.DynamicAlloc =  $true
@@ -281,7 +267,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
             }
 
             It 'Should throw the correct error message' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $mockTestTargetResourceParameters.MaxDop = 4
@@ -307,7 +293,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
             }
 
             It 'Should return $true even if it is not in desired state' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $mockTestTargetResourceParameters.ProcessOnlyOnActiveNode = $true
@@ -331,7 +317,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
             }
 
             It 'Should return $false' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $mockTestTargetResourceParameters.MaxDop = 4
@@ -354,7 +340,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
             }
 
             It 'Should return $false' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $mockTestTargetResourceParameters.DynamicAlloc = $true
@@ -377,7 +363,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
             }
 
             It 'Should return $false' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $mockTestTargetResourceParameters.Ensure = 'Absent'
@@ -385,6 +371,220 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
                     $result | Should -BeFalse
+                }
+            }
+        }
+    }
+}
+
+Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockSetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When both the parameters DynamicAlloc and MaxDop are set' {
+        BeforeAll {
+            Mock -CommandName Connect-SQL -MockWith {
+                # Can mock anything for this test since it is not used before it throws
+                return 'mocked server object'
+            }
+        }
+
+        It 'Should throw the correct error message' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters.MaxDop = 4
+                $mockSetTargetResourceParameters.DynamicAlloc =  $true
+
+                $mockErrorMessage = '{0} (Parameter ''MaxDop'')' -f $script:localizedData.MaxDopParamMustBeNull
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        Context 'When setting the max degree of parallelism but the call to the method Alter() fails' {
+            BeforeAll {
+                $mockConnectSQL = {
+                    $mockMaxDegreeOfParallelismObject = New-Object -TypeName Object |
+                        Add-Member -MemberType 'NoteProperty' -Name 'DisplayName' -Value 'max degree of parallelism' -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'Description' -Value 'maximum degree of parallelism' -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'RunValue' -Value 8 -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'ConfigValue' -Value 8 -PassThru -Force
+
+                    $mockConfigurationObject = @(
+                        (
+                            New-Object -TypeName 'Object' |
+                                Add-Member -MemberType 'NoteProperty' -Name 'MaxDegreeOfParallelism' -Value $mockMaxDegreeOfParallelismObject -PassThru -Force
+                        )
+                    )
+
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                        Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru |
+                        Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                            throw 'Mock Alter Method was called with invalid operation.'
+                        } -PassThru -Force
+                }
+
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+            }
+
+            It 'Should return the correct value for each property' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.MaxDop = 4
+
+                    $mockErrorMessage = $script:localizedData.MaxDopSetError
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*Mock Alter Method was called with invalid operation.*')
+                }
+            }
+        }
+
+        Context 'When max degree of parallelism should not be used' {
+            BeforeAll {
+                $mockConnectSQL = {
+                    $mockMaxDegreeOfParallelismObject = New-Object -TypeName Object |
+                        Add-Member -MemberType 'NoteProperty' -Name 'DisplayName' -Value 'max degree of parallelism' -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'Description' -Value 'maximum degree of parallelism' -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'RunValue' -Value 8 -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'ConfigValue' -Value 8 -PassThru -Force
+
+                    $mockConfigurationObject = @(
+                        (
+                            New-Object -TypeName 'Object' |
+                                Add-Member -MemberType 'NoteProperty' -Name 'MaxDegreeOfParallelism' -Value $mockMaxDegreeOfParallelismObject -PassThru -Force
+                        )
+                    )
+
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                        Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru |
+                        Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                            if ( $this.Configuration.MaxDegreeOfParallelism.ConfigValue -ne $mockExpectedMaxDopForAlterMethod )
+                            {
+                                throw "Called mocked Alter() method without setting the right MaxDegreeOfParallelism. Expected '{0}'. But was '{1}'." `
+                                    -f $mockExpectedMaxDopForAlterMethod, $this.Configuration.MaxDegreeOfParallelism.ConfigValue
+                            }
+                        } -PassThru -Force
+                }
+
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+            }
+
+            It 'Should return the correct value for each property' {
+                $mockExpectedMaxDopForAlterMethod = 0
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.Ensure = 'Absent'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+            }
+        }
+
+        Context 'When setting the max degree of parallelism to a specific value' {
+            BeforeAll {
+                $mockConnectSQL = {
+                    $mockMaxDegreeOfParallelismObject = New-Object -TypeName Object |
+                        Add-Member -MemberType 'NoteProperty' -Name 'DisplayName' -Value 'max degree of parallelism' -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'Description' -Value 'maximum degree of parallelism' -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'RunValue' -Value 8 -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'ConfigValue' -Value 8 -PassThru -Force
+
+                    $mockConfigurationObject = @(
+                        (
+                            New-Object -TypeName 'Object' |
+                                Add-Member -MemberType 'NoteProperty' -Name 'MaxDegreeOfParallelism' -Value $mockMaxDegreeOfParallelismObject -PassThru -Force
+                        )
+                    )
+
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                        Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru |
+                        Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                            if ( $this.Configuration.MaxDegreeOfParallelism.ConfigValue -ne $mockExpectedMaxDopForAlterMethod )
+                            {
+                                throw "Called mocked Alter() method without setting the right MaxDegreeOfParallelism. Expected '{0}'. But was '{1}'." `
+                                    -f $mockExpectedMaxDopForAlterMethod, $this.Configuration.MaxDegreeOfParallelism.ConfigValue
+                            }
+                        } -PassThru -Force
+                }
+
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+            }
+
+            It 'Should return the correct value for each property' {
+                $mockExpectedMaxDopForAlterMethod = 4
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.MaxDop = 4
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+            }
+        }
+
+        Context 'When setting the max degree of parallelism to a dynamic value' {
+            BeforeAll {
+                $mockConnectSQL = {
+                    $mockMaxDegreeOfParallelismObject = New-Object -TypeName Object |
+                        Add-Member -MemberType 'NoteProperty' -Name 'DisplayName' -Value 'max degree of parallelism' -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'Description' -Value 'maximum degree of parallelism' -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'RunValue' -Value 8 -PassThru |
+                        Add-Member -MemberType 'NoteProperty' -Name 'ConfigValue' -Value 8 -PassThru -Force
+
+                    $mockConfigurationObject = @(
+                        (
+                            New-Object -TypeName 'Object' |
+                                Add-Member -MemberType 'NoteProperty' -Name 'MaxDegreeOfParallelism' -Value $mockMaxDegreeOfParallelismObject -PassThru -Force
+                        )
+                    )
+
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                        Add-Member -MemberType 'NoteProperty' -Name 'Configuration' -Value $mockConfigurationObject -PassThru |
+                        Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                            if ( $this.Configuration.MaxDegreeOfParallelism.ConfigValue -ne $mockExpectedMaxDopForAlterMethod )
+                            {
+                                throw "Called mocked Alter() method without setting the right MaxDegreeOfParallelism. Expected '{0}'. But was '{1}'." `
+                                    -f $mockExpectedMaxDopForAlterMethod, $this.Configuration.MaxDegreeOfParallelism.ConfigValue
+                            }
+                        } -PassThru -Force
+                }
+
+                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+
+                Mock -CommandName Get-SqlDscDynamicMaxDop -MockWith {
+                    return 2
+                }
+            }
+
+            It 'Should return the correct value for each property' {
+                $mockExpectedMaxDopForAlterMethod = 2
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DynamicAlloc = $true
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
                 }
             }
         }
@@ -409,7 +609,7 @@ Describe 'Get-SqlDscDynamicMaxDop' -Tag 'Helper' {
             }
 
             It 'Should return the correct value for dynamic max degree of parallelism' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $result = Get-SqlDscDynamicMaxDop
@@ -435,7 +635,7 @@ Describe 'Get-SqlDscDynamicMaxDop' -Tag 'Helper' {
             }
 
             It 'Should return the correct value for dynamic max degree of parallelism' {
-                InModuleScope -Parameters $_ -ScriptBlock {
+                InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
                     $result = Get-SqlDscDynamicMaxDop
@@ -467,7 +667,7 @@ Describe 'Get-SqlDscDynamicMaxDop' -Tag 'Helper' {
         }
 
         It 'Should return the correct value for dynamic max degree of parallelism' {
-            InModuleScope -Parameters $_ -ScriptBlock {
+            InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-SqlDscDynamicMaxDop
@@ -498,7 +698,7 @@ Describe 'Get-SqlDscDynamicMaxDop' -Tag 'Helper' {
         }
 
         It 'Should return the correct value for dynamic max degree of parallelism' {
-            InModuleScope -Parameters $_ -ScriptBlock {
+            InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-SqlDscDynamicMaxDop
@@ -529,7 +729,7 @@ Describe 'Get-SqlDscDynamicMaxDop' -Tag 'Helper' {
         }
 
         It 'Should return the correct value for dynamic max degree of parallelism' {
-            InModuleScope -Parameters $_ -ScriptBlock {
+            InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-SqlDscDynamicMaxDop
