@@ -113,6 +113,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     mode.
   - The function `Test-TargetResource` did not correctly evaluate if the
     node was the active node..
+- SqlMemory
+  - Now it possible to just set the minimum memory without it throwing because
+    the maximum memory is not specified.
+  - In a certain scenario the maximum memory would be enforced even if it was
+    not specified in the configuration.
 
 ### Added
 
