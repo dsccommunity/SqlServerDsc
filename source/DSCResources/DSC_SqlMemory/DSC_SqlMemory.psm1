@@ -437,46 +437,45 @@ function Test-TargetResource
             }
             else
             {
-                if (-not $MaxMemory -and -not $MaxMemoryPercent)
+                if ($PSBoundParameters.ContainsKey('MaxMemory') -and -not $MaxMemory)
                 {
                     $errorMessage = $script:localizedData.MaxMemoryParamMustNotBeNull
                     New-InvalidArgumentException -ArgumentName 'MaxMemory' -Message $errorMessage
                 }
             }
 
-            if ($MaxMemory)
+            if ($MaxMemory -or $MaxMemoryPercent)
             {
-                if ($MaxMemoryPercent)
+                if ($MaxMemory -and $MaxMemoryPercent)
                 {
                     $errorMessage = $script:localizedData.MaxMemoryPercentParamMustBeNull
                     New-InvalidArgumentException -ArgumentName 'MaxMemoryPercent' -Message $errorMessage
                 }
-            }
-            elseif ($MaxMemoryPercent)
-            {
-                $MaxMemory = Get-SqlDscPercentMemory -PercentMemory $MaxMemoryPercent
-            }
 
-            if ($MaxMemory -ne $currentMaxMemory)
-            {
-                Write-Verbose -Message (
-                    $script:localizedData.WrongMaximumMemory -f $currentMaxMemory, $MaxMemory
-                )
+                if ($MaxMemoryPercent)
+                {
+                    $MaxMemory = Get-SqlDscPercentMemory -PercentMemory $MaxMemoryPercent
+                }
 
-                $isServerMemoryInDesiredState = $false
+                if ($MaxMemory -ne $currentMaxMemory)
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.WrongMaximumMemory -f $currentMaxMemory, $MaxMemory
+                    )
+
+                    $isServerMemoryInDesiredState = $false
+                }
             }
 
             if ($MinMemory -or $MinMemoryPercent)
             {
-                if ($MinMemory)
+                if ($MinMemory -and $MinMemoryPercent)
                 {
-                    if ($MinMemoryPercent)
-                    {
-                        $errorMessage = $script:localizedData.MinMemoryPercentParamMustBeNull
-                        New-InvalidArgumentException -ArgumentName 'MinMemoryPercent' -Message $errorMessage
-                    }
+                    $errorMessage = $script:localizedData.MinMemoryPercentParamMustBeNull
+                    New-InvalidArgumentException -ArgumentName 'MinMemoryPercent' -Message $errorMessage
                 }
-                elseif ($MinMemoryPercent)
+
+                if ($MinMemoryPercent)
                 {
                     $MinMemory = Get-SqlDscPercentMemory -PercentMemory $MinMemoryPercent
                 }
