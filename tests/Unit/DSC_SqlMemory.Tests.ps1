@@ -106,22 +106,7 @@ Describe 'SqlMaxDop\Get-TargetResource' -Tag 'Get' {
                     Add-Member -MemberType NoteProperty -Name 'MaxServerMemory' -Value $mockMaxServerMemoryObject -PassThru -Force
 
                 return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                    Add-Member -MemberType NoteProperty -Name 'Configuration' -Value $mockServerConfigurationObject -PassThru -Force |
-                    Add-Member -MemberType ScriptMethod -Name Alter -Value {
-                        InModuleScope -ScriptBlock {
-                            $script:mockMethodAlterWasRun += 1
-                        }
-
-                        if ( $this.Configuration.MinServerMemory.ConfigValue -ne $mockExpectedMinMemoryForAlterMethod )
-                        {
-                            throw "Called mocked Alter() method without setting the right minimum server memory. Expected '{0}'. But was '{1}'." -f $mockExpectedMinMemoryForAlterMethod, $this.Configuration.MinServerMemory.ConfigValue
-                        }
-
-                        if ( $this.Configuration.MaxServerMemory.ConfigValue -ne $mockExpectedMaxMemoryForAlterMethod )
-                        {
-                            throw "Called mocked Alter() method without setting the right maximum server memory. Expected '{0}'. But was '{1}'." -f $mockExpectedMaxMemoryForAlterMethod, $this.Configuration.MaxServerMemory.ConfigValue
-                        }
-                    } -PassThru -Force
+                    Add-Member -MemberType NoteProperty -Name 'Configuration' -Value $mockServerConfigurationObject -PassThru -Force
             }
 
 
@@ -351,7 +336,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
     }
 
     Context 'When the system is in the desired state' {
-        Context 'When no specific values for maximum och minimum memory should be set (use default values)' {
+        Context 'When no specific values for maximum and minimum memory should be set (use default values)' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
@@ -522,7 +507,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
     }
 
     Context 'When the system is not in the desired state' {
-        Context 'When no specific values for maximum och minimum memory should be set (use default values)' {
+        Context 'When no specific values for maximum and minimum memory should be set (use default values)' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
@@ -724,7 +709,320 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
     }
 }
 
-Describe 'DSC_SqlMemory\Get-SqlDscDynamicMaxMemory' -Tag 'Helper' {
+Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockSetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When specifying the wrong combination of parameters' {
+        BeforeAll {
+            Mock -CommandName Connect-SQL -MockWith {
+                # Can return any value since the content is never used.
+                return 'Anything'
+            }
+        }
+
+        Context 'When specifying dynamic value together with a specific value for maximum memory' {
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DynamicAlloc = $true
+                    $mockSetTargetResourceParameters.MaxMemory = $true
+
+                    $mockErrorMessage = '{0} (Parameter ''MaxMemory'')' -f $script:localizedData.MaxMemoryParamMustBeNull
+
+                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                }
+            }
+        }
+
+        Context 'When specifying dynamic value together with a percentage value for maximum memory' {
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DynamicAlloc = $true
+                    $mockSetTargetResourceParameters.MaxMemoryPercent = 50
+
+                    $mockErrorMessage = '{0} (Parameter ''MaxMemoryPercent'')' -f $script:localizedData.MaxMemoryPercentParamMustBeNull
+
+                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                }
+            }
+        }
+
+        Context 'When specifying specific value together with a percentage value for maximum memory' {
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.MaxMemory = 8192
+                    $mockSetTargetResourceParameters.MaxMemoryPercent = 50
+
+                    $mockErrorMessage = '{0} (Parameter ''MaxMemoryPercent'')' -f $script:localizedData.MaxMemoryPercentParamMustBeNull
+
+                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                }
+            }
+        }
+
+        Context 'When specifying specific value together with a percentage value for minimum memory' {
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.MinMemory = 8192
+                    $mockSetTargetResourceParameters.MinMemoryPercent = 50
+
+                    $mockErrorMessage = '{0} (Parameter ''MinMemoryPercent'')' -f $script:localizedData.MinMemoryPercentParamMustBeNull
+
+                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                }
+            }
+        }
+
+        Context 'When specifying $null as the specific value for maximum memory' {
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.MaxMemory = $null
+
+                    $mockErrorMessage = '{0} (Parameter ''MaxMemory'')' -f $script:localizedData.MaxMemoryParamMustNotBeNull
+
+                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                }
+            }
+        }
+
+        Context 'When specifying 0 (zero) as the specific value for maximum memory' {
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.MaxMemory = 0
+
+                    $mockErrorMessage = '{0} (Parameter ''MaxMemory'')' -f $script:localizedData.MaxMemoryParamMustNotBeNull
+
+                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                }
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            $mockConnectSQL = {
+                $mockMinServerMemoryObject = New-Object -TypeName Object |
+                    Add-Member -MemberType NoteProperty -Name DisplayName -Value 'min server memory (MB)' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name Description -Value 'Minimum size of server memory (MB)' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name RunValue -Value 2048 -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConfigValue -Value 2048 -PassThru -Force
+
+                $mockMaxServerMemoryObject = New-Object -TypeName Object |
+                    Add-Member -MemberType NoteProperty -Name DisplayName -Value 'max server memory (MB)' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name Description -Value 'Maximum size of server memory (MB)' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name RunValue -Value 10300 -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ConfigValue -Value 10300 -PassThru -Force
+
+                $mockServerConfigurationObject = New-Object -TypeName Object |
+                    Add-Member -MemberType NoteProperty -Name 'MinServerMemory' -Value $mockMinServerMemoryObject -PassThru |
+                    Add-Member -MemberType NoteProperty -Name 'MaxServerMemory' -Value $mockMaxServerMemoryObject -PassThru -Force
+
+                return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                    Add-Member -MemberType NoteProperty -Name 'Configuration' -Value $mockServerConfigurationObject -PassThru -Force |
+                    Add-Member -MemberType ScriptMethod -Name Alter -Value {
+                        InModuleScope -ScriptBlock {
+                            $script:mockMethodAlterWasRun += 1
+                        }
+
+                        if ($script:mockInvalidOperationAlterMethod)
+                        {
+                            throw 'Mock InvalidOperationException'
+                        }
+
+                        if ( $this.Configuration.MinServerMemory.ConfigValue -ne $mockExpectedMinMemoryForAlterMethod )
+                        {
+                            throw "Called mocked Alter() method without setting the right minimum server memory. Expected '{0}'. But was '{1}'." -f $mockExpectedMinMemoryForAlterMethod, $this.Configuration.MinServerMemory.ConfigValue
+                        }
+
+                        if ( $this.Configuration.MaxServerMemory.ConfigValue -ne $mockExpectedMaxMemoryForAlterMethod )
+                        {
+                            throw "Called mocked Alter() method without setting the right maximum server memory. Expected '{0}'. But was '{1}'." -f $mockExpectedMaxMemoryForAlterMethod, $this.Configuration.MaxServerMemory.ConfigValue
+                        }
+                    } -PassThru -Force
+            }
+
+
+            Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+            Mock -CommandName Test-ActiveNode -MockWith {
+                return $false
+            }
+
+        }
+
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $script:mockMethodAlterWasRun = 0
+            }
+        }
+
+        Context 'When no specific values for maximum and minimum memory should be set (use default values)' {
+            It 'Should not throw and call the correct mocked method' {
+                $mockExpectedMaxMemoryForAlterMethod = 2147483647
+                $mockExpectedMinMemoryForAlterMethod = 0
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.Ensure = 'Absent'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $mockMethodAlterWasRun | Should -Be 1
+                }
+            }
+        }
+
+        Context 'When setting a specific value for maximum memory' {
+            It 'Should not throw and call the correct mocked method' {
+                $mockExpectedMaxMemoryForAlterMethod = 15000
+                $mockExpectedMinMemoryForAlterMethod = 2048
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.MaxMemory = 15000
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $mockMethodAlterWasRun | Should -Be 1
+                }
+            }
+        }
+
+        Context 'When setting a specific value for minimum memory' {
+            It 'Should not throw and call the correct mocked method' {
+                $mockExpectedMaxMemoryForAlterMethod = 10300
+                $mockExpectedMinMemoryForAlterMethod = 4096
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.MinMemory = 4096
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $mockMethodAlterWasRun | Should -Be 1
+                }
+            }
+        }
+
+        Context 'When setting a percentage value for maximum memory' {
+            BeforeAll {
+                Mock -CommandName Get-SqlDscPercentMemory -MockWith {
+                    return 8192
+                }
+            }
+
+            It 'Should not throw and call the correct mocked method' {
+                $mockExpectedMaxMemoryForAlterMethod = 8192
+                $mockExpectedMinMemoryForAlterMethod = 2048
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.MaxMemoryPercent = 50
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $mockMethodAlterWasRun | Should -Be 1
+                }
+            }
+        }
+
+        Context 'When setting a percentage value for minimum memory' {
+            BeforeAll {
+                Mock -CommandName Get-SqlDscPercentMemory -MockWith {
+                    return 8192
+                }
+            }
+
+            It 'Should not throw and call the correct mocked method' {
+                $mockExpectedMaxMemoryForAlterMethod = 10300
+                $mockExpectedMinMemoryForAlterMethod = 8192
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.MinMemoryPercent = 50
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $mockMethodAlterWasRun | Should -Be 1
+                }
+            }
+        }
+
+        Context 'When setting a dynamic value for maximum memory' {
+            BeforeAll {
+                Mock -CommandName Get-SqlDscDynamicMaxMemory -MockWith {
+                    return 8192
+                }
+            }
+
+            It 'Should not throw and call the correct mocked method' {
+                $mockExpectedMaxMemoryForAlterMethod = 8192
+                $mockExpectedMinMemoryForAlterMethod = 2048
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DynamicAlloc = $true
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $mockMethodAlterWasRun | Should -Be 1
+                }
+            }
+        }
+
+        Context 'When setting a value and method Alter() fails' {
+            It 'Should not throw and call the correct mocked method' {
+                $script:mockInvalidOperationAlterMethod = $true
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.MaxMemory = 15000
+
+                    $mockErrorMessage = '*{0}*Mock InvalidOperationException*' -f ($script:localizedData.AlterServerMemoryFailed -f 'localhost', 'MSSQLSERVER')
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+
+                    $mockMethodAlterWasRun | Should -Be 1
+                }
+
+                $script:mockInvalidOperationAlterMethod = $false
+            }
+        }
+    }
+}
+
+Describe 'SqlMemory\Get-SqlDscDynamicMaxMemory' -Tag 'Helper' {
     Context 'When the physical memory should be calculated' {
         Context 'When number of cores is 2' {
             BeforeAll {
@@ -1116,6 +1414,7 @@ Describe 'SqlMemory\Get-SqlDscPercentMemory' -Tag 'Helper' {
         }
     }
 }
+
 
 # try
 # {
