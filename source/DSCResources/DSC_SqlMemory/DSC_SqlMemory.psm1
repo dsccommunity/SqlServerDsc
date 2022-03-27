@@ -183,7 +183,7 @@ function Set-TargetResource
                 }
                 else
                 {
-                    if (-not $MaxMemory -and -not $MaxMemoryPercent)
+                    if ($PSBoundParameters.ContainsKey('MaxMemory') -and -not $MaxMemory)
                     {
                         $errorMessage = $script:localizedData.MaxMemoryParamMustNotBeNull
                         New-InvalidArgumentException -ArgumentName 'MaxMemory' -Message $errorMessage
