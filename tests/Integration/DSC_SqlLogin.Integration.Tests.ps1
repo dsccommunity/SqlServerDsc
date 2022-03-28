@@ -629,7 +629,7 @@ try
                 $resourceCurrentState.LoginType | Should -Be $ConfigurationData.AllNodes.DscUser5Type
                 $resourceCurrentState.Disabled | Should -Be $false
                 $resourceCurrentState.LoginMustChangePassword | Should -Be $false
-                $resourceCurrentState.LoginPasswordPolicyEnforced | Should -Be $true
+                $resourceCurrentState.LoginPasswordPolicyEnforced | Should -Be $false
                 $resourceCurrentState.LoginPasswordExpirationEnabled | Should -Be $false
             }
 

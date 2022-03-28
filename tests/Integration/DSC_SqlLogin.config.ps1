@@ -317,33 +317,6 @@ Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config
 
 <#
     .SYNOPSIS
-        Updates a SQL login, sets LoginPasswordExpirationEnabled to $true
-#>
-Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config_LoginPasswordExpirationEnabled
-{
-    Import-DscResource -ModuleName 'SqlServerDsc'
-
-    node $AllNodes.NodeName
-    {
-        SqlLogin 'Integration_Test'
-        {
-            Ensure                         = 'Present'
-            Name                           = $Node.DscUser4Name
-            LoginType                      = $Node.DscUser4Type
-            LoginPasswordExpirationEnabled = $true
-
-            ServerName                     = $Node.ServerName
-            InstanceName                   = $Node.InstanceName
-
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
-        }
-    }
-}
-
-<#
-    .SYNOPSIS
         Updates a SQL login, sets LoginPasswordPolicyEnforced to $true
 #>
 Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config_LoginPasswordPolicyEnforced
@@ -358,6 +331,33 @@ Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config_LoginPasswordPolicyEnforce
             Name                           = $Node.DscUser4Name
             LoginType                      = $Node.DscUser4Type
             LoginPasswordPolicyEnforced    = $true
+
+            ServerName                     = $Node.ServerName
+            InstanceName                   = $Node.InstanceName
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Updates a SQL login, sets LoginPasswordExpirationEnabled to $true
+#>
+Configuration DSC_SqlLogin_UpdateLoginDscUser4_Config_LoginPasswordExpirationEnabled
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlLogin 'Integration_Test'
+        {
+            Ensure                         = 'Present'
+            Name                           = $Node.DscUser4Name
+            LoginType                      = $Node.DscUser4Type
+            LoginPasswordExpirationEnabled = $true
 
             ServerName                     = $Node.ServerName
             InstanceName                   = $Node.InstanceName
