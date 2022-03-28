@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Bumped Stale task to v5 in the GitHub workflow.
 - Wiki
   - add introduction and links to DSC technology
+- SqlLogin
+  - BREAKING CHANGE: `LoginMustChangePassword`, `LoginPasswordExpirationEnabled` and `LoginPasswordPolicyEnforced`
+    parameters no longer enforce default values ([issue #1669](https://github.com/dsccommunity/SqlServerDsc/issues/1669)).
 
 ### Fixed
 
