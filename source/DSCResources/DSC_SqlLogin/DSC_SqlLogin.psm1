@@ -302,9 +302,14 @@ function Set-TargetResource
                             New-InvalidOperationException -Message $errorMessage
                         }
 
-                        # `PasswordPolicyEnforced` and `PasswordExpirationEnabled` must be updated together.
+                        <#
+                            PasswordExpirationEnabled can only be set to $true if PasswordPolicyEnforced
+                            is also set to $true. If not the SQL Server will throw the exception
+                            "The CHECK_EXPIRATION option cannot be used when CHECK_POLICY is OFF".
+                        #>
                         $login.PasswordPolicyEnforced = $LoginPasswordPolicyEnforced
                         $login.PasswordExpirationEnabled = $LoginPasswordExpirationEnabled
+
                         if ( $LoginMustChangePassword )
                         {
                             $LoginCreateOptions = [Microsoft.SqlServer.Management.Smo.LoginCreateOptions]::MustChange

@@ -45,8 +45,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Wiki
   - add introduction and links to DSC technology
 - SqlLogin
-  - BREAKING CHANGE: `LoginMustChangePassword`, `LoginPasswordExpirationEnabled` and `LoginPasswordPolicyEnforced`
-    parameters no longer enforce default values ([issue #1669](https://github.com/dsccommunity/SqlServerDsc/issues/1669)).
+  - BREAKING CHANGE: The parameters `LoginMustChangePassword`, `LoginPasswordExpirationEnabled`,
+    and `LoginPasswordPolicyEnforced` no longer have a default value of `$true`.
+    This means that when creating a new login, and not specifically setting
+    these parameters to `$true` in the configuration, the login that is created
+    will have these properties set to `$false`.
+  - BREAKING CHANGE: `LoginMustChangePassword`, `LoginPasswordExpirationEnabled`,
+    and `LoginPasswordPolicyEnforced` parameters no longer enforce default
+    values ([issue #1669](https://github.com/dsccommunity/SqlServerDsc/issues/1669)).
 - SqlServerDsc
   - All tests have been converted to run in Pester 5 (Pester 4 can no
     longer be supported) ([issue #1654](https://github.com/dsccommunity/SqlServerDsc/issues/1654)).
