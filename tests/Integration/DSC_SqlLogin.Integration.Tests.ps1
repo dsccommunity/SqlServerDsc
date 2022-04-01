@@ -773,15 +773,8 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
-        }
-
-        It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
             } | Should -Throw -ExpectedMessage '*The CHECK_EXPIRATION option cannot be used when CHECK_POLICY is OFF*'
         }
-
     }
 
     <#
@@ -962,7 +955,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Disabled | Should -Be $false
             $resourceCurrentState.LoginMustChangePassword | Should -BeFalse
             $resourceCurrentState.LoginPasswordExpirationEnabled | Should -BeFalse
-            $resourceCurrentState.LoginPasswordPolicyEnforced | Should -BeTrue
+            $resourceCurrentState.LoginPasswordPolicyEnforced | Should -BeFalse
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {

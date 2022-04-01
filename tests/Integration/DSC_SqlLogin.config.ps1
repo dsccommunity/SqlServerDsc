@@ -442,7 +442,7 @@ Configuration DSC_SqlLogin_AddLoginDscUser5_Set_LoginPasswordExpirationEnabled_C
 <#
     .SYNOPSIS
         Adds a second SQL login to test both LoginPasswordExpirationEnabled and
-        LoginPasswordPolicyEnforced set to False.
+        LoginPasswordPolicyEnforced set to True.
 #>
 Configuration DSC_SqlLogin_AddLoginDscUser5_Set_LoginPasswordExpirationEnabled_LoginPasswordPolicyEnforced_Config
 {
@@ -522,7 +522,7 @@ Configuration DSC_SqlLogin_UpdateLoginDscUser5_Set_LoginPasswordExpirationEnable
 
 <#
     .SYNOPSIS
-        Updates the second SQL login to test LoginPasswordPolicyEnforced set to True, and
+        Updates the second SQL login to test LoginPasswordPolicyEnforced set to False, and
         LoginPasswordExpirationEnabled using the previous set value.
 
     .NOTES
