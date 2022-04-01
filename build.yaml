@@ -107,6 +107,11 @@ DscTest:
           - "Common Tests - New Error-Level Script Analyzer Rules"
       Output:
         Verbosity: Detailed
+        CIFormat: Auto
+      TestResult:
+        OutputFormat: NUnitXML
+        OutputEncoding: ascii
+        OutputPath: ./output/testResults/NUnitXml_HQRM_Tests.xml
   Script:
     ExcludeSourceFile:
       - output
