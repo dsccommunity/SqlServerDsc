@@ -71,6 +71,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - A localized string for an error message was updated to correctly reflect
     the code that says that to use a SQL login the authentication mode must
     be either Mixed or Normal, prio it just stated Mixed.
+- SqlSecureConnection
+  - BREAKING CHANGE: Now `Get-TargetResource` returns the value `'Empty'`
+    for the property thumbprint if there is no thumbprint set in the current
+    state. Returning the value `'Empty'` was always intended, but it due to
+    a bug it was never returned, but instead it returned an empty string
+    or `$null` value.
 
 ### Fixed
 
