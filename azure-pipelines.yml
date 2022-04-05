@@ -123,6 +123,7 @@ stages:
               testRunTitle: 'Unit (Windows Server 2019)'
           - task: PublishPipelineArtifact@1
             displayName: 'Publish Test Artifact'
+            condition: succeededOrFailed()
             inputs:
               targetPath: '$(buildFolderName)/$(testResultFolderName)/'
               artifactName: $(testArtifactName)
