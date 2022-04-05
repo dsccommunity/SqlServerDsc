@@ -46,5 +46,5 @@
         "[tT]ests/[uU]nit/*.[tT]ests.[pP][sS]1"
     ],
     "pester.runTestsInNewProcess": false,
-    "pester.pesterModulePath": ".\\output\\RequiredModules\\Pester"
+    "pester.pesterModulePath": "./output/RequiredModules/Pester"
 }
