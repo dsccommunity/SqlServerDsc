@@ -15,7 +15,7 @@ variables:
   buildFolderName: output
   buildArtifactName: output
   testResultFolderName: testResults
-  testArtifactName: testResults_$(system.JobId)
+  testArtifactName: 'testResults_$(system.JobId)'
   sourceFolderName: source
   defaultBranch: main
 
