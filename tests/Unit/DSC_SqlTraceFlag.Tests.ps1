@@ -68,9 +68,7 @@ AfterAll {
 
 Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
     BeforeAll {
-        #region Function mocks
         $mockSmoWmiManagedComputer = {
-            param($ServerName)
             $mockServerInstances = [System.Collections.ArrayList]::new()
             $mockServerInstances.Add('MSSQLSERVER') | Out-Null
             $mockServerInstances.Add('INST00') | Out-Null
@@ -209,7 +207,7 @@ Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
         }
 
         It 'Should not throw' {
-            InModuleScope -Parameters $_ -ScriptBlock {
+            InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
                 { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
@@ -256,706 +254,820 @@ Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
     }
 }
 
-# Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
-#     BeforeAll {
-#         $mockServerName = 'TestServer'
-#         $mockFakeServerName = 'FakeServer'
-#         $mockInstanceName1 = 'MSSQLSERVER'
-#         $mockInstanceName1Agent = 'SQLSERVERAGENT'
-#         $mockInstanceName2 = 'INST00'
-#         $mockInstanceName2Agent = 'SQLAgent$INST00'
-#         $mockInstanceName3 = 'INST01'
-#         $mockInstanceName3Agent = 'SQLAgent$INST01'
-
-#         $mockInvalidOperationForAlterMethod = $false
-
-#         $mockServerInstances = [System.Collections.ArrayList]::new()
-#         $mockServerInstances.Add($mockInstanceName1) | Out-Null
-#         $mockServerInstances.Add($mockInstanceName2) | Out-Null
-
-#         # The Trailing spaces in these here strings are ment to be there. Do not remove!
-#         $mockStartupParametersInstance1 = @"
-# -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802
-# "@
-#         $mockStartupParametersInstance2 = @"
-# -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
-# "@
-
-#         # Default parameters that are used for the It-blocks
-#         $mockDefaultParameters1 = @{
-#             InstanceName = $mockInstanceName1
-#             ServerName   = $mockServerName
-#         }
-
-#         $mockInst00Parameters = @{
-#             InstanceName = $mockInstanceName2
-#             ServerName   = $mockServerName
-#         }
-
-#         $mockInst01Parameters = @{
-#             InstanceName = $mockInstanceName3
-#             ServerName   = $mockServerName
-#         }
-
-#         $mockNonExistServerParameters = @{
-#             InstanceName = $mockInstanceName1
-#             ServerName   = $mockFakeServerName
-#         }
-
-#         $mockNewObject_ParameterFilter_RealServerName = {
-#             $ServerName -eq $mockServerName
-#         }
-
-#         $mockNewObject_ParameterFilter_FakeServerName = {
-#             $ServerName -eq $mockFakeServerName
-#         }
-
-#         $script:mockMethodAlterRan = $false
-#         $script:mockMethodAlterValue = ''
-
-#         #region Function mocks
-#         $mockSmoWmiManagedComputer = {
-#             $mockServerObjectHashtable = @{
-#                 State = 'Existing'
-#                 Name = $mockServerName
-#                 ServerInstances = $mockServerInstances
-#             }
-
-#             class service
-#             {
-#                 [string]$Name
-#                 [string]$ServiceState
-#                 [string]$StartupParameters
-#             }
-
-#             $Services = [System.Collections.ArrayList]::new()
-
-#             $service1 = [service]::new()
-#             $service1.Name = $mockInstanceName1
-#             $service1.ServiceState = 'Running'
-#             $service1.StartupParameters = $mockStartupParametersInstance1
-
-#             $Services.Add($service1) | Out-Null
-
-#             $service2 = [service]::new()
-#             $service2.Name = $mockInstanceName1Agent
-#             $service2.ServiceState = 'Running'
-#             $service2.StartupParameters = ''
-
-#             $Services.Add($service2) | Out-Null
-
-#             $service3 = [service]::new()
-#             $service3.Name = 'MSSQL${0}' -f $mockInstanceName2
-#             $service3.ServiceState = 'Running'
-#             $service3.StartupParameters = $mockStartupParametersInstance2
-
-#             $Services.Add($service3) | Out-Null
-
-#             $service4 = [service]::new()
-#             $service4.Name = 'SQLAgent${0}' -f $mockInstanceName2Agent
-#             $service4.ServiceState = 'Stopped'
-#             $service4.StartupParameters = ''
-
-#             $Services.Add($service4) | Out-Null
-
-#             $ServerServices = [System.Collections.ArrayList]::new()
-
-#             foreach ($mockService in $Services)
-#             {
-#                 $mockService | Add-Member -MemberType ScriptMethod -Name Alter -Value {
-#                     $script:mockMethodAlterRan = $true
-#                     $script:mockMethodAlterValue = $this.StartupParameters
-#                 } -PassThru
-#                 $ServerServices.Add( $mockService) | Out-Null
-#             }
-
-#             $mockServerObjectHashtable += @{
-#                 Services = $ServerServices
-#             }
-#             $mockServerObject = [PSCustomObject]$mockServerObjectHashtable
-
-#             return @($mockServerObject)
-#         }
-#         Mock -CommandName New-Object -MockWith $mockSmoWmiManagedComputer
-#         Mock -CommandName Import-SQLPSModule
-#     }
-
-#     Context 'When the system is not in the desired state and TraceFlags is empty with existing traceflag' {
-#         BeforeAll {
-#             $testParameters = $mockDefaultParameters1
-#             $testParameters += @{
-#                 TraceFlags = @()
-#             }
-#         }
-
-#         It 'Should return false when Traceflags on the instance exist' {
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeFalse
-#         }
-
-#         It 'Should be executed once' {
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope Context
-#         }
-#     }
-
-#     Context 'When the system is in the desired state and TraceFlags is empty without existing traceflag' {
-#         BeforeAll {
-#             $testParameters = $mockInst00Parameters
-#             $testParameters += @{
-#                 TraceFlags = @()
-#             }
-#         }
-
-#         It 'Should return true when no Traceflags on the instance exist' {
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeTrue
-#         }
-
-#         It 'Should be executed once' {
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope Context
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlags does not match the actual TraceFlags with existing traceflag' {
-#         BeforeAll {
-#             $testParameters = $mockDefaultParameters1
-#             $testParameters += @{
-#                 TraceFlags = '3228'
-#             }
-#         }
-
-#         It 'Should return false when Traceflags do not match the actual TraceFlags' {
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeFalse
-#         }
-
-#         It 'Should be executed once' {
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope Context
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlags does not match the actual TraceFlags without existing traceflag' {
-#         BeforeAll {
-#             $testParameters = $mockInst00Parameters
-#             $testParameters += @{
-#                 TraceFlags = '3228'
-#             }
-#         }
-
-#         It 'Should return false when Traceflags do not match the actual TraceFlags' {
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeFalse
-#         }
-
-#         It 'Should be executed once' {
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope Context
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlagsToInclude are not in the actual TraceFlags with existing traceflag' {
-#         BeforeAll {
-#             $testParameters = $mockDefaultParameters1
-#             $testParameters += @{
-#                 TraceFlagsToInclude = '3228'
-#             }
-#         }
-
-#         It 'Should return false when TraceflagsToInclude are not in the actual TraceFlags' {
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeFalse
-#         }
-
-#         It 'Should be executed once' {
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope Context
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlagsToInclude are not in the actual TraceFlags without existing traceflag' {
-#         BeforeAll {
-#             $testParameters = $mockInst00Parameters
-#             $testParameters += @{
-#                 TraceFlagsToInclude = '3228'
-#             }
-#         }
-
-#         It 'Should return false when TraceflagsToInclude are not in the actual TraceFlags' {
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeFalse
-#         }
-
-#         It 'Should be executed once' {
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope Context
-#         }
-#     }
-
-#     Context 'When the system is in the desired state and ensure is set to Present and `$TraceFlagsToInclude are in the actual TraceFlags' {
-#         BeforeAll {
-#             $testParameters = $mockDefaultParameters1
-#             $testParameters += @{
-#                 TraceFlagsToInclude = '3226'
-#             }
-#         }
-
-#         It 'Should return false when TraceflagsToInclude are in the actual TraceFlags' {
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeTrue
-#         }
-
-#         It 'Should be executed once' {
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope Context
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlagsToExclude are in the actual TraceFlags' {
-#         BeforeAll {
-#             $testParameters = $mockDefaultParameters1
-#             $testParameters += @{
-#                 TraceFlagsToExclude = '3226'
-#             }
-#         }
-
-#         It 'Should return false when TraceflagsToExclude are in the actual TraceFlags' {
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeFalse
-#         }
-
-#         It 'Should be executed once' {
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope Context
-#         }
-#     }
-
-#     Context 'When the system is in the desired state and ensure is set to Present and `$TraceFlagsToExclude are not in the actual TraceFlags with existing traceflag' {
-#         BeforeAll {
-#             $testParameters = $mockDefaultParameters1
-#             $testParameters += @{
-#                 TraceFlagsToExclude = '3228'
-#             }
-#         }
-
-#         It 'Should return true when TraceflagsToExclude are not in the actual TraceFlags' {
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeTrue
-#         }
-
-#         It 'Should be executed once' {
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope Context
-#         }
-#     }
-
-#     Context 'When the system is in the desired state and ensure is set to Present and `$TraceFlagsToExclude are not in the actual TraceFlags without existing traceflag' {
-#         BeforeAll {
-#             $testParameters = $mockInst00Parameters
-#             $testParameters += @{
-#                 TraceFlagsToExclude = '3228'
-#             }
-#         }
-
-#         It 'Should return true when TraceflagsToExclude are not in the actual TraceFlags' {
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeTrue
-#         }
-
-#         It 'Should be executed once' {
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope Context
-#         }
-#     }
-
-#     Context 'When both the parameters TraceFlags and TraceFlagsToInclude are assigned a value.' {
-#         BeforeAll {
-#             $testParameters = $mockDefaultParameters1
-#             $testParameters += @{
-#                 TraceFlags          = '3228'
-#                 TraceFlagsToInclude = '3228'
-#             }
-#         }
-
-#         It 'Should throw the correct error' {
-#             { Test-TargetResource @testParameters } | Should -Throw '(DRC0010)'
-#         }
-
-#         It 'Should not be executed' {
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 0 -Scope Context
-#         }
-#     }
-
-#     Context 'When both the parameters TraceFlags and TraceFlagsToExclude are assigned a value.' {
-#         BeforeAll {
-#             $testParameters = $mockDefaultParameters1
-#             $testParameters += @{
-#                 TraceFlags          = '3228'
-#                 TraceFlagsToExclude = '3228'
-#             }
-#         }
-
-#         It 'Should throw the correct error' {
-#             { Test-TargetResource @testParameters } | Should -Throw '(DRC0010)'
-#         }
-
-#         It 'Should not be executed' {
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 0 -Scope Context
-#         }
-#     }
-# }
-
-#     Describe 'DSC_SqlTraceFlag\Set-TargetResource' -Tag 'Set' {
-#     BeforeAll {
-#                 $mockServerName = 'TestServer'
-#                 $mockFakeServerName = 'FakeServer'
-#                 $mockInstanceName1 = 'MSSQLSERVER'
-#                 $mockInstanceName1Agent = 'SQLSERVERAGENT'
-#                 $mockInstanceName2 = 'INST00'
-#                 $mockInstanceName2Agent = 'SQLAgent$INST00'
-#                 $mockInstanceName3 = 'INST01'
-#                 $mockInstanceName3Agent = 'SQLAgent$INST01'
-
-#                 $mockInvalidOperationForAlterMethod = $false
-
-#                 $mockServerInstances = [System.Collections.ArrayList]::new()
-#                 $mockServerInstances.Add($mockInstanceName1) | Out-Null
-#                 $mockServerInstances.Add($mockInstanceName2) | Out-Null
-
-#                     # The Trailing spaces in these here strings are ment to be there. Do not remove!
-#                 $mockStartupParametersInstance1 = @"
-# -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802
-# "@
-#                 $mockStartupParametersInstance2 = @"
-# -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
-# "@
-
-#                 # Default parameters that are used for the It-blocks
-#                 $mockDefaultParameters1 = @{
-#                     InstanceName = $mockInstanceName1
-#                     ServerName   = $mockServerName
-#                 }
-
-#                 $mockInst00Parameters = @{
-#                     InstanceName = $mockInstanceName2
-#                     ServerName   = $mockServerName
-#                 }
-
-#                 $mockInst01Parameters = @{
-#                     InstanceName = $mockInstanceName3
-#                     ServerName   = $mockServerName
-#                 }
-
-#                 $mockNonExistServerParameters = @{
-#                     InstanceName = $mockInstanceName1
-#                     ServerName   = $mockFakeServerName
-#                 }
-
-#                 $mockNewObject_ParameterFilter_RealServerName = {
-#                     $ServerName -eq $mockServerName
-#                 }
-
-#                 $mockNewObject_ParameterFilter_FakeServerName = {
-#                     $ServerName -eq $mockFakeServerName
-#                 }
-
-#                 $script:mockMethodAlterRan = $false
-#                 $script:mockMethodAlterValue = ''
-
-#                 #region Function mocks
-#                 $mockSmoWmiManagedComputer = {
-#                     $mockServerObjectHashtable = @{
-#                         State = 'Existing'
-#                         Name = $mockServerName
-#                         ServerInstances = $mockServerInstances
-#                     }
-
-#                     class service
-#                     {
-#                         [string]$Name
-#                         [string]$ServiceState
-#                         [string]$StartupParameters
-#                     }
-
-#                     $Services = [System.Collections.ArrayList]::new()
-
-#                     $service1 = [service]::new()
-#                     $service1.Name = $mockInstanceName1
-#                     $service1.ServiceState = 'Running'
-#                     $service1.StartupParameters = $mockStartupParametersInstance1
-
-#                     $Services.Add($service1) | Out-Null
-
-#                     $service2 = [service]::new()
-#                     $service2.Name = $mockInstanceName1Agent
-#                     $service2.ServiceState = 'Running'
-#                     $service2.StartupParameters = ''
-
-#                     $Services.Add($service2) | Out-Null
-
-#                     $service3 = [service]::new()
-#                     $service3.Name = 'MSSQL${0}' -f $mockInstanceName2
-#                     $service3.ServiceState = 'Running'
-#                     $service3.StartupParameters = $mockStartupParametersInstance2
-
-#                     $Services.Add($service3) | Out-Null
-
-#                     $service4 = [service]::new()
-#                     $service4.Name = 'SQLAgent${0}' -f $mockInstanceName2Agent
-#                     $service4.ServiceState = 'Stopped'
-#                     $service4.StartupParameters = ''
-
-#                     $Services.Add($service4) | Out-Null
-
-#                     $ServerServices = [System.Collections.ArrayList]::new()
-
-#                     foreach ($mockService in $Services)
-#                     {
-#                         $mockService | Add-Member -MemberType ScriptMethod -Name Alter -Value {
-#                             $script:mockMethodAlterRan = $true
-#                             $script:mockMethodAlterValue = $this.StartupParameters
-#                         } -PassThru
-#                         $ServerServices.Add( $mockService) | Out-Null
-#                     }
-
-#                     $mockServerObjectHashtable += @{
-#                         Services = $ServerServices
-#                     }
-#                     $mockServerObject = [PSCustomObject]$mockServerObjectHashtable
-
-#                     return @($mockServerObject)
-#                 }
-#         Mock -CommandName New-Object -MockWith $mockSmoWmiManagedComputer
-#         Mock -CommandName Restart-SqlService -ModuleName $script:dscResourceName
-#         Mock -CommandName Import-SQLPSModule
-#     }
-
-#     Context 'When the system is not in the desired state and ensure is set to Absent with existing traceflag' {
-#         BeforeAll {
-#             $testParameters = $mockDefaultParameters1
-#             $testParameters += @{
-#                 TraceFlags = @()
-#             }
-#         }
-
-#         It 'Should not throw when calling the alter method' {
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-#             $script:mockMethodAlterRan | Should -BeTrue -Because 'Alter should run'
-#             $script:mockMethodAlterValue | Should -Be @"
-# -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
-# "@ -Because 'Alter must change the value correct'
-
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state and ensure is set to Absent without existing traceflag' {
-#         BeforeAll {
-#             $testParameters = $mockInst00Parameters
-#             $testParameters += @{
-#                 TraceFlags = '3228'
-#             }
-#         }
-
-#         It 'Should not throw when calling the alter method' {
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-#             $script:mockMethodAlterRan | Should -BeTrue -Because 'Alter should run'
-#             $script:mockMethodAlterValue | Should -Be @"
-# -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
-# "@ -Because 'Alter must change the value correct'
-
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlags does not match the actual TraceFlags with existing traceflag' {
-#         BeforeAll {
-#             $testParameters = $mockDefaultParameters1
-#             $testParameters += @{
-#                 TraceFlags = '3228'
-#             }
-#         }
-
-#         It 'Should not throw when calling the alter method' {
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-#             $script:mockMethodAlterRan | Should -BeTrue -Because 'Alter should run'
-#             $script:mockMethodAlterValue | Should -Be @"
-# -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
-# "@ -Because 'Alter must change the value correct'
-
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlags does not match the actual TraceFlags without existing traceflag' {
-#         BeforeAll {
-#             $testParameters = $mockInst00Parameters
-#             $testParameters += @{
-#                 TraceFlags = '3228'
-#             }
-#         }
-
-#         It 'Should not throw when calling the alter method' {
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-#             $script:mockMethodAlterRan | Should -BeTrue -Because 'Alter should run'
-#             $script:mockMethodAlterValue | Should -Be @"
-# -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
-# "@ -Because 'Alter must change the value correct'
-
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlagsToInclude is not in TraceFlags with existing traceflag' {
-#         BeforeAll {
-#             $testParameters = $mockDefaultParameters1
-#             $testParameters += @{
-#                 TraceFlagsToInclude = '3228'
-#             }
-#         }
-
-#         It 'Should not throw when calling the alter method' {
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-#             $script:mockMethodAlterRan | Should -BeTrue
-#             $script:mockMethodAlterValue | Should -Be @"
-# -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802;-T3228
-# "@
-
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 2 -Scope It
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlagsToInclude is not in TraceFlags without existing traceflag' {
-#         BeforeAll {
-#             $testParameters = $mockInst00Parameters
-#             $testParameters += @{
-#                 TraceFlagsToInclude = '3228'
-#             }
-#         }
-
-#         It 'Should not throw when calling the alter method' {
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-#             $script:mockMethodAlterRan | Should -BeTrue
-#             $script:mockMethodAlterValue | Should -Be @"
-# -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
-# "@
-
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 2 -Scope It
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlagsToExclude is in TraceFlags' {
-#         BeforeAll {
-#             $testParameters = $mockDefaultParameters1
-#             $testParameters += @{
-#                 TraceFlagsToExclude = '1802'
-#             }
-#         }
-
-#         It 'Should not throw when calling the alter method' {
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-#             $script:mockMethodAlterRan | Should -BeTrue
-#             $script:mockMethodAlterValue | Should -Be @"
-# -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226
-# "@
-
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 2 -Scope It
-#         }
-#     }
-
-#     Context 'When the system is not in the desired state and ensure is set to Present and `$TraceFlags does not match the actual TraceFlags' {
-#         BeforeAll {
-#             $testParameters = $mockDefaultParameters1
-#             $testParameters += @{
-#                 TraceFlags = '3228'
-#                 RestartService = $true
-#             }
-#         }
-
-#         It 'Should not throw when calling the restart method' {
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-#             $script:mockMethodAlterRan | Should -BeTrue
-#             $script:mockMethodAlterValue | Should -Be @"
-# -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
-# Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
-# "@
-
-#             Assert-MockCalled -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -Scope It
-#         }
-#     }
-
-#     Context 'When both the parameters TraceFlags and TraceFlagsToInclude are assigned a value.' {
-#         BeforeAll {
-#             $testParameters = $mockDefaultParameters1
-#             $testParameters += @{
-#                 TraceFlags          = '3228'
-#                 TraceFlagsToInclude = '3228'
-#             }
-#         }
-
-#         It 'Should throw the correct error' {
-#             { Set-TargetResource @testParameters } | Should -Throw '(DRC0010)'
-#         }
-
-#         It 'Should not be executed' {
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 0 -Scope Context
-#         }
-#     }
-
-#     Context 'When both the parameters TraceFlags and TraceFlagsToExclude are assigned a value.' {
-#         BeforeAll {
-#             $testParameters = $mockDefaultParameters1
-#             $testParameters += @{
-#                 TraceFlags          = '3228'
-#                 TraceFlagsToExclude = '3228'
-#             }
-#         }
-
-#         It 'Should throw the correct error' {
-#             { Set-TargetResource @testParameters } | Should -Throw '(DRC0010)'
-#         }
-
-#         It 'Should not be executed' {
-#             Assert-MockCalled -CommandName New-Object -Exactly -Times 0 -Scope Context
-#         }
-#     }
-
-#     Context 'For a nonexistent instance' {
-#         BeforeAll {
-#             $testParameters = $mockInst01Parameters
-#         }
-#         It 'Should throw for incorrect parameters' {
-#             { Set-TargetResource @testParameters } |
-#                 Should -Throw -ExpectedMessage ("Was unable to connect to WMI information '{0}' in '{1}'." -f $mockInstanceName3, $mockServerName)
-#         }
-#     }
-
-#     Context 'For a nonexistent server' {
-#         BeforeAll {
-#             $testParameters = $mockNonExistServerParameters
-#             Mock -CommandName New-Object -MockWith {
-#                 return $null
-#             } -ParameterFilter $mockNewObject_ParameterFilter_FakeServerName
-#         }
-#         It 'Should throw for incorrect parameters' {
-#             { Set-TargetResource @testParameters } |
-#             Should -Throw -ExpectedMessage ("Was unable to connect to ComputerManagement '{0}'." -f $mockFakeServerName)
-#         }
-#     }
-# }
+Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'TestServer'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockTestTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        Context 'When there should be no trace flags' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ServerName          = 'TestServer'
+                        InstanceName        = 'MSSQLSERVER'
+                        TraceFlags          = @()
+                    }
+                }
+            }
+
+            It 'Should return true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.TraceFlags = @()
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue -Because 'it should return that the trace flags are in the desired state'
+                }
+            }
+
+            It 'Should call the correct mock' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+
+        Context 'When the correct trace flags exist' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ServerName          = 'TestServer'
+                        InstanceName        = 'MSSQLSERVER'
+                        TraceFlags          = @('1802', '3226')
+                    }
+                }
+            }
+
+            It 'Should return true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    <#
+                        The trace flags are in reverse order than the mock to
+                        make sure the order does not matter.
+                    #>
+                    $mockTestTargetResourceParameters.TraceFlags = @('3226', '1802')
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue -Because 'it should return that the trace flags are in the desired state'
+                }
+            }
+
+            It 'Should call the correct mock' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+
+        Context 'When adding a trace flag and the trace flag already exist' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ServerName          = 'TestServer'
+                        InstanceName        = 'MSSQLSERVER'
+                        TraceFlags          = @('1802', '3226')
+                    }
+                }
+            }
+
+            It 'Should return true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.TraceFlagsToInclude = '1802'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue -Because 'it should return that the trace flags are in the desired state'
+                }
+            }
+
+            It 'Should call the correct mock' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+
+        Context 'When removing an existing trace flag' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ServerName          = 'TestServer'
+                        InstanceName        = 'MSSQLSERVER'
+                        TraceFlags          = @('1802', '3226')
+                    }
+                }
+            }
+
+            It 'Should return true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.TraceFlagsToExclude = '4199'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue -Because 'it should return that the trace flags are in the desired state'
+                }
+            }
+
+            It 'Should call the correct mock' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+
+        Context 'When removing an existing trace flag, when there are no existent trace flags' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ServerName          = 'TestServer'
+                        InstanceName        = 'MSSQLSERVER'
+                        TraceFlags          = @()
+                    }
+                }
+            }
+
+            It 'Should return true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.TraceFlagsToExclude = '4199'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue -Because 'it should return that the trace flags are in the desired state'
+                }
+            }
+
+            It 'Should call the correct mock' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+
+        Context 'When both adding a new trace flag and removing an existing trace flag' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ServerName          = 'TestServer'
+                        InstanceName        = 'MSSQLSERVER'
+                        TraceFlags          = @('1802', '3226')
+                    }
+                }
+            }
+
+            It 'Should return true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.TraceFlagsToInclude = '3226'
+                    $mockTestTargetResourceParameters.TraceFlagsToExclude = '4199'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue -Because 'it should return that the trace flags are in the desired state'
+                }
+            }
+
+            It 'Should call the correct mock' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        Context 'When there should be no trace flags' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ServerName          = 'TestServer'
+                        InstanceName        = 'MSSQLSERVER'
+                        TraceFlags          = @('1802', '3226')
+                    }
+                }
+            }
+
+            It 'Should return false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.TraceFlags = @()
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                }
+            }
+
+            It 'Should call the correct mock' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+
+        Context 'When specifying one trace flag that does not match' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ServerName          = 'TestServer'
+                        InstanceName        = 'MSSQLSERVER'
+                        TraceFlags          = @('1802', '3226')
+                    }
+                }
+            }
+
+            It 'Should return false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.TraceFlags = '4137'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                }
+            }
+
+            It 'Should call the correct mock' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+
+        Context 'When specified several trace flags that does not match' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ServerName          = 'TestServer'
+                        InstanceName        = 'MSSQLSERVER'
+                        TraceFlags          = @('1802', '3226')
+                    }
+                }
+            }
+
+            It 'Should return false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.TraceFlags = @('4137', '4199')
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                }
+            }
+
+            It 'Should call the correct mock' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+
+        Context 'When specifying one trace flag that exist and one that does not exist' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ServerName          = 'TestServer'
+                        InstanceName        = 'MSSQLSERVER'
+                        TraceFlags          = @('1802', '3226')
+                    }
+                }
+            }
+
+            It 'Should return false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.TraceFlags = @('1802', '4199')
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                }
+            }
+
+            It 'Should call the correct mock' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+
+        Context 'When there are no existing trace flags' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ServerName          = 'TestServer'
+                        InstanceName        = 'MSSQLSERVER'
+                        TraceFlags          = @()
+                    }
+                }
+            }
+
+            It 'Should return false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.TraceFlags = @('1802', '4199')
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                }
+            }
+
+            It 'Should call the correct mock' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+
+        Context 'When adding an non-existent trace flag' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ServerName          = 'TestServer'
+                        InstanceName        = 'MSSQLSERVER'
+                        TraceFlags          = @('1802', '3226')
+                    }
+                }
+            }
+
+            It 'Should return false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.TraceFlagsToInclude = '4199'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                }
+            }
+
+            It 'Should call the correct mock' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+
+        Context 'When adding an non-existent trace flag, when there are no existent trace flags' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ServerName          = 'TestServer'
+                        InstanceName        = 'MSSQLSERVER'
+                        TraceFlags          = @()
+                    }
+                }
+            }
+
+            It 'Should return false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.TraceFlagsToInclude = '4199'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                }
+            }
+
+            It 'Should call the correct mock' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+
+        Context 'When removing an existing trace flag' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ServerName          = 'TestServer'
+                        InstanceName        = 'MSSQLSERVER'
+                        TraceFlags          = @('1802', '3226')
+                    }
+                }
+            }
+
+            It 'Should return false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.TraceFlagsToExclude = '3226'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                }
+            }
+
+            It 'Should call the correct mock' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+
+        Context 'When both adding a new trace flag and removing an existing trace flag' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ServerName          = 'TestServer'
+                        InstanceName        = 'MSSQLSERVER'
+                        TraceFlags          = @('1802', '3226')
+                    }
+                }
+            }
+
+            It 'Should return false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.TraceFlagsToInclude = '4199'
+                    $mockTestTargetResourceParameters.TraceFlagsToExclude = '3226'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                }
+            }
+
+            It 'Should call the correct mock' {
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+            }
+        }
+    }
+
+    Context 'When both the parameters TraceFlags and TraceFlagsToInclude are assigned a value' {
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockTestTargetResourceParameters.TraceFlags = '3226'
+                $mockTestTargetResourceParameters.TraceFlagsToInclude = '3226'
+
+                { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage '*(DRC0010)*'
+            }
+        }
+    }
+
+    Context 'When both the parameters TraceFlags and TraceFlagsToExclude are assigned a value' {
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockTestTargetResourceParameters.TraceFlags = '3226'
+                $mockTestTargetResourceParameters.TraceFlagsToExclude = '3226'
+
+                { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage '*(DRC0010)*'
+            }
+        }
+    }
+}
+
+Describe 'DSC_SqlTraceFlag\Set-TargetResource' -Tag 'Set' {
+    BeforeAll {
+        $mockSmoWmiManagedComputer = {
+            $mockServerInstances = [System.Collections.ArrayList]::new()
+            $mockServerInstances.Add('MSSQLSERVER') | Out-Null
+            $mockServerInstances.Add('INST00') | Out-Null
+
+            $mockServerObjectHashtable = @{
+                State = 'Existing'
+                Name = 'TestServer'
+                ServerInstances = $mockServerInstances
+            }
+
+            class service
+            {
+                [string] $Name
+                [string] $ServiceState
+                [string] $StartupParameters
+            }
+
+            $Services = [System.Collections.ArrayList]::new()
+
+            $service1 = [service]::new()
+            $service1.Name = 'MSSQLSERVER'
+            $service1.ServiceState = 'Running'
+
+            $service1.StartupParameters = @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802
+"@
+
+            $Services.Add($service1) | Out-Null
+
+            $service2 = [service]::new()
+            $service2.Name = 'SQLSERVERAGENT'
+            $service2.ServiceState = 'Running'
+            $service2.StartupParameters = ''
+
+            $Services.Add($service2) | Out-Null
+
+            $service3 = [service]::new()
+            $service3.Name = 'MSSQL$INST00'
+            $service3.ServiceState = 'Running'
+
+            $service3.StartupParameters = @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
+"@
+
+            $Services.Add($service3) | Out-Null
+
+            $service4 = [service]::new()
+            $service4.Name = 'SQLAgent$SQLAgent$INST00'
+            $service4.ServiceState = 'Stopped'
+            $service4.StartupParameters = ''
+
+            $Services.Add($service4) | Out-Null
+
+            $ServerServices = [System.Collections.ArrayList]::new()
+
+            foreach ($mockService in $Services)
+            {
+                $mockService | Add-Member -MemberType ScriptMethod -Name Alter -Value {
+                    $_.StartupParameters = $this.StartupParameters
+
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        $script:mockMethodAlterRan = $true
+                        $script:mockMethodAlterValue = $StartupParameters
+                    }
+                } -PassThru
+
+                $ServerServices.Add($mockService) | Out-Null
+            }
+
+            $mockServerObjectHashtable += @{
+                Services = $ServerServices
+            }
+
+            $mockServerObject = [PSCustomObject] $mockServerObjectHashtable
+
+            return @($mockServerObject)
+        }
+
+        Mock -CommandName New-Object -MockWith $mockSmoWmiManagedComputer -ParameterFilter {
+            $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer'
+        }
+
+        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Restart-SqlService
+
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'TestServer'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockSetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        Context 'When there should be no trace flags' {
+            It 'Should not throw and set the correct value' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.TraceFlags = @()
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
+
+                    $script:mockMethodAlterValue | Should -Be @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
+"@ -Because 'Alter must change the value correct'
+                }
+
+                Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When specifying a trace flag' {
+            It 'Should not throw and set the correct value' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.TraceFlags = '3228'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
+
+                    $script:mockMethodAlterValue | Should -Be @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
+"@ -Because 'Alter must change the value correct'
+                }
+
+                Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When adding a trace flag' {
+            It 'Should not throw when calling the alter method' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.InstanceName = 'INST00'
+                    $mockSetTargetResourceParameters.TraceFlagsToInclude = '3228'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
+
+                    $script:mockMethodAlterValue | Should -Be @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
+"@
+                }
+
+                # New-Object is also called in Get-TargetResource since there is no mock for Get-TargetResource.
+                Should -Invoke -CommandName New-Object -Exactly -Times 2 -Scope It
+            }
+        }
+
+        Context 'When adding a trace flag to existent trace flags' {
+            It 'Should not throw when calling the alter method' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.TraceFlagsToInclude = '3228'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
+
+                    $script:mockMethodAlterValue | Should -Be @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802;-T3228
+"@
+                }
+
+                # New-Object is also called in Get-TargetResource since there is no mock for Get-TargetResource.
+                Should -Invoke -CommandName New-Object -Exactly -Times 2 -Scope It
+            }
+        }
+
+        Context 'When removing a trace flag' {
+            It 'Should not throw when calling the alter method' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.TraceFlagsToExclude = '1802'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
+
+                    $script:mockMethodAlterValue | Should -Be @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226
+"@
+                }
+
+                # New-Object is also called in Get-TargetResource since there is no mock for Get-TargetResource.
+                Should -Invoke -CommandName New-Object -Exactly -Times 2 -Scope It
+            }
+        }
+
+        Context 'When removing several trace flags' {
+            It 'Should not throw when calling the alter method' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.TraceFlagsToExclude = '1802', '3226'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
+
+                    $script:mockMethodAlterValue | Should -Be @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
+"@
+                }
+
+                # New-Object is also called in Get-TargetResource since there is no mock for Get-TargetResource.
+                Should -Invoke -CommandName New-Object -Exactly -Times 2 -Scope It
+            }
+        }
+
+        Context 'When restarting the SQL Server service after modifying trace flags' {
+            It 'Should not throw when calling the alter method' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.TraceFlags = '4199'
+                    $mockSetTargetResourceParameters.RestartService = $true
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
+
+                    $script:mockMethodAlterValue | Should -Be @"
+-dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
+Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T4199
+"@
+                }
+
+                # New-Object is also called in Get-TargetResource since there is no mock for Get-TargetResource.
+                Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+
+    Context 'When both the parameters TraceFlags and TraceFlagsToInclude are assigned a value' {
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters.TraceFlags = '4199'
+                $mockSetTargetResourceParameters.TraceFlagsToInclude = '4037'
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*(DRC0010)*'
+            }
+        }
+
+        It 'Should not call mock New-Object' {
+            Should -Invoke -CommandName New-Object -Exactly -Times 0 -Scope Context
+        }
+    }
+
+    Context 'When both the parameters TraceFlags and TraceFlagsToExclude are assigned a value' {
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters.TraceFlags = '4199'
+                $mockSetTargetResourceParameters.TraceFlagsToExclude = '4037'
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*(DRC0010)*'
+            }
+        }
+
+        It 'Should not call mock New-Object' {
+            Should -Invoke -CommandName New-Object -Exactly -Times 0 -Scope Context
+        }
+    }
+
+    Context 'For a nonexistent instance' {
+        It 'Should throw for incorrect parameters' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters.InstanceName = 'INST01'
+
+                $mockErrorMessage = $script:localizedData.NotConnectedToWMI -f 'INST01', 'TestServer'
+
+                { Test-TargetResource @mockSetTargetResourceParameters } |
+                    Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+            }
+        }
+    }
+
+    Context 'For a nonexistent server' {
+        BeforeAll {
+            Mock -CommandName New-Object -MockWith {
+                return $null
+            } -ParameterFilter {
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer'
+            }
+        }
+
+        It 'Should throw for incorrect parameters' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters.ServerName = 'FakeServer'
+                $mockSetTargetResourceParameters.InstanceName = 'INST00' # Instance exist
+
+                $mockErrorMessage = $script:localizedData.NotConnectedToComputerManagement -f 'FakeServer'
+
+                { Test-TargetResource @mockSetTargetResourceParameters } |
+                    Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)            }
+        }
+    }
+}
