@@ -79,6 +79,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     state. Returning the value `'Empty'` was always intended, but it due to
     a bug it was never returned, but instead it returned an empty string
     or `$null` value.
+- SqlWindowsFirewall
+  - Now the property Features always return the features in the order
+    'SQLENGINE', 'RS', 'AS', and 'IS' if they are installed.
 
 ### Fixed
 
@@ -133,6 +136,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the maximum memory is not specified.
   - In a certain scenario the maximum memory would be enforced even if it was
     not specified in the configuration.
+- SqlWindowsFirewall
+  - Now the variables in `Get-TargetResource` are correctly initialized so
+    they pass the new unit test that use strict mode.
 
 ### Added
 
