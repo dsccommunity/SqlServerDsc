@@ -389,7 +389,7 @@ AfterAll {
 #     )
 # }
 
-Describe "SqlWindowsFirewall\Get-TargetResource" -Tag 'Get' {
+Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
     BeforeAll {
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
@@ -2025,611 +2025,852 @@ Describe "SqlWindowsFirewall\Get-TargetResource" -Tag 'Get' {
         }
 
         Context 'When passing credentials in the parameter SourceCredential' {
-            Context 'When the features are not installed (the service is missing)' {
+            BeforeAll {
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return $MockSqlMajorVersion
+                }
+
+                Mock -CommandName Get-Service -MockWith {
+                    return @()
+                }
+
+                Mock -CommandName New-SmbMapping
+                Mock -CommandName Remove-SmbMapping
+            }
+
+            BeforeEach {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $script:mockGetTargetResourceParameters.Features = 'SQLENGINE'
+                }
+            }
+
+            It 'Should call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $script:mockGetTargetResourceParameters.Features = 'SQLENGINE'
+                    $script:mockGetTargetResourceParameters.SourceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @(
+                        'COMPANY\SqlAdmin',
+                        ('dummyPassword' | ConvertTo-SecureString -AsPlainText -Force)
+                    )
+
+                    { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke New-SmbMapping -Exactly -Times 1 -Scope It
+                Should -Invoke Remove-SmbMapping -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+}
+
+Describe 'SqlWindowsFirewall\Test-TargetResource' -Tag 'Test' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                Features     = 'SQLENGINE'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockTestTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        Context 'When the firewall rules should be present' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                    }
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue
+                }
+            }
+        }
+
+        Context 'When the firewall rules should be absent' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Absent'
+                    }
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.Ensure = 'Absent'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue
+                }
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        Context 'When the firewall rules should be present' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Absent'
+                    }
+                }
+            }
+
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse
+                }
+            }
+        }
+
+        Context 'When the firewall rules should be absent' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Absent'
+                    }
+                }
+            }
+
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse
+                }
+            }
+        }
+    }
+}
+
+Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                SourcePath = $TestDrive
+            }
+        }
+
+        Mock -CommandName Set-NetFirewallRule
+        Mock -CommandName New-NetFirewallRule
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockSetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When using the instance <MockInstanceName>' -ForEach @(
+        @{
+            MockInstanceName = 'MSSQLSERVER'
+        }
+        @{
+            MockInstanceName = 'TEST'
+        }
+    ) {
+        BeforeAll {
+            Mock -CommandName Test-TargetResource -MockWith {
+                return $true
+            }
+        }
+
+        BeforeEach {
+            <#
+                Pester only holds the inner-most foreach-variable in the $_-table,
+                so it vill hold variables MockFeatures and MockSqlMajorVersion from
+                the next Context-block. This adds this context-blocks foreach-variable
+                to the $_-table so it is available.
+            #>
+            $_.MockInstanceName = $MockInstanceName
+
+            InModuleScope -Parameters $_ -ScriptBlock {
+                $script:mockSetTargetResourceParameters.InstanceName = $MockInstanceName
+            }
+        }
+
+        Context 'When using the feature ''<MockFeatures>'' and major version ''<MockSqlMajorVersion>''' -ForEach @(
+            <#
+                Testing two major versions to verify Integration Services differences (i.e service name).
+                No point in testing each supported SQL Server version, since there are no difference
+                between the other major versions.
+            #>
+            @{
+                MockFeatures = 'SQLENGINE'
+                MockSqlMajorVersion = '11' # SQL Server 2012
+            }
+            @{
+                # Using lower-case to test that casing does not matter.
+                MockFeatures = 'SQLEngine'
+                MockSqlMajorVersion = '10' # SQL Server 2008 and 2008 R2
+            }
+        ) {
+            Context 'When the feature is not installed' {
                 BeforeAll {
                     Mock -CommandName Get-FilePathMajorVersion -MockWith {
                         return $MockSqlMajorVersion
                     }
 
-                    Mock -CommandName Get-Service -MockWith {
-                        return @()
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Features = ''
+                        }
                     }
-
-                    Mock -CommandName New-SmbMapping
-                    Mock -CommandName Remove-SmbMapping
                 }
 
                 BeforeEach {
                     InModuleScope -Parameters $_ -ScriptBlock {
-                        $script:mockGetTargetResourceParameters.Features = 'SQLENGINE'
+                        $script:mockSetTargetResourceParameters.Features = $MockFeatures
                     }
                 }
 
-                It 'Should call the correct mocks' {
+                It 'Should call the expected mocks' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        $script:mockGetTargetResourceParameters.Features = 'SQLENGINE'
-                        $script:mockGetTargetResourceParameters.SourceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @(
-                            'COMPANY\SqlAdmin',
-                            ('dummyPassword' | ConvertTo-SecureString -AsPlainText -Force)
-                        )
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                        Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                    }
+                }
+            }
+
+            Context 'When the feature is installed' {
+                BeforeAll {
+                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                        return $MockSqlMajorVersion
+                    }
+                }
+
+                BeforeEach {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        $script:mockSetTargetResourceParameters.Features = $MockFeatures
+                    }
+                }
+
+                Context 'When firewall rules are present for Database Engine and SQL Browser' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = 'SQLENGINE'
+                                DatabaseEngineFirewall = $true
+                                BrowserFirewall = $true
+                            }
+                        }
                     }
 
-                    Should -Invoke New-SmbMapping -Exactly -Times 1 -Scope It
-                    Should -Invoke Remove-SmbMapping -Exactly -Times 1 -Scope It
+                    It 'Should call the expected mocks' {
+                        InModuleScope -ScriptBlock {
+                            Set-StrictMode -Version 1.0
+
+                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                            Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
+                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                        }
+                    }
+                }
+
+                Context 'When firewall rules are absent for Database Engine and present for SQL Browser' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = 'SQLENGINE'
+                                DatabaseEngineFirewall = $false
+                                BrowserFirewall = $true
+                            }
+                        }
+
+                        Mock -CommandName Get-SQLPath -MockWith {
+                            return 'C:\Program Files\Microsoft SQL Server'
+                        }
+                    }
+
+                    Context 'When firewall rule already exist' {
+                        BeforeAll {
+                            Mock -CommandName Get-NetFirewallRule -MockWith {
+                                return @{
+                                    DisplayName = 'SQL Server Database Engine instance {0}' -f $MockInstanceName
+                                }
+                            }
+                        }
+
+                        It 'Should call the expected mocks' {
+                            InModuleScope -ScriptBlock {
+                                Set-StrictMode -Version 1.0
+
+                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                                Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 1 -Scope It
+                                Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                            }
+                        }
+                    }
+
+                    Context 'When firewall rule do not exist' {
+                        BeforeAll {
+                            Mock -CommandName Get-NetFirewallRule
+                        }
+
+                        It 'Should call the expected mocks' {
+                            InModuleScope -ScriptBlock {
+                                Set-StrictMode -Version 1.0
+
+                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                                Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
+                                Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
+                            }
+                        }
+                    }
+                }
+
+                Context 'When firewall rules are present for Database Engine and absent for SQL Browser' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = 'SQLENGINE'
+                                DatabaseEngineFirewall = $true
+                                BrowserFirewall = $false
+                            }
+                        }
+                    }
+
+                    Context 'When firewall rule do not exist' {
+                        It 'Should call the expected mocks' {
+                            InModuleScope -ScriptBlock {
+                                Set-StrictMode -Version 1.0
+
+                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                                Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
+                                Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
+                            }
+                        }
+                    }
+                }
+
+                Context 'When firewall rules for both SQL Engine and SQL Browser are disabled' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = 'SQLENGINE'
+                                DatabaseEngineFirewall = $false
+                                BrowserFirewall = $false
+                            }
+                        }
+
+                        Mock -CommandName Get-SQLPath -MockWith {
+                            return 'C:\Program Files\Microsoft SQL Server'
+                        }
+                    }
+
+                    Context 'When firewall rule for Database Engine already exist' {
+                        BeforeAll {
+                            Mock -CommandName Get-NetFirewallRule -MockWith {
+                                return @{
+                                    DisplayName = 'SQL Server Database Engine instance {0}' -f $MockInstanceName
+                                }
+                            }
+                        }
+
+                        It 'Should call the expected mocks' {
+                            InModuleScope -ScriptBlock {
+                                Set-StrictMode -Version 1.0
+
+                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                                Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 1 -Scope It #-Because 'the rule already exist for the Database Engine'
+                                Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It #-Because 'no rule exist for the SQL Browser'
+                            }
+                        }
+                    }
+
+                    Context 'When firewall rule for Database Engine do not exist' {
+                        BeforeAll {
+                            Mock -CommandName Get-NetFirewallRule
+                        }
+
+                        It 'Should call the expected mocks' {
+                            InModuleScope -ScriptBlock {
+                                Set-StrictMode -Version 1.0
+
+                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                                Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It #-Because 'no rules exist to change'
+                                Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It #-Because 'no rule exist for either the Database Engine or SQL Browser'
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        # $mockCurrentInstanceName = 'MSSQLSERVER'
-        # $mockCurrentDatabaseEngineInstanceId = "MSSQL$($MockSqlMajorVersion).MSSQLSERVER"
-        # $mockCurrentAnalysisServiceInstanceId = "MSAS$($MockSqlMajorVersion).MSSQLSERVER"
+        Context 'When using the feature ''<MockFeatures>'' and major version ''<MockSqlMajorVersion>''' -ForEach @(
+            <#
+                Testing two major versions to verify Integration Services differences (i.e service name).
+                No point in testing each supported SQL Server version, since there are no difference
+                between the other major versions.
+            #>
+            @{
+                MockFeatures = 'AS'
+                MockSqlMajorVersion = '11' # SQL Server 2012
+            }
+            @{
+                # Using lower-case to test that casing does not matter.
+                MockFeatures = 'As'
+                MockSqlMajorVersion = '10' # SQL Server 2008 and 2008 R2
+            }
+        ) {
+            Context 'When the feature is not installed' {
+                BeforeAll {
+                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                        return $MockSqlMajorVersion
+                    }
 
-        # $mockCurrentSqlAnalysisServiceName = 'MSSQLServerOLAPService'
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Features = ''
+                        }
+                    }
+                }
 
-        # $mockCurrentDatabaseEngineSqlBinDirectory = "C:\Program Files\Microsoft SQL Server\$mockCurrentDatabaseEngineInstanceId\MSSQL\Binn"
-        # $mockCurrentAnalysisServicesSqlBinDirectory = "C:\Program Files\Microsoft SQL Server\$mockCurrentDatabaseEngineInstanceId\OLAP\Binn"
-        # $mockCurrentIntegrationServicesSqlPathDirectory = "C:\Program Files\Microsoft SQL Server\$($MockSqlMajorVersion)0\DTS\"
+                BeforeEach {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        $script:mockSetTargetResourceParameters.Features = $MockFeatures
+                    }
+                }
+
+                It 'Should call the expected mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                        Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                    }
+                }
+            }
+
+            Context 'When the feature is installed' {
+                BeforeAll {
+                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                        return $MockSqlMajorVersion
+                    }
+                }
+
+                BeforeEach {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        $script:mockSetTargetResourceParameters.Features = $MockFeatures
+                    }
+                }
+
+                Context 'When firewall rules are present for Analysis Services and SQL Browser' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = 'AS'
+                                AnalysisServicesFirewall = $true
+                                BrowserFirewall = $true
+                            }
+                        }
+                    }
+
+                    It 'Should call the expected mocks' {
+                        InModuleScope -ScriptBlock {
+                            Set-StrictMode -Version 1.0
+
+                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                        }
+                    }
+                }
+
+                Context 'When firewall rules are absent for Analysis Services and present for SQL Browser' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = 'AS'
+                                AnalysisServicesFirewall = $false
+                                BrowserFirewall = $true
+                            }
+                        }
+                    }
+
+                    It 'Should call the expected mocks' {
+                        InModuleScope -ScriptBlock {
+                            Set-StrictMode -Version 1.0
+
+                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
+                        }
+                    }
+                }
+
+                Context 'When firewall rules are present for Analysis Services and absent for SQL Browser' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = 'AS'
+                                AnalysisServicesFirewall = $true
+                                BrowserFirewall = $false
+                            }
+                        }
+                    }
+
+                    Context 'When firewall rule do not exist' {
+                        It 'Should call the expected mocks' {
+                            InModuleScope -ScriptBlock {
+                                Set-StrictMode -Version 1.0
+
+                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                                Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
+                            }
+                        }
+                    }
+                }
+
+                Context 'When firewall rules for both Analysis Services and SQL Browser are disabled' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = 'AS'
+                                AnalysisServicesFirewall = $false
+                                BrowserFirewall = $false
+                            }
+                        }
+                    }
+
+                    It 'Should call the expected mocks' {
+                        InModuleScope -ScriptBlock {
+                            Set-StrictMode -Version 1.0
+
+                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It #-Because 'no rule exist for either Analysis Services or SQL Browser'
+                        }
+                    }
+                }
+            }
+        }
+
+        Context 'When using the feature ''<MockFeatures>'' and major version ''<MockSqlMajorVersion>''' -ForEach @(
+            <#
+                Testing two major versions to verify Integration Services differences (i.e service name).
+                No point in testing each supported SQL Server version, since there are no difference
+                between the other major versions.
+            #>
+            @{
+                MockFeatures = 'RS'
+                MockSqlMajorVersion = '11' # SQL Server 2012
+            }
+            @{
+                # Using lower-case to test that casing does not matter.
+                MockFeatures = 'Rs'
+                MockSqlMajorVersion = '10' # SQL Server 2008 and 2008 R2
+            }
+        ) {
+            Context 'When the feature is not installed' {
+                BeforeAll {
+                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                        return $MockSqlMajorVersion
+                    }
+
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Features = ''
+                        }
+                    }
+                }
+
+                BeforeEach {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        $script:mockSetTargetResourceParameters.Features = $MockFeatures
+                    }
+                }
+
+                It 'Should call the expected mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                        Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                    }
+                }
+            }
+
+            Context 'When the feature is installed' {
+                BeforeAll {
+                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                        return $MockSqlMajorVersion
+                    }
+                }
+
+                BeforeEach {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        $script:mockSetTargetResourceParameters.Features = $MockFeatures
+                    }
+                }
+
+                Context 'When firewall rules are present for Reporting Services' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = 'RS'
+                                ReportingServicesFirewall = $true
+                            }
+                        }
+                    }
+
+                    It 'Should call the expected mocks' {
+                        InModuleScope -ScriptBlock {
+                            Set-StrictMode -Version 1.0
+
+                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                        }
+                    }
+                }
+
+                Context 'When firewall rules are absent for Reporting Services' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = 'RS'
+                                ReportingServicesFirewall = $false
+                            }
+                        }
+                    }
+
+                    It 'Should call the expected mocks' {
+                        InModuleScope -ScriptBlock {
+                            Set-StrictMode -Version 1.0
+
+                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It
+                        }
+                    }
+                }
+            }
+        }
 
 
-        # $mockSqlInstallPath = "C:\Program Files\Microsoft SQL Server\$($mockDefaultInstance_InstanceId)\MSSQL"
-        # $mockSqlBackupPath = "C:\Program Files\Microsoft SQL Server\$($mockDefaultInstance_InstanceId)\MSSQL\Backup"
-        # $mockSqlTempDatabasePath = ''
-        # $mockSqlTempDatabaseLogPath = ''
-        # $mockSqlDefaultDatabaseFilePath = "C:\Program Files\Microsoft SQL Server\$($mockDefaultInstance_InstanceId)\MSSQL\DATA\"
-        # $mockSqlDefaultDatabaseLogPath = "C:\Program Files\Microsoft SQL Server\$($mockDefaultInstance_InstanceId)\MSSQL\DATA\"
+        Context 'When using the feature ''<MockFeatures>'' and major version ''<MockSqlMajorVersion>''' -ForEach @(
+            <#
+                Testing two major versions to verify Integration Services differences (i.e service name).
+                No point in testing each supported SQL Server version, since there are no difference
+                between the other major versions.
+            #>
+            @{
+                MockFeatures = 'IS'
+                MockSqlMajorVersion = '11' # SQL Server 2012
+            }
+            @{
+                # Using lower-case to test that casing does not matter.
+                MockFeatures = 'Is'
+                MockSqlMajorVersion = '10' # SQL Server 2008 and 2008 R2
+            }
+        ) {
+            Context 'When the feature is not installed' {
+                BeforeAll {
+                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                        return $MockSqlMajorVersion
+                    }
 
-        # Context "When SQL Server version is <MockSqlMajorVersion> and there are no components installed" {
-        #     BeforeAll {
-        #         $testParameters = $mockDefaultParameters.Clone()
-        #         $testParameters += @{
-        #             InstanceName = $mockCurrentInstanceName
-        #             SourcePath = $mockSourcePath
-        #         }
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Features = ''
+                        }
+                    }
+                }
 
-        #         Mock -CommandName Get-Service -MockWith {
-        #             return @()
-        #         }
-        #         Mock -CommandName Test-IsFirewallRuleInDesiredState
-        #         Mock -CommandName New-NetFirewallRule
-        #         Mock -CommandName Set-NetFirewallRule
-        #     }
+                BeforeEach {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        $script:mockSetTargetResourceParameters.Features = $MockFeatures
+                    }
+                }
 
-        #     It 'Should return the same values as passed as parameters' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.InstanceName | Should -Be $testParameters.InstanceName
-        #         $result.SourcePath | Should -Be $testParameters.SourcePath
-        #     }
+                It 'Should call the expected mocks' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
 
-        #     It 'Should not return any values in the read parameters' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
-        #         $result.BrowserFirewall | Should -BeNullOrEmpty
-        #         $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-        #         $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-        #         $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
-        #     }
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-        #     It 'Should return state as absent' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.Ensure | Should -Be 'Absent'
-        #         $result.Features | Should -BeNullOrEmpty
-        #     }
+                        Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                    }
+                }
+            }
 
-        #     Context 'When authenticating using NetBIOS domain' {
-        #         It 'Should call the correct functions exact number of times' {
-        #             $result = Get-TargetResource @testParameters
+            Context 'When the feature is installed' {
+                BeforeAll {
+                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                        return $MockSqlMajorVersion
+                    }
+                }
 
-        #             Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It
-        #             Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-        #             Assert-MockCalled -CommandName Test-IsFirewallRuleInDesiredState -Exactly -Times 0 -Scope It
-        #             Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
-        #             Assert-MockCalled -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
-        #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
-        #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
-        #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
-        #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
-        #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 0 -Scope It
+                BeforeEach {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        $script:mockSetTargetResourceParameters.Features = $MockFeatures
+                    }
+                }
 
-        #             Assert-MockCalled -CommandName New-SmbMapping -ParameterFilter {
-        #                 $UserName -eq 'COMPANY\sqladmin'
-        #             } -Exactly -Times 1 -Scope It
-        #         }
-        #     }
+                Context 'When firewall rules are present for Integration Services' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = 'IS'
+                                IntegrationServicesFirewall = $true
+                            }
+                        }
+                    }
 
-        #     Context 'When authenticating using Fully Qualified Domain Name (FQDN)' {
-        #         BeforeAll {
-        #             $testParameters['SourceCredential'] = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @(
-        #                 'sqladmin@company.local',
-        #                 ('dummyPassw0rd' | ConvertTo-SecureString -AsPlainText -Force)
-        #             )
-        #         }
+                    It 'Should call the expected mocks' {
+                        InModuleScope -ScriptBlock {
+                            Set-StrictMode -Version 1.0
 
-        #         It 'Should call the correct functions exact number of times' {
-        #             $result = Get-TargetResource @testParameters
+                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-        #             Assert-MockCalled -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It
-        #             Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-        #             Assert-MockCalled -CommandName Test-IsFirewallRuleInDesiredState -Exactly -Times 0 -Scope It
-        #             Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
-        #             Assert-MockCalled -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
-        #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
-        #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
-        #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
-        #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
-        #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 0 -Scope It
+                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                        }
+                    }
+                }
 
-        #             Assert-MockCalled -CommandName New-SmbMapping -ParameterFilter {
-        #                 $UserName -eq 'sqladmin@company.local'
-        #             } -Exactly -Times 1 -Scope It
-        #         }
-        #     }
-        # }
+                Context 'When firewall rules are absent for Integration Services' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Features = 'IS'
+                                IntegrationServicesFirewall = $false
+                            }
+                        }
 
-        # Context "When SQL Server version is <MockSqlMajorVersion> and the system is not in the desired state for default instance" {
-        #     BeforeEach {
-        #         $testParameters = $mockDefaultParameters.Clone()
-        #         $testParameters += @{
-        #             InstanceName = $mockCurrentInstanceName
-        #             SourcePath = $mockSourcePath
-        #         }
+                        Mock -CommandName Get-SQLPath -MockWith {
+                            return 'C:\Program Files\Microsoft SQL Server'
+                        }
+                    }
 
-        #         Mock -CommandName Get-NetFirewallRule
-        #         Mock -CommandName Get-NetFirewallApplicationFilter
-        #         Mock -CommandName Get-NetFirewallServiceFilter
-        #         Mock -CommandName Get-NetFirewallPortFilter
-        #         Mock -CommandName New-NetFirewallRule
-        #         Mock -CommandName Set-NetFirewallRule
-        #         Mock -CommandName Get-Service -MockWith $mockGetService_DefaultInstance
-        #     }
+                    It 'Should call the expected mocks' {
+                        InModuleScope -ScriptBlock {
+                            Set-StrictMode -Version 1.0
 
-        #     It 'Should return the same values as passed as parameters' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.InstanceName | Should -Be $testParameters.InstanceName
-        #         $result.SourcePath | Should -Be $testParameters.SourcePath
-        #         $result.Features | Should -Be $testParameters.Features
-        #     }
+                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-        #     It 'Should return $false for the read parameter DatabaseEngineFirewall' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.DatabaseEngineFirewall | Should -Be $false
-        #     }
+                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It
+                        }
+                    }
+                }
+            }
+        }
 
-        #     It 'Should return $false for the read parameter BrowserFirewall' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.BrowserFirewall | Should -Be $false
-        #     }
+        Context 'When passing credentials in the parameter SourceCredential' {
+            BeforeAll {
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return $MockSqlMajorVersion
+                }
 
-        #     It 'Should return $false for the read parameter ReportingServicesFirewall' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.ReportingServicesFirewall | Should -Be $false
-        #     }
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Features = ''
+                    }
+                }
 
-        #     It 'Should return $false for the read parameter AnalysisServicesFirewall' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.AnalysisServicesFirewall | Should -Be $false
-        #     }
+                Mock -CommandName New-SmbMapping
+                Mock -CommandName Remove-SmbMapping
+            }
 
-        #     It 'Should return $false for the read parameter IntegrationServicesFirewall' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.IntegrationServicesFirewall | Should -Be $false
-        #     }
+            BeforeEach {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $script:mockSetTargetResourceParameters.Features = 'SQLENGINE'
+                }
+            }
 
-        #     It 'Should return state as absent' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.Ensure | Should -Be 'Absent'
-        #     }
+            It 'Should call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
 
-        #     It 'Should call the correct functions exact number of times' {
-        #         $result = Get-TargetResource @testParameters
-        #         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-        #         Assert-MockCalled -CommandName Get-NetFirewallRule -Exactly -Times 6 -Scope It
-        #         Assert-MockCalled -CommandName Get-NetFirewallApplicationFilter -Exactly -Times 0 -Scope It
-        #         Assert-MockCalled -CommandName Get-NetFirewallServiceFilter -Exactly -Times 0 -Scope It
-        #         Assert-MockCalled -CommandName Get-NetFirewallPortFilter -Exactly -Times 0 -Scope It
-        #         Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
-        #         Assert-MockCalled -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
-        #         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 1 -Scope It
-        #         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
-        #         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 1 -Scope It
-        #         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
-        #         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 1 -Scope It
-        #     }
-        # }
+                    $script:mockSetTargetResourceParameters.Features = 'SQLENGINE'
+                    $script:mockSetTargetResourceParameters.SourceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @(
+                        'COMPANY\SqlAdmin',
+                        ('dummyPassword' | ConvertTo-SecureString -AsPlainText -Force)
+                    )
 
-        # Context "When SQL Server version is <MockSqlMajorVersion> and the system is in the desired state for default instance" {
-        #     BeforeEach {
-        #         $testParameters = $mockDefaultParameters.Clone()
-        #         $testParameters += @{
-        #             InstanceName = $mockCurrentInstanceName
-        #             SourcePath = $mockSourcePath
-        #         }
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
 
-        #         Mock -CommandName Get-NetFirewallRule -MockWith $mockGetNetFirewallRule
-        #         Mock -CommandName Get-NetFirewallApplicationFilter -MockWith $mockGetNetFirewallApplicationFilter
-        #         Mock -CommandName Get-NetFirewallServiceFilter -MockWith $mockGetNetFirewallServiceFilter
-        #         Mock -CommandName Get-NetFirewallPortFilter -MockWith $mockGetNetFirewallPortFilter
-        #         Mock -CommandName New-NetFirewallRule
-        #         Mock -CommandName Set-NetFirewallRule
-        #         Mock -CommandName Get-Service -MockWith $mockGetService_DefaultInstance
-        #     }
+                Should -Invoke New-SmbMapping -Exactly -Times 1 -Scope It
+                Should -Invoke Remove-SmbMapping -Exactly -Times 1 -Scope It
+            }
+        }
 
-        #     It 'Should return the same values as passed as parameters' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.InstanceName | Should -Be $testParameters.InstanceName
-        #         $result.SourcePath | Should -Be $testParameters.SourcePath
-        #     }
+        Context 'When Test-TargetResource returns false at the end of Set-TargetResource' {
+            BeforeAll {
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return $MockSqlMajorVersion
+                }
 
-        #     It 'Should return $true for the read parameter DatabaseEngineFirewall' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.DatabaseEngineFirewall | Should -Be $true
-        #     }
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Features = ''
+                    }
+                }
 
-        #     It 'Should return $true for the read parameter BrowserFirewall' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.BrowserFirewall | Should -Be $true
-        #     }
+                Mock -CommandName Test-TargetResource -MockWith {
+                    return $false
+                }
+            }
 
-        #     It 'Should return $true for the read parameter ReportingServicesFirewall' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.ReportingServicesFirewall | Should -Be $true
-        #     }
+            BeforeEach {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $script:mockSetTargetResourceParameters.Features = 'SQLENGINE'
+                }
+            }
 
-        #     It 'Should return $true for the read parameter AnalysisServicesFirewall' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.AnalysisServicesFirewall | Should -Be $true
-        #     }
+            It 'Should call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
 
-        #     It 'Should return $true for the read parameter IntegrationServicesFirewall' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.IntegrationServicesFirewall | Should -Be $true
-        #     }
+                    $script:mockSetTargetResourceParameters.Features = 'SQLENGINE'
 
-        #     It 'Should return state as absent' {
-        #         $result = Get-TargetResource @testParameters
-        #         $result.Ensure | Should -Be 'Present'
-        #         $result.Features | Should -Be $testParameters.Features
-        #     }
+                    $mockErrorMessage = $script:localizedData.TestFailedAfterSet
 
-        #     It 'Should call the correct functions exact number of times' {
-        #         $result = Get-TargetResource @testParameters
-        #         Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-        #         Assert-MockCalled -CommandName Get-NetFirewallRule -Exactly -Times 8 -Scope It
-        #         Assert-MockCalled -CommandName Get-NetFirewallApplicationFilter -Exactly -Times 2 -Scope It
-        #         Assert-MockCalled -CommandName Get-NetFirewallServiceFilter -Exactly -Times 3 -Scope It
-        #         Assert-MockCalled -CommandName Get-NetFirewallPortFilter -Exactly -Times 3 -Scope It
-        #         Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
-        #         Assert-MockCalled -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
-        #         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 1 -Scope It
-        #         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
-        #         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 1 -Scope It
-        #         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
-        #         Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 1 -Scope It
-        #     }
-        # }
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                }
+            }
+        }
     }
-
-    # Context 'When using a named instance' {
-        # BeforeEach {
-        #     # General mocks
-        #     Mock -CommandName Get-FilePathMajorVersion -MockWith $mockGetSqlMajorVersion
-
-        #     # Mock SQL Server Database Engine registry for Instance ID.
-        #     Mock -CommandName Get-ItemProperty `
-        #         -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter `
-        #         -MockWith $mockGetItemProperty_SqlInstanceId
-
-        #     # Mock SQL Server Analysis Services registry for Instance ID.
-        #     Mock -CommandName Get-ItemProperty `
-        #         -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter `
-        #         -MockWith $mockGetItemProperty_AnalysisServicesInstanceId
-
-        #     # Mocking SQL Server Database Engine registry for path to binaries root.
-        #     Mock -CommandName Get-ItemProperty `
-        #         -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter `
-        #         -MockWith $mockGetItemProperty_DatabaseEngineSqlBinRoot
-
-        #     # Mocking SQL Server Database Engine registry for path to binaries root.
-        #     Mock -CommandName Get-ItemProperty `
-        #         -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter `
-        #         -MockWith $mockGetItemProperty_AnalysisServicesSqlBinRoot
-
-        #     # Mock SQL Server Integration Services Registry for path to binaries root.
-        #     Mock -CommandName Get-ItemProperty `
-        #         -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter `
-        #         -MockWith $mockGetItemProperty_IntegrationsServicesSqlPath
-
-        #     Mock -CommandName Get-ItemProperty -MockWith $mockGetItemProperty_CallingWithWrongParameters
-        #     Mock -CommandName New-SmbMapping
-        #     Mock -CommandName Remove-SmbMapping
-        # }
-
-        # BeforeDiscovery {
-        #     <#
-        #         Testing two major versions to verify Integration Services differences (i.e service name).
-        #         No point in testing each supported SQL Server version, since there are no difference
-        #         between the other major versions.
-        #     #>
-        #     $mockTestCases = @(
-        #         @{
-        #             MockSqlMajorVersion = '11' # SQL Server 2012
-        #         }
-        #         @{
-        #             MockSqlMajorVersion = '10' # SQL Server 2008 and 2008 R2
-        #         }
-        #     )
-        # }
-    #     $mockCurrentInstanceName = 'TEST'
-    #     $mockCurrentDatabaseEngineInstanceId = "$('MSSQL')$($MockSqlMajorVersion).$($mockCurrentInstanceName)"
-    #     $mockCurrentAnalysisServiceInstanceId = "$('MSAS')$($MockSqlMajorVersion).$($mockCurrentInstanceName)"
-
-    #     $mockCurrentSqlAnalysisServiceName = 'MSOLAP$TEST'
-
-    #     $mockCurrentDatabaseEngineSqlBinDirectory = "C:\Program Files\Microsoft SQL Server\$mockCurrentDatabaseEngineInstanceId\MSSQL\Binn"
-    #     $mockCurrentAnalysisServicesSqlBinDirectory = "C:\Program Files\Microsoft SQL Server\$mockCurrentDatabaseEngineInstanceId\OLAP\Binn"
-    #     $mockCurrentIntegrationServicesSqlPathDirectory = "C:\Program Files\Microsoft SQL Server\$($MockSqlMajorVersion)0\DTS\"
-
-    #     Context "When SQL Server version is <MockSqlMajorVersion> and the system is not in the desired state for named instance" {
-    #         BeforeEach {
-    #             $testParameters = $mockDefaultParameters.Clone()
-    #             $testParameters += @{
-    #                 InstanceName = $mockCurrentInstanceName
-    #                 SourcePath = $mockSourcePath
-    #             }
-
-    #             Mock -CommandName Get-NetFirewallRule
-    #             Mock -CommandName Get-NetFirewallApplicationFilter
-    #             Mock -CommandName Get-NetFirewallServiceFilter
-    #             Mock -CommandName Get-NetFirewallPortFilter
-    #             Mock -CommandName New-NetFirewallRule
-    #             Mock -CommandName Set-NetFirewallRule
-    #             Mock -CommandName Get-Service -MockWith $mockGetService_NamedInstance
-    #         }
-
-    #         It 'Should return the same values as passed as parameters' {
-    #             $result = Get-TargetResource @testParameters
-    #             $result.InstanceName | Should -Be $testParameters.InstanceName
-    #             $result.SourcePath | Should -Be $testParameters.SourcePath
-    #             $result.Features | Should -Be $testParameters.Features
-    #         }
-
-    #         It 'Should return $false for the read parameter DatabaseEngineFirewall' {
-    #             $result = Get-TargetResource @testParameters
-    #             $result.DatabaseEngineFirewall | Should -Be $false
-    #         }
-
-    #         It 'Should return $false for the read parameter BrowserFirewall' {
-    #             $result = Get-TargetResource @testParameters
-    #             $result.BrowserFirewall | Should -Be $false
-    #         }
-
-    #         It 'Should return $false for the read parameter ReportingServicesFirewall' {
-    #             $result = Get-TargetResource @testParameters
-    #             $result.ReportingServicesFirewall | Should -Be $false
-    #         }
-
-    #         It 'Should return $false for the read parameter AnalysisServicesFirewall' {
-    #             $result = Get-TargetResource @testParameters
-    #             $result.AnalysisServicesFirewall | Should -Be $false
-    #         }
-
-    #         It 'Should return $false for the read parameter IntegrationServicesFirewall' {
-    #             $result = Get-TargetResource @testParameters
-    #             $result.IntegrationServicesFirewall | Should -Be $false
-    #         }
-
-    #         It 'Should return state as absent' {
-    #             $result = Get-TargetResource @testParameters
-    #             $result.Ensure | Should -Be 'Absent'
-    #         }
-
-    #         It 'Should call the correct functions exact number of times' {
-    #             $result = Get-TargetResource @testParameters
-    #             Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-    #             Assert-MockCalled -CommandName Get-NetFirewallRule -Exactly -Times 6 -Scope It
-    #             Assert-MockCalled -CommandName Get-NetFirewallApplicationFilter -Exactly -Times 0 -Scope It
-    #             Assert-MockCalled -CommandName Get-NetFirewallServiceFilter -Exactly -Times 0 -Scope It
-    #             Assert-MockCalled -CommandName Get-NetFirewallPortFilter -Exactly -Times 0 -Scope It
-    #             Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
-    #             Assert-MockCalled -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
-    #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 1 -Scope It
-    #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
-    #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 1 -Scope It
-    #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
-    #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 1 -Scope It
-    #         }
-    #     }
-
-    #     Context "When SQL Server version is <MockSqlMajorVersion> and the system is not in the desired state for named instance" {
-    #         BeforeEach {
-    #             $testParameters = $mockDefaultParameters.Clone()
-    #             $testParameters += @{
-    #                 InstanceName = $mockCurrentInstanceName
-    #                 SourcePath = $mockSourcePath
-    #             }
-
-    #             Mock -CommandName Get-NetFirewallRule -MockWith $mockGetNetFirewallRule
-    #             Mock -CommandName Get-NetFirewallApplicationFilter -MockWith $mockGetNetFirewallApplicationFilter
-    #             Mock -CommandName Get-NetFirewallServiceFilter -MockWith $mockGetNetFirewallServiceFilter
-    #             Mock -CommandName Get-NetFirewallPortFilter -MockWith $mockGetNetFirewallPortFilter
-    #             Mock -CommandName New-NetFirewallRule
-    #             Mock -CommandName Set-NetFirewallRule
-    #             Mock -CommandName Get-Service -MockWith $mockGetService_NamedInstance
-    #         }
-
-    #         # Change the mock to not return a rule for DB Engine
-    #         $mockDynamicSQLBrowserFirewallRulePresent = $true
-    #         $mockDynamicSQLIntegrationServicesRulePresent = $true
-    #         $mockDynamicSQLEngineFirewallRulePresent = $false
-    #         $mockDynamicSQLAnalysisServicesFirewallRulePresent = $true
-
-    #         Context 'SQLBrowser rule is present, but missing SQLEngine rule' {
-    #             It 'Should return the same values as passed as parameters' {
-    #                 $result = Get-TargetResource @testParameters
-    #                 $result.InstanceName | Should -Be $testParameters.InstanceName
-    #                 $result.SourcePath | Should -Be $testParameters.SourcePath
-    #             }
-
-    #             It 'Should return $false for the read parameter DatabaseEngineFirewall' {
-    #                 $result = Get-TargetResource @testParameters
-    #                 $result.DatabaseEngineFirewall | Should -Be $false
-    #             }
-
-    #             It 'Should return $true for the read parameter BrowserFirewall' {
-    #                 $result = Get-TargetResource @testParameters
-    #                 $result.BrowserFirewall | Should -Be $true
-    #             }
-
-    #             It 'Should return state as absent' {
-    #                 $result = Get-TargetResource @testParameters
-    #                 $result.Ensure | Should -Be 'Absent'
-    #                 $result.Features | Should -Be $testParameters.Features
-    #             }
-
-    #             It 'Should call the correct functions exact number of times' {
-    #                 $result = Get-TargetResource @testParameters
-    #                 Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-    #                 Assert-MockCalled -CommandName Get-NetFirewallRule -Exactly -Times 8 -Scope It
-    #                 Assert-MockCalled -CommandName Get-NetFirewallApplicationFilter -Exactly -Times 2 -Scope It
-    #                 Assert-MockCalled -CommandName Get-NetFirewallServiceFilter -Exactly -Times 3 -Scope It
-    #                 Assert-MockCalled -CommandName Get-NetFirewallPortFilter -Exactly -Times 3 -Scope It
-    #                 Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
-    #                 Assert-MockCalled -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
-    #                 Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 1 -Scope It
-    #                 Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
-    #                 Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 1 -Scope It
-    #                 Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
-    #                 Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 1 -Scope It
-    #             }
-    #         }
-
-    #         # Change the mock to not return a rule for Analysis Services
-    #         $mockDynamicSQLBrowserFirewallRulePresent = $true
-    #         $mockDynamicSQLIntegrationServicesRulePresent = $true
-    #         $mockDynamicSQLEngineFirewallRulePresent = $true
-    #         $mockDynamicSQLAnalysisServicesFirewallRulePresent = $false
-
-    #         Context 'SQLBrowser rule is present, but missing Analysis Services rule' {
-    #             It 'Should return the same values as passed as parameters' {
-    #                 $result = Get-TargetResource @testParameters
-    #                 $result.InstanceName | Should -Be $testParameters.InstanceName
-    #                 $result.SourcePath | Should -Be $testParameters.SourcePath
-    #             }
-
-    #             It 'Should return $false for the read parameter AnalysisServicesFirewall' {
-    #                 $result = Get-TargetResource @testParameters
-    #                 $result.AnalysisServicesFirewall | Should -Be $false
-    #             }
-
-    #             It 'Should return $true for the read parameter BrowserFirewall' {
-    #                 $result = Get-TargetResource @testParameters
-    #                 $result.BrowserFirewall | Should -Be $true
-    #             }
-
-    #             It 'Should return state as absent' {
-    #                 $result = Get-TargetResource @testParameters
-    #                 $result.Ensure | Should -Be 'Absent'
-    #                 $result.Features | Should -Be $testParameters.Features
-    #             }
-
-    #             It 'Should call the correct functions exact number of times' {
-    #                 $result = Get-TargetResource @testParameters
-    #                 Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-    #                 Assert-MockCalled -CommandName Get-NetFirewallRule -Exactly -Times 8 -Scope It
-    #                 Assert-MockCalled -CommandName Get-NetFirewallApplicationFilter -Exactly -Times 2 -Scope It
-    #                 Assert-MockCalled -CommandName Get-NetFirewallServiceFilter -Exactly -Times 3 -Scope It
-    #                 Assert-MockCalled -CommandName Get-NetFirewallPortFilter -Exactly -Times 3 -Scope It
-    #                 Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
-    #                 Assert-MockCalled -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
-    #                 Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 1 -Scope It
-    #                 Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
-    #                 Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 1 -Scope It
-    #                 Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
-    #                 Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 1 -Scope It
-    #             }
-    #         }
-    #     }
-
-    #     # Set mock to return all rules.
-    #     $mockDynamicSQLBrowserFirewallRulePresent = $true
-    #     $mockDynamicSQLIntegrationServicesRulePresent = $true
-    #     $mockDynamicSQLEngineFirewallRulePresent = $true
-    #     $mockDynamicSQLAnalysisServicesFirewallRulePresent = $true
-
-    #     Context "When SQL Server version is <MockSqlMajorVersion> and the system is in the desired state for named instance" {
-    #         BeforeEach {
-    #             $testParameters = $mockDefaultParameters.Clone()
-    #             $testParameters += @{
-    #                 InstanceName = $mockCurrentInstanceName
-    #                 SourcePath = $mockSourcePath
-    #             }
-
-    #             Mock -CommandName Get-NetFirewallRule -MockWith $mockGetNetFirewallRule
-    #             Mock -CommandName Get-NetFirewallApplicationFilter -MockWith $mockGetNetFirewallApplicationFilter
-    #             Mock -CommandName Get-NetFirewallServiceFilter -MockWith $mockGetNetFirewallServiceFilter
-    #             Mock -CommandName Get-NetFirewallPortFilter -MockWith $mockGetNetFirewallPortFilter
-    #             Mock -CommandName New-NetFirewallRule
-    #             Mock -CommandName Set-NetFirewallRule
-    #             Mock -CommandName Get-Service -MockWith $mockGetService_NamedInstance
-    #         }
-
-    #         It 'Should return the same values as passed as parameters' {
-    #             $result = Get-TargetResource @testParameters
-    #             $result.InstanceName | Should -Be $testParameters.InstanceName
-    #             $result.SourcePath | Should -Be $testParameters.SourcePath
-    #         }
-
-    #         It 'Should return $true for the read parameter DatabaseEngineFirewall' {
-    #             $result = Get-TargetResource @testParameters
-    #             $result.DatabaseEngineFirewall | Should -Be $true
-    #         }
-
-    #         It 'Should return $true for the read parameter BrowserFirewall' {
-    #             $result = Get-TargetResource @testParameters
-    #             $result.BrowserFirewall | Should -Be $true
-    #         }
-
-    #         It 'Should return $true for the read parameter ReportingServicesFirewall' {
-    #             $result = Get-TargetResource @testParameters
-    #             $result.ReportingServicesFirewall | Should -Be $true
-    #         }
-
-    #         It 'Should return $true for the read parameter AnalysisServicesFirewall' {
-    #             $result = Get-TargetResource @testParameters
-    #             $result.AnalysisServicesFirewall | Should -Be $true
-    #         }
-
-    #         It 'Should return $true for the read parameter IntegrationServicesFirewall' {
-    #             $result = Get-TargetResource @testParameters
-    #             $result.IntegrationServicesFirewall | Should -Be $true
-    #         }
-
-    #         It 'Should return state as absent' {
-    #             $result = Get-TargetResource @testParameters
-    #             $result.Ensure | Should -Be 'Present'
-    #             $result.Features | Should -Be $testParameters.Features
-    #         }
-
-    #         It 'Should call the correct functions exact number of times' {
-    #             $result = Get-TargetResource @testParameters
-    #             Assert-MockCalled -CommandName Get-Service -Exactly -Times 1 -Scope It
-    #             Assert-MockCalled -CommandName Get-NetFirewallRule -Exactly -Times 8 -Scope It
-    #             Assert-MockCalled -CommandName Get-NetFirewallApplicationFilter -Exactly -Times 2 -Scope It
-    #             Assert-MockCalled -CommandName Get-NetFirewallServiceFilter -Exactly -Times 3 -Scope It
-    #             Assert-MockCalled -CommandName Get-NetFirewallPortFilter -Exactly -Times 3 -Scope It
-    #             Assert-MockCalled -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
-    #             Assert-MockCalled -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
-    #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_SqlInstanceId_ParameterFilter -Exactly -Times 1 -Scope It
-    #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesInstanceId_ParameterFilter -Exactly -Times 0 -Scope It
-    #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_DatabaseEngineSqlBinRoot_ParameterFilter -Exactly -Times 1 -Scope It
-    #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_AnalysisServicesSqlBinRoot_ParameterFilter -Exactly -Times 0 -Scope It
-    #             Assert-MockCalled -CommandName Get-ItemProperty -ParameterFilter $mockGetItemProperty_IntegrationsServicesSqlPath_ParameterFilter -Exactly -Times 1 -Scope It
-    #         }
-    #     }
-    # }
 }
 
 # Describe SqlWindowsFirewall\Set-TargetResource -Tag 'Set' {
