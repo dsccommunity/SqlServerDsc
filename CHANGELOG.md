@@ -141,6 +141,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     they pass the new unit test that use strict mode.
   - The verbose message in `Test-TargetResource` did not use the correct
     variable name, so the message did not contain the correct information.
+  - Removed unnecessary logic in `Set-TargetResource` that did just evaluated
+    the same thing that the call to function `Get-TargetResource` already
+    does.
 
 ### Added
 
