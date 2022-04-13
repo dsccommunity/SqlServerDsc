@@ -666,7 +666,7 @@ function Test-TargetResource
     )
 
     Write-Verbose -Message (
-        $script:localizedData.EvaluatingFirewallRules -f $sqlVersion
+        $script:localizedData.EvaluatingFirewallRules -f $InstanceName
     )
 
     $getTargetResourceResult = Get-TargetResource -SourcePath $SourcePath -Features $Features -InstanceName $InstanceName
