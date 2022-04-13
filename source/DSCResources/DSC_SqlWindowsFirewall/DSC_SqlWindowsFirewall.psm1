@@ -448,20 +448,17 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @databaseEngineFirewallRuleParameters))
-                    {
-                        $databaseEngineFirewallRule = Get-NetFirewallRule | Where-Object -FilterScript {
-                            $_.DisplayName -eq $databaseEngineFirewallRuleDisplayName
-                        }
+                    $databaseEngineFirewallRule = Get-NetFirewallRule | Where-Object -FilterScript {
+                        $_.DisplayName -eq $databaseEngineFirewallRuleDisplayName
+                    }
 
-                        if ($databaseEngineFirewallRule)
-                        {
-                            Set-NetFirewallRule @databaseEngineFirewallRuleParameters
-                        }
-                        else
-                        {
-                            New-NetFirewallRule @databaseEngineFirewallRuleParameters
-                        }
+                    if ($databaseEngineFirewallRule)
+                    {
+                        Set-NetFirewallRule @databaseEngineFirewallRuleParameters
+                    }
+                    else
+                    {
+                        New-NetFirewallRule @databaseEngineFirewallRuleParameters
                     }
                 }
 
@@ -477,10 +474,7 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @browserFirewallRuleParameters))
-                    {
-                        New-NetFirewallRule @browserFirewallRuleParameters
-                    }
+                    New-NetFirewallRule @browserFirewallRuleParameters
                 }
             }
 
@@ -501,10 +495,7 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @reportingServicesNoSslFirewallRuleParameters))
-                    {
-                        New-NetFirewallRule @reportingServicesNoSslFirewallRuleParameters
-                    }
+                    New-NetFirewallRule @reportingServicesNoSslFirewallRuleParameters
 
                     $reportingServicesSslProtocol = 'TCP'
                     $reportingServicesSslLocalPort = '443'
@@ -519,10 +510,7 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @reportingServicesSslFirewallRuleParameters))
-                    {
-                        New-NetFirewallRule @reportingServicesSslFirewallRuleParameters
-                    }
+                    New-NetFirewallRule @reportingServicesSslFirewallRuleParameters
                 }
             }
 
@@ -540,10 +528,7 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @analysisServicesFirewallRuleParameters))
-                    {
-                        New-NetFirewallRule @analysisServicesFirewallRuleParameters
-                    }
+                    New-NetFirewallRule @analysisServicesFirewallRuleParameters
                 }
 
                 if (-not ($getTargetResourceResult.BrowserFirewall))
@@ -558,10 +543,7 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @browserFirewallRuleParameters))
-                    {
-                        New-NetFirewallRule @browserFirewallRuleParameters
-                    }
+                    New-NetFirewallRule @browserFirewallRuleParameters
                 }
             }
 
@@ -580,10 +562,7 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @integrationServicesFirewallRuleApplicationParameters))
-                    {
-                        New-NetFirewallRule @integrationServicesFirewallRuleApplicationParameters
-                    }
+                    New-NetFirewallRule @integrationServicesFirewallRuleApplicationParameters
 
                     $integrationServicesProtocol = 'TCP'
                     $integrationServicesLocalPort = '135'
@@ -598,10 +577,7 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @integrationServicesFirewallRulePortParameters))
-                    {
-                        New-NetFirewallRule @integrationServicesFirewallRulePortParameters
-                    }
+                    New-NetFirewallRule @integrationServicesFirewallRulePortParameters
                 }
             }
         }
