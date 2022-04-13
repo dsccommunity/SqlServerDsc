@@ -139,6 +139,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlWindowsFirewall
   - Now the variables in `Get-TargetResource` are correctly initialized so
     they pass the new unit test that use strict mode.
+  - The verbose message in `Test-TargetResource` did not use the correct
+    variable name, so the message did not contain the correct information.
 
 ### Added
 
