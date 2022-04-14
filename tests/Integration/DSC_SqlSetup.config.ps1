@@ -55,6 +55,10 @@ else
         }
     }
 
+    # Set environment variables so other integration tests can reuse the downloaded ISO.
+    $env:IsoDriveLetter = $mockIsoMediaDriveLetter
+    $env:IsoImagePath = Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.IsoImageName
+
     $ConfigurationData = @{
         AllNodes = @(
             @{
@@ -117,8 +121,8 @@ else
                 DownloadIsoPath                         = $(if($versionSpecificData.DownloadIsoName){Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.DownloadIsoName})
 
                 # Properties for mounting media
-                ImagePath                               = Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.IsoImageName
-                DriveLetter                             = $mockIsoMediaDriveLetter
+                ImagePath                               = $env:IsoImagePath
+                DriveLetter                             = $env:IsoDriveLetter
 
                 # Parameters to configure TempDb
                 SqlTempDbFileCount                      = '2'

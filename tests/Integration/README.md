@@ -73,6 +73,15 @@ sa | P@ssw0rd1 | Administrator of the Database Engine instances DSCSQLTEST. |
 with this user and that means that this user must have permission to access the
 properties `IsClustered` and `IsHadrEnable`.*
 
+### Image media (ISO)
+
+The path to the image media is set in the environment variable `$env:IsoImagePath`
+and the drive letter used to mount the image media is save in `$env:IsoDriveLetter`.
+
+This information can be used for other integration tests that depends on
+the image media. Those integration test must be run after integration tests
+for resource SqlSetup has run.
+
 ## SqlRSSetup
 
 Installs _Microsoft SQL Server 2017 Reporting Services_ in Azure Pipelines job
