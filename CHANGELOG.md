@@ -160,6 +160,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Remove-SqlModuleStub`
     - Added a new helper function `Remove-SqlModuleStub` for tests to remove
       the PowerShell SqlServer stub module when a test has run.
+- SqlWindowsFirewall
+  - Added integration tests for SqlWindowsFirewall ([issue #747](https://github.com/dsccommunity/SqlServerDsc/issues/747)).
 
 ## [15.2.0] - 2021-09-01
 

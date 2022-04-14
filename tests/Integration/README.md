@@ -379,6 +379,16 @@ AsymmetricKey1 | RSA_2048 | P@ssw0rd1
 
 The integration test will not leave anything on any instance.
 
+## SqlWindowsFirewall
+
+**Run order:** 4
+
+**Depends on:** SqlSetup, SqlRS
+
+This integration test are dependent on the environment variables that are
+set by the resource SqlSetup's integration tests. The integration test will
+not leave anything on any instance.
+
 ## SqlReplication
 
 **Run order:** 3
