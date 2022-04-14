@@ -63,6 +63,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update the pipeline file _azure-pipelines.yml_ to use the latest version
     from the Sampler project.
 - SqlRs
+  - BREAKING CHANGE: Now the Reporting Services is always restarted after
+    the call to CIM method `SetDatabaseConnection` when setting up the
+    Reporting Services. This so to try to finish the initialization of
+    Reporting Services. This was prior only done for _SQL Server Reporting_
+    _Services 2019_ ([issue #1721](https://github.com/dsccommunity/SqlServerDsc/issues/1721)).
+  - Added some verbose messages to better indicate which CIM methods are run
+    and when they are run.
   - Minor refactor to support running unit test with strict mode enabled.
 - SqlLogin
   - Only enforces optional parameter `LoginType` when it is specified in the
