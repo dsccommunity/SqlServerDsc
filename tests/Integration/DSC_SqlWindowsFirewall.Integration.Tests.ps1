@@ -17,11 +17,9 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
-
     # Need to define the variables here which will be used in Pester Run.
     $script:dscModuleName = 'SqlServerDsc'
-    $script:dscResourceFriendlyName = 'SqlSecureConnection'
+    $script:dscResourceFriendlyName = 'SqlWindowsFirewall'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
     $script:testEnvironment = Initialize-TestEnvironment `
@@ -30,24 +28,12 @@ BeforeAll {
         -ResourceType 'Mof' `
         -TestType 'Integration'
 
-    <#
-        This will create a new self signed certificate an write the path to the new
-        certificate in the environment variable 'SqlPrivateCertificatePath', and its
-        thumbprint to the environment variable 'SqlCertificateThumbprint'
-    #>
-    $null = New-SQLSelfSignedCertificate -Verbose
-    $mockSqlPrivateKeyPassword = ConvertTo-SecureString -String '1234' -AsPlainText -Force
-    Import-PfxCertificate -FilePath $env:SqlPrivateCertificatePath -Password $mockSqlPrivateKeyPassword -Exportable -CertStoreLocation 'Cert:\LocalMachine\Root'
-    Import-PfxCertificate -FilePath $env:SqlPrivateCertificatePath -Password $mockSqlPrivateKeyPassword -Exportable -CertStoreLocation 'Cert:\LocalMachine\My'
-
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configFile
 }
 
 AfterAll {
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
-
-    Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
 Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019') {
