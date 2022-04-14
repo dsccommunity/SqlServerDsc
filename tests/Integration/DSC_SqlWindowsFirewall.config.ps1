@@ -39,7 +39,7 @@ else
 #>
 Configuration DSC_SqlWindowsFirewall_CreateDependencies_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'StorageDsc' -ModuleVersion '4.9.0.0'
 
     node $AllNodes.NodeName
     {
