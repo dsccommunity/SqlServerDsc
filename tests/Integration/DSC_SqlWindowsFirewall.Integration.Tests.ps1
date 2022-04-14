@@ -122,7 +122,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Features | Should -Be $ConfigurationData.AllNodes.Features
+            $resourceCurrentState.Features | Should -Be 'SQLENGINE'
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
             $resourceCurrentState.SourcePath | Should -Be $ConfigurationData.AllNodes.SourcePath
             $resourceCurrentState.DatabaseEngineFirewall | Should -BeTrue
