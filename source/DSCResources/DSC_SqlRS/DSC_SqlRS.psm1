@@ -402,6 +402,8 @@ function Set-TargetResource
                 }
             }
 
+            Write-Verbose -Message "Generate database creation script on $DatabaseServerName\$DatabaseInstanceName for $reportingServicesDatabaseName."
+
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
                 MethodName  = 'GenerateDatabaseCreationScript'
@@ -418,6 +420,8 @@ function Set-TargetResource
             $reportingServicesServiceAccountUserName = (Get-CimInstance -ClassName Win32_Service | Where-Object -FilterScript {
                     $_.Name -eq $reportingServicesServiceName
                 }).StartName
+
+            Write-Verbose -Message "Generate database rights script on $DatabaseServerName\$DatabaseInstanceName for $reportingServicesDatabaseName and user $reportingServicesServiceAccountUserName."
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
@@ -440,6 +444,8 @@ function Set-TargetResource
             Import-SQLPSModule
             Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseScript.Script
             Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseRightsScript.Script
+
+            Write-Verbose -Message "Set database connection on $DatabaseServerName\$DatabaseInstanceName to $reportingServicesDatabaseName."
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
@@ -477,16 +483,18 @@ function Set-TargetResource
                 It also seems that simply restarting SSRS at this point initializes
                 it.
 
+                This has since been change to always restart Reporting Services service
+                for all versions to initialize the Reporting Services. If still not
+                initialized after restart, the CIM method InitializeReportServer will
+                also run after.
+
                 We will ignore $SuppressRestart here.
             #>
-            if ($reportingServicesData.SqlVersion -ge 15)
-            {
-                Write-Verbose -Message $script:localizedData.RestartToFinishInitialization
+            Write-Verbose -Message $script:localizedData.RestartToFinishInitialization
 
-                Restart-ReportingServicesService -InstanceName $InstanceName -WaitTime 30
+            Restart-ReportingServicesService -InstanceName $InstanceName -WaitTime 30
 
-                $restartReportingService = $false
-            }
+            $restartReportingService = $false
 
             $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
 
@@ -498,6 +506,8 @@ function Set-TargetResource
             #>
             if ( -not $reportingServicesData.Configuration.IsInitialized )
             {
+                Write-Verbose -Message "Did not help restarting the Reporting Services service, running the CIM method to initialize report server on $DatabaseServerName\$DatabaseInstanceName for instance ID $($reportingServicesData.Configuration.InstallationID)."
+
                 $restartReportingService = $true
 
                 $invokeRsCimMethodParameters = @{
