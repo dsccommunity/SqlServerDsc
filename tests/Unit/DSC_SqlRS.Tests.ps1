@@ -584,15 +584,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
-
-                if ($TestCaseVersion -eq 15)
-                {
-                    Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
-                }
-                else
-                {
-                    Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
-                }
+                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
             }
 
             Context 'When there is no Reporting Services instance after Set-TargetResource has been called' {
@@ -901,15 +893,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
-
-                if ($TestCaseVersion -eq 15)
-                {
-                    Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
-                }
-                else
-                {
-                    Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
-                }
+                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
             }
         }
     }
