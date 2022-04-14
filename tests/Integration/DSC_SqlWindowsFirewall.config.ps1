@@ -50,7 +50,7 @@ Configuration DSC_SqlWindowsFirewall_CreateDependencies_Config
             Ensure      = 'Present'
         }
 
-        WaitForVolume WaitForMountOfIsoMedia
+        WaitForVolume 'WaitForMountOfIsoMedia'
         {
             DriveLetter      = $Node.DriveLetter
             RetryIntervalSec = 5
@@ -73,6 +73,7 @@ Configuration DSC_SqlWindowsFirewall_SetFirewallRules_SQLENGINE_Config
             Ensure = 'Present'
             InstanceName = $Node.InstanceName
             Features = 'SQLENGINE'
+            SourcePath = $Node.SourcePath
         }
     }
 }
