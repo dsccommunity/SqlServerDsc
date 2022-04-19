@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Changes to SqlAGDatabase
+  - Added StatementTimeout parameter with value 0 (no timeout) to Connect-SQL invocation in Set-TargetResource function to fix Issue#1743
+    This prevents timeout during backup operation on secondary.
+
 ### Removed
 
 - The deprecated DSC resource SqlDatabaseOwner have been removed _(and replaced_

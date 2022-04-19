@@ -204,7 +204,7 @@ function Set-TargetResource
     Import-SQLPSModule
 
     # Connect to the defined instance
-    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -StatementTimeout 0
 
     # Get the Availability Group
     $availabilityGroup = $serverObject.AvailabilityGroups[$AvailabilityGroupName]
@@ -576,7 +576,6 @@ function Set-TargetResource
                         $restoreLogQueryStringBuilder.AppendLine() | Out-Null
                         $restoreLogQueryStringBuilder.Append('REVERT') | Out-Null
                     }
-
                     $restoreLogQueryString = $restoreLogQueryStringBuilder.ToString()
                 }
 
