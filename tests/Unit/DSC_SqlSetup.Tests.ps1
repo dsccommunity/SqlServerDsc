@@ -62,17 +62,6 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-# InModuleScope -ScriptBlock {
-#     # Default parameters that are used for the It-blocks.
-#     $script:mockDefaultParameters = @{
-#         <#
-#             These are written with both lower-case and upper-case to make sure we support that.
-#             The feature list must be written in the order it is returned by the function Get-TargetResource.
-#         #>
-#         Features = 'SQLEngine,Replication,Dq,Dqc,FullText,Rs,As,Is,Bol,Conn,Bc,Sdk,Mds,Ssms,Adv_Ssms'
-#     }
-# }
-
 Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
     BeforeDiscovery {
         # Testing each supported SQL Server version
@@ -99,6 +88,71 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
     }
 
     BeforeAll {
+        <#
+            These mocks is meant to make sure the commands are actually mocked in a
+            Context-block below.
+
+            If these are not mocked it can slow down testing. If a Context-block
+            does not mock a command, it will be tested against the default mock which
+            will be these ones and they will throw an error reminding to create
+            a mock.
+        #>
+        Mock -CommandName Get-InstalledSharedFeatures -MockWith {
+            throw 'The command ''Get-InstalledSharedFeatures'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Connect-UncPath -MockWith {
+            throw 'The command ''Connect-UncPath'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Disconnect-UncPath -MockWith {
+            throw 'The command ''Disconnect-UncPath'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Get-Service -MockWith {
+            throw 'The command ''Get-Service'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Get-SqlEngineProperties -MockWith {
+            throw 'The command ''Get-SqlEngineProperties'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Test-IsReplicationFeatureInstalled -MockWith {
+            throw 'The command ''Test-IsReplicationFeatureInstalled'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Test-IsDQComponentInstalled -MockWith {
+            throw 'The command ''Test-IsDQComponentInstalled'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Get-InstanceProgramPath -MockWith {
+            throw 'The command ''Get-InstanceProgramPath'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Get-TempDbProperties -MockWith {
+            throw 'The command ''Get-TempDbProperties'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Get-SqlRoleMembers -MockWith {
+            throw 'The command ''Get-SqlRoleMembers'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Get-SqlClusterProperties -MockWith {
+            throw 'The command ''Get-SqlClusterProperties'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Get-ServiceProperties -MockWith {
+            throw 'The command ''Get-ServiceProperties'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Test-IsSsmsInstalled -MockWith {
+            throw 'The command ''Test-IsSsmsInstalled'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Test-IsSsmsAdvancedInstalled -MockWith {
+            throw 'The command ''Test-IsSsmsAdvancedInstalled'' needs to be mocked in the Context-block'
+        }
+
         $mockGetService_NoServices = {
             return @()
         }
@@ -243,6 +297,10 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
             Mock -CommandName Get-InstanceProgramPath -MockWith {
                 return 'C:\Program Files\Microsoft SQL Server'
+            }
+
+            Mock -CommandName Get-InstalledSharedFeatures -MockWith {
+                return @()
             }
 
             InModuleScope -ScriptBlock {
@@ -541,6 +599,10 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
             Mock -CommandName Get-Service -MockWith $mockGetService_NoServices
             Mock -CommandName Get-InstanceProgramPath -MockWith {
                 return 'C:\Program Files\Microsoft SQL Server'
+            }
+
+            Mock -CommandName Get-InstalledSharedFeatures -MockWith {
+                return @()
             }
 
             InModuleScope -ScriptBlock {
@@ -1142,6 +1204,10 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 return 'C:\Program Files\Microsoft SQL Server'
             }
 
+            Mock -CommandName Get-InstalledSharedFeatures -MockWith {
+                return @()
+            }
+
             InModuleScope -ScriptBlock {
                 $script:mockGetTargetResourceParameters = @{
                     InstanceName = 'TEST'
@@ -1208,47 +1274,40 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
     Context 'When SQL Server version is <MockSqlMajorVersion> and the system is in the desired state for named instance' -ForEach $testProductVersion {
         BeforeAll {
-            $mockNamedInstance_DatabaseServiceName = "MSSQL`$TEST"
-            $mockNamedInstance_AgentServiceName = "SQLAgent`$TEST"
-            $mockNamedInstance_FullTextServiceName = "MSSQLFDLauncher`$TEST"
-            $mockNamedInstance_ReportingServiceName = "ReportServer`$TEST"
-            $mockNamedInstance_IntegrationServiceName = 'MsDtsServer{0}0' -f $MockSqlMajorVersion
-            $mockNamedInstance_AnalysisServiceName = "MSOLAP`$TEST"
-
             $mockGetService_NamedInstance = {
                 return @(
                     (
                         New-Object -TypeName Object |
-                            Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_DatabaseServiceName -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value 'MSSQL$TEST' -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'StartName' -Value 'COMPANY\SqlAccount' -PassThru -Force |
                             Add-Member -MemberType NoteProperty -Name 'StartMode' -Value 'Auto' -PassThru -Force
                     ),
                     (
                         New-Object -TypeName Object |
-                            Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_AgentServiceName -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value 'SQLAgent$TEST' -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'StartName' -Value 'COMPANY\AgentAccount' -PassThru -Force |
                             Add-Member -MemberType NoteProperty -Name 'StartMode' -Value 'Auto' -PassThru -Force
                     ),
                     (
                         New-Object -TypeName Object |
-                            Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_FullTextServiceName -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value 'MSSQLFDLauncher$TEST' -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'StartName' -Value 'COMPANY\SqlAccount' -PassThru -Force
                     ),
                     (
                         New-Object -TypeName Object |
-                            Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_ReportingServiceName -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value 'ReportServer$TEST' -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'StartName' -Value 'COMPANY\SqlAccount' -PassThru -Force |
                             Add-Member -MemberType NoteProperty -Name 'StartMode' -Value 'Auto' -PassThru -Force
                     ),
                     (
                         New-Object -TypeName Object |
-                            Add-Member -MemberType NoteProperty -Name 'Name' -Value ($mockNamedInstance_IntegrationServiceName -f $MockSqlMajorVersion) -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value ('MsDtsServer{0}0' -f $MockSqlMajorVersion) -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'StartName' -Value 'COMPANY\SqlAccount' -PassThru -Force |
                             Add-Member -MemberType NoteProperty -Name 'StartMode' -Value 'Auto' -PassThru -Force
                     ),
                     (
                         New-Object -TypeName Object |
-                            Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockNamedInstance_AnalysisServiceName -PassThru |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value 'MSOLAP$TEST' -PassThru |
                             Add-Member -MemberType NoteProperty -Name 'StartName' -Value 'COMPANY\SqlAccount' -PassThru -Force |
                             Add-Member -MemberType NoteProperty -Name 'StartMode' -Value 'Auto' -PassThru -Force
                     )
@@ -1447,6 +1506,18 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
             Mock -CommandName Get-Service -MockWith $mockGetService_NoServices
 
+            Mock -CommandName Get-InstalledSharedFeatures -MockWith {
+                return @()
+            }
+
+            Mock -CommandName Test-IsSsmsInstalled -MockWith {
+                return $true
+            }
+
+            Mock -CommandName Test-IsSsmsAdvancedInstalled -MockWith {
+                return $true
+            }
+
             InModuleScope -ScriptBlock {
                 $script:mockGetTargetResourceParameters = @{
                     InstanceName = 'MSSQLSERVER'
@@ -1470,6 +1541,23 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
     Context 'When SQL Server version is <MockSqlMajorVersion> and the system is in the desired state for a clustered default instance' -ForEach $testProductVersion {
         BeforeAll {
             Mock -CommandName Get-Service -MockWith $mockGetService_DefaultInstance
+
+
+            Mock -CommandName Test-IsSsmsInstalled -MockWith {
+                return $true
+            }
+
+            Mock -CommandName Test-IsSsmsAdvancedInstalled -MockWith {
+                return $true
+            }
+
+            Mock -CommandName Test-IsReplicationFeatureInstalled -MockWith {
+                return $true
+            }
+
+            Mock -CommandName Test-IsDQComponentInstalled -MockWith {
+                return $true
+            }
 
             Mock -CommandName Get-TempDbProperties -MockWith {
                 return @{
@@ -1504,6 +1592,24 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 }
             }
 
+            Mock -CommandName Get-ServiceProperties -MockWith {
+                return @{
+                    UserName = 'COMPANY\SqlAccount'
+                    StartupType = 'Auto'
+                }
+            }
+
+            Mock -CommandName Get-InstalledSharedFeatures -MockWith {
+                return @(
+                    'DQC'
+                    'BOL'
+                    'CONN'
+                    'BC'
+                    'SDK'
+                    'MDS'
+                )
+            }
+
             InModuleScope -ScriptBlock {
                 $script:mockGetTargetResourceParameters = @{
                     Action = 'InstallFailoverCluster'
@@ -1528,275 +1634,266 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
     }
 }
 
-# Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
-#     BeforeAll {
-#         $mockSourcePath = $TestDrive.FullName
+Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
+    BeforeAll {
+        $mockSourcePath = $TestDrive.FullName
 
-#         <#
-#             These are written with both lower-case and upper-case to make sure we support that.
-#             The feature list must be written in the order it is returned by the function Get-TargetResource.
-#         #>
-#         $mockDefaultFeatures = 'SQLEngine,Replication,Dq,Dqc,FullText,Rs,As,Is,Bol,Conn,Bc,Sdk,Mds,Ssms,Adv_Ssms'
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks
+            $script:mockDefaultParameters = @{
+                <#
+                    These are written with both lower-case and upper-case to make sure we support that.
+                    The feature list must be written in the order it is returned by the function Get-TargetResource.
+                #>
+                Features = 'SQLEngine,Replication,Dq,Dqc,FullText,Rs,As,Is,Bol,Conn,Bc,Sdk,Mds,Ssms,Adv_Ssms'
+            }
+        }
+    }
 
-#         # Default parameters that are used for the It-blocks
-#         $mockDefaultParameters = @{
-#             Features = $mockDefaultFeatures
-#         }
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockTestTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
 
-#         $mockDefaultInstance_InstanceName = 'MSSQLSERVER'
-#     }
+    Context 'When the system is not in the desired state' {
+        Context 'When no features are installed' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Features = ''
+                    }
+                }
+            }
 
-#     Context 'When the system is not in the desired state' {
-#         Context 'When no features are installed' {
-#             BeforeAll {
-#                 $testParameters = $mockDefaultParameters.Clone()
-#                 $testParameters += @{
-#                     InstanceName = $mockDefaultInstance_InstanceName
-#                     SourceCredential = $null
-#                     SourcePath = $TestDrive
-#                 }
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters.InstanceName = 'MSSQLSERVER'
+                    $mockTestTargetResourceParameters.SourceCredential = $null
+                    $mockTestTargetResourceParameters.SourcePath = $TestDrive
 
-#                 Mock -CommandName Get-TargetResource -MockWith {
-#                     return @{
-#                         Features = ''
-#                     }
-#                 }
-#             }
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
-#             It 'Should return $false' {
-#                 $result = Test-TargetResource @testParameters -Verbose
-#                 $result | Should -BeFalse
+                    $result | Should -BeFalse
+                }
 
-#                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
-#             }
-#         }
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
 
-#         Context 'When a clustered instance cannot be found' {
-#             BeforeAll {
-#                 $testParameters = $mockDefaultParameters.Clone()
-#                 $testParameters += @{
-#                     InstanceName = $mockDefaultInstance_InstanceName
-#                     SourceCredential = $null
-#                     SourcePath = $TestDrive
-#                     FailoverClusterGroupName = $mockDefaultInstance_FailoverClusterGroupName
-#                     FailoverClusterIPAddress = $mockDefaultInstance_FailoverClusterIPAddress
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-#                 }
+        Context 'When a clustered instance cannot be found' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Features = ''
+                        FailoverClusterGroupName = $null
+                        FailoverClusterNetworkName = $null
+                        FailoverClusterIPAddress = $null
+                    }
+                }
+            }
 
-#                 Mock -CommandName Get-TargetResource -MockWith {
-#                     return @{
-#                         Features = ''
-#                         FailoverClusterGroupName = $null
-#                         FailoverClusterNetworkName = $null
-#                         FailoverClusterIPAddress = $null
-#                     }
-#                 }
-#             }
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters.InstanceName = 'MSSQLSERVER'
+                    $mockTestTargetResourceParameters.SourceCredential = $null
+                    $mockTestTargetResourceParameters.SourcePath = $TestDrive
+                    $mockTestTargetResourceParameters.FailoverClusterGroupName = 'SQL Server (MSSQLSERVER)'
+                    $mockTestTargetResourceParameters.FailoverClusterIPAddress = '10.0.0.10'
+                    $mockTestTargetResourceParameters.FailoverClusterNetworkName = 'TestDefaultCluster'
 
-#             It 'Should return $false' {
-#                 $result = Test-TargetResource @testParameters -Verbose
-#                 $result | Should -BeFalse
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
-#                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
-#             }
-#         }
+                    $result | Should -BeFalse
+                }
 
-#         Context 'When a SQL Server failover cluster is missing features' {
-#             BeforeAll {
-#                 $testParameters = $mockDefaultParameters.Clone()
-#                 $testParameters['Features'] = 'SQLEngine,AS'
-#                 $testParameters += @{
-#                     InstanceName = $mockDefaultInstance_InstanceName
-#                     SourceCredential = $null
-#                     SourcePath = $TestDrive
-#                     FailoverClusterGroupName = $mockDefaultInstance_FailoverClusterGroupName
-#                     FailoverClusterIPAddress = $mockDefaultInstance_FailoverClusterIPAddress
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-#                 }
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
 
-#                 Mock -CommandName Get-TargetResource -MockWith {
-#                     return @{
-#                         Features = 'SQLENGINE' # Must be upper-case since Get-TargetResource returns upper-case.
-#                         FailoverClusterGroupName = $mockDefaultInstance_FailoverClusterGroupName
-#                         FailoverClusterIPAddress = $mockDefaultInstance_FailoverClusterIPAddress
-#                         FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-#                     }
-#                 }
-#             }
+        Context 'When a SQL Server failover cluster is missing features' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Features = 'SQLENGINE' # Must be upper-case since Get-TargetResource returns upper-case.
+                        FailoverClusterGroupName = 'SQL Server (MSSQLSERVER)'
+                        FailoverClusterIPAddress = '10.0.0.10'
+                        FailoverClusterNetworkName = 'TestDefaultCluster'
+                    }
+                }
+            }
 
-#             # This is a test for regression testing of issue #432
-#             It 'Should return $false' {
-#                 $result = Test-TargetResource @testParameters -Verbose
-#                 $result | Should -BeFalse
+            # This is a test for regression testing of issue #432
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters.Features = 'SQLEngine,AS'
+                    $mockTestTargetResourceParameters.InstanceName = 'MSSQLSERVER'
+                    $mockTestTargetResourceParameters.SourceCredential = $null
+                    $mockTestTargetResourceParameters.SourcePath = $TestDrive
+                    $mockTestTargetResourceParameters.FailoverClusterGroupName = 'SQL Server (MSSQLSERVER)'
+                    $mockTestTargetResourceParameters.FailoverClusterIPAddress = '10.0.0.10'
+                    $mockTestTargetResourceParameters.FailoverClusterNetworkName = 'TestDefaultCluster'
 
-#                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
-#             }
-#         }
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
-#         Context 'When Action is set to ''Upgrade'' and current major version is not the expected' {
-#             BeforeAll {
-#                 $testParameters = $mockDefaultParameters.Clone()
-#                 $testParameters += @{
-#                     Action = 'Upgrade'
-#                     InstanceName = $mockDefaultInstance_InstanceName
-#                     SourceCredential = $null
-#                     SourcePath = $TestDrive
-#                 }
+                    $result | Should -BeFalse
+                }
 
-#                 Mock -CommandName Get-TargetResource -MockWith {
-#                     return @{
-#                         Features = $mockDefaultFeatures
-#                     }
-#                 }
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
 
-#                 Mock -CommandName Get-FilePathMajorVersion -MockWith {
-#                     return '15'
-#                 }
+        Context 'When Action is set to ''Upgrade'' and current major version is not the expected' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Features = 'SQLEngine,Replication,Dq,Dqc,FullText,Rs,As,Is,Bol,Conn,Bc,Sdk,Mds,Ssms,Adv_Ssms'
+                    }
+                }
 
-#                 Mock -CommandName Get-SQLInstanceMajorVersion -MockWith {
-#                     return '14'
-#                 }
-#             }
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return '15'
+                }
 
-#             It 'Should return $false' {
-#                 $result = Test-TargetResource @testParameters -Verbose
-#                 $result | Should -BeFalse
+                Mock -CommandName Get-SQLInstanceMajorVersion -MockWith {
+                    return '14'
+                }
+            }
 
-#                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
-#             }
-#         }
-#     }
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters.Action = 'Upgrade'
+                    $mockTestTargetResourceParameters.InstanceName = 'MSSQLSERVER'
+                    $mockTestTargetResourceParameters.SourceCredential = $null
+                    $mockTestTargetResourceParameters.SourcePath = $TestDrive
 
-#     Context "When the system is in the desired state" {
-#         Context 'When all features are installed' {
-#             BeforeAll {
-#                 $testParameters = $mockDefaultParameters.Clone()
-#                 $testParameters += @{
-#                     InstanceName = $mockDefaultInstance_InstanceName
-#                     SourceCredential = $null
-#                     SourcePath = $TestDrive
-#                 }
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
-#                 Mock -CommandName Get-TargetResource -MockWith {
-#                     return @{
-#                         Features = $mockDefaultFeatures
-#                     }
-#                 }
-#             }
+                    $result | Should -BeFalse
+                }
 
-#             It 'Should return $true' {
-#                 $result = Test-TargetResource @testParameters -Verbose
-#                 $result | Should -BeTrue
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+    }
 
-#                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
-#             }
-#         }
+    Context "When the system is in the desired state" {
+        Context 'When all features are installed' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Features = 'SQLEngine,Replication,Dq,Dqc,FullText,Rs,As,Is,Bol,Conn,Bc,Sdk,Mds,Ssms,Adv_Ssms'
+                    }
+                }
+            }
 
-#         Context 'When the correct clustered instance was found' {
-#             BeforeAll {
-#                 $mockDefaultInstance_FailoverClusterNetworkName = 'TestDefaultCluster'
-#                 $mockDefaultInstance_FailoverClusterIPAddress = '10.0.0.10'
-#                 $mockDefaultInstance_FailoverClusterGroupName = "SQL Server ($mockDefaultInstance_InstanceName)"
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters.InstanceName = 'MSSQLSERVER'
+                    $mockTestTargetResourceParameters.SourceCredential = $null
+                    $mockTestTargetResourceParameters.SourcePath = $TestDrive
 
-#                 $testParameters = $mockDefaultParameters.Clone()
-#                 $testParameters += @{
-#                     InstanceName = $mockDefaultInstance_InstanceName
-#                     SourceCredential = $null
-#                     SourcePath = $TestDrive
-#                     FailoverClusterGroupName = $mockDefaultInstance_FailoverClusterGroupName
-#                     FailoverClusterIPAddress = $mockDefaultInstance_FailoverClusterIPAddress
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-#                 }
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
-#                 Mock -CommandName Get-TargetResource -MockWith {
-#                     return @{
-#                         Features = $mockDefaultFeatures
-#                         FailoverClusterGroupName = $mockDefaultInstance_FailoverClusterGroupName
-#                         FailoverClusterIPAddress = $mockDefaultInstance_FailoverClusterIPAddress
-#                         FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-#                     }
-#                 }
+                    $result | Should -BeTrue
+                }
 
-#                 $mockClusterDiskMap = {
-#                     @{
-#                         SysData = Split-Path -Path $mockDynamicSqlDataDirectoryPath -Qualifier
-#                         UserData = Split-Path -Path $mockDynamicSqlUserDatabasePath -Qualifier
-#                         UserLogs = Split-Path -Path $mockDynamicSqlUserDatabaseLogPath -Qualifier
-#                         TempDbData = Split-Path -Path $mockDynamicSqlTempDatabasePath -Qualifier
-#                         TempDbLogs = Split-Path -Path $mockDynamicSqlTempDatabaseLogPath -Qualifier
-#                         Backup = Split-Path -Path $mockDynamicSqlBackupPath -Qualifier
-#                     }
-#                 }
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
 
-#                 $mockSqlDataDirectoryPath = 'E:\MSSQL\Data'
-#                 $mockSqlUserDatabasePath = 'K:\MSSQL\Data'
-#                 $mockSqlUserDatabaseLogPath = 'L:\MSSQL\Logs'
-#                 $mockSqlTempDatabasePath = 'M:\MSSQL\TempDb\Data'
-#                 $mockSqlTempDatabaseLogPath = 'N:\MSSQL\TempDb\Logs'
-#                 $mockSqlBackupPath = 'O:\MSSQL\Backup'
-#             }
+        Context 'When the correct clustered instance was found' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Features = 'SQLEngine,Replication,Dq,Dqc,FullText,Rs,As,Is,Bol,Conn,Bc,Sdk,Mds,Ssms,Adv_Ssms'
+                        FailoverClusterGroupName = 'SQL Server (MSSQLSERVER)'
+                        FailoverClusterIPAddress = '10.0.0.10'
+                        FailoverClusterNetworkName = 'TestDefaultCluster'
+                    }
+                }
+            }
 
-#             It 'Should return $true' {
-#                 $result = Test-TargetResource @testParameters -Verbose
-#                 $result | Should -BeTrue
+            BeforeEach {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters.InstanceName = 'MSSQLSERVER'
+                    $mockTestTargetResourceParameters.SourceCredential = $null
+                    $mockTestTargetResourceParameters.SourcePath = $TestDrive
+                    $mockTestTargetResourceParameters.FailoverClusterGroupName = 'SQL Server (MSSQLSERVER)'
+                    $mockTestTargetResourceParameters.FailoverClusterIPAddress = '10.0.0.10'
+                    $mockTestTargetResourceParameters.FailoverClusterNetworkName = 'TestDefaultCluster'
+                }
+            }
 
-#                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
-#             }
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
-#             # Regression test when the variables were detected differently.
-#             It 'Should not return false after a clustered install due to the presence of a variable called "FailoverClusterDisks"' {
-#                 # These are needed to populate paths when calling (& $mockClusterDiskMap).
-#                 $mockDynamicSqlDataDirectoryPath = $mockSqlDataDirectoryPath
-#                 $mockDynamicSqlUserDatabasePath = $mockSqlUserDatabasePath
-#                 $mockDynamicSqlUserDatabaseLogPath = $mockSqlUserDatabaseLogPath
-#                 $mockDynamicSqlTempDatabasePath = 'M:\MSSQL\TempDb\Data'
-#                 $mockDynamicSqlTempDatabaseLogPath = $mockSqlTempDatabaseLogPath
-#                 $mockDynamicSqlBackupPath = $mockSqlBackupPath
+                    $result | Should -BeTrue
+                }
 
-#                 New-Variable -Name 'FailoverClusterDisks' -Value (& $mockClusterDiskMap)['UserData']
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
 
-#                 $result = Test-TargetResource @testParameters -Verbose
-#                 $result | Should -BeTrue
+            # Regression test when the variables were detected differently.
+            It 'Should not return false after a clustered install due to the presence of a variable called "FailoverClusterDisks"' {
+                InModuleScope -ScriptBlock {
+                    # This is used when calling (& $mockClusterDiskMap).
+                    $mockClusterDiskMap = {
+                        @{
+                            SysData = Split-Path -Path 'E:\MSSQL\Data' -Qualifier
+                            UserData = Split-Path -Path 'K:\MSSQL\Data' -Qualifier
+                            UserLogs = Split-Path -Path 'L:\MSSQL\Logs' -Qualifier
+                            TempDbData = Split-Path -Path 'M:\MSSQL\TempDb\Data' -Qualifier
+                            TempDbLogs = Split-Path -Path 'N:\MSSQL\TempDb\Logs' -Qualifier
+                            Backup = Split-Path -Path 'O:\MSSQL\Backup' -Qualifier
+                        }
+                    }
 
-#                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
-#             }
-#         }
+                    New-Variable -Name 'FailoverClusterDisks' -Value (& $mockClusterDiskMap)['UserData']
 
-#         # This is a test for regression testing of issue #432.
-#         Context 'When the SQL Server failover cluster has all features and is in desired state' {
-#             BeforeAll {
-#                 $testParameters = $mockDefaultParameters.Clone()
-#                 $testParameters['Features'] = 'SQLENGINE,AS'
-#                 $testParameters += @{
-#                     InstanceName = $mockDefaultInstance_InstanceName
-#                     SourceCredential = $null
-#                     SourcePath = $TestDrive
-#                     FailoverClusterGroupName = $mockDefaultInstance_FailoverClusterGroupName
-#                     FailoverClusterIPAddress = $mockDefaultInstance_FailoverClusterIPAddress
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-#                 }
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
-#                 Mock -CommandName Get-TargetResource -MockWith {
-#                     return @{
-#                         Features = 'SQLEngine,AS'
-#                         FailoverClusterGroupName = $mockDefaultInstance_FailoverClusterGroupName
-#                         FailoverClusterIPAddress = $mockDefaultInstance_FailoverClusterIPAddress
-#                         FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-#                     }
-#                 }
-#             }
+                    $result | Should -BeTrue
+                }
 
-#             It 'Should return $true' {
-#                 $result = Test-TargetResource @testParameters -Verbose
-#                 $result | Should -BeTrue
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
 
-#                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
-#             }
-#         }
-#     }
+        # This is a test for regression testing of issue #432.
+        Context 'When the SQL Server failover cluster has all features and is in desired state' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Features = 'SQLEngine,AS'
+                        FailoverClusterGroupName = 'SQL Server (MSSQLSERVER)'
+                        FailoverClusterIPAddress = '10.0.0.10'
+                        FailoverClusterNetworkName = 'TestDefaultCluster'
+                    }
+                }
+            }
 
-#     Assert-VerifiableMock
-# }
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters.Features = 'SQLENGINE,AS'
+                    $mockTestTargetResourceParameters.InstanceName = 'MSSQLSERVER'
+                    $mockTestTargetResourceParameters.SourceCredential = $null
+                    $mockTestTargetResourceParameters.SourcePath = $TestDrive
+                    $mockTestTargetResourceParameters.FailoverClusterGroupName = 'SQL Server (MSSQLSERVER)'
+                    $mockTestTargetResourceParameters.FailoverClusterIPAddress = '10.0.0.10'
+                    $mockTestTargetResourceParameters.FailoverClusterNetworkName = 'TestDefaultCluster'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+}
 
 # Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 #     BeforeAll {
@@ -1840,18 +1937,14 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
 #         #endregion Setting up TestDrive:\
 
-#         <#
-#             These are written with both lower-case and upper-case to make sure we support that.
-#             The feature list must be written in the order it is returned by the function Get-TargetResource.
-#         #>
-#         $mockDefaultFeatures = 'SQLEngine,Replication,Dq,Dqc,FullText,Rs,As,Is,Bol,Conn,Bc,Sdk,Mds,Ssms,Adv_Ssms'
-
 #         # Default parameters that are used for the It-blocks
 #         $mockDefaultParameters = @{
-#             Features = $mockDefaultFeatures
+#             <#
+#                 These are written with both lower-case and upper-case to make sure we support that.
+#                 The feature list must be written in the order it is returned by the function Get-TargetResource.
+#             #>
+#             Features = 'SQLEngine,Replication,Dq,Dqc,FullText,Rs,As,Is,Bol,Conn,Bc,Sdk,Mds,Ssms,Adv_Ssms'
 #         }
-
-#         $mockDefaultInstance_InstanceName = 'MSSQLSERVER'
 
 #         $mockServiceStartupType = 'Automatic'
 
@@ -1889,9 +1982,6 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
 #         $mockClusterNodes = @($env:COMPUTERNAME,'SQL01','SQL02')
 
-#         $mockDefaultInstance_FailoverClusterNetworkName = 'TestDefaultCluster'
-#         $mockDefaultInstance_FailoverClusterIPAddress = '10.0.0.10'
-#         $mockDefaultInstance_FailoverClusterGroupName = "SQL Server ($mockDefaultInstance_InstanceName)"
 #         $mockDefaultInstance_FailoverClusterIPAddress_SecondSite = '10.0.10.100'
 #         $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
 #         $mockDefaultInstance_FailoverClusterIPAddressParameter_MultiSite = 'IPv4;10.0.0.10;SiteA_Prod;255.255.255.0; IPv4;10.0.10.100;SiteB_Prod;255.255.255.0'
@@ -2055,7 +2145,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #         $mockClusterSites = @(
 #             @{
 #                 Name = 'SiteA'
-#                 Address = $mockDefaultInstance_FailoverClusterIPAddress
+#                 Address = '10.0.0.10'
 #                 Mask = '255.255.255.0'
 #             },
 #             @{
@@ -2118,7 +2208,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #             return $false
 #         }
 
-#         $mockDefaultInstance_InstanceId = "MSSQL$($MockSqlMajorVersion).$($mockDefaultInstance_InstanceName)"
+#         $mockDefaultInstance_InstanceId = "MSSQL$($MockSqlMajorVersion).MSSQLSERVER"
 
 #         $mockSqlInstallPath = "C:\Program Files\Microsoft SQL Server\$($mockDefaultInstance_InstanceId)\MSSQL"
 #         $mockDynamicSqlBackupPath = "C:\Program Files\Microsoft SQL Server\$($mockDefaultInstance_InstanceId)\MSSQL\Backup"
@@ -2156,7 +2246,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                     $testParameters += @{
 #                         SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
 #                         ASSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
-#                         InstanceName = $mockDefaultInstance_InstanceName
+#                         InstanceName = 'MSSQLSERVER'
 #                         SourceCredential = $null
 #                         SourcePath = $TestDrive
 #                         ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
@@ -2238,7 +2328,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                     $testParameters = @{
 #                         Features = 'SQLENGINE'
 #                         SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
-#                         InstanceName = $mockDefaultInstance_InstanceName
+#                         InstanceName = 'MSSQLSERVER'
 #                         SourceCredential = $null
 #                         SourcePath = $TestDrive
 #                         ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
@@ -2275,7 +2365,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                     $testParameters = @{
 #                         Features = 'SQLENGINE'
 #                         SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
-#                         InstanceName = $mockDefaultInstance_InstanceName
+#                         InstanceName = 'MSSQLSERVER'
 #                         SourceCredential = $null
 #                         SourcePath = $TestDrive
 #                         ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
@@ -2313,7 +2403,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                 $testParameters = @{
 #                     Features = 'SQLENGINE'
 #                     SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
-#                     InstanceName = $mockDefaultInstance_InstanceName
+#                     InstanceName = 'MSSQLSERVER'
 #                     SourceCredential = $null
 #                     SourcePath = $TestDrive
 #                     ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
@@ -2350,7 +2440,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                 $testParameters = @{
 #                     Features = 'SQLENGINE'
 #                     SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
-#                     InstanceName = $mockDefaultInstance_InstanceName
+#                     InstanceName = 'MSSQLSERVER'
 #                     SourceCredential = $null
 #                     SourcePath = $TestDrive
 #                     ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
@@ -2387,7 +2477,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                 $testParameters = @{
 #                     Features = 'SQLENGINE'
 #                     SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
-#                     InstanceName = $mockDefaultInstance_InstanceName
+#                     InstanceName = 'MSSQLSERVER'
 #                     SourceCredential = $null
 #                     SourcePath = $TestDrive
 #                     ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
@@ -2424,7 +2514,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                 $testParameters = @{
 #                     Features = 'SQLENGINE'
 #                     SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
-#                     InstanceName = $mockDefaultInstance_InstanceName
+#                     InstanceName = 'MSSQLSERVER'
 #                     SourceCredential = $null
 #                     SourcePath = $TestDrive
 #                     ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
@@ -2461,7 +2551,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                 $testParameters = @{
 #                     Features = 'SQLENGINE'
 #                     SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
-#                     InstanceName = $mockDefaultInstance_InstanceName
+#                     InstanceName = 'MSSQLSERVER'
 #                     SourceCredential = $null
 #                     SourcePath = $TestDrive
 #                     ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
@@ -2504,7 +2594,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
 #             BeforeEach {
 #                 $testParameters += @{
-#                     InstanceName = $mockDefaultInstance_InstanceName
+#                     InstanceName = 'MSSQLSERVER'
 #                     SourceCredential = $null
 #                     SourcePath = $TestDrive
 #                 }
@@ -2552,7 +2642,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                 $testParameters += @{
 #                     SQLSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
 #                     ASSysAdminAccounts = 'COMPANY\User1','COMPANY\SQLAdmins'
-#                     InstanceName = $mockDefaultInstance_InstanceName
+#                     InstanceName = 'MSSQLSERVER'
 #                     SourceCredential = $null
 #                     SourcePath = $TestDrive
 #                     ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
@@ -2623,7 +2713,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #             {
 #                 It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016, 2017 or 2019' {
 #                     $testParameters += @{
-#                         InstanceName = $mockDefaultInstance_InstanceName
+#                         InstanceName = 'MSSQLSERVER'
 #                         SourceCredential = $null
 #                         SourcePath = $TestDrive
 #                     }
@@ -2636,7 +2726,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
 #                 It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016, 2017 or 2019' {
 #                     $testParameters += @{
-#                         InstanceName = $mockDefaultInstance_InstanceName
+#                         InstanceName = 'MSSQLSERVER'
 #                         SourceCredential = $null
 #                         SourcePath = $TestDrive
 #                     }
@@ -2651,7 +2741,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #             {
 #                 It 'Should set the system in the desired state when feature is SSMS' {
 #                     $testParameters += @{
-#                         InstanceName = $mockDefaultInstance_InstanceName
+#                         InstanceName = 'MSSQLSERVER'
 #                         SourceCredential = $null
 #                         SourcePath = $TestDrive
 #                     }
@@ -2675,7 +2765,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
 #                 It 'Should set the system in the desired state when feature is ADV_SSMS' {
 #                     $testParameters += @{
-#                         InstanceName = $mockDefaultInstance_InstanceName
+#                         InstanceName = 'MSSQLSERVER'
 #                         SourceCredential = $null
 #                         SourcePath = $TestDrive
 #                     }
@@ -2715,7 +2805,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
     # $mockSourcePathUNC = Join-Path -Path "\\localhost\$testDrive_DriveShare" -ChildPath (Split-Path -Path $TestDrive -NoQualifier)
 
 #                 $testParameters += @{
-#                     InstanceName = $mockDefaultInstance_InstanceName
+#                     InstanceName = 'MSSQLSERVER'
 #                     SourceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
 #                     SourcePath = $mockSourcePathUNC
 #                 }
@@ -2814,7 +2904,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
 #             BeforeEach {
 #                 $testParameters += @{
-#                     InstanceName = $mockDefaultInstance_InstanceName
+#                     InstanceName = 'MSSQLSERVER'
 #                     SourceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
 #                     SourcePath = $mockSourcePathUNCWithoutLeaf
 #                     ForceReboot = $true
@@ -3028,7 +3118,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                     AgtSvcAccount = $mockSQLAgentCredential
 #                     SqlSvcAccount = $mockSQLServiceCredential
 #                     ASSvcAccount = $mockAnalysisServiceCredential
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
 #                 }
 #             }
 
@@ -3102,8 +3192,8 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                     SourcePath = $TestDrive
 #                     Action = 'InstallFailoverCluster'
 #                     FailoverClusterGroupName = 'SQL Server (MSSQLSERVER)'
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-#                     FailoverClusterIPAddress = $mockDefaultInstance_FailoverClusterIPAddress
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
+#                     FailoverClusterIPAddress = '10.0.0.10'
 
 #                     # Ensure we use "clustered" disks for our paths
 #                     InstallSQLDataDir = $mockDynamicSqlDataDirectoryPath
@@ -3121,7 +3211,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                     Action = 'InstallFailoverCluster'
 #                     FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
 #                     FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
 #                     InstallSQLDataDir = $mockDynamicSqlDataDirectoryPath
 #                     SQLUserDBDir = $mockDynamicSqlUserDatabasePath
 #                     SQLUserDBLogDir = $mockDynamicSqlUserDatabaseLogPath
@@ -3139,7 +3229,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                     Action = 'InstallFailoverCluster'
 #                     FailoverClusterDisks = 'SysData'
 #                     FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
 #                     InstallSQLDataDir = $mockDynamicSqlDataDirectoryPath
 #                 }
 
@@ -3159,7 +3249,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                     Action = 'InstallFailoverCluster'
 #                     FailoverClusterDisks = 'SysData'
 #                     FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
 #                     InstallSQLDataDir = 'E:\SQLData'
 #                     SQLUserDBDir = 'E:\SQLData\UserDb'
 #                     SQLUserDBLogDir = 'E:\SQLData\UserDbLogs'
@@ -3197,7 +3287,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                     SQLTempDBDir = $mockDynamicSqlTempDatabasePath
 #                     SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
 #                     SQLBackupDir = $mockDynamicSqlBackupPath
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
 #                     FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
 #                 }
 
@@ -3212,7 +3302,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                 $mockStartSqlSetupProcessExpectedArgument += @{
 #                     Action = 'InstallFailoverCluster'
 #                     FailoverClusterIPAddresses = 'DEFAULT'
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
 #                     InstallSQLDataDir = $mockDynamicSqlDataDirectoryPath
 #                     SQLUserDBDir = $mockDynamicSqlUserDatabasePath
 #                     SQLUserDBLogDir = $mockDynamicSqlUserDatabaseLogPath
@@ -3251,7 +3341,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                 $mockStartSqlSetupProcessExpectedArgument = $mockStartSqlSetupProcessExpectedArgumentClusterDefault.Clone()
 #                 $mockStartSqlSetupProcessExpectedArgument += @{
 #                     FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
 #                     InstallSQLDataDir = $mockDynamicSqlDataDirectoryPath
 #                     SQLUserDBDir = $mockDynamicSqlUserDatabasePath
 #                     SQLUserDBLogDir = $mockDynamicSqlUserDatabaseLogPath
@@ -3275,7 +3365,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                 $mockStartSqlSetupProcessExpectedArgument = $mockStartSqlSetupProcessExpectedArgumentClusterDefault.Clone()
 #                 $mockStartSqlSetupProcessExpectedArgument += @{
 #                     FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_MultiSite
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
 #                     InstallSQLDataDir = $mockDynamicSqlDataDirectoryPath
 #                     SQLUserDBDir = $mockDynamicSqlUserDatabasePath
 #                     SQLUserDBLogDir = $mockDynamicSqlUserDatabaseLogPath
@@ -3309,7 +3399,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                     FailoverClusterDisks = "$($mockCSVClusterDiskMap['Backup'].Name); $($mockCSVClusterDiskMap['UserData'].Name); $($mockCSVClusterDiskMap['UserLogs'].Name); $($mockCSVClusterDiskMap['SysData'].Name); $($mockCSVClusterDiskMap['TempDBData'].Name); $($mockCSVClusterDiskMap['TempDBLogs'].Name)"
 #                     FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
 #                     FailoverClusterGroup = 'SQL Server (MSSQLSERVER)'
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
 #                     InstallSQLDataDir = $mockCSVClusterDiskMap['SysData'].Path
 #                     SQLUserDBDir = $mockCSVClusterDiskMap['UserData'].Path
 #                     SQLUserDBLogDir = $mockCSVClusterDiskMap['UserLogs'].Path
@@ -3341,7 +3431,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                     FailoverClusterDisks = "$($mockCSVClusterDiskMap['Backup'].Name); $($mockCSVClusterDiskMap['UserData'].Name)"
 #                     FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
 #                     FailoverClusterGroup = 'SQL Server (MSSQLSERVER)'
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
 #                     InstallSQLDataDir = "$($mockCSVClusterDiskMap['UserData'].Path)\Data"
 #                     SQLUserDBDir = "$($mockCSVClusterDiskMap['UserData'].Path)\Data"
 #                     SQLUserDBLogDir = "$($mockCSVClusterDiskMap['UserData'].Path)\Logs"
@@ -3485,8 +3575,8 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                     SourcePath = $TestDrive
 #                     Action = 'CompleteFailoverCluster'
 #                     FailoverClusterGroupName = 'SQL Server (MSSQLSERVER)'
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
-#                     FailoverClusterIPAddress = $mockDefaultInstance_FailoverClusterIPAddress
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
+#                     FailoverClusterIPAddress = '10.0.0.10'
 
 #                     # Ensure we use "clustered" disks for our paths
 #                     InstallSQLDataDir = $mockDynamicSqlDataDirectoryPath
@@ -3518,7 +3608,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                     SQLTempDBDir = $mockDynamicSqlTempDatabasePath
 #                     SQLTempDBLogDir = $mockDynamicSqlTempDatabaseLogPath
 #                     SQLBackupDir = $mockDynamicSqlBackupPath
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
 #                     FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
 #                 }
 
@@ -3533,7 +3623,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                 $mockStartSqlSetupProcessExpectedArgument += @{
 #                     Action = 'CompleteFailoverCluster'
 #                     FailoverClusterIPAddresses = 'DEFAULT'
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
 #                     InstallSQLDataDir = $mockDynamicSqlDataDirectoryPath
 #                     SQLUserDBDir = $mockDynamicSqlUserDatabasePath
 #                     SQLUserDBLogDir = $mockDynamicSqlUserDatabaseLogPath
@@ -3572,7 +3662,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                 $mockStartSqlSetupProcessExpectedArgument = $mockStartSqlSetupProcessExpectedArgumentClusterDefault.Clone()
 #                 $mockStartSqlSetupProcessExpectedArgument += @{
 #                     FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
 #                     InstallSQLDataDir = $mockDynamicSqlDataDirectoryPath
 #                     SQLUserDBDir = $mockDynamicSqlUserDatabasePath
 #                     SQLUserDBLogDir = $mockDynamicSqlUserDatabaseLogPath
@@ -3596,7 +3686,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                 $mockStartSqlSetupProcessExpectedArgument = $mockStartSqlSetupProcessExpectedArgumentClusterDefault.Clone()
 #                 $mockStartSqlSetupProcessExpectedArgument += @{
 #                     FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_MultiSite
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
 #                     InstallSQLDataDir = $mockDynamicSqlDataDirectoryPath
 #                     SQLUserDBDir = $mockDynamicSqlUserDatabasePath
 #                     SQLUserDBLogDir = $mockDynamicSqlUserDatabaseLogPath
@@ -3622,7 +3712,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 #                     FailoverClusterDisks = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
 #                     FailoverClusterIPAddresses = $mockDefaultInstance_FailoverClusterIPAddressParameter_SingleSite
 #                     FailoverClusterGroup = 'SQL Server (MSSQLSERVER)'
-#                     FailoverClusterNetworkName = $mockDefaultInstance_FailoverClusterNetworkName
+#                     FailoverClusterNetworkName = 'TestDefaultCluster'
 #                     InstallSQLDataDir = $mockDynamicSqlDataDirectoryPath
 #                     SQLUserDBDir = $mockDynamicSqlUserDatabasePath
 #                     SQLUserDBLogDir = $mockDynamicSqlUserDatabaseLogPath
