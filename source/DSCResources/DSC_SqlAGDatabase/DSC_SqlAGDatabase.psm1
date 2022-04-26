@@ -153,6 +153,9 @@ function Get-TargetResource
     .PARAMETER ProcessOnlyOnActiveNode
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
         Not used in Set-TargetResource.
+
+    .PARAMETER StatementTimeout
+        Set the query StatementTimeout in seconds. Default 600 seconds (10mins).
 #>
 function Set-TargetResource
 {
@@ -198,13 +201,18 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $ProcessOnlyOnActiveNode
+        $ProcessOnlyOnActiveNode,
+
+        [Parameter()]
+        [ValidateNotNull()]
+        [System.Int32]
+        $StatementTimeout = 600
     )
 
     Import-SQLPSModule
 
     # Connect to the defined instance
-    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -StatementTimeout 0
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -StatementTimeout $StatementTimeout
 
     # Get the Availability Group
     $availabilityGroup = $serverObject.AvailabilityGroups[$AvailabilityGroupName]
@@ -591,8 +599,8 @@ function Set-TargetResource
                         if ( $availabilityGroupReplica.SeedingMode -eq 'MANUAL')
                         {
                             # Restore the database
-                            Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreDatabaseQueryString -StatementTimeout 0
-                            Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreLogQueryString -StatementTimeout 0
+                            Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreDatabaseQueryString -StatementTimeout $StatementTimeout
+                            Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreLogQueryString -StatementTimeout $StatementTimeout
                         }
 
                         # Add the database to the Availability Group
@@ -713,6 +721,9 @@ function Set-TargetResource
 
     .PARAMETER ProcessOnlyOnActiveNode
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+
+    .PARAMETER StatementTimeout
+        Set the query StatementTimeout in seconds. Default 600 seconds (10mins).
 #>
 function Test-TargetResource
 {
@@ -759,7 +770,12 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $ProcessOnlyOnActiveNode
+        $ProcessOnlyOnActiveNode,
+
+        [Parameter()]
+        [ValidateNotNull()]
+        [System.Int32]
+        $StatementTimeout = 600
     )
 
     $configurationInDesiredState = $true

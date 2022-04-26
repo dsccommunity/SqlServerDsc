@@ -1,7 +1,7 @@
 <#
     .DESCRIPTION
         This example shows how to ensure that the databases 'DB*' and 'AdventureWorks'
-        'are the only members of the Availability Group 'TestAG'.
+        are the only members of the Availability Group 'TestAG'.
 #>
 
 Configuration Example
