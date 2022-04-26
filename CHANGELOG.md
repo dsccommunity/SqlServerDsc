@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Changes to SqlAGDatabase
+  - Added StatementTimeout optional parameter with default value of 600 seconds (10 mins) to SqlAGDatabase to fix Issue#1743
+    Users will be able to specify the backup and restore timeout with it.
+
 ### Removed
 
 - The deprecated DSC resource SqlDatabaseOwner have been removed _(and replaced_

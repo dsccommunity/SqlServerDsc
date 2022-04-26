@@ -11,5 +11,6 @@ class DSC_SqlAGDatabase : OMI_BaseResource
     [Write, Description("If set to `$true`, this ensures the database owner of the database on the primary replica is the owner of the database on all secondary replicas. This requires the database owner is available as a login on all replicas and that the **PsDscRunAsCredential** has _impersonate any login_, _control server_, _impersonate login_, or _control login_ permissions. If set to `$false`, the owner of the database will be the username specified in **PsDscRunAsCredential**. The default is `$false`.")] Boolean MatchDatabaseOwner;
     [Write, Description("If set to `$true`, this adds the restore option `WITH REPLACE`. If set to `$false`, existing databases and files will block the restore and throw error. The default is `$false`.")] Boolean ReplaceExisting;
     [Write, Description("Specifies that the resource will only determine if a change is needed if the target node is the active host of the _SQL Server_ instance.")] Boolean ProcessOnlyOnActiveNode;
+    [Write, Description("Set the query timeout in seconds for the backup and restore operations. The default is 600 seconds (10mins).")] SInt32 StatementTimeout;
     [Read, Description("Returns if the current node is actively hosting the _SQL Server_ instance.")] Boolean IsActiveNode;
 };

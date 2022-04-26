@@ -48,4 +48,7 @@ PARAMETER MatchDatabaseOwner
     The default is '$false'.
 
 .PARAMETER ProcessOnlyOnActiveNode
-        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+    Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+
+.PARAMETER StatementTimeout
+    Set the query StatementTimeout in seconds. Default 600 seconds (10mins).

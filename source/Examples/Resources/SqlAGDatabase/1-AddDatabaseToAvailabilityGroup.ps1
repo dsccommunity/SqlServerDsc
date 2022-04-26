@@ -1,7 +1,7 @@
 <#
     .DESCRIPTION
         This example shows how to ensure that the databases 'DB*' and 'AdventureWorks'
-        are members in the Availability Group 'TestAG'.
+        are members of the Availability Group 'TestAG'.
 
         In the event this is applied to a Failover Cluster Instance (FCI), the
         ProcessOnlyOnActiveNode property will tell the Test-TargetResource function
