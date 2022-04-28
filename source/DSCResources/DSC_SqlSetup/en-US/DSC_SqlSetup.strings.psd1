@@ -2,13 +2,13 @@
 
 ConvertFrom-StringData @'
     UsingPath = Using path '{0}'.
-    EvaluateReplicationFeature = Detecting replication feature ({0}).
+    EvaluateReplicationFeature = Detecting replication feature.
     ReplicationFeatureFound = Replication feature detected.
     ReplicationFeatureNotFound = Replication feature not detected.
     EvaluateDataQualityClientFeature = Detecting Data Quality Client feature ({0}).
     DataQualityClientFeatureFound = Data Quality Client feature detected.
     DataQualityClientFeatureNotFound = Data Quality Client feature not detected.
-    EvaluateDataQualityServicesFeature = Detecting Data Services Client feature ({0}).
+    EvaluateDataQualityServicesFeature = Detecting Data Services Client feature.
     DataQualityServicesFeatureFound = Data Quality Services feature detected.
     DataQualityServicesFeatureNotFound = Data Quality Services feature not detected.
     ClusterInstanceFound = Clustered instance detected.

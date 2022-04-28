@@ -151,6 +151,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed unnecessary logic in `Set-TargetResource` that did just evaluated
     the same thing that the call to function `Get-TargetResource` already
     does.
+- SqlSetup
+  - Now the variables in `Set-TargetResource` are correctly initialized so
+    they pass the new unit test that use strict mode.
+  - Some verbose messages in `Get-TargetResource` wrongly reference a variable
+    that was not available.
+  - The loop that evaluates what features are installed did an unnecessary
+    step for each iteration. A line of code was moved outside of the loop.
 
 ### Added
 
