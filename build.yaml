@@ -24,6 +24,7 @@ BuildWorkflow:
 
   test:
     - Pester_Tests_Stop_On_Fail
+    - Pester_Run_Times
     - Pester_If_Code_Coverage_Under_Threshold
 
   publish:
@@ -31,6 +32,81 @@ BuildWorkflow:
     - Publish_Module_To_gallery
     - Publish_GitHub_Wiki_Content
     - Create_ChangeLog_GitHub_PR
+
+  # Synopsis: List the run time for each Pester test.
+  Pester_Run_Times: |
+    {
+        param
+        (
+            # Project path
+            [Parameter()]
+            [System.String]
+            $ProjectPath = (property ProjectPath $BuildRoot),
+
+            [Parameter()]
+            # Base directory of all output (default to 'output')
+            [System.String]
+            $OutputDirectory = (property OutputDirectory (Join-Path $BuildRoot 'output')),
+
+            [Parameter()]
+            [System.String]
+            $ProjectName = (property ProjectName ''),
+
+            [Parameter()]
+            [System.String]
+            $PesterOutputFolder = (property PesterOutputFolder 'testResults'),
+
+            # Build Configuration object
+            [Parameter()]
+            [System.Collections.Hashtable]
+            $BuildInfo = (property BuildInfo @{ })
+        )
+
+        # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
+        . Set-SamplerTaskVariable
+
+        $PesterOutputFolder = Get-SamplerAbsolutePath -Path $PesterOutputFolder -RelativeTo $OutputDirectory
+
+        $getPesterOutputFileFileNameParameters = @{
+            ProjectName       = $ProjectName
+            ModuleVersion     = $ModuleVersion
+            OsShortName       = Get-OperatingSystemShortName
+            PowerShellVersion = ('PSv.{0}' -f $PSVersionTable.PSVersion)
+        }
+
+        $PesterOutputFileFileName = Get-PesterOutputFileFileName @getPesterOutputFileFileNameParameters
+
+        $PesterResultObjectClixml = Join-Path $PesterOutputFolder "PesterObject_$PesterOutputFileFileName"
+
+        "`tPester Output Folder     = {0}" -f $PesterOutputFolder
+        "`tPester Output Object     = {0}" -f $PesterResultObjectClixml
+        ""
+
+        if ((Test-Path -Path $PesterResultObjectClixml))
+        {
+            $pesterObject = Import-Clixml -Path $PesterResultObjectClixml
+
+            $maxColumnLength = ($pesterObject.Containers | ForEach-Object -Process { $_.Item.Name.Length } | Measure-Object -Maximum).Maximum
+            $maxColumnLength += 2
+
+            "Test script file{0}Duration" -f "".PadRight($maxColumnLength - 16)
+            "".PadRight($maxColumnLength + 25, '-') # Adding 25 chars to cover the time in clear text
+
+            $pesterObject.Containers | ForEach-Object -Process {
+              $padding = $maxColumnLength - $_.Item.Name.Length
+
+              "{0}{1}{2} ({3})" -f $_.Item.Name, "".PadRight($padding), ($_.Duration.ToString("''m' minutes 's' seconds'") -replace '0 minutes ', ''), $_.Result
+            }
+
+            ""
+            "Total run time:`t{0}" -f $pesterObject.Duration.ToString("''m' minutes 's' seconds'")
+            ""
+        }
+        else
+        {
+            Write-Warning -Message 'Pester result object not found.'
+        }
+    }
 
 ####################################################
 #           ModuleBuilder Configuration            #
