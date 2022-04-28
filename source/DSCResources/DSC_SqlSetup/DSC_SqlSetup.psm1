@@ -217,7 +217,7 @@ function Get-TargetResource
         $getTargetResourceReturnValue.IsClustered = $currentSqlEngineProperties.IsClustered
         $getTargetResourceReturnValue.SecurityMode = $currentSqlEngineProperties.SecurityMode
 
-        Write-Verbose -Message ($script:localizedData.EvaluateReplicationFeature -f $replicationRegistryPath)
+        Write-Verbose -Message $script:localizedData.EvaluateReplicationFeature
 
         # Check if Replication sub component is configured for this instance
         $isReplicationInstalled = Test-IsReplicationFeatureInstalled -InstanceName $InstanceName
@@ -233,7 +233,7 @@ function Get-TargetResource
             Write-Verbose -Message $script:localizedData.ReplicationFeatureNotFound
         }
 
-        Write-Verbose -Message ($script:localizedData.EvaluateDataQualityServicesFeature -f $dataQualityServicesRegistryPath)
+        Write-Verbose -Message $script:localizedData.EvaluateDataQualityServicesFeature
 
         # Check if the Data Quality Services sub component is configured.
         $isDQInstalled = Test-IsDQComponentInstalled -InstanceName $InstanceName -SqlServerMajorVersion $sqlVersion
@@ -991,6 +991,7 @@ function Set-TargetResource
     $featuresToInstall = ''
 
     $featuresArray = $Features -split ','
+    $foundFeaturesArray = $getTargetResourceResult.Features -split ','
 
     foreach ($feature in $featuresArray)
     {
@@ -999,8 +1000,6 @@ function Set-TargetResource
             $errorMessage = $script:localizedData.FeatureNotSupported -f $feature
             New-InvalidOperationException -Message $errorMessage
         }
-
-        $foundFeaturesArray = $getTargetResourceResult.Features -split ','
 
         if ($feature -notin $foundFeaturesArray)
         {
@@ -1565,6 +1564,8 @@ function Set-TargetResource
         $processExitCode = Start-SqlSetupProcess @startProcessParameters
 
         $setupExitMessage = ($script:localizedData.SetupExitMessage -f $processExitCode)
+
+        $setupEndedInError = $false
 
         if ($processExitCode -eq 3010 -and -not $SuppressReboot)
         {
