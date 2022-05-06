@@ -108,37 +108,6 @@ AfterAll {
 
 Describe 'SqlAGListener\Get-TargetResource' {
     BeforeAll {
-        $mockConnectSql = {
-            return New-Object -TypeName Object |
-                Add-Member -MemberType ScriptProperty -Name AvailabilityGroups -Value {
-                return @(
-                    @{
-                        'AG01' = New-Object -TypeName Object |
-                            Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListeners -Value {
-                            @(
-                                @{
-                                    'AGListener' = New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty -Name PortNumber -Value 5031 -PassThru |
-                                        Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
-                                            return @(
-                                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                                (New-Object -TypeName Object | # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-                                                        Add-Member -MemberType NoteProperty -Name IsDHCP -Value $mockDynamicIsDhcp -PassThru |
-                                                        Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
-                                                        Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
-                                                )
-                                            )
-                                        } -PassThru -Force
-                                }
-                            )
-                        } -PassThru -Force
-                    }
-                )
-            } -PassThru -Force
-        }
-
-        Mock -CommandName Connect-SQL -MockWith $mockConnectSql
-
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
             $script:mockDefaultParameters = @{
@@ -156,183 +125,265 @@ Describe 'SqlAGListener\Get-TargetResource' {
         }
     }
 
-    Context 'When the system is not in the desired state' {
-        BeforeAll {
-            Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener
-        }
 
-        It 'Should return the desired state as absent' {
-            InModuleScope -ScriptBlock {
-                $result = Get-TargetResource @mockGetTargetResourceParameters
+    Context 'When the system is in the desired state' {
+        Context 'When the listener is absent' {
+            BeforeAll {
+                Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener
+            }
 
-                $result.Ensure | Should -Be 'Absent'
+            It 'Should return the desired state as absent' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.Ensure | Should -Be 'Absent'
+                }
+            }
+
+            It 'Should return the same values as passed as parameters' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                    $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                    $result.AvailabilityGroup | Should -Be $mockGetTargetResourceParameters.AvailabilityGroup
+                }
+            }
+
+            It 'Should not return any IP addresses' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.IpAddress | Should -BeNullOrEmpty
+                }
+            }
+
+            It 'Should not return port' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.Port | Should -Be 0
+                }
+            }
+
+            It 'Should return that DHCP is not used' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.DHCP | Should -BeFalse
+                }
+            }
+
+            It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
+                InModuleScope -ScriptBlock {
+                    { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
             }
         }
 
-        It 'Should return the same values as passed as parameters' {
-            InModuleScope -ScriptBlock {
-                $result = Get-TargetResource @mockGetTargetResourceParameters
+        Context 'When listener is present and not using DHCP' {
+            BeforeAll {
+                Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
+                    return @{
+                        PortNumber = 5031
+                        AvailabilityGroupListenerIPAddresses = @{
+                            IsDHCP  = $false
+                            IPAddress = '192.168.0.1'
+                            SubnetMask = '255.255.255.0'
+                        }
+                    }
+                }
+            }
 
-                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                $result.AvailabilityGroup | Should -Be $mockGetTargetResourceParameters.AvailabilityGroup
+            It 'Should return the desired state as present' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.Ensure | Should -Be 'Present'
+                }
+            }
+
+            It 'Should return the same values as passed as parameters' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                    $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                    $result.AvailabilityGroup | Should -Be $mockGetTargetResourceParameters.AvailabilityGroup
+                }
+            }
+
+            It 'Should return correct IP address' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.IpAddress | Should -Be '192.168.0.1/255.255.255.0'
+                }
+            }
+
+            It 'Should return correct port' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.Port | Should -Be 5031
+                }
+            }
+
+            It 'Should return that DHCP is not used' {
+                $mockDynamicIsDhcp = $false
+
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.DHCP | Should -BeFalse
+                }
+            }
+
+            It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
+                InModuleScope -ScriptBlock {
+                    { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
             }
         }
 
-        It 'Should not return any IP addresses' {
-            InModuleScope -ScriptBlock {
-                $result = Get-TargetResource @mockGetTargetResourceParameters
+        Context 'When listener is present and using DHCP' {
+            BeforeAll {
+                Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
+                    return @{
+                        PortNumber = 5031
+                        AvailabilityGroupListenerIPAddresses = @{
+                            IsDHCP  = $true
+                            IPAddress = '192.168.0.1'
+                            SubnetMask = '255.255.255.0'
+                        }
+                    }
+                }
+            }
 
-                $result.IpAddress | Should -BeNullOrEmpty
+            It 'Should return the desired state as present' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.Ensure | Should -Be 'Present'
+                }
+            }
+
+            It 'Should return the same values as passed as parameters' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                    $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                    $result.AvailabilityGroup | Should -Be $mockGetTargetResourceParameters.AvailabilityGroup
+                }
+            }
+
+            It 'Should return correct IP address' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.IpAddress | Should -Be '192.168.0.1/255.255.255.0'
+                }
+            }
+
+            It 'Should return correct port' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.Port | Should -Be 5031
+                }
+            }
+
+            It 'Should return that DHCP is not used' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.DHCP | Should -BeTrue
+                }
+            }
+
+            It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
+                InModuleScope -ScriptBlock {
+                    { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
             }
         }
 
-        It 'Should not return port' {
-            InModuleScope -ScriptBlock {
-                $result = Get-TargetResource @mockGetTargetResourceParameters
-
-                $result.Port | Should -Be 0
-            }
-        }
-
-        It 'Should return that DHCP is not used' {
-            InModuleScope -ScriptBlock {
-                $result = Get-TargetResource @mockGetTargetResourceParameters
-
-                $result.DHCP | Should -BeFalse
-            }
-        }
-
-        It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
-            InModuleScope -ScriptBlock {
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+        Context 'When listener does not have subnet mask' {
+            BeforeAll {
+                Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
+                    return @{
+                        PortNumber = 5031
+                        AvailabilityGroupListenerIPAddresses = @{
+                            IsDHCP  = $false
+                            IPAddress = '192.168.0.1'
+                            SubnetMask = ''
+                        }
+                    }
+                }
             }
 
-            Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+            It 'Should return the desired state as present' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.Ensure | Should -Be 'Present'
+                }
+            }
+
+            It 'Should return the same values as passed as parameters' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                    $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                    $result.AvailabilityGroup | Should -Be $mockGetTargetResourceParameters.AvailabilityGroup
+                }
+            }
+
+            It 'Should return correct IP address' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.IpAddress | Should -Be '192.168.0.1'
+                }
+            }
+
+            It 'Should return correct port' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.Port | Should -Be 5031
+                }
+            }
+
+            It 'Should return that DHCP is not used' {
+                InModuleScope -ScriptBlock {
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.DHCP | Should -BeFalse
+                }
+            }
+
+            It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
+                InModuleScope -ScriptBlock {
+                    { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+            }
         }
     }
-
-    # Context 'When the system is in the desired state' {
-    #     Context 'When not using DHCP' {
-    #         It 'Should return the desired state as present' {
-    #             InModuleScope -ScriptBlock {
-    #                 $result = Get-TargetResource @mockGetTargetResourceParameters
-
-    #                 $result.Ensure | Should -Be 'Present'
-    #             }
-    #         }
-
-    #         It 'Should return the same values as passed as parameters' {
-    #             InModuleScope -ScriptBlock {
-    #                 $result = Get-TargetResource @mockGetTargetResourceParameters
-
-    #                 $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-    #                 $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-    #                 $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-    #                 $result.AvailabilityGroup | Should -Be $mockGetTargetResourceParameters.AvailabilityGroup
-    #             }
-    #         }
-
-    #         It 'Should return correct IP address' {
-    #             InModuleScope -ScriptBlock {
-    #                 $result = Get-TargetResource @mockGetTargetResourceParameters
-
-    #                 $result.IpAddress | Should -Be '192.168.0.1/255.255.255.0'
-    #             }
-    #         }
-
-    #         It 'Should return correct port' {
-    #             InModuleScope -ScriptBlock {
-    #                 $result = Get-TargetResource @mockGetTargetResourceParameters
-
-    #                 $result.Port | Should -Be 5031
-    #             }
-    #         }
-
-    #         It 'Should return that DHCP is not used' {
-    #             $mockDynamicIsDhcp = $false
-
-    #             InModuleScope -ScriptBlock {
-    #                 $result = Get-TargetResource @mockGetTargetResourceParameters
-
-    #                 $result.DHCP | Should -BeFalse
-    #             }
-    #         }
-
-    #         It 'Should call the mock function Connect-SQL' {
-    #             InModuleScope -ScriptBlock {
-    #                 { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
-    #             }
-
-    #             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-    #         }
-    #     }
-
-    #     Context 'When using DHCP' {
-    #         It 'Should return the desired state as present' {
-    #             InModuleScope -ScriptBlock {
-    #                 $result = Get-TargetResource @mockGetTargetResourceParameters
-
-    #                 $result.Ensure | Should -Be 'Present'
-    #             }
-    #         }
-
-    #         It 'Should return the same values as passed as parameters' {
-    #             InModuleScope -ScriptBlock {
-    #                 $result = Get-TargetResource @mockGetTargetResourceParameters
-
-    #                 $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-    #                 $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-    #                 $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-    #                 $result.AvailabilityGroup | Should -Be $mockGetTargetResourceParameters.AvailabilityGroup
-    #             }
-    #         }
-
-    #         It 'Should return correct IP address' {
-    #             InModuleScope -ScriptBlock {
-    #                 $result = Get-TargetResource @mockGetTargetResourceParameters
-
-    #                 $result.IpAddress | Should -Be '192.168.0.1/255.255.255.0'
-    #             }
-    #         }
-
-    #         It 'Should return correct port' {
-    #             InModuleScope -ScriptBlock {
-    #                 $result = Get-TargetResource @mockGetTargetResourceParameters
-
-    #                 $result.Port | Should -Be 5031
-    #             }
-    #         }
-
-    #         It 'Should return that DHCP is not used' {
-    #             $mockDynamicIsDhcp = $true
-
-    #             InModuleScope -ScriptBlock {
-    #                 $result = Get-TargetResource @mockGetTargetResourceParameters
-
-    #                 $result.DHCP | Should -BeTrue
-    #             }
-    #         }
-
-    #         It 'Should call the mock function Connect-SQL' {
-    #             InModuleScope -ScriptBlock {
-    #                 { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
-    #             }
-
-    #             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-    #         }
-    #     }
-    # }
-
-    # Context 'When Get-SQLAlwaysOnAvailabilityGroupListener throws an error' {
-    #     # Setting dynamic mock to an availability group that the test is not expecting.
-    #     $mockDynamicAvailabilityGroup = 'UnknownAG'
-
-    #     It 'Should throw the correct error' {
-    #         { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.AvailabilityGroupListenerNotFound -f $testParameters.AvailabilityGroup, $testParameters.InstanceName)
-    #     }
-    # }
 }
 
 # Describe 'SqlAGListener\Test-TargetResource' {
@@ -913,3 +964,90 @@ Describe 'SqlAGListener\Get-TargetResource' {
 
 #     Assert-VerifiableMock
 # }
+
+Describe 'SqlAGListener\Get-SQLAlwaysOnAvailabilityGroupListener' {
+    BeforeAll {
+        Mock -CommandName Connect-SQL -MockWith {
+            return New-Object -TypeName Object |
+                Add-Member -MemberType ScriptProperty -Name AvailabilityGroups -Value {
+                return @(
+                    @{
+                        'AG01' = New-Object -TypeName Object |
+                            Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListeners -Value {
+                            @(
+                                @{
+                                    'AGListener' = New-Object -TypeName Object |
+                                        Add-Member -MemberType NoteProperty -Name PortNumber -Value 5031 -PassThru |
+                                        Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
+                                            return @(
+                                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                                (New-Object -TypeName Object | # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                                        Add-Member -MemberType NoteProperty -Name IsDHCP -Value $true -PassThru |
+                                                        Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
+                                                        Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
+                                                )
+                                            )
+                                        } -PassThru -Force
+                                }
+                            )
+                        } -PassThru -Force
+                    }
+                )
+            } -PassThru -Force
+        }
+    }
+
+    Context 'When the Availability Group exist' {
+        It 'Should return the correct values for each property' {
+            InModuleScope -ScriptBlock {
+                $mockGetSQLAlwaysOnAvailabilityGroupListenerParameters = @{
+                    Name              = 'AGListener'
+                    AvailabilityGroup = 'AG01'
+                    InstanceName      = 'MSSQLSERVER'
+                    ServerName        = 'localhost'
+                }
+
+                $result = Get-SQLAlwaysOnAvailabilityGroupListener @mockGetSQLAlwaysOnAvailabilityGroupListenerParameters
+
+                $result.PortNumber | Should -Be 5031
+                $result.AvailabilityGroupListenerIPAddresses.IsDHCP | Should -BeTrue
+                $result.AvailabilityGroupListenerIPAddresses.IPAddress | Should -Be '192.168.0.1'
+                $result.AvailabilityGroupListenerIPAddresses.SubnetMask | Should -Be '255.255.255.0'
+            }
+        }
+    }
+
+    Context 'When the Availability Group Listener does not exist' {
+        It 'Should return the correct values for each property' {
+            InModuleScope -ScriptBlock {
+                $mockGetSQLAlwaysOnAvailabilityGroupListenerParameters = @{
+                    Name              = 'UnknownListener'
+                    AvailabilityGroup = 'AG01'
+                    InstanceName      = 'MSSQLSERVER'
+                    ServerName        = 'localhost'
+                }
+
+                $result = Get-SQLAlwaysOnAvailabilityGroupListener @mockGetSQLAlwaysOnAvailabilityGroupListenerParameters
+
+                $result | Should -BeNullOrEmpty
+            }
+        }
+    }
+
+    Context 'When the Availability Group does not exist' {
+        It 'Should throw the correct error message' {
+            InModuleScope -ScriptBlock {
+                $mockGetSQLAlwaysOnAvailabilityGroupListenerParameters = @{
+                    Name              = 'AGListener'
+                    AvailabilityGroup = 'UnknownAG'
+                    InstanceName      = 'MSSQLSERVER'
+                    ServerName        = 'localhost'
+                }
+
+                $mockErrorMessage = $script:localizedData.AvailabilityGroupNotFound -f 'UnknownAG', 'MSSQLSERVER'
+
+                { $result = Get-SQLAlwaysOnAvailabilityGroupListener @mockGetSQLAlwaysOnAvailabilityGroupListenerParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+            }
+        }
+    }
+}
