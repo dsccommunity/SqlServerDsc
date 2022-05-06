@@ -89,6 +89,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlWindowsFirewall
   - Now the property Features always return the features in the order
     'SQLENGINE', 'RS', 'AS', and 'IS' if they are installed.
+- SqlAGListener
+  - Removed unnecessary exception that probably never will be thrown in
+    `Test-TargetResource`.
+  - Simplified the logic that checks if the properties are in desired state
+    as the new unit tests did not pass with the previous logic.
 
 ### Fixed
 

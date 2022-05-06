@@ -386,112 +386,249 @@ Describe 'SqlAGListener\Get-TargetResource' {
     }
 }
 
-# Describe 'SqlAGListener\Test-TargetResource' {
-#     BeforeEach {
-#         $testParameters = $defaultParameters.Clone()
-#     }
+Describe 'SqlAGListener\Test-TargetResource' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName      = 'MSSQLSERVER'
+                ServerName        = 'localhost'
+                Name              = 'AGListener'
+                AvailabilityGroup = 'AG01'
+            }
+        }
+    }
 
-#     Context 'When the system is not in the desired state (for static IP)' {
-#         It 'Should return that desired state is absent when wanted desired state is to be Present' {
-#             $testParameters['Ensure'] = 'Present'
-#             $testParameters['IpAddress'] = '192.168.10.45/255.255.252.0'
-#             $testParameters['Port'] = 5030
-#             $testParameters['DHCP'] = $false
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockTestTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
 
-#             Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener
+    Context 'When the system is in the desired state' {
+        Context 'When the listener does not exist' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Absent'
+                    }
+                }
+            }
 
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeFalse
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters.Ensure = 'Absent'
 
-#             Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#         }
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
-#         Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
-#             # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListener
-#             return New-Object -TypeName Object |
-#                 Add-Member -MemberType NoteProperty -Name PortNumber -Value 5030 -PassThru |
-#                 Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
-#                 return @(
-#                     # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-#                     (New-Object -TypeName Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-#                             Add-Member -MemberType NoteProperty -Name IsDHCP -Value $false -PassThru |
-#                             Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
-#                             Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
-#                     )
-#                 )
-#             } -PassThru -Force
-#         }
+                    $result | Should -BeTrue
+                }
 
-#         It 'Should return that desired state is absent when wanted desired state is to be Absent' {
-#             $testParameters['Ensure'] = 'Absent'
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
 
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeFalse
+        Context 'When the listener does exist' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                    }
+                }
+            }
 
-#             Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#         }
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
-#         It 'Should return that desired state is absent when IP address is different' {
-#             $testParameters['Ensure'] = 'Present'
-#             $testParameters['IpAddress'] = '192.168.10.45/255.255.252.0'
-#             $testParameters['Port'] = 5030
-#             $testParameters['DHCP'] = $false
+                    $result | Should -BeTrue
+                }
 
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeFalse
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+    }
 
-#             Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#         }
+    Context 'When the system is not in the desired state' {
+        Context 'When the listener does not exist' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Absent'
+                    }
+                }
+            }
 
-#         It 'Should return that desired state is absent when DHCP is absent but should be present' {
-#             $testParameters['Ensure'] = 'Present'
-#             $testParameters['IpAddress'] = '192.168.0.1/255.255.255.0'
-#             $testParameters['Port'] = 5030
-#             $testParameters['DHCP'] = $true
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeFalse
+                    $result | Should -BeFalse
+                }
 
-#             Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#         }
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
 
-#         It 'Should return that desired state is absent when DHCP is the only set parameter' {
-#             $testParameters['DHCP'] = $true
+        Context 'When the listener does exist' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                    }
+                }
+            }
 
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeFalse
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters.Ensure = 'Absent'
 
-#             Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#         }
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
-#         Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
-#             # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListener
-#             return New-Object -TypeName Object |
-#                 Add-Member -MemberType NoteProperty -Name PortNumber -Value 5555 -PassThru |
-#                 Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
-#                 return @(
-#                     # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-#                     (New-Object -TypeName Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-#                             Add-Member -MemberType NoteProperty -Name IsDHCP -Value $false -PassThru |
-#                             Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
-#                             Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
-#                     )
-#                 )
-#             } -PassThru -Force
-#         }
+                    $result | Should -BeFalse
+                }
 
-#         It 'Should return that desired state is absent when port is different' {
-#             $testParameters['Ensure'] = 'Present'
-#             $testParameters['IpAddress'] = '192.168.0.1/255.255.255.0'
-#             $testParameters['Port'] = 5030
-#             $testParameters['DHCP'] = $false
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
 
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeFalse
+        Context 'When using static IP address' {
+            Context 'When the property <MockPropertyName> is not in desired state' -ForEach @(
+                @{
+                    MockPropertyName = 'IpAddress'
+                    MockExpectedValue = '192.168.10.45/255.255.252.0'
+                    MockActualValue = '192.168.10.45/255.255.255.0'
+                }
+                @{
+                    MockPropertyName = 'Port'
+                    MockExpectedValue = '5031'
+                    MockActualValue = '5030'
+                }
+                @{
+                    MockPropertyName = 'DHCP'
+                    MockExpectedValue = $false
+                    MockActualValue = $true
+                }
+             ) {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            $MockPropertyName = $MockActualValue
+                        }
+                    }
+                }
 
-#             Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#         }
-#     }
+                It 'Should return $false' {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        $mockTestTargetResourceParameters.$MockPropertyName = $MockExpectedValue
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeFalse
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When static IP address is desired but current state is using DHCP' {
+                 BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            IpAddress = '192.168.0.1'
+                            DHCP = $true
+                        }
+                    }
+                }
+
+                Context 'When using default value for DHCP' {
+                    It 'Should return $false' {
+                        InModuleScope -ScriptBlock {
+                            $mockTestTargetResourceParameters.IpAddress = '192.168.0.1'
+
+                            $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                            $result | Should -BeFalse
+                        }
+
+                        Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context 'When specifying a value for DHCP' {
+                    It 'Should return $false' {
+                        InModuleScope -ScriptBlock {
+                            $mockTestTargetResourceParameters.IpAddress = '192.168.0.1'
+                            $mockTestTargetResourceParameters.DHCP = $false
+
+                            $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                            $result | Should -BeFalse
+                        }
+
+                        Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    }
+                }
+            }
+        }
+
+        Context 'When using DHCP' {
+            Context 'When the property <MockPropertyName> is not in desired state' -ForEach @(
+                @{
+                    MockPropertyName = 'DHCP'
+                    MockExpectedValue = $true
+                    MockActualValue = $false
+                }
+            ) {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            $MockPropertyName = $MockActualValue
+                        }
+                    }
+                }
+
+                It 'Should return $false' {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        $mockTestTargetResourceParameters.$MockPropertyName = $MockExpectedValue
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeFalse
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When DHCP is desired but current state is using static IP address' {
+                BeforeAll {
+                   Mock -CommandName Get-TargetResource -MockWith {
+                       return @{
+                           Ensure = 'Present'
+                           IpAddress = '192.168.0.1'
+                           DHCP = $false
+                       }
+                   }
+               }
+
+                It 'Should return $false' {
+                    InModuleScope -ScriptBlock {
+                        $mockTestTargetResourceParameters.DHCP = $true
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeFalse
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                }
+           }
+        }
+    }
 
 #     Context 'When the system is not in the desired state (for DHCP)' {
 #         Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
@@ -672,9 +809,7 @@ Describe 'SqlAGListener\Get-TargetResource' {
 #             { Test-TargetResource @testParameters } | Should -Throw $script:localizedData.UnexpectedErrorFromGet
 #         }
 #     }
-
-#     Assert-VerifiableMock
-# }
+}
 
 # Describe 'SqlAGListener\Set-TargetResource' {
 #     BeforeEach {
