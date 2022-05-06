@@ -475,40 +475,36 @@ function Test-TargetResource
     )
 
     $availabilityGroupListenerState = Get-TargetResource @parameters
-    if ($null -ne $availabilityGroupListenerState)
-    {
-        if ($null -eq $IpAddress -or ($null -ne $availabilityGroupListenerState.IpAddress -and -not ( Compare-Object -ReferenceObject $IpAddress -DifferenceObject $availabilityGroupListenerState.IpAddress)))
-        {
-            $ipAddressEqual = $true
-        }
-        else
-        {
-            $ipAddressEqual = $false
-        }
 
-        [System.Boolean] $result = $false
-        if ($availabilityGroupListenerState.Ensure -eq $Ensure)
+    [System.Boolean] $result = $false
+
+    if ($availabilityGroupListenerState.Ensure -eq $Ensure)
+    {
+        $result = $true
+
+        if ($Ensure -eq 'Present')
         {
-            if ($Ensure -eq 'Absent')
+            if ($PSBoundParameters.ContainsKey('Port') -and $availabilityGroupListenerState.Port -ne $Port)
             {
-                $result = $true
+                $result = $false
+            }
+
+            if ($PSBoundParameters.ContainsKey('DHCP') -and $availabilityGroupListenerState.DHCP -ne $DHCP)
+            {
+                $result = $false
+            }
+
+            if ($PSBoundParameters.ContainsKey('IpAddress') -and $availabilityGroupListenerState.DHCP -eq $true)
+            {
+                $result = $false
+            }
+
+            # Compare-Object will return a value if the comparison is not equal.
+            if ($PSBoundParameters.ContainsKey('IpAddress') -and (Compare-Object -ReferenceObject $IpAddress -DifferenceObject $availabilityGroupListenerState.IpAddress))
+            {
+                $result = $false
             }
         }
-
-        if (-not $($PSBoundParameters.ContainsKey('Ensure')) -or $Ensure -eq 'Present')
-        {
-            if (($Port -eq "" -or $availabilityGroupListenerState.Port -eq $Port) -and
-                $ipAddressEqual -and
-                (-not $($PSBoundParameters.ContainsKey('DHCP')) -or $availabilityGroupListenerState.DHCP -eq $DHCP))
-            {
-                $result = $true
-            }
-        }
-    }
-    else
-    {
-        $errorMessage = $script:localizedData.UnexpectedErrorFromGet
-        New-InvalidResultException -Message $errorMessage
     }
 
     if ($result)
@@ -585,4 +581,3 @@ function Get-SQLAlwaysOnAvailabilityGroupListener
 
     return $availabilityGroupListener
 }
-
