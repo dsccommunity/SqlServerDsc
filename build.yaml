@@ -86,20 +86,37 @@ BuildWorkflow:
         {
             $pesterObject = Import-Clixml -Path $PesterResultObjectClixml
 
-            $maxColumnLength = ($pesterObject.Containers | ForEach-Object -Process { $_.Item.Name.Length } | Measure-Object -Maximum).Maximum
-            $maxColumnLength += 2
+            $pesterObject.Containers |
+                ForEach-Object -Process {
+                    $durationString = $_.Duration.ToString("''m' minutes 's' seconds'")
+                    $durationString = $durationString -replace '0 minutes '
+                    $durationString = $durationString -replace '1 minutes ', '1 minute '
+                    $durationString = $durationString -replace '1 seconds', '1 second '
 
-            "Test script file{0}Duration" -f "".PadRight($maxColumnLength - 16)
-            "".PadRight($maxColumnLength + 25, '-') # Adding 25 chars to cover the time in clear text
-
-            $pesterObject.Containers | ForEach-Object -Process {
-              $padding = $maxColumnLength - $_.Item.Name.Length
-
-              "{0}{1}{2} ({3})" -f $_.Item.Name, "".PadRight($padding), ($_.Duration.ToString("''m' minutes 's' seconds'") -replace '0 minutes ', ''), $_.Result
-            }
+                    [PSCustomObject] @{
+                        Name = $_.Item.Name
+                        Duration = $durationString
+                        Result = $_.Result
+                    }
+                } |
+                Format-Table -Property @(
+                    @{
+                        Name = 'Test Script File'
+                        Expression = { $_.Name }
+                    }
+                    @{
+                        Name = 'Duration'
+                        Expression = { $_.Duration }
+                        Align = 'Right'
+                    }
+                    @{
+                        Name = 'Result'
+                        Expression = { $_.Result }
+                    }
+                )
 
             ""
-            "Total run time:`t{0}" -f $pesterObject.Duration.ToString("''m' minutes 's' seconds'")
+            "Total run time: {0}" -f $pesterObject.Duration.ToString("''m' minutes 's' seconds'")
             ""
         }
         else
