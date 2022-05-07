@@ -447,6 +447,50 @@ Describe 'SqlAGListener\Test-TargetResource' {
                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
             }
         }
+
+        Context 'When the property <MockPropertyName> is in desired state' -ForEach @(
+            @{
+                MockPropertyName = 'IpAddress'
+                MockExpectedValue = '192.168.10.45/255.255.252.0'
+                MockActualValue = '192.168.10.45/255.255.252.0'
+            }
+            @{
+                MockPropertyName = 'Port'
+                MockExpectedValue = '5031'
+                MockActualValue = '5031'
+            }
+            @{
+                MockPropertyName = 'DHCP'
+                MockExpectedValue = $false
+                MockActualValue = $false
+            }
+            @{
+                MockPropertyName = 'DHCP'
+                MockExpectedValue = $true
+                MockActualValue = $true
+            }
+            ) {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                        $MockPropertyName = $MockActualValue
+                    }
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $mockTestTargetResourceParameters.$MockPropertyName = $MockExpectedValue
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
     }
 
     Context 'When the system is not in the desired state' {
@@ -629,497 +673,736 @@ Describe 'SqlAGListener\Test-TargetResource' {
            }
         }
     }
-
-#     Context 'When the system is not in the desired state (for DHCP)' {
-#         Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
-#             # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListener
-#             return New-Object -TypeName Object |
-#                 Add-Member -MemberType NoteProperty -Name PortNumber -Value 5030 -PassThru |
-#                 Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
-#                 return @(
-#                     # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-#                     (New-Object -TypeName Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-#                             Add-Member -MemberType NoteProperty -Name IsDHCP -Value $true -PassThru |
-#                             Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
-#                             Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
-#                     )
-#                 )
-#             } -PassThru -Force
-#         }
-
-#         It 'Should return that desired state is absent when DHCP is present but should be absent' {
-#             $testParameters['Ensure'] = 'Present'
-#             $testParameters['IpAddress'] = '192.168.0.100/255.255.255.0'
-#             $testParameters['Port'] = 5030
-#             $testParameters['DHCP'] = $false
-
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeFalse
-
-#             Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#         }
-
-#         It 'Should return that desired state is absent when IP address is the only set parameter' {
-#             $testParameters['IpAddress'] = '192.168.10.45/255.255.252.0'
-
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeFalse
-
-#             Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#         }
-
-#         Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
-#             # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListener
-#             return New-Object -TypeName Object |
-#                 Add-Member -MemberType NoteProperty -Name PortNumber -Value 5555 -PassThru |
-#                 Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
-#                 return @(
-#                     # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-#                     (New-Object -TypeName Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-#                             Add-Member -MemberType NoteProperty -Name IsDHCP -Value $true -PassThru |
-#                             Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
-#                             Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
-#                     )
-#                 )
-#             } -PassThru -Force
-#         }
-
-#         It 'Should return that desired state is absent when port is the only set parameter' {
-#             $testParameters['Port'] = 5030
-
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeFalse
-
-#             Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#         }
-#     }
-
-#     Context 'When the system is in the desired state (for static IP)' {
-#         It 'Should return that desired state is present when wanted desired state is to be Absent' {
-#             $testParameters['Ensure'] = 'Absent'
-#             $testParameters['IpAddress'] = '192.168.10.45/255.255.252.0'
-#             $testParameters['Port'] = 5030
-#             $testParameters['DHCP'] = $false
-
-#             Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener
-
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeTrue
-
-#             Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#         }
-
-#         Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
-#             # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListener
-#             return New-Object -TypeName Object |
-#                 Add-Member -MemberType NoteProperty -Name PortNumber -Value 5030 -PassThru |
-#                 Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
-#                 return @(
-#                     # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-#                     (New-Object -TypeName Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-#                             Add-Member -MemberType NoteProperty -Name IsDHCP -Value $false -PassThru |
-#                             Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
-#                             Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
-#                     ),
-#                     # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-#                     (New-Object -TypeName Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-#                             Add-Member -MemberType NoteProperty -Name IsDHCP -Value $false -PassThru |
-#                             Add-Member -MemberType NoteProperty -Name IPAddress -Value 'f00::ba12' -PassThru
-#                     )
-#                 )
-#             } -PassThru -Force
-#         }
-
-#         It 'Should return that desired state is present when wanted desired state is to be Present, without DHCP' {
-#             $testParameters['Ensure'] = 'Present'
-#             $testParameters['IpAddress'] = @('192.168.0.1/255.255.255.0', 'f00::ba12')
-#             $testParameters['Port'] = 5030
-#             $testParameters['DHCP'] = $false
-
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeTrue
-
-#             Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#         }
-
-#         It 'Should return that desired state is present when IP address is the only set parameter' {
-#             $testParameters['IpAddress'] = @('192.168.0.1/255.255.255.0', 'f00::ba12')
-
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeTrue
-
-#             Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#         }
-
-#         It 'Should return that desired state is present when port is the only set parameter' {
-#             $testParameters['Port'] = 5030
-
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeTrue
-
-#             Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#         }
-#     }
-
-#     Context 'When the system is in the desired state (for DHCP)' {
-#         Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
-#             # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListener
-#             return New-Object -TypeName Object |
-#                 Add-Member -MemberType NoteProperty -Name PortNumber -Value 5030 -PassThru |
-#                 Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
-#                 return @(
-#                     # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-#                     (New-Object -TypeName Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-#                             Add-Member -MemberType NoteProperty -Name IsDHCP -Value $true -PassThru |
-#                             Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
-#                             Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
-#                     )
-#                 )
-#             } -PassThru -Force
-#         }
-
-#         It 'Should return that desired state is present when wanted desired state is to be Present, with DHCP' {
-#             $testParameters['Ensure'] = 'Present'
-#             $testParameters['IpAddress'] = '192.168.0.1/255.255.255.0'
-#             $testParameters['Port'] = 5030
-#             $testParameters['DHCP'] = $true
-
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeTrue
-
-#             Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#         }
-
-#         It 'Should return that desired state is present when DHCP is the only set parameter' {
-#             $testParameters['DHCP'] = $true
-
-#             $result = Test-TargetResource @testParameters
-#             $result | Should -BeTrue
-
-#             Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#         }
-#     }
-
-#     Context 'When Get-TargetResource returns $null' {
-#         It 'Should throw the correct error' {
-#             Mock -CommandName Get-TargetResource -MockWith {
-#                 return $null
-#             }
-
-#             { Test-TargetResource @testParameters } | Should -Throw $script:localizedData.UnexpectedErrorFromGet
-#         }
-#     }
 }
 
-# Describe 'SqlAGListener\Set-TargetResource' {
-#     BeforeEach {
-#         $testParameters = $defaultParameters.Clone()
-
-#         Mock -CommandName Connect-SQL -MockWith $mockConnectSql
-#         Mock -CommandName New-SqlAvailabilityGroupListener
-#         Mock -CommandName Set-SqlAvailabilityGroupListener
-#         Mock -CommandName Add-SqlAvailabilityGroupListenerStaticIp
-#     }
-
-#     Context 'When the system is not in the desired state' {
-#         $mockDynamicListenerName = 'UnknownListener'
-
-#         It 'Should call the cmdlet New-SqlAvailabilityGroupListener when system is not in desired state, when using Static IP' {
-#             $testParameters['Ensure'] = 'Present'
-#             $testParameters['IpAddress'] = '192.168.10.45/255.255.252.0'
-#             $testParameters['Port'] = 5031
-#             $testParameters['DHCP'] = $false
-
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-
-#             Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
-#             Should -Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#             Should -Invoke -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
-#         }
-
-#         $mockDynamicListenerName = 'UnknownListener'
-
-#         It 'Should call the cmdlet New-SqlAvailabilityGroupListener when system is not in desired state, when using DHCP and specific DhcpSubnet' {
-#             $testParameters['Ensure'] = 'Present'
-#             $testParameters['IpAddress'] = '192.168.10.1/255.255.252.0'
-#             $testParameters['Port'] = 5031
-#             $testParameters['DHCP'] = $true
-
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-
-#             Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
-#             Should -Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#             Should -Invoke -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
-#         }
-
-#         $mockDynamicListenerName = 'UnknownListener'
-
-#         It 'Should call the cmdlet New-SqlAvailabilityGroupListener when system is not in desired state, when using DHCP and server default DhcpSubnet' {
-#             $testParameters['Ensure'] = 'Present'
-#             $testParameters['Port'] = 5031
-#             $testParameters['DHCP'] = $true
-
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-
-#             Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
-#             Should -Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#             Should -Invoke -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
-#         }
-
-#         $mockDynamicIsDhcp = $false
-#         $mockDynamicListenerName = 'AGListener'
-#         $mockDynamicPortNumber = 5031
-
-#         It 'Should throw when trying to change an existing IP address' {
-#             $testParameters['IpAddress'] = '10.0.0.1/255.255.252.0'
-#             $testParameters['Port'] = 5031
-#             $testParameters['DHCP'] = $false
-
-#             { Set-TargetResource @testParameters } | Should -Throw
-
-#             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-#             Should -Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
-#         }
-
-#         $mockDynamicIsDhcp = $false
-#         $mockDynamicListenerName = 'AGListener'
-#         $mockDynamicPortNumber = 5031
-
-#         It 'Should throw when trying to change from static IP to DHCP' {
-#             $testParameters['IpAddress'] = '192.168.0.1/255.255.255.0'
-#             $testParameters['Port'] = 5031
-#             $testParameters['DHCP'] = $true
-
-#             { Set-TargetResource @testParameters } | Should -Throw
-
-#             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-#             Should -Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
-#         }
-
-#         $mockDynamicIsDhcp = $false
-#         $mockDynamicListenerName = 'AGListener'
-#         $mockDynamicPortNumber = 5031
-
-#         It 'Should call the cmdlet Add-SqlAvailabilityGroupListenerStaticIp, when adding another IP address, and system is not in desired state' {
-#             $testParameters['IpAddress'] = @('192.168.0.1/255.255.255.0', '10.0.0.1/255.255.252.0')
-#             $testParameters['Port'] = 5030
-#             $testParameters['DHCP'] = $false
-
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-
-#             Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
-#             Should -Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
-#             Should -Invoke -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 1 -Scope It
-#         }
-
-#         $mockDynamicIsDhcp = $false
-#         $mockDynamicListenerName = 'AGListener'
-#         $mockDynamicPortNumber = 5031
-
-#         It 'Should not call the any cmdlet *-SqlAvailability* when system is in desired state' {
-#             $testParameters['Ensure'] = 'Present'
-#             $testParameters['IpAddress'] = '192.168.0.1/255.255.255.0'
-#             $testParameters['Port'] = 5031
-#             $testParameters['DHCP'] = $false
-
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-
-#             Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
-#             Should -Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
-#         }
-
-#         $mockDynamicListenerName = 'AGListener'
-#         $script:mockMethodDropRan = $false # This is set to $true when Drop() method is called. make sure we start the test with $false.
-
-#         It 'Should not call the any cmdlet *-SqlAvailability* or the the Drop() method when system is in desired state and ensure is set to ''Absent''' {
-#             $testParameters['Ensure'] = 'Absent'
-
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-#             $script:mockMethodDropRan | Should -BeTrue # Should have made one call to the Drop() method.
-
-#             Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
-#             Should -Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
-#         }
-
-#         $mockDynamicAvailabilityGroup = 'UnknownAG'
-#         $mockDynamicListenerName = 'UnknownListener'
-
-#         It 'Should throw the correct error when availability group is not found and Ensure is set to ''Present''' {
-#             $testParameters['Ensure'] = 'Present'
-#             $testParameters['IpAddress'] = '192.168.0.1/255.255.255.0'
-#             $testParameters['Port'] = 5031
-#             $testParameters['DHCP'] = $false
-
-#             Mock -CommandName Get-TargetResource -MockWith {
-#                 return @{
-#                     Ensure = 'Absent'
-#                 }
-#             }
-
-#             { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.AvailabilityGroupNotFound -f $testParameters.AvailabilityGroup, $testParameters.InstanceName)
-#         }
-
-#         It 'Should throw the correct error when availability group is not found and Ensure is set to ''Absent''' {
-#             $testParameters['Ensure'] = 'Absent'
-
-#             Mock -CommandName Get-TargetResource -MockWith {
-#                 return @{
-#                     Ensure = 'Present'
-#                 }
-#             }
-
-#             { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.AvailabilityGroupNotFound -f $testParameters.AvailabilityGroup, $testParameters.InstanceName)
-#         }
-
-#         $mockDynamicAvailabilityGroup = 'AG01'
-#         $mockDynamicListenerName = 'UnknownListener'
-
-#         It 'Should throw the correct error when listener is not found and Ensure is set to ''Absent''' {
-#             $testParameters['Ensure'] = 'Absent'
-
-#             { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.AvailabilityGroupListenerNotFound -f $testParameters.AvailabilityGroup, $testParameters.InstanceName)
-#         }
-
-#         It 'Should throw the correct error when listener is not found and Ensure is set to ''Present''' {
-#             $testParameters['Ensure'] = 'Present'
-#             $testParameters['IpAddress'] = '192.168.0.1/255.255.255.0'
-#             $testParameters['Port'] = 5031
-#             $testParameters['DHCP'] = $false
-
-#             Mock -CommandName Get-TargetResource -MockWith {
-#                 return @{
-#                     Ensure            = 'Present'
-#                     Name              = 'UnknownListener'
-#                     AvailabilityGroup = 'AG01'
-#                     IpAddress         = '192.168.0.1/255.255.255.0'
-#                     Port              = 5031
-#                     DHCP              = $false
-#                 }
-#             }
-
-#             { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.AvailabilityGroupListenerNotFound -f $testParameters.AvailabilityGroup, $testParameters.InstanceName)
-#         }
-
-#         $mockDynamicAvailabilityGroup = 'UnknownAG'
-#         $mockDynamicListenerName = 'UnknownListener'
-
-#         It 'Should throw the correct error when availability group is not found and Ensure is set to ''Present''' {
-#             $testParameters['Ensure'] = 'Present'
-#             $testParameters['IpAddress'] = '192.168.0.1/255.255.255.0'
-#             $testParameters['Port'] = 5031
-#             $testParameters['DHCP'] = $false
-
-#             Mock -CommandName Get-TargetResource -MockWith {
-#                 return @{
-#                     Ensure            = 'Present'
-#                     Name              = 'UnknownListener'
-#                     AvailabilityGroup = 'UnknownAG'
-#                     IpAddress         = '192.168.0.1/255.255.255.0'
-#                     Port              = 5031
-#                     DHCP              = $false
-#                 }
-#             }
-
-#             { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.AvailabilityGroupNotFound -f $testParameters.AvailabilityGroup, $testParameters.InstanceName)
-#         }
-#     }
-
-#     Context 'When the system is in the desired state' {
-#         $mockDynamicIsDhcp = $false
-#         $mockDynamicListenerName = 'AGListener'
-#         $mockDynamicPortNumber = 5031
-
-#         It 'Should not call the any cmdlet *-SqlAvailability* when system is in desired state' {
-#             $testParameters['Ensure'] = 'Present'
-#             $testParameters['IpAddress'] = '192.168.0.1/255.255.255.0'
-#             $testParameters['Port'] = 5031
-
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-
-#             Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
-#             Should -Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
-#         }
-
-#         $mockDynamicIsDhcp = $false
-#         $mockDynamicListenerName = 'AGListener'
-#         $mockDynamicPortNumber = 5031
-
-#         It 'Should not call the any cmdlet *-SqlAvailability* when system is in desired state (without ensure parameter)' {
-#             $testParameters['IpAddress'] = '192.168.0.1/255.255.255.0'
-#             $testParameters['Port'] = 5031
-
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-
-#             Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
-#             Should -Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
-#         }
-
-#         $mockDynamicListenerName = 'UnknownListener'
-#         $script:mockMethodDropRan = $false # This is set to $true when Drop() method is called. make sure we start the test with $false.
-
-#         It 'Should not call the any cmdlet *-SqlAvailability* or the the Drop() method when system is in desired state and ensure is set to ''Absent''' {
-#             $testParameters['Ensure'] = 'Absent'
-
-#             { Set-TargetResource @testParameters } | Should -Not -Throw
-#             $script:mockMethodDropRan | Should -BeFalse # Should not have called Drop() method.
-
-#             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-#             Should -Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 0 -Scope It
-#             Should -Invoke -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 0 -Scope It
-
-#         }
-#     }
-
-#     Context 'When Get-TargetResource returns $null' {
-#         It 'Should throw the correct error' {
-#             Mock -CommandName Get-TargetResource -MockWith {
-#                 return $null
-#             }
-
-#             { Set-TargetResource @testParameters } | Should -Throw $script:localizedData.UnexpectedErrorFromGet
-#         }
-#     }
-
-#     Assert-VerifiableMock
-# }
+Describe 'SqlAGListener\Set-TargetResource' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName      = 'MSSQLSERVER'
+                ServerName        = 'localhost'
+                Name              = 'AGListener'
+                AvailabilityGroup = 'AG01'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockSetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        Context 'When the listener does not exist' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Absent'
+                    }
+                }
+            }
+
+            It 'Should not throw and call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    $mockSetTargetResourceParameters.Ensure = 'Absent'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the listener does exist' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                    }
+                }
+
+                Mock -CommandName Connect-SQL -MockWith {
+                    return New-Object -TypeName Object |
+                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
+                        return @(
+                            @{
+                                'AG01' = New-Object -TypeName Object |
+                                    Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                    @(
+                                        @{
+                                            AGListener = New-Object -TypeName Object |
+                                                Add-Member -MemberType 'NoteProperty' -Name 'PortNumber' -Value 5031 -PassThru |
+                                                Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListenerIPAddresses' -Value {
+                                                    return @(
+                                                        # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                                        (New-Object -TypeName Object | # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                                                Add-Member -MemberType 'NoteProperty' -Name 'IsDHCP' -Value $true -PassThru |
+                                                                Add-Member -MemberType 'NoteProperty' -Name 'IPAddress' -Value '192.168.0.1' -PassThru |
+                                                                Add-Member -MemberType 'NoteProperty' -Name 'SubnetMask' -Value '255.255.255.0' -PassThru
+                                                        )
+                                                    )
+                                                } -PassThru -Force
+                                        }
+                                    )
+                                } -PassThru -Force
+                            }
+                        )
+                    } -PassThru -Force
+                }
+            }
+
+            It 'Should not throw and call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the property <MockPropertyName> is in desired state' -ForEach @(
+            @{
+                MockPropertyName = 'IpAddress'
+                MockExpectedValue = '192.168.10.45/255.255.252.0'
+            }
+            @{
+                MockPropertyName = 'Port'
+                MockExpectedValue = '5031'
+            }
+            @{
+                MockPropertyName = 'DHCP'
+                MockExpectedValue = $false
+            }
+            @{
+                MockPropertyName = 'DHCP'
+                MockExpectedValue = $true
+            }
+        ) {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                        $MockPropertyName = $MockExpectedValue
+                    }
+                }
+
+                Mock -CommandName Connect-SQL -MockWith {
+                    if ($MockPropertyName -eq 'DHCP')
+                    {
+                        $MockDynamicDhcpValue = $MockExpectedValue
+                    }
+                    else
+                    {
+                        $MockDynamicDhcpValue = $false
+                    }
+
+                    return New-Object -TypeName Object |
+                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
+                        return @(
+                            @{
+                                AG01 = New-Object -TypeName Object |
+                                    Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                    @(
+                                        @{
+                                            AGListener = New-Object -TypeName Object |
+                                                Add-Member -MemberType 'NoteProperty' -Name 'PortNumber' -Value 5031 -PassThru |
+                                                Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListenerIPAddresses' -Value {
+                                                    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                                    return @(
+                                                        (New-Object -TypeName Object | # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                                                Add-Member -MemberType 'NoteProperty' -Name 'IsDHCP' -Value $MockDynamicDhcpValue -PassThru |
+                                                                Add-Member -MemberType 'NoteProperty' -Name 'IPAddress' -Value '192.168.0.1' -PassThru |
+                                                                Add-Member -MemberType 'NoteProperty' -Name 'SubnetMask' -Value '255.255.252.0' -PassThru
+                                                        )
+                                                    )
+                                                } -PassThru -Force
+                                        }
+                                    )
+                                } -PassThru -Force
+                            }
+                        )
+                    } -PassThru -Force
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $mockSetTargetResourceParameters.$MockPropertyName = $MockExpectedValue
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        Context 'When Connect-SQL does not return the correct availability group' {
+            Context 'When adding a new listener' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Absent'
+                        }
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
+                            return @(
+                                @{
+                                    AG01 = New-Object -TypeName Object
+                                }
+                            )
+                        } -PassThru -Force
+                    }
+                }
+
+                It 'Should throw the correct error message' {
+                    InModuleScope -ScriptBlock {
+                        $mockSetTargetResourceParameters.AvailabilityGroup = 'UnknownAG'
+
+                        $mockErrorMessage = $script:localizedData.AvailabilityGroupNotFound -f 'UnknownAG', 'MSSQLSERVER'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When modifying an existing listener' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                        }
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
+                            return @(
+                                @{
+                                    AG01 = New-Object -TypeName Object
+                                }
+                            )
+                        } -PassThru -Force
+                    }
+                }
+
+                It 'Should throw the correct error message' {
+                    InModuleScope -ScriptBlock {
+                        $mockSetTargetResourceParameters.AvailabilityGroup = 'UnknownAG'
+
+                        $mockErrorMessage = $script:localizedData.AvailabilityGroupNotFound -f 'UnknownAG', 'MSSQLSERVER'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When removing an existing listener' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                        }
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
+                            return @(
+                                @{
+                                    AG01 = New-Object -TypeName Object
+                                }
+                            )
+                        } -PassThru -Force
+                    }
+                }
+
+                It 'Should throw the correct error message' {
+                    InModuleScope -ScriptBlock {
+                        $mockSetTargetResourceParameters.Ensure = 'Absent'
+                        $mockSetTargetResourceParameters.AvailabilityGroup = 'UnknownAG'
+
+                        $mockErrorMessage = $script:localizedData.AvailabilityGroupNotFound -f 'UnknownAG', 'MSSQLSERVER'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When Connect-SQL does not return the correct listener' {
+            Context 'When modifying an existing listener' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                        }
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
+                            return @(
+                                @{
+                                    AG01 = New-Object -TypeName Object |
+                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                            return @(
+                                                @{
+                                                    AGListener = New-Object -TypeName Object
+                                                }
+                                            )
+                                        } -PassThru -Force
+                                }
+                            )
+                        } -PassThru -Force
+                    }
+                }
+
+                It 'Should throw the correct error message' {
+                    InModuleScope -ScriptBlock {
+                        $mockSetTargetResourceParameters.Name = 'UnknownListener'
+
+                        $mockErrorMessage = $script:localizedData.AvailabilityGroupListenerNotFound -f 'UnknownListener', 'AG01'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When removing an existing listener' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                        }
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
+                            return @(
+                                @{
+                                    AG01 = New-Object -TypeName Object |
+                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                            return @(
+                                                @{
+                                                    AGListener = New-Object -TypeName Object
+                                                }
+                                            )
+                                        } -PassThru -Force
+                                }
+                            )
+                        } -PassThru -Force
+                    }
+                }
+
+                It 'Should throw the correct error message' {
+                    InModuleScope -ScriptBlock {
+                        $mockSetTargetResourceParameters.Ensure = 'Absent'
+                        $mockSetTargetResourceParameters.Name = 'UnknownListener'
+
+                        $mockErrorMessage = $script:localizedData.AvailabilityGroupListenerNotFound -f 'UnknownListener', 'AG01'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When the listener does not exist' {
+            Context 'When only using mandatory parameters' {
+                BeforeAll {
+                    Mock -CommandName New-SqlAvailabilityGroupListener
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Absent'
+                        }
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
+                            return @(
+                                @{
+                                    AG01 = New-Object -TypeName Object |
+                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                            return @(
+                                                @{
+                                                    AGListener = New-Object -TypeName Object
+                                                }
+                                            )
+                                        } -PassThru -Force
+                                }
+                            )
+                        } -PassThru -Force
+                    }
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When using DHCP' {
+                BeforeAll {
+                    Mock -CommandName New-SqlAvailabilityGroupListener
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Absent'
+                        }
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
+                            return @(
+                                @{
+                                    AG01 = New-Object -TypeName Object
+                                }
+                            )
+                        } -PassThru -Force
+                    }
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        $mockSetTargetResourceParameters.DHCP = $true
+                        $mockSetTargetResourceParameters.IpAddress = '192.168.10.45/255.255.252.0'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-SqlAvailabilityGroupListener -ParameterFilter {
+                        $DhcpSubnet -eq '192.168.10.45/255.255.252.0'
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When passing property Port' {
+                BeforeAll {
+                    Mock -CommandName New-SqlAvailabilityGroupListener
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Absent'
+                        }
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
+                            return @(
+                                @{
+                                    AG01 = New-Object -TypeName Object
+                                }
+                            )
+                        } -PassThru -Force
+                    }
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        $mockSetTargetResourceParameters.Port = 5031
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-SqlAvailabilityGroupListener -ParameterFilter {
+                        $Port -eq 5031
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When passing property IpAddress' {
+                BeforeAll {
+                    Mock -CommandName New-SqlAvailabilityGroupListener
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Absent'
+                        }
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
+                            return @(
+                                @{
+                                    AG01 = New-Object -TypeName Object
+                                }
+                            )
+                        } -PassThru -Force
+                    }
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        $mockSetTargetResourceParameters.IpAddress = '192.168.10.45/255.255.252.0'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-SqlAvailabilityGroupListener -ParameterFilter {
+                        $StaticIp -eq '192.168.10.45/255.255.252.0'
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When the listener does exist' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                    }
+                }
+
+                Mock -CommandName Connect-SQL -MockWith {
+                    return New-Object -TypeName Object |
+                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
+                        return @(
+                            @{
+                                AG01 = New-Object -TypeName Object |
+                                    Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                        # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                        return @{
+                                            AGListener = New-Object -TypeName Object |
+                                                Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
+                                                    InModuleScope -ScriptBlock {
+                                                        $script:mockMethodDropWasRunCount += 1
+                                                    }
+                                                } -PassThru -Force
+                                        }
+                                    } -PassThru -Force
+                            }
+                        )
+                    } -PassThru -Force
+                }
+            }
+
+            BeforeEach {
+                InModuleScope -ScriptBlock {
+                    $script:mockMethodDropWasRunCount = 0
+                }
+            }
+
+            It 'Should not throw and call the correct mocks and mocked method' {
+                InModuleScope -ScriptBlock {
+                    $mockSetTargetResourceParameters.Ensure = 'Absent'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $mockMethodDropWasRunCount | Should -Be 1
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the property Port is not in desired state' {
+            BeforeAll {
+                Mock -CommandName Set-SqlAvailabilityGroupListener
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                        Port = 5031
+                    }
+                }
+
+                Mock -CommandName Connect-SQL -MockWith {
+                    return New-Object -TypeName Object |
+                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
+                        return @(
+                            @{
+                                AG01 = New-Object -TypeName Object |
+                                    Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                    @(
+                                        @{
+                                            AGListener = New-Object -TypeName Object |
+                                                Add-Member -MemberType 'NoteProperty' -Name 'PortNumber' -Value 5031 -PassThru -Force
+                                        }
+                                    )
+                                } -PassThru -Force
+                            }
+                        )
+                    } -PassThru -Force
+                }
+            }
+
+            It 'Should not throw and call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    $mockSetTargetResourceParameters.Port = 5030
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the property IpAddress is not in desired state' {
+            Context 'When there is a single IpAddress in the collection, and that is not in desired state' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            IpAddress = '192.168.0.1/255.255.252.0'
+                        }
+                    }
+                }
+
+                It 'Should throw the correct error message' {
+                    InModuleScope -ScriptBlock {
+                        $mockSetTargetResourceParameters.IpAddress = '192.168.10.45/255.255.255.0'
+
+                        $mockErrorMessage = $script:localizedData.AvailabilityGroupListenerIPChangeError -f '192.168.10.45/255.255.255.0', '192.168.0.1/255.255.252.0'
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When there two IpAddress in the collection, and one is not in desired state' {
+                BeforeAll {
+                    Mock -CommandName Add-SqlAvailabilityGroupListenerStaticIp
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure = 'Present'
+                            IpAddress = @(
+                                '192.168.0.1/255.255.252.0'
+                            )
+                        }
+                    }
+
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return New-Object -TypeName Object |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
+                            return @(
+                                @{
+                                    AG01 = New-Object -TypeName Object |
+                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                        @(
+                                            @{
+                                                AGListener = New-Object -TypeName Object |
+                                                    Add-Member -MemberType 'NoteProperty' -Name 'PortNumber' -Value 5031 -PassThru |
+                                                    Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListenerIPAddresses' -Value {
+                                                        # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                                        return @(
+                                                            (New-Object -TypeName Object | # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
+                                                                    Add-Member -MemberType 'NoteProperty' -Name 'IPAddress' -Value '192.168.0.1' -PassThru |
+                                                                    Add-Member -MemberType 'NoteProperty' -Name 'SubnetMask' -Value '255.255.252.0' -PassThru -Force
+                                                            )
+                                                        )
+                                                    } -PassThru -Force
+                                            }
+                                        )
+                                    } -PassThru -Force
+                                }
+                            )
+                        } -PassThru -Force
+                    }
+                }
+
+                It 'Should not throw and call the correct mocks' {
+                    InModuleScope -ScriptBlock {
+                        $mockSetTargetResourceParameters.IpAddress = @(
+                            '192.168.10.45/255.255.255.0'
+                            '192.168.0.1/255.255.252.0'
+                        )
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When the property DHCP is not in desired state' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                        DHCP = $false
+                    }
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $mockSetTargetResourceParameters.DHCP = $true
+
+                    $mockErrorMessage = $script:localizedData.AvailabilityGroupListenerDHCPChangeError -f $true, $false
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+}
 
 Describe 'SqlAGListener\Get-SQLAlwaysOnAvailabilityGroupListener' {
     BeforeAll {
         Mock -CommandName Connect-SQL -MockWith {
             return New-Object -TypeName Object |
-                Add-Member -MemberType ScriptProperty -Name AvailabilityGroups -Value {
+                Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
                 return @(
                     @{
-                        'AG01' = New-Object -TypeName Object |
-                            Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListeners -Value {
+                        AG01 = New-Object -TypeName Object |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
                             @(
                                 @{
-                                    'AGListener' = New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty -Name PortNumber -Value 5031 -PassThru |
-                                        Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
+                                    AGListener = New-Object -TypeName Object |
+                                        Add-Member -MemberType 'NoteProperty' -Name 'PortNumber' -Value 5031 -PassThru |
+                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListenerIPAddresses' -Value {
                                             return @(
                                                 # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
                                                 (New-Object -TypeName Object | # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-                                                        Add-Member -MemberType NoteProperty -Name IsDHCP -Value $true -PassThru |
-                                                        Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
-                                                        Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
+                                                        Add-Member -MemberType 'NoteProperty' -Name 'IsDHCP' -Value $true -PassThru |
+                                                        Add-Member -MemberType 'NoteProperty' -Name 'IPAddress' -Value '192.168.0.1' -PassThru |
+                                                        Add-Member -MemberType 'NoteProperty' -Name 'SubnetMask' -Value '255.255.255.0' -PassThru
                                                 )
                                             )
                                         } -PassThru -Force
