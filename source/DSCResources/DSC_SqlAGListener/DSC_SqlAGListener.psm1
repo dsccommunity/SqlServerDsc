@@ -94,7 +94,7 @@ function Get-TargetResource
     }
     catch
     {
-        $errorMessage = $script:localizedData.AvailabilityGroupListenerNotFound -f $AvailabilityGroup, $InstanceName
+        $errorMessage = $script:localizedData.AvailabilityGroupListenerNotFound -f $Name, $AvailabilityGroup
         New-ObjectNotFoundException -Message $errorMessage -ErrorRecord $_
     }
 
@@ -186,210 +186,203 @@ function Set-TargetResource
     }
 
     $availabilityGroupListenerState = Get-TargetResource @parameters
-    if ($null -ne $availabilityGroupListenerState)
+
+    if ($Ensure -ne '' -and $availabilityGroupListenerState.Ensure -ne $Ensure)
     {
-        if ($Ensure -ne '' -and $availabilityGroupListenerState.Ensure -ne $Ensure)
+        if ($Ensure -eq 'Present')
         {
-            if ($Ensure -eq 'Present')
+            Write-Verbose -Message (
+                $script:localizedData.CreateAvailabilityGroupListener -f $Name, $AvailabilityGroup, $InstanceName
+            )
+
+            $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
+            $availabilityGroupObject = $sqlServerObject.AvailabilityGroups[$AvailabilityGroup]
+            if ($availabilityGroupObject)
             {
-                Write-Verbose -Message (
-                    $script:localizedData.CreateAvailabilityGroupListener -f $Name, $AvailabilityGroup, $InstanceName
-                )
+                $newListenerParams = @{
+                    Name        = $Name
+                    InputObject = $availabilityGroupObject
+                }
 
-                $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
-
-                $availabilityGroupObject = $sqlServerObject.AvailabilityGroups[$AvailabilityGroup]
-                if ($availabilityGroupObject)
+                if ($PSBoundParameters.ContainsKey('Port'))
                 {
-                    $newListenerParams = @{
-                        Name        = $Name
-                        InputObject = $availabilityGroupObject
+                    Write-Verbose -Message (
+                        $script:localizedData.SetAvailabilityGroupListenerPort -f $Port
+                    )
+
+                    $newListenerParams += @{
+                        Port = $Port
                     }
+                }
 
-                    if ($Port)
-                    {
-                        Write-Verbose -Message (
-                            $script:localizedData.SetAvailabilityGroupListenerPort -f $Port
-                        )
+                if ($PSBoundParameters.ContainsKey('DHCP') -and $DHCP -and $IpAddress.Count -gt 0)
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.SetAvailabilityGroupListenerDhcp -f $IpAddress
+                    )
 
-                        $newListenerParams += @{
-                            Port = $Port
-                        }
+                    $newListenerParams += @{
+                        DhcpSubnet = [System.String] $IpAddress
                     }
+                }
+                elseif ($PSBoundParameters.ContainsKey('IpAddress') -and -not $DHCP -and $IpAddress.Count -gt 0)
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.SetAvailabilityGroupListenerStaticIpAddress -f ($IpAddress -join ', ')
+                    )
 
-                    if ($DHCP -and $IpAddress.Count -gt 0)
-                    {
-                        Write-Verbose -Message (
-                            $script:localizedData.SetAvailabilityGroupListenerDhcp -f $IpAddress
-                        )
-
-                        $newListenerParams += @{
-                            DhcpSubnet = [System.String] $IpAddress
-                        }
+                    $newListenerParams += @{
+                        StaticIp = $IpAddress
                     }
-                    elseif (-not $DHCP -and $IpAddress.Count -gt 0)
-                    {
-                        Write-Verbose -Message (
-                            $script:localizedData.SetAvailabilityGroupListenerStaticIpAddress -f ($IpAddress -join ', ')
-                        )
-
-                        $newListenerParams += @{
-                            StaticIp = $IpAddress
-                        }
-                    }
-                    else
-                    {
-                        Write-Verbose -Message $script:localizedData.SetAvailabilityGroupListenerDhcpDefaultSubnet
-                    }
-
-                    New-SqlAvailabilityGroupListener @newListenerParams -ErrorAction Stop | Out-Null
                 }
                 else
                 {
-                    $errorMessage = $script:localizedData.AvailabilityGroupNotFound -f $AvailabilityGroup, $InstanceName
+                    Write-Verbose -Message $script:localizedData.SetAvailabilityGroupListenerDhcpDefaultSubnet
+                }
+
+                New-SqlAvailabilityGroupListener @newListenerParams -ErrorAction Stop | Out-Null
+            }
+            else
+            {
+                $errorMessage = $script:localizedData.AvailabilityGroupNotFound -f $AvailabilityGroup, $InstanceName
+                New-ObjectNotFoundException -Message $errorMessage
+            }
+        }
+        else
+        {
+            Write-Verbose -Message (
+                $script:localizedData.DropAvailabilityGroupListener -f $Name, $AvailabilityGroup, $InstanceName
+            )
+
+            $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
+            $availabilityGroupObject = $sqlServerObject.AvailabilityGroups[$AvailabilityGroup]
+            if ($availabilityGroupObject)
+            {
+                $availabilityGroupListenerObject = $availabilityGroupObject.AvailabilityGroupListeners[$Name]
+                if ($availabilityGroupListenerObject)
+                {
+                    $availabilityGroupListenerObject.Drop()
+                }
+                else
+                {
+                    $errorMessage = $script:localizedData.AvailabilityGroupListenerNotFound -f $Name, $AvailabilityGroup
                     New-ObjectNotFoundException -Message $errorMessage
                 }
             }
             else
             {
-                Write-Verbose -Message (
-                    $script:localizedData.DropAvailabilityGroupListener -f $Name, $AvailabilityGroup, $InstanceName
-                )
-
-                $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
-
-                $availabilityGroupObject = $sqlServerObject.AvailabilityGroups[$AvailabilityGroup]
-                if ($availabilityGroupObject)
-                {
-                    $availabilityGroupListenerObject = $availabilityGroupObject.AvailabilityGroupListeners[$Name]
-                    if ($availabilityGroupListenerObject)
-                    {
-                        $availabilityGroupListenerObject.Drop()
-                    }
-                    else
-                    {
-                        $errorMessage = $script:localizedData.AvailabilityGroupListenerNotFound -f $AvailabilityGroup, $InstanceName
-                        New-ObjectNotFoundException -Message $errorMessage
-                    }
-                }
-                else
-                {
-                    $errorMessage = $script:localizedData.AvailabilityGroupNotFound -f $AvailabilityGroup, $InstanceName
-                    New-ObjectNotFoundException -Message $errorMessage
-                }
-            }
-        }
-        else
-        {
-            if ($availabilityGroupListenerState.Ensure -eq 'Present')
-            {
-                Write-Verbose -Message (
-                    $script:localizedData.AvailabilityGroupListenerIsPresent -f $Name
-                )
-
-                if (-not $DHCP -and $availabilityGroupListenerState.IpAddress.Count -lt $IpAddress.Count) # Only able to add a new IP-address, not change existing ones.
-                {
-                    Write-Verbose -Message $script:localizedData.FoundNewIpAddress
-
-                    $ipAddressEqual = $false
-                }
-                else
-                {
-                    # No new IP-address
-                    if ($null -eq $IpAddress -or -not ( Compare-Object -ReferenceObject $IpAddress -DifferenceObject $availabilityGroupListenerState.IpAddress))
-                    {
-                        $ipAddressEqual = $true
-                    }
-                    else
-                    {
-                        $errorMessage = $script:localizedData.AvailabilityGroupListenerIPChangeError -f ($IpAddress -join ', '), ($availabilityGroupListenerState.IpAddress -join ', ')
-                        New-InvalidOperationException -Message $errorMessage
-                    }
-                }
-
-                if ($($PSBoundParameters.ContainsKey('DHCP')) -and $availabilityGroupListenerState.DHCP -ne $DHCP)
-                {
-                    $errorMessage = $script:localizedData.AvailabilityGroupListenerDHCPChangeError -f $DHCP, $availabilityGroupListenerState.DHCP
-                    New-InvalidOperationException -Message $errorMessage
-                }
-
-                $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
-
-                $availabilityGroupObject = $sqlServerObject.AvailabilityGroups[$AvailabilityGroup]
-                if ($availabilityGroupObject)
-                {
-                    $availabilityGroupListenerObject = $availabilityGroupObject.AvailabilityGroupListeners[$Name]
-                    if ($availabilityGroupListenerObject)
-                    {
-                        if ($availabilityGroupListenerState.Port -ne $Port -or -not $ipAddressEqual)
-                        {
-                            Write-Verbose -Message (
-                                $script:localizedData.AvailabilityGroupListenerNotInDesiredState -f $Name, $AvailabilityGroup, $InstanceName
-                            )
-
-                            if ($availabilityGroupListenerState.Port -ne $Port)
-                            {
-                                Write-Verbose -Message (
-                                    $script:localizedData.ChangingAvailabilityGroupListenerPort -f $Port
-                                )
-
-                                $setListenerParams = @{
-                                    InputObject = $availabilityGroupListenerObject
-                                    Port        = $Port
-                                }
-
-                                Set-SqlAvailabilityGroupListener @setListenerParams -ErrorAction Stop | Out-Null
-                            }
-
-                            if (-not $ipAddressEqual)
-                            {
-                                $newIpAddress = @()
-
-                                foreach ($currentIpAddress in $IpAddress)
-                                {
-                                    if (-not ( $availabilityGroupListenerState.IpAddress -contains $currentIpAddress))
-                                    {
-                                        Write-Verbose -Message (
-                                            $script:localizedData.AddingAvailabilityGroupListenerIpAddress -f $currentIpAddress
-                                        )
-
-                                        $newIpAddress += $currentIpAddress
-                                    }
-                                }
-
-                                $setListenerParams = @{
-                                    InputObject = $availabilityGroupListenerObject
-                                    StaticIp    = $newIpAddress
-                                }
-
-                                Add-SqlAvailabilityGroupListenerStaticIp @setListenerParams -ErrorAction Stop | Out-Null
-                            }
-                        }
-                        else
-                        {
-                            Write-Verbose -Message (
-                                $script:localizedData.AvailabilityGroupListenerInDesiredState -f $Name, $AvailabilityGroup, $InstanceName
-                            )
-                        }
-                    }
-                    else
-                    {
-                        $errorMessage = $script:localizedData.AvailabilityGroupListenerNotFound -f $AvailabilityGroup, $InstanceName
-                        New-ObjectNotFoundException -Message $errorMessage
-                    }
-                }
-                else
-                {
-                    $errorMessage = $script:localizedData.AvailabilityGroupNotFound -f $AvailabilityGroup, $InstanceName
-                    New-ObjectNotFoundException -Message $errorMessage
-                }
+                $errorMessage = $script:localizedData.AvailabilityGroupNotFound -f $AvailabilityGroup, $InstanceName
+                New-ObjectNotFoundException -Message $errorMessage
             }
         }
     }
     else
     {
-        $errorMessage = $script:localizedData.UnexpectedErrorFromGet
-        New-InvalidResultException -Message $errorMessage
+        if ($availabilityGroupListenerState.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message (
+                $script:localizedData.AvailabilityGroupListenerIsPresent -f $Name
+            )
+
+            if (-not $DHCP -and $availabilityGroupListenerState.IpAddress.Count -lt $IpAddress.Count) # Only able to add a new IP-address, not change existing ones.
+            {
+                Write-Verbose -Message $script:localizedData.FoundNewIpAddress
+
+                $ipAddressEqual = $false
+            }
+            else
+            {
+                # No new IP-address
+                if (-not $PSBoundParameters.ContainsKey('IpAddress') -or -not ( Compare-Object -ReferenceObject $IpAddress -DifferenceObject $availabilityGroupListenerState.IpAddress))
+                {
+                    $ipAddressEqual = $true
+                }
+                else
+                {
+                    $errorMessage = $script:localizedData.AvailabilityGroupListenerIPChangeError -f ($IpAddress -join ', '), ($availabilityGroupListenerState.IpAddress -join ', ')
+                    New-InvalidOperationException -Message $errorMessage
+                }
+            }
+
+            if ($PSBoundParameters.ContainsKey('DHCP') -and $availabilityGroupListenerState.DHCP -ne $DHCP)
+            {
+                $errorMessage = $script:localizedData.AvailabilityGroupListenerDHCPChangeError -f $DHCP, $availabilityGroupListenerState.DHCP
+                New-InvalidOperationException -Message $errorMessage
+            }
+
+            $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
+            $availabilityGroupObject = $sqlServerObject.AvailabilityGroups[$AvailabilityGroup]
+            if ($availabilityGroupObject)
+            {
+                $availabilityGroupListenerObject = $availabilityGroupObject.AvailabilityGroupListeners[$Name]
+                if ($availabilityGroupListenerObject)
+                {
+                    if (($PSBoundParameters.ContainsKey('Port') -and $availabilityGroupListenerState.Port -ne $Port) -or -not $ipAddressEqual)
+                    {
+                        Write-Verbose -Message (
+                            $script:localizedData.AvailabilityGroupListenerNotInDesiredState -f $Name, $AvailabilityGroup, $InstanceName
+                        )
+
+                        if ($PSBoundParameters.ContainsKey('Port') -and $availabilityGroupListenerState.Port -ne $Port)
+                        {
+                            Write-Verbose -Message (
+                                $script:localizedData.ChangingAvailabilityGroupListenerPort -f $Port
+                            )
+
+                            $setListenerParams = @{
+                                InputObject = $availabilityGroupListenerObject
+                                Port        = $Port
+                            }
+
+                            Set-SqlAvailabilityGroupListener @setListenerParams -ErrorAction Stop | Out-Null
+                        }
+
+                        if (-not $ipAddressEqual)
+                        {
+                            $newIpAddress = @()
+
+                            foreach ($currentIpAddress in $IpAddress)
+                            {
+                                if (-not ( $availabilityGroupListenerState.IpAddress -contains $currentIpAddress))
+                                {
+                                    Write-Verbose -Message (
+                                        $script:localizedData.AddingAvailabilityGroupListenerIpAddress -f $currentIpAddress
+                                    )
+
+                                    $newIpAddress += $currentIpAddress
+                                }
+                            }
+
+                            $setListenerParams = @{
+                                InputObject = $availabilityGroupListenerObject
+                                StaticIp    = $newIpAddress
+                            }
+
+                            Add-SqlAvailabilityGroupListenerStaticIp @setListenerParams -ErrorAction Stop | Out-Null
+                        }
+                    }
+                    else
+                    {
+                        Write-Verbose -Message (
+                            $script:localizedData.AvailabilityGroupListenerInDesiredState -f $Name, $AvailabilityGroup, $InstanceName
+                        )
+                    }
+                }
+                else
+                {
+                    $errorMessage = $script:localizedData.AvailabilityGroupListenerNotFound -f $Name, $AvailabilityGroup
+                    New-ObjectNotFoundException -Message $errorMessage
+                }
+            }
+            else
+            {
+                $errorMessage = $script:localizedData.AvailabilityGroupNotFound -f $AvailabilityGroup, $InstanceName
+                New-ObjectNotFoundException -Message $errorMessage
+            }
+        }
     }
 }
 

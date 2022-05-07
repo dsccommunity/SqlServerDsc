@@ -2,7 +2,7 @@ ConvertFrom-StringData @'
     GetAvailabilityGroupListener = Get the current state of the Availability Group listener '{0}' for the Availability Group '{1}' on the instance '{2}'.
     AvailabilityGroupListenerIsPresent = The Availability Group listener '{0}' exist.
     AvailabilityGroupListenerIsNotPresent = The Availability Group listener '{0}' does not exist.
-    AvailabilityGroupListenerNotFound = Trying to make a change to a listener that does not exist.
+    AvailabilityGroupListenerNotFound = Trying to make a change to the listener '{0}' that does not exist in the availability group '{1}'.
     CreateAvailabilityGroupListener = Create Availability Group listener '{0}' for the Availability Group '{1}' on the instance '{2}'.
     SetAvailabilityGroupListenerPort = Availability Group listener port is set to '{0}'.
     SetAvailabilityGroupListenerDhcp = Availability Group listener is using DHCP with the subnet '{0}'.
