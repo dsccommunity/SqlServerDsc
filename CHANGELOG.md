@@ -90,10 +90,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Now the property Features always return the features in the order
     'SQLENGINE', 'RS', 'AS', and 'IS' if they are installed.
 - SqlAGListener
-  - Removed unnecessary exception that probably never will be thrown in
-    `Test-TargetResource`.
+  - Removed unnecessary exception that is very unlikely to be thrown in
+    `Set-TargetResource` and `Test-TargetResource`.
   - Simplified the logic that checks if the properties are in desired state
     as the new unit tests did not pass with the previous logic.
+  - Updated the verbose message when the listener does not exist to write
+    out the name of the listener that is meant to be updated, added, or
+    dropped.
+  - Only update values for the properties that are actually enforced by the
+    configuration.
 
 ### Fixed
 
