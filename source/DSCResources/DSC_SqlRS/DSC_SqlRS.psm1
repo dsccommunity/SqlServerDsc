@@ -338,7 +338,7 @@ function Set-TargetResource
 
             if ( $reportingServicesData.Configuration.VirtualDirectoryReportServer -ne $ReportServerVirtualDirectory )
             {
-                Write-Verbose -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
+                Write-Verbose -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to '$ReportServerVirtualDirectory'."
 
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
@@ -371,7 +371,7 @@ function Set-TargetResource
 
             if ( $reportingServicesData.Configuration.VirtualDirectoryReportManager -ne $ReportsVirtualDirectory )
             {
-                Write-Verbose -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
+                Write-Verbose -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to '$ReportServerVirtualDirectory'."
 
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
@@ -402,7 +402,7 @@ function Set-TargetResource
                 }
             }
 
-            Write-Verbose -Message "Generate database creation script on $DatabaseServerName\$DatabaseInstanceName for $reportingServicesDatabaseName."
+            Write-Verbose -Message "Generate database creation script on $DatabaseServerName\$DatabaseInstanceName for database '$reportingServicesDatabaseName'."
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
@@ -421,7 +421,7 @@ function Set-TargetResource
                     $_.Name -eq $reportingServicesServiceName
                 }).StartName
 
-            Write-Verbose -Message "Generate database rights script on $DatabaseServerName\$DatabaseInstanceName for $reportingServicesDatabaseName and user $reportingServicesServiceAccountUserName."
+            Write-Verbose -Message "Generate database rights script on $DatabaseServerName\$DatabaseInstanceName for database '$reportingServicesDatabaseName' and user '$reportingServicesServiceAccountUserName'."
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
@@ -445,7 +445,7 @@ function Set-TargetResource
             Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseScript.Script
             Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseRightsScript.Script
 
-            Write-Verbose -Message "Set database connection on $DatabaseServerName\$DatabaseInstanceName to $reportingServicesDatabaseName."
+            Write-Verbose -Message "Set database connection on $DatabaseServerName\$DatabaseInstanceName to database '$reportingServicesDatabaseName'."
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
@@ -506,7 +506,7 @@ function Set-TargetResource
             #>
             if ( -not $reportingServicesData.Configuration.IsInitialized )
             {
-                Write-Verbose -Message "Did not help restarting the Reporting Services service, running the CIM method to initialize report server on $DatabaseServerName\$DatabaseInstanceName for instance ID $($reportingServicesData.Configuration.InstallationID)."
+                Write-Verbose -Message "Did not help restarting the Reporting Services service, running the CIM method to initialize report server on $DatabaseServerName\$DatabaseInstanceName for instance ID '$($reportingServicesData.Configuration.InstallationID)'."
 
                 $restartReportingService = $true
 
@@ -519,6 +519,10 @@ function Set-TargetResource
                 }
 
                 Invoke-RsCimMethod @invokeRsCimMethodParameters
+            }
+            else
+            {
+                Write-Verbose -Message "Reporting Services on $DatabaseServerName\$DatabaseInstanceName is initialized."
             }
 
             if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $reportingServicesData.Configuration.SecureConnectionLevel )
