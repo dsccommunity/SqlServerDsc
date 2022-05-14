@@ -17,7 +17,6 @@ ConvertFrom-StringData @'
     AvailabilityGroupListenerNotInDesiredState = Availability Group listener '{0}' is not in desired state for the Availability Group '{1}' on the instance '{2}'.
     ChangingAvailabilityGroupListenerPort = Changing Availability Group listener port to '{0}'.
     AddingAvailabilityGroupListenerIpAddress = Adding Availability Group listener IP address '{0}'.
-    UnexpectedErrorFromGet = Got unexpected result from Get-TargetResource. No change is made.
     TestingConfiguration = Determines the current state for the Availability Group listener '{0}' for the Availability Group '{1}' on the instance '{2}'..
     DebugConnectingAvailabilityGroup = Connecting to Availability Group listener '{0}' as the user '{1}'.
 '@
