@@ -530,7 +530,7 @@ function Test-TargetResource
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-    if ( $getTargetResourceResult.DatabaseIsUpdateable -eq $false )
+    if ( $false -eq $getTargetResourceResult.DatabaseIsUpdateable )
     {
         $testTargetResourceReturnValue = $true
     }
