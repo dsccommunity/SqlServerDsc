@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changes to SqlAGDatabase
   - Added StatementTimeout optional parameter with default value of 600 seconds (10 mins) to SqlAGDatabase to fix Issue#1743
     Users will be able to specify the backup and restore timeout with it.
+- Changes to SqlDatabaseUser
+  - `Test-TargetResource` returns true if the `IsUpdateable` property of the database is `$false` to resolve Issue#1748.
 
 ### Removed
 

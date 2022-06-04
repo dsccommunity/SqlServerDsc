@@ -54,17 +54,18 @@ function Get-TargetResource
     )
 
     $returnValue = @{
-        Ensure             = 'Absent'
-        Name               = $Name
-        ServerName         = $ServerName
-        InstanceName       = $InstanceName
-        DatabaseName       = $DatabaseName
-        LoginName          = $null
-        AsymmetricKeyName  = $null
-        CertificateName    = $null
-        UserType           = $null
-        AuthenticationType = $null
-        LoginType          = $null
+        Ensure               = 'Absent'
+        Name                 = $Name
+        ServerName           = $ServerName
+        InstanceName         = $InstanceName
+        DatabaseName         = $DatabaseName
+        DatabaseIsUpdateable = $null
+        LoginName            = $null
+        AsymmetricKeyName    = $null
+        CertificateName      = $null
+        UserType             = $null
+        AuthenticationType   = $null
+        LoginType            = $null
     }
 
     # Check if database exists.
@@ -72,6 +73,7 @@ function Get-TargetResource
 
     if ($sqlDatabaseObject)
     {
+        $returnValue['DatabaseIsUpdateable'] = $sqlDatabaseObject.IsUpdateable
         $sqlUserObject = $sqlDatabaseObject.Users[$Name]
 
         if ($sqlUserObject)
@@ -528,7 +530,11 @@ function Test-TargetResource
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-    if ($getTargetResourceResult.Ensure -eq $Ensure)
+    if ( $getTargetResourceResult.DatabaseIsUpdateable -eq $false )
+    {
+        $testTargetResourceReturnValue = $true
+    }
+    elseif ($getTargetResourceResult.Ensure -eq $Ensure)
     {
         if ($Ensure -eq 'Present')
         {
@@ -870,4 +876,3 @@ function Assert-DatabaseAsymmetricKey
         New-ObjectNotFoundException -Message $errorMessage
     }
 }
-
