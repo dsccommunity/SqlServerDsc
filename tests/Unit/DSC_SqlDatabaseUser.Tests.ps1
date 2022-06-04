@@ -75,6 +75,7 @@ try
                                 @{
                                     $mockDatabaseName = New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDatabaseName -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'IsUpdateable' -Value $true |
                                     Add-Member -MemberType ScriptProperty -Name 'Users' -Value {
                                         return @(
                                             @{
@@ -1087,6 +1088,7 @@ try
                             @{
                                 $mockDatabaseName = New-Object -TypeName Object |
                                 Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDatabaseName -PassThru |
+                                Add-Member -MemberType NoteProperty -Name 'IsUpdateable' -Value $true |
                                 Add-Member -MemberType ScriptProperty -Name 'Certificates' -Value {
                                     return @(
                                         @{
@@ -1137,6 +1139,7 @@ try
                             @{
                                 $mockDatabaseName = New-Object -TypeName Object |
                                 Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDatabaseName -PassThru |
+                                Add-Member -MemberType NoteProperty -Name 'IsUpdateable' -Value $true |
                                 Add-Member -MemberType ScriptProperty -Name 'AsymmetricKeys' -Value {
                                     return @(
                                         @{
