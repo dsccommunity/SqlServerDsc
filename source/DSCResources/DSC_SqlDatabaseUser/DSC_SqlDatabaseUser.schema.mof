@@ -13,4 +13,5 @@ class DSC_SqlDatabaseUser : OMI_BaseResource
     [Write, Description("Specifies if it is allowed to re-create the database user if either the user type, the asymmetric key, or the certificate changes. Default value is `$false` not allowing database users to be re-created.")] Boolean Force;
     [Read, Description("Returns the authentication type of the login connected to the database user. This will return either `'Windows'`, `'Instance'`, or `'None'`. The value `'Windows'` means the login is using _Windows Authentication_, `'Instance'` means that the login is using _SQL Authentication_, and `'None'` means that the database user have no login connected to it.")] String AuthenticationType;
     [Read, Description("Returns the login type of the login connected to the database user. If no login is connected to the database user this returns `$null`.")] String LoginType;
+    [Read, Description("Returns if the database is updatable. If the database is updatable, this will return `$true`. Otherwise it will return `$false`.")] Boolean DatabaseIsUpdateable;
 };

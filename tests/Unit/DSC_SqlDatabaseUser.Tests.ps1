@@ -48,6 +48,7 @@ try
         $mockServerName = 'localhost'
         $mockInstanceName = 'MSSQLSERVER'
         $mockDatabaseName = 'TestDB'
+        $mockDatabaseIsUpdateable = $true
         $mockLoginName = 'CONTOSO\Login1'
         $mockAsymmetricKeyName = 'AsymmetricKey1'
         $mockCertificateName = 'Certificate1'
@@ -75,6 +76,7 @@ try
                                 @{
                                     $mockDatabaseName = New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDatabaseName -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'IsUpdateable' -Value $mockDatabaseIsUpdateable -PassThru |
                                     Add-Member -MemberType ScriptProperty -Name 'Users' -Value {
                                         return @(
                                             @{
@@ -130,6 +132,11 @@ try
                         $getTargetResourceResult.LoginType | Should -BeNullOrEmpty
                         $getTargetResourceResult.UserType | Should -BeNullOrEmpty
                     }
+
+                    It 'Should return $true for the property DatabaseIsUpdateable' {
+                        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+                        $getTargetResourceResult.DatabaseIsUpdateable | Should -Be $true
+                    }
                 }
 
                 Context 'When the configuration is present' {
@@ -158,6 +165,11 @@ try
                         $getTargetResourceResult.AuthenticationType | Should -Be $mockAuthenticationType
                         $getTargetResourceResult.LoginType | Should -Be 'WindowsUser'
                         $getTargetResourceResult.UserType | Should -Be $mockUserType
+                    }
+
+                    It 'Should return $true for the property DatabaseIsUpdateable' {
+                        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+                        $getTargetResourceResult.DatabaseIsUpdateable | Should -Be $true
                     }
                 }
             }
@@ -194,17 +206,18 @@ try
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
-                                Ensure             = 'Absent'
-                                Name               = $mockName
-                                ServerName         = $mockServerName
-                                InstanceName       = $mockInstanceName
-                                DatabaseName       = $mockDatabaseName
-                                LoginName          = $null
-                                AsymmetricKeyName  = $null
-                                CertificateName    = $null
-                                UserType           = $null
-                                AuthenticationType = $null
-                                LoginType          = $null
+                                Ensure               = 'Absent'
+                                Name                 = $mockName
+                                ServerName           = $mockServerName
+                                InstanceName         = $mockInstanceName
+                                DatabaseName         = $mockDatabaseName
+                                DatabaseIsUpdateable = $mockDatabaseIsUpdateable
+                                LoginName            = $null
+                                AsymmetricKeyName    = $null
+                                CertificateName      = $null
+                                UserType             = $null
+                                AuthenticationType   = $null
+                                LoginType            = $null
                             }
                         }
 
@@ -224,17 +237,18 @@ try
                     BeforeAll {
                         Mock -CommandName Get-TargetResource -MockWith {
                             return @{
-                                Ensure             = 'Present'
-                                Name               = $mockName
-                                ServerName         = $mockServerName
-                                InstanceName       = $mockInstanceName
-                                DatabaseName       = $mockDatabaseName
-                                LoginName          = $mockLoginName
-                                AsymmetricKeyName  = $null
-                                CertificateName    = $null
-                                UserType           = $mockUserType
-                                AuthenticationType = $mockAuthenticationType
-                                LoginType          = $mockLoginType
+                                Ensure               = 'Present'
+                                Name                 = $mockName
+                                ServerName           = $mockServerName
+                                InstanceName         = $mockInstanceName
+                                DatabaseName         = $mockDatabaseName
+                                DatabaseIsUpdateable = $mockDatabaseIsUpdateable
+                                LoginName            = $mockLoginName
+                                AsymmetricKeyName    = $null
+                                CertificateName      = $null
+                                UserType             = $mockUserType
+                                AuthenticationType   = $mockAuthenticationType
+                                LoginType            = $mockLoginType
                             }
                         }
 
@@ -372,6 +386,71 @@ try
 
                             Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                         }
+                    }
+                }
+            }
+
+            Context 'When the database is not updatable' {
+                Context 'When the configuration is absent' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Ensure               = 'Absent'
+                                Name                 = $mockName
+                                ServerName           = $mockServerName
+                                InstanceName         = $mockInstanceName
+                                DatabaseName         = $mockDatabaseName
+                                DatabaseIsUpdateable = $false
+                                LoginName            = $null
+                                AsymmetricKeyName    = $null
+                                CertificateName      = $null
+                                UserType             = $null
+                                AuthenticationType   = $null
+                                LoginType            = $null
+                            }
+                        }
+
+                        $testTargetResourceParameters = $mockDefaultParameters.Clone()
+                        $testTargetResourceParameters['Ensure'] = 'Absent'
+                    }
+
+                    It 'Should return the state as $true' {
+                        $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
+                        $testTargetResourceResult | Should -Be $true
+
+                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context 'When the configuration is present' {
+                    BeforeAll {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Ensure               = 'Present'
+                                Name                 = $mockName
+                                ServerName           = $mockServerName
+                                InstanceName         = $mockInstanceName
+                                DatabaseName         = $mockDatabaseName
+                                DatabaseIsUpdateable = $false
+                                LoginName            = $mockLoginName
+                                AsymmetricKeyName    = $null
+                                CertificateName      = $null
+                                UserType             = $mockUserType
+                                AuthenticationType   = $mockAuthenticationType
+                                LoginType            = $mockLoginType
+                            }
+                        }
+
+                        $testTargetResourceParameters = $mockDefaultParameters.Clone()
+                        $testTargetResourceParameters['UserType'] = $mockUserType
+                        $testTargetResourceParameters['LoginName'] = $mockLoginName
+                    }
+
+                    It 'Should return the state as $true' {
+                        $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
+                        $testTargetResourceResult | Should -Be $true
+
+                        Assert-MockCalled -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -1087,6 +1166,7 @@ try
                             @{
                                 $mockDatabaseName = New-Object -TypeName Object |
                                 Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDatabaseName -PassThru |
+                                Add-Member -MemberType NoteProperty -Name 'IsUpdateable' -Value $mockDatabaseIsUpdateable -PassThru |
                                 Add-Member -MemberType ScriptProperty -Name 'Certificates' -Value {
                                     return @(
                                         @{
@@ -1137,6 +1217,7 @@ try
                             @{
                                 $mockDatabaseName = New-Object -TypeName Object |
                                 Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockDatabaseName -PassThru |
+                                Add-Member -MemberType NoteProperty -Name 'IsUpdateable' -Value $mockDatabaseIsUpdateable -PassThru |
                                 Add-Member -MemberType ScriptProperty -Name 'AsymmetricKeys' -Value {
                                     return @(
                                         @{
