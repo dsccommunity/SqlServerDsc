@@ -369,6 +369,25 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
     }
 
     BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Inject a stub in the module scope to support testing cross-plattform
+            function script:Get-CimInstance {
+                param
+                (
+                    $ClassName
+                )
+            }
+
+            # Inject a stub in the module scope to support testing cross-plattform
+            function script:Invoke-CimMethod  {
+                param
+                (
+                    $MethodName,
+                    $Arguments
+                )
+            }
+        }
+
         $mockNamedInstanceName = 'INSTANCE'
         $mockDefaultInstanceName = 'MSSQLSERVER'
         $mockReportingServicesDatabaseServerName = 'SERVER'
@@ -501,6 +520,15 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             $script:mockNamedInstanceName = 'INSTANCE'
             $script:mockReportingServicesDatabaseServerName = 'SERVER'
             $script:mockReportingServicesDatabaseNamedInstanceName = $mockNamedInstanceName
+
+            # Inject a stub in the module scope to support testing cross-plattform
+            function script:Invoke-CimMethod  {
+                param
+                (
+                    $MethodName,
+                    $Arguments
+                )
+            }
         }
     }
 
@@ -1199,12 +1227,19 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 Describe 'SqlRS\Invoke-RsCimMethod' -Tag 'Helper' {
     BeforeAll {
         InModuleScope -ScriptBlock {
-            Set-StrictMode -Version 1.0
-
             $script:mockCimInstance = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
                 'MSReportServer_ConfigurationSetting'
                 'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v13/Admin'
             )
+
+            # Inject a stub in the module scope to support testing cross-plattform
+            function script:Invoke-CimMethod  {
+                param
+                (
+                    $MethodName,
+                    $Arguments
+                )
+            }
         }
     }
 
@@ -1357,6 +1392,16 @@ Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
 
         $mockGetItemProperty_Sql2017AndSql2019_ParameterFilter = {
             $Path -eq ('HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\MSSQLServer\CurrentVersion' -f $mockInstanceId)
+        }
+
+        # Inject a stub in the module scope to support testing cross-plattform
+        InModuleScope -ScriptBlock {
+            function script:Get-CimInstance {
+                param
+                (
+                    $ClassName
+                )
+            }
         }
     }
 

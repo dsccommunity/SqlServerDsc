@@ -73,16 +73,27 @@ AfterAll {
 
 Describe 'Helper functions' {
     Context 'Get-SqlLocalServerName' {
-
         It 'Should return COMPUTERNAME given MSSQLSERVER' {
             InModuleScope -ScriptBlock {
-                Get-SqlLocalServerName -InstanceName MSSQLSERVER | Should -Be $env:COMPUTERNAME
+                <#
+                    Using helper function in DscResource.Common to get
+                    correct hostname cross-plattform.
+                #>
+                $mockComputerName = Get-ComputerName
+
+                Get-SqlLocalServerName -InstanceName MSSQLSERVER | Should -Be $mockComputerName
             }
         }
 
         It 'Should return COMPUTERNAME\InstanceName given InstanceName' {
             InModuleScope -ScriptBlock {
-                Get-SqlLocalServerName -InstanceName InstanceName | Should -Be "$($env:COMPUTERNAME)\InstanceName"
+                <#
+                    Using helper function in DscResource.Common to get
+                    correct hostname cross-plattform.
+                #>
+                $mockComputerName = Get-ComputerName
+
+                Get-SqlLocalServerName -InstanceName InstanceName | Should -Be "$($mockComputerName)\InstanceName"
             }
         }
     }

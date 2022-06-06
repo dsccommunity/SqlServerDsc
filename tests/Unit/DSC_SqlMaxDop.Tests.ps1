@@ -331,6 +331,10 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
         Context 'When specifying that a dynamic value should be used for max degree of parallelism' {
             BeforeAll {
+                Mock -CommandName Get-SqlDscDynamicMaxDop -MockWith {
+                    return 4
+                }
+
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
                         MaxDop                  = 0
@@ -640,6 +644,18 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 }
 
 Describe 'Get-SqlDscDynamicMaxDop' -Tag 'Helper' {
+    BeforeAll {
+        # Inject a stub in the module scope to support testing cross-plattform
+        InModuleScope -ScriptBlock {
+            function script:Get-CimInstance {
+                param
+                (
+                    $ClassName
+                )
+            }
+        }
+    }
+
     Context 'When number of logical processors is 1' {
         Context 'When number of cores are 1' {
             BeforeAll {
