@@ -41,6 +41,9 @@ BeforeAll {
 
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
+    # Loading mocked classes
+    Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
+
     # Load the correct SQL Module stub
     $script:stubModuleName = Import-SQLModuleStub -PassThru
 
@@ -76,6 +79,7 @@ Describe 'SqlDatabaseUser\Get-TargetResource' -Tag 'Get' {
                     @{
                         'TestDB' = New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value 'TestDB' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'IsUpdateable' -Value $true -PassThru |
                         Add-Member -MemberType ScriptProperty -Name 'Users' -Value {
                             return @(
                                 @{
@@ -162,6 +166,16 @@ Describe 'SqlDatabaseUser\Get-TargetResource' -Tag 'Get' {
                     $getTargetResourceResult.UserType | Should -BeNullOrEmpty
                 }
             }
+
+            It 'Should return $true for the property DatabaseIsUpdateable' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $getTargetResourceResult.DatabaseIsUpdateable | Should -BeTrue
+                }
+            }
         }
 
         Context 'When the configuration is present' {
@@ -200,6 +214,16 @@ Describe 'SqlDatabaseUser\Get-TargetResource' -Tag 'Get' {
                     $getTargetResourceResult.AuthenticationType | Should -Be 'Windows'
                     $getTargetResourceResult.LoginType | Should -Be 'WindowsUser'
                     $getTargetResourceResult.UserType | Should -Be 'Login'
+                }
+            }
+
+            It 'Should return $true for the property DatabaseIsUpdateable' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $getTargetResourceResult.DatabaseIsUpdateable | Should -BeTrue
                 }
             }
         }
@@ -265,11 +289,6 @@ Describe 'SqlDatabaseUser\Test-TargetResource' -Tag 'Test' {
                         AuthenticationType = $null
                         LoginType          = $null
                     }
-
-                    It 'Should return $true for the property DatabaseIsUpdateable' {
-                        $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-                        $getTargetResourceResult.DatabaseIsUpdateable | Should -Be $true
-                    }
                 }
             }
 
@@ -307,6 +326,46 @@ Describe 'SqlDatabaseUser\Test-TargetResource' -Tag 'Test' {
                         UserType           = 'Login'
                         AuthenticationType = 'Windows'
                         LoginType          = 'WindowsUser'
+                    }
+                }
+            }
+
+            BeforeEach {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters['UserType'] = 'Login'
+                    $mockTestTargetResourceParameters['LoginName'] = 'CONTOSO\Login1'
+                }
+            }
+
+            It 'Should return the state as $true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $testTargetResourceResult | Should -BeTrue
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the database is not updatable' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure               = 'Present'
+                        Name                 = 'DatabaseUser1'
+                        ServerName           = 'localhost'
+                        InstanceName         = 'MSSQLSERVER'
+                        DatabaseName         = 'TestDB'
+                        DatabaseIsUpdateable = $false
+                        LoginName            = 'CONTOSO\Login1'
+                        AsymmetricKeyName    = $null
+                        CertificateName      = $null
+                        UserType             = 'Login'
+                        AuthenticationType   = 'Windows'
+                        LoginType            = 'WindowsUser'
                     }
                 }
             }
@@ -487,6 +546,40 @@ Describe 'SqlDatabaseUser\Test-TargetResource' -Tag 'Test' {
                         $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
 
                         $testTargetResourceResult | Should -BeFalse
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When the database is not updatable' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure            = 'Present'
+                            LoginName         = 'OtherLogin1'
+                            AsymmetricKeyName = $null
+                            CertificateName   = $null
+                            UserType          = 'Login'
+                            DatabaseIsUpdateable = $false
+                        }
+                    }
+                }
+
+                BeforeEach {
+                    InModuleScope -ScriptBlock {
+                        $mockTestTargetResourceParameters['LoginName'] = 'CONTOSO\Login1'
+                        $mockTestTargetResourceParameters['UserType'] = 'Login'
+                    }
+                }
+
+                It 'Should return the state as $true' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $testTargetResourceResult | Should -BeTrue
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
