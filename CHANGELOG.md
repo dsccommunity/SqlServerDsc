@@ -5,14 +5,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Changes to SqlAGDatabase
-  - Added StatementTimeout optional parameter with default value of 600 seconds (10 mins) to SqlAGDatabase to fix Issue#1743
-    Users will be able to specify the backup and restore timeout with it.
-- Changes to SqlDatabaseUser
-  - `Test-TargetResource` returns true if the `IsUpdateable` property of the database is `$false` to resolve Issue#1748.
-- Changes to SqlDatabaseRole
-  - `Test-TargetResource` returns true if the `IsUpdateable` property of the database is `$false` to resolve Issue#1750.
-
 ### Removed
 
 - The deprecated DSC resource SqlDatabaseOwner have been removed _(and replaced_
@@ -35,6 +27,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     been moved to the module _DscResource.Test_.
   - Remove the helper function `Get-InvalidResultRecord` since it has been
     moved to the module _DscResource.Test_.
+
+### Added
+
+- SqlServerDsc
+  - Added recommended VS Code extensions.
+    - Added settings for VS Code extension _Pester Test Adapter_.
+- CommonTestHelper
+  - `Import-SqlModuleStub`
+    - Added the optional parameter **PasThru** that, if used, will return the
+      name of the stub module.
+    - When removing stub modules from the session that is not supposed to
+      be loaded, it uses `Get-Module -All` to look for previously loaded
+      stub modules.
+  - `Remove-SqlModuleStub`
+    - Added a new helper function `Remove-SqlModuleStub` for tests to remove
+      the PowerShell SqlServer stub module when a test has run.
+- SqlWindowsFirewall
+  - Added integration tests for SqlWindowsFirewall ([issue #747](https://github.com/dsccommunity/SqlServerDsc/issues/747)).
 
 ### Changed
 
@@ -99,6 +109,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     dropped.
   - Only update values for the properties that are actually enforced by the
     configuration.
+- SqlAGDatabase
+  - Added StatementTimeout optional parameter with default value of 600 seconds (10 mins) to SqlAGDatabase to fix Issue#1743
+    Users will be able to specify the backup and restore timeout with it.
+- SqlDatabaseUser
+  - `Test-TargetResource` returns true if the `IsUpdateable` property of the database is `$false` to resolve Issue#1748.
+- SqlDatabaseRole
+  - `Test-TargetResource` returns true if the `IsUpdateable` property of the database is `$false` to resolve Issue#1750.
 
 ### Fixed
 
@@ -168,24 +185,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     that was not available.
   - The loop that evaluates what features are installed did an unnecessary
     step for each iteration. A line of code was moved outside of the loop.
-
-### Added
-
-- SqlServerDsc
-  - Added recommended VS Code extensions.
-    - Added settings for VS Code extension _Pester Test Adapter_.
-- CommonTestHelper
-  - `Import-SqlModuleStub`
-    - Added the optional parameter **PasThru** that, if used, will return the
-      name of the stub module.
-    - When removing stub modules from the session that is not supposed to
-      be loaded, it uses `Get-Module -All` to look for previously loaded
-      stub modules.
-  - `Remove-SqlModuleStub`
-    - Added a new helper function `Remove-SqlModuleStub` for tests to remove
-      the PowerShell SqlServer stub module when a test has run.
-- SqlWindowsFirewall
-  - Added integration tests for SqlWindowsFirewall ([issue #747](https://github.com/dsccommunity/SqlServerDsc/issues/747)).
 
 ## [15.2.0] - 2021-09-01
 
