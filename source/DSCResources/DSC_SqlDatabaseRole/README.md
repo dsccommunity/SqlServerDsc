@@ -3,7 +3,8 @@
 The `SqlDatabaseRole` DSC resource is used to create a database role when
 Ensure is set to 'Present' or remove a database role when Ensure is set to
 'Absent'. The resource also manages members in both built-in and user
-created database roles.
+created database roles. If the targeted database is not updatable, the resource
+returns true.
 
 ## Requirements
 
