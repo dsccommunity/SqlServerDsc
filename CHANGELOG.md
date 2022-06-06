@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Users will be able to specify the backup and restore timeout with it.
 - Changes to SqlDatabaseUser
   - `Test-TargetResource` returns true if the `IsUpdateable` property of the database is `$false` to resolve Issue#1748.
+- Changes to SqlDatabaseRole
+  - `Test-TargetResource` returns true if the `IsUpdateable` property of the database is `$false` to resolve Issue#1750.
 
 ### Removed
 

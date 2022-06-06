@@ -89,6 +89,8 @@ function Get-TargetResource
             New-ObjectNotFoundException -Message $errorMessage
         }
 
+        $databaseIsUpdateable  = $sqlDatabaseObject.IsUpdateable
+
         if ($sqlDatabaseRoleObject = $sqlDatabaseObject.Roles[$Name])
         {
             try
@@ -156,6 +158,7 @@ function Get-TargetResource
         ServerName            = $ServerName
         InstanceName          = $InstanceName
         DatabaseName          = $DatabaseName
+        DatabaseIsUpdateable  = $databaseIsUpdateable
         Name                  = $Name
         Members               = $roleMembers
         MembersToInclude      = $MembersToInclude
@@ -467,27 +470,30 @@ function Test-TargetResource
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
     $isDatabaseRoleInDesiredState = $true
 
-    switch ($Ensure)
+    if ( $true -eq $getTargetResourceResult.DatabaseIsUpdateable )
     {
-        'Absent'
+        switch ($Ensure)
         {
-            if ($getTargetResourceResult.Ensure -ne 'Absent')
+            'Absent'
             {
-                Write-Verbose -Message (
-                    $script:localizedData.EnsureIsAbsent -f $Name
-                )
-                $isDatabaseRoleInDesiredState = $false
+                if ($getTargetResourceResult.Ensure -ne 'Absent')
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.EnsureIsAbsent -f $Name
+                    )
+                    $isDatabaseRoleInDesiredState = $false
+                }
             }
-        }
 
-        'Present'
-        {
-            if ($getTargetResourceResult.Ensure -ne 'Present' -or $getTargetResourceResult.MembersInDesiredState -eq $false)
+            'Present'
             {
-                Write-Verbose -Message (
-                    $script:localizedData.EnsureIsPresent -f $Name
-                )
-                $isDatabaseRoleInDesiredState = $false
+                if ($getTargetResourceResult.Ensure -ne 'Present' -or $getTargetResourceResult.MembersInDesiredState -eq $false)
+                {
+                    Write-Verbose -Message (
+                        $script:localizedData.EnsureIsPresent -f $Name
+                    )
+                    $isDatabaseRoleInDesiredState = $false
+                }
             }
         }
     }
@@ -600,4 +606,3 @@ function Remove-SqlDscDatabaseRoleMember
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
 }
-

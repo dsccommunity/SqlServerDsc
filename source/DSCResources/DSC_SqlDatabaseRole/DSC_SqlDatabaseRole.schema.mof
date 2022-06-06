@@ -10,4 +10,5 @@ class DSC_SqlDatabaseRole : OMI_BaseResource
     [Write, Description("The members the database role should exclude. This parameter will only remove members from a database role. Will only be used when parameter **Ensure** is set to `'Present'`. Can not be used at the same time as parameter **Members**.")] String MembersToExclude[];
     [Write, Description("If `'Present'` then the role will be added to the database and the role membership will be set. If `'Absent'` then the role will be removed from the database. Default value is `'Present'`."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Read, Description("Returns whether the database role members are in the desired state.")] Boolean MembersInDesiredState;
+    [Read, Description("Returns if the database is updatable. If the database is updatable, this will return `$true`. Otherwise it will return `$false`.")] Boolean DatabaseIsUpdateable;
 };
