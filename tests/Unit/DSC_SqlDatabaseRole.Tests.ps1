@@ -48,6 +48,7 @@ try
         $mockServerName = 'localhost'
         $mockInstanceName = 'MSSQLSERVER'
         $mockSqlDatabaseName = 'AdventureWorks'
+        $mockDatabaseIsUpdateable = $true
 
         $mockSqlServerLogin1 = 'John'
         $mockSqlServerLogin1Type = 'WindowsUser'
@@ -91,6 +92,7 @@ try
                             $mockSqlDatabaseName = @((
                                     New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'IsUpdateable' -Value $mockDatabaseIsUpdateable -PassThru |
                                     Add-Member -MemberType ScriptProperty -Name Users -Value {
                                         return @{
                                             $mockSqlServerLogin1 = @((
@@ -274,6 +276,7 @@ try
 
         Describe 'DSC_SqlDatabaseRole\Get-TargetResource' -Tag 'Get' {
             BeforeEach {
+                $mockDatabaseIsUpdateable = $true
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
 
@@ -292,6 +295,47 @@ try
 
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When role does not exist and the database is not updatable' {
+                $testParameters = $mockDefaultParameters
+                $testParameters += @{
+                    DatabaseName = $mockSqlDatabaseName
+                    Name         = 'UnknownRoleName'
+                }
+
+                BeforeEach {
+                    $mockDatabaseIsUpdateable = $false
+                }
+
+                It 'Should return the state as Absent' {
+                    $result = Get-TargetResource @testParameters
+                    $result.Ensure | Should -Be 'Absent'
+
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                It 'Should return the members as null' {
+                    $result = Get-TargetResource @testParameters
+                    $result.Members | Should -BeNullOrEmpty
+
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                It 'Should return the same values as passed as parameters' {
+                    $result = Get-TargetResource @testParameters
+                    $result.ServerName | Should -Be $testParameters.ServerName
+                    $result.InstanceName | Should -Be $testParameters.InstanceName
+                    $result.DatabaseName | Should -Be $testParameters.DatabaseName
+                    $result.Name | Should -Be $testParameters.Name
+
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                It 'Should return $true for the property DatabaseIsUpdateable' {
+                    $result = Get-TargetResource @testParameters
+                    $result.DatabaseIsUpdateable | Should -Be $false
                 }
             }
 
@@ -325,6 +369,11 @@ try
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
+
+                It 'Should return $true for the property DatabaseIsUpdateable' {
+                    $result = Get-TargetResource @testParameters
+                    $result.DatabaseIsUpdateable | Should -Be $true
+                }
             }
 
             Context 'When only key parameters have values and the role exists' {
@@ -343,6 +392,11 @@ try
 
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+                }
+
+                It 'Should return $true for the property DatabaseIsUpdateable' {
+                    $result = Get-TargetResource @testParameters
+                    $result.DatabaseIsUpdateable | Should -Be $true
                 }
             }
 
@@ -411,6 +465,11 @@ try
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
+
+                It 'Should return $true for the property DatabaseIsUpdateable' {
+                    $result = Get-TargetResource @testParameters
+                    $result.DatabaseIsUpdateable | Should -Be $true
+                }
             }
 
             Context 'When parameter Members is assigned a value, the role exists, and the role members are not in the desired state' {
@@ -440,6 +499,11 @@ try
                     ($result.Members -is [System.String[]]) | Should -Be $true
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                It 'Should return $true for the property DatabaseIsUpdateable' {
+                    $result = Get-TargetResource @testParameters
+                    $result.DatabaseIsUpdateable | Should -Be $true
                 }
             }
 
@@ -509,6 +573,11 @@ try
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
+
+                It 'Should return $true for the property DatabaseIsUpdateable' {
+                    $result = Get-TargetResource @testParameters
+                    $result.DatabaseIsUpdateable | Should -Be $true
+                }
             }
 
             Context 'When parameter MembersToInclude is assigned a value, the role exists, and the role members are not in the desired state' {
@@ -539,6 +608,11 @@ try
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
+
+                It 'Should return $true for the property DatabaseIsUpdateable' {
+                    $result = Get-TargetResource @testParameters
+                    $result.DatabaseIsUpdateable | Should -Be $true
+                }
             }
 
             Context 'When both parameters MembersToExclude and Members are assigned a value' {
@@ -559,7 +633,6 @@ try
                 It 'Should call the mock function Connect-SQL' {
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
                 }
-
             }
 
             Context 'When parameter MembersToExclude is assigned a value, the role exists, and the role members are in the desired state' {
@@ -594,6 +667,11 @@ try
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
+
+                It 'Should return $true for the property DatabaseIsUpdateable' {
+                    $result = Get-TargetResource @testParameters
+                    $result.DatabaseIsUpdateable | Should -Be $true
+                }
             }
 
             Context 'When parameter MembersToExclude is assigned a value, the role exists, and the role members are not in the desired state' {
@@ -623,6 +701,11 @@ try
                     ($result.Members -is [System.String[]]) | Should -Be $true
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+
+                It 'Should return $true for the property DatabaseIsUpdateable' {
+                    $result = Get-TargetResource @testParameters
+                    $result.DatabaseIsUpdateable | Should -Be $true
                 }
             }
 
@@ -886,6 +969,7 @@ try
 
         Describe "DSC_SqlDatabaseRole\Test-TargetResource" -Tag 'Test' {
             BeforeEach {
+                $mockDatabaseIsUpdateable = $true
                 Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
             }
 
@@ -905,8 +989,28 @@ try
                 }
             }
 
+            Context 'When the system is not in the desired state and Ensure is set to Absent and the database is not updateable' {
+                BeforeEach {
+                    $mockDatabaseIsUpdateable = $false
+                }
+
+                It 'Should return True when the desired database role exists' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        DatabaseName = $mockSqlDatabaseName
+                        Name         = $mockSqlDatabaseRole1
+                        Ensure       = 'Absent'
+                    }
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $true
+
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+
             Context 'When the system is not in the desired state and Ensure is set to Present' {
-                It 'Should return True when the desired database role does not exist' {
+                It 'Should return False when the desired database role does not exist' {
                     $testParameters = $mockDefaultParameters
                     $testParameters += @{
                         DatabaseName = $mockSqlDatabaseName
@@ -916,6 +1020,26 @@ try
 
                     $result = Test-TargetResource @testParameters
                     $result | Should -Be $false
+
+                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When the system is not in the desired state and Ensure is set to Present and the database is not updateable' {
+                BeforeEach {
+                    $mockDatabaseIsUpdateable = $false
+                }
+
+                It 'Should return True when the desired database role does not exist' {
+                    $testParameters = $mockDefaultParameters
+                    $testParameters += @{
+                        DatabaseName = $mockSqlDatabaseName
+                        Name         = $mockSqlDatabaseRole3
+                        Ensure       = 'Present'
+                    }
+
+                    $result = Test-TargetResource @testParameters
+                    $result | Should -Be $true
 
                     Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
                 }
