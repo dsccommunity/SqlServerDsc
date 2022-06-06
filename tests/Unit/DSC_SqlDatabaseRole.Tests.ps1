@@ -79,6 +79,7 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
                             'AdventureWorks' = @((
                                     New-Object -TypeName Object |
                                     Add-Member -MemberType NoteProperty -Name Name -Value 'AdventureWorks' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'IsUpdateable' -Value $false -PassThru |
                                     Add-Member -MemberType ScriptProperty -Name Users -Value {
                                         return @{
                                             'John' = New-Object -TypeName Object
@@ -221,6 +222,64 @@ Describe 'SqlDatabaseRole\Get-TargetResource' {
 
         It 'Should call the mock function Connect-SQL' {
             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+        }
+    }
+
+    Context 'When role does not exist and the database is not updatable' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name         = 'UnknownRoleName'
+            }
+        }
+
+        It 'Should return the state as Absent' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                $result.Ensure | Should -Be 'Absent'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as null' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                $result.Members | Should -BeNullOrEmpty
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the same values as passed as parameters' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
+                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return $false for the property DatabaseIsUpdateable' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                $result.DatabaseIsUpdateable | Should -BeFalse
+            }
         }
     }
 
@@ -699,6 +758,7 @@ Describe 'SqlDatabaseRole\Test-TargetResource' -Tag 'Test' {
                     return @{
                         Ensure = 'Present'
                         MembersInDesiredState = $false
+                        DatabaseIsUpdateable = $true
                     }
                 }
             }
@@ -726,6 +786,7 @@ Describe 'SqlDatabaseRole\Test-TargetResource' -Tag 'Test' {
                     return @{
                         Ensure = 'Absent'
                         MembersInDesiredState = $false
+                        DatabaseIsUpdateable = $true
                     }
                 }
             }
@@ -753,6 +814,7 @@ Describe 'SqlDatabaseRole\Test-TargetResource' -Tag 'Test' {
                     return @{
                         Ensure = 'Present'
                         MembersInDesiredState = $false
+                        DatabaseIsUpdateable = $true
                     }
                 }
             }
@@ -768,6 +830,61 @@ Describe 'SqlDatabaseRole\Test-TargetResource' -Tag 'Test' {
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
                     $result | Should -BeFalse
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the role should not exist but the database is not updateable' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                        MembersInDesiredState = $false
+                        DatabaseIsUpdateable = $false
+                    }
+                }
+            }
+
+            It 'Should return $true even if the desired database role exists' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                    $mockTestTargetResourceParameters.Name         = 'MyRole'
+                    $mockTestTargetResourceParameters.Ensure       = 'Absent'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue -Because 'the database is not updatable'
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the role should exist but the database is not updateable' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                        MembersInDesiredState = $false
+                        DatabaseIsUpdateable = $false
+                    }
+                }
+            }
+
+            It 'Should return $true even if the desired database role does not exists' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                    $mockTestTargetResourceParameters.Name         = 'NewRole'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue -Because 'the database is not updatable'
                 }
 
                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It

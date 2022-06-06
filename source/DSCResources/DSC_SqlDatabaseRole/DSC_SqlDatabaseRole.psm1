@@ -470,10 +470,12 @@ function Test-TargetResource
         MembersToInclude = $PSBoundParameters.MembersToInclude
         MembersToExclude = $PSBoundParameters.MembersToExclude
     }
+
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
     $isDatabaseRoleInDesiredState = $true
 
-    if ( $true -eq $getTargetResourceResult.DatabaseIsUpdateable )
+    if ($true -eq $getTargetResourceResult.DatabaseIsUpdateable)
     {
         switch ($Ensure)
         {
