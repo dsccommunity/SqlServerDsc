@@ -206,6 +206,11 @@ function Set-TargetResource
                     if ( ( $PSBoundParameters.ContainsKey('LoginPasswordPolicyEnforced') -and $login.PasswordPolicyEnforced -ne $LoginPasswordPolicyEnforced ) -or
                          ( $PSBoundParameters.ContainsKey('LoginPasswordExpirationEnabled') -and $login.PasswordExpirationEnabled -ne $LoginPasswordExpirationEnabled ) )
                     {
+                        <#
+                            PasswordExpirationEnabled can only be set to $true if PasswordPolicyEnforced
+                            is also set or already set to $true. Otherwise the SQL Server will throw the
+                            exception "The CHECK_EXPIRATION option cannot be used when CHECK_POLICY is OFF".
+                        #>
                         if ( $PSBoundParameters.ContainsKey('LoginPasswordPolicyEnforced') )
                         {
                             Write-Verbose -Message (
@@ -297,8 +302,14 @@ function Set-TargetResource
                             New-InvalidOperationException -Message $errorMessage
                         }
 
+                        <#
+                            PasswordExpirationEnabled can only be set to $true if PasswordPolicyEnforced
+                            is also set to $true. If not the SQL Server will throw the exception
+                            "The CHECK_EXPIRATION option cannot be used when CHECK_POLICY is OFF".
+                        #>
                         $login.PasswordPolicyEnforced = $LoginPasswordPolicyEnforced
                         $login.PasswordExpirationEnabled = $LoginPasswordExpirationEnabled
+
                         if ( $LoginMustChangePassword )
                         {
                             $LoginCreateOptions = [Microsoft.SqlServer.Management.Smo.LoginCreateOptions]::MustChange
@@ -317,7 +328,7 @@ function Set-TargetResource
                     }
                 }
 
-                # we can only disable the login once it's been created
+                # We can only disable the login once it's been created
                 if ( $Disabled )
                 {
                     Write-Verbose -Message (
@@ -327,7 +338,7 @@ function Set-TargetResource
                     $login.Disable()
                 }
 
-                # set the default database if specified
+                # Set the default database if specified
                 if ( $PSBoundParameters.ContainsKey('DefaultDatabase') )
                 {
                     $login.DefaultDatabase = $DefaultDatabase
@@ -475,7 +486,7 @@ function Test-TargetResource
 
     if ( $Ensure -eq 'Present' -and $($loginInfo.Ensure) -eq 'Present' )
     {
-        if ( $LoginType -ne $loginInfo.LoginType )
+        if ( $PSBoundParameters.ContainsKey('LoginType') -and $LoginType -ne $loginInfo.LoginType )
         {
             Write-Verbose -Message (
                 $script:localizedData.WrongLoginType -f $Name, $loginInfo.LoginType, $LoginType
@@ -564,7 +575,7 @@ function Test-TargetResource
                     if ($Disabled)
                     {
                         <#
-                            An exception occurred and $Disabled is true, we neeed
+                            An exception occurred and $Disabled is true, we need
                             to check the error codes for expected error numbers.
                             Recursively search the Exception variable and inner
                             Exceptions for the specific numbers.

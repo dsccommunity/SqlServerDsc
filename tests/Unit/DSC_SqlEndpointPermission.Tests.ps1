@@ -1,29 +1,37 @@
 <#
     .SYNOPSIS
-        Automated unit test for DSC_SqlEndpointPermission DSC resource.
-
+        Unit test for DSC_SqlEndpointPermission DSC resource.
 #>
 
-Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
 
-if (-not (Test-BuildCategory -Type 'Unit'))
-{
-    return
-}
-
-$script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlEndpointPermission'
-
-function Invoke-TestSetup
-{
+BeforeDiscovery {
     try
     {
-        Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
+        if (-not (Get-Module -Name 'DscResource.Test'))
+        {
+            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
+            {
+                # Redirect all streams to $null, except the error stream (stream 2)
+                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+            }
+
+            # If the dependencies has not been resolved, this will throw an error.
+            Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
+}
+
+BeforeAll {
+    $script:dscModuleName = 'SqlServerDsc'
+    $script:dscResourceName = 'DSC_SqlEndpointPermission'
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
@@ -31,308 +39,453 @@ function Invoke-TestSetup
         -ResourceType 'Mof' `
         -TestType 'Unit'
 
-    # Loading mocked classes
-    Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
+    # Load the correct SQL Module stub
+    $script:stubModuleName = Import-SQLModuleStub -PassThru
+
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
 }
 
-function Invoke-TestCleanup
-{
+AfterAll {
+    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
+    $PSDefaultParameterValues.Remove('Mock:ModuleName')
+    $PSDefaultParameterValues.Remove('Should:ModuleName')
+
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+
+    # Unload the module being tested so that it doesn't impact any other tests.
+    Get-Module -Name $script:dscResourceName -All | Remove-Module -Force
+
+    # Unload the stub module.
+    Remove-SqlModuleStub -Name $script:stubModuleName
+
+    # Remove module common test helper.
+    Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Invoke-TestSetup
-
-try
-{
-    InModuleScope $script:dscResourceName {
-        $mockNodeName = 'localhost'
-        $mockInstanceName = 'SQL2016'
-        $mockPrincipal = 'COMPANY\SqlServiceAcct'
-        $mockOtherPrincipal = 'COMPANY\OtherAcct'
-        $mockEndpointName = 'DefaultEndpointMirror'
-
-        $mockDynamicEndpointName = $mockEndpointName
-
-        $script:mockMethodGrantRan = $false
-        $script:mockMethodRevokeRan = $false
-
+Describe 'SqlEndpointPermission\Get-TargetResource' -Tag 'Get' {
+    BeforeAll {
         $mockConnectSql = {
             return New-Object -TypeName Object |
                 Add-Member -MemberType ScriptProperty -Name 'Endpoints' -Value {
                 return @(
                     @{
                         # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
-                        $mockDynamicEndpointName = New-Object -TypeName Object |
-                            Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockEndpointName -PassThru |
+                        'DefaultEndpointMirror' = New-Object -TypeName Object |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value 'DefaultEndpointMirror' -PassThru |
                             Add-Member -MemberType ScriptMethod -Name 'EnumObjectPermissions' -Value {
-                            param($permissionSet)
-                            return @(
-                                (New-Object -TypeName Object |
-                                        Add-Member -MemberType NoteProperty Grantee $mockDynamicPrincipal -PassThru |
-                                        Add-Member -MemberType NoteProperty PermissionState 'Grant' -PassThru
+                                param
+                                (
+                                    $permissionSet
                                 )
-                            )
-                        } -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name 'Grant' -Value {
-                            param(
-                                $permissionSet,
-                                $mockPrincipal
-                            )
 
-                            $script:mockMethodGrantRan = $true
-                        } -PassThru |
-                            Add-Member -MemberType ScriptMethod -Name 'Revoke' -Value {
-                            param(
-                                $permissionSet,
-                                $mockPrincipal
-                            )
-
-                            $script:mockMethodRevokeRan = $true
-                        } -PassThru -Force
+                                return @(
+                                    (
+                                        New-Object -TypeName Object |
+                                            Add-Member -MemberType NoteProperty -Name 'Grantee' -Value 'COMPANY\Account' -PassThru |
+                                            Add-Member -MemberType NoteProperty -Name 'PermissionState' -Value 'Grant' -PassThru -Force
+                                    )
+                                )
+                            } -PassThru -Force
                     }
                 )
             } -PassThru -Force
         }
 
-        $defaultParameters = @{
-            InstanceName = $mockInstanceName
-            ServerName   = $mockNodeName
-            Name         = $mockEndpointName
-            Principal    = $mockPrincipal
+        Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+
+        Mock -CommandName New-Object -MockWith {
+            return [PSCustomObject]@{
+                Connect = $true
+            }
+        } -ParameterFilter {
+            $TypeName -eq 'Microsoft.SqlServer.Management.Smo.ObjectPermissionSet'
         }
 
-        Describe 'DSC_SqlEndpointPermission\Get-TargetResource' -Tag 'Get' {
-            BeforeEach {
-                $testParameters = $defaultParameters.Clone()
-
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
+                Name         = 'DefaultEndpointMirror'
             }
+        }
+    }
 
-            $mockDynamicPrincipal = $mockOtherPrincipal
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockGetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
 
-            Context 'When the system is not in the desired state' {
-                It 'Should return the desired state as absent' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should -Be 'Absent'
-                }
+    Context 'When the system is in the desired state' {
+        Context 'When the endpoint exist' {
+            Context 'When the permission should be present' {
+                It 'Should return the correct value for each property' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
 
-                It 'Should return the same values as passed as parameters' {
-                    $result = Get-TargetResource @testParameters
-                    $result.ServerName | Should -Be $testParameters.ServerName
-                    $result.InstanceName | Should -Be $testParameters.InstanceName
-                    $result.Name | Should -Be $testParameters.Name
-                    $result.Principal | Should -Be $testParameters.Principal
-                }
+                        $mockGetTargetResourceParameters.Principal = 'COMPANY\Account'
 
-                It 'Should not return any permissions' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Permission | Should -Be ''
-                }
+                        $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                It 'Should call the mock function Connect-SQL' {
-                    $result = Get-TargetResource @testParameters
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                $mockDynamicEndpointName = 'UnknownEndPoint'
-
-                Context 'When endpoint is missing' {
-                    It 'Should throw the correct error message' {
-                        { Get-TargetResource @testParameters } | Should -Throw ($script:localizedData.UnexpectedErrorFromGet -f $testParameters.Name)
-
-                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                        $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                        $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                        $result.Principal | Should -Be $mockGetTargetResourceParameters.Principal
+                        $result.Permission | Should -Be 'CONNECT'
                     }
                 }
-
-                $mockDynamicEndpointName = $mockEndpointName
             }
 
-            $mockDynamicPrincipal = $mockPrincipal
+            Context 'When the permission should be absent' {
+                It 'Should return the correct value for each property' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
 
-            Context 'When the system is in the desired state' {
-                It 'Should return the desired state as present' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should -Be 'Present'
-                }
+                        $mockGetTargetResourceParameters.Principal = 'COMPANY\MissingAccount'
 
-                It 'Should return the same values as passed as parameters' {
-                    $result = Get-TargetResource @testParameters
-                    $result.ServerName | Should -Be $testParameters.ServerName
-                    $result.InstanceName | Should -Be $testParameters.InstanceName
-                    $result.Name | Should -Be $testParameters.Name
-                    $result.Principal | Should -Be $testParameters.Principal
-                }
+                        $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                It 'Should return the permissions passed as parameter' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Permission | Should -Be 'CONNECT'
-                }
-
-                It 'Should call the mock function Connect-SQL' {
-                    $result = Get-TargetResource @testParameters
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Assert-VerifiableMock
-        }
-
-        Describe 'DSC_SqlEndpointPermission\Test-TargetResource' -Tag 'Test' {
-            BeforeEach {
-                $testParameters = $defaultParameters.Clone()
-
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
-            }
-
-            Context 'When the system is not in the desired state' {
-                $mockDynamicPrincipal = $mockOtherPrincipal
-
-                It 'Should return that desired state is absent when wanted desired state is to be Present' {
-                    $testParameters['Ensure'] = 'Present'
-                    $testParameters['Permission'] = 'CONNECT'
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $false
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                $mockDynamicPrincipal = $mockPrincipal
-
-                It 'Should return that desired state is absent when wanted desired state is to be Absent' {
-                    $testParameters['Ensure'] = 'Absent'
-                    $testParameters['Permission'] = 'CONNECT'
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $false
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When the system is in the desired state' {
-                $mockDynamicPrincipal = $mockPrincipal
-
-                It 'Should return that desired state is present when wanted desired state is to be Present' {
-                    $testParameters['Ensure'] = 'Present'
-                    $testParameters['Permission'] = 'CONNECT'
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                $mockDynamicPrincipal = $mockOtherPrincipal
-
-                It 'Should return that desired state is present when wanted desired state is to be Absent' {
-                    $testParameters['Ensure'] = 'Absent'
-                    $testParameters['Permission'] = 'CONNECT'
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Assert-VerifiableMock
-        }
-
-        Describe 'DSC_SqlEndpointPermission\Set-TargetResource' -Tag 'Set' {
-            BeforeEach {
-                $testParameters = $defaultParameters.Clone()
-
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
-            }
-
-            Context 'When the system is not in the desired state' {
-                $mockDynamicPrincipal = $mockOtherPrincipal
-                $script:mockMethodGrantRan = $false
-                $script:mockMethodRevokeRan = $false
-
-                It 'Should call the the method Grant when desired state is to be Present' {
-                    $testParameters['Ensure'] = 'Present'
-                    $testParameters['Permission'] = 'CONNECT'
-
-                    { Set-TargetResource @testParameters } | Should -Not -Throw
-                    $script:mockMethodGrantRan | Should -Be $true
-                    $script:mockMethodRevokeRan | Should -Be $false
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope It
-                }
-
-                $mockDynamicPrincipal = $mockPrincipal
-                $script:mockMethodGrantRan = $false
-                $script:mockMethodRevokeRan = $false
-
-                It 'Should call the the method Revoke when desired state is to be Absent' {
-                    $testParameters['Ensure'] = 'Absent'
-                    $testParameters['Permission'] = 'CONNECT'
-
-                    { Set-TargetResource @testParameters } | Should -Not -Throw
-                    $script:mockMethodGrantRan | Should -Be $false
-                    $script:mockMethodRevokeRan | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 2 -Scope It
-                }
-
-                $mockDynamicEndpointName = 'UnknownEndPoint'
-
-                Context 'When endpoint is missing' {
-                    It 'Should throw the correct error message' {
-                        Mock -CommandName Get-TargetResource -MockWith {
-                            return @{
-                                Ensure = 'Absent'
-                            }
-                        } -Verifiable
-
-                        { Set-TargetResource @testParameters } | Should -Throw ($script:localizedData.EndpointNotFound -f $testParameters.Name)
-
-                        Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                        $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                        $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                        $result.Principal | Should -Be $mockGetTargetResourceParameters.Principal
+                        $result.Permission | Should -BeNullOrEmpty
                     }
                 }
-
-                $mockDynamicEndpointName = $mockEndpointName
             }
+        }
+    }
 
-            Context 'When the system is in the desired state' {
-                $mockDynamicPrincipal = $mockPrincipal
-                $script:mockMethodGrantRan = $false
-                $script:mockMethodRevokeRan = $false
+    Context 'When the system is not in the desired state' {
+        Context 'When the endpoint does not exist' {
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
 
-                It 'Should not call Grant() or Revoke() method when desired state is already Present' {
-                    $testParameters['Ensure'] = 'Present'
-                    $testParameters['Permission'] = 'CONNECT'
+                    $mockGetTargetResourceParameters.Name = 'MissingEndpoint'
+                    $mockGetTargetResourceParameters.Principal = 'COMPANY\MissingAccount'
 
-                    { Set-TargetResource @testParameters } | Should -Not -Throw
-                    $script:mockMethodGrantRan | Should -Be $false
-                    $script:mockMethodRevokeRan | Should -Be $false
+                    <#
+                        This will throw an exception because the endpoint does not exist,
+                        but that will also throw the outer exception in Get-TargetResource.
+                    #>
+                    $mockErrorMessage = '{0}*{1}' -f @(
+                        ($script:localizedData.UnexpectedErrorFromGet -f 'MissingEndpoint'),
+                        ($script:localizedData.EndpointNotFound -f 'MissingEndpoint')
+                    )
 
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                $mockDynamicPrincipal = $mockOtherPrincipal
-                $script:mockMethodGrantRan = $false
-                $script:mockMethodRevokeRan = $false
-
-                It 'Should not call Grant() or Revoke() method when desired state is already Absent' {
-                    $testParameters['Ensure'] = 'Absent'
-                    $testParameters['Permission'] = 'CONNECT'
-
-                    { Set-TargetResource @testParameters } | Should -Not -Throw
-                    $script:mockMethodGrantRan | Should -Be $false
-                    $script:mockMethodRevokeRan | Should -Be $false
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
                 }
             }
-
-            Assert-VerifiableMock
         }
     }
 }
-finally
-{
-    Invoke-TestCleanup
+
+Describe 'SqlEndpointPermission\Test-TargetResource' -Tag 'Test' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
+                Name         = 'DefaultEndpointMirror'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockTestTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        Context 'When the endpoint should exist' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        InstanceName = 'MSSQLSERVER'
+                        ServerName   = 'localhost'
+                        Ensure       = 'Present'
+                        Name         = 'DefaultEndpointMirror'
+                        Principal    = 'COMPANY\Account'
+                        Permission   = 'CONNECT'
+                    }
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.Principal = 'COMPANY\Account'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue
+                }
+            }
+        }
+
+        Context 'When the endpoint should not exist' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        InstanceName = 'MSSQLSERVER'
+                        ServerName   = 'localhost'
+                        Ensure       = 'Absent'
+                        Name         = 'DefaultEndpointMirror'
+                        Principal    = 'COMPANY\Account'
+                        Permission   = 'CONNECT'
+                    }
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.Ensure = 'Absent'
+                    $mockTestTargetResourceParameters.Principal = 'COMPANY\Account'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue
+                }
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        Context 'When the endpoint exist' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        InstanceName = 'MSSQLSERVER'
+                        ServerName   = 'localhost'
+                        Ensure       = 'Absent'
+                        Name         = 'DefaultEndpointMirror'
+                        Principal    = 'COMPANY\MissingAccount'
+                        Permission   = ''
+                    }
+                }
+            }
+
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.Principal = 'COMPANY\MissingAccount'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse
+                }
+            }
+        }
+    }
+}
+
+Describe 'SqlEndpointPermission\Set-TargetResource' -Tag 'Set' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
+                Name         = 'DefaultEndpointMirror'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockSetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        Context 'When the permission should be present' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                    }
+                }
+            }
+
+            It 'Should return the correct value for each property' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.Principal = 'COMPANY\Account'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When the permission should be absent' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Absent'
+                    }
+                }
+            }
+
+            It 'Should return the correct value for each property' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.Ensure = 'Absent'
+                    $mockSetTargetResourceParameters.Principal = 'COMPANY\MissingAccount'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            $mockConnectSql = {
+                return New-Object -TypeName Object |
+                    Add-Member -MemberType ScriptProperty -Name 'Endpoints' -Value {
+                    return @(
+                        @{
+                            # TypeName: Microsoft.SqlServer.Management.Smo.Endpoint
+                            'DefaultEndpointMirror' = New-Object -TypeName Object |
+                                Add-Member -MemberType NoteProperty -Name 'Name' -Value 'DefaultEndpointMirror' -PassThru |
+                                Add-Member -MemberType ScriptMethod -Name 'Grant' -Value {
+                                    param
+                                    (
+                                        $permissionSet,
+                                        $mockPrincipal
+                                    )
+
+                                    InModuleScope -ScriptBlock {
+                                        $script:mockMethodGrantWasRun += 1
+                                    }
+                                } -PassThru |
+                                Add-Member -MemberType ScriptMethod -Name 'Revoke' -Value {
+                                    param
+                                    (
+                                        $permissionSet,
+                                        $mockPrincipal
+                                    )
+
+                                    InModuleScope -ScriptBlock {
+                                        $script:mockMethodRevokeWasRun += 1
+                                    }
+                                } -PassThru -Force
+                        }
+                    )
+                } -PassThru -Force
+            }
+
+            Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+
+            Mock -CommandName New-Object -MockWith {
+                return [PSCustomObject]@{
+                    Connect = $true
+                }
+            } -ParameterFilter {
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.ObjectPermissionSet'
+            }
+        }
+
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $script:mockMethodGrantWasRun = 0
+                $script:mockMethodRevokeWasRun = 0
+            }
+        }
+
+        Context 'When the permission should be present' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Absent'
+                    }
+                }
+            }
+
+            It 'Should return the correct value for each property' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.Principal = 'COMPANY\Account'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+
+                    $mockMethodGrantWasRun | Should -Be 1
+                    $mockMethodRevokeWasRun | Should -Be 0
+                }
+            }
+        }
+
+        Context 'When the permission should be absent' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                    }
+                }
+            }
+
+            It 'Should return the correct value for each property' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.Ensure = 'Absent'
+                    $mockSetTargetResourceParameters.Principal = 'COMPANY\MissingAccount'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+
+                    $mockMethodRevokeWasRun | Should -Be 1
+                    $mockMethodGrantWasRun | Should -Be 0
+                }
+            }
+        }
+
+        Context 'When the endpoint is missing' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                    }
+                }
+            }
+
+            It 'Should return throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.Ensure = 'Absent'
+                    $mockSetTargetResourceParameters.Name = 'MissingEndpoint'
+                    $mockSetTargetResourceParameters.Principal = 'COMPANY\Account'
+
+                    $mockErrorMessage = $script:localizedData.EndpointNotFound -f 'MissingEndpoint'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                }
+            }
+        }
+    }
 }

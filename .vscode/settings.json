@@ -1,3 +1,4 @@
+
 {
     "powershell.codeFormatting.openBraceOnSameLine": false,
     "powershell.codeFormatting.newLineAfterOpenBrace": true,
@@ -33,10 +34,19 @@
         "keepachangelog",
         "notin",
         "pscmdlet",
-        "steppable"
+        "steppable",
+        "SSRS"
     ],
     "[markdown]": {
         "files.trimTrailingWhitespace": true,
         "files.encoding": "utf8"
-    }
+    },
+    "powershell.pester.useLegacyCodeLens": false,
+    "pester.testFilePath": [
+        "[tT]ests/[uU]nit/*.[tT]ests.[pP][sS]1"
+    ],
+    "pester.runTestsInNewProcess": false,
+    "pester.pesterModulePath": "./output/RequiredModules/Pester",
+    "powershell.pester.codeLens": true,
+    "pester.suppressCodeLensNotice": true
 }

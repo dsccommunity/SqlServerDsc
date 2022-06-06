@@ -1,33 +1,37 @@
 <#
     .SYNOPSIS
-        Automated unit test for DSC_SqlScript DSC resource.
-
+        Unit test for DSC_SqlScript DSC resource.
 #>
 
-# Suppression of this PSSA rule allowed in tests.
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
-param()
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
 
-Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
-
-if (-not (Test-BuildCategory -Type 'Unit'))
-{
-    return
-}
-
-$script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlScript'
-
-function Invoke-TestSetup
-{
+BeforeDiscovery {
     try
     {
-        Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
+        if (-not (Get-Module -Name 'DscResource.Test'))
+        {
+            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
+            {
+                # Redirect all streams to $null, except the error stream (stream 2)
+                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+            }
+
+            # If the dependencies has not been resolved, this will throw an error.
+            Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
+}
+
+BeforeAll {
+    $script:dscModuleName = 'SqlServerDsc'
+    $script:dscResourceName = 'DSC_SqlScript'
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
@@ -35,180 +39,325 @@ function Invoke-TestSetup
         -ResourceType 'Mof' `
         -TestType 'Unit'
 
-    # Loading mocked classes
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
+    # Loading mocked exception class
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SqlPowerShellSqlExecutionException.cs')
+
+    # Load the correct SQL Module stub
+    $script:stubModuleName = Import-SQLModuleStub -PassThru
+
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
 }
 
-function Invoke-TestCleanup
-{
+AfterAll {
+    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
+    $PSDefaultParameterValues.Remove('Mock:ModuleName')
+    $PSDefaultParameterValues.Remove('Should:ModuleName')
+
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+
+    # Unload the module being tested so that it doesn't impact any other tests.
+    Get-Module -Name $script:dscResourceName -All | Remove-Module -Force
+
+    # Unload the stub module.
+    Remove-SqlModuleStub -Name $script:stubModuleName
+
+    # Remove module common test helper.
+    Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Invoke-TestSetup
+Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
+                SetFilePath  = 'set.sql'
+                GetFilePath  = 'get.sql'
+                TestFilePath = 'test.sql'
+            }
+        }
+    }
 
-try
-{
-    InModuleScope $script:dscResourceName {
-        Describe 'DSC_SqlScript\Get-TargetResource' {
-            BeforeAll {
-                $testParameters = @{
-                    ServerName   = $env:COMPUTERNAME
-                    InstanceName = 'MSSQLSERVER'
-                    SetFilePath  = "set.sql"
-                    GetFilePath  = "get.sql"
-                    TestFilePath = "test.sql"
-                }
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockGetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
 
-                $testParametersTimeout = @{
-                    ServerName   = $env:COMPUTERNAME
+    Context 'When Get-TargetResource returns script results successfully' {
+        BeforeAll {
+            Mock -CommandName Invoke-SqlScript -MockWith {
+                return ''
+            }
+        }
+
+        It 'Should return the expected results' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                $result | Should -BeOfType [System.Collections.Hashtable]
+                $result.ServerInstance | Should -Be $mockGetTargetResourceParameters.ServerInstance
+                $result.SetFilePath | Should -Be $mockGetTargetResourceParameters.SetFilePath
+                $result.GetFilePath | Should -Be $mockGetTargetResourceParameters.GetFilePath
+                $result.TestFilePath | Should -Be $mockGetTargetResourceParameters.TestFilePath
+            }
+        }
+    }
+
+    Context 'When Get-TargetResource returns script results successfully with query timeout' {
+        BeforeAll {
+            Mock -CommandName Invoke-SqlScript -MockWith {
+                return ''
+            }
+        }
+
+        It 'Should return the expected results' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockTestParametersTimeout = @{
+                    ServerName   = 'localhost'
                     InstanceName = 'MSSQLSERVER'
-                    SetFilePath  = "set-timeout.sql"
-                    GetFilePath  = "get-timeout.sql"
-                    TestFilePath = "test-timeout.sql"
+                    SetFilePath  = 'set-timeout.sql'
+                    GetFilePath  = 'get-timeout.sql'
+                    TestFilePath = 'test-timeout.sql'
                     QueryTimeout = 30
                 }
+
+                $result = Get-TargetResource @mockTestParametersTimeout
+
+                $result | Should -BeOfType [System.Collections.Hashtable]
+                $result.ServerInstance | Should -Be $mockTestParametersTimeout.ServerInstance
+                $result.SetFilePath | Should -Be $mockTestParametersTimeout.SetFilePath
+                $result.GetFilePath | Should -Be $mockTestParametersTimeout.GetFilePath
+                $result.TestFilePath | Should -Be $mockTestParametersTimeout.TestFilePath
             }
+        }
+    }
 
-            Context 'When Get-TargetResource returns script results successfully' {
-                Mock -CommandName Invoke-SqlScript -MockWith {
-                    return ''
-                }
-
-                It 'Should return the expected results' {
-                    $result = Get-TargetResource @testParameters
-
-                    $result.ServerInstance | Should -Be $testParameters.ServerInstance
-                    $result.SetFilePath | Should -Be $testParameters.SetFilePath
-                    $result.GetFilePath | Should -Be $testParameters.GetFilePath
-                    $result.TestFilePath | Should -Be $testParameters.TestFilePath
-                    $result | Should -BeOfType [System.Collections.Hashtable]
-                }
-            }
-
-            Context 'When Get-TargetResource returns script results successfully with query timeout' {
-                Mock -CommandName Invoke-SqlScript -MockWith {
-                    return ''
-                }
-
-                It 'Should return the expected results' {
-                    $result = Get-TargetResource @testParametersTimeout
-                    $result.ServerInstance | Should -Be $testParametersTimeout.ServerInstance
-                    $result.SetFilePath | Should -Be $testParametersTimeout.SetFilePath
-                    $result.GetFilePath | Should -Be $testParametersTimeout.GetFilePath
-                    $result.TestFilePath | Should -Be $testParametersTimeout.TestFilePath
-                    $result | Should -BeOfType [System.Collections.Hashtable]
-                }
-            }
-
-            Context 'When Get-TargetResource throws an error when running the script in the GetFilePath parameter' {
-                $errorMessage = "Failed to run SQL Script"
-
-                Mock -CommandName Invoke-SqlScript -MockWith {
-                    throw $errorMessage
-                }
-
-                It 'Should throw the correct error from Invoke-Sqlcmd' {
-                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
-                }
+    Context 'When Get-TargetResource throws an error when running the script in the GetFilePath parameter' {
+        BeforeAll {
+            Mock -CommandName Invoke-SqlScript -MockWith {
+                throw 'Failed to run SQL Script'
             }
         }
 
-        Describe 'DSC_SqlScript\Set-TargetResource' {
-            Context 'When Set-TargetResource runs script without issue' {
-                Mock -CommandName Invoke-SqlScript -MockWith {
-                    return ''
-                }
+        It 'Should throw the correct error from Invoke-Sqlcmd' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-                It 'Should return the expected results' {
-                    $result = Set-TargetResource @testParameters
-                    $result | Should -Be ''
-                }
-            }
+                $mockErrorMessage = 'Failed to run SQL Script'
 
-            Context 'When Set-TargetResource runs script without issue using timeout' {
-                Mock -CommandName Invoke-SqlScript -MockWith {
-                    return ''
-                }
-
-                It 'Should return the expected results' {
-                    $result = Set-TargetResource @testParametersTimeout
-                    $result | Should -Be ''
-                }
-            }
-
-            Context 'When Set-TargetResource throws an error when running the script in the SetFilePath parameter' {
-                $errorMessage = "Failed to run SQL Script"
-
-                Mock -CommandName Invoke-SqlScript -MockWith {
-                    throw $errorMessage
-                }
-
-                It 'Should throw the correct error from Invoke-Sqlcmd' {
-                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
-                }
-            }
-        }
-
-        Describe 'DSC_SqlScript\Test-TargetResource' {
-            Context 'When the system is in the desired state' {
-                Context 'When Test-TargetResource runs script without issue' {
-                    Mock -CommandName Invoke-SqlScript
-
-                    It 'Should return true' {
-                        $result = Test-TargetResource @testParameters
-                        $result | Should -Be $true
-                    }
-                }
-
-                Context 'When Test-TargetResource runs script without issue with timeout' {
-                    Mock -CommandName Invoke-SqlScript
-
-                    It 'Should return true' {
-                        $result = Test-TargetResource @testParametersTimeout
-                        $result | Should -Be $true
-                    }
-                }
-            }
-
-            Context 'When the system is not in the desired state' {
-                Context 'When Invoke-SqlScript returns an SQL error code from the script that was ran' {
-                    Mock -CommandName Invoke-SqlScript -MockWith {
-                        return 1
-                    }
-
-                    It 'Should return false' {
-                        $result = Test-TargetResource @testParametersTimeout
-                        $result | Should -Be $false
-                    }
-                }
-
-                Context 'When Test-TargetResource throws the exception SqlPowerShellSqlExecutionException when running the script in the TestFilePath parameter' {
-                    Mock -CommandName Invoke-SqlScript -MockWith {
-                        throw New-Object -TypeName Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException
-                    }
-
-                    It 'Should return false' {
-                        $result = Test-TargetResource @testParameters
-                        $result | Should -Be $false
-                    }
-                }
-
-                Context 'When Test-TargetResource throws an unexpected error when running the script in the TestFilePath parameter' {
-                    $errorMessage = "Failed to run SQL Script"
-
-                    Mock -CommandName Invoke-SqlScript -MockWith {
-                        throw $errorMessage
-                    }
-
-                    It 'Should throw the correct error from Invoke-Sqlcmd' {
-                        { Test-TargetResource @testParameters } | Should -Throw $errorMessage
-                    }
-                }
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
             }
         }
     }
 }
-finally
-{
-    Invoke-TestCleanup
+
+Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
+                SetFilePath  = 'set.sql'
+                GetFilePath  = 'get.sql'
+                TestFilePath = 'test.sql'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockSetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When Set-TargetResource runs script without issue' {
+        BeforeAll {
+            Mock -CommandName Invoke-SqlScript -MockWith {
+                return ''
+            }
+        }
+
+        It 'Should return the expected results' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+            }
+        }
+    }
+
+    Context 'When Set-TargetResource runs script without issue using timeout' {
+        BeforeAll {
+            Mock -CommandName Invoke-SqlScript -MockWith {
+                return ''
+            }
+        }
+
+        It 'Should return the expected results' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+            }
+        }
+    }
+
+    Context 'When Set-TargetResource throws an error when running the script in the SetFilePath parameter' {
+        BeforeAll {
+            Mock -CommandName Invoke-SqlScript -MockWith {
+                throw 'Failed to run SQL Script'
+            }
+        }
+
+
+        It 'Should throw the correct error from Invoke-Sqlcmd' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockErrorMessage = 'Failed to run SQL Script'
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+            }
+        }
+    }
+}
+
+Describe 'SqlScript\Test-TargetResource' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
+                SetFilePath  = 'set.sql'
+                GetFilePath  = 'get.sql'
+                TestFilePath = 'test.sql'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockTestTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        Context 'When Test-TargetResource runs script without issue' {
+            BeforeAll {
+                Mock -CommandName Invoke-SqlScript
+            }
+
+            It 'Should return true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue
+                }
+            }
+        }
+
+        Context 'When Test-TargetResource runs script without issue with timeout' {
+            BeforeAll {
+                Mock -CommandName Invoke-SqlScript
+            }
+
+            It 'Should return true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestParametersTimeout = @{
+                        ServerName   = 'localhost'
+                        InstanceName = 'MSSQLSERVER'
+                        SetFilePath  = 'set-timeout.sql'
+                        GetFilePath  = 'get-timeout.sql'
+                        TestFilePath = 'test-timeout.sql'
+                        QueryTimeout = 30
+                    }
+
+                    $result = Test-TargetResource @mockTestParametersTimeout
+
+                    $result | Should -BeTrue
+                }
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        Context 'When Invoke-SqlScript returns an SQL error code from the script that was ran' {
+            BeforeAll {
+                Mock -CommandName Invoke-SqlScript -MockWith {
+                    return 1
+                }
+            }
+
+            It 'Should return false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestParametersTimeout = @{
+                        ServerName   = 'localhost'
+                        InstanceName = 'MSSQLSERVER'
+                        SetFilePath  = 'set-timeout.sql'
+                        GetFilePath  = 'get-timeout.sql'
+                        TestFilePath = 'test-timeout.sql'
+                        QueryTimeout = 30
+                    }
+
+                    $result = Test-TargetResource @mockTestParametersTimeout
+
+                    $result | Should -BeFalse
+                }
+            }
+        }
+
+        Context 'When Test-TargetResource throws the exception SqlPowerShellSqlExecutionException when running the script in the TestFilePath parameter' {
+            BeforeAll {
+                Mock -CommandName Invoke-SqlScript -MockWith {
+                    throw New-Object -TypeName Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException
+                }
+            }
+
+            It 'Should return false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse
+                }
+            }
+        }
+
+        Context 'When Test-TargetResource throws an unexpected error when running the script in the TestFilePath parameter' {
+            BeforeAll {
+                Mock -CommandName Invoke-SqlScript -MockWith {
+                    throw 'Failed to run SQL Script'
+                }
+            }
+
+            It 'Should throw the correct error from Invoke-Sqlcmd' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockErrorMessage = 'Failed to run SQL Script'
+
+                    { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                }
+            }
+        }
+    }
 }

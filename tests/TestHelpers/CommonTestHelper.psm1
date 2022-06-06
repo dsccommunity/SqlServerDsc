@@ -7,10 +7,16 @@
 
     .PARAMETER ModuleName
         The name of the module to load the stubs for. Default is 'SqlServer'.
+
+    .OUTPUTS
+        [System.String]
+
+        The name of the module that was imported if the parameter PassThru was specified.
 #>
-function Import-SQLModuleStub
+function Import-SqlModuleStub
 {
     [CmdletBinding(DefaultParameterSetName = 'Module')]
+    [OutputType([System.String])]
     param
     (
         [Parameter(Mandatory = $true, ParameterSetName = 'Version')]
@@ -20,13 +26,20 @@ function Import-SQLModuleStub
         [Parameter(ParameterSetName = 'Module')]
         [ValidateSet('SQLPS', 'SqlServer')]
         [System.String]
-        $ModuleName = 'SqlServer'
+        $ModuleName = 'SqlServer',
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $PassThru
     )
 
-    # Translate the module names to their appropriate stub name
+    <#
+        Translate the module names to their appropriate stub name.
+        This must be the correct casing to work cross-platform.
+    #>
     $modulesAndStubs = @{
         SQLPS     = 'SQLPSStub'
-        SqlServer = 'SqlServerStub'
+        SqlServer = 'SQLServerStub'
     }
 
     # Determine which module to ensure is loaded based on the parameters passed
@@ -50,10 +63,7 @@ function Import-SQLModuleStub
         $_ -ne $stubModuleName
     }
 
-    if ( Get-Module -Name $otherStubModules )
-    {
-        Remove-Module -Name $otherStubModules
-    }
+    Get-Module -Name $otherStubModules -All | Remove-Module -Force
 
     # If the desired module is not loaded, load it now
     if ( -not ( Get-Module -Name $stubModuleName ) )
@@ -63,6 +73,33 @@ function Import-SQLModuleStub
 
         Import-Module -Name $moduleStubPath -Force -Global -WarningAction 'SilentlyContinue'
     }
+
+    if ($PassThru.IsPresent)
+    {
+        return $stubModuleName
+    }
+}
+
+<#
+    .SYNOPSIS
+        Ensure the module stubs are unloaded.
+#>
+function Remove-SqlModuleStub
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [ValidateSet('SQLPSStub', 'SqlServerStub')]
+        [System.String[]]
+        $Name = @(
+            # Possible stub modules.
+            'SQLPSStub'
+            'SqlServerStub'
+        )
+    )
+
+    Get-Module $Name -All | Remove-Module -Force
 }
 
 <#
@@ -290,75 +327,8 @@ function New-SQLSelfSignedCertificate
 
 <#
     .SYNOPSIS
-        Returns $true if the the environment variable APPVEYOR is set to $true,
-        and the environment variable CONFIGURATION is set to the value passed
-        in the parameter Type.
-
-    .PARAMETER Name
-        Name of the test script that is called. Default value is the name of the
-        calling script.
-
-    .PARAMETER Type
-        Type of tests in the test file. Can be set to Unit or Integration.
-
-    .PARAMETER Category
-        Optional. One or more categories to check if they are set in
-        $env:CONFIGURATION. If this are not set, the parameter Type
-        is used as category.
-#>
-function Test-BuildCategory
-{
-    [OutputType([System.Boolean])]
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $Name = $MyInvocation.PSCommandPath.Split('\')[-1],
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Unit', 'Integration')]
-        [System.String]
-        $Type,
-
-        [Parameter()]
-        [System.String[]]
-        $Category
-    )
-
-    # Support using only the Type parameter as category names.
-    if (-not $Category)
-    {
-        $Category = @($Type)
-    }
-
-    $result = $true
-
-    if ($Type -eq 'Integration' -and -not $env:CI -eq $true)
-    {
-        Write-Warning -Message ('{1} test for {0} will be skipped unless $env:CI is set to $true' -f $Name, $Type)
-        $result = $false
-    }
-
-    <#
-        If running in CI then check if it should run in the
-        current category set in $env:CONFIGURATION.
-    #>
-    if ($env:CI -eq $true -and -not (Test-ContinuousIntegrationTaskCategory -Category $Category))
-    {
-        Write-Verbose -Message ('{1} tests in {0} will be skipped unless $env:CONFIGURATION is set to ''{1}''.' -f $Name, ($Category -join ''', or ''')) -Verbose
-        $result = $false
-    }
-
-    return $result
-}
-
-<#
-    .SYNOPSIS
-        Returns $true if the the environment variable APPVEYOR is set to $true,
-        and the environment variable CONFIGURATION is set to the value passed
-        in the parameter Type.
+        Returns $true if the environment variable CONFIGURATION is set to the value
+        passed in the parameter Category.
 
     .PARAMETER Category
         One or more categories to check if they are set in $env:CONFIGURATION.
@@ -376,166 +346,12 @@ function Test-ContinuousIntegrationTaskCategory
 
     $result = $false
 
-    if ($env:CI -eq $true -and $env:CONFIGURATION -in $Category)
+    if ($env:CONFIGURATION -in $Category)
     {
         $result = $true
     }
 
     return $result
-}
-
-<#
-    .SYNOPSIS
-        Waits for LCM to become idle.
-
-    .PARAMETER Clear
-        If specified, the LCM will also be cleared of DSC configurations.
-
-    .NOTES
-        Used in integration test where integration tests run to quickly before
-        LCM have time to cool down.
-#>
-function Wait-ForIdleLcm
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Clear
-    )
-
-    while ((Get-DscLocalConfigurationManager).LCMState -ne 'Idle')
-    {
-        Write-Verbose -Message 'Waiting for the LCM to become idle'
-
-        Start-Sleep -Seconds 2
-    }
-
-    if ($Clear)
-    {
-        Clear-DscLcmConfiguration
-    }
-}
-
-<#
-    .SYNOPSIS
-        Returns an invalid operation exception object
-
-    .PARAMETER Message
-        The message explaining why this error is being thrown
-
-    .PARAMETER ErrorRecord
-        The error record containing the exception that is causing this terminating
-        error
-#>
-function Get-InvalidOperationRecord
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $Message,
-
-        [Parameter()]
-        [ValidateNotNull()]
-        [System.Management.Automation.ErrorRecord]
-        $ErrorRecord
-    )
-
-    $newObjectParameters = @{
-        TypeName = 'System.InvalidOperationException'
-    }
-
-    if ($PSBoundParameters.ContainsKey('Message') -and $PSBoundParameters.ContainsKey('ErrorRecord'))
-    {
-        $newObjectParameters['ArgumentList'] = @(
-            $Message,
-            $ErrorRecord.Exception
-        )
-    }
-    elseif ($PSBoundParameters.ContainsKey('Message'))
-    {
-        $newObjectParameters['ArgumentList'] = @(
-            $Message
-        )
-    }
-
-    $invalidOperationException = New-Object @newObjectParameters
-
-    $newObjectParameters = @{
-        TypeName     = 'System.Management.Automation.ErrorRecord'
-        ArgumentList = @(
-            $invalidOperationException.ToString(),
-            'MachineStateIncorrect',
-            'InvalidOperation',
-            $null
-        )
-    }
-
-    return New-Object @newObjectParameters
-}
-
-<#
-    .SYNOPSIS
-        Returns an invalid result exception object
-
-    .PARAMETER Message
-        The message explaining why this error is being thrown
-
-    .PARAMETER ErrorRecord
-        The error record containing the exception that is causing this terminating
-        error
-#>
-function Get-InvalidResultRecord
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $Message,
-
-        [Parameter()]
-        [ValidateNotNull()]
-        [System.Management.Automation.ErrorRecord]
-        $ErrorRecord
-    )
-
-    $newObjectParameters = @{
-        TypeName = 'System.Exception'
-    }
-
-    if ($PSBoundParameters.ContainsKey('Message') -and $PSBoundParameters.ContainsKey('ErrorRecord'))
-    {
-        $newObjectParameters['ArgumentList'] = @(
-            $Message,
-            $ErrorRecord.Exception
-        )
-    }
-    elseif ($PSBoundParameters.ContainsKey('Message'))
-    {
-        $newObjectParameters['ArgumentList'] = @(
-            $Message
-        )
-    }
-
-    $invalidOperationException = New-Object @newObjectParameters
-
-    $newObjectParameters = @{
-        TypeName     = 'System.Management.Automation.ErrorRecord'
-        ArgumentList = @(
-            $invalidOperationException.ToString(),
-            'MachineStateIncorrect',
-            'InvalidOperation',
-            $null
-        )
-    }
-
-    return New-Object @newObjectParameters
 }
 
 <#

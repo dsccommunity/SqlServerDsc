@@ -108,190 +108,192 @@ function Get-TargetResource
 
     $ensure = 'Present'
     $featuresInstalled = ''
+    $databaseEngineFirewall = $null
+    $browserFirewall = $null
+    $reportingServicesFirewall = $null
+    $analysisServicesFirewall = $null
+    $integrationServicesFirewall = $null
 
     $services = Get-Service
 
-    foreach ($currentFeature in $Features.Split(','))
+    # Split on comma and remove any whitespace.
+    $desiredFeatures = @(($Features -split ',').Trim())
+
+    if ('SQLENGINE' -in $desiredFeatures)
     {
-        switch ($currentFeature)
+        if ($services | Where-Object -FilterScript { $_.Name -eq $databaseServiceName })
         {
-            'SQLENGINE'
-            {
-                if ($services | Where-Object -FilterScript { $_.Name -eq $databaseServiceName })
-                {
-                    $featuresInstalled += "$_,"
+            $featuresInstalled += 'SQLENGINE,'
 
-                    $pathToDatabaseEngineExecutable = Join-Path -Path (Get-SQLPath -Feature $_ -InstanceName $InstanceName) -ChildPath 'sqlservr.exe'
-                    $databaseEngineFirewallRuleDisplayName = "SQL Server Database Engine instance $InstanceName"
+            $pathToDatabaseEngineExecutable = Join-Path -Path (Get-SQLPath -Feature 'SQLENGINE' -InstanceName $InstanceName) -ChildPath 'sqlservr.exe'
+            $databaseEngineFirewallRuleDisplayName = "SQL Server Database Engine instance $InstanceName"
 
-                    $databaseEngineFirewallRuleParameters = @{
-                        DisplayName = $databaseEngineFirewallRuleDisplayName
-                        Program     = $pathToDatabaseEngineExecutable
-                        Enabled     = 'True'
-                        Profile     = 'Any'
-                        Direction   = 'Inbound'
-                    }
-
-                    if (Test-IsFirewallRuleInDesiredState @databaseEngineFirewallRuleParameters)
-                    {
-                        $databaseEngineFirewall = $true
-                    }
-                    else
-                    {
-                        $databaseEngineFirewall = $false
-                    }
-
-                    $browserFirewallRuleDisplayName = 'SQL Server Browser'
-
-                    $browserFirewallRuleParameters = @{
-                        DisplayName = $browserFirewallRuleDisplayName
-                        Service     = $browserServiceName
-                        Enabled     = 'True'
-                        Profile     = 'Any'
-                        Direction   = 'Inbound'
-                    }
-
-                    if (Test-IsFirewallRuleInDesiredState @browserFirewallRuleParameters)
-                    {
-                        $browserFirewall = $true
-                    }
-                    else
-                    {
-                        $browserFirewall = $false
-                    }
-                }
+            $databaseEngineFirewallRuleParameters = @{
+                DisplayName = $databaseEngineFirewallRuleDisplayName
+                Program     = $pathToDatabaseEngineExecutable
+                Enabled     = 'True'
+                Profile     = 'Any'
+                Direction   = 'Inbound'
             }
 
-            'RS'
+            if (Test-IsFirewallRuleInDesiredState @databaseEngineFirewallRuleParameters)
             {
-                if ($services | Where-Object -FilterScript { $_.Name -eq $reportServiceName })
-                {
-                    $featuresInstalled += "$_,"
-
-                    $reportingServicesNoSslProtocol = 'TCP'
-                    $reportingServicesNoSslLocalPort = '80'
-                    $reportingServicesNoSslFirewallRuleDisplayName = 'SQL Server Reporting Services 80'
-
-                    $reportingServicesNoSslFirewallRuleParameters = @{
-                        DisplayName = $reportingServicesNoSslFirewallRuleDisplayName
-                        Protocol    = $reportingServicesNoSslProtocol
-                        LocalPort   = $reportingServicesNoSslLocalPort
-                        Enabled     = 'True'
-                        Profile     = 'Any'
-                        Direction   = 'Inbound'
-                    }
-
-                    $reportingServicesSslProtocol = 'TCP'
-                    $reportingServicesSslLocalPort = '443'
-                    $reportingServicesSslFirewallRuleDisplayName = 'SQL Server Reporting Services 443'
-
-                    $reportingServicesSslFirewallRuleParameters = @{
-                        DisplayName = $reportingServicesSslFirewallRuleDisplayName
-                        Protocol    = $reportingServicesSslProtocol
-                        LocalPort   = $reportingServicesSslLocalPort
-                        Enabled     = 'True'
-                        Profile     = 'Any'
-                        Direction   = 'Inbound'
-                    }
-
-                    if ((Test-IsFirewallRuleInDesiredState @reportingServicesNoSslFirewallRuleParameters) `
-                            -and (Test-IsFirewallRuleInDesiredState @reportingServicesSslFirewallRuleParameters))
-                    {
-                        $reportingServicesFirewall = $true
-                    }
-                    else
-                    {
-                        $reportingServicesFirewall = $false
-                    }
-                }
+                $databaseEngineFirewall = $true
+            }
+            else
+            {
+                $databaseEngineFirewall = $false
             }
 
-            'AS'
-            {
-                if ($services | Where-Object -FilterScript { $_.Name -eq $analysisServiceName })
-                {
-                    $featuresInstalled += "$_,"
+            $browserFirewallRuleDisplayName = 'SQL Server Browser'
 
-                    $analysisServicesFirewallRuleDisplayName = "SQL Server Analysis Services instance $InstanceName"
-
-                    $analysisServicesFirewallRuleParameters = @{
-                        DisplayName = $analysisServicesFirewallRuleDisplayName
-                        Service     = $analysisServiceName
-                        Enabled     = 'True'
-                        Profile     = 'Any'
-                        Direction   = 'Inbound'
-                    }
-
-                    if (Test-IsFirewallRuleInDesiredState @analysisServicesFirewallRuleParameters)
-                    {
-                        $analysisServicesFirewall = $true
-                    }
-                    else
-                    {
-                        $analysisServicesFirewall = $false
-                    }
-
-                    $browserFirewallRuleDisplayName = 'SQL Server Browser'
-
-                    $browserFirewallRuleParameters = @{
-                        DisplayName = $browserFirewallRuleDisplayName
-                        Service     = $browserServiceName
-                        Enabled     = 'True'
-                        Profile     = 'Any'
-                        Direction   = 'Inbound'
-                    }
-
-                    if (Test-IsFirewallRuleInDesiredState @browserFirewallRuleParameters)
-                    {
-                        $browserFirewall = $true
-                    }
-                    else
-                    {
-                        $browserFirewall = $false
-                    }
-                }
+            $browserFirewallRuleParameters = @{
+                DisplayName = $browserFirewallRuleDisplayName
+                Service     = $browserServiceName
+                Enabled     = 'True'
+                Profile     = 'Any'
+                Direction   = 'Inbound'
             }
 
-            'IS'
+            if (Test-IsFirewallRuleInDesiredState @browserFirewallRuleParameters)
             {
-                if ($services | Where-Object -FilterScript { $_.Name -eq $integrationServiceName })
-                {
-                    $featuresInstalled += "$_,"
+                $browserFirewall = $true
+            }
+            else
+            {
+                $browserFirewall = $false
+            }
+        }
+    }
 
-                    $integrationServicesRuleApplicationDisplayName = 'SQL Server Integration Services Application'
-                    $pathToIntegrationServicesExecutable = (Join-Path -Path (Join-Path -Path (Get-SQLPath -Feature 'IS' -SQLVersion $sqlVersion) -ChildPath 'Binn') -ChildPath 'MsDtsSrvr.exe')
+    if ('RS' -in $desiredFeatures)
+    {
+        if ($services | Where-Object -FilterScript { $_.Name -eq $reportServiceName })
+        {
+            $featuresInstalled += 'RS,'
 
-                    $integrationServicesFirewallRuleApplicationParameters = @{
-                        DisplayName = $integrationServicesRuleApplicationDisplayName
-                        Program     = $pathToIntegrationServicesExecutable
-                        Enabled     = 'True'
-                        Profile     = 'Any'
-                        Direction   = 'Inbound'
-                    }
+            $reportingServicesNoSslProtocol = 'TCP'
+            $reportingServicesNoSslLocalPort = '80'
+            $reportingServicesNoSslFirewallRuleDisplayName = 'SQL Server Reporting Services 80'
 
-                    $integrationServicesProtocol = 'TCP'
-                    $integrationServicesLocalPort = '135'
-                    $integrationServicesFirewallRuleDisplayName = 'SQL Server Integration Services Port'
+            $reportingServicesNoSslFirewallRuleParameters = @{
+                DisplayName = $reportingServicesNoSslFirewallRuleDisplayName
+                Protocol    = $reportingServicesNoSslProtocol
+                LocalPort   = $reportingServicesNoSslLocalPort
+                Enabled     = 'True'
+                Profile     = 'Any'
+                Direction   = 'Inbound'
+            }
 
-                    $integrationServicesFirewallRulePortParameters = @{
-                        DisplayName = $integrationServicesFirewallRuleDisplayName
-                        Protocol    = $integrationServicesProtocol
-                        LocalPort   = $integrationServicesLocalPort
-                        Enabled     = 'True'
-                        Profile     = 'Any'
-                        Direction   = 'Inbound'
-                    }
+            $reportingServicesSslProtocol = 'TCP'
+            $reportingServicesSslLocalPort = '443'
+            $reportingServicesSslFirewallRuleDisplayName = 'SQL Server Reporting Services 443'
 
-                    if ((Test-IsFirewallRuleInDesiredState @integrationServicesFirewallRuleApplicationParameters) `
-                            -and (Test-IsFirewallRuleInDesiredState @integrationServicesFirewallRulePortParameters))
-                    {
-                        $integrationServicesFirewall = $true
-                    }
-                    else
-                    {
-                        $integrationServicesFirewall = $false
-                    }
-                }
+            $reportingServicesSslFirewallRuleParameters = @{
+                DisplayName = $reportingServicesSslFirewallRuleDisplayName
+                Protocol    = $reportingServicesSslProtocol
+                LocalPort   = $reportingServicesSslLocalPort
+                Enabled     = 'True'
+                Profile     = 'Any'
+                Direction   = 'Inbound'
+            }
+
+            if ((Test-IsFirewallRuleInDesiredState @reportingServicesNoSslFirewallRuleParameters) `
+                    -and (Test-IsFirewallRuleInDesiredState @reportingServicesSslFirewallRuleParameters))
+            {
+                $reportingServicesFirewall = $true
+            }
+            else
+            {
+                $reportingServicesFirewall = $false
+            }
+        }
+    }
+
+    if ('AS' -in $desiredFeatures)
+    {
+        if ($services | Where-Object -FilterScript { $_.Name -eq $analysisServiceName })
+        {
+            $featuresInstalled += 'AS,'
+
+            $analysisServicesFirewallRuleDisplayName = "SQL Server Analysis Services instance $InstanceName"
+
+            $analysisServicesFirewallRuleParameters = @{
+                DisplayName = $analysisServicesFirewallRuleDisplayName
+                Service     = $analysisServiceName
+                Enabled     = 'True'
+                Profile     = 'Any'
+                Direction   = 'Inbound'
+            }
+
+            if (Test-IsFirewallRuleInDesiredState @analysisServicesFirewallRuleParameters)
+            {
+                $analysisServicesFirewall = $true
+            }
+            else
+            {
+                $analysisServicesFirewall = $false
+            }
+
+            $browserFirewallRuleDisplayName = 'SQL Server Browser'
+
+            $browserFirewallRuleParameters = @{
+                DisplayName = $browserFirewallRuleDisplayName
+                Service     = $browserServiceName
+                Enabled     = 'True'
+                Profile     = 'Any'
+                Direction   = 'Inbound'
+            }
+
+            if (Test-IsFirewallRuleInDesiredState @browserFirewallRuleParameters)
+            {
+                $browserFirewall = $true
+            }
+            else
+            {
+                $browserFirewall = $false
+            }
+        }
+    }
+
+    if ('IS' -in $desiredFeatures)
+    {
+        if ($services | Where-Object -FilterScript { $_.Name -eq $integrationServiceName })
+        {
+            $featuresInstalled += 'IS,'
+
+            $integrationServicesRuleApplicationDisplayName = 'SQL Server Integration Services Application'
+            $pathToIntegrationServicesExecutable = (Join-Path -Path (Join-Path -Path (Get-SQLPath -Feature 'IS' -SQLVersion $sqlVersion) -ChildPath 'Binn') -ChildPath 'MsDtsSrvr.exe')
+
+            $integrationServicesFirewallRuleApplicationParameters = @{
+                DisplayName = $integrationServicesRuleApplicationDisplayName
+                Program     = $pathToIntegrationServicesExecutable
+                Enabled     = 'True'
+                Profile     = 'Any'
+                Direction   = 'Inbound'
+            }
+
+            $integrationServicesProtocol = 'TCP'
+            $integrationServicesLocalPort = '135'
+            $integrationServicesFirewallRuleDisplayName = 'SQL Server Integration Services Port'
+
+            $integrationServicesFirewallRulePortParameters = @{
+                DisplayName = $integrationServicesFirewallRuleDisplayName
+                Protocol    = $integrationServicesProtocol
+                LocalPort   = $integrationServicesLocalPort
+                Enabled     = 'True'
+                Profile     = 'Any'
+                Direction   = 'Inbound'
+            }
+
+            if ((Test-IsFirewallRuleInDesiredState @integrationServicesFirewallRuleApplicationParameters) `
+                    -and (Test-IsFirewallRuleInDesiredState @integrationServicesFirewallRulePortParameters))
+            {
+                $integrationServicesFirewall = $true
+            }
+            else
+            {
+                $integrationServicesFirewall = $false
             }
         }
     }
@@ -446,20 +448,17 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @databaseEngineFirewallRuleParameters))
-                    {
-                        $databaseEngineFirewallRule = Get-NetFirewallRule | Where-Object -FilterScript {
-                            $_.DisplayName -eq $databaseEngineFirewallRuleDisplayName
-                        }
+                    $databaseEngineFirewallRule = Get-NetFirewallRule | Where-Object -FilterScript {
+                        $_.DisplayName -eq $databaseEngineFirewallRuleDisplayName
+                    }
 
-                        if ($databaseEngineFirewallRule)
-                        {
-                            Set-NetFirewallRule @databaseEngineFirewallRuleParameters
-                        }
-                        else
-                        {
-                            New-NetFirewallRule @databaseEngineFirewallRuleParameters
-                        }
+                    if ($databaseEngineFirewallRule)
+                    {
+                        Set-NetFirewallRule @databaseEngineFirewallRuleParameters
+                    }
+                    else
+                    {
+                        New-NetFirewallRule @databaseEngineFirewallRuleParameters
                     }
                 }
 
@@ -475,10 +474,7 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @browserFirewallRuleParameters))
-                    {
-                        New-NetFirewallRule @browserFirewallRuleParameters
-                    }
+                    New-NetFirewallRule @browserFirewallRuleParameters
                 }
             }
 
@@ -499,10 +495,7 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @reportingServicesNoSslFirewallRuleParameters))
-                    {
-                        New-NetFirewallRule @reportingServicesNoSslFirewallRuleParameters
-                    }
+                    New-NetFirewallRule @reportingServicesNoSslFirewallRuleParameters
 
                     $reportingServicesSslProtocol = 'TCP'
                     $reportingServicesSslLocalPort = '443'
@@ -517,10 +510,7 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @reportingServicesSslFirewallRuleParameters))
-                    {
-                        New-NetFirewallRule @reportingServicesSslFirewallRuleParameters
-                    }
+                    New-NetFirewallRule @reportingServicesSslFirewallRuleParameters
                 }
             }
 
@@ -538,10 +528,7 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @analysisServicesFirewallRuleParameters))
-                    {
-                        New-NetFirewallRule @analysisServicesFirewallRuleParameters
-                    }
+                    New-NetFirewallRule @analysisServicesFirewallRuleParameters
                 }
 
                 if (-not ($getTargetResourceResult.BrowserFirewall))
@@ -556,10 +543,7 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @browserFirewallRuleParameters))
-                    {
-                        New-NetFirewallRule @browserFirewallRuleParameters
-                    }
+                    New-NetFirewallRule @browserFirewallRuleParameters
                 }
             }
 
@@ -578,10 +562,7 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @integrationServicesFirewallRuleApplicationParameters))
-                    {
-                        New-NetFirewallRule @integrationServicesFirewallRuleApplicationParameters
-                    }
+                    New-NetFirewallRule @integrationServicesFirewallRuleApplicationParameters
 
                     $integrationServicesProtocol = 'TCP'
                     $integrationServicesLocalPort = '135'
@@ -596,10 +577,7 @@ function Set-TargetResource
                         Direction   = 'Inbound'
                     }
 
-                    if (-not (Test-IsFirewallRuleInDesiredState @integrationServicesFirewallRulePortParameters))
-                    {
-                        New-NetFirewallRule @integrationServicesFirewallRulePortParameters
-                    }
+                    New-NetFirewallRule @integrationServicesFirewallRulePortParameters
                 }
             }
         }
@@ -664,7 +642,7 @@ function Test-TargetResource
     )
 
     Write-Verbose -Message (
-        $script:localizedData.EvaluatingFirewallRules -f $sqlVersion
+        $script:localizedData.EvaluatingFirewallRules -f $InstanceName
     )
 
     $getTargetResourceResult = Get-TargetResource -SourcePath $SourcePath -Features $Features -InstanceName $InstanceName
@@ -866,4 +844,3 @@ function Test-IsFirewallRuleInDesiredState
 
     return $isRuleInDesiredState
 }
-

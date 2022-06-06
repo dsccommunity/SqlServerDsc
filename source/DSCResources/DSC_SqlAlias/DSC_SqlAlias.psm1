@@ -47,6 +47,8 @@ function Get-TargetResource
         -Name $Name `
         -ErrorAction SilentlyContinue
 
+    $isWow6432Node = $false
+
     if (((Get-CimInstance -ClassName win32_OperatingSystem).OSArchitecture) -eq '64-bit')
     {
         Write-Verbose -Message (
@@ -334,12 +336,14 @@ function Test-TargetResource
                 }
                 elseif ($Protocol -eq 'TCP' -and
                     $UseDynamicTcpPort -and
+                    $currentValues.UseDynamicTcpPort -eq $UseDynamicTcpPort -and
                     $currentValues.ServerName -eq $ServerName)
                 {
                     $result = $true
                 }
                 elseif ($Protocol -eq 'TCP' -and
                     -not $UseDynamicTcpPort -and
+                    $currentValues.UseDynamicTcpPort -eq $UseDynamicTcpPort -and
                     $currentValues.ServerName -eq $ServerName -and
                     $currentValues.TcpPort -eq $TcpPort)
                 {
@@ -364,4 +368,3 @@ function Test-TargetResource
 
     return $result
 }
-

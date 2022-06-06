@@ -141,7 +141,7 @@ function Get-TargetResource
 
         if ($encryptionSettings.Certificate -eq '')
         {
-            $certificateValue = 'Empty'
+            $encryptionSettings.Certificate = 'Empty'
         }
         else
         {
@@ -150,11 +150,11 @@ function Get-TargetResource
                 $script:localizedData.ThumbprintResult `
                     -f $encryptionSettings.Certificate, 'Empty'
             )
-            $certificateValue = $encryptionSettings.Certificate
         }
+
         Write-Verbose -Message (
             $script:localizedData.EncryptedSettings `
-                -f $certificateValue, $encryptionSettings.ForceEncryption
+                -f $encryptionSettings.Certificate, $encryptionSettings.ForceEncryption
         )
     }
 
@@ -619,4 +619,3 @@ function Test-CertificatePermission
         return $false
     }
 }
-

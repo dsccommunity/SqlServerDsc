@@ -5,14 +5,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Changes to SqlAGDatabase
-  - Added StatementTimeout optional parameter with default value of 600 seconds (10 mins) to SqlAGDatabase to fix Issue#1743
-    Users will be able to specify the backup and restore timeout with it.
-- Changes to SqlDatabaseUser
-  - `Test-TargetResource` returns true if the `IsUpdateable` property of the database is `$false` to resolve Issue#1748.
-- Changes to SqlDatabaseRole
-  - `Test-TargetResource` returns true if the `IsUpdateable` property of the database is `$false` to resolve Issue#1750.
-
 ### Removed
 
 - The deprecated DSC resource SqlDatabaseOwner have been removed _(and replaced_
@@ -28,6 +20,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   _[**SqlProtocol**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocol)_
   _and [**SqlProtocolTcpIp**](https://github.com/dsccommunity/SqlServerDsc/wiki/sqlprotocoltcpip))_
   ([issue #1725](https://github.com/dsccommunity/SqlServerDsc/issues/1725)).
+- CommonTestHelper
+  - Remove the helper function `Wait-ForIdleLcm` since it has been moved
+    to the module _DscResource.Test_.
+  - Remove the helper function `Get-InvalidOperationRecord` since it has
+    been moved to the module _DscResource.Test_.
+  - Remove the helper function `Get-InvalidResultRecord` since it has been
+    moved to the module _DscResource.Test_.
+
+### Added
+
+- SqlServerDsc
+  - Added recommended VS Code extensions.
+    - Added settings for VS Code extension _Pester Test Adapter_.
+- CommonTestHelper
+  - `Import-SqlModuleStub`
+    - Added the optional parameter **PasThru** that, if used, will return the
+      name of the stub module.
+    - When removing stub modules from the session that is not supposed to
+      be loaded, it uses `Get-Module -All` to look for previously loaded
+      stub modules.
+  - `Remove-SqlModuleStub`
+    - Added a new helper function `Remove-SqlModuleStub` for tests to remove
+      the PowerShell SqlServer stub module when a test has run.
+- SqlWindowsFirewall
+  - Added integration tests for SqlWindowsFirewall ([issue #747](https://github.com/dsccommunity/SqlServerDsc/issues/747)).
 
 ### Changed
 
@@ -35,17 +52,80 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated pipeline to use the build worker image 'ubuntu-latest'.
   - Switch to installing GitVersion using 'dotnet tool install' ([issue #1732](https://github.com/dsccommunity/SqlServerDsc/issues/1732)).
   - Bumped Stale task to v5 in the GitHub workflow.
+  - Make it possible to publish code coverage on failed test runs, and
+    when re-run a fail job.
 - Wiki
   - add introduction and links to DSC technology
 - SqlLogin
-  - BREAKING CHANGE: `LoginMustChangePassword`, `LoginPasswordExpirationEnabled` and `LoginPasswordPolicyEnforced`
-    parameters no longer enforce default values ([issue #1669](https://github.com/dsccommunity/SqlServerDsc/issues/1669)).
+  - BREAKING CHANGE: The parameters `LoginMustChangePassword`, `LoginPasswordExpirationEnabled`,
+    and `LoginPasswordPolicyEnforced` no longer have a default value of `$true`.
+    This means that when creating a new login, and not specifically setting
+    these parameters to `$true` in the configuration, the login that is created
+    will have these properties set to `$false`.
+  - BREAKING CHANGE: `LoginMustChangePassword`, `LoginPasswordExpirationEnabled`,
+    and `LoginPasswordPolicyEnforced` parameters no longer enforce default
+    values ([issue #1669](https://github.com/dsccommunity/SqlServerDsc/issues/1669)).
+- SqlServerDsc
+  - All tests have been converted to run in Pester 5 (Pester 4 can no
+    longer be supported) ([issue #1654](https://github.com/dsccommunity/SqlServerDsc/issues/1654)).
+  - Pipeline build and deploy now runs on Ubuntu 18.04, see more information
+    in https://github.com/actions/virtual-environments/issues/3287.
+  - Update the pipeline file _azure-pipelines.yml_ to use the latest version
+    from the Sampler project.
+- SqlRs
+  - BREAKING CHANGE: Now the Reporting Services is always restarted after
+    the call to CIM method `SetDatabaseConnection` when setting up the
+    Reporting Services. This so to try to finish the initialization of
+    Reporting Services. This was prior only done for _SQL Server Reporting_
+    _Services 2019_ ([issue #1721](https://github.com/dsccommunity/SqlServerDsc/issues/1721)).
+  - Added some verbose messages to better indicate which CIM methods are run
+    and when they are run.
+  - Minor refactor to support running unit test with strict mode enabled.
+- SqlLogin
+  - Only enforces optional parameter `LoginType` when it is specified in the
+    configuration.
+  - Only enforces optional parameters `LoginPasswordExpirationEnabled` and
+    `LoginPasswordPolicyEnforced` for a SQL login when the parameters are
+    specified in the configuration.
+  - A localized string for an error message was updated to correctly reflect
+    the code that says that to use a SQL login the authentication mode must
+    be either Mixed or Normal, prio it just stated Mixed.
+- SqlSecureConnection
+  - BREAKING CHANGE: Now `Get-TargetResource` returns the value `'Empty'`
+    for the property thumbprint if there is no thumbprint set in the current
+    state. Returning the value `'Empty'` was always intended, but it due to
+    a bug it was never returned, but instead it returned an empty string
+    or `$null` value.
+- SqlWindowsFirewall
+  - Now the property Features always return the features in the order
+    'SQLENGINE', 'RS', 'AS', and 'IS' if they are installed.
+- SqlAGListener
+  - Removed unnecessary exception that is very unlikely to be thrown in
+    `Set-TargetResource` and `Test-TargetResource`.
+  - Simplified the logic that checks if the properties are in desired state
+    as the new unit tests did not pass with the previous logic.
+  - Updated the verbose message when the listener does not exist to write
+    out the name of the listener that is meant to be updated, added, or
+    dropped.
+  - Only update values for the properties that are actually enforced by the
+    configuration.
+- SqlAGDatabase
+  - Added StatementTimeout optional parameter with default value of 600 seconds (10 mins) to SqlAGDatabase to fix Issue#1743
+    Users will be able to specify the backup and restore timeout with it.
+- SqlDatabaseUser
+  - `Test-TargetResource` returns true if the `IsUpdateable` property of the database is `$false` to resolve Issue#1748.
+- SqlDatabaseRole
+  - `Test-TargetResource` returns true if the `IsUpdateable` property of the database is `$false` to resolve Issue#1750.
 
 ### Fixed
 
 - SqlServerDsc
   - URLs the referenced TechNet in the documentation has been update to link to
     new pages at docs.microsoft.com.
+  - Fix pipeline so code coverage is published on fail.
+- CommonTestHelper
+  - The test helper function `Import-SqlModuleStub` was using wrong casing for
+    one of the stub  modules which failed test when running cross plattform.
 - SqlDatabaseObjectPermission
   - Fix for issue ([issue #1724](https://github.com/dsccommunity/SqlServerDsc/issues/1724)).
     - BREAKING CHANGE: Updated class DSC_DatabaseObjectPermission.
@@ -55,6 +135,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlProtocolTcpIp
   - Output verbose information in integration tests so it is shown what NICs
     are available and what IP address the tests will use.
+- SqlAlias
+  - Now the code passes strict mode during unit testing.
+  - When an existing alias existed with a static TCP port but the desired
+    state was to have a dynamic port, the function `Test-TargetResource` did
+    not correctly return `$false`. Same for an alias that existed with a
+    dynamic port but the desired state was to have a static port. Now the
+    function `Test-TargetResource` returns `$false` in both these scenarios.
+- SqlAgentOperator
+  - In a certain case the `Test-TargetResource` function returned the wrong
+    verbose message. If passing an e-mail address and the operator did not
+    exist it would wrongly say operator exist but had wrong e-mail address.
+    Truth was that the operator did not exist at all.
+- SqlDatabaseMail
+  - Improved the verification of an empty description so that it can handle
+    both empty string and `$null`.
+- SqlDatabaseRole
+  - Some variables where not initialized correctly which was discovered when
+    running the unit tests using strict mode. Now the variables are initialized
+    and should not cause any issues in the object returned from the function
+    `Get-TargetResource`.
+- SqlEndpointPermission
+  - Verbose messages did not use the correct variable name, so the messages
+    did not contain the correct information.
+  - Minor style guideline changes.
+- SqlMaxDop
+  - The function `Get-TargetResource` did not initialize some of the variables
+    correctly which was discovered when running the unit tests using strict
+    mode.
+  - The function `Test-TargetResource` did not correctly evaluate if the
+    node was the active node..
+- SqlMemory
+  - Now it possible to just set the minimum memory without it throwing because
+    the maximum memory is not specified.
+  - In a certain scenario the maximum memory would be enforced even if it was
+    not specified in the configuration.
+- SqlWindowsFirewall
+  - Now the variables in `Get-TargetResource` are correctly initialized so
+    they pass the new unit test that use strict mode.
+  - The verbose message in `Test-TargetResource` did not use the correct
+    variable name, so the message did not contain the correct information.
+  - Removed unnecessary logic in `Set-TargetResource` that did just evaluated
+    the same thing that the call to function `Get-TargetResource` already
+    does.
+- SqlSetup
+  - Now the variables in `Set-TargetResource` are correctly initialized so
+    they pass the new unit test that use strict mode.
+  - Some verbose messages in `Get-TargetResource` wrongly reference a variable
+    that was not available.
+  - The loop that evaluates what features are installed did an unnecessary
+    step for each iteration. A line of code was moved outside of the loop.
 
 ## [15.2.0] - 2021-09-01
 

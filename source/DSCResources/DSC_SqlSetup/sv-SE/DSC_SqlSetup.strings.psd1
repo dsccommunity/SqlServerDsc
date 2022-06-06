@@ -2,13 +2,13 @@
 
 ConvertFrom-StringData @'
     UsingPath = Använder sökväg '{0}'.
-    EvaluateReplicationFeature = Letar efter funktionen Replication ({0}).
+    EvaluateReplicationFeature = Letar efter funktionen Replication.
     ReplicationFeatureFound = Replication funktionen hittad.
     ReplicationFeatureNotFound = Replication funktionen hittades inte.
     EvaluateDataQualityClientFeature = Letar efter Data Quality Client funktionen ({0}).
     DataQualityClientFeatureFound = Data Quality Client funktionen hittad.
     DataQualityClientFeatureNotFound = Data Quality Client funktionen hittades inte.
-    EvaluateDataQualityServicesFeature = Letar efter Data Services Client funktionen ({0}).
+    EvaluateDataQualityServicesFeature = Letar efter Data Services Client funktionen.
     DataQualityServicesFeatureFound = Data Quality Services funktionen hittad.
     DataQualityServicesFeatureNotFound = Data Quality Services funktionen hittades inte.
     ClusterInstanceFound = Klustrad instans hittad.

@@ -1,183 +1,75 @@
 <#
     .SYNOPSIS
-        Automated unit test for DSC_SqlConfiguration DSC resource.
-
+        Unit test for DSC_SqlConfiguration DSC resource.
 #>
 
-Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
 
-if (-not (Test-BuildCategory -Type 'Unit'))
-{
-    return
-}
-
-$script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlConfiguration'
-
-try
-{
-    Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
-}
-catch [System.IO.FileNotFoundException]
-{
-    throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
-}
-
-$script:testEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:dscModuleName `
-    -DSCResourceName $script:dscResourceName `
-    -ResourceType 'Mof' `
-    -TestType 'Unit'
-
-$defaultState = @{
-    ServerName     = 'CLU01'
-    InstanceName   = 'ClusteredInstance'
-    OptionName     = 'user connections'
-    OptionValue    = 0
-    RestartService = $false
-    RestartTimeout = 120
-}
-
-$desiredState = @{
-    ServerName     = 'CLU01'
-    InstanceName   = 'ClusteredInstance'
-    OptionName     = 'user connections'
-    OptionValue    = 500
-    RestartService = $false
-    RestartTimeout = 120
-}
-
-$desiredStateRestart = @{
-    ServerName     = 'CLU01'
-    InstanceName   = 'ClusteredInstance'
-    OptionName     = 'user connections'
-    OptionValue    = 5000
-    RestartService = $true
-    RestartTimeout = 120
-}
-
-$dynamicOption = @{
-    ServerName     = 'CLU02'
-    InstanceName   = 'ClusteredInstance'
-    OptionName     = 'show advanced options'
-    OptionValue    = 0
-    RestartService = $false
-    RestartTimeout = 120
-}
-
-$invalidOption = @{
-    ServerName     = 'CLU01'
-    InstanceName   = 'MSSQLSERVER'
-    OptionName     = 'Does Not Exist'
-    OptionValue    = 1
-    RestartService = $false
-    RestartTimeout = 120
-}
-
-try
-{
-    Describe "$($script:dscResourceName)\Get-TargetResource" {
-        Context 'The system is not in the desired state' {
-            Mock -CommandName Connect-SQL -MockWith {
-                $mock = New-Object -TypeName PSObject -Property @{
-                    Configuration = @{
-                        Properties = @(
-                            @{
-                                DisplayName = 'user connections'
-                                ConfigValue = 0
-                            }
-                        )
-                    }
-                }
-
-                # Add the Alter method.
-                $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
-
-                return $mock
-            } -ModuleName $script:dscResourceName -Verifiable
-
-            # Get the current state.
-            $result = Get-TargetResource @desiredState
-
-            It 'Should return the same values as passed' {
-                $result.ServerName | Should -Be $desiredState.ServerName
-                $result.InstanceName | Should -Be $desiredState.InstanceName
-                $result.OptionName | Should -Be $desiredState.OptionName
-                $result.OptionValue | Should -Not -Be $desiredState.OptionValue
-                $result.RestartService | Should -Be $desiredState.RestartService
-                $result.RestartTimeout | Should -Be $desiredState.RestartTimeout
+BeforeDiscovery {
+    try
+    {
+        if (-not (Get-Module -Name 'DscResource.Test'))
+        {
+            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
+            {
+                # Redirect all streams to $null, except the error stream (stream 2)
+                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            It 'Should call Connect-SQL mock when getting the current state' {
-                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Connect-SQL -Scope Context -Times 1
-            }
-        }
-
-        Context 'The system is in the desired state' {
-            Mock -CommandName Connect-SQL -MockWith {
-                $mock = New-Object -TypeName PSObject -Property @{
-                    Configuration = @{
-                        Properties = @(
-                            @{
-                                DisplayName = 'user connections'
-                                ConfigValue = 500
-                            }
-                        )
-                    }
-                }
-
-                # Add the Alter method.
-                $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
-
-                return $mock
-            } -ModuleName $script:dscResourceName -Verifiable
-
-            # Get the current state.
-            $result = Get-TargetResource @desiredState
-
-            It 'Should return the same values as passed' {
-                $result.ServerName | Should -Be $desiredState.ServerName
-                $result.InstanceName | Should -Be $desiredState.InstanceName
-                $result.OptionName | Should -Be $desiredState.OptionName
-                $result.OptionValue | Should -Be $desiredState.OptionValue
-                $result.RestartService | Should -Be $desiredState.RestartService
-                $result.RestartTimeout | Should -Be $desiredState.RestartTimeout
-            }
-
-            It 'Should call Connect-SQL mock when getting the current state' {
-                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Connect-SQL -Scope Context -Times 1
-            }
-        }
-
-        Context 'Invalid option name is supplied' {
-            Mock -CommandName Connect-SQL -MockWith {
-                $mock = New-Object -TypeName PSObject -Property @{
-                    Configuration = @{
-                        Properties = @(
-                            @{
-                                DisplayName = 'user connections'
-                                ConfigValue = 0
-                            }
-                        )
-                    }
-                }
-
-                # Add the Alter method.
-                $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
-
-                return $mock
-            } -ModuleName $script:dscResourceName -Verifiable
-
-            It 'Should throw the correct error message' {
-                $errorMessage = ($script:localizedData.ConfigurationOptionNotFound -f $invalidOption.OptionName)
-                { Get-TargetResource @invalidOption } | Should -Throw $errorMessage
-            }
+            # If the dependencies has not been resolved, this will throw an error.
+            Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+    }
+}
 
-    Describe "$($script:dscResourceName)\Test-TargetResource" {
+BeforeAll {
+    $script:dscModuleName = 'SqlServerDsc'
+    $script:dscResourceName = 'DSC_SqlConfiguration'
+
+    $script:testEnvironment = Initialize-TestEnvironment `
+        -DSCModuleName $script:dscModuleName `
+        -DSCResourceName $script:dscResourceName `
+        -ResourceType 'Mof' `
+        -TestType 'Unit'
+
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
+    # Load the correct SQL Module stub
+    $script:stubModuleName = Import-SQLModuleStub -PassThru
+
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
+}
+
+AfterAll {
+    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
+    $PSDefaultParameterValues.Remove('Mock:ModuleName')
+    $PSDefaultParameterValues.Remove('Should:ModuleName')
+
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+
+    # Unload the module being tested so that it doesn't impact any other tests.
+    Get-Module -Name $script:dscResourceName -All | Remove-Module -Force
+
+    # Unload the stub module.
+    Remove-SqlModuleStub -Name $script:stubModuleName
+
+    # Remove module common test helper.
+    Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
+}
+
+Describe 'SqlConfiguration\Get-TargetResource' {
+    BeforeAll {
         Mock -CommandName Connect-SQL -MockWith {
-            $mock = New-Object -TypeName PSObject -Property @{
+            return New-Object -TypeName PSObject -Property @{
                 Configuration = @{
                     Properties = @(
                         @{
@@ -187,114 +79,269 @@ try
                     )
                 }
             }
-
-            # Add the Alter method.
-            $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
-
-            return $mock
-        } -ModuleName $script:dscResourceName -Verifiable
-
-        It 'Should cause Test-TargetResource to return false when not in the desired state' {
-            Test-TargetResource @defaultState | Should -Be $false
-        }
-
-        It 'Should cause Test-TargetResource method to return true' {
-            Test-TargetResource @desiredState | Should -Be $true
         }
     }
 
-    Describe "$($script:dscResourceName)\Set-TargetResource" {
-        Mock -CommandName Connect-SQL -MockWith {
-            $mock = New-Object -TypeName PSObject -Property @{
-                Configuration = @{
-                    Properties = @(
-                        @{
-                            DisplayName = 'user connections'
-                            ConfigValue = 0
-                            IsDynamic   = $false
-                        }
-                    )
+    Context 'When the system is in the desired state' {
+        It 'Should return the same values as passed' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockGetTargetResourceParameters = @{
+                    ServerName     = 'CLU01'
+                    InstanceName   = 'ClusteredInstance'
+                    OptionName     = 'user connections'
+                    OptionValue    = 500
+                    RestartService = $false
+                    RestartTimeout = 120
                 }
-            }
 
-            # Add the Alter method.
-            $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
+                $result = Get-TargetResource @mockGetTargetResourceParameters
 
-            return $mock
-        } -ModuleName $script:dscResourceName -Verifiable -ParameterFilter { $ServerName -eq 'CLU01' }
-
-        Mock -CommandName Connect-SQL -MockWith {
-            $mock = New-Object -TypeName PSObject -Property @{
-                Configuration = @{
-                    Properties = @(
-                        @{
-                            DisplayName = 'show advanced options'
-                            ConfigValue = 1
-                            IsDynamic   = $true
-                        }
-                    )
-                }
-            }
-
-            # Add the Alter method.
-            $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
-
-            return $mock
-        } -ModuleName $script:dscResourceName -Verifiable -ParameterFilter { $ServerName -eq 'CLU02' }
-
-        Mock -CommandName Restart-SqlService -ModuleName $script:dscResourceName -Verifiable
-        Mock -CommandName Write-Warning -ModuleName $script:dscResourceName -Verifiable
-
-        Context 'Change the system to the desired state' {
-            It 'Should not restart SQL for a dynamic option' {
-                Set-TargetResource @dynamicOption
-                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Restart-SqlService -Scope It -Times 0 -Exactly
-            }
-
-            It 'Should restart SQL for a non-dynamic option' {
-                Set-TargetResource @desiredStateRestart
-                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Restart-SqlService -Scope It -Times 1 -Exactly
-            }
-
-            It 'Should warn about restart when required, but not requested' {
-                Set-TargetResource @desiredState
-
-                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Write-Warning -Scope It -Times 1 -Exactly
-                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Restart-SqlService -Scope It -Times 0 -Exactly
-            }
-
-            It 'Should call Connect-SQL to get option values' {
-                Assert-MockCalled -ModuleName $script:dscResourceName -CommandName Connect-SQL -Scope Context -Times 3
+                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.OptionName | Should -Be $mockGetTargetResourceParameters.OptionName
+                $result.OptionValue | Should -Be $mockGetTargetResourceParameters.OptionValue
+                $result.RestartService | Should -Be $mockGetTargetResourceParameters.RestartService
+                $result.RestartTimeout | Should -Be $mockGetTargetResourceParameters.RestartTimeout
             }
         }
 
-        Context 'Invalid option name is supplied' {
-            Mock -CommandName Connect-SQL -MockWith {
-                $mock = New-Object -TypeName PSObject -Property @{
-                    Configuration = @{
-                        Properties = @(
-                            @{
-                                DisplayName = 'user connections'
-                                ConfigValue = 0
-                            }
-                        )
-                    }
+        It 'Should call Connect-SQL mock when getting the current state' {
+            Should -Invoke -CommandName Connect-SQL -Scope Context -Times 1
+        }
+    }
+
+    Context 'When an invalid option name is supplied' {
+        It 'Should throw the correct error message' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockGetTargetResourceParameters = @{
+                    ServerName     = 'CLU01'
+                    InstanceName   = 'MSSQLSERVER'
+                    OptionName     = 'Does Not Exist'
+                    OptionValue    = 1
+                    RestartService = $false
+                    RestartTimeout = 120
                 }
 
-                # Add the Alter method.
-                $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
+                $errorMessage = ($script:localizedData.ConfigurationOptionNotFound -f $mockGetTargetResourceParameters.OptionName) + " (Parameter 'OptionName')"
 
-                return $mock
-            } -ModuleName $script:dscResourceName -Verifiable
-
-            It 'Should throw the correct error message' {
-                $errorMessage = ($script:localizedData.ConfigurationOptionNotFound -f $invalidOption.OptionName)
-                { Set-TargetResource @invalidOption } | Should -Throw $errorMessage
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage $errorMessage
             }
         }
     }
 }
-finally
-{
-    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+
+Describe 'SqlConfiguration\Test-TargetResource' {
+    BeforeAll {
+        Mock -CommandName Get-TargetResource -MockWith {
+            return @{
+                ServerName     = 'CLU01'
+                InstanceName   = 'ClusteredInstance'
+                OptionName     = 'user connections'
+                OptionValue    = 500
+                RestartService = $false
+                RestartTimeout = 120
+            }
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        It 'Should return $true' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockTestTargetResourceParameters = @{
+                    ServerName     = 'CLU01'
+                    InstanceName   = 'ClusteredInstance'
+                    OptionName     = 'user connections'
+                    OptionValue    = 500
+                    RestartService = $false
+                    RestartTimeout = 120
+                }
+
+                $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                $result | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Get-TargetResource -Scope It -Times 1
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        It 'Should return $false' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockTestTargetResourceParameters = @{
+                    ServerName     = 'CLU01'
+                    InstanceName   = 'ClusteredInstance'
+                    OptionName     = 'user connections'
+                    OptionValue    = 400
+                    RestartService = $false
+                    RestartTimeout = 120
+                }
+
+                $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                $result | Should -BeFalse
+            }
+
+            Should -Invoke -CommandName Get-TargetResource -Scope It -Times 1
+        }
+    }
+}
+
+Describe 'SqlConfiguration\Set-TargetResource' {
+    Context 'When the system is not in the desired state' {
+        Context 'When setting option ''<OptionName>'' which has property IsDynamic set to <IsDynamic>' -ForEach @(
+            @{
+                OptionName = 'user connections'
+                IsDynamic = $false
+            }
+            @{
+                OptionName = 'show advanced options'
+                IsDynamic = $true
+            }
+        ) {
+            BeforeAll {
+                Mock -CommandName Restart-SqlService
+                Mock -CommandName Write-Warning
+                Mock -CommandName Connect-SQL -MockWith {
+                    $mock = New-Object -TypeName PSObject -Property @{
+                        Configuration = @{
+                            Properties = @(
+                                @{
+                                    DisplayName = $OptionName
+                                    ConfigValue = 0
+                                    IsDynamic   = $IsDynamic
+                                }
+                            )
+                        }
+                    }
+
+                    # Add the Alter method.
+                    $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {
+                        InModuleScope -ScriptBlock {
+                            $script:mockAlterMethodCallCount += 1
+                        }
+                    }
+
+                    return $mock
+                }
+            }
+
+            BeforeEach {
+                InModuleScope -ScriptBlock {
+                    # Reset method call count before each It-block.
+                    $script:mockAlterMethodCallCount = 0
+                }
+            }
+
+            It 'Should call the correct mocks and mocked methods for setting <OptionName>' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        ServerName     = 'CLU01'
+                        InstanceName   = 'ClusteredInstance'
+                        OptionName     = $OptionName
+                        OptionValue    = 1
+                        RestartService = $false
+                        RestartTimeout = 120
+                    }
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockAlterMethodCallCount | Should -Be 1
+                }
+
+                Should -Invoke -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
+
+                if ($IsDynamic)
+                {
+                    Should -Invoke -CommandName Write-Warning -Exactly -Times 0 -Scope It
+                }
+                else
+                {
+                    Should -Invoke -CommandName Write-Warning -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When passing RestartService set to $true' {
+                It 'Should call the correct mocks and mocked methods for setting <OptionName>' {
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters = @{
+                            ServerName     = 'CLU01'
+                            InstanceName   = 'ClusteredInstance'
+                            OptionName     = $OptionName
+                            OptionValue    = 1
+                            RestartService = $true
+                            RestartTimeout = 120
+                        }
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    if ($IsDynamic)
+                    {
+                        Should -Invoke -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Write-Warning -Exactly -Times 0 -Scope It
+                    }
+                    else
+                    {
+                        Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Write-Warning -Exactly -Times 0 -Scope It
+                    }
+                }
+            }
+        }
+
+        Context 'When an invalid option is passed' {
+            BeforeAll {
+                Mock -CommandName Connect-SQL -MockWith {
+                    $mock = New-Object -TypeName PSObject -Property @{
+                        Configuration = @{
+                            Properties = @(
+                                @{
+                                    DisplayName = 'user connections'
+                                    ConfigValue = 0
+                                    IsDynamic   = $false
+                                }
+                            )
+                        }
+                    }
+
+                    # Add the Alter method.
+                    $mock.Configuration | Add-Member -MemberType ScriptMethod -Name Alter -Value {}
+
+                    return $mock
+                }
+            }
+
+            It 'Should throw the correct error message' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        ServerName     = 'CLU01'
+                        InstanceName   = 'ClusteredInstance'
+                        OptionName     = 'InvalidOptionName'
+                        OptionValue    = 1
+                        RestartService = $true
+                        RestartTimeout = 120
+                    }
+
+                    $errorMessage = ($script:localizedData.ConfigurationOptionNotFound -f 'InvalidOptionName') + " (Parameter 'OptionName')"
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage $errorMessage
+                }
+            }
+        }
+    }
 }

@@ -76,11 +76,14 @@ function Get-TargetResource
         $script:localizedData.GetDatabaseRoleProperties -f $Name
     )
 
+    $roleMembers = @()
+    $roleStatus = 'Absent'
+    $membersInDesiredState = $false
+
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
     if ($sqlServerObject)
     {
         $membersInDesiredState = $true
-        $roleStatus = 'Absent'
 
         # Check if database exists.
         if (-not ($sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName]))
@@ -467,10 +470,12 @@ function Test-TargetResource
         MembersToInclude = $PSBoundParameters.MembersToInclude
         MembersToExclude = $PSBoundParameters.MembersToExclude
     }
+
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
     $isDatabaseRoleInDesiredState = $true
 
-    if ( $true -eq $getTargetResourceResult.DatabaseIsUpdateable )
+    if ($true -eq $getTargetResourceResult.DatabaseIsUpdateable)
     {
         switch ($Ensure)
         {

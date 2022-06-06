@@ -1,7 +1,7 @@
 @{
     CustomRulePath      = @(
-        '.\output\RequiredModules\DscResource.AnalyzerRules'
-        '.\tests\QA\AnalyzerRules\SqlServerDsc.AnalyzerRules.psm1'
+        './output/RequiredModules/DscResource.AnalyzerRules'
+        './tests/QA/AnalyzerRules/SqlServerDsc.AnalyzerRules.psm1'
     )
     IncludeDefaultRules = $true
     IncludeRules        = @(
@@ -55,14 +55,14 @@
     Rules               = @{
         PSUseConsistentWhitespace  = @{
             Enable                          = $true
-            CheckOpenBrace                  = $false
+            CheckOpenBrace                  = $true
             CheckInnerBrace                 = $true
             CheckOpenParen                  = $true
             CheckOperator                   = $false
             CheckSeparator                  = $true
             CheckPipe                       = $true
             CheckPipeForRedundantWhitespace = $true
-            CheckParameter                  = $false
+            CheckParameter                  = $true
         }
 
         PSPlaceOpenBrace           = @{

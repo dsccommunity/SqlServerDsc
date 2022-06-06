@@ -43,36 +43,50 @@ function Get-TargetResource
         $script:localizedData.GetConfiguration -f $InstanceName
     )
 
+    $getTargetResourceResult = @{
+        InstanceName                 = $InstanceName
+        DatabaseServerName           = $DatabaseServerName
+        DatabaseInstanceName         = $DatabaseInstanceName
+        ReportServerVirtualDirectory = $null
+        ReportsVirtualDirectory      = $null
+        ReportServerReservedUrl      = $null
+        ReportsReservedUrl           = $null
+        UseSsl                       = $false
+        IsInitialized                = $false
+    }
+
     $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
 
     if ( $null -ne $reportingServicesData.Configuration )
     {
         if ( $reportingServicesData.Configuration.DatabaseServerName.Contains('\') )
         {
-            $DatabaseServerName = $reportingServicesData.Configuration.DatabaseServerName.Split('\')[0]
-            $DatabaseInstanceName = $reportingServicesData.Configuration.DatabaseServerName.Split('\')[1]
+            $getTargetResourceResult.DatabaseServerName = $reportingServicesData.Configuration.DatabaseServerName.Split('\')[0]
+            $getTargetResourceResult.DatabaseInstanceName = $reportingServicesData.Configuration.DatabaseServerName.Split('\')[1]
         }
         else
         {
-            $DatabaseServerName = $reportingServicesData.Configuration.DatabaseServerName
-            $DatabaseInstanceName = 'MSSQLSERVER'
+            $getTargetResourceResult.DatabaseServerName = $reportingServicesData.Configuration.DatabaseServerName
+            $getTargetResourceResult.DatabaseInstanceName = 'MSSQLSERVER'
         }
 
         $isInitialized = $reportingServicesData.Configuration.IsInitialized
+
+        [System.Boolean] $getTargetResourceResult.IsInitialized = $isInitialized
 
         if ( $isInitialized )
         {
             if ( $reportingServicesData.Configuration.SecureConnectionLevel )
             {
-                $isUsingSsl = $true
+                $getTargetResourceResult.UseSsl = $true
             }
             else
             {
-                $isUsingSsl = $false
+                $getTargetResourceResult.UseSsl = $false
             }
 
-            $reportServerVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportServer
-            $reportsVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportManager
+            $getTargetResourceResult.ReportServerVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportServer
+            $getTargetResourceResult.ReportsVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportManager
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
@@ -96,6 +110,9 @@ function Get-TargetResource
                     $reportsReservedUrl += $reservedUrls.UrlString[$i]
                 }
             }
+
+            $getTargetResourceResult.ReportServerReservedUrl = $reportServerReservedUrl
+            $getTargetResourceResult.ReportsReservedUrl = $reportsReservedUrl
         }
         else
         {
@@ -103,26 +120,17 @@ function Get-TargetResource
                 Make sure the value returned is false, if the value returned was
                 either empty, $null or $false. Fic for issue #822.
             #>
-            [System.Boolean] $isInitialized = $false
+            [System.Boolean] $getTargetResourceResult.IsInitialized = $false
         }
     }
     else
     {
         $errorMessage = $script:localizedData.ReportingServicesNotFound -f $InstanceName
+
         New-ObjectNotFoundException -Message $errorMessage
     }
 
-    return @{
-        InstanceName                 = $InstanceName
-        DatabaseServerName           = $DatabaseServerName
-        DatabaseInstanceName         = $DatabaseInstanceName
-        ReportServerVirtualDirectory = $reportServerVirtualDirectory
-        ReportsVirtualDirectory      = $reportsVirtualDirectory
-        ReportServerReservedUrl      = $reportServerReservedUrl
-        ReportsReservedUrl           = $reportsReservedUrl
-        UseSsl                       = $isUsingSsl
-        IsInitialized                = $isInitialized
-    }
+    return $getTargetResourceResult
 }
 
 <#
@@ -330,7 +338,7 @@ function Set-TargetResource
 
             if ( $reportingServicesData.Configuration.VirtualDirectoryReportServer -ne $ReportServerVirtualDirectory )
             {
-                Write-Verbose -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
+                Write-Verbose -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to '$ReportServerVirtualDirectory'."
 
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
@@ -363,7 +371,7 @@ function Set-TargetResource
 
             if ( $reportingServicesData.Configuration.VirtualDirectoryReportManager -ne $ReportsVirtualDirectory )
             {
-                Write-Verbose -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
+                Write-Verbose -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to '$ReportServerVirtualDirectory'."
 
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
@@ -394,6 +402,8 @@ function Set-TargetResource
                 }
             }
 
+            Write-Verbose -Message "Generate database creation script on $DatabaseServerName\$DatabaseInstanceName for database '$reportingServicesDatabaseName'."
+
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
                 MethodName  = 'GenerateDatabaseCreationScript'
@@ -410,6 +420,8 @@ function Set-TargetResource
             $reportingServicesServiceAccountUserName = (Get-CimInstance -ClassName Win32_Service | Where-Object -FilterScript {
                     $_.Name -eq $reportingServicesServiceName
                 }).StartName
+
+            Write-Verbose -Message "Generate database rights script on $DatabaseServerName\$DatabaseInstanceName for database '$reportingServicesDatabaseName' and user '$reportingServicesServiceAccountUserName'."
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
@@ -432,6 +444,8 @@ function Set-TargetResource
             Import-SQLPSModule
             Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseScript.Script
             Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseRightsScript.Script
+
+            Write-Verbose -Message "Set database connection on $DatabaseServerName\$DatabaseInstanceName to database '$reportingServicesDatabaseName'."
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
@@ -469,16 +483,18 @@ function Set-TargetResource
                 It also seems that simply restarting SSRS at this point initializes
                 it.
 
+                This has since been change to always restart Reporting Services service
+                for all versions to initialize the Reporting Services. If still not
+                initialized after restart, the CIM method InitializeReportServer will
+                also run after.
+
                 We will ignore $SuppressRestart here.
             #>
-            if ($reportingServicesData.SqlVersion -ge 15)
-            {
-                Write-Verbose -Message $script:localizedData.RestartToFinishInitialization
+            Write-Verbose -Message $script:localizedData.RestartToFinishInitialization
 
-                Restart-ReportingServicesService -InstanceName $InstanceName -WaitTime 30
+            Restart-ReportingServicesService -InstanceName $InstanceName -WaitTime 30
 
-                $restartReportingService = $false
-            }
+            $restartReportingService = $false
 
             $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
 
@@ -490,6 +506,8 @@ function Set-TargetResource
             #>
             if ( -not $reportingServicesData.Configuration.IsInitialized )
             {
+                Write-Verbose -Message "Did not help restarting the Reporting Services service, running the CIM method to initialize report server on $DatabaseServerName\$DatabaseInstanceName for instance ID '$($reportingServicesData.Configuration.InstallationID)'."
+
                 $restartReportingService = $true
 
                 $invokeRsCimMethodParameters = @{
@@ -501,6 +519,10 @@ function Set-TargetResource
                 }
 
                 Invoke-RsCimMethod @invokeRsCimMethodParameters
+            }
+            else
+            {
+                Write-Verbose -Message "Reporting Services on $DatabaseServerName\$DatabaseInstanceName is initialized."
             }
 
             if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $reportingServicesData.Configuration.SecureConnectionLevel )

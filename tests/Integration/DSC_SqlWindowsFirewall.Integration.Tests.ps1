@@ -12,14 +12,14 @@ BeforeDiscovery {
         Need to define that variables here to be used in the Pester Discover to
         build the ForEach-blocks.
     #>
-    $script:dscResourceFriendlyName = 'SqlAgentOperator'
+    $script:dscResourceFriendlyName = 'SqlWindowsFirewall'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 }
 
 BeforeAll {
     # Need to define the variables here which will be used in Pester Run.
     $script:dscModuleName = 'SqlServerDsc'
-    $script:dscResourceFriendlyName = 'SqlAgentOperator'
+    $script:dscResourceFriendlyName = 'SqlWindowsFirewall'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
     $script:testEnvironment = Initialize-TestEnvironment `
@@ -42,7 +42,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
     }
 
     Context ('When using configuration <_>') -ForEach @(
-        "$($script:dscResourceName)_Add_Config"
+        "$($script:dscResourceName)_CreateDependencies_Config"
     ) {
         BeforeAll {
             $configurationName = $_
@@ -55,9 +55,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         It 'Should compile and apply the MOF without throwing' {
             {
                 $configurationParameters = @{
-                    OutputPath           = $TestDrive
+                    OutputPath        = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData    = $ConfigurationData
+                    ConfigurationData = $ConfigurationData
                 }
 
                 & $configurationName @configurationParameters
@@ -73,32 +73,11 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Start-DscConfiguration @startDscConfigurationParameters
             } | Should -Not -Throw
-        }
-
-        It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
-        }
-
-        It 'Should have set the resource and all the parameters should match' {
-            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                $_.ConfigurationName -eq $configurationName `
-                -and $_.ResourceId -eq $resourceId
-            }
-
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.Name
-            $resourceCurrentState.EmailAddress | Should -Be $ConfigurationData.AllNodes.EmailAddress
-        }
-
-        It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
         }
     }
 
     Context ('When using configuration <_>') -ForEach @(
-        "$($script:dscResourceName)_Remove_Config"
+        "$($script:dscResourceName)_SetFirewallRules_SQLENGINE_Config"
     ) {
         BeforeAll {
             $configurationName = $_
@@ -111,9 +90,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         It 'Should compile and apply the MOF without throwing' {
             {
                 $configurationParameters = @{
-                    OutputPath           = $TestDrive
+                    OutputPath                 = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData    = $ConfigurationData
+                    ConfigurationData          = $ConfigurationData
                 }
 
                 & $configurationName @configurationParameters
@@ -143,9 +122,14 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Absent'
-            $resourceCurrentState.Name | Should -BeNullOrEmpty
-            $resourceCurrentState.EmailAddress | Should -BeNullOrEmpty
+            $resourceCurrentState.Features | Should -Be 'SQLENGINE'
+            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.SourcePath | Should -Be $ConfigurationData.AllNodes.SourcePath
+            $resourceCurrentState.DatabaseEngineFirewall | Should -BeTrue
+            $resourceCurrentState.BrowserFirewall | Should -BeTrue
+            $resourceCurrentState.ReportingServicesFirewall | Should -BeFalse
+            $resourceCurrentState.AnalysisServicesFirewall | Should -BeFalse
+            $resourceCurrentState.IntegrationServicesFirewall | Should -BeFalse
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {

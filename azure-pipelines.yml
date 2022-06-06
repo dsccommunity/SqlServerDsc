@@ -10,12 +10,14 @@ trigger:
     - "v*"
     exclude:
     - "*-*"
+
 variables:
   buildFolderName: output
   buildArtifactName: output
   testResultFolderName: testResults
-  testArtifactName: testResults
+  testArtifactName: 'testResults_$(System.JobAttempt)'
   sourceFolderName: source
+  defaultBranch: main
 
 stages:
   - stage: Build
@@ -69,7 +71,13 @@ stages:
           - pwsh: |
               # Workaround for issue https://github.com/dsccommunity/DscResource.Test/issues/100
               ./build.ps1 -Task noop
-              Invoke-Pester -Script .\tests\QA -EnableExit
+
+              $pesterConfig = New-PesterConfiguration
+              $pesterConfig.Run.Path = '.\tests\QA'
+              $pesterConfig.Run.Throw = $true
+              $pesterConfig.Output.Verbosity = 'Detailed'
+
+              Invoke-Pester -Configuration $pesterConfig
             name: qualitytest
             displayName: 'Run SqlServerDsc QA Test'
           - task: PowerShell@2
@@ -84,7 +92,7 @@ stages:
             condition: succeededOrFailed()
             inputs:
               testResultsFormat: 'NUnit'
-              testResultsFiles: 'output/testResults/NUnit*.xml'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'HQRM'
 
       - job: Test_Unit
@@ -104,7 +112,7 @@ stages:
             displayName: 'Run Unit Test'
             inputs:
               filePath: './build.ps1'
-              arguments: "-Tasks test -PesterScript 'tests/Unit'"
+              arguments: "-Tasks test -PesterPath 'tests/Unit'"
               pwsh: true
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
@@ -115,6 +123,7 @@ stages:
               testRunTitle: 'Unit (Windows Server 2019)'
           - task: PublishPipelineArtifact@1
             displayName: 'Publish Test Artifact'
+            condition: succeededOrFailed()
             inputs:
               targetPath: '$(buildFolderName)/$(testResultFolderName)/'
               artifactName: $(testArtifactName)
@@ -165,7 +174,7 @@ stages:
               script: 'winrm quickconfig -quiet'
               pwsh: false
           - powershell: |
-              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterScript @(
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
                   # Group 1
                   'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
@@ -189,6 +198,7 @@ stages:
                   # Group 4
                   'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlWindowsFirewall.Integration.Tests.ps1'
                   # Group 5
                   'tests/Integration/DSC_SqlSecureConnection.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
@@ -210,6 +220,7 @@ stages:
       - job: Code_Coverage
         displayName: 'Publish Code Coverage'
         dependsOn: Test_Unit
+        condition: succeededOrFailed()
         pool:
           vmImage: 'ubuntu-latest'
         timeoutInMinutes: 0
@@ -275,8 +286,8 @@ stages:
             env:
               GitHubToken: $(GitHubToken)
               GalleryApiToken: $(GalleryApiToken)
-              ReleaseBranch: main
-              MainGitBranch: main
+              ReleaseBranch: $(defaultBranch)
+              MainGitBranch: $(defaultBranch)
           - task: PowerShell@2
             name: sendChangelogPR
             displayName: 'Send Changelog PR'
@@ -286,5 +297,5 @@ stages:
               pwsh: true
             env:
               GitHubToken: $(GitHubToken)
-              ReleaseBranch: main
-              MainGitBranch: main
+              ReleaseBranch: $(defaultBranch)
+              MainGitBranch: $(defaultBranch)

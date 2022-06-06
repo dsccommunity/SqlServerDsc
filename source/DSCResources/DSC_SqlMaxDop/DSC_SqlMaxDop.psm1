@@ -37,6 +37,9 @@ function Get-TargetResource
         $script:localizedData.GetConfiguration -f $InstanceName
     )
 
+    $currentMaxDop = $null
+    $isActiveNode = $null
+
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
     if ($sqlServerObject)
     {
@@ -250,7 +253,7 @@ function Test-TargetResource
     )
 
     Write-Verbose -Message (
-        $script:localizedData.EvaluationConfiguration -f $targetMaxDop
+        $script:localizedData.EvaluationConfiguration
     )
 
     $parameters = @{
@@ -258,9 +261,9 @@ function Test-TargetResource
         ServerName   = $ServerName
     }
 
-    $currentValues = Get-TargetResource @parameters
+    $getTargetResourceResult = Get-TargetResource @parameters
 
-    $getMaxDop = $currentValues.MaxDop
+    $getMaxDop = $getTargetResourceResult.MaxDop
     $isMaxDopInDesiredState = $true
 
     <#
@@ -361,4 +364,3 @@ function Get-SqlDscDynamicMaxDop
 
     $dynamicMaxDop
 }
-

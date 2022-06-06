@@ -1,29 +1,37 @@
 <#
     .SYNOPSIS
-        Automated unit test for DSC_SqlDatabaseRole DSC resource.
-
+        Unit test for DSC_SqlDatabaseRole DSC resource.
 #>
 
-Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
 
-if (-not (Test-BuildCategory -Type 'Unit'))
-{
-    return
-}
-
-$script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlDatabaseRole'
-
-function Invoke-TestSetup
-{
+BeforeDiscovery {
     try
     {
-        Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
+        if (-not (Get-Module -Name 'DscResource.Test'))
+        {
+            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
+            {
+                # Redirect all streams to $null, except the error stream (stream 2)
+                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+            }
+
+            # If the dependencies has not been resolved, this will throw an error.
+            Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
+}
+
+BeforeAll {
+    $script:dscModuleName = 'SqlServerDsc'
+    $script:dscResourceName = 'DSC_SqlDatabaseRole'
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
@@ -31,155 +39,59 @@ function Invoke-TestSetup
         -ResourceType 'Mof' `
         -TestType 'Unit'
 
-    # Loading mocked classes
-    Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
+    # Load the correct SQL Module stub
+    $script:stubModuleName = Import-SQLModuleStub -PassThru
+
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
 }
 
-function Invoke-TestCleanup
-{
+AfterAll {
+    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
+    $PSDefaultParameterValues.Remove('Mock:ModuleName')
+    $PSDefaultParameterValues.Remove('Should:ModuleName')
+
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+
+    # Unload the module being tested so that it doesn't impact any other tests.
+    Get-Module -Name $script:dscResourceName -All | Remove-Module -Force
+
+    # Unload the stub module.
+    Remove-SqlModuleStub -Name $script:stubModuleName
+
+    # Remove module common test helper.
+    Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Invoke-TestSetup
-
-try
-{
-    InModuleScope $script:dscResourceName {
-        $mockServerName = 'localhost'
-        $mockInstanceName = 'MSSQLSERVER'
-        $mockSqlDatabaseName = 'AdventureWorks'
-        $mockDatabaseIsUpdateable = $true
-
-        $mockSqlServerLogin1 = 'John'
-        $mockSqlServerLogin1Type = 'WindowsUser'
-        $mockSqlServerLogin2 = 'CONTOSO\KingJulian'
-        $mockSqlServerLogin2Type = 'WindowsGroup'
-        $mockSqlServerLogin3 = 'CONTOSO\SQLAdmin'
-        $mockSqlServerLogin3Type = 'WindowsGroup'
-        $mockSqlServerInvalidLogin = 'KingJulian'
-
-        $mockSqlDatabaseRole1 = 'MyRole'
-        $mockSqlDatabaseRole2 = 'MySecondRole'
-        $mockSqlDatabaseRole3 = 'NewRole'
-
-        $mockEnumMembers = @($mockSqlServerLogin1, $mockSqlServerLogin2)
-
-        $mockExpectedSqlDatabaseRole = 'MyRole'
-
-        $mockInvalidOperationForAddMemberMethod = $false
-        $mockInvalidOperationForCreateMethod = $false
-        $mockInvalidOperationForDropMethod = $false
-        $mockInvalidOperationForDropMemberMethod = $false
-
-        $mockExpectedMemberToAdd = 'MySecondRole'
-        $mockExpectedMemberToDrop = 'MyRole'
-
-        # Default parameters that are used for the It-blocks
-        $mockDefaultParameters = @{
-            ServerName   = $mockServerName
-            InstanceName = $mockInstanceName
-        }
-
-        #region Function mocks
+Describe 'SqlDatabaseRole\Get-TargetResource' {
+    BeforeAll {
         $mockConnectSQL = {
             return @(
                 (
                     New-Object -TypeName Object |
-                    Add-Member -MemberType NoteProperty -Name InstanceName -Value $mockInstanceName -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value $mockServerName -PassThru |
+                    Add-Member -MemberType NoteProperty -Name InstanceName -Value 'MSSQLSERVER' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value 'localhost' -PassThru |
                     Add-Member -MemberType ScriptProperty -Name Databases -Value {
                         return @{
-                            $mockSqlDatabaseName = @((
+                            'AdventureWorks' = @((
                                     New-Object -TypeName Object |
-                                    Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseName -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name 'IsUpdateable' -Value $mockDatabaseIsUpdateable -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name Name -Value 'AdventureWorks' -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'IsUpdateable' -Value $false -PassThru |
                                     Add-Member -MemberType ScriptProperty -Name Users -Value {
                                         return @{
-                                            $mockSqlServerLogin1 = @((
-                                                    New-Object -TypeName Object |
-                                                    Add-Member -MemberType ScriptMethod -Name IsMember -Value {
-                                                        param
-                                                        (
-                                                            [Parameter()]
-                                                            [System.String]
-                                                            $Name
-                                                        )
-                                                        if ($Name -eq $mockExpectedSqlDatabaseRole)
-                                                        {
-                                                            return $true
-                                                        }
-                                                        else
-                                                        {
-                                                            return $false
-                                                        }
-                                                    } -PassThru
-                                                ))
-                                            $mockSqlServerLogin2 = @((
-                                                    New-Object -TypeName Object |
-                                                    Add-Member -MemberType ScriptMethod -Name IsMember -Value {
-                                                        return $true
-                                                    } -PassThru
-                                                ))
-                                            $mockSqlServerLogin3 = @((
-                                                    New-Object -TypeName Object |
-                                                    Add-Member -MemberType ScriptMethod -Name IsMember -Value {
-                                                        return $true
-                                                    } -PassThru
-                                                ))
-
+                                            'John' = New-Object -TypeName Object
+                                            'CONTOSO\KingJulian' = New-Object -TypeName Object
+                                            'CONTOSO\SQLAdmin' = New-Object -TypeName Object
                                         }
                                     } -PassThru |
                                     Add-Member -MemberType ScriptProperty -Name Roles -Value {
                                         return @{
-                                            $mockSqlDatabaseRole1 = @((
+                                            'MyRole' = @((
                                                     New-Object -TypeName Object |
-                                                    Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseRole1 -PassThru |
-                                                    Add-Member -MemberType ScriptMethod -Name AddMember -Value {
-                                                        param
-                                                        (
-                                                            [Parameter()]
-                                                            [System.String]
-                                                            $Name
-                                                        )
-                                                        if ($mockInvalidOperationForAddMemberMethod)
-                                                        {
-                                                            throw 'Mock AddMember Method was called with invalid operation.'
-                                                        }
-                                                        if ($Name -ne $mockExpectedMemberToAdd)
-                                                        {
-                                                            throw "Called mocked AddMember() method without adding the right user. Expected '{0}'. But was '{1}'." `
-                                                                -f $mockExpectedMemberToAdd, $Name
-                                                        }
-                                                    } -PassThru |
-                                                    Add-Member -MemberType ScriptMethod -Name Drop -Value {
-                                                        if ($mockInvalidOperationForDropMethod)
-                                                        {
-                                                            throw 'Mock Drop Method was called with invalid operation.'
-                                                        }
-
-                                                        if ($Name -ne $mockExpectedSqlDatabaseRole)
-                                                        {
-                                                            throw "Called mocked Drop() method without dropping the right database role. Expected '{0}'. But was '{1}'." `
-                                                                -f $mockExpectedSqlDatabaseRole, $Name
-                                                        }
-                                                    } -PassThru |
-                                                    Add-Member -MemberType ScriptMethod -Name DropMember -Value {
-                                                        param
-                                                        (
-                                                            [Parameter()]
-                                                            [System.String]
-                                                            $Name
-                                                        )
-                                                        if ($mockInvalidOperationForDropMemberMethod)
-                                                        {
-                                                            throw 'Mock DropMember Method was called with invalid operation.'
-                                                        }
-                                                        if ($Name -ne $mockExpectedMemberToDrop)
-                                                        {
-                                                            throw "Called mocked Drop() method without adding the right user. Expected '{0}'. But was '{1}'." `
-                                                                -f $mockExpectedMemberToDrop, $Name
-                                                        }
-                                                    } -PassThru |
+                                                    Add-Member -MemberType NoteProperty -Name Name -Value 'MyRole' -PassThru |
                                                     Add-Member -MemberType ScriptMethod -Name EnumMembers -Value {
                                                         if ($mockInvalidOperationForEnumMethod)
                                                         {
@@ -187,70 +99,848 @@ try
                                                         }
                                                         else
                                                         {
-                                                            $mockEnumMembers
+                                                            return @('John', 'CONTOSO\KingJulian')
                                                         }
                                                     } -PassThru
                                                 ))
-                                            $mockSqlDatabaseRole2 = @((
+                                            'MySecondRole' = @((
                                                     New-Object -TypeName Object |
-                                                    Add-Member -MemberType NoteProperty -Name Name -Value $mockSqlDatabaseRole2 -PassThru |
-                                                    Add-Member -MemberType ScriptMethod -Name AddMember -Value {
-                                                        param
-                                                        (
-                                                            [Parameter()]
-                                                            [System.String]
-                                                            $Name
-                                                        )
-                                                        if ($mockInvalidOperationForAddMemberMethod)
-                                                        {
-                                                            throw 'Mock AddMember Method was called with invalid operation.'
-                                                        }
-                                                        if ($Name -ne $mockExpectedMemberToAdd)
-                                                        {
-                                                            throw "Called mocked AddMember() method without adding the right user. Expected '{0}'. But was '{1}'." `
-                                                                -f $mockExpectedMemberToAdd, $Name
-                                                        }
-                                                    } -PassThru |
-                                                    Add-Member -MemberType ScriptMethod -Name DropMember -Value {
-                                                        param
-                                                        (
-                                                            [Parameter()]
-                                                            [System.String]
-                                                            $Name
-                                                        )
-                                                        if ($mockInvalidOperationForDropMemberMethod)
-                                                        {
-                                                            throw 'Mock DropMember Method was called with invalid operation.'
-                                                        }
-                                                        if ($Name -ne $mockExpectedMemberToDrop)
-                                                        {
-                                                            throw "Called mocked Drop() method without adding the right user. Expected '{0}'. But was '{1}'." `
-                                                                -f $mockExpectedMemberToDrop, $Name
-                                                        }
-                                                    } -PassThru
+                                                    Add-Member -MemberType NoteProperty -Name Name -Value 'MySecondRole' -PassThru -Force
                                                 ))
                                         }
                                     } -PassThru -Force
                                 ))
                         }
-                    } -PassThru -Force |
-                    Add-Member -MemberType ScriptProperty -Name Logins -Value {
+                    } -PassThru -Force
+                )
+            )
+        }
+
+        Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockGetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When only key parameters have values and database name does not exist' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName = 'unknownDatabaseName'
+                $mockGetTargetResourceParameters.Name         = 'MyRole'
+            }
+        }
+
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $errorMessage = $script:localizedData.DatabaseNotFound -f $mockGetTargetResourceParameters.DatabaseName
+
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+            }
+        }
+
+        It 'Should call the mock function Connect-SQL' {
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+        }
+    }
+
+    Context 'When only key parameters have values and the role does not exist' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name         = 'UnknownRoleName'
+            }
+        }
+
+        It 'Should return the state as Absent' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Absent'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as null' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Members | Should -BeNullOrEmpty
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the same values as passed as parameters' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
+                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When only key parameters have values and the role exists' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name         = 'MyRole'
+            }
+        }
+
+        It 'Should return the state as Present' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Present'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should call the mock function Connect-SQL' {
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+        }
+    }
+
+    Context 'When role does not exist and the database is not updatable' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name         = 'UnknownRoleName'
+            }
+        }
+
+        It 'Should return the state as Absent' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                $result.Ensure | Should -Be 'Absent'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as null' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                $result.Members | Should -BeNullOrEmpty
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the same values as passed as parameters' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
+                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return $false for the property DatabaseIsUpdateable' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                $result.DatabaseIsUpdateable | Should -BeFalse
+            }
+        }
+    }
+
+    Context 'When only key parameters have values and throwing with EnumMembers method' {
+        BeforeEach {
+            $mockInvalidOperationForEnumMethod = $true
+
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name         = 'MyRole'
+            }
+        }
+
+        AfterAll {
+            $mockInvalidOperationForEnumMethod = $false
+        }
+
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $errorMessage = $script:localizedData.EnumDatabaseRoleMemberNamesError -f 'MyRole', 'AdventureWorks'
+
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage + '*')
+            }
+        }
+
+        It 'Should call the mock function Connect-SQL' {
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+        }
+    }
+
+    Context 'When parameter Members is assigned a value, the role exists, and the role members are in the desired state' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name         = 'MyRole'
+                $mockGetTargetResourceParameters.Members      = @('John', 'CONTOSO\KingJulian')
+            }
+        }
+
+        It 'Should return Ensure as Present' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Present'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return MembersInDesiredState as True' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.MembersInDesiredState | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as not null' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Members | Should -Be $mockGetTargetResourceParameters.Members
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as string array' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                ($result.Members -is [System.String[]]) | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the same values as passed as parameters' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
+                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                $result.Members | Should -Be $mockGetTargetResourceParameters.Members
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When parameter Members is assigned a value, the role exists, and the role members are not in the desired state' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name         = 'MyRole'
+                $mockGetTargetResourceParameters.Members      = @('John', 'CONTOSO\SQLAdmin')
+            }
+        }
+
+        It 'Should return Ensure as Present' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Present'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return MembersInDesiredState as False' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.MembersInDesiredState | Should -BeFalse
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as string array' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                ($result.Members -is [System.String[]]) | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When both parameters MembersToInclude and Members are assigned a value' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name             = 'MyRole'
+                $mockGetTargetResourceParameters.Members          = @('John', 'CONTOSO\KingJulian')
+                $mockGetTargetResourceParameters.MembersToInclude = 'John'
+            }
+        }
+
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
+
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+            }
+        }
+
+        It 'Should call the mock function Connect-SQL' {
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+        }
+    }
+
+    Context 'When parameter MembersToInclude is assigned a value, the role exists, and the role members are in the desired state' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name             = 'MyRole'
+                $mockGetTargetResourceParameters.MembersToInclude = 'John'
+            }
+        }
+
+        It 'Should return Ensure as Present' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Present'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return MembersInDesiredState as True' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.MembersInDesiredState | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as not null' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Members | Should -Not -BeNullOrEmpty
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as string array' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                ($result.Members -is [System.String[]]) | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the same values as passed as parameters' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
+                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                $result.MembersToInclude | Should -Be $mockGetTargetResourceParameters.MembersToInclude
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When parameter MembersToInclude is assigned a value, the role exists, and the role members are not in the desired state' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name             = 'MyRole'
+                $mockGetTargetResourceParameters.MembersToInclude = 'CONTOSO\SQLAdmin'
+            }
+        }
+
+        It 'Should return Ensure as Present' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Present'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return MembersInDesiredState as False' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.MembersInDesiredState | Should -BeFalse
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as string array' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                ($result.Members -is [System.String[]]) | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When both parameters MembersToExclude and Members are assigned a value' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name             = 'MyRole'
+                $mockGetTargetResourceParameters.Members          = @('John', 'CONTOSO\KingJulian')
+                $mockGetTargetResourceParameters.MembersToExclude = 'John'
+
+            }
+        }
+
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
+
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+            }
+        }
+
+        It 'Should call the mock function Connect-SQL' {
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+        }
+    }
+
+    Context 'When parameter MembersToExclude is assigned a value, the role exists, and the role members are in the desired state' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name             = 'MyRole'
+                $mockGetTargetResourceParameters.MembersToExclude = 'CONTOSO\SQLAdmin'
+            }
+        }
+
+        It 'Should return Ensure as Present' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Present'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return MembersInDesiredState as True' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.MembersInDesiredState | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the same values as passed as parameters' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
+                $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                $result.MembersToExclude | Should -Be $mockGetTargetResourceParameters.MembersToExclude
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When parameter MembersToExclude is assigned a value, the role exists, and the role members are not in the desired state' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $mockGetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                $mockGetTargetResourceParameters.Name             = 'MyRole'
+                $mockGetTargetResourceParameters.MembersToExclude = 'CONTOSO\KingJulian'
+            }
+        }
+
+        It 'Should return Ensure as Present' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.Ensure | Should -Be 'Present'
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return MembersInDesiredState as False' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                $result.MembersInDesiredState | Should -BeFalse
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should return the members as string array' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $result = Get-TargetResource @mockGetTargetResourceParameters
+                ($result.Members -is [System.String[]]) | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        }
+    }
+}
+
+Describe 'SqlDatabaseRole\Test-TargetResource' -Tag 'Test' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
+            }
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockTestTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
+
+    Context 'When the system is in the desired' {
+        Context 'When the role should be absent' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                        MembersInDesiredState = $true
+                    }
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                    $mockTestTargetResourceParameters.Name         = 'MyRole'
+                    $mockTestTargetResourceParameters.Ensure       = 'Present'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the role should be present' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Absent'
+                        MembersInDesiredState = $true
+                    }
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                    $mockTestTargetResourceParameters.Name         = 'MyRole'
+                    $mockTestTargetResourceParameters.Ensure       = 'Absent'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired' {
+        Context 'When the role should be absent' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                        MembersInDesiredState = $false
+                        DatabaseIsUpdateable = $true
+                    }
+                }
+            }
+
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                    $mockTestTargetResourceParameters.Name         = 'MyRole'
+                    $mockTestTargetResourceParameters.Ensure       = 'Absent'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the role should be present' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Absent'
+                        MembersInDesiredState = $false
+                        DatabaseIsUpdateable = $true
+                    }
+                }
+            }
+
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                    $mockTestTargetResourceParameters.Name         = 'MyRole'
+                    $mockTestTargetResourceParameters.Ensure       = 'Present'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the role is present but the members are not in the desired state' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                        MembersInDesiredState = $false
+                        DatabaseIsUpdateable = $true
+                    }
+                }
+            }
+
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                    $mockTestTargetResourceParameters.Name         = 'MyRole'
+                    $mockTestTargetResourceParameters.Ensure       = 'Present'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeFalse
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the role should not exist but the database is not updateable' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                        MembersInDesiredState = $false
+                        DatabaseIsUpdateable = $false
+                    }
+                }
+            }
+
+            It 'Should return $true even if the desired database role exists' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                    $mockTestTargetResourceParameters.Name         = 'MyRole'
+                    $mockTestTargetResourceParameters.Ensure       = 'Absent'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue -Because 'the database is not updatable'
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the role should exist but the database is not updateable' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Ensure = 'Present'
+                        MembersInDesiredState = $false
+                        DatabaseIsUpdateable = $false
+                    }
+                }
+            }
+
+            It 'Should return $true even if the desired database role does not exists' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockTestTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                    $mockTestTargetResourceParameters.Name         = 'NewRole'
+
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                    $result | Should -BeTrue -Because 'the database is not updatable'
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+}
+
+Describe 'SqlDatabaseRole\Set-TargetResource' -Tag 'Set' {
+    BeforeAll {
+        $mockConnectSQL = {
+            return @(
+                (
+                    New-Object -TypeName Object |
+                    Add-Member -MemberType NoteProperty -Name InstanceName -Value 'MSSQLSERVER' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ComputerNamePhysicalNetBIOS -Value 'localhost' -PassThru |
+                    Add-Member -MemberType ScriptProperty -Name 'Databases' -Value {
                         return @{
-                            $mockSqlServerLogin1 = @((
+                            'AdventureWorks' = @((
                                     New-Object -TypeName Object |
-                                    Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLogin1Type -PassThru
-                                ))
-                            $mockSqlServerLogin2 = @((
-                                    New-Object -TypeName Object |
-                                    Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLogin2Type -PassThru
-                                ))
-                            $mockSqlServerLogin3 = @((
-                                    New-Object -TypeName Object |
-                                    Add-Member -MemberType NoteProperty -Name LoginType -Value $mockSqlServerLogin3Type -PassThru
+                                    Add-Member -MemberType NoteProperty -Name 'Name' -Value 'AdventureWorks' -PassThru |
+                                    Add-Member -MemberType ScriptProperty -Name 'Users' -Value {
+                                        return @{
+                                            'John' = New-Object -TypeName Object
+                                            'CONTOSO\KingJulian' = New-Object -TypeName Object
+                                            'CONTOSO\SQLAdmin' = New-Object -TypeName Object
+                                        }
+                                    } -PassThru |
+                                    Add-Member -MemberType ScriptProperty -Name 'Roles' -Value {
+                                        return @{
+                                            'MyRole' = @((
+                                                    New-Object -TypeName Object |
+                                                    Add-Member -MemberType NoteProperty -Name 'Name' -Value 'MyRole' -PassThru |
+                                                    Add-Member -MemberType ScriptMethod -Name 'Drop' -Value {
+                                                        if ($mockInvalidOperationForDropMethod)
+                                                        {
+                                                            throw 'Mock Drop method was called with invalid operation.'
+                                                        }
+
+                                                        InModuleScope -ScriptBlock {
+                                                            $script:mockMethodDropWasCalled += 1
+                                                        }
+                                                    } -PassThru |
+                                                    Add-Member -MemberType ScriptMethod -Name 'EnumMembers' -Value {
+                                                        return @('John', 'CONTOSO\KingJulian')
+                                                    } -PassThru
+                                                ))
+                                            'MySecondRole' = @((
+                                                    New-Object -TypeName Object |
+                                                    Add-Member -MemberType NoteProperty -Name 'Name' -Value 'MySecondRole' -PassThru -Force
+                                                ))
+                                        }
+                                    } -PassThru -Force
                                 ))
                         }
                     } -PassThru -Force
-
                 )
             )
         }
@@ -258,1007 +948,465 @@ try
         $mockNewObjectDatabaseRole = {
             return @(
                 New-Object -TypeName Object |
-                Add-Member -MemberType NoteProperty -Name Name -Value $mockExpectedSqlDatabaseRole -PassThru |
-                Add-Member -MemberType ScriptMethod -Name Create -Value {
+                Add-Member -MemberType NoteProperty -Name 'Name' -Value 'MyRole' -PassThru |
+                Add-Member -MemberType ScriptMethod -Name 'Create' -Value {
                     if ($mockInvalidOperationForCreateMethod)
                     {
-                        throw 'Mock Create Method was called with invalid operation.'
+                        throw 'Mock Create method was called with invalid operation.'
                     }
-                    if ($this.Name -ne $mockExpectedSqlDatabaseRole)
-                    {
-                        throw "Called mocked Create() method without adding the right user. Expected '{0}'. But was '{1}'." `
-                            -f $mockExpectedSqlDatabaseRole, $this.Name
+
+                    InModuleScope -ScriptBlock {
+                        $script:mockMethodCreateWasCalled += 1
                     }
                 } -PassThru -Force
             )
         }
-        #endregion
 
-        Describe 'DSC_SqlDatabaseRole\Get-TargetResource' -Tag 'Get' {
-            BeforeEach {
-                $mockDatabaseIsUpdateable = $true
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
-            }
-
-            Context 'When only key parameters have values and database name does not exist' {
-                $testParameters = $mockDefaultParameters
-                $testParameters += @{
-                    DatabaseName = 'unknownDatabaseName'
-                    Name         = $mockSqlDatabaseRole1
-                }
-
-                It 'Should throw the correct error' {
-                    $errorMessage = $script:localizedData.DatabaseNotFound -f $testParameters.DatabaseName
-
-                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
-                }
-
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
-                }
-            }
-
-            Context 'When role does not exist and the database is not updatable' {
-                $testParameters = $mockDefaultParameters
-                $testParameters += @{
-                    DatabaseName = $mockSqlDatabaseName
-                    Name         = 'UnknownRoleName'
-                }
-
-                BeforeEach {
-                    $mockDatabaseIsUpdateable = $false
-                }
-
-                It 'Should return the state as Absent' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should -Be 'Absent'
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return the members as null' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Members | Should -BeNullOrEmpty
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return the same values as passed as parameters' {
-                    $result = Get-TargetResource @testParameters
-                    $result.ServerName | Should -Be $testParameters.ServerName
-                    $result.InstanceName | Should -Be $testParameters.InstanceName
-                    $result.DatabaseName | Should -Be $testParameters.DatabaseName
-                    $result.Name | Should -Be $testParameters.Name
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return $true for the property DatabaseIsUpdateable' {
-                    $result = Get-TargetResource @testParameters
-                    $result.DatabaseIsUpdateable | Should -Be $false
-                }
-            }
-
-            Context 'When only key parameters have values and the role does not exist' {
-                $testParameters = $mockDefaultParameters
-                $testParameters += @{
-                    DatabaseName = $mockSqlDatabaseName
-                    Name         = 'UnknownRoleName'
-                }
-
-                It 'Should return the state as Absent' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should -Be 'Absent'
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return the members as null' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Members | Should -BeNullOrEmpty
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return the same values as passed as parameters' {
-                    $result = Get-TargetResource @testParameters
-                    $result.ServerName | Should -Be $testParameters.ServerName
-                    $result.InstanceName | Should -Be $testParameters.InstanceName
-                    $result.DatabaseName | Should -Be $testParameters.DatabaseName
-                    $result.Name | Should -Be $testParameters.Name
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return $true for the property DatabaseIsUpdateable' {
-                    $result = Get-TargetResource @testParameters
-                    $result.DatabaseIsUpdateable | Should -Be $true
-                }
-            }
-
-            Context 'When only key parameters have values and the role exists' {
-                $testParameters = $mockDefaultParameters
-                $testParameters += @{
-                    DatabaseName = $mockSqlDatabaseName
-                    Name         = $mockSqlDatabaseRole1
-                }
-
-                It 'Should return the state as Present' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should -Be 'Present'
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
-                }
-
-                It 'Should return $true for the property DatabaseIsUpdateable' {
-                    $result = Get-TargetResource @testParameters
-                    $result.DatabaseIsUpdateable | Should -Be $true
-                }
-            }
-
-            Context 'When only key parameters have values and throwing with EnumMembers method' {
-                $mockInvalidOperationForEnumMethod = $true
-                $testParameters = $mockDefaultParameters
-                $testParameters += @{
-                    DatabaseName = $mockSqlDatabaseName
-                    Name         = $mockSqlDatabaseRole1
-                }
-
-                It 'Should throw the correct error' {
-                    $errorMessage = $script:localizedData.EnumDatabaseRoleMemberNamesError -f $mockSqlDatabaseRole1, $mockSqlDatabaseName
-
-                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
-                }
-
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
-                }
-            }
-
-            Context 'When parameter Members is assigned a value, the role exists, and the role members are in the desired state' {
-                $testParameters = $mockDefaultParameters
-                $testParameters += @{
-                    DatabaseName = $mockSqlDatabaseName
-                    Name         = $mockSqlDatabaseRole1
-                    Members      = $mockEnumMembers
-                }
-
-                It 'Should return Ensure as Present' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should -Be 'Present'
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return MembersInDesiredState as True' {
-                    $result = Get-TargetResource @testParameters
-                    $result.MembersInDesiredState | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return the members as not null' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Members | Should -Be $testParameters.Members
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return the members as string array' {
-                    $result = Get-TargetResource @testParameters
-                    ($result.Members -is [System.String[]]) | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return the same values as passed as parameters' {
-                    $result = Get-TargetResource @testParameters
-                    $result.ServerName | Should -Be $testParameters.ServerName
-                    $result.InstanceName | Should -Be $testParameters.InstanceName
-                    $result.DatabaseName | Should -Be $testParameters.DatabaseName
-                    $result.Name | Should -Be $testParameters.Name
-                    $result.Members | Should -Be $testParameters.Members
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return $true for the property DatabaseIsUpdateable' {
-                    $result = Get-TargetResource @testParameters
-                    $result.DatabaseIsUpdateable | Should -Be $true
-                }
-            }
-
-            Context 'When parameter Members is assigned a value, the role exists, and the role members are not in the desired state' {
-                $testParameters = $mockDefaultParameters
-                $testParameters += @{
-                    DatabaseName = $mockSqlDatabaseName
-                    Name         = $mockSqlDatabaseRole1
-                    Members      = @($mockSqlServerLogin1, $mockSqlServerLogin3)
-                }
-
-                It 'Should return Ensure as Present' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should -Be 'Present'
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return MembersInDesiredState as False' {
-                    $result = Get-TargetResource @testParameters
-                    $result.MembersInDesiredState | Should -Be $false
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return the members as string array' {
-                    $result = Get-TargetResource @testParameters
-                    ($result.Members -is [System.String[]]) | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return $true for the property DatabaseIsUpdateable' {
-                    $result = Get-TargetResource @testParameters
-                    $result.DatabaseIsUpdateable | Should -Be $true
-                }
-            }
-
-            Context 'When both parameters MembersToInclude and Members are assigned a value' {
-                $testParameters = $mockDefaultParameters
-                $testParameters += @{
-                    DatabaseName     = $mockSqlDatabaseName
-                    Name             = $mockSqlDatabaseRole1
-                    Members          = $mockEnumMembers
-                    MembersToInclude = $mockSqlServerLogin1
-                }
-
-                It 'Should throw the correct error' {
-                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
-
-                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
-                }
-
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
-                }
-            }
-
-            Context 'When parameter MembersToInclude is assigned a value, the role exists, and the role members are in the desired state' {
-                $testParameters = $mockDefaultParameters
-                $testParameters += @{
-                    DatabaseName     = $mockSqlDatabaseName
-                    Name             = $mockSqlDatabaseRole1
-                    MembersToInclude = $mockSqlServerLogin1
-                }
-
-                It 'Should return Ensure as Present' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should -Be 'Present'
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return MembersInDesiredState as True' {
-                    $result = Get-TargetResource @testParameters
-                    $result.MembersInDesiredState | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return the members as not null' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Members | Should -Not -BeNullOrEmpty
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return the members as string array' {
-                    $result = Get-TargetResource @testParameters
-                    ($result.Members -is [System.String[]]) | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return the same values as passed as parameters' {
-                    $result = Get-TargetResource @testParameters
-                    $result.ServerName | Should -Be $testParameters.ServerName
-                    $result.InstanceName | Should -Be $testParameters.InstanceName
-                    $result.DatabaseName | Should -Be $testParameters.DatabaseName
-                    $result.Name | Should -Be $testParameters.Name
-                    $result.MembersToInclude | Should -Be $testParameters.MembersToInclude
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return $true for the property DatabaseIsUpdateable' {
-                    $result = Get-TargetResource @testParameters
-                    $result.DatabaseIsUpdateable | Should -Be $true
-                }
-            }
-
-            Context 'When parameter MembersToInclude is assigned a value, the role exists, and the role members are not in the desired state' {
-                $testParameters = $mockDefaultParameters
-                $testParameters += @{
-                    DatabaseName     = $mockSqlDatabaseName
-                    Name             = $mockSqlDatabaseRole1
-                    MembersToInclude = $mockSqlServerLogin3
-                }
-
-                It 'Should return Ensure as Present' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should -Be 'Present'
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return MembersInDesiredState as False' {
-                    $result = Get-TargetResource @testParameters
-                    $result.MembersInDesiredState | Should -Be $false
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return the members as string array' {
-                    $result = Get-TargetResource @testParameters
-                    ($result.Members -is [System.String[]]) | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return $true for the property DatabaseIsUpdateable' {
-                    $result = Get-TargetResource @testParameters
-                    $result.DatabaseIsUpdateable | Should -Be $true
-                }
-            }
-
-            Context 'When both parameters MembersToExclude and Members are assigned a value' {
-                $testParameters = $mockDefaultParameters
-                $testParameters += @{
-                    DatabaseName     = $mockSqlDatabaseName
-                    Name             = $mockSqlDatabaseRole1
-                    Members          = $mockEnumMembers
-                    MembersToExclude = $mockSqlServerLogin1
-                }
-
-                It 'Should throw the correct error' {
-                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
-
-                    { Get-TargetResource @testParameters } | Should -Throw $errorMessage
-                }
-
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
-                }
-            }
-
-            Context 'When parameter MembersToExclude is assigned a value, the role exists, and the role members are in the desired state' {
-                $testParameters = $mockDefaultParameters
-                $testParameters += @{
-                    DatabaseName     = $mockSqlDatabaseName
-                    Name             = $mockSqlDatabaseRole1
-                    MembersToExclude = $mockSqlServerLogin3
-                }
-
-                It 'Should return Ensure as Present' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should -Be 'Present'
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return MembersInDesiredState as True' {
-                    $result = Get-TargetResource @testParameters
-                    $result.MembersInDesiredState | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return the same values as passed as parameters' {
-                    $result = Get-TargetResource @testParameters
-                    $result.ServerName | Should -Be $testParameters.ServerName
-                    $result.InstanceName | Should -Be $testParameters.InstanceName
-                    $result.DatabaseName | Should -Be $testParameters.DatabaseName
-                    $result.Name | Should -Be $testParameters.Name
-                    $result.MembersToExclude | Should -Be $testParameters.MembersToExclude
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return $true for the property DatabaseIsUpdateable' {
-                    $result = Get-TargetResource @testParameters
-                    $result.DatabaseIsUpdateable | Should -Be $true
-                }
-            }
-
-            Context 'When parameter MembersToExclude is assigned a value, the role exists, and the role members are not in the desired state' {
-                $testParameters = $mockDefaultParameters
-                $testParameters += @{
-                    DatabaseName     = $mockSqlDatabaseName
-                    Name             = $mockSqlDatabaseRole1
-                    MembersToExclude = $mockSqlServerLogin2
-                }
-
-                It 'Should return Ensure as Present' {
-                    $result = Get-TargetResource @testParameters
-                    $result.Ensure | Should -Be 'Present'
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return MembersInDesiredState as False' {
-                    $result = Get-TargetResource @testParameters
-                    $result.MembersInDesiredState | Should -Be $false
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return the members as string array' {
-                    $result = Get-TargetResource @testParameters
-                    ($result.Members -is [System.String[]]) | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return $true for the property DatabaseIsUpdateable' {
-                    $result = Get-TargetResource @testParameters
-                    $result.DatabaseIsUpdateable | Should -Be $true
-                }
-            }
-
-            Assert-VerifiableMock
+        Mock -CommandName Connect-SQL -MockWith $mockConnectSQL
+        Mock -CommandName New-Object -MockWith $mockNewObjectDatabaseRole -ParameterFilter {
+            $TypeName -eq 'Microsoft.SqlServer.Management.Smo.DatabaseRole'
         }
 
-        Describe "DSC_SqlDatabaseRole\Set-TargetResource" -Tag 'Set' {
-            BeforeEach {
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
-                Mock -CommandName New-Object -MockWith $mockNewObjectDatabaseRole -ParameterFilter {
-                    $TypeName -eq 'Microsoft.SqlServer.Management.Smo.DatabaseRole'
-                }
+        InModuleScope -ScriptBlock {
+            # Default parameters that are used for the It-blocks.
+            $script:mockDefaultParameters = @{
+                InstanceName = 'MSSQLSERVER'
+                ServerName   = 'localhost'
             }
+        }
+    }
 
-            Context 'When the system is not in the desired state and Ensure is set to Absent' {
-                It 'Should not throw when calling the Drop method' {
-                    $mockSqlDatabaseRoleToDrop = 'DatabaseRoleToDrop'
-                    $mockExpectedSqlDatabaseRole = 'DatabaseRoleToDrop'
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName = $mockSqlDatabaseName
-                        Name         = $mockSqlDatabaseRoleToDrop
-                        Ensure       = 'Absent'
-                    }
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockMethodDropWasCalled = 0
+            $script:mockMethodCreateWasCalled = 0
 
-                    { Set-TargetResource @testParameters } | Should -Not -Throw
+            $script:mockSetTargetResourceParameters = $script:mockDefaultParameters.Clone()
+        }
+    }
 
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+    Context 'When the system is not in the desired state' {
+        Context 'When database role should not exist' {
+            It 'Should not throw when calling the Drop method' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name         = 'MyRole'
+                    $mockSetTargetResourceParameters.Ensure       = 'Absent'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $mockMethodDropWasCalled | Should -Be 1
                 }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
             }
-
-            Context 'When the system is not in the desired state and Ensure is set to Absent' {
-                It 'Should throw the correct error when calling the Drop method' {
-                    $mockInvalidOperationForDropMethod = $true
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName = $mockSqlDatabaseName
-                        Name         = $mockSqlDatabaseRole1
-                        Ensure       = 'Absent'
-                    }
-
-                    $errorMessage = $script:localizedData.DropDatabaseRoleError -f $mockSqlDatabaseRole1, $mockSqlDatabaseName
-
-                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When the system is not in the desired state and Ensure is set to Present' {
-                It 'Should not throw when calling the Create method' {
-                    $mockSqlDatabaseRoleAdd = 'DatabaseRoleToAdd'
-                    $mockExpectedSqlDatabaseRole = 'DatabaseRoleToAdd'
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName = $mockSqlDatabaseName
-                        Name         = $mockSqlDatabaseRoleAdd
-                        Ensure       = 'Present'
-                    }
-
-                    { Set-TargetResource @testParameters } | Should -Not -Throw
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.DatabaseRole' {
-                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
-                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.DatabaseRole'
-                    } -Scope Context
-                }
-            }
-
-            Context 'When the system is not in the desired state and Ensure is set to Present' {
-                It 'Should throw the correct error when calling the Create method' {
-                    $mockSqlDatabaseRoleAdd = 'DatabaseRoleToAdd'
-                    $mockExpectedSqlDatabaseRole = 'DatabaseRoleToAdd'
-                    $mockInvalidOperationForCreateMethod = $true
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName = $mockSqlDatabaseName
-                        Name         = $mockSqlDatabaseRoleAdd
-                        Ensure       = 'Present'
-                    }
-
-                    $errorMessage = $script:localizedData.CreateDatabaseRoleError -f $mockSqlDatabaseRoleAdd, $mockSqlDatabaseName
-
-                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.DatabaseRole' {
-                    Assert-MockCalled -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
-                        $TypeName -eq 'Microsoft.SqlServer.Management.Smo.DatabaseRole'
-                    } -Scope Context
-                }
-            }
-
-            Context 'When parameter Members is assigned a value and Ensure is set to Present' {
-                It 'Should throw the correct error when database user does not exist' {
-                    $mockExpectedMemberToAdd = $mockSqlServerInvalidLogin
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName = $mockSqlDatabaseName
-                        Name         = $mockSqlDatabaseRole1
-                        Members      = @($mockSqlServerInvalidLogin, $mockSqlServerLogin1, $mockSqlServerLogin2)
-                        Ensure       = 'Present'
-                    }
-
-                    $errorMessage = $script:localizedData.DatabaseUserNotFound -f $mockSqlServerInvalidLogin, $mockSqlDatabaseName
-
-                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should not throw when calling both the AddMember and DropMember methods' {
-                    $mockExpectedMemberToAdd = $mockSqlServerLogin3
-                    $mockExpectedMemberToDrop = $mockSqlServerLogin2
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName = $mockSqlDatabaseName
-                        Name         = $mockSqlDatabaseRole1
-                        Members      = @($mockSqlServerLogin1, $mockSqlServerLogin3)
-                        Ensure       = 'Present'
-                    }
-
-                    { Set-TargetResource @testParameters } | Should -Not -Throw
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When both parameters Members and MembersToInclude are assigned a value and Ensure is set to Present' {
-                It 'Should throw the correct error' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName     = $mockSqlDatabaseName
-                        Name             = $mockSqlDatabaseRole1
-                        Members          = $mockEnumMembers
-                        MembersToInclude = $mockSqlServerLogin3
-                        Ensure           = 'Present'
-                    }
-
-                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
-
-                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When parameter MembersToInclude is assigned a value, parameter Members is not assigned a value, and Ensure is set to Present' {
-                It 'Should throw the correct error when the database user does not exist' {
-                    $mockExpectedMemberToAdd = $mockSqlServerLogin3
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName     = $mockSqlDatabaseName
-                        Name             = $mockSqlDatabaseRole1
-                        MembersToInclude = $mockSqlServerInvalidLogin
-                        Ensure           = 'Present'
-                    }
-
-                    $errorMessage = $script:localizedData.DatabaseUserNotFound -f $mockSqlServerInvalidLogin, $mockSqlDatabaseName
-
-                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should not throw when calling the AddMember method' {
-                    $mockExpectedMemberToAdd = $mockSqlServerLogin3
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName     = $mockSqlDatabaseName
-                        Name             = $mockSqlDatabaseRole1
-                        MembersToInclude = $mockSqlServerLogin3
-                        Ensure           = 'Present'
-                    }
-
-                    { Set-TargetResource @testParameters } | Should -Not -Throw
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should throw the correct error when calling the AddMember method' {
-                    $mockInvalidOperationForAddMemberMethod = $true
-                    $mockExpectedMemberToAdd = $mockSqlServerLogin3
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName     = $mockSqlDatabaseName
-                        Name             = $mockSqlDatabaseRole1
-                        MembersToInclude = $mockSqlServerLogin3
-                        Ensure           = 'Present'
-                    }
-
-                    $errorMessage = $script:localizedData.AddDatabaseRoleMemberError -f $mockSqlServerLogin3, $mockSqlDatabaseRole1, $mockSqlDatabaseName
-
-                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When both parameters Members and MembersToExclude are assigned a value and Ensure is set to Present' {
-                It 'Should throw the correct error' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName     = $mockSqlDatabaseName
-                        Name             = $mockSqlDatabaseRole1
-                        Members          = $mockEnumMembers
-                        MembersToExclude = $mockSqlServerLogin2
-                        Ensure           = 'Present'
-                    }
-
-                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
-
-                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When parameter MembersToExclude is assigned a value, parameter Members is not assigned a value, and Ensure is set to Present' {
-                It 'Should not throw when calling the DropMember method' {
-                    $mockExpectedMemberToDrop = $mockSqlServerLogin3
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName     = $mockSqlDatabaseName
-                        Name             = $mockSqlDatabaseRole1
-                        MembersToExclude = $mockSqlServerLogin3
-                        Ensure           = 'Present'
-                    }
-
-                    { Set-TargetResource @testParameters } | Should -Not -Throw
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should throw the correct error when calling the DropMember method' {
-                    $mockInvalidOperationForDropMemberMethod = $true
-                    $mockExpectedMemberToDrop = $mockSqlServerLogin2
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName     = $mockSqlDatabaseName
-                        Name             = $mockSqlDatabaseRole1
-                        MembersToExclude = $mockSqlServerLogin2
-                        Ensure           = 'Present'
-                    }
-
-                    $errorMessage = $script:localizedData.DropDatabaseRoleMemberError -f $mockSqlServerLogin2, $mockSqlDatabaseRole1, $mockSqlDatabaseName
-
-                    { Set-TargetResource @testParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Assert-VerifiableMock
         }
 
-        Describe "DSC_SqlDatabaseRole\Test-TargetResource" -Tag 'Test' {
-            BeforeEach {
-                $mockDatabaseIsUpdateable = $true
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSQL -Verifiable
-            }
+        Context 'When the Drop() method fails' {
+            It 'Should throw the correct error' {
+                $mockInvalidOperationForDropMethod = $true
 
-            Context 'When the system is not in the desired state and Ensure is set to Absent' {
-                It 'Should return False when the desired database role exists' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName = $mockSqlDatabaseName
-                        Name         = $mockSqlDatabaseRole1
-                        Ensure       = 'Absent'
-                    }
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
 
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $false
+                    $mockSetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name         = 'MyRole'
+                    $mockSetTargetResourceParameters.Ensure       = 'Absent'
 
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
+                    $errorMessage = $script:localizedData.DropDatabaseRoleError -f 'MyRole', 'AdventureWorks'
 
-            Context 'When the system is not in the desired state and Ensure is set to Absent and the database is not updateable' {
-                BeforeEach {
-                    $mockDatabaseIsUpdateable = $false
-                }
-
-                It 'Should return True when the desired database role exists' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName = $mockSqlDatabaseName
-                        Name         = $mockSqlDatabaseRole1
-                        Ensure       = 'Absent'
-                    }
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When the system is not in the desired state and Ensure is set to Present' {
-                It 'Should return False when the desired database role does not exist' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName = $mockSqlDatabaseName
-                        Name         = $mockSqlDatabaseRole3
-                        Ensure       = 'Present'
-                    }
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $false
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When the system is not in the desired state and Ensure is set to Present and the database is not updateable' {
-                BeforeEach {
-                    $mockDatabaseIsUpdateable = $false
-                }
-
-                It 'Should return True when the desired database role does not exist' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName = $mockSqlDatabaseName
-                        Name         = $mockSqlDatabaseRole3
-                        Ensure       = 'Present'
-                    }
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When the system is in the desired state and Ensure is set to Absent' {
-                It 'Should return True when the desired database role does not exist' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName = $mockSqlDatabaseName
-                        Name         = $mockSqlDatabaseRole3
-                        Ensure       = 'Absent'
-                    }
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When the system is in the desired state and Ensure is set to Present' {
-                It 'Should return True when the desired database role exists' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName = $mockSqlDatabaseName
-                        Name         = $mockSqlDatabaseRole1
-                        Ensure       = 'Present'
-                    }
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When parameter Members is assigned a value and Ensure parameter is set to Present' {
-                It 'Should return False when the desired members are not in the desired database role' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName = $mockSqlDatabaseName
-                        Name         = $mockSqlDatabaseRole1
-                        Members      = @($mockSqlServerLogin3)
-                        Ensure       = 'Present'
-                    }
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $false
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When both parameters Members and MembersToInclude are assigned a value and Ensure is set to Present' {
-                It 'Should throw the correct error' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName     = $mockSqlDatabaseName
-                        Name             = $mockSqlDatabaseRole1
-                        Members          = $mockEnumMembers
-                        MembersToInclude = $mockSqlServerLogin3
-                        Ensure           = 'Present'
-                    }
-
-                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
-
-                    { Test-TargetResource @testParameters } | Should -Throw $errorMessage
-                }
-
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
-                }
-            }
-
-            Context 'When parameter MembersToInclude is assigned a value, parameter Members is not assigned a value, and Ensure is set to Present' {
-                It 'Should return False when desired database role does not exist' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName     = $mockSqlDatabaseName
-                        Name             = $mockSqlDatabaseRole3
-                        MembersToInclude = $mockSqlServerLogin1
-                        Ensure           = 'Present'
-                    }
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $false
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return True when the desired database role exists and the MembersToInclude contains members that already exist' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName     = $mockSqlDatabaseName
-                        Name             = $mockSqlDatabaseRole1
-                        MembersToInclude = $mockSqlServerLogin2
-                        Ensure           = 'Present'
-                    }
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return False when the desired database role exists and the MembersToInclude contains members that are missing' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName     = $mockSqlDatabaseName
-                        Name             = $mockSqlDatabaseRole1
-                        MembersToInclude = $mockSqlServerLogin3
-                        Ensure           = 'Present'
-                    }
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $false
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When both parameters Members and MembersToExclude are assigned a value and Ensure is set to Present' {
-                It 'Should throw the correct error' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName     = $mockSqlDatabaseName
-                        Name             = $mockSqlDatabaseRole1
-                        Members          = $mockEnumMembers
-                        MembersToExclude = $mockSqlServerLogin3
-                        Ensure           = 'Present'
-                    }
-
-                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
-
-                    { Test-TargetResource @testParameters } | Should -Throw $errorMessage
-                }
-
-                It 'Should call the mock function Connect-SQL' {
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
-                }
-            }
-
-            Context 'When parameter MembersToExclude is assigned a value, parameter Members is not assigned a value, and Ensure is set to Present' {
-                It 'Should return False when desired database role does not exist' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName     = $mockSqlDatabaseName
-                        Name             = $mockSqlDatabaseRole3
-                        MembersToExclude = $mockSqlServerLogin3
-                        Ensure           = 'Present'
-                    }
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $false
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return True when the desired database role exists and the MembersToExclude contains members that do not yet exist' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName     = $mockSqlDatabaseName
-                        Name             = $mockSqlDatabaseRole1
-                        MembersToExclude = $mockSqlServerLogin3
-                        Ensure           = 'Present'
-                    }
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-
-                It 'Should return False when the desired database role exists and the MembersToExclude contains members that already exist' {
-                    $testParameters = $mockDefaultParameters
-                    $testParameters += @{
-                        DatabaseName     = $mockSqlDatabaseName
-                        Name             = $mockSqlDatabaseRole1
-                        MembersToExclude = $mockSqlServerLogin1
-                        Ensure           = 'Present'
-                    }
-
-                    $result = Test-TargetResource @testParameters
-                    $result | Should -Be $false
-
-                    Assert-MockCalled -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Assert-VerifiableMock
-        }
-
-        Describe 'Add-SqlDscDatabaseRoleMember' -Tag 'Helper' {
-            BeforeAll {
-                $mockSqlDatabaseObject = @{
-                    Name = $mockSqlDatabaseName
-                    Roles = @{
-                        $mockSqlDatabaseRole1 = 'Role'
-                    }
-                    Users = @{
-                        $mockSqlServerLogin1 = 'User'
-                    }
-                }
-                $mockName = 'MissingRole'
-                $mockMemberName = 'MissingUser'
-
-            }
-            Context 'When calling with a role that does not exist' {
-                It 'Should throw the correct error' {
                     {
-                        Add-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name $mockName -MemberName $mockMemberName
-                    } | Should -Throw ($script:localizedData.DatabaseRoleOrUserNotFound -f $mockName, $mockMemberName, $mockSqlDatabaseName)
+                        Set-TargetResource @mockSetTargetResourceParameters
+                    } | Should -Throw -ExpectedMessage ('*' + $errorMessage +'*Mock Drop method was called with invalid operation.*')
                 }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+
+                $mockInvalidOperationForDropMethod = $false
+            }
+        }
+
+        Context 'When the role should exist' {
+            It 'Should not throw and call the correct mocked method' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name         = 'DatabaseRoleToAdd'
+                    $mockSetTargetResourceParameters.Ensure       = 'Present'
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $mockMethodCreateWasCalled | Should -Be 1
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
+                    $TypeName -eq 'Microsoft.SqlServer.Management.Smo.DatabaseRole'
+                } -Scope Context
+            }
+        }
+
+        Context 'When the Create() method fails' {
+            It 'Should throw the correct error' {
+                $mockInvalidOperationForCreateMethod = $true
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name         = 'DatabaseRoleToAdd'
+                    $mockSetTargetResourceParameters.Ensure       = 'Present'
+
+                    $errorMessage = $script:localizedData.CreateDatabaseRoleError -f 'DatabaseRoleToAdd', 'AdventureWorks'
+
+                    {
+                        Set-TargetResource @mockSetTargetResourceParameters
+                    } | Should -Throw -ExpectedMessage ('*' + $errorMessage +'*Mock Create method was called with invalid operation.*')
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+
+                $mockInvalidOperationForCreateMethod = $false
+            }
+        }
+
+        Context 'When both parameters Members and MembersToExclude are assigned a value' {
+            It 'Should throw the correct error' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name             = 'MyRole'
+                    $mockSetTargetResourceParameters.Ensure           = 'Present'
+                    $mockSetTargetResourceParameters.Members          = @('John', 'CONTOSO\KingJulian')
+                    $mockSetTargetResourceParameters.MembersToExclude = 'CONTOSO\KingJulian'
+
+                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
+
+                    {
+                        Set-TargetResource @mockSetTargetResourceParameters
+                    } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When both parameters Members and MembersToInclude are assigned a value' {
+            It 'Should throw the correct error' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name             = 'MyRole'
+                    $mockSetTargetResourceParameters.Ensure           = 'Present'
+                    $mockSetTargetResourceParameters.Members          = @('John', 'CONTOSO\KingJulian')
+                    $mockSetTargetResourceParameters.MembersToInclude = 'CONTOSO\SQLAdmin'
+
+                    $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
+
+                    {
+                        Set-TargetResource @mockSetTargetResourceParameters
+                    } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When specifying parameter Members to both add and remove members' {
+            BeforeAll {
+                Mock -CommandName Add-SqlDscDatabaseRoleMember
+                Mock -CommandName Remove-SqlDscDatabaseRoleMember
+            }
+
+            It 'Should not throw and call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DatabaseName = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name         = 'MyRole'
+                    $mockSetTargetResourceParameters.Ensure       = 'Present'
+                    <#
+                        This should remove the mocked member 'CONTOSO\KingJulian' which
+                        is mocked in the EnumMembers() method.
+                    #>
+                    $mockSetTargetResourceParameters.Members      = @('John', 'CONTOSO\SQLAdmin')
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Add-SqlDscDatabaseRoleMember -ParameterFilter {
+                    $MemberName -eq 'CONTOSO\SQLAdmin'
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Remove-SqlDscDatabaseRoleMember -ParameterFilter {
+                    $MemberName -eq 'CONTOSO\KingJulian'
+                } -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When specifying parameter MembersToInclude' {
+            BeforeAll {
+                Mock -CommandName Add-SqlDscDatabaseRoleMember
+                Mock -CommandName Remove-SqlDscDatabaseRoleMember
+            }
+
+            It 'Should not throw and call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name             = 'MyRole'
+                    $mockSetTargetResourceParameters.Ensure           = 'Present'
+                    <#
+                        This should add the member since it is not returned by the
+                        EnumMembers() mocked method.
+                    #>
+                    $mockSetTargetResourceParameters.MembersToInclude = @('CONTOSO\SQLAdmin')
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Add-SqlDscDatabaseRoleMember -ParameterFilter {
+                    $MemberName -eq 'CONTOSO\SQLAdmin'
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Remove-SqlDscDatabaseRoleMember -Exactly -Times 0 -Scope It
+            }
+        }
+
+        Context 'When specifying parameter MembersToExclude' {
+            BeforeAll {
+                Mock -CommandName Add-SqlDscDatabaseRoleMember
+                Mock -CommandName Remove-SqlDscDatabaseRoleMember
+            }
+
+            It 'Should not throw and call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters.DatabaseName     = 'AdventureWorks'
+                    $mockSetTargetResourceParameters.Name             = 'MyRole'
+                    $mockSetTargetResourceParameters.Ensure           = 'Present'
+                    <#
+                        This should add the member since it is not returned by the
+                        EnumMembers() mocked method.
+                    #>
+                    $mockSetTargetResourceParameters.MembersToExclude = @('CONTOSO\KingJulian')
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Add-SqlDscDatabaseRoleMember -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Remove-SqlDscDatabaseRoleMember -ParameterFilter {
+                    $MemberName -eq 'CONTOSO\KingJulian'
+                } -Exactly -Times 1 -Scope It
             }
         }
     }
 }
-finally
-{
-    Invoke-TestCleanup
+
+Describe 'Add-SqlDscDatabaseRoleMember' -Tag 'Helper' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            $script:mockInvalidOperationForAddMemberMethod = $false
+
+            $script:mockSqlDatabaseObject = @(
+                    (
+                        New-Object -TypeName Object |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value 'AdventureWorks' -PassThru |
+                            Add-Member -MemberType ScriptProperty -Name 'Users' -Value {
+                                return @{
+                                    'John' = New-Object -TypeName Object
+                                }
+                            } -PassThru |
+                            Add-Member -MemberType ScriptProperty -Name 'Roles' -Value {
+                                return @{
+                                    'MyRole' = @(
+                                        (
+                                            New-Object -TypeName Object |
+                                            Add-Member -MemberType NoteProperty -Name 'Name' -Value 'MyRole' -PassThru |
+                                            Add-Member -MemberType ScriptMethod -Name 'AddMember' -Value {
+                                                param
+                                                (
+                                                    [Parameter()]
+                                                    [System.String]
+                                                    $Name
+                                                )
+
+                                                if ($mockInvalidOperationForAddMemberMethod)
+                                                {
+                                                    throw 'Mock AddMember Method was called with invalid operation.'
+                                                }
+
+                                                $script:mockMethodAddMemberWasCalled += 1
+                                            } -PassThru -Force
+                                        )
+                                    )
+                                }
+                            } -PassThru -Force
+                    )
+                )
+        }
+    }
+
+    Context 'When calling with a role that does not exist' {
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockErrorMessage = $script:localizedData.DatabaseRoleOrUserNotFound -f 'MissingRole', 'MissingUser', 'AdventureWorks'
+                {
+                    Add-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name 'MissingRole' -MemberName 'MissingUser'
+                } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+            }
+        }
+    }
+
+    Context 'When add a member from a role' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $script:mockMethodAddMemberWasCalled = 0
+            }
+        }
+
+        It 'Should call the correct method' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                {
+                    Add-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name 'MyRole' -MemberName 'John'
+                } | Should -Not -Throw
+
+                $mockMethodAddMemberWasCalled | Should -Be 1
+            }
+        }
+    }
+
+    Context 'When method AddMember() fails' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockInvalidOperationForAddMemberMethod = $true
+            }
+        }
+
+        AfterAll {
+            InModuleScope -ScriptBlock {
+                $script:mockInvalidOperationForAddMemberMethod = $false
+            }
+        }
+
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockErrorMessage = $script:localizedData.AddDatabaseRoleMemberError -f 'John', 'MyRole', 'AdventureWorks'
+
+                {
+                    Add-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name 'MyRole' -MemberName 'John'
+                } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*Mock AddMember Method was called with invalid operation.*')
+            }
+        }
+    }
+}
+
+Describe 'Remove-SqlDscDatabaseRoleMember' -Tag 'Helper' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            $script:mockInvalidOperationForDropMemberMethod = $false
+
+            $script:mockSqlDatabaseObject = @(
+                    (
+                        New-Object -TypeName Object |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value 'AdventureWorks' -PassThru |
+                            Add-Member -MemberType ScriptProperty -Name 'Users' -Value {
+                                return @{
+                                    'John' = New-Object -TypeName Object
+                                }
+                            } -PassThru |
+                            Add-Member -MemberType ScriptProperty -Name 'Roles' -Value {
+                                return @{
+                                    'MyRole' = @(
+                                        (
+                                            New-Object -TypeName Object |
+                                            Add-Member -MemberType NoteProperty -Name 'Name' -Value 'MyRole' -PassThru |
+                                            Add-Member -MemberType ScriptMethod -Name 'DropMember' -Value {
+                                                param
+                                                (
+                                                    [Parameter()]
+                                                    [System.String]
+                                                    $Name
+                                                )
+
+                                                if ($mockInvalidOperationForDropMemberMethod)
+                                                {
+                                                    throw 'Mock DropMember Method was called with invalid operation.'
+                                                }
+
+                                                $script:mockMethodDropMemberWasCalled += 1
+                                            } -PassThru -Force
+                                        )
+                                    )
+                                }
+                            } -PassThru -Force
+                    )
+                )
+        }
+    }
+
+    Context 'When removing a member from a role' {
+        BeforeEach {
+            InModuleScope -ScriptBlock {
+                $script:mockMethodDropMemberWasCalled = 0
+            }
+        }
+
+        It 'Should call the correct method' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                {
+                    Remove-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name 'MyRole' -MemberName 'MyRole'
+                } | Should -Not -Throw
+
+                $mockMethodDropMemberWasCalled | Should -Be 1
+            }
+        }
+    }
+
+    Context 'When method DropMember() fails' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockInvalidOperationForDropMemberMethod = $true
+            }
+        }
+
+        AfterAll {
+            InModuleScope -ScriptBlock {
+                $script:mockInvalidOperationForDropMemberMethod = $false
+            }
+        }
+
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockErrorMessage = $script:localizedData.DropDatabaseRoleMemberError -f 'MyRole', 'MyRole', 'AdventureWorks'
+
+                {
+                    Remove-SqlDscDatabaseRoleMember -SqlDatabaseObject $mockSqlDatabaseObject -Name 'MyRole' -MemberName 'MyRole'
+                } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*Mock DropMember Method was called with invalid operation.*')
+            }
+        }
+    }
 }

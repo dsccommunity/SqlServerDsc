@@ -2,7 +2,7 @@ ConvertFrom-StringData @'
     GetAvailabilityGroupListener = Get the current state of the Availability Group listener '{0}' for the Availability Group '{1}' on the instance '{2}'.
     AvailabilityGroupListenerIsPresent = The Availability Group listener '{0}' exist.
     AvailabilityGroupListenerIsNotPresent = The Availability Group listener '{0}' does not exist.
-    AvailabilityGroupListenerNotFound = Trying to make a change to a listener that does not exist.
+    AvailabilityGroupListenerNotFound = Trying to make a change to the listener '{0}' that does not exist in the availability group '{1}'.
     CreateAvailabilityGroupListener = Create Availability Group listener '{0}' for the Availability Group '{1}' on the instance '{2}'.
     SetAvailabilityGroupListenerPort = Availability Group listener port is set to '{0}'.
     SetAvailabilityGroupListenerDhcp = Availability Group listener is using DHCP with the subnet '{0}'.
@@ -17,7 +17,6 @@ ConvertFrom-StringData @'
     AvailabilityGroupListenerNotInDesiredState = Availability Group listener '{0}' is not in desired state for the Availability Group '{1}' on the instance '{2}'.
     ChangingAvailabilityGroupListenerPort = Changing Availability Group listener port to '{0}'.
     AddingAvailabilityGroupListenerIpAddress = Adding Availability Group listener IP address '{0}'.
-    UnexpectedErrorFromGet = Got unexpected result from Get-TargetResource. No change is made.
     TestingConfiguration = Determines the current state for the Availability Group listener '{0}' for the Availability Group '{1}' on the instance '{2}'..
     DebugConnectingAvailabilityGroup = Connecting to Availability Group listener '{0}' as the user '{1}'.
 '@

@@ -17,11 +17,7 @@ The documentation, examples, unit test, and integration tests have been removed
 for these deprecated resources. These resources will be removed
 in a future release.
 
-- SqlDatabaseOwner _(replaced by a property in [**SqlDatabase**](sqldatabase))_.
-- SqlDatabaseRecoveryModel _(replaced by a property in [**SqlDatabase**](sqldatabase))_.
-- SqlServerEndpointState _(replaced by a property in [**SqlEndpoint**](sqlendpoint))_.
-- SqlServerNetwork _(replaced by [**SqlProtocol**](sqlprotocol) and_
-  _[**SqlProtocolTcpIp**](sqlprotocoltcpip))_.
+*No resources are currently deprecated.*
 
 ## Getting started
 
@@ -47,26 +43,35 @@ Get-DscResource -Module SqlServerDsc
 
 ## Prerequisites
 
-* Familiarity with Powershell DSC Framework
-* Powershell 5.0 or higher
-* SqlServer powershell module (optional)
+- Familiarity with Powershell DSC Framework
+- Powershell 5.0 or higher
+- SqlServer powershell module (optional)
 
 ### Familiarity with Powershell DSC Framework
 
-SqlServerDSC implements configuration management for MS SQL using the [Powershell DSC](https://docs.microsoft.com/en-us/search/?terms=Desired%20State%20Configuration&scope=PowerShell) technology developed by Microsoft.  A [community](https://dsccommunity.org/) maintains resources related to these [tools](https://dsccommunity.org/configmgt/).
+SqlServerDSC implements configuration management for *Microsoft SQL Server*
+using the [Powershell DSC](https://docs.microsoft.com/en-us/search/?terms=Desired%20State%20Configuration&scope=PowerShell)
+technology developed by Microsoft. A [community](https://dsccommunity.org/)
+maintains [resources](https://www.powershellgallery.com/packages?q=Tags%3A%22DSCResource%22)
+that can be used by [configuration automation tools](https://dsccommunity.org/configmgt/)
+from various companies.
 
 ### Powershell
 
-The minimum Windows Management Framework (PowerShell) version required is 5.0
-or higher, which ships with Windows 10 or Windows Server 2016,
-but can also be installed on Windows 7 SP1, Windows 8.1, Windows Server 2012,
-and Windows Server 2012 R2.
+It is recommended to use Windows Management Framework (PowerShell) version 5.1.
+
+The minimum Windows Management Framework (PowerShell) version required is 5.0,
+which ships with Windows 10 or Windows Server 2016, but can also be installed
+on Windows 7 SP1, Windows 8.1, Windows Server 2012, and Windows Server 2012 R2.
+
+These resource might not work on PowerShell 7.x because they depend on
+*SQL Server* modules which only works in PowerShell 5.x.
 
 ### SqlServer powershell module (optional)
 
-Optionally the PowerShell Module [_SqlServer_](https://www.powershellgallery.com/packages/SqlServer)
+Optionally the PowerShell Module [*SqlServer*](https://www.powershellgallery.com/packages/SqlServer)
 can be installed which then will be used instead of the PowerShell module
-_SQLPS_ that is installed with SQL Server.
+*SQLPS* that is installed with SQL Server.
 
 ## Change log
 
