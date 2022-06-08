@@ -185,6 +185,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     that was not available.
   - The loop that evaluates what features are installed did an unnecessary
     step for each iteration. A line of code was moved outside of the loop.
+  - The `SourcePath` parameter is now mandatory for all `*-TargetResource`
+    ([issue #1755](https://github.com/dsccommunity/SqlServerDsc/issues/1755)).
 
 ## [15.2.0] - 2021-09-01
 
