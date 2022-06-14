@@ -12,4 +12,5 @@ class DSC_SqlRS : OMI_BaseResource
     [Write, Description("If connections to the _Reporting Services_ must use SSL. If this parameter is not assigned a value, the default is that _Reporting Services_ does not use SSL.")] Boolean UseSsl;
     [Write, Description("_Reporting Services_ need to be restarted after initialization or settings change. If this parameter is set to `$true`, _Reporting Services_ will not be restarted, even after initialization.")] Boolean SuppressRestart;
     [Read, Description("Returns if the _Reporting Services_ instance initialized or not.")] Boolean IsInitialized;
+    [Read, Description("Returns the name of the _Reporting Services_ service account.")] String WindowsServiceIdentityActual;
 };
