@@ -3125,6 +3125,31 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
         }
     }
 
+    Context 'When restarting Power BI Report Server' {
+        BeforeAll {
+            $mockServiceName = 'PowerBIReportServer'
+            $mockDependedServiceName = 'DependentService'
+
+            $mockDynamicServiceName = $mockServiceName
+            $mockDynamicDependedServiceName = $mockDependedServiceName
+            $mockDynamicServiceDisplayName = 'Reporting Services (TEST)'
+
+            Mock -CommandName Stop-Service
+            Mock -CommandName Start-Service
+            Mock -CommandName Get-Service -MockWith $mockGetService
+        }
+
+        It 'Should restart the service and dependent service' {
+            { Restart-ReportingServicesService -InstanceName 'PBIRS' } | Should -Not -Throw
+
+            Should -Invoke -CommandName Get-Service -ParameterFilter {
+                $Name -eq $mockServiceName
+            } -Scope It -Exactly -Times 1
+            Should -Invoke -CommandName Stop-Service -Scope It -Exactly -Times 1
+            Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 2
+        }
+    }
+
     Context 'When restarting a Report Services named instance using a wait timer' {
         BeforeAll {
             $mockServiceName = 'ReportServer$TEST'

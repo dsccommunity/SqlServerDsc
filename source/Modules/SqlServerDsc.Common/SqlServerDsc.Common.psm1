@@ -1194,18 +1194,25 @@ function Restart-ReportingServicesService
         $WaitTime = 0
     )
 
-    if ($InstanceName -eq 'SSRS')
+    if ($InstanceName -eq 'PBIRS')
+    {
+        $serviceName = 'PowerBIReportServer'
+    }
+    elseif ($InstanceName -eq 'SSRS')
     {
         # Check if we're dealing with SSRS 2017 or SQL2019
-        $ServiceName = 'SQLServerReportingServices'
+        $serviceName = 'SQLServerReportingServices'
+    }
 
-        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
-        $reportingServicesService = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
+    if ( $null -ne $serviceName )
+    {
+        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $serviceName) -Verbose
+        $reportingServicesService = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
     }
 
     if ($null -eq $reportingServicesService)
     {
-        $ServiceName = 'ReportServer'
+        $serviceName = 'ReportServer'
 
         <#
             Pre-2017 SSRS support multiple instances, check if we're dealing
@@ -1213,11 +1220,11 @@ function Restart-ReportingServicesService
         #>
         if (-not ($InstanceName -eq 'MSSQLSERVER'))
         {
-            $ServiceName += '${0}' -f $InstanceName
+            $serviceName += '${0}' -f $InstanceName
         }
 
-        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
-        $reportingServicesService = Get-Service -Name $ServiceName
+        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $serviceName) -Verbose
+        $reportingServicesService = Get-Service -Name $serviceName
     }
 
     <#
