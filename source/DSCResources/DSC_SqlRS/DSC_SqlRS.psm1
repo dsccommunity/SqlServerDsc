@@ -948,18 +948,17 @@ function Get-ReportingServicesData
 
         if (Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\MSSQLServer\CurrentVersion")
         {
-            # SQL Server 2017 and 2019 SSRS stores current SQL Server version to a different Registry path.
-            $sqlVersion = [int]((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$InstanceId\MSSQLServer\CurrentVersion" -Name 'CurrentVersion').CurrentVersion).Split('.')[0]
+            # Get the SQL Server 2017+ SSRS and PBIRS version
+            $sqlVersion = [System.Int32] ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$InstanceId\MSSQLServer\CurrentVersion" -Name 'CurrentVersion').CurrentVersion).Split('.')[0]
         }
         else
         {
-            $sqlVersion = [int]((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Setup" -Name 'Version').Version).Split('.')[0]
+            # Get the SQL Server 2016 and older version
+            $sqlVersion = [System.Int32] ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$instanceId\Setup" -Name 'Version').Version).Split('.')[0]
         }
 
-        $reportingServicesConfiguration = Get-CimInstance -ClassName MSReportServer_ConfigurationSetting -Namespace "root\Microsoft\SQLServer\ReportServer\RS_$InstanceName\v$sqlVersion\Admin"
-        $reportingServicesConfiguration = $reportingServicesConfiguration | Where-Object -FilterScript {
-            $_.InstanceName -eq $InstanceName
-        }
+        $reportingServicesConfiguration = Get-CimInstance -ClassName MSReportServer_ConfigurationSetting -Namespace "root\Microsoft\SQLServer\ReportServer\RS_$InstanceName\v$sqlVersion\Admin" |
+            Where-Object -Property InstanceName -EQ -Value $InstanceName
 
         <#
             SQL Server Reporting Services Web Portal application name changed
@@ -976,7 +975,7 @@ function Get-ReportingServicesData
         }
     }
 
-    @{
+    return @{
         Configuration          = $reportingServicesConfiguration
         ReportsApplicationName = $reportsApplicationName
         SqlVersion             = $sqlVersion
