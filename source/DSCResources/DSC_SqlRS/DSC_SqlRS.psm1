@@ -378,7 +378,7 @@ function Set-TargetResource
                     }
                 }
 
-                $setWindowsServiceIdentityResult = Invoke-RsCimMethod @invokeRsCimMethodParameters
+                Invoke-RsCimMethod @invokeRsCimMethodParameters > $null
             }
 
             # If no Report Server reserved URLs have been specified, use the default one.
@@ -626,7 +626,7 @@ function Set-TargetResource
 
             if ($PSBoundParameters.ContainsKey('ServiceAccount') -and $ServiceAccount.UserName -ne $currentConfig.WindowsServiceIdentityActual)
             {
-                Write-Verbose -Message ($script:localizedData.SetServiceAccount -f $ServiceAccount.UserName,$currentConfig.WindowsServiceIdentityActual) -Verbose
+                Write-Verbose -Message ($script:localizedData.SetServiceAccount -f $ServiceAccount.UserName, $currentConfig.WindowsServiceIdentityActual) -Verbose
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
                     MethodName  = 'SetWindowsServiceIdentity'
