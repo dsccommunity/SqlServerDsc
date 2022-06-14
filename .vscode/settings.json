@@ -21,6 +21,9 @@
     "files.associations": {
         "*.ps1xml": "xml"
     },
+    "cSpell.dictionaries": [
+        "powershell"
+    ],
     "cSpell.words": [
         "COMPANYNAME",
         "ICONURI",
@@ -35,7 +38,57 @@
         "notin",
         "pscmdlet",
         "steppable",
-        "SSRS"
+        "SSRS",
+        "Addnode",
+        "AppVeyor",
+        "CHANGELOG",
+        "IsUpdateable",
+        "PSPKI",
+        "AgtSvcStartupType",
+        "SqlTempdbFileGrowth",
+        "SqlTempdbLogFileGrowth",
+        "hashtable",
+        "hashtables",
+        "dsccommunity",
+        "SqlTempdbFileCount",
+        "SqlTempdbFileSize",
+        "SqlTempdbLogFileSize",
+        "Maxime",
+        "Daniou",
+        "Reist",
+        "Reilingh",
+        "Sarti",
+        "RSSQLServer",
+        "RSSQLInstanceName",
+        "DSCFCISqlBuild",
+        "DSCSQLBuildEncrypted",
+        "IsHadrEnabled",
+        "xSQLAOGroupJoin",
+        "xSQLAOGroupEnsure",
+        "Test-SPDSCObjectHasProperty",
+        "DynamicAlloc",
+        "GetxPDTVariable"
+    ],
+    "cSpell.ignorePaths": [
+        ".git"
+    ],
+    "cSpell.ignoreRegExpList": [
+        "/HKCU:/g",
+        "/analyzersettings\\.psd1/g",
+        "/SQLENGINE/g",
+        "//norestart/g",
+        "/@Zuldans/g",
+        "/@kungfu71186/g",
+        "/@pshamus/g",
+        "/@mdaniou/g",
+        "/@adamrushuk/g",
+        "/@randomnote1/g",
+        "/@NReilingh/g",
+        "/@chasewilson/g",
+        "/@prkelly/g",
+        "/@glennsarti/g",
+        "/tempdb/g",
+        "/sqlcmd\\.exe/g"
     ],
     "[markdown]": {
         "files.trimTrailingWhitespace": true,
