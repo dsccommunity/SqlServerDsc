@@ -4,7 +4,7 @@
         replica and an Always On secondary replica, and where each replica has
         a different SQL service account.
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification='The variable $ConfigurationData is used by the HQRM test')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification='The variable $ConfigurationData is used by the HQRM test')]
 param ()
 
 $ConfigurationData = @{

@@ -61,6 +61,36 @@ supported versions.
 Those SQL Server products that are still supported can be listed at the
 [Microsoft life cycle site](https://support.microsoft.com/en-us/lifecycle/search?alpha=SQL%20Server).
 
+## Script Analyzer rules
+
+There are several Script Analyzer rules to help with the development and review
+process. Rules come from the modules **ScriptAnalyzer**, **DscResource.AnalyzerRules**,
+**Indented.ScriptAnalyzerRules**, and **SqlServerDsc.AnalyzerRules**.
+
+Some rules (but not all) are allowed to be overridden with a justification.
+
+This is an example how to override a rule from the module **SqlServerDsc.AnalyzerRules**.
+
+```powershell
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+param ()
+```
+
+This is an example how to override a rule from the module **ScriptAnalyzer**.
+
+```powershell
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification='Because $global:DSCMachineStatus is used to trigger a Restart, either by force or when there are pending changes')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification='Because $global:DSCMachineStatus is only set, never used (by design of Desired State Configuration)')]
+param ()
+```
+
+This is an example how to override a rule from the module **Indented.ScriptAnalyzerRules**.
+
+```powershell
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification='Because the code throws based on an prior expression')]
+param ()
+```
+
 ## Design patterns
 
 ### Credentials that does not have password

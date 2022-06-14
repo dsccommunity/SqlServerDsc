@@ -2,6 +2,7 @@
 	"recommendations": [
         "davidanson.vscode-markdownlint",
         "pspester.pester-test",
-        "ms-vscode.powershell"
+        "ms-vscode.powershell",
+        "streetsidesoftware.code-spell-checker"
     ]
 }

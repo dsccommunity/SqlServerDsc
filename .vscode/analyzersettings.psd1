@@ -2,10 +2,11 @@
     CustomRulePath      = @(
         './output/RequiredModules/DscResource.AnalyzerRules'
         './tests/QA/AnalyzerRules/SqlServerDsc.AnalyzerRules.psm1'
+        './output/RequiredModules/Indented.ScriptAnalyzerRules'
     )
     IncludeDefaultRules = $true
     IncludeRules        = @(
-        # DSC Resource Kit style guideline rules.
+        # DSC Community style guideline rules from the module ScriptAnalyzer.
         'PSAvoidDefaultValueForMandatoryParameter',
         'PSAvoidDefaultValueSwitchParameter',
         'PSAvoidInvokingEmptyMembers',
@@ -41,7 +42,7 @@
         'PSUseDeclaredVarsMoreThanAssignments',
         'PSUsePSCredentialType',
 
-        # Additional rules
+        # Additional rules from the module ScriptAnalyzer
         'PSUseConsistentWhitespace',
         'UseCorrectCasing',
         'PSPlaceOpenBrace',
@@ -49,7 +50,24 @@
         'AlignAssignmentStatement',
         'AvoidUsingDoubleQuotesForConstantString',
 
+        # Rules from the modules DscResource.AnalyzerRules and SqlServerDsc.AnalyzerRules
         'Measure-*'
+
+        # Rules from the module Indented.ScriptAnalyzerRules
+        'AvoidCreatingObjectsFromAnEmptyString'
+        'AvoidDashCharacters'
+        'AvoidEmptyNamedBlocks'
+        'AvoidFilter'
+        'AvoidHelpMessage'
+        'AvoidNestedFunctions'
+        'AvoidNewObjectToCreatePSObject'
+        'AvoidParameterAttributeDefaultValues'
+        'AvoidProcessWithoutPipeline'
+        'AvoidSmartQuotes'
+        'AvoidThrowOutsideOfTry'
+        'AvoidWriteErrorStop'
+        'AvoidWriteOutput'
+        'UseSyntacticallyCorrectExamples'
     )
 
     Rules               = @{

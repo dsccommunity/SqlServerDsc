@@ -1,5 +1,5 @@
 @{
-    PSDependOptions             = @{
+    PSDependOptions                = @{
         AddToPath  = $true
         Target     = 'output\RequiredModules'
         Parameters = @{
@@ -7,28 +7,31 @@
         }
     }
 
-    InvokeBuild                 = 'latest'
-    PSScriptAnalyzer            = 'latest'
-    Pester                      = 'latest'
-    Plaster                     = 'latest'
-    ModuleBuilder               = 'latest'
-    ChangelogManagement         = 'latest'
-    Sampler                     = 'latest'
-    'Sampler.GitHubTasks'       = 'latest'
-    MarkdownLinkCheck           = 'latest'
-    'DscResource.Common'        = 'latest'
-    'DscResource.Test'          = 'latest'
-    'DscResource.AnalyzerRules' = 'latest'
-    xDscResourceDesigner        = 'latest'
-    'DscResource.DocGenerator'  = 'latest'
+    InvokeBuild                    = 'latest'
+    PSScriptAnalyzer               = 'latest'
+    Pester                         = 'latest'
+    Plaster                        = 'latest'
+    ModuleBuilder                  = 'latest'
+    ChangelogManagement            = 'latest'
+    Sampler                        = 'latest'
+    'Sampler.GitHubTasks'          = 'latest'
+    MarkdownLinkCheck              = 'latest'
+    'DscResource.Common'           = 'latest'
+    'DscResource.Test'             = 'latest'
+    xDscResourceDesigner           = 'latest'
+    'DscResource.DocGenerator'     = 'latest'
+
+    # Analyzer rules
+    'DscResource.AnalyzerRules'    = 'latest'
+    'Indented.ScriptAnalyzerRules' = 'latest'
 
     # Dependency for integration tests
-    LoopbackAdapter             = 'latest'
-    PSPKI                       = 'latest'
+    LoopbackAdapter                = 'latest'
+    PSPKI                          = 'latest'
 
     # Prerequisites modules needed for examples or integration tests
-    PSDscResources              = '2.12.0.0'
-    StorageDsc                  = '4.9.0.0'
-    NetworkingDsc               = '7.4.0.0'
-    PowerShellGet               = '2.1.2'
+    PSDscResources                 = '2.12.0.0'
+    StorageDsc                     = '4.9.0.0'
+    NetworkingDsc                  = '7.4.0.0'
+    PowerShellGet                  = '2.1.2'
 }

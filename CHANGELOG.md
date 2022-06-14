@@ -33,6 +33,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Added recommended VS Code extensions.
     - Added settings for VS Code extension _Pester Test Adapter_.
+  - Added new Script Analyzer rules from the module _Indented.ScriptAnalyzerRules_
+    to help development and review process. The rules that did not contradict
+    the existing DSC Community rules and style guideline were added.
+  - Added the Visual Studio Code extension _Code Spell Checker_ to the list
+    of recommended Visual Studio Code extensions.
 - CommonTestHelper
   - `Import-SqlModuleStub`
     - Added the optional parameter **PasThru** that, if used, will return the
@@ -110,12 +115,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Only update values for the properties that are actually enforced by the
     configuration.
 - SqlAGDatabase
-  - Added StatementTimeout optional parameter with default value of 600 seconds (10 mins) to SqlAGDatabase to fix Issue#1743
-    Users will be able to specify the backup and restore timeout with it.
+  - Added StatementTimeout optional parameter with default value of 600 seconds
+    (10 mins) to SqlAGDatabase to fix issue #1743. Users will be able to specify
+    the backup and restore timeout with it.
 - SqlDatabaseUser
-  - `Test-TargetResource` returns true if the `IsUpdateable` property of the database is `$false` to resolve Issue#1748.
+  - `Test-TargetResource` returns true if the `IsUpdateable` property of the
+    database is `$false` to resolve issue #1748.
 - SqlDatabaseRole
-  - `Test-TargetResource` returns true if the `IsUpdateable` property of the database is `$false` to resolve Issue#1750.
+  - `Test-TargetResource` returns true if the `IsUpdateable` property of the
+    database is `$false` to resolve issue #1750.
 
 ### Fixed
 
@@ -200,7 +208,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated pipelines files to latest from Sampler project.
   - Updated GitHub issue templates.
   - Remove pipeline jobs `Test_Integration_SQL2016`, `Test_Integration_SQL2017`,
-    and `Test_Integration_SQL2019` and raplaced with a single job
+    and `Test_Integration_SQL2019` and replaced with a single job
     `Test_Integration` ([issue #1713](https://github.com/dsccommunity/SqlServerDsc/issues/1713)).
   - Update HQRM tests to run on the VM image `windows-2022`.
   - Update unit tests to run on the VM image `windows-2022`.
@@ -977,7 +985,7 @@ in a future release.
     for the test of `Set-TargetResource`.
 - SqlServerRole
   - Add support for nested role membership ([issue #1452](https://github.com/dsccommunity/SqlServerDsc/issues/1452))
-  - Removed use of case-sensitive Contains() function when evalutating role membership.
+  - Removed use of case-sensitive Contains() function when evaluating role membership.
     ([issue #1153](https://github.com/dsccommunity/SqlServerDsc/issues/1153))
   - Refactored mocks and unit tests to increase performance. ([issue #979](https://github.com/dsccommunity/SqlServerDsc/issues/979))
 
@@ -1117,8 +1125,8 @@ in a future release.
   - Fix typo in test it block.
 - Changes to SqlDatabaseRole
   - BREAKING CHANGE: Refactored to enable creation/deletion of the database role
-    itself as well as management of the role members. *Note that the resource no
-    longer adds database users.* ([issue #845](https://github.com/dsccommunity/SqlServerDsc/issues/845),
+    itself as well as management of the role members. _Note that the resource no
+    longer adds database users._ ([issue #845](https://github.com/dsccommunity/SqlServerDsc/issues/845),
     [issue #847](https://github.com/dsccommunity/SqlServerDsc/issues/847),
     [issue #1252](https://github.com/dsccommunity/SqlServerDsc/issues/1252),
     [issue #1339](https://github.com/dsccommunity/SqlServerDsc/issues/1339)).
@@ -1191,13 +1199,13 @@ in a future release.
   - Fixed one of the error handling to use localization, and made the
     error message more descriptive when the Set-TargetResource function
     calls the Test-TargetResource function to verify the desired
-    state. *This was done prior to adding full en-US localization.*
+    state. _This was done prior to adding full en-US localization_.
   - Fixed ([issue #1258](https://github.com/dsccommunity/SqlServerDsc/issues/1258)).
     When initializing Reporting Services, there is no need to execute `InitializeReportServer`
     CIM method, since executing `SetDatabaseConnection` CIM method initializes
     Reporting Services.
   - [issue #864](https://github.com/dsccommunity/SqlServerDsc/issues/864) SqlRs
-    can now initialise SSRS 2017 instances
+    can now initialize SSRS 2017 instances
 - Changes to SqlServerLogin
   - Added en-US localization ([issue #615](https://github.com/dsccommunity/SqlServerDsc/issues/615)).
   - Added unit tests to improved code coverage.
@@ -1289,15 +1297,15 @@ in a future release.
   - Refactored unit tests for the functions Test-TargetResource and
     Set-TargetResource to improve testing speed.
   - Modified the Test-TargetResource and Set-TargetResource to not be
-    case-sensitive when comparing feature names. *This was handled
+    case-sensitive when comparing feature names. _This was handled
     correctly in real-world scenarios, but failed when running the unit
-    tests (and testing casing).*
+    tests (and testing casing)._
 - Changes to SqlAGDatabase
   - Fix MatchDatabaseOwner to check for CONTROL SERVER, IMPERSONATE LOGIN, or
     CONTROL LOGIN permission in addition to IMPERSONATE ANY LOGIN.
   - Update and fix MatchDatabaseOwner help text.
 - Changes to SqlAG
-  - Updated documentation on the behaviour of defaults as they only apply when
+  - Updated documentation on the behavior of defaults as they only apply when
     creating a group.
 - Changes to SqlAGReplica
   - AvailabilityMode, BackupPriority, and FailoverMode defaults only apply when
@@ -1364,7 +1372,7 @@ in a future release.
   - Updated the integration test to stop the named instance while installing
     the other instances to mitigate
     [issue #1260](https://github.com/dsccommunity/SqlServerDsc/issues/1260).
-  - Add parameters to configure the Tempdb files during the installation of
+  - Add parameters to configure the 'tempdb' files during the installation of
     the instance. The new parameters are SqlTempdbFileCount, SqlTempdbFileSize,
     SqlTempdbFileGrowth, SqlTempdbLogFileSize and SqlTempdbLogFileGrowth
     ([issue #1167](https://github.com/dsccommunity/SqlServerDsc/issues/1167)).
@@ -1429,7 +1437,7 @@ in a future release.
       SqlServer module).
 - Changes to SqlAg, SqlAGDatabase, and SqlAGReplica examples
   - Included configuration for SqlAlwaysOnService to enable
-    HADR on each node to avoid confusion
+    High Availability Disaster Recovery on each node to avoid confusion
     ([issue #1182](https://github.com/dsccommunity/SqlServerDsc/issues/1182)).
 - Changes to SqlServerDatabaseMail
   - Minor update to Ensure parameter description in the README.md.
@@ -2365,7 +2373,7 @@ in a future release.
   - When TcpDynamicPorts is set to '0' the Test-TargetResource function will no
     longer fail each time (issue #564).
 - Changes to xSQLServerRSConfig
-  - Replaced sqlcmd.exe usages with Invoke-Sqlcmd calls (issue #567).
+  - Replaced sqlcmd.exe usages with Invoke-SqlCmd calls (issue #567).
 - Changes to xSQLServerDatabasePermission
   - Fixed code style, updated README.md and removed *-SqlDatabasePermission functions
     from xSQLServerHelper.psm1.
@@ -2767,7 +2775,7 @@ in a future release.
   - Get-TargetResource now works with Get-DscConfiguration.
 - Fixes in xSQLServerRole
   - Updated Ensure parameter to 'Present' default value.
-  - Renamed helper functions *-SqlServerRole* to *-SqlServerRoleMember*.
+  - Renamed helper functions _-SqlServerRole_ to _-SqlServerRoleMember_.
 - Changes to xSQLAlias
   - Add UseDynamicTcpPort parameter for option "Dynamically determine port".
   - Change Get-WmiObject to Get-CimInstance in Resource and associated pester file.
@@ -2873,8 +2881,8 @@ in a future release.
     - Get-SQLPSInstance
     - Get-SQLAlwaysOnEndpoint
   - modified functions
-    - New-TerminatingError - *added optional parameter `InnerException` to be able
-    to give the user more information in the returned message*
+    - New-TerminatingError - _added optional parameter `InnerException` to be able
+    to give the user more information in the returned message_
 
 ## [1.7.0.0] - 2016-06-29
 
