@@ -593,7 +593,7 @@ function Set-TargetResource
                     }
                 }
 
-                $setWindowsServiceIdentityResult = Invoke-RsCimMethod @invokeRsCimMethodParameters
+                Invoke-RsCimMethod @invokeRsCimMethodParameters > $null
             }
 
             <#
