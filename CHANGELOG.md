@@ -472,6 +472,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added some verbose messages to better indicate which CIM methods are run
     and when they are run.
   - Minor refactor to support running unit test with strict mode enabled.
+  - Added support for Power BI Report Server
+  - Added the ability to change the service account
 - SqlLogin
   - Only enforces optional parameter `LoginType` when it is specified in the
     configuration.
