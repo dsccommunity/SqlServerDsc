@@ -7,7 +7,7 @@
         so that SMO assemblies are loaded into the PowerShell session.
 
     .EXAMPLE
-        Measure-CommandsNeededToLoadSMO -WhileStatementAst $ScriptBlockAst
+        Measure-CommandsNeededToLoadSMO -FunctionAst $ScriptBlockAst
 
     .INPUTS
         [System.Management.Automation.Language.CommandAst]

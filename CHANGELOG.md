@@ -33,6 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Added recommended VS Code extensions.
     - Added settings for VS Code extension _Pester Test Adapter_.
+  - Added new Script Analyzer rules from the module _Indented.ScriptAnalyzerRules_
+    to help development and review process. The rules that did not contradict
+    the existing DSC Community rules and style guideline were added.
 - CommonTestHelper
   - `Import-SqlModuleStub`
     - Added the optional parameter **PasThru** that, if used, will return the
@@ -110,12 +113,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Only update values for the properties that are actually enforced by the
     configuration.
 - SqlAGDatabase
-  - Added StatementTimeout optional parameter with default value of 600 seconds (10 mins) to SqlAGDatabase to fix Issue#1743
-    Users will be able to specify the backup and restore timeout with it.
+  - Added StatementTimeout optional parameter with default value of 600 seconds
+    (10 mins) to SqlAGDatabase to fix issue #1743. Users will be able to specify
+    the backup and restore timeout with it.
 - SqlDatabaseUser
-  - `Test-TargetResource` returns true if the `IsUpdateable` property of the database is `$false` to resolve Issue#1748.
+  - `Test-TargetResource` returns true if the `IsUpdateable` property of the
+    database is `$false` to resolve issue #1748.
 - SqlDatabaseRole
-  - `Test-TargetResource` returns true if the `IsUpdateable` property of the database is `$false` to resolve Issue#1750.
+  - `Test-TargetResource` returns true if the `IsUpdateable` property of the
+    database is `$false` to resolve issue #1750.
 
 ### Fixed
 

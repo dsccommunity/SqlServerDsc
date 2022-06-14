@@ -1385,10 +1385,15 @@ function Restart-ReportingServicesService
             -Query 'SELECT name FROM sys.databases' -WithResults
 
     .EXAMPLE
-        Invoke-Query -SQLServer Server1 -SQLInstanceName MSSQLSERVER -Database MyDatabase `
+        Invoke-Query -ServerName Server1 -InstanceName MSSQLSERVER -Database MyDatabase `
              -Query "select * from MyTable where password = 'PlaceholderPa\ssw0rd1' and password = 'placeholder secret passphrase'" `
              -WithResults -RedactText @('PlaceholderPa\sSw0rd1','Placeholder Secret PassPhrase') -Verbose
 
+    .NOTES
+        The script analyzer rule UseSyntacticallyCorrectExamples will fail in VS Code
+        on this function unless the SMO types are loaded (either the real ones or the
+        stubs). When the rule is run in the pipeline the test will load the SMO stub
+        classes for proper testing of the rule.
 #>
 function Invoke-Query
 {
@@ -1935,6 +1940,7 @@ function Split-FullSqlInstanceName
 #>
 function Test-ClusterPermissions
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification='Because the code throws based on an prior expression')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
