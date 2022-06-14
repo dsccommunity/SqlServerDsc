@@ -53,6 +53,7 @@ function Get-TargetResource
         ReportsReservedUrl           = $null
         UseSsl                       = $false
         IsInitialized                = $false
+        WindowsServiceIdentityActual = $null
     }
 
     $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
@@ -71,8 +72,9 @@ function Get-TargetResource
         }
 
         $isInitialized = $reportingServicesData.Configuration.IsInitialized
+        $getTargetResourceResult.IsInitialized = [System.Boolean] $isInitialized
 
-        [System.Boolean] $getTargetResourceResult.IsInitialized = $isInitialized
+        $getTargetResourceResult.WindowsServiceIdentityActual = $reportingServicesData.Configuration.WindowsServiceIdentityActual
 
         if ( $isInitialized )
         {
@@ -226,6 +228,10 @@ function Set-TargetResource
         $DatabaseInstanceName,
 
         [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $ServiceAccount,
+
+        [Parameter()]
         [System.String]
         $ReportServerVirtualDirectory,
 
@@ -254,7 +260,12 @@ function Set-TargetResource
 
     if ( $null -ne $reportingServicesData.Configuration )
     {
-        if ( $reportingServicesData.SqlVersion -ge 14 )
+        if ( $null -ne $reportingServicesData.Configuration.ServiceName )
+        {
+            $reportingServicesServiceName = $reportServicesData.Configuration.ServiceName
+            $reportingServicesDatabaseName = 'ReportServer'
+        }
+        elseif ( $reportingServicesData.SqlVersion -ge 14 )
         {
             if ( [string]::IsNullOrEmpty($ReportServerVirtualDirectory) )
             {
@@ -324,6 +335,22 @@ function Set-TargetResource
 
             # We will restart Reporting Services after initialization (unless SuppressRestart is set)
             $restartReportingService = $true
+
+            if ($PSBoundParameters.ContainsKey('ServiceAccount') -and $ServiceAccount.UserName -ne $reportingServicesData.Configuration.WindowsServiceIdentityActual)
+            {
+                Write-Verbose -Message ($script:localizedData.SetServiceAccount -f $ServiceAccount.UserName, $reportingServicesData.Configuration.WindowsServiceIdentityActual) -Verbose
+                $invokeRsCimMethodParameters = @{
+                    CimInstance = $reportingServicesData.Configuration
+                    MethodName  = 'SetWindowsServiceIdentity'
+                    Arguments   = @{
+                        Account           = $ServiceAccount.UserName
+                        Password          = $ServiceAccount.GetNetworkCredential().Password
+                        UseBuiltInAccount = $false
+                    }
+                }
+
+                $setWindowsServiceIdentityResult = Invoke-RsCimMethod @invokeRsCimMethodParameters
+            }
 
             # If no Report Server reserved URLs have been specified, use the default one.
             if ( $null -eq $ReportServerReservedUrl )
@@ -552,6 +579,22 @@ function Set-TargetResource
             }
 
             $currentConfig = Get-TargetResource @getTargetResourceParameters
+
+            if ($PSBoundParameters.ContainsKey('ServiceAccount') -and $ServiceAccount.UserName -ne $currentConfig.WindowsServiceIdentityActual)
+            {
+                Write-Verbose -Message ($script:localizedData.SetServiceAccount -f $ServiceAccount.UserName,$currentConfig.WindowsServiceIdentityActual) -Verbose
+                $invokeRsCimMethodParameters = @{
+                    CimInstance = $reportingServicesData.Configuration
+                    MethodName  = 'SetWindowsServiceIdentity'
+                    Arguments   = @{
+                        Account           = $ServiceAccount.UserName
+                        Password          = $ServiceAccount.GetNetworkCredential().Password
+                        UseBuiltInAccount = $false
+                    }
+                }
+
+                $setWindowsServiceIdentityResult = Invoke-RsCimMethod @invokeRsCimMethodParameters
+            }
 
             <#
                 SQL Server Reporting Services virtual directories (both
@@ -838,6 +881,10 @@ function Test-TargetResource
         $DatabaseInstanceName,
 
         [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $ServiceAccount,
+
+        [Parameter()]
         [System.String]
         $ReportServerVirtualDirectory,
 
@@ -915,6 +962,12 @@ function Test-TargetResource
     if ($PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl)
     {
         Write-Verbose -Message "The value for using SSL are not in desired state. Should be '$UseSsl', but was '$($currentConfig.UseSsl)'."
+        $result = $false
+    }
+
+    if ($PSBoundParameters.ContainsKey('ServiceAccount') -and $ServiceAccount.UserName -ne $currentConfig.WindowsServiceIdentityActual)
+    {
+        Write-Verbose -Message "The value for ServiceAccount is not in the desired state. Should be '$($ServiceAccount.UserName))', but is '$($currentConfig.WindowsServiceIdentityActual)'."
         $result = $false
     }
 
