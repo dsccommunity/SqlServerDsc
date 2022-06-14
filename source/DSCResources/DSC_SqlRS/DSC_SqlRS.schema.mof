@@ -13,4 +13,5 @@ class DSC_SqlRS : OMI_BaseResource
     [Write, Description("_Reporting Services_ need to be restarted after initialization or settings change. If this parameter is set to `$true`, _Reporting Services_ will not be restarted, even after initialization.")] Boolean SuppressRestart;
     [Write, Description("Specifies how encryption should be enforced when using command `Invoke-SqlCmd`. When not specified, the default value is `Mandatory`."), ValueMap{"Mandatory","Optional","Strict"}, Values{"Mandatory","Optional","Strict"}] String Encrypt;
     [Read, Description("Returns if the _Reporting Services_ instance initialized or not.")] Boolean IsInitialized;
+    [Read, Description("Returns the name of the _Reporting Services_ service account.")] String WindowsServiceIdentityActual;
 };
