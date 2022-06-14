@@ -58,7 +58,7 @@ function Get-TargetResource
         [System.String]
         $Action = 'Install',
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SourcePath,
 
@@ -655,7 +655,7 @@ function Set-TargetResource
         [System.String]
         $Action = 'Install',
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SourcePath,
 
@@ -1867,7 +1867,7 @@ function Test-TargetResource
         [System.String]
         $Action = 'Install',
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SourcePath,
 
