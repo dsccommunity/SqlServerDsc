@@ -73,7 +73,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
         $mockReportingServicesDatabaseServerName = 'SERVER'
         $mockReportingServicesDatabaseNamedInstanceName = $mockNamedInstanceName
         $mockReportingServicesDatabaseDefaultInstanceName = $mockDefaultInstanceName
-
+        $mockServiceAccountName = 'Contoso\ServiceAccount'
         $mockReportsApplicationName = 'ReportServerWebApp'
         $mockReportServerApplicationName = 'ReportServerWebService'
         $mockReportsApplicationUrl = 'http://+:80'
@@ -108,7 +108,8 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                         Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru |
+                        Add-Member -MemberType NoteProperty -Name WindowsServiceIdentityActual -Value $mockServiceAccountName -PassThru -Force
                 ),
                 (
                     # Array is a regression test for issue #819.
@@ -128,8 +129,9 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                 Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $false -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockDefaultInstanceName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
-                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru -Force
-                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru |
+                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru |
+                Add-Member -MemberType NoteProperty -Name WindowsServiceIdentityActual -Value $mockServiceAccountName -PassThru -Force
         }
 
         Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_ListReservedUrls -ParameterFilter {
@@ -189,6 +191,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
+                $mockServiceAccountName = 'Contoso\ServiceAccount'
                 $mockReportsApplicationUrl = 'http://+:80'
                 $mockReportServerApplicationUrl = 'http://+:80'
                 $mockVirtualDirectoryReportManagerName = 'Reports_SQL2016'
@@ -202,6 +205,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                 $resultGetTargetResource.ReportServerReservedUrl | Should -Be $mockReportServerApplicationUrl
                 $resultGetTargetResource.ReportsReservedUrl | Should -Be $mockReportsApplicationUrl
                 $resultGetTargetResource.UseSsl | Should -BeFalse
+                $resultGetTargetResource.WindowsServiceIdentityActual | Should -Be $mockServiceAccountName
             }
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
@@ -402,6 +406,13 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         $mockVirtualDirectoryReportManagerName = 'Reports_SQL2016'
         $mockVirtualDirectoryReportServerName = 'ReportServer_SQL2016'
 
+        $mockServiceNamePowerBiReportServer = 'PowerBIReportServer'
+
+        $mockServiceAccount = 'CONTOSO\ServiceAccount'
+        $mockPassword = [System.Security.SecureString]::new()
+        $mockPassword.AppendChar(' ')
+        $mockServiceAccountCredential = [System.Management.Automation.PSCredential]::new($mockServiceAccount, $mockPassword)
+
         $mockInvokeCimMethod = {
             throw 'Should not call Invoke-CimMethod directly, should call the wrapper Invoke-RsCimMethod.'
         }
@@ -469,6 +480,31 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force
         }
 
+        $mockGetCimInstance_ConfigurationSetting_PowerBIReportServer = {
+            return @(
+                (
+                    New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
+                        'MSReportServer_ConfigurationSetting'
+                        'root/Microsoft/SQLServer/ReportServer/RS_PBIRS/v15/Admin'
+                    ) | Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $mockDynamicIsInitialized -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockServiceNamePowerBiReportServer -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value 'NT AUTHORITY\SYSTEM' -PassThru -Force
+                ),
+                (
+                    # Array is a regression test for issue #819.
+                    New-Object -TypeName Object |
+                        Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $true -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value 'DummyInstance' -PassThru -Force
+                )
+            )
+        }
+
         $mockGetCimInstance_ConfigurationSetting_ParameterFilter = {
             $ClassName -eq 'MSReportServer_ConfigurationSetting'
         }
@@ -481,6 +517,16 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
         $mockGetCimInstance_OperatingSystem_ParameterFilter = {
             $ClassName -eq 'Win32_OperatingSystem'
+        }
+
+        $mockGetCimInstance_Service_ParameterFilter = {
+            $ClassName -eq 'Win32_Service'
+        }
+
+        $mockGetCimInstance_ServiceAccountUserName = {
+            return @{
+                Name = $mockServiceAccountName
+            }
         }
 
         Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_ListReservedUrls -ParameterFilter {
@@ -554,6 +600,10 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 Mock -CommandName Get-CimInstance `
                     -MockWith $mockGetCimInstance_Language `
                     -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter
+
+                Mock -CommandName Get-CimInstance `
+                    -MockWith $mockGetCimInstance_ServiceAccountUserName `
+                    -ParameterFilter $mockGetCimInstance_Service_ParameterFilter
             }
 
             It 'Should configure Reporting Service without throwing an error' {
@@ -610,7 +660,14 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                    $ClassName -eq 'Win32_Service'
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                    $ClassName -eq 'Win32_OperatingSystem'
+                } -Exactly -Times 1 -Scope It
+
                 Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
             }
@@ -926,6 +983,188 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         }
     }
 
+    Context 'When Power BI Report Server is not in the desired state' {
+        Context "When configuring an instance that is not initialized" {
+            BeforeAll {
+                $mockDynamicIsInitialized = $false
+
+                Mock -CommandName Test-TargetResource -MockWith {
+                    return $true
+                }
+
+                $defaultParameters = @{
+                    InstanceName         = 'PBIRS'
+                    DatabaseServerName   = $mockReportingServicesDatabaseServerName
+                    DatabaseInstanceName = $mockReportingServicesDatabaseDefaultInstanceName
+                    ServiceAccount       = $mockServiceAccountCredential
+                }
+
+                Mock -CommandName Get-ReportingServicesData -MockWith {
+                    return @{
+                        Configuration          = (& $mockGetCimInstance_ConfigurationSetting_PowerBIReportServer)[0]
+                        ReportsApplicationName = 'ReportServerWebApp'
+                        SqlVersion             = 15
+                    }
+                }
+
+                Mock -CommandName Get-CimInstance `
+                    -MockWith $mockGetCimInstance_Language `
+                    -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter
+            }
+
+            It 'Should configure Reporting Service without throwing an error' {
+                { Set-TargetResource @defaultParameters } | Should -Not -Throw
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'SetWindowsServiceIdentity'
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'RemoveURL'
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'InitializeReportServer'
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'SetDatabaseConnection'
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'GenerateDatabaseRightsScript'
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'GenerateDatabaseCreationScript'
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationName
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
+            }
+        }
+
+        Context "When configuring an instance that is already initialized" {
+            BeforeAll {
+                $mockDynamicIsInitialized = $true
+
+                Mock -CommandName Get-ReportingServicesData -MockWith {
+                    return @{
+                        Configuration          = (& $mockGetCimInstance_ConfigurationSetting_PowerBIReportServer)[0]
+                        ReportsApplicationName = 'ReportServerWebApp'
+                        SqlVersion             = 15
+                    }
+                }
+
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        ReportServerReservedUrl = $mockReportServerApplicationUrl
+                        ReportsReservedUrl      = $mockReportsApplicationUrl
+                    }
+                }
+
+                Mock -CommandName Test-TargetResource -MockWith {
+                    return $true
+                }
+
+                $testParameters = @{
+                    InstanceName                 = 'PBIRS'
+                    DatabaseServerName           = $mockReportingServicesDatabaseServerName
+                    DatabaseInstanceName         = $mockReportingServicesDatabaseNamedInstanceName
+                    ReportServerVirtualDirectory = 'ReportServer_NewName'
+                    ReportsVirtualDirectory      = 'Reports_NewName'
+                    ReportServerReservedUrl      = 'https://+:4443'
+                    ReportsReservedUrl           = 'https://+:4443'
+                    UseSsl                       = $true
+                    ServiceAccount               = $mockServiceAccountCredential
+                }
+            }
+
+            BeforeEach {
+                Mock -CommandName Get-CimInstance `
+                    -MockWith $mockGetCimInstance_Language `
+                    -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter
+            }
+
+            It 'Should configure Reporting Service without throwing an error' {
+                { Set-TargetResource @testParameters } | Should -Not -Throw
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'SetWindowsServiceIdentity'
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'SetSecureConnectionLevel'
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportServerApplicationName
+                } -Exactly -Times 2 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportsApplicationName
+                } -Exactly -Times 2 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'InitializeReportServer'
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'SetDatabaseConnection'
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'GenerateDatabaseRightsScript'
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'GenerateDatabaseCreationScript'
+                } -Exactly -Times 0 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportsApplicationName
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
+                } -Exactly -Times 2 -Scope It
+
+                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
+                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
+                } -Exactly -Times 2 -Scope It
+
+                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+
     Context "When configuring a named instance of SQL Server Reporting Services 2019 that have been initialized by restarting the service" {
         BeforeAll {
             $script:alreadyCalledGetReportingServicesData = $false
@@ -1195,6 +1434,38 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
                 }
             }
         }
+
+        Context 'When the service account is not to the desired state' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        IsInitialized                = $true
+                        WindowsServiceIdentityActual = 'NT AUTHORITY\SYSTEM'
+                    }
+                }
+            }
+
+            It 'Should return state as not in desired state' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockServiceAccount = 'CONTOSO\ServiceAccount'
+                    $mockPassword = [System.Security.SecureString]::new()
+                    $mockPassword.AppendChar(' ')
+                    $mockServiceAccountCredential = [System.Management.Automation.PSCredential]::new($mockServiceAccount,$mockPassword)
+
+                    $testParameters = @{
+                        InstanceName         = 'INSTANCE'
+                        DatabaseServerName   = 'DBSERVER'
+                        DatabaseInstanceName = 'DBINSTANCE'
+                        ServiceAccount       = $mockServiceAccountCredential
+                    }
+
+                    $resultTestTargetResource = Test-TargetResource @testParameters
+                    $resultTestTargetResource | Should -BeFalse
+                }
+            }
+        }
     }
 
     Context 'When the system is in the desired state' {
@@ -1424,7 +1695,8 @@ Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
                                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value 'INSTANCE' -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value 'ReportServer' -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value 'Reports' -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $false -PassThru -Force
+                                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $false -PassThru |
+                                Add-Member -MemberType NoteProperty -Name WindowsServiceIdentityActual -Value 'Contoso\ssrsServiceAccount' -PassThru -Force
                         ),
                         (
                             # Array is a regression test for issue #819.
@@ -1463,6 +1735,7 @@ Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be 'ReportServer'
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be 'Reports'
                     $getReportingServicesDataResult.Configuration.SecureConnectionLevel | Should -Be 0
+                    $getReportingServicesDataResult.Configuration.WindowsServiceIdentityActual | Should -Be 'Contoso\ssrsServiceAccount'
                     $getReportingServicesDataResult.ReportsApplicationName | Should -Be 'ReportManager'
                     $getReportingServicesDataResult.SqlVersion | Should -Be '12'
                 }
@@ -1503,6 +1776,7 @@ Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be 'ReportServer'
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be 'Reports'
                     $getReportingServicesDataResult.Configuration.SecureConnectionLevel | Should -Be 0
+                    $getReportingServicesDataResult.Configuration.WindowsServiceIdentityActual | Should -Be 'Contoso\ssrsServiceAccount'
                     $getReportingServicesDataResult.ReportsApplicationName | Should -Be 'ReportServerWebApp'
                     $getReportingServicesDataResult.SqlVersion | Should -Be '13'
                 }
@@ -1543,6 +1817,7 @@ Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be 'ReportServer'
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be 'Reports'
                     $getReportingServicesDataResult.Configuration.SecureConnectionLevel | Should -Be 0
+                    $getReportingServicesDataResult.Configuration.WindowsServiceIdentityActual | Should -Be 'Contoso\ssrsServiceAccount'
                     $getReportingServicesDataResult.ReportsApplicationName | Should -Be 'ReportServerWebApp'
                     $getReportingServicesDataResult.SqlVersion | Should -Be '14'
                 }
@@ -1583,6 +1858,7 @@ Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be 'ReportServer'
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be 'Reports'
                     $getReportingServicesDataResult.Configuration.SecureConnectionLevel | Should -Be 0
+                    $getReportingServicesDataResult.Configuration.WindowsServiceIdentityActual | Should -Be 'Contoso\ssrsServiceAccount'
                     $getReportingServicesDataResult.ReportsApplicationName | Should -Be 'ReportServerWebApp'
                     $getReportingServicesDataResult.SqlVersion | Should -Be '15'
                 }
