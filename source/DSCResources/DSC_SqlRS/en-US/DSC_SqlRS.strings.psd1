@@ -5,4 +5,5 @@ ConvertFrom-StringData @'
     ReportingServicesNotFound = SQL Reporting Services instance '{0}' does not exist.
     GetConfiguration = Get the current reporting services configuration for the instance '{0}'.
     RestartToFinishInitialization = Restarting Reporting Services to finish initialization.
+    SetServiceAccount = The WindowsServiceIdentityActual should be '{0}' but is '{1}'.
 '@
