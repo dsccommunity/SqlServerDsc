@@ -88,6 +88,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Minor refactor to support running unit test with strict mode enabled.
   - Added support for Power BI Report Server
   - Added the ability to change the service account
+  - Added the ability to specify the databases name
+    ([issue #149](https://github.com/dsccommunity/SqlServerDsc/issues/149))
 - SqlLogin
   - Only enforces optional parameter `LoginType` when it is specified in the
     configuration.
