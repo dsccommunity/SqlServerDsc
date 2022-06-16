@@ -151,6 +151,9 @@ function Get-TargetResource
     .PARAMETER DatabaseInstanceName
         Name of the SQL Server instance to host the Reporting Service database.
 
+    .PARAMETER DatabaseName
+        Name of the the Reporting Services database. Default is "ReportServer".
+
     .PARAMETER ReportServerVirtualDirectory
         Report Server Web Service virtual directory. Optional.
 
@@ -716,6 +719,9 @@ function Set-TargetResource
 
     .PARAMETER DatabaseInstanceName
         Name of the SQL Server instance to host the Reporting Service database.
+
+    .PARAMETER DatabaseName
+        Name of the the Reporting Services database. Default is "ReportServer".
 
     .PARAMETER ReportServerVirtualDirectory
         Report Server Web Service virtual directory. Optional.
