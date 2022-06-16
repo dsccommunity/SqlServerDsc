@@ -6,4 +6,7 @@ ConvertFrom-StringData @'
     GetConfiguration = Get the current reporting services configuration for the instance '{0}'.
     RestartToFinishInitialization = Restarting Reporting Services to finish initialization.
     SetServiceAccount = The WindowsServiceIdentityActual should be '{0}' but is '{1}'.
+    TestDatabaseName = The database name is '{0}' but should be '{1}'.
+    ReportServerReservedUrlNotInDesiredState = Report Server reserved URLs on '{0}\{1}' are '{2}', should be '{3}'.
+    ReportsReservedUrlNotInDesiredState = Reports URLs on '{0}\{1}' are '{2}', should be '{3}'.
 '@
