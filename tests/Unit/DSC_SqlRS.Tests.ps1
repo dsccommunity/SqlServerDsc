@@ -73,6 +73,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
         $mockReportingServicesDatabaseServerName = 'SERVER'
         $mockReportingServicesDatabaseNamedInstanceName = $mockNamedInstanceName
         $mockReportingServicesDatabaseDefaultInstanceName = $mockDefaultInstanceName
+        $mockReportingServicesDatabaseName = 'ReportServer'
         $mockServiceAccountName = 'Contoso\ServiceAccount'
         $mockReportsApplicationName = 'ReportServerWebApp'
         $mockReportServerApplicationName = 'ReportServerWebService'
@@ -104,12 +105,13 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                         'MSReportServer_ConfigurationSetting'
                         'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v13/Admin'
                     ) | Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'DatabaseName' -Value $mockReportingServicesDatabaseName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $mockDynamicIsInitialized -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru |
-                        Add-Member -MemberType NoteProperty -Name WindowsServiceIdentityActual -Value $mockServiceAccountName -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value $mockServiceAccountName -PassThru -Force
                 ),
                 (
                     # Array is a regression test for issue #819.
@@ -126,6 +128,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                 'MSReportServer_ConfigurationSetting'
                 'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v13/Admin'
             ) | Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName" -PassThru |
+                Add-Member -MemberType NoteProperty -Name 'DatabaseName' -Value $mockReportingServicesDatabaseName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $false -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockDefaultInstanceName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
@@ -297,7 +300,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'ListReservedUrls'
-            } -Exactly -Times 0 -Scope It
+            } -Exactly -Times 1 -Scope It
         }
 
         # Regression test for issue #822.
@@ -397,6 +400,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         $mockReportingServicesDatabaseServerName = 'SERVER'
         $mockReportingServicesDatabaseNamedInstanceName = $mockNamedInstanceName
         $mockReportingServicesDatabaseDefaultInstanceName = $mockDefaultInstanceName
+        $mockReportingServicesDatabaseName = 'ReportServer'
 
         $mockReportsApplicationName = 'ReportServerWebApp'
         $mockReportsApplicationNameLegacy = 'ReportManager'
@@ -519,10 +523,6 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             $ClassName -eq 'Win32_OperatingSystem'
         }
 
-        $mockGetCimInstance_Service_ParameterFilter = {
-            $ClassName -eq 'Win32_Service'
-        }
-
         $mockGetCimInstance_ServiceAccountUserName = {
             return @{
                 Name = $mockServiceAccountName
@@ -579,7 +579,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
     }
 
     Context "When the system is not in the desired state (<TestCaseVersionName>)" -ForEach $sqlVersions {
-        Context "When configuring a named instance that are not initialized (<TestCaseVersionName>)" {
+        Context "When configuring a named instance that is not initialized (<TestCaseVersionName>)" {
             BeforeAll {
                 $mockDynamicIsInitialized = $false
 
@@ -626,7 +626,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'RemoveURL'
-                } -Exactly -Times 0 -Scope It
+                } -Exactly -Times 2 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'InitializeReportServer'
@@ -654,15 +654,11 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Exactly -Times 0 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
-                } -Exactly -Times 1 -Scope It
-
-                Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
-                    $ClassName -eq 'Win32_Service'
-                } -Exactly -Times 1 -Scope It
+                } -Exactly -Times 0 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
                     $ClassName -eq 'Win32_OperatingSystem'
@@ -718,7 +714,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        Context "When configuring a named instance that are already initialized (<TestCaseVersionName>)" {
+        Context "When configuring a named instance that is already initialized (<TestCaseVersionName>)" {
             BeforeAll {
                 $mockDynamicIsInitialized = $true
 
@@ -732,6 +728,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
+                        DatabaseName = $mockReportingServicesDatabaseName
                         ReportServerReservedUrl = $mockReportServerApplicationUrl
                         ReportsReservedUrl      = $mockReportsApplicationUrl
                     }
@@ -745,6 +742,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     InstanceName                 = $mockNamedInstanceName
                     DatabaseServerName           = $mockReportingServicesDatabaseServerName
                     DatabaseInstanceName         = $mockReportingServicesDatabaseNamedInstanceName
+                    DatabaseName                 = 'NewDatabase'
                     ReportServerVirtualDirectory = 'ReportServer_NewName'
                     ReportsVirtualDirectory      = 'Reports_NewName'
                     ReportServerReservedUrl      = 'https://+:4443'
@@ -780,15 +778,15 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'SetDatabaseConnection'
-                } -Exactly -Times 0 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'GenerateDatabaseRightsScript'
-                } -Exactly -Times 0 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'GenerateDatabaseCreationScript'
-                } -Exactly -Times 0 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'SetVirtualDirectory' -and $Arguments.Application -eq $mockReportServerApplicationName
@@ -800,19 +798,19 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 2 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
-                } -Exactly -Times 2 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
             }
         }
 
-        Context "When configuring a named instance that are already initialized (<TestCaseVersionName>), suppress restart" {
+        Context "When configuring a named instance that is already initialized (<TestCaseVersionName>), suppress restart" {
             BeforeAll {
                 $mockDynamicIsInitialized = $true
 
@@ -826,6 +824,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
+                        DatabaseName = $mockReportingServicesDatabaseName
                         ReportServerReservedUrl = $mockReportServerApplicationUrl
                         ReportsReservedUrl      = $mockReportsApplicationUrl
                     }
@@ -895,19 +894,19 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 2 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
-                } -Exactly -Times 2 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
             }
         }
 
-        Context "When configuring a default instance that are not initialized (<TestCaseVersionName>)" {
+        Context "When configuring a default instance that is not initialized (<TestCaseVersionName>)" {
             BeforeAll {
                 $mockDynamicIsInitialized = $false
 
@@ -942,7 +941,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'RemoveURL'
-                } -Exactly -Times 0 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'InitializeReportServer'
@@ -970,7 +969,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Exactly -Times 0 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationNameLegacy
@@ -1021,7 +1020,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'RemoveURL'
-                } -Exactly -Times 0 -Scope It
+                } -Exactly -Times 2 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'InitializeReportServer'
@@ -1049,15 +1048,11 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Exactly -Times 0 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
-                } -Exactly -Times 1 -Scope It
-
-                Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
-                    $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
-                } -Exactly -Times 1 -Scope It
+                } -Exactly -Times 0 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
@@ -1079,6 +1074,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
+                        DatabaseName = $mockReportingServicesDatabaseName
                         ReportServerReservedUrl = $mockReportServerApplicationUrl
                         ReportsReservedUrl      = $mockReportsApplicationUrl
                     }
@@ -1152,15 +1148,15 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
-                } -Exactly -Times 2 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
-                } -Exactly -Times 2 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
             }
         }
     }
@@ -1223,7 +1219,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'RemoveURL'
-            } -Exactly -Times 0 -Scope It
+            } -Exactly -Times 2 -Scope It
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'InitializeReportServer'
@@ -1251,11 +1247,11 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportServerApplicationName
-            } -Exactly -Times 1 -Scope It
+            } -Exactly -Times 0 -Scope It
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                 $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
-            } -Exactly -Times 1 -Scope It
+            } -Exactly -Times 0 -Scope It
 
             Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
@@ -1473,6 +1469,9 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
             Mock -CommandName Get-TargetResource -MockWith {
                 return @{
                     IsInitialized = $true
+                    DatabaseName = 'ReportServer'
+                    ReportServerReservedUrl = @('http://+:80')
+                    ReportsReservedUrl = @('http://+:80')
                 }
             }
         }
