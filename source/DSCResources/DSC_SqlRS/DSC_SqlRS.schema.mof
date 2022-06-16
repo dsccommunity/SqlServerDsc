@@ -4,6 +4,7 @@ class DSC_SqlRS : OMI_BaseResource
     [Key, Description("Name of the _SQL Server Reporting Services_ instance to be configured.")] String InstanceName;
     [Required, Description("Name of the _SQL Server_ to host the _Reporting Services_ database.")] String DatabaseServerName;
     [Required, Description("Name of the _SQL Server_ instance to host the _Reporting Services_ database.")] String DatabaseInstanceName;
+    [Write, Description("Name of the the _Reporting Services_ database. Default is _ReportServer_.")] String DatabaseName;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("The service account that should be used when running the _Windows_ service.")] String ServiceAccount;
     [Write, Description("_Report Server Web Service_ virtual directory. Optional.")] String ReportServerVirtualDirectory;
     [Write, Description("_Report Manager_ or _Report Web App_ virtual directory name. Optional.")] String ReportsVirtualDirectory;
