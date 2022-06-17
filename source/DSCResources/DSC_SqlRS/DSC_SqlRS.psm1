@@ -58,7 +58,7 @@ function Get-TargetResource
         ReportsReservedUrl           = $null
         UseSsl                       = $false
         IsInitialized                = $false
-        WindowsServiceIdentityActual = $null
+        ServiceName                  = $null
         EncryptionKeyBackupFile      = $null
     }
 
@@ -80,7 +80,7 @@ function Get-TargetResource
         $isInitialized = $reportingServicesData.Configuration.IsInitialized
         $getTargetResourceResult.IsInitialized = [System.Boolean] $isInitialized
 
-        $getTargetResourceResult.WindowsServiceIdentityActual = $reportingServicesData.Configuration.WindowsServiceIdentityActual
+        $getTargetResourceResult.ServiceName = $reportingServicesData.Configuration.WindowsServiceIdentityActual
 
         $getTargetResourceResult.DatabaseName = $reportingServicesData.Configuration.DatabaseName
 
@@ -397,13 +397,13 @@ function Set-TargetResource
         #endregion Backup Encryption Key
 
         #region Set the service account
-        if ($PSBoundParameters.ContainsKey('ServiceAccount') -and $ServiceAccount.UserName -ne $currentConfig.WindowsServiceIdentityActual)
+        if ($PSBoundParameters.ContainsKey('ServiceAccount') -and $ServiceAccount.UserName -ne $currentConfig.ServiceName)
         {
             # Need to handle a virtual account and Network account
             # "NT Service\$($reportingServicesData.Configuration.ServiceName)"
             # 'NT AUTHORITY\NetworkService'
 
-            Write-Verbose -Message ($script:localizedData.SetServiceAccount -f $ServiceAccount.UserName, $currentConfig.WindowsServiceIdentityActual) -Verbose
+            Write-Verbose -Message ($script:localizedData.SetServiceAccount -f $ServiceAccount.UserName, $currentConfig.ServiceName) -Verbose
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
                 MethodName  = 'SetWindowsServiceIdentity'
@@ -453,16 +453,21 @@ function Set-TargetResource
             Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseScript.Script
         }
 
-        if ( ( $currentConfig.DatabaseName -ne $DatabaseName ) -or $executeDatabaseRightsScript )
+        if (
+            $executeDatabaseRightsScript -or
+            $currentConfig.DatabaseName -ne $DatabaseName -or
+            $currentConfig.DatabaseServerName -ne $DatabaseServerName -or
+            $currentConfig.DatabaseInstanceName -ne $DatabaseInstanceName
+        )
         {
-            Write-Verbose -Message "Generate database rights script on $DatabaseServerName\$DatabaseInstanceName for database '$DatabaseName' and user '$($currentConfig.WindowsServiceIdentityActual)'." -Verbose
+            Write-Verbose -Message "Generate database rights script on $DatabaseServerName\$DatabaseInstanceName for database '$DatabaseName' and user '$($currentConfig.ServiceName)'." -Verbose
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
                 MethodName  = 'GenerateDatabaseRightsScript'
                 Arguments   = @{
                     DatabaseName  = $DatabaseName
-                    UserName      = $currentConfig.WindowsServiceIdentityActual
+                    UserName      = $currentConfig.ServiceName
                     IsRemote      = $false
                     IsWindowsUser = $true
                 }
@@ -472,7 +477,11 @@ function Set-TargetResource
             Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseRightsScript.Script
         }
 
-        if ( $currentConfig.DatabaseName -ne $DatabaseName )
+        if (
+            $currentConfig.DatabaseName -ne $DatabaseName -or
+            $currentConfig.DatabaseServerName -ne $DatabaseServerName -or
+            $currentConfig.DatabaseInstanceName -ne $DatabaseInstanceName
+        )
         {
             Write-Verbose -Message "Set database connection on $DatabaseServerName\$DatabaseInstanceName to database '$DatabaseName'." -Verbose
 
@@ -1044,9 +1053,9 @@ function Test-TargetResource
         $result = $false
     }
 
-    if ($PSBoundParameters.ContainsKey('ServiceAccount') -and $ServiceAccount.UserName -ne $currentConfig.WindowsServiceIdentityActual)
+    if ($PSBoundParameters.ContainsKey('ServiceAccount') -and $ServiceAccount.UserName -ne $currentConfig.ServiceName)
     {
-        Write-Verbose -Message "The ServiceAccount should be '$($currentConfig.WindowsServiceIdentityActual)' but is '$($ServiceAccount.UserName)'." -Verbose
+        Write-Verbose -Message "The ServiceAccount should be '$($currentConfig.ServiceName)' but is '$($ServiceAccount.UserName)'." -Verbose
         $result = $false
     }
 
