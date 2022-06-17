@@ -301,11 +301,14 @@ function Set-TargetResource
         'SSRS'
     )
 
+    Import-SQLPSModule
+
     $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
 
     if ( $null -ne $reportingServicesData.Configuration )
     {
         $restartReportingService = $false
+        $executeDatabaseRightsScript = $false
 
         $getTargetResourceParameters = @{
             InstanceName         = $InstanceName
@@ -328,6 +331,10 @@ function Set-TargetResource
         #region Set the service account
         if ($PSBoundParameters.ContainsKey('ServiceAccount') -and $ServiceAccount.UserName -ne $currentConfig.WindowsServiceIdentityActual)
         {
+            # Need to handle a virtual account and Network account
+            # "NT Service\$($reportingServicesData.Configuration.ServiceName)"
+            # 'NT AUTHORITY\NetworkService'
+
             Write-Verbose -Message ($script:localizedData.SetServiceAccount -f $ServiceAccount.UserName, $currentConfig.WindowsServiceIdentityActual) -Verbose
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
@@ -342,6 +349,7 @@ function Set-TargetResource
             Invoke-RsCimMethod @invokeRsCimMethodParameters > $null
 
             $restartReportingService = $true
+            $executeDatabaseRightsScript = $true
         }
         #endregion Set the service account
 
@@ -371,7 +379,11 @@ function Set-TargetResource
             }
 
             $reportingServicesDatabaseScript = Invoke-RsCimMethod @invokeRsCimMethodParameters
+            Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseScript.Script
+        }
 
+        if ( ( $currentConfig.DatabaseName -ne $DatabaseName ) -or $executeDatabaseRightsScript )
+        {
             Write-Verbose -Message "Generate database rights script on $DatabaseServerName\$DatabaseInstanceName for database '$DatabaseName' and user '$($reportingServicesData.Configuration.WindowsServiceIdentityActual)'." -Verbose
 
             $invokeRsCimMethodParameters = @{
@@ -411,6 +423,8 @@ function Set-TargetResource
             Invoke-SqlCmd @invokeSqlCmdParameters -Query $reportingServicesDatabaseScript.Script
             Invoke-SqlCmd @invokeSqlCmdParameters -Query $reportingServicesDatabaseRightsScript.Script
 
+        if ( $currentConfig.DatabaseName -ne $DatabaseName )
+        {
             Write-Verbose -Message "Set database connection on $DatabaseServerName\$DatabaseInstanceName to database '$DatabaseName'." -Verbose
 
             $invokeRsCimMethodParameters = @{
