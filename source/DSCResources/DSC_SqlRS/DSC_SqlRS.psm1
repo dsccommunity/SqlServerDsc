@@ -36,7 +36,11 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $DatabaseInstanceName
+        $DatabaseInstanceName,
+
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $EncryptionKeyBackupPathCredential
     )
 
     Write-Verbose -Message (
@@ -55,6 +59,7 @@ function Get-TargetResource
         UseSsl                       = $false
         IsInitialized                = $false
         WindowsServiceIdentityActual = $null
+        EncryptionKeyBackupFile      = $null
     }
 
     $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
@@ -77,56 +82,73 @@ function Get-TargetResource
 
         $getTargetResourceResult.WindowsServiceIdentityActual = $reportingServicesData.Configuration.WindowsServiceIdentityActual
 
-        <#if ( $isInitialized )
-        {#>
-            $getTargetResourceResult.DatabaseName = $reportingServicesData.Configuration.DatabaseName
+        $getTargetResourceResult.DatabaseName = $reportingServicesData.Configuration.DatabaseName
 
-            if ( $reportingServicesData.Configuration.SecureConnectionLevel )
-            {
-                $getTargetResourceResult.UseSsl = $true
-            }
-            else
-            {
-                $getTargetResourceResult.UseSsl = $false
-            }
-
-            $getTargetResourceResult.ReportServerVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportServer
-            $getTargetResourceResult.ReportsVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportManager
-
-            $invokeRsCimMethodParameters = @{
-                CimInstance = $reportingServicesData.Configuration
-                MethodName  = 'ListReservedUrls'
-            }
-
-            $reservedUrls = Invoke-RsCimMethod @invokeRsCimMethodParameters
-
-            $reportServerReservedUrl = @()
-            $reportsReservedUrl = @()
-
-            for ( $i = 0; $i -lt $reservedUrls.Application.Count; ++$i )
-            {
-                if ( $reservedUrls.Application[$i] -eq 'ReportServerWebService' )
-                {
-                    $reportServerReservedUrl += $reservedUrls.UrlString[$i]
-                }
-
-                if ( $reservedUrls.Application[$i] -eq $reportingServicesData.ReportsApplicationName )
-                {
-                    $reportsReservedUrl += $reservedUrls.UrlString[$i]
-                }
-            }
-
-            $getTargetResourceResult.ReportServerReservedUrl = $reportServerReservedUrl
-            $getTargetResourceResult.ReportsReservedUrl = $reportsReservedUrl
-        <#}
+        if ( $reportingServicesData.Configuration.SecureConnectionLevel )
+        {
+            $getTargetResourceResult.UseSsl = $true
+        }
         else
-        {#>
-            <#
-                Make sure the value returned is false, if the value returned was
-                either empty, $null or $false. Fic for issue #822.
-            #>
-            <#[System.Boolean] $getTargetResourceResult.IsInitialized = $false
-        }#>
+        {
+            $getTargetResourceResult.UseSsl = $false
+        }
+
+        $getTargetResourceResult.ReportServerVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportServer
+        $getTargetResourceResult.ReportsVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportManager
+
+        $invokeRsCimMethodParameters = @{
+            CimInstance = $reportingServicesData.Configuration
+            MethodName  = 'ListReservedUrls'
+        }
+
+        $reservedUrls = Invoke-RsCimMethod @invokeRsCimMethodParameters
+
+        $reportServerReservedUrl = @()
+        $reportsReservedUrl = @()
+
+        for ( $i = 0; $i -lt $reservedUrls.Application.Count; ++$i )
+        {
+            if ( $reservedUrls.Application[$i] -eq 'ReportServerWebService' )
+            {
+                $reportServerReservedUrl += $reservedUrls.UrlString[$i]
+            }
+
+            if ( $reservedUrls.Application[$i] -eq $reportingServicesData.ReportsApplicationName )
+            {
+                $reportsReservedUrl += $reservedUrls.UrlString[$i]
+            }
+        }
+
+        $getTargetResourceResult.ReportServerReservedUrl = $reportServerReservedUrl
+        $getTargetResourceResult.ReportsReservedUrl = $reportsReservedUrl
+
+        #region Get Encryption Key Backup
+        $EncryptionKeyBackupPath = [Environment]::ExpandEnvironmentVariables($EncryptionKeyBackupPath)
+
+        if ( $EncryptionKeyBackupPath -match '^\\\\')
+        {
+            $encryptionKeyBackupPathIsUnc = $true
+        }
+        else
+        {
+            $encryptionKeyBackupPathIsUnc = $false
+        }
+
+        if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+        {
+            Connect-UncPath -RemotePath $EncryptionKeyBackupPath -SourceCredential $EncryptionKeyBackupPathCredential
+        }
+
+        $encryptionKeyBackupFileName = "$($env:ComputerName)-$($currentConfig.InstanceName).snk"
+        $encryptionKeyBackupFile = Join-Path -Path $EncryptionKeyBackupPath -ChildPath $encryptionKeyBackupFileName
+
+        $getTargetResourceResult.EncryptionKeyBackupFile = ( Get-Item -Path $encryptionKeyBackupFile -ErrorAction SilentlyContinue ).Name
+
+        if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+        {
+            Disconnect-UncPath -RemotePath $EncryptionKeyBackupPath
+        }
+        #endregion Get Encryption Key Backup
     }
     else
     {
@@ -263,7 +285,19 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $SuppressRestart
+        $SuppressRestart,
+
+        [Parameter()]
+        [System.String]
+        $EncryptionKeyBackupPath,
+
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $EncryptionKeyBackupPathCredential,
+
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $EncryptionKeyBackupCredential
     )
 
     $defaultInstanceNames = @(
@@ -299,6 +333,69 @@ function Set-TargetResource
         $language = $wmiOperatingSystem.OSLanguage
         #endregion Get Operating System Information
 
+        #region Backup Encryption Key
+        if ( -not $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+        {
+            $characterSet = ( @(33..126) | Foreach-Object -Process { ,[System.Char][System.Byte]$_ } )
+            $encryptionKeyBackupPassword = [System.Security.SecureString]::new()
+            for ( $loop=1; $loop -le 16; $loop++ )
+            {
+                $encryptionKeyBackupPassword.InsertAt(($loop - 1), ($CharacterSet | Get-Random))
+            }
+
+            $EncryptionKeyBackupCredential = [System.Management.Automation.PSCredential]::new('BackupUser',$encryptionKeyBackupPassword)
+        }
+
+        $invokeRsCimMethodParameters = @{
+            CimInstance = $reportingServicesData.Configuration
+            MethodName  = 'BackupEncryptionKey'
+            Arguments   = @{
+                Password = $EncryptionKeyBackupCredential.GetNetworkCredential().Password
+            }
+        }
+
+        $backupEncryptionKeyResult = Invoke-RsCimMethod @invokeRsCimMethodParameters
+
+        if ( $backupEncryptionKeyResult.HRESULT -ne 0 )
+        {
+            throw "Failed to backup the encryption key: $($backupEncryptionKeyResult.ExtendedErrors)"
+        }
+        elseif ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') )
+        {
+            Write-Verbose -Message ($script:localizedData.BackupEncryptionKey -f $encryptionKeyBackupFile) -Verbose
+
+            $EncryptionKeyBackupPath = [Environment]::ExpandEnvironmentVariables($EncryptionKeyBackupPath)
+
+            $encryptionKeyBackupPathIsUnc = $false
+            if ( $EncryptionKeyBackupPath -match '^\\\\')
+            {
+                $encryptionKeyBackupPathIsUnc = $true
+            }
+
+            if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+            {
+                Connect-UncPath -RemotePath $EncryptionKeyBackupPath -SourceCredential $EncryptionKeyBackupPathCredential
+            }
+
+            if ( -not ( Test-Path -Path $EncryptionKeyBackupPath ) )
+            {
+                New-Item -Path $EncryptionKeyBackupPath -ItemType Directory
+            }
+
+            $encryptionKeyBackupFileName = "$($env:ComputerName)-$($currentConfig.InstanceName).snk"
+            $encryptionKeyBackupFile = Join-Path -Path $EncryptionKeyBackupPath -ChildPath $encryptionKeyBackupFileName
+
+            $stream = [System.IO.File]::Create($encryptionKeyBackupFile, $backupEncryptionKeyResult.Length)
+            $stream.Write($backupEncryptionKeyResult.KeyFile, 0, $backupEncryptionKeyResult.Length)
+            $stream.Close()
+
+            if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+            {
+                Disconnect-UncPath -RemotePath $EncryptionKeyBackupPath
+            }
+        }
+        #endregion Backup Encryption Key
+
         #region Set the service account
         if ($PSBoundParameters.ContainsKey('ServiceAccount') -and $ServiceAccount.UserName -ne $currentConfig.WindowsServiceIdentityActual)
         {
@@ -321,6 +418,9 @@ function Set-TargetResource
 
             $restartReportingService = $true
             $executeDatabaseRightsScript = $true
+
+            # Get the current configuration since it changed the reserved URLs
+            $currentConfig = Get-TargetResource @getTargetResourceParameters
         }
         #endregion Set the service account
 
@@ -355,14 +455,14 @@ function Set-TargetResource
 
         if ( ( $currentConfig.DatabaseName -ne $DatabaseName ) -or $executeDatabaseRightsScript )
         {
-            Write-Verbose -Message "Generate database rights script on $DatabaseServerName\$DatabaseInstanceName for database '$DatabaseName' and user '$($reportingServicesData.Configuration.WindowsServiceIdentityActual)'." -Verbose
+            Write-Verbose -Message "Generate database rights script on $DatabaseServerName\$DatabaseInstanceName for database '$DatabaseName' and user '$($currentConfig.WindowsServiceIdentityActual)'." -Verbose
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
                 MethodName  = 'GenerateDatabaseRightsScript'
                 Arguments   = @{
                     DatabaseName  = $DatabaseName
-                    UserName      = $reportingServicesData.Configuration.WindowsServiceIdentityActual
+                    UserName      = $currentConfig.WindowsServiceIdentityActual
                     IsRemote      = $false
                     IsWindowsUser = $true
                 }
@@ -664,7 +764,7 @@ function Set-TargetResource
 
             $restartReportingService = $true
 
-            $invokeRsCimMethodParameters = @{
+            $invokeRsCimMethodInitializeReportServerParameters = @{
                 CimInstance = $reportingServicesData.Configuration
                 MethodName  = 'InitializeReportServer'
                 Arguments   = @{
@@ -672,7 +772,42 @@ function Set-TargetResource
                 }
             }
 
-            Invoke-RsCimMethod @invokeRsCimMethodParameters
+            try
+            {
+                Invoke-RsCimMethod @invokeRsCimMethodInitializeReportServerParameters
+            }
+            catch [System.Management.Automation.RuntimeException]
+            {
+                if ( $_.Exception -match 'The report server was unable to validate the integrity of encrypted data in the database' )
+                {
+                    # Restore key here
+                    $invokeRsCimMethodRestoreEncryptionKeyParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName  = 'RestoreEncryptionKey'
+                        Arguments   = @{
+                            KeyFile = $backupEncryptionKeyResult.KeyFile
+                            Length = $restoreEncryptionKeyResult.Length
+                            Password = $EncryptionKeyBackupCredential.GetNetworkCredential().Password
+                        }
+                    }
+
+                    $restoreEncryptionKeyResult = Invoke-RsCimMethod @invokeRsCimMethodRestoreEncryptionKeyParameters
+
+                    if ( $restoreEncryptionKeyResult.HRESULT -eq 0 )
+                    {
+                        # Finally, try and initialize the server again
+                        Invoke-RsCimMethod @invokeRsCimMethodInitializeReportServerParameters
+                    }
+                    else
+                    {
+                        throw "Could not restore the encryption key: $($restoreEncryptionKeyResult.ExtendedErrors)"
+                    }
+                }
+                else
+                {
+                    throw $_
+                }
+            }
         }
         else
         {
@@ -808,7 +943,19 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $SuppressRestart
+        $SuppressRestart,
+
+        [Parameter()]
+        [System.String]
+        $EncryptionKeyBackupPath,
+
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $EncryptionKeyBackupPathCredential,
+
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $EncryptionKeyBackupCredential
     )
 
     $result = $true
@@ -823,7 +970,7 @@ function Test-TargetResource
 
     if (-not $currentConfig.IsInitialized)
     {
-        Write-Verbose -Message "Reporting services $DatabaseServerName\$DatabaseInstanceName are not initialized."
+        Write-Verbose -Message "Reporting services $DatabaseServerName\$DatabaseInstanceName is not initialized." -Verbose
         $result = $false
     }
 
@@ -835,13 +982,13 @@ function Test-TargetResource
 
     if (-not [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) -and ($ReportServerVirtualDirectory -ne $currentConfig.ReportServerVirtualDirectory))
     {
-        Write-Verbose -Message "Report server virtual directory on $DatabaseServerName\$DatabaseInstanceName is $($currentConfig.ReportServerVirtualDir), should be $ReportServerVirtualDirectory."
+        Write-Verbose -Message "Report server virtual directory on $DatabaseServerName\$DatabaseInstanceName is $($currentConfig.ReportServerVirtualDir), should be $ReportServerVirtualDirectory." -Verbose
         $result = $false
     }
 
     if (-not [System.String]::IsNullOrEmpty($ReportsVirtualDirectory) -and ($ReportsVirtualDirectory -ne $currentConfig.ReportsVirtualDirectory))
     {
-        Write-Verbose -Message "Reports virtual directory on $DatabaseServerName\$DatabaseInstanceName is $($currentConfig.ReportsVirtualDir), should be $ReportsVirtualDirectory."
+        Write-Verbose -Message "Reports virtual directory on $DatabaseServerName\$DatabaseInstanceName is $($currentConfig.ReportsVirtualDir), should be $ReportsVirtualDirectory." -Verbose
         $result = $false
     }
 
@@ -893,13 +1040,18 @@ function Test-TargetResource
 
     if ($PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl)
     {
-        Write-Verbose -Message "The value for using SSL are not in desired state. Should be '$UseSsl', but was '$($currentConfig.UseSsl)'."
+        Write-Verbose -Message "The value for using SSL is not in desired state. Should be '$UseSsl', but was '$($currentConfig.UseSsl)'."
         $result = $false
     }
 
     if ($PSBoundParameters.ContainsKey('ServiceAccount') -and $ServiceAccount.UserName -ne $currentConfig.WindowsServiceIdentityActual)
     {
-        Write-Verbose -Message "The value for ServiceAccount is not in the desired state. Should be '$($ServiceAccount.UserName))', but is '$($currentConfig.WindowsServiceIdentityActual)'."
+        Write-Verbose -Message "The ServiceAccount should be '$($currentConfig.WindowsServiceIdentityActual)' but is '$($ServiceAccount.UserName)'." -Verbose
+        $result = $false
+    }
+
+    if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') -and $null -ne $currentConfig.EncryptionKeyBackupFile )
+    {
         $result = $false
     }
 
