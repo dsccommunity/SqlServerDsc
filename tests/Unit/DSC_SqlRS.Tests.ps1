@@ -1132,7 +1132,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'GenerateDatabaseRightsScript'
-                } -Exactly -Times 0 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'GenerateDatabaseCreationScript'
@@ -1155,7 +1155,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
             }
         }
