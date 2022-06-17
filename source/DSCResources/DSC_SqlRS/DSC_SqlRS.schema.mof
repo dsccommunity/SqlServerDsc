@@ -5,6 +5,7 @@ class DSC_SqlRS : OMI_BaseResource
     [Required, Description("Name of the _SQL Server_ to host the _Reporting Services_ database.")] String DatabaseServerName;
     [Required, Description("Name of the _SQL Server_ instance to host the _Reporting Services_ database.")] String DatabaseInstanceName;
     [Write, Description("Name of the the _Reporting Services_ database. Default is _ReportServer_.")] String DatabaseName;
+    [Write, Description("Name of the local account which the service will run as. This is ignored if the _ServiceAccount_ parameter is supplied.. Default is _VirtualAccount_.")] String LocalServiceAccountType;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("The service account that should be used when running the _Windows_ service.")] String ServiceAccount;
     [Write, Description("_Report Server Web Service_ virtual directory. Optional.")] String ReportServerVirtualDirectory;
     [Write, Description("_Report Manager_ or _Report Web App_ virtual directory name. Optional.")] String ReportsVirtualDirectory;
@@ -17,5 +18,6 @@ class DSC_SqlRS : OMI_BaseResource
     [Write, EmbeddedInstance("MSFT_Credential"), Description("The credential which is used to access the path specified in `EncryptionKeyBackupPath`.")] String EncryptionKeyBackupPathCredential;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("The credential which should be used to backup the encryption key. If no credential is supplied, a randomized value will be generated for internal use during runtime.")] String EncryptionKeyBackupCredential;
     [Read, Description("Returns if the _Reporting Services_ instance initialized or not.")] Boolean IsInitialized;
-    [Read, Description("Returns the name of the _Reporting Services_ service account.")] String ServiceName;
+    [Read, Description("Returns the name of the _Reporting Services_ service.")] String ServiceName;
+    [Read, Description("Returns the name of the _Reporting Services_ service account.")] String ServiceAccountName;
 };

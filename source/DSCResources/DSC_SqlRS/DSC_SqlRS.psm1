@@ -75,6 +75,7 @@ function Get-TargetResource
         Encrypt                      = $Encrypt
         WindowsServiceIdentityActual = $null
         ServiceName                  = $null
+        ServiceAccountName           = $null
         EncryptionKeyBackupFile      = $null
     }
 
@@ -96,8 +97,8 @@ function Get-TargetResource
         $isInitialized = $reportingServicesData.Configuration.IsInitialized
         $getTargetResourceResult.IsInitialized = [System.Boolean] $isInitialized
 
-        $getTargetResourceResult.ServiceName = $reportingServicesData.Configuration.WindowsServiceIdentityActual
-
+        $getTargetResourceResult.ServiceName = $reportingServicesData.Configuration.ServiceName
+        $getTargetResourceResult.ServiceAccountName = $reportingServicesData.Configuration.WindowsServiceIdentityActual
         $getTargetResourceResult.DatabaseName = $reportingServicesData.Configuration.DatabaseName
 
         if ( $reportingServicesData.Configuration.SecureConnectionLevel )
@@ -285,6 +286,16 @@ function Set-TargetResource
         $DatabaseName = 'ReportServer',
 
         [Parameter()]
+        [ValidateSet(
+            'LocalService',
+            'NetworkService',
+            'System',
+            'VirtualAccount'
+        )]
+        [System.String]
+        $LocalServiceAccountType = 'VirtualAccount',
+
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ServiceAccount,
 
@@ -427,24 +438,45 @@ function Set-TargetResource
         #endregion Backup Encryption Key
 
         #region Set the service account
-        if ($PSBoundParameters.ContainsKey('ServiceAccount') -and $ServiceAccount.UserName -ne $currentConfig.ServiceName)
-        {
-            # Need to handle a virtual account and Network account
-            # "NT Service\$($reportingServicesData.Configuration.ServiceName)"
-            # 'NT AUTHORITY\NetworkService'
+        $getLocalServiceAccountNameParameters = @{
+            LocalServiceAccountType = $LocalServiceAccountType
+            ServiceName = $currentConfig.ServiceName
+        }
+        $localServiceAccountName = Get-LocalServiceAccountName @getLocalServiceAccountNameParameters
 
-            Write-Verbose -Message ($script:localizedData.SetServiceAccount -f $ServiceAccount.UserName, $currentConfig.ServiceName) -Verbose
-            $invokeRsCimMethodParameters = @{
-                CimInstance = $reportingServicesData.Configuration
-                MethodName  = 'SetWindowsServiceIdentity'
-                Arguments   = @{
+        if ( ( $ServiceAccount.UserName -ne $currentConfig.ServiceAccountName) -and ( $localServiceAccountName -ne $currentConfig.ServiceAccountName ) )
+        {
+            if ( $PSBoundParameters.ContainsKey('ServiceAccount') )
+            {
+                $invokeRsCimMethodSetWindowsServiceIdentityParameterArguments = @{
                     Account           = $ServiceAccount.UserName
                     Password          = $ServiceAccount.GetNetworkCredential().Password
                     UseBuiltInAccount = $false
                 }
             }
+            else
+            {
+                $invokeRsCimMethodSetWindowsServiceIdentityParameterArguments = @{
+                    Account           = $localServiceAccountName
+                    Password          = ''
+                    UseBuiltInAccount = $false
+                }
+            }
 
-            Invoke-RsCimMethod @invokeRsCimMethodParameters > $null
+            Write-Verbose -Message (
+                $script:localizedData.SetServiceAccount -f @(
+                    $invokeRsCimMethodSetWindowsServiceIdentityParameterArguments.Account
+                    $currentConfig.ServiceAccountName
+                )
+            ) -Verbose
+
+            $invokeRsCimMethodSetWindowsServiceIdentityParameters = @{
+                CimInstance = $reportingServicesData.Configuration
+                MethodName  = 'SetWindowsServiceIdentity'
+                Arguments   = $invokeRsCimMethodSetWindowsServiceIdentityParameterArguments
+            }
+
+            Invoke-RsCimMethod @invokeRsCimMethodSetWindowsServiceIdentityParameters > $null
 
             $restartReportingService = $true
             $executeDatabaseRightsScript = $true
@@ -464,6 +496,7 @@ function Set-TargetResource
             $reportingServicesConnection = "$DatabaseServerName\$DatabaseInstanceName"
         }
 
+        # Generate the database creation script
         if ( $currentConfig.DatabaseName -ne $DatabaseName )
         {
             Write-Verbose -Message "The current database is '$($currentConfig.DatabaseName)' and should be '$DatabaseName'." -Verbose
@@ -483,6 +516,7 @@ function Set-TargetResource
             Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseScript.Script
         }
 
+        # Generate the database rights script
         if (
             $executeDatabaseRightsScript -or
             $currentConfig.DatabaseName -ne $DatabaseName -or
@@ -490,15 +524,35 @@ function Set-TargetResource
             $currentConfig.DatabaseInstanceName -ne $DatabaseInstanceName
         )
         {
-            Write-Verbose -Message "Generate database rights script on $DatabaseServerName\$DatabaseInstanceName for database '$DatabaseName' and user '$($currentConfig.ServiceName)'." -Verbose
+            Write-Verbose -Message "Generate database rights script on $DatabaseServerName\$DatabaseInstanceName for database '$DatabaseName' and user '$($currentConfig.ServiceAccountName)'." -Verbose
+
+            #region Determine if the database is local or remote
+
+            # Get the local computer properties
+            $computerSystem = Get-CimInstance -ClassName Win32_ComputerSystem -Namespace 'root/cimv2'
+
+            # Define an array of hostnames and IP addresses which identify the local computer
+            $localServerIdentifiers = @(
+                '.'
+                '(local)'
+                'LOCAL'
+                'localhost'
+                $computerSystem.DNSHostName
+                "$($computerSystem.DNSHostName).$($computerSystem.Domain)"
+            ) + ( Get-NetIPAddress | Select-Object -ExpandProperty IPAddress )
+
+            $localServerIdentifiersRegex = $localServerIdentifiers | Foreach-Object -Process { [System.Text.RegularExpressions.Regex]::Escape($_) }
+            $databaseServerIsRemote = $DatabaseServerName -notmatch "^$( $localServerIdentifiersRegex -join '|' )$"
+            Write-Verbose -Message ( $script:localizedData.DatabaseServerIsRemote -f $DatabaseServerName, $databaseServerIsRemote ) -Verbose
+            #endregion Determine if the database is local or remote
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
                 MethodName  = 'GenerateDatabaseRightsScript'
                 Arguments   = @{
                     DatabaseName  = $DatabaseName
-                    UserName      = $currentConfig.ServiceName
-                    IsRemote      = $false
+                    UserName      = $currentConfig.ServiceAccountName
+                    IsRemote      = $databaseServerIsRemote
                     IsWindowsUser = $true
                 }
             }
@@ -529,6 +583,7 @@ function Set-TargetResource
             Invoke-SqlCmd @invokeSqlCmdParameters -Query $reportingServicesDatabaseScript.Script
             Invoke-SqlCmd @invokeSqlCmdParameters -Query $reportingServicesDatabaseRightsScript.Script
 
+        # Set the database connection
         if (
             $currentConfig.DatabaseName -ne $DatabaseName -or
             $currentConfig.DatabaseServerName -ne $DatabaseServerName -or
@@ -988,6 +1043,16 @@ function Test-TargetResource
         $DatabaseName = 'ReportServer',
 
         [Parameter()]
+        [ValidateSet(
+            'LocalService',
+            'NetworkService',
+            'System',
+            'VirtualAccount'
+        )]
+        [System.String]
+        $LocalServiceAccountType = 'VirtualAccount',
+
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $ServiceAccount,
 
@@ -1155,13 +1220,27 @@ function Test-TargetResource
 
     if ($PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl)
     {
-        Write-Verbose -Message "The value for using SSL is not in desired state. Should be '$UseSsl', but was '$($currentConfig.UseSsl)'."
+        Write-Verbose -Message "The value for using SSL is not in desired state. Should be '$UseSsl', but was '$($currentConfig.UseSsl)'." -Verbose
         $result = $false
     }
 
-    if ($PSBoundParameters.ContainsKey('ServiceAccount') -and $ServiceAccount.UserName -ne $currentConfig.ServiceName)
+    $getLocalServiceAccountNameParameters = @{
+        LocalServiceAccountType = $LocalServiceAccountType
+        ServiceName = $currentConfig.ServiceName
+    }
+    $localServiceAccountName = Get-LocalServiceAccountName @getLocalServiceAccountNameParameters
+
+    if ( ( $ServiceAccount.UserName -ne $currentConfig.ServiceAccountName) -and ( $localServiceAccountName -ne $currentConfig.ServiceAccountName ) )
     {
-        Write-Verbose -Message "The ServiceAccount should be '$($currentConfig.ServiceName)' but is '$($ServiceAccount.UserName)'." -Verbose
+        if ( $PSBoundParameters.ContainsKey('ServiceAccount') )
+        {
+            $serviceAccountName = $ServiceAccount.UserName
+        }
+        else
+        {
+            $serviceAccountName = $localServiceAccountName
+        }
+        Write-Verbose -Message "The ServiceAccount should be '$serviceAccountName' but is '$($currentConfig.ServiceAccountName)'." -Verbose
         $result = $false
     }
 
@@ -1307,4 +1386,46 @@ function Invoke-RsCimMethod
     }
 
     return $invokeCimMethodResult
+}
+
+<#
+    .SYNOPSIS
+        Convert the local service account type to a local service account name.
+
+    .PARAMETER LocalServiceAccountType
+        The type name of the local service account.
+
+    .PARAMETER ServiceName
+        The name of the service that is running reporting services.
+#>
+function Get-LocalServiceAccountName
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateSet(
+            'LocalService',
+            'NetworkService',
+            'System',
+            'VirtualAccount'
+        )]
+        [System.String]
+        $LocalServiceAccountType,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ServiceName
+    )
+
+    $serviceAccountLookupTable = @{
+        LocalService = 'NT AUTHORITY\LocalService'
+        NetworkService = 'NT AUTHORITY\NetworkService'
+        System = 'NT AUTHORITY\System'
+        VirtualAccount = "NT SERVICE\$ServiceName"
+    }
+
+    $localServiceAccountName = $serviceAccountLookupTable.$LocalServiceAccountType
+    Write-Verbose -Message ( $script:localizedData.GetLocalServiceAccountName -f $localServiceAccountName, $LocalServiceAccountType ) -Verbose
+    return $localServiceAccountName
 }
