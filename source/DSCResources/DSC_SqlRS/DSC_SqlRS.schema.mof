@@ -12,6 +12,9 @@ class DSC_SqlRS : OMI_BaseResource
     [Write, Description("_Report Manager_ or _Report Web App_ URL reservations. Optional. If not specified, `'http://+:80'` URL reservation will be used.")] String ReportsReservedUrl[];
     [Write, Description("If connections to the _Reporting Services_ must use SSL. If this parameter is not assigned a value, the default is that _Reporting Services_ does not use SSL.")] Boolean UseSsl;
     [Write, Description("_Reporting Services_ need to be restarted after initialization or settings change. If this parameter is set to `$true`, _Reporting Services_ will not be restarted, even after initialization.")] Boolean SuppressRestart;
+    [Write, Description("The path where the encryption key will be backed up to. Default is `$env:TEMP`")] String EncryptionKeyBackupPath;
+    [Write, EmbeddedInstance("MSFT_Credential"), Description("The credential which is used to access the path specified in `EncryptionKeyBackupPath`.")] String EncryptionKeyBackupPathCredential;
+    [Write, EmbeddedInstance("MSFT_Credential"), Description("The credential which should be used to backup the encryption key. If no credential is supplied, a randomized value will be generated for internal use during runtime.")] String EncryptionKeyBackupCredential;
     [Read, Description("Returns if the _Reporting Services_ instance initialized or not.")] Boolean IsInitialized;
     [Read, Description("Returns the name of the _Reporting Services_ service account.")] String WindowsServiceIdentityActual;
 };

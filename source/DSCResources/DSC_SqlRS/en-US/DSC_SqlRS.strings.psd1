@@ -9,4 +9,5 @@ ConvertFrom-StringData @'
     TestDatabaseName = The database name is '{0}' but should be '{1}'.
     ReportServerReservedUrlNotInDesiredState = Report Server reserved URLs on '{0}\{1}' are '{2}', should be '{3}'.
     ReportsReservedUrlNotInDesiredState = Reports URLs on '{0}\{1}' are '{2}', should be '{3}'.
+    BackupEncryptionKey = Backing up the encryption key to '{0}'.
 '@
