@@ -132,6 +132,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - BREAKING CHANGE: The parameter `IsHadrEnabled` is no longer returned by
     `Get-TargetResource`. The `Ensure` parameter now returns `Present` if
     Always On HADR is enabled and `Absent` if it is disabled.
+- Changes to helper function Restart-ReportingServicesService
+  - Changed accepted parameters to the ServiceName because the service name is
+    retrieved from the WMI object during execution of the DSC resources.
 
 ### Fixed
 
