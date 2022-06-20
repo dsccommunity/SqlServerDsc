@@ -60,9 +60,9 @@ function Get-TargetResource
         ReportsVirtualDirectory      = $null
         ReportServerReservedUrl      = $null
         ReportsReservedUrl           = $null
-        HttpsCertificateThumbprint        = $null
-        HttpsIPAddress                    = $null
-        HttpsPort                         = $null
+        HttpsCertificateThumbprint   = $null
+        HttpsIPAddress               = $null
+        HttpsPort                    = $null
         UseSsl                       = $false
         IsInitialized                = $false
         ServiceName                  = $null
@@ -950,7 +950,7 @@ function Set-TargetResource
         #>
         Write-Verbose -Message $script:localizedData.RestartToFinishInitialization
 
-        Restart-ReportingServicesService -InstanceName $InstanceName -WaitTime 30
+        Restart-ReportingServicesService -ServiceName $currentConfig.ServiceName -WaitTime 30
 
         $restartReportingService = $false
 
@@ -1046,7 +1046,7 @@ function Set-TargetResource
         elseif ( $restartReportingService -and (-not $SuppressRestart) )
         {
             Write-Verbose -Message $script:localizedData.Restart
-            Restart-ReportingServicesService -InstanceName $InstanceName -WaitTime 30
+            Restart-ReportingServicesService -ServiceName $currentConfig.ServiceName -WaitTime 30
         }
         #endregion Restart
     }

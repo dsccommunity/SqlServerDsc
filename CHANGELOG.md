@@ -192,6 +192,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     The type `DatabasePermission` contains two properties; `State` and
     `Permission`.
   - The resource was refactored into a class-based resource.
+- Changes to helper function Restart-ReportingServicesService
+  - Changed accepted parameters to the ServiceName because the service name is
+    retrieved from the WMI object during execution of the DSC resources.
 
 ### Fixed
 
