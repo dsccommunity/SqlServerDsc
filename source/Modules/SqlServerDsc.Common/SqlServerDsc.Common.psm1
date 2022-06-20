@@ -1187,45 +1187,15 @@ function Restart-ReportingServicesService
     (
         [Parameter()]
         [System.String]
-        $InstanceName = 'MSSQLSERVER',
+        $ServiceName = 'SQLServerReportingServices',
 
         [Parameter()]
         [System.UInt16]
         $WaitTime = 0
     )
 
-    if ($InstanceName -eq 'PBIRS')
-    {
-        $serviceName = 'PowerBIReportServer'
-    }
-    elseif ($InstanceName -eq 'SSRS')
-    {
-        # Check if we're dealing with SSRS 2017 or SQL2019
-        $serviceName = 'SQLServerReportingServices'
-    }
-
-    if ( $null -ne $serviceName )
-    {
-        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $serviceName) -Verbose
-        $reportingServicesService = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
-    }
-
-    if ($null -eq $reportingServicesService)
-    {
-        $serviceName = 'ReportServer'
-
-        <#
-            Pre-2017 SSRS support multiple instances, check if we're dealing
-            with a named instance.
-        #>
-        if (-not ($InstanceName -eq 'MSSQLSERVER'))
-        {
-            $serviceName += '${0}' -f $InstanceName
-        }
-
-        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $serviceName) -Verbose
-        $reportingServicesService = Get-Service -Name $serviceName
-    }
+    Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
+    $reportingServicesService = Get-Service -Name $ServiceName
 
     <#
         Get all dependent services that are running.
