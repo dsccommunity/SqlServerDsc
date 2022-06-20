@@ -128,6 +128,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlDatabaseRole
   - `Test-TargetResource` returns true if the `IsUpdateable` property of the
     database is `$false` to resolve issue #1750.
+- Changes to helper function Restart-ReportingServicesService
+  - Changed accepted parameters to the ServiceName because the service name is
+    retrieved from the WMI object during execution of the DSC resources.
 
 ### Fixed
 
