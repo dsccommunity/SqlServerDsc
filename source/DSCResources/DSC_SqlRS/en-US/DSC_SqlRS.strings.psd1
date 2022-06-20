@@ -12,4 +12,10 @@ ConvertFrom-StringData @'
     BackupEncryptionKey = Backing up the encryption key to '{0}'.
     GetLocalServiceAccountName = The local service account name is '{0}' for the type '{1}'.
     DatabaseServerIsRemote = The database server '{0}' is remote: {1}
+    LocalServiceAccountUnsupportedException = Cannot use '{0}' as the service account in reporting services version '{1}'.
+    HttpsCertificateThumbprintNotInDesiredState = The HTTPS certificate thumbprint is '{0}' but should be '{1}'.
+    HttpsIPAddessNotInDesiredState = The HTTPS IP address binding is '{0}' but should be '{1}'.
+    HttpsPortNotInDesiredState = The HTTPS port is '{0}' but should be '{1}'.
+    RemoveSslCertficateBindingError = Failed to remove the SSL certificate binding for the application '{0}', certificate thumbprint '{1}', IP Address '{2}', and port '{3}'.
+    CreateSslCertficateBindingError = Failed to create the SSL certificate binding for the application '{0}', certificate thumbprint '{1}', IP Address '{2}', and port '{3}'.
 '@
