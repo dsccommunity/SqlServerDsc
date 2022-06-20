@@ -39,6 +39,10 @@ function Get-TargetResource
         $DatabaseInstanceName,
 
         [Parameter()]
+        [System.String]
+        $EncryptionKeyBackupPath,
+
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $EncryptionKeyBackupPathCredential
     )
@@ -56,6 +60,9 @@ function Get-TargetResource
         ReportsVirtualDirectory      = $null
         ReportServerReservedUrl      = $null
         ReportsReservedUrl           = $null
+        HttpsCertificateThumbprint        = $null
+        HttpsIPAddress                    = $null
+        HttpsPort                         = $null
         UseSsl                       = $false
         IsInitialized                = $false
         ServiceName                  = $null
@@ -67,6 +74,16 @@ function Get-TargetResource
 
     if ( $null -ne $reportingServicesData.Configuration )
     {
+        #region Get Operating System Information
+        $wmiOperatingSystem = Get-CimInstance -ClassName Win32_OperatingSystem -Namespace 'root/cimv2' -ErrorAction SilentlyContinue
+        if ( $null -eq $wmiOperatingSystem )
+        {
+            throw 'Unable to find WMI object Win32_OperatingSystem.'
+        }
+
+        $language = $wmiOperatingSystem.OSLanguage
+        #endregion Get Operating System Information
+
         if ( $reportingServicesData.Configuration.DatabaseServerName.Contains('\') )
         {
             $getTargetResourceResult.DatabaseServerName = $reportingServicesData.Configuration.DatabaseServerName.Split('\')[0]
@@ -123,31 +140,49 @@ function Get-TargetResource
         $getTargetResourceResult.ReportServerReservedUrl = $reportServerReservedUrl
         $getTargetResourceResult.ReportsReservedUrl = $reportsReservedUrl
 
+        #region Get SSL Certificate Bindings
+        $invokeRsCimMethodListSSLCertificateBindingsParameters = @{
+            CimInstance = $reportingServicesData.Configuration
+            MethodName  = 'ListSSLCertificateBindings'
+            Arguments = @{
+                LCID = $language
+            }
+        }
+        $sslCertificateBindings = Invoke-RsCimMethod @invokeRsCimMethodListSSLCertificateBindingsParameters
+
+        $getTargetResourceResult.HttpsCertificateThumbprint = $sslCertificateBindings | Select-Object -ExpandProperty CertificateHash -Unique
+        $getTargetResourceResult.HttpsIPAddress = $sslCertificateBindings | Select-Object -ExpandProperty IPAddress -Unique
+        $getTargetResourceResult.HttpsPort = $sslCertificateBindings | Select-Object -ExpandProperty Port -Unique
+        #endregion Get SSL Certificate Bindings
+
         #region Get Encryption Key Backup
-        $EncryptionKeyBackupPath = [Environment]::ExpandEnvironmentVariables($EncryptionKeyBackupPath)
-
-        if ( $EncryptionKeyBackupPath -match '^\\\\')
+        if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') )
         {
-            $encryptionKeyBackupPathIsUnc = $true
-        }
-        else
-        {
-            $encryptionKeyBackupPathIsUnc = $false
-        }
+            $EncryptionKeyBackupPath = [Environment]::ExpandEnvironmentVariables($EncryptionKeyBackupPath)
 
-        if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
-        {
-            Connect-UncPath -RemotePath $EncryptionKeyBackupPath -SourceCredential $EncryptionKeyBackupPathCredential
-        }
+            if ( $EncryptionKeyBackupPath -match '^\\\\')
+            {
+                $encryptionKeyBackupPathIsUnc = $true
+            }
+            else
+            {
+                $encryptionKeyBackupPathIsUnc = $false
+            }
 
-        $encryptionKeyBackupFileName = "$($env:ComputerName)-$($currentConfig.InstanceName).snk"
-        $encryptionKeyBackupFile = Join-Path -Path $EncryptionKeyBackupPath -ChildPath $encryptionKeyBackupFileName
+            if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+            {
+                Connect-UncPath -RemotePath $EncryptionKeyBackupPath -SourceCredential $EncryptionKeyBackupPathCredential
+            }
 
-        $getTargetResourceResult.EncryptionKeyBackupFile = ( Get-Item -Path $encryptionKeyBackupFile -ErrorAction SilentlyContinue ).Name
+            $encryptionKeyBackupFileName = "$($env:ComputerName)-$($currentConfig.InstanceName).snk"
+            $encryptionKeyBackupFile = Join-Path -Path $EncryptionKeyBackupPath -ChildPath $encryptionKeyBackupFileName
 
-        if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
-        {
-            Disconnect-UncPath -RemotePath $EncryptionKeyBackupPath
+            $getTargetResourceResult.EncryptionKeyBackupFile = ( Get-Item -Path $encryptionKeyBackupFile -ErrorAction SilentlyContinue ).Name
+
+            if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+            {
+                Disconnect-UncPath -RemotePath $EncryptionKeyBackupPath
+            }
         }
         #endregion Get Encryption Key Backup
     }
@@ -291,6 +326,18 @@ function Set-TargetResource
         $ReportsReservedUrl = @('http://+:80'),
 
         [Parameter()]
+        [System.String]
+        $HttpsCertificateThumbprint,
+
+        [Parameter()]
+        [System.String]
+        $HttpsIPAddress = '0.0.0.0',
+
+        [Parameter()]
+        [System.Int32]
+        $HttpsPort = 443,
+
+        [Parameter()]
         [System.Boolean]
         $UseSsl,
 
@@ -426,6 +473,13 @@ function Set-TargetResource
             }
             else
             {
+                # SQL 2017+ cannot use NT AUTHORITY\SYSTEM or NT AUTHORITY\LocalService as the service account
+                if ( $reportingServicesData.SqlVersion -ge 14 -and $LocalServiceAccountType -in @('LocalService', 'System') )
+                {
+                    $localServiceAccountUnsupportedException = $script:localizedData.LocalServiceAccountUnsupportedException -f $LocalServiceAccountType, $reportingServicesData.SqlVersion
+                    New-InvalidArgumentException -Message $localServiceAccountUnsupportedException -ArgumentName $LocalServiceAccountType
+                }
+
                 $invokeRsCimMethodSetWindowsServiceIdentityParameterArguments = @{
                     Account           = $localServiceAccountName
                     Password          = ''
@@ -642,20 +696,6 @@ function Set-TargetResource
 
             Invoke-RsCimMethod @invokeRsCimMethodParameters
 
-            <#$currentConfig.ReportServerReservedUrl | ForEach-Object -Process {
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $reportingServicesData.Configuration
-                    MethodName  = 'ReserveUrl'
-                    Arguments   = @{
-                        Application = 'ReportServerWebService'
-                        UrlString   = $_
-                        Lcid        = $language
-                    }
-                }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
-            }#>
-
             # Get the current configuration since it changed the reserved URLs
             $currentConfig = Get-TargetResource @getTargetResourceParameters
         }
@@ -691,20 +731,6 @@ function Set-TargetResource
             }
 
             Invoke-RsCimMethod @invokeRsCimMethodParameters
-
-            <#$currentConfig.ReportsReservedUrl | ForEach-Object -Process {
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $reportingServicesData.Configuration
-                    MethodName  = 'ReserveUrl'
-                    Arguments   = @{
-                        Application = $reportingServicesData.ReportsApplicationName
-                        UrlString   = $_
-                        Lcid        = $language
-                    }
-                }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
-            }#>
 
             # Get the current configuration since it changed the reserved URLs
             $currentConfig = Get-TargetResource @getTargetResourceParameters
@@ -791,6 +817,120 @@ function Set-TargetResource
             }
         }
         #endregion Reserved URLs
+
+        #region SSL Certificate Bindings
+        $invokeRsCimMethodListSSLCertificateBindingsParameters = @{
+            CimInstance = $reportingServicesData.Configuration
+            MethodName  = 'ListSSLCertificateBindings'
+            Arguments = @{
+                LCID = $language
+            }
+        }
+        $sslCertificateBindings = Invoke-RsCimMethod @invokeRsCimMethodListSSLCertificateBindingsParameters
+
+        # Create a PSObject of the binding information to make it easier to work with
+        $sslCertificateBindingObjects = @()
+        for ( $i = 0; $i -lt $sslCertificateBindings.Application.Count; $i++ )
+        {
+            $sslCertificateBindingObjects += New-Object -TypeName PSObject -Property @{
+                Application = $sslCertificateBindings.Application[$i]
+                CertificateHash = $sslCertificateBindings.CertificateHash[$i]
+                IPAddress = $sslCertificateBindings.IPAddress[$i]
+                Port = $sslCertificateBindings.Port[$i]
+            }
+        }
+
+        if ( $sslCertificateBindingObjects.Count -gt 1 )
+        {
+            # Get the bindings to remove
+            $sslCertificateBindingsToRemove = $sslCertificateBindingObjects | Where-Object -FilterScript {
+                $_.CertificateHash -ne $HttpsCertificateThumbprint -or
+                $_.IPAddress -ne $HttpsIPAddress -or
+                $_.Port -ne $HttpsPort
+            }
+
+            $invokeRsCimMethodRemoveSSLCertificateBindingsParameters = @{
+                CimInstance = $reportingServicesData.Configuration
+                MethodName  = 'RemoveSSLCertificateBindings'
+                Arguments = $null
+            }
+
+            foreach ( $sslCertificateBindingToRemove in $sslCertificateBindingsToRemove )
+            {
+                $invokeRsCimMethodRemoveSSLCertificateBindingsParameterArguments = @{
+                    Application = $sslCertificateBindingToRemove.Application
+                    CertificateHash = $sslCertificateBindingToRemove.CertificateHash
+                    IPAddress = $sslCertificateBindingToRemove.IPAddress
+                    Port = $sslCertificateBindingToRemove.Port
+                    lcid = $language
+                }
+                $invokeRsCimMethodRemoveSSLCertificateBindingsParameters.Arguments = $invokeRsCimMethodRemoveSSLCertificateBindingsParameterArguments
+
+                $removeSslCertficateBindingResult = Invoke-RsCimMethod @invokeRsCimMethodRemoveSSLCertificateBindingsParameters
+
+                if ( $removeSslCertficateBindingResult.HRESULT -ne 0 )
+                {
+                    $removeSslCertficateBindingErrorArguments = @(
+                        $invokeRsCimMethodRemoveSSLCertificateBindingsParameterArguments.Application
+                        $invokeRsCimMethodRemoveSSLCertificateBindingsParameterArguments.CertificateHash
+                        $invokeRsCimMethodRemoveSSLCertificateBindingsParameterArguments.IPAddress
+                        $invokeRsCimMethodRemoveSSLCertificateBindingsParameterArguments.Port
+                    )
+                    New-InvalidResultException -Message ( $script:localizedData.RemoveSslCertficateBindingError -f $removeSslCertficateBindingErrorArguments ) -ErrorRecord $removeSslCertficateBindingResult.Error
+                }
+            }
+        }
+
+        if ( $PSBoundParameters.ContainsKey('HttpsCertificateThumbprint') )
+        {
+            $applicationNames = @(
+                'ReportServerWebApp'
+                'ReportServerWebService'
+                #'PowerBIWebApp'
+                #'OfficeWebApp'
+            )
+
+            $invokeRsCimMethodCreateSSLCertificateBindingParameters = @{
+                CimInstance = $reportingServicesData.Configuration
+                MethodName  = 'CreateSSLCertificateBinding'
+                Arguments = $null
+            }
+
+            foreach ( $applicationName in $applicationNames )
+            {
+                $sslCertificateBindingExists = $sslCertificateBindingObjects |
+                    Where-Object -Property Application -EQ -Value $applicationName |
+                    Where-Object -Property CertificateHash -EQ -Value $HttpsCertificateThumbprint |
+                    Where-Object -Property IPAddress -EQ -Value $HttpsIPAddress |
+                    Where-Object -Property Port -EQ -Value $HttpsPort
+
+                if ( -not $sslCertificateBindingExists )
+                {
+                    $invokeRsCimMethodCreateSSLCertificateBindingParameterArguments = @{
+                        Application = $applicationName
+                        CertificateHash = $HttpsCertificateThumbprint.ToLower()
+                        IPAddress = $HttpsIPAddress
+                        Port = $HttpsPort
+                        Lcid = $language
+                    }
+                    $invokeRsCimMethodCreateSSLCertificateBindingParameters.Arguments = $invokeRsCimMethodCreateSSLCertificateBindingParameterArguments
+
+                    $createSSLCertificateBindingResult = Invoke-RsCimMethod @invokeRsCimMethodCreateSSLCertificateBindingParameters
+
+                    if ( $createSSLCertificateBindingResult.HRESULT -ne 0 )
+                    {
+                        $createSslCertficateBindingErrorArguments = @(
+                            $invokeRsCimMethodCreateSSLCertificateBindingParameterArguments.Application
+                            $invokeRsCimMethodCreateSSLCertificateBindingParameterArguments.CertificateHash
+                            $invokeRsCimMethodCreateSSLCertificateBindingParameterArguments.IPAddress
+                            $invokeRsCimMethodCreateSSLCertificateBindingParameterArguments.Port
+                        )
+                        New-InvalidResultException -Message ( $script:localizedData.CreateSslCertficateBindingError -f $createSslCertficateBindingErrorArguments ) -ErrorRecord $createSSLCertificateBindingResult.Error
+                    }
+                }
+            }
+        }
+        #endregion SSL Certificate Bindings
 
         #region Initialize
         Write-Verbose -Message "Initializing Reporting Services on $DatabaseServerName\$DatabaseInstanceName."
@@ -1012,6 +1152,18 @@ function Test-TargetResource
         $ReportsReservedUrl = @('http://+:80'),
 
         [Parameter()]
+        [System.String]
+        $HttpsCertificateThumbprint,
+
+        [Parameter()]
+        [System.String]
+        $HttpsIPAddress = '0.0.0.0',
+
+        [Parameter()]
+        [System.Int32]
+        $HttpsPort = 443,
+
+        [Parameter()]
         [System.Boolean]
         $UseSsl,
 
@@ -1140,6 +1292,24 @@ function Test-TargetResource
 
     if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') -and $null -ne $currentConfig.EncryptionKeyBackupFile )
     {
+        $result = $false
+    }
+
+    if ( $PSBoundParameters.ContainsKey('HttpsCertificateThumbprint') -and $HttpsCertificateThumbprint -ne $currentConfig.HttpsCertificateThumbprint )
+    {
+        Write-Verbose -Message ( $script:localizedData.HttpsCertificateThumbprintNotInDesiredState -f ( $currentConfig.HttpsCertificateThumbprint -join ', ' ), $HttpsCertificateThumbprint ) -Verbose
+        $result = $false
+    }
+
+    if ( $PSBoundParameters.ContainsKey('HttpsCertificateThumbprint') -and $HttpsIPAddress -ne $currentConfig.HttpsIPAddress )
+    {
+        Write-Verbose -Message ( $script:localizedData.HttpsIPAddressNotInDesiredState -f ( $currentConfig.HttpsIPAddress -join ', ' ), $HttpsIPAddress ) -Verbose
+        $result = $false
+    }
+
+    if ( $PSBoundParameters.ContainsKey('HttpsCertificateThumbprint') -and $HttpsPort -ne $currentConfig.HttpsPort )
+    {
+        Write-Verbose -Message ( $script:localizedData.HttpsPortNotInDesiredState -f ( $currentConfig.HttpsPort -join ', '), $HttpsPort ) -Verbose
         $result = $false
     }
 
