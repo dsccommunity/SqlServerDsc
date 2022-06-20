@@ -3256,7 +3256,7 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
         }
 
         It 'Should restart the service and dependent service' {
-            { Restart-ReportingServicesService -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
+            { Restart-ReportingServicesService -ServiceName $mockServiceName } | Should -Not -Throw
 
             Should -Invoke -CommandName Get-Service -ParameterFilter {
                 $Name -eq $mockServiceName
@@ -3281,7 +3281,7 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
         }
 
         It 'Should restart the service and dependent service' {
-            { Restart-ReportingServicesService -InstanceName 'SSRS' } | Should -Not -Throw
+            { Restart-ReportingServicesService } | Should -Not -Throw
 
             Should -Invoke -CommandName Get-Service -ParameterFilter {
                 $Name -eq $mockServiceName
@@ -3306,7 +3306,7 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
         }
 
         It 'Should restart the service and dependent service' {
-            { Restart-ReportingServicesService -InstanceName 'TEST' } | Should -Not -Throw
+            { Restart-ReportingServicesService -ServiceName $mockServiceName } | Should -Not -Throw
 
             Should -Invoke -CommandName Get-Service -ParameterFilter {
                 $Name -eq $mockServiceName
@@ -3331,7 +3331,7 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
         }
 
         It 'Should restart the service and dependent service' {
-            { Restart-ReportingServicesService -InstanceName 'PBIRS' } | Should -Not -Throw
+            { Restart-ReportingServicesService -ServiceName $mockServiceName } | Should -Not -Throw
 
             Should -Invoke -CommandName Get-Service -ParameterFilter {
                 $Name -eq $mockServiceName
@@ -3357,7 +3357,7 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
         }
 
         It 'Should restart the service and dependent service' {
-            { Restart-ReportingServicesService -InstanceName 'TEST' -WaitTime 1 } | Should -Not -Throw
+            { Restart-ReportingServicesService -ServiceName $mockServiceName -WaitTime 1 } | Should -Not -Throw
 
             Should -Invoke -CommandName Get-Service -ParameterFilter {
                 $Name -eq $mockServiceName
