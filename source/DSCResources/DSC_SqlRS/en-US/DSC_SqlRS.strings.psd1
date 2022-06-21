@@ -19,4 +19,19 @@ ConvertFrom-StringData @'
     RemoveSslCertficateBindingError = Failed to remove the SSL certificate binding for the application '{0}', certificate thumbprint '{1}', IP Address '{2}', and port '{3}'.
     CreateSslCertficateBindingError = Failed to create the SSL certificate binding for the application '{0}', certificate thumbprint '{1}', IP Address '{2}', and port '{3}'.
     GetOperatingSystemClassError = Unable to find WMI object Win32_OperatingSystem.
+    InvokeRsCimMethodError = Method {0}() failed with an error. Error: {1} (HRESULT:{2})
+    GenerateDatabaseCreateScript = Generate database creation script on '{0}\{1}' for database '{2}'.
+    GenerateDatabaseRightsScript = Generate database rights script on '{0}\{1}' for database '{2}'.
+    SetDatabaseConnection = Set database connection on '{0}\{1}' to database '{2}'.
+    SetReportServerVirtualDirectory = Setting report server virtual directory on '{0}\{1}' to '{2}'.
+    SetReportsVirtualDirectory = Setting report server virtual directory on '{0}\{1}' to '{2}'.
+    AddReportsUrlReservation = Adding reports URL reservation on '{0}\{1}': '{2}'.
+    RestartDidNotHelp = Did not help restarting the Reporting Services service, running the CIM method to initialize report server on '{0}\{1}' for instance ID '{2}'.
+    ReportingServicesInitialized = Reporting Services on '{0}\{1}' is initialized.
+    SetUseSsl = Changing value for using SSL to '{0}'.
+    TestNotInitialized = Reporting services '{0}\{1}' is not initialized.
+    TestReportServerVirtualDirectory = Report server virtual directory on '{0}\{1}' is '{2}', should be '{3}'.
+    TestReportsVirtualDirectory = Report server virtual directory on '{0}\{1}' is '{2}', should be '{3}'.
+    TestUseSsl = The value for using SSL is not in desired state. Should be '{0}', but is '{1}'.
+    TestServiceAccount = The ServiceAccount should be '{0}' but is '{1}'.
 '@
