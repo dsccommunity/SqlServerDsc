@@ -18,4 +18,5 @@ ConvertFrom-StringData @'
     HttpsPortNotInDesiredState = The HTTPS port is '{0}' but should be '{1}'.
     RemoveSslCertficateBindingError = Failed to remove the SSL certificate binding for the application '{0}', certificate thumbprint '{1}', IP Address '{2}', and port '{3}'.
     CreateSslCertficateBindingError = Failed to create the SSL certificate binding for the application '{0}', certificate thumbprint '{1}', IP Address '{2}', and port '{3}'.
+    GetOperatingSystemClassError = Unable to find WMI object Win32_OperatingSystem.
 '@
