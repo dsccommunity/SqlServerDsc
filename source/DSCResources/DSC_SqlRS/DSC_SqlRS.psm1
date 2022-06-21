@@ -1579,13 +1579,13 @@ function Invoke-RsCimMethod
             $errorMessage = $invokeCimMethodResult.Error
         }
 
-        New-InvalidOperationException -Message (
+        throw (
             $script:localizedData.InvokeRsCimMethodError -f @(
                 $MethodName
                 $errorMessage
                 $invokeCimMethodResult.HRESULT
             )
-        ) -Error $errorMessage
+        )
     }
 
     return $invokeCimMethodResult
@@ -1616,10 +1616,19 @@ function Get-LocalServiceAccountName
         [System.String]
         $LocalServiceAccountType,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [System.String]
         $ServiceName
     )
+
+    if ( $LocalServiceAccountType -eq 'VirtualAccount' -and [System.String]::IsNullOrEmpty($ServiceName) )
+    {
+        $newInvalidArgumentException = @{
+            Message = $script:localizedData.GetLocalServiceAccountNameServiceNotSpecified -f $LocalServiceAccountType
+            ArgumentName = 'ServiceName'
+        }
+        New-InvalidArgumentException @newInvalidArgumentException
+    }
 
     $serviceAccountLookupTable = @{
         LocalService = 'NT AUTHORITY\LocalService'

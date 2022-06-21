@@ -34,4 +34,5 @@ ConvertFrom-StringData @'
     TestReportsVirtualDirectory = Report server virtual directory on '{0}\{1}' is '{2}', should be '{3}'.
     TestUseSsl = The value for using SSL is not in desired state. Should be '{0}', but is '{1}'.
     TestServiceAccount = The ServiceAccount should be '{0}' but is '{1}'.
+    GetLocalServiceAccountNameServiceNotSpecified = The 'ServiceName' parameter is required with the 'LocalServiceAccountType' is '{0}'.
 '@
