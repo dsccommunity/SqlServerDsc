@@ -12,12 +12,12 @@ class DSC_SqlRS : OMI_BaseResource
     [Write, Description("_Report Server_ URL reservations. Optional. If not specified, `'http://+:80'` URL reservation will be used.")] String ReportServerReservedUrl[];
     [Write, Description("_Report Manager_ or _Report Web App_ URL reservations. Optional. If not specified, `'http://+:80'` URL reservation will be used.")] String ReportsReservedUrl[];
     [Write, Description("The thumbprint of the certificate used to secure SSL communication.")] String HttpsCertificateThumbprint;
-    [Write, Description("The IP address to bind the certificate specified in the _CertificateThumbprint_ parameter to. Default is `0.0.0.0` which bind to all IP addresses.")] String HttpsIPAddress;
+    [Write, Description("The IP address to bind the certificate specified in the _CertificateThumbprint_ parameter to. Default is `0.0.0.0` which binds to all IP addresses.")] String HttpsIPAddress;
     [Write, Description("The port used for SSL communication. Default is `443`.")] Uint32 HttpsPort;
     [Write, Description("If connections to the _Reporting Services_ must use SSL. If this parameter is not assigned a value, the default is that _Reporting Services_ does not use SSL.")] Boolean UseSsl;
     [Write, Description("_Reporting Services_ need to be restarted after initialization or settings change. If this parameter is set to `$true`, _Reporting Services_ will not be restarted, even after initialization.")] Boolean SuppressRestart;
     [Write, Description("Specifies how encryption should be enforced when using command `Invoke-SqlCmd`. When not specified, the default value is `Mandatory`."), ValueMap{"Mandatory","Optional","Strict"}, Values{"Mandatory","Optional","Strict"}] String Encrypt;
-    [Write, Description("The path where the encryption key will be backed up to. Default is `$env:TEMP`")] String EncryptionKeyBackupPath;
+    [Write, Description("The path where the encryption key will be backed up to.")] String EncryptionKeyBackupPath;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("The credential which is used to access the path specified in `EncryptionKeyBackupPath`.")] String EncryptionKeyBackupPathCredential;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("The credential which should be used to backup the encryption key. If no credential is supplied, a randomized value will be generated for internal use during runtime.")] String EncryptionKeyBackupCredential;
     [Read, Description("Returns if the _Reporting Services_ instance initialized or not.")] Boolean IsInitialized;
