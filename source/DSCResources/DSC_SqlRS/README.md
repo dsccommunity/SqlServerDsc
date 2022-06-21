@@ -1,7 +1,7 @@
 # Description
 
 The `SqlRS` DSC resource initializes and configures SQL Reporting Services
-server.
+server and Power BI Report Server.
 
 ## Requirements
 
@@ -31,10 +31,6 @@ server.
   and [Configure SQL Server Database Engine for encrypting connections](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/configure-sql-server-encryption?view=sql-server-ver16).
 
 ## Known issues
-
-* This resource does not currently have full SSL support, please see
-  [issue #587](https://github.com/dsccommunity/SqlServerDsc/issues/587) for more
-  information.
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlRS).
 
