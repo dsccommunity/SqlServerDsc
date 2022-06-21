@@ -8,7 +8,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
-        Gets the SQL Reporting Services initialization status.
+        Gets the SQL Server Reporting Services properties.
 
     .PARAMETER InstanceName
         Name of the SQL Server Reporting Services instance to be configured.
@@ -27,6 +27,12 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         on the SqlConnection object of the Microsoft.Data.SqlClient driver.
 
         This parameter can only be used when the module SqlServer v22.x.x is installed.
+
+    .PARAMETER EncryptionKeyBackupPath
+        The path where the encryption key will be backed up to.
+
+    .PARAMETER EncryptionKeyBackupPathCredential
+        The credential which is used to access the path specified in EncryptionKeyBackupPath.
 #>
 function Get-TargetResource
 {
@@ -91,10 +97,13 @@ function Get-TargetResource
     if ( $null -ne $reportingServicesData.Configuration )
     {
         #region Get Operating System Information
-        $wmiOperatingSystem = Get-CimInstance -ClassName Win32_OperatingSystem -Namespace 'root/cimv2' -ErrorAction SilentlyContinue
-        if ( $null -eq $wmiOperatingSystem )
+        try
         {
-            throw 'Unable to find WMI object Win32_OperatingSystem.'
+            $wmiOperatingSystem = Get-CimInstance -ClassName Win32_OperatingSystem -Namespace 'root/cimv2' -ErrorAction Stop
+        }
+        catch
+        {
+            New-ObjectNotFoundException -Message ( $script:localizedData.GetOperatingSystemClassError ) -ErrorRecord $_
         }
 
         $language = $wmiOperatingSystem.OSLanguage
@@ -113,7 +122,6 @@ function Get-TargetResource
 
         $isInitialized = $reportingServicesData.Configuration.IsInitialized
         $getTargetResourceResult.IsInitialized = [System.Boolean] $isInitialized
-
         $getTargetResourceResult.ServiceName = $reportingServicesData.Configuration.ServiceName
         $getTargetResourceResult.ServiceAccountName = $reportingServicesData.Configuration.WindowsServiceIdentityActual
         $getTargetResourceResult.DatabaseName = $reportingServicesData.Configuration.DatabaseName
@@ -130,6 +138,7 @@ function Get-TargetResource
         $getTargetResourceResult.ReportServerVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportServer
         $getTargetResourceResult.ReportsVirtualDirectory = $reportingServicesData.Configuration.VirtualDirectoryReportManager
 
+        #region Get Reserved URLs
         $invokeRsCimMethodParameters = @{
             CimInstance = $reportingServicesData.Configuration
             MethodName  = 'ListReservedUrls'
@@ -155,6 +164,7 @@ function Get-TargetResource
 
         $getTargetResourceResult.ReportServerReservedUrl = $reportServerReservedUrl
         $getTargetResourceResult.ReportsReservedUrl = $reportsReservedUrl
+        #endregion Get Reserved URLs
 
         #region Get SSL Certificate Bindings
         $invokeRsCimMethodListSSLCertificateBindingsParameters = @{
@@ -214,7 +224,7 @@ function Get-TargetResource
 
 <#
     .SYNOPSIS
-        Initializes SQL Reporting Services.
+        Configures SQL Server Reporting Services.
 
     .PARAMETER InstanceName
         Name of the SQL Server Reporting Services instance to be configured.
@@ -227,6 +237,15 @@ function Get-TargetResource
 
     .PARAMETER DatabaseName
         Name of the the Reporting Services database. Default is "ReportServer".
+
+    .PARAMETER LocalServiceAccountType
+        Name of the local account which the service will run as. This is
+        ignored if the _ServiceAccount_ parameter is supplied.. Default is
+        "VirtualAccount".
+
+    .PARAMETER ServiceAccount
+        The service account that should be used when running the Windows
+        service.
 
     .PARAMETER ReportServerVirtualDirectory
         Report Server Web Service virtual directory. Optional.
@@ -241,6 +260,17 @@ function Get-TargetResource
     .PARAMETER ReportsReservedUrl
         Report Manager/Report Web App URL reservations. Optional.
         If not specified, 'http://+:80' URL reservation will be used.
+
+    .PARAMETER HttpsCertificateThumbprint
+        The thumbprint of the certificate used to secure SSL communication.
+
+    .PARAMETER HttpsIPAddress
+        The IP address to bind the certificate specified in the
+        CertificateThumbprint parameter to. Default is `0.0.0.0` which binds to
+        all IP addresses.
+
+    .PARAMETER HttpsPort
+        The port used for SSL communication. Default is `443`.
 
     .PARAMETER UseSsl
         If connections to the Reporting Services must use SSL. If this
@@ -260,6 +290,18 @@ function Get-TargetResource
         on the SqlConnection object of the Microsoft.Data.SqlClient driver.
 
         This parameter can only be used when the module SqlServer v22.x.x is installed.
+
+    .PARAMETER EncryptionKeyBackupPath
+        The path where the encryption key will be backed up to.
+
+    .PARAMETER EncryptionKeyBackupPathCredential
+        The credential which is used to access the path specified in
+        "EncryptionKeyBackupPath".
+
+    .PARAMETER EncryptionKeyBackupCredential
+        The credential which should be used to backup the encryption key. If no
+        credential is supplied, a randomized value will be generated for
+        internal use during runtime.
 
     .NOTES
         To find out the parameter names for the methods in the class
@@ -288,7 +330,7 @@ function Get-TargetResource
         ```
 
         SecureConnectionLevel (the parameter UseSsl):
-        The SecureConnectionLevel value can be 0,1,2 or 3, but since
+        The SecureConnectionLevel value can be 0, 1, 2, or 3, but since
         SQL Server 2008 R2 this was changed. So we are just setting it to 0 (off)
         and 1 (on).
 
@@ -412,10 +454,13 @@ function Set-TargetResource
         $currentConfig = Get-TargetResource @getTargetResourceParameters
 
         #region Get Operating System Information
-        $wmiOperatingSystem = Get-CimInstance -ClassName Win32_OperatingSystem -Namespace 'root/cimv2' -ErrorAction SilentlyContinue
-        if ( $null -eq $wmiOperatingSystem )
+        try
         {
-            throw 'Unable to find WMI object Win32_OperatingSystem.'
+            $wmiOperatingSystem = Get-CimInstance -ClassName Win32_OperatingSystem -Namespace 'root/cimv2' -ErrorAction Stop
+        }
+        catch
+        {
+            New-ObjectNotFoundException -Message ( $script:localizedData.GetOperatingSystemClassError ) -ErrorRecord $_
         }
 
         $language = $wmiOperatingSystem.OSLanguage
@@ -424,14 +469,14 @@ function Set-TargetResource
         #region Backup Encryption Key
         if ( -not $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
         {
-            $characterSet = ( @(33..126) | Foreach-Object -Process { ,[System.Char][System.Byte]$_ } )
+            $characterSet = ( @(33..126) | Foreach-Object -Process { [System.Char][System.Byte]$_ } )
             $encryptionKeyBackupPassword = [System.Security.SecureString]::new()
             for ( $loop=1; $loop -le 16; $loop++ )
             {
                 $encryptionKeyBackupPassword.InsertAt(($loop - 1), ($CharacterSet | Get-Random))
             }
 
-            $EncryptionKeyBackupCredential = [System.Management.Automation.PSCredential]::new('BackupUser',$encryptionKeyBackupPassword)
+            $EncryptionKeyBackupCredential = [System.Management.Automation.PSCredential]::new('BackupUser', $encryptionKeyBackupPassword)
         }
 
         $invokeRsCimMethodParameters = @{
@@ -441,14 +486,9 @@ function Set-TargetResource
                 Password = $EncryptionKeyBackupCredential.GetNetworkCredential().Password
             }
         }
+        Invoke-RsCimMethod @invokeRsCimMethodParameters > $null
 
-        $backupEncryptionKeyResult = Invoke-RsCimMethod @invokeRsCimMethodParameters
-
-        if ( $backupEncryptionKeyResult.HRESULT -ne 0 )
-        {
-            throw "Failed to backup the encryption key: $($backupEncryptionKeyResult.ExtendedErrors)"
-        }
-        elseif ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') )
+        if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') )
         {
             Write-Verbose -Message ($script:localizedData.BackupEncryptionKey -f $encryptionKeyBackupFile) -Verbose
 
@@ -553,8 +593,12 @@ function Set-TargetResource
         # Generate the database creation script
         if ( $currentConfig.DatabaseName -ne $DatabaseName )
         {
-            Write-Verbose -Message "The current database is '$($currentConfig.DatabaseName)' and should be '$DatabaseName'." -Verbose
-            Write-Verbose -Message "Generate database creation script on $DatabaseServerName\$DatabaseInstanceName for database '$DatabaseName'." -Verbose
+            Write-Verbose -Message ( $script:localizedData.TestDatabaseName -f $currentConfig.DatabaseName, $DatabaseName ) -Verbose
+            Write-Verbose -Message ( $script:localizedData.GenerateDatabaseCreateScript -f @(
+                $DatabaseServerName
+                $DatabaseInstanceName
+                $DatabaseName
+            )) -Verbose
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
@@ -578,7 +622,11 @@ function Set-TargetResource
             $currentConfig.DatabaseInstanceName -ne $DatabaseInstanceName
         )
         {
-            Write-Verbose -Message "Generate database rights script on $DatabaseServerName\$DatabaseInstanceName for database '$DatabaseName' and user '$($currentConfig.ServiceAccountName)'." -Verbose
+            Write-Verbose -Message ( $script:localizedData.GenerateDatabaseRightsScript -f @(
+                $DatabaseServerName
+                $DatabaseInstanceName
+                $DatabaseName
+            )) -Verbose
 
             #region Determine if the database is local or remote
 
@@ -644,7 +692,11 @@ function Set-TargetResource
             $currentConfig.DatabaseInstanceName -ne $DatabaseInstanceName
         )
         {
-            Write-Verbose -Message "Set database connection on $DatabaseServerName\$DatabaseInstanceName to database '$DatabaseName'." -Verbose
+            Write-Verbose -Message ( $script:localizedData.SetDatabaseConnection -f @(
+                $DatabaseServerName
+                $DatabaseInstanceName
+                $DatabaseName
+            )) -Verbose
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
@@ -718,7 +770,13 @@ function Set-TargetResource
 
         if ( -not [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) -and ($ReportServerVirtualDirectory -ne $currentConfig.ReportServerVirtualDirectory) )
         {
-            Write-Verbose -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
+            Write-Verbose -Message (
+                $script:localizedData.SetReportServerVirtualDirectory -f @(
+                    $DatabaseServerName
+                    $DatabaseInstanceName
+                    $ReportServerVirtualDirectory
+                )
+            ) -Verbose
 
             $restartReportingService = $true
 
@@ -754,7 +812,13 @@ function Set-TargetResource
 
         if ( -not [System.String]::IsNullOrEmpty($ReportsVirtualDirectory) -and ($ReportsVirtualDirectory -ne $currentConfig.ReportsVirtualDirectory) )
         {
-            Write-Verbose -Message "Setting reports virtual directory on $DatabaseServerName\$DatabaseInstanceName to $ReportServerVirtualDirectory."
+            Write-Verbose -Message (
+                $script:localizedData.SetReportsVirtualDirectory -f @(
+                    $DatabaseServerName
+                    $DatabaseInstanceName
+                    $ReportServerVirtualDirectory
+                )
+            ) -Verbose
 
             $restartReportingService = $true
 
@@ -853,7 +917,13 @@ function Set-TargetResource
             }
 
             $ReportsReservedUrl | ForEach-Object -Process {
-                Write-Verbose -Message "Adding reports URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
+                Write-Verbose -Message (
+                    $script:localizedData.AddReportsUrlReservation -f @(
+                        $DatabaseServerName
+                        $DatabaseInstanceName
+                        $_
+                    )
+                )
 
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
@@ -884,7 +954,7 @@ function Set-TargetResource
         $sslCertificateBindingObjects = @()
         for ( $i = 0; $i -lt $sslCertificateBindings.Application.Count; $i++ )
         {
-            $sslCertificateBindingObjects += New-Object -TypeName PSObject -Property @{
+            $sslCertificateBindingObjects += [PSCustomObject] @{
                 Application = $sslCertificateBindings.Application[$i]
                 CertificateHash = $sslCertificateBindings.CertificateHash[$i]
                 IPAddress = $sslCertificateBindings.IPAddress[$i]
@@ -938,6 +1008,8 @@ function Set-TargetResource
             $applicationNames = @(
                 'ReportServerWebApp'
                 'ReportServerWebService'
+
+                # I thought I saw other app names being used, but I can't seem to find them
                 #'PowerBIWebApp'
                 #'OfficeWebApp'
             )
@@ -1016,7 +1088,13 @@ function Set-TargetResource
         #>
         if ( -not $reportingServicesData.Configuration.IsInitialized )
         {
-            Write-Verbose -Message "Did not help restarting the Reporting Services service, running the CIM method to initialize report server on $DatabaseServerName\$DatabaseInstanceName for instance ID '$($reportingServicesData.Configuration.InstallationID)'."
+            Write-Verbose -Message (
+                $script:localizedData.RestartDidNotHelp -f @(
+                    $DatabaseServerName
+                    $DatabaseInstanceName
+                    $reportingServicesData.Configuration.InstallationID
+                )
+            )
 
             $restartReportingService = $true
 
@@ -1054,10 +1132,6 @@ function Set-TargetResource
                         # Finally, try and initialize the server again
                         Invoke-RsCimMethod @invokeRsCimMethodInitializeReportServerParameters
                     }
-                    else
-                    {
-                        throw "Could not restore the encryption key: $($restoreEncryptionKeyResult.ExtendedErrors)"
-                    }
                 }
                 else
                 {
@@ -1068,13 +1142,19 @@ function Set-TargetResource
         else
         {
             Write-Verbose -Message "Reporting Services on $DatabaseServerName\$DatabaseInstanceName is initialized."
+            Write-Verbose -Message (
+                $script:localizedData.ReportingServicesInitialized -f @(
+                    $DatabaseServerName
+                    $DatabaseInstanceName
+                )
+            )
         }
         #endregion Initialize
 
         #region Use SSL
         if ( $PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl )
         {
-            Write-Verbose -Message "Changing value for using SSL to '$UseSsl'."
+            Write-Verbose -Message ( $script:localizedData.SetUseSsl -f $UseSsl ) -Verbose
 
             $restartReportingService = $true
 
@@ -1112,7 +1192,8 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-        Tests the SQL Reporting Services initialization status.
+        Tests the SQL Server Reporting Services to determine if it is in the
+        desired state.
 
     .PARAMETER InstanceName
         Name of the SQL Server Reporting Services instance to be configured.
@@ -1126,6 +1207,15 @@ function Set-TargetResource
     .PARAMETER DatabaseName
         Name of the the Reporting Services database. Default is "ReportServer".
 
+    .PARAMETER LocalServiceAccountType
+        Name of the local account which the service will run as. This is
+        ignored if the _ServiceAccount_ parameter is supplied.. Default is
+        "VirtualAccount".
+
+    .PARAMETER ServiceAccount
+        The service account that should be used when running the Windows
+        service.
+
     .PARAMETER ReportServerVirtualDirectory
         Report Server Web Service virtual directory. Optional.
 
@@ -1134,11 +1224,22 @@ function Set-TargetResource
 
     .PARAMETER ReportServerReservedUrl
         Report Server URL reservations. Optional. If not specified,
-        http://+:80' URL reservation will be used.
+        'http://+:80' URL reservation will be used.
 
     .PARAMETER ReportsReservedUrl
         Report Manager/Report Web App URL reservations. Optional.
         If not specified, 'http://+:80' URL reservation will be used.
+
+    .PARAMETER HttpsCertificateThumbprint
+        The thumbprint of the certificate used to secure SSL communication.
+
+    .PARAMETER HttpsIPAddress
+        The IP address to bind the certificate specified in the
+        CertificateThumbprint parameter to. Default is `0.0.0.0` which binds to
+        all IP addresses.
+
+    .PARAMETER HttpsPort
+        The port used for SSL communication. Default is `443`.
 
     .PARAMETER UseSsl
         If connections to the Reporting Services must use SSL. If this
@@ -1158,6 +1259,18 @@ function Set-TargetResource
         on the SqlConnection object of the Microsoft.Data.SqlClient driver.
 
         This parameter can only be used when the module SqlServer v22.x.x is installed.
+
+    .PARAMETER EncryptionKeyBackupPath
+        The path where the encryption key will be backed up to.
+
+    .PARAMETER EncryptionKeyBackupPathCredential
+        The credential which is used to access the path specified in
+        "EncryptionKeyBackupPath".
+
+    .PARAMETER EncryptionKeyBackupCredential
+        The credential which should be used to backup the encryption key. If no
+        credential is supplied, a randomized value will be generated for
+        internal use during runtime.
 #>
 function Test-TargetResource
 {
@@ -1267,7 +1380,7 @@ function Test-TargetResource
 
     if (-not $currentConfig.IsInitialized)
     {
-        Write-Verbose -Message "Reporting services $DatabaseServerName\$DatabaseInstanceName is not initialized." -Verbose
+        Write-Verbose -Message ( $script:localizedData.TestNotInitialized -f $DatabaseServerName, $DatabaseInstanceName ) -Verbose
         $result = $false
     }
 
@@ -1279,13 +1392,27 @@ function Test-TargetResource
 
     if (-not [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) -and ($ReportServerVirtualDirectory -ne $currentConfig.ReportServerVirtualDirectory))
     {
-        Write-Verbose -Message "Report server virtual directory on $DatabaseServerName\$DatabaseInstanceName is $($currentConfig.ReportServerVirtualDir), should be $ReportServerVirtualDirectory." -Verbose
+        Write-Verbose -Message (
+            $script:localizedData.TestReportServerVirtualDirectory -f @(
+                $DatabaseServerName
+                $DatabaseInstanceName
+                $currentConfig.ReportServerVirtualDir
+                $ReportServerVirtualDirectory
+            )
+        ) -Verbose
         $result = $false
     }
 
     if (-not [System.String]::IsNullOrEmpty($ReportsVirtualDirectory) -and ($ReportsVirtualDirectory -ne $currentConfig.ReportsVirtualDirectory))
     {
-        Write-Verbose -Message "Reports virtual directory on $DatabaseServerName\$DatabaseInstanceName is $($currentConfig.ReportsVirtualDir), should be $ReportsVirtualDirectory." -Verbose
+        Write-Verbose -Message (
+            $script:localizedData.TestReportsVirtualDirectory -f @(
+                $DatabaseServerName
+                $DatabaseInstanceName
+                $currentConfig.ReportsVirtualDir
+                $ReportsVirtualDirectory
+            )
+        ) -Verbose
         $result = $false
     }
 
@@ -1372,7 +1499,12 @@ function Test-TargetResource
 
     if ($PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl)
     {
-        Write-Verbose -Message "The value for using SSL is not in desired state. Should be '$UseSsl', but was '$($currentConfig.UseSsl)'." -Verbose
+        Write-Verbose -Message (
+            $script:localizedData.TestUseSsl -f @(
+                $UseSsl
+                $currentConfig.UseSsl
+            )
+        ) -Verbose
         $result = $false
     }
 
@@ -1392,7 +1524,12 @@ function Test-TargetResource
         {
             $serviceAccountName = $localServiceAccountName
         }
-        Write-Verbose -Message "The ServiceAccount should be '$serviceAccountName' but is '$($currentConfig.ServiceAccountName)'." -Verbose
+        Write-Verbose -Message (
+            $script:localizedData.TestServiceAccount -f @(
+                $serviceAccountName
+                $currentConfig.ServiceAccountName
+            )
+        ) -Verbose
         $result = $false
     }
 
@@ -1494,7 +1631,7 @@ function Get-ReportingServicesData
         The method to call in the CIM Instance object.
 
     .PARAMETER Arguments
-        The arguments that should be
+        The arguments that should be supplied to the CIM Method.
 #>
 function Invoke-RsCimMethod
 {
@@ -1548,11 +1685,13 @@ function Invoke-RsCimMethod
             $errorMessage = $invokeCimMethodResult.Error
         }
 
-        throw 'Method {0}() failed with an error. Error: {1} (HRESULT:{2})' -f @(
-            $MethodName
-            $errorMessage
-            $invokeCimMethodResult.HRESULT
-        )
+        New-InvalidOperationException -Message (
+            $script:localizedData.InvokeRsCimMethodError -f @(
+                $MethodName
+                $errorMessage
+                $invokeCimMethodResult.HRESULT
+            )
+        ) -Error $errorMessage
     }
 
     return $invokeCimMethodResult
