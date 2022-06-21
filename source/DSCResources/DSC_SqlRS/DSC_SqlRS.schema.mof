@@ -5,7 +5,7 @@ class DSC_SqlRS : OMI_BaseResource
     [Required, Description("Name of the _SQL Server_ to host the _Reporting Services_ database.")] String DatabaseServerName;
     [Required, Description("Name of the _SQL Server_ instance to host the _Reporting Services_ database.")] String DatabaseInstanceName;
     [Write, Description("Name of the the _Reporting Services_ database. Default is _ReportServer_.")] String DatabaseName;
-    [Write, Description("Name of the local account which the service will run as. This is ignored if the _ServiceAccount_ parameter is supplied.. Default is _VirtualAccount_.")] String LocalServiceAccountType;
+    [Write, Description("Name of the local account which the service will run as. This is ignored if the _ServiceAccount_ parameter is supplied.. Default is _VirtualAccount_."), ValueMap{"LocalService","NetworkService","System","VirtualAccount"}, Values{"LocalService","NetworkService","System","VirtualAccount"}] String LocalServiceAccountType;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("The service account that should be used when running the _Windows_ service.")] String ServiceAccount;
     [Write, Description("_Report Server Web Service_ virtual directory. Optional.")] String ReportServerVirtualDirectory;
     [Write, Description("_Report Manager_ or _Report Web App_ virtual directory name. Optional.")] String ReportsVirtualDirectory;
@@ -13,7 +13,7 @@ class DSC_SqlRS : OMI_BaseResource
     [Write, Description("_Report Manager_ or _Report Web App_ URL reservations. Optional. If not specified, `'http://+:80'` URL reservation will be used.")] String ReportsReservedUrl[];
     [Write, Description("The thumbprint of the certificate used to secure SSL communication.")] String HttpsCertificateThumbprint;
     [Write, Description("The IP address to bind the certificate specified in the _CertificateThumbprint_ parameter to. Default is `0.0.0.0` which binds to all IP addresses.")] String HttpsIPAddress;
-    [Write, Description("The port used for SSL communication. Default is `443`.")] Uint32 HttpsPort;
+    [Write, Description("The port used for SSL communication. Default is `443`.")] SInt32 HttpsPort;
     [Write, Description("If connections to the _Reporting Services_ must use SSL. If this parameter is not assigned a value, the default is that _Reporting Services_ does not use SSL.")] Boolean UseSsl;
     [Write, Description("_Reporting Services_ need to be restarted after initialization or settings change. If this parameter is set to `$true`, _Reporting Services_ will not be restarted, even after initialization.")] Boolean SuppressRestart;
     [Write, Description("The path where the encryption key will be backed up to.")] String EncryptionKeyBackupPath;
