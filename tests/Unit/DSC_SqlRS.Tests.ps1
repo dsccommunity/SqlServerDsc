@@ -70,7 +70,7 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-<#Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
+Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
     BeforeAll {
         $mockNamedInstanceName = 'INSTANCE'
         $mockDefaultInstanceName = 'MSSQLSERVER'
@@ -138,11 +138,16 @@ AfterAll {
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru |
-                Add-Member -MemberType NoteProperty -Name WindowsServiceIdentityActual -Value $mockServiceAccountName -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value $mockServiceAccountName -PassThru |
+                Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value 'ReportServer' -PassThru -Force
         }
 
         Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_ListReservedUrls -ParameterFilter {
             $MethodName -eq 'ListReservedUrls'
+        }
+
+        Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_ListReservedUrls -ParameterFilter {
+            $MethodName -eq 'ListSSLCertificateBindings'
         }
 
         InModuleScope -ScriptBlock {
@@ -157,7 +162,7 @@ AfterAll {
                 Encrypt              = 'Optional'
             }
         }
-    }
+    }#>
 
     Context 'When the system is in the desired state' {
         BeforeAll {
@@ -214,7 +219,7 @@ AfterAll {
                 $resultGetTargetResource.ReportServerReservedUrl | Should -Be $mockReportServerApplicationUrl
                 $resultGetTargetResource.ReportsReservedUrl | Should -Be $mockReportsApplicationUrl
                 $resultGetTargetResource.UseSsl | Should -BeFalse
-                $resultGetTargetResource.WindowsServiceIdentityActual | Should -Be $mockServiceAccountName
+                $resultGetTargetResource.ServiceAccountName | Should -Be $mockServiceAccountName
             }
 
             Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
@@ -361,9 +366,9 @@ AfterAll {
             }
         }
     }
-}#>
+}
 
-<#Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
+Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
     BeforeDiscovery {
         $sqlVersions = @(
             @{
@@ -474,7 +479,8 @@ AfterAll {
                         Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value "ReportServer`$$mockNamedInstanceName" -PassThru -Force
                 ),
                 (
                     # Array is a regression test for issue #819.
@@ -494,8 +500,10 @@ AfterAll {
                 Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $false -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockDefaultInstanceName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
-                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru -Force |
-                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru |
+                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru |
+                Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value $mockServiceAccountName -PassThru |
+                Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value 'ReportServer' -PassThru -Force
         }
 
         $mockGetCimInstance_ConfigurationSetting_PowerBIReportServer = {
@@ -511,14 +519,16 @@ AfterAll {
                         Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value $mockServiceNamePowerBiReportServer -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value 'NT AUTHORITY\SYSTEM' -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'WindowsServiceIdentityActual' -Value 'NT AUTHORITY\SYSTEM' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value 'PowerBIReportServer' -PassThru -Force
                 ),
                 (
                     # Array is a regression test for issue #819.
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value "$mockReportingServicesDatabaseServerName\$mockReportingServicesDatabaseNamedInstanceName" -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $true -PassThru |
-                        Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value 'DummyInstance' -PassThru -Force
+                        Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value 'DummyInstance' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value 'ReportServer' -PassThru -Force
                 )
             )
         }
@@ -686,7 +696,7 @@ AfterAll {
 
                 Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
                     $ClassName -eq 'Win32_OperatingSystem'
-                } -Exactly -Times 1 -Scope It
+                } -Exactly -Times 4 -Scope It
 
                 Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 2 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
@@ -722,7 +732,7 @@ AfterAll {
             Context 'When it is not possible to evaluate OSLanguage' {
                 BeforeEach {
                     Mock -CommandName Get-CimInstance -MockWith {
-                        return $null
+                        throw
                     } -ParameterFilter $mockGetCimInstance_OperatingSystem_ParameterFilter
                 }
 
@@ -737,7 +747,7 @@ AfterAll {
                             UseSsl               = $true
                         }
 
-                        { Set-TargetResource @mockDefaultParameters } | Should -Throw ('*' + 'Unable to find WMI object Win32_OperatingSystem.')
+                        { Set-TargetResource @mockDefaultParameters } | Should -Throw ('*Unable to find WMI object Win32_OperatingSystem.*')
                     }
                 }
             }
@@ -760,6 +770,7 @@ AfterAll {
                         DatabaseName = $mockReportingServicesDatabaseName
                         ReportServerReservedUrl = $mockReportServerApplicationUrl
                         ReportsReservedUrl      = $mockReportsApplicationUrl
+                        ServiceName             = "ReportServer`$$mockNamedInstanceName"
                     }
                 }
 
@@ -853,9 +864,10 @@ AfterAll {
 
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        DatabaseName = $mockReportingServicesDatabaseName
+                        DatabaseName            = $mockReportingServicesDatabaseName
                         ReportServerReservedUrl = $mockReportServerApplicationUrl
                         ReportsReservedUrl      = $mockReportsApplicationUrl
+                        ServiceName             = "ReportServer`$$mockNamedInstanceName"
                     }
                 }
 
@@ -903,11 +915,11 @@ AfterAll {
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'SetDatabaseConnection'
-                } -Exactly -Times 0 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'GenerateDatabaseRightsScript'
-                } -Exactly -Times 0 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'GenerateDatabaseCreationScript'
@@ -930,7 +942,7 @@ AfterAll {
                 } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
             }
         }
@@ -1016,7 +1028,7 @@ AfterAll {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationNameLegacy
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 4 -Scope It
                 Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 2 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
 
@@ -1099,7 +1111,7 @@ AfterAll {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
                 } -Exactly -Times 0 -Scope It
 
-                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 5 -Scope It
                 Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
             }
@@ -1119,9 +1131,10 @@ AfterAll {
 
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        DatabaseName = $mockReportingServicesDatabaseName
+                        DatabaseName            = $mockReportingServicesDatabaseName
                         ReportServerReservedUrl = $mockReportServerApplicationUrl
                         ReportsReservedUrl      = $mockReportsApplicationUrl
+                        ServiceName             = 'SQLServerReportingServices'
                     }
                 }
 
@@ -1173,7 +1186,7 @@ AfterAll {
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'SetDatabaseConnection'
-                } -Exactly -Times 0 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'GenerateDatabaseRightsScript'
@@ -1231,7 +1244,8 @@ AfterAll {
                                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockNamedInstanceName -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value $mockVirtualDirectoryReportServerName -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value $mockVirtualDirectoryReportManagerName -PassThru |
-                                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $script:mockDynamicSecureConnectionLevel -PassThru -Force
+                                Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $script:mockDynamicSecureConnectionLevel -PassThru |
+                                Add-Member -MemberType NoteProperty -Name 'ServiceName' -Value 'SQLServerReportingServices' -PassThru -Force
                     ReportsApplicationName = 'ReportServerWebApp'
                     SqlVersion             = $sqlVersion.Version
                 }
@@ -1298,20 +1312,21 @@ AfterAll {
                 $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
             } -Exactly -Times 0 -Scope It
 
-            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 4 -Scope It
             Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 2 -Scope It
             Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
         }
     }
-}#>
+}
 
-<#Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
+Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
     Context 'When the system is not in the desired state' {
         Context 'When Reporting Services are not initialized' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
                         IsInitialized = $false
+                        ServiceName   = 'ReportServer'
                     }
                 }
             }
@@ -1397,6 +1412,7 @@ AfterAll {
                         IsInitialized                = $true
                         ReportServerVirtualDirectory = 'ReportServer_SQL2016'
                         ReportsVirtualDirectory      = 'Reports_SQL2016'
+                        ServiceName                  = 'ReportServer'
                     }
                 }
             }
@@ -1426,6 +1442,7 @@ AfterAll {
                         IsInitialized                = $true
                         ReportServerVirtualDirectory = 'ReportServer_SQL2016'
                         ReportsVirtualDirectory      = 'Reports_SQL2016'
+                        ServiceName                  = 'ReportServer'
                     }
                 }
             }
@@ -1455,6 +1472,7 @@ AfterAll {
                     return @{
                         IsInitialized           = $true
                         ReportServerReservedUrl = 'http://+:80'
+                        ServiceName             = 'ReportServer'
                     }
                 }
             }
@@ -1483,6 +1501,7 @@ AfterAll {
                     return @{
                         IsInitialized      = $true
                         ReportsReservedUrl = 'http://+:80'
+                        ServiceName        = 'ReportServer'
                     }
                 }
             }
@@ -1511,6 +1530,7 @@ AfterAll {
                     return @{
                         IsInitialized      = $true
                         UseSsl             = $false
+                        ServiceName        = 'ReportServer'
                     }
                 }
             }
@@ -1537,8 +1557,9 @@ AfterAll {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        IsInitialized                = $true
-                        WindowsServiceIdentityActual = 'NT AUTHORITY\SYSTEM'
+                        IsInitialized      = $true
+                        ServiceAccountName = 'NT AUTHORITY\SYSTEM'
+                        ServiceName        = 'ReportServer'
                     }
                 }
             }
@@ -1570,10 +1591,11 @@ AfterAll {
         BeforeAll {
             Mock -CommandName Get-TargetResource -MockWith {
                 return @{
-                    IsInitialized = $true
-                    DatabaseName = 'ReportServer'
+                    IsInitialized           = $true
+                    DatabaseName            = 'ReportServer'
                     ReportServerReservedUrl = @('http://+:80')
-                    ReportsReservedUrl = @('http://+:80')
+                    ReportsReservedUrl      = @('http://+:80')
+                    ServiceName             = 'ReportServer'
                 }
             }
         }
@@ -1594,7 +1616,7 @@ AfterAll {
             }
         }
     }
-}#>
+}
 
 Describe 'SqlRS\Invoke-RsCimMethod' -Tag 'Helper' {
     BeforeAll {
