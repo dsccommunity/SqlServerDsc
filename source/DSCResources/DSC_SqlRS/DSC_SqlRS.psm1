@@ -160,9 +160,9 @@ function Get-TargetResource
         }
         $sslCertificateBindings = Invoke-RsCimMethod @invokeRsCimMethodListSSLCertificateBindingsParameters
 
-        $getTargetResourceResult.HttpsCertificateThumbprint = $sslCertificateBindings | Select-Object -ExpandProperty CertificateHash -Unique
-        $getTargetResourceResult.HttpsIPAddress = $sslCertificateBindings | Select-Object -ExpandProperty IPAddress -Unique
-        $getTargetResourceResult.HttpsPort = $sslCertificateBindings | Select-Object -ExpandProperty Port -Unique
+        $getTargetResourceResult.HttpsCertificateThumbprint = $sslCertificateBindings | Select-Object -ExpandProperty CertificateHash -Unique -ErrorAction SilentlyContinue
+        $getTargetResourceResult.HttpsIPAddress = $sslCertificateBindings | Select-Object -ExpandProperty IPAddress -Unique -ErrorAction SilentlyContinue
+        $getTargetResourceResult.HttpsPort = $sslCertificateBindings | Select-Object -ExpandProperty Port -Unique -ErrorAction SilentlyContinue
         #endregion Get SSL Certificate Bindings
 
         #region Get Encryption Key Backup
