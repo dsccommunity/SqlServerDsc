@@ -2099,7 +2099,7 @@ Describe 'SqlRS\Get-LocalServiceAccountName' -Tag 'Helper' {
         }
 
         It 'Should throw the correct error when when "LocalServiceAccountType" is "VirtualAccount" and the service name is not supplied' {
-            { Get-LocalServiceAccountName -LocalServiceAccountType VirtualAccount } | Should -Throw "The 'ServiceName' parameter is required with the 'LocalServiceAccountType' is 'VirtualAccount'.*Parameter name: ServiceName"
+            { Get-LocalServiceAccountName -LocalServiceAccountType VirtualAccount } | Should -Throw "The 'ServiceName' parameter is required with the 'LocalServiceAccountType' is 'VirtualAccount'.*"
         }
     }
 }
