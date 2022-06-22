@@ -467,70 +467,73 @@ function Set-TargetResource
         #endregion Get Operating System Information
 
         #region Backup Encryption Key
-        if ( -not $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+        if ( $currentConfig.IsInitialized )
         {
-            $characterSet = ( @(33..126) | Foreach-Object -Process { [System.Char][System.Byte]$_ } )
-            $encryptionKeyBackupPassword = [System.Security.SecureString]::new()
-            for ( $loop=1; $loop -le 16; $loop++ )
+            if ( -not $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
             {
-                $encryptionKeyBackupPassword.InsertAt(($loop - 1), ($CharacterSet | Get-Random))
+                $characterSet = ( @(33..126) | Foreach-Object -Process { [System.Char][System.Byte]$_ } )
+                $encryptionKeyBackupPassword = [System.Security.SecureString]::new()
+                for ( $loop=1; $loop -le 16; $loop++ )
+                {
+                    $encryptionKeyBackupPassword.InsertAt(($loop - 1), ($CharacterSet | Get-Random))
+                }
+
+                $EncryptionKeyBackupCredential = [System.Management.Automation.PSCredential]::new('BackupUser', $encryptionKeyBackupPassword)
             }
 
-            $EncryptionKeyBackupCredential = [System.Management.Automation.PSCredential]::new('BackupUser', $encryptionKeyBackupPassword)
-        }
-
-        $invokeRsCimMethodParameters = @{
-            CimInstance = $reportingServicesData.Configuration
-            MethodName  = 'BackupEncryptionKey'
-            Arguments   = @{
-                Password = $EncryptionKeyBackupCredential.GetNetworkCredential().Password
+            $invokeRsCimMethodParameters = @{
+                CimInstance = $reportingServicesData.Configuration
+                MethodName  = 'BackupEncryptionKey'
+                Arguments   = @{
+                    Password = $EncryptionKeyBackupCredential.GetNetworkCredential().Password
+                }
             }
-        }
-        $backupEncryptionKeyResult = Invoke-RsCimMethod @invokeRsCimMethodParameters
+            $backupEncryptionKeyResult = Invoke-RsCimMethod @invokeRsCimMethodParameters
 
-        if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') )
-        {
-            $EncryptionKeyBackupPath = [Environment]::ExpandEnvironmentVariables($EncryptionKeyBackupPath)
-
-            $encryptionKeyBackupPathIsUnc = $false
-            if ( $EncryptionKeyBackupPath -match '^\\\\')
+            if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') )
             {
-                $encryptionKeyBackupPathIsUnc = $true
-            }
+                $EncryptionKeyBackupPath = [Environment]::ExpandEnvironmentVariables($EncryptionKeyBackupPath)
 
-            if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
-            {
-                Connect-UncPath -RemotePath $EncryptionKeyBackupPath -SourceCredential $EncryptionKeyBackupPathCredential
-            }
+                $encryptionKeyBackupPathIsUnc = $false
+                if ( $EncryptionKeyBackupPath -match '^\\\\')
+                {
+                    $encryptionKeyBackupPathIsUnc = $true
+                }
 
-            if ( -not ( Test-Path -Path $EncryptionKeyBackupPath ) )
-            {
-                New-Item -Path $EncryptionKeyBackupPath -ItemType Directory
-            }
+                if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+                {
+                    Connect-UncPath -RemotePath $EncryptionKeyBackupPath -SourceCredential $EncryptionKeyBackupPathCredential
+                }
 
-            $encryptionKeyBackupFileName = "$($env:ComputerName)-$($currentConfig.InstanceName).snk"
-            $encryptionKeyBackupFile = Join-Path -Path $EncryptionKeyBackupPath -ChildPath $encryptionKeyBackupFileName
-            Write-Verbose -Message ($script:localizedData.BackupEncryptionKey -f $encryptionKeyBackupFile) -Verbose
+                if ( -not ( Test-Path -Path $EncryptionKeyBackupPath ) )
+                {
+                    New-Item -Path $EncryptionKeyBackupPath -ItemType Directory
+                }
 
-            $setContentParameters = @{
-                Path = $encryptionKeyBackupFile
-                Value = $backupEncryptionKeyResult.KeyFile
-            }
+                $encryptionKeyBackupFileName = "$($env:ComputerName)-$($currentConfig.InstanceName).snk"
+                $encryptionKeyBackupFile = Join-Path -Path $EncryptionKeyBackupPath -ChildPath $encryptionKeyBackupFileName
+                Write-Verbose -Message ($script:localizedData.BackupEncryptionKey -f $encryptionKeyBackupFile) -Verbose
 
-            if ( $PSVersionTable.PSVersion.Major -gt 5 )
-            {
-                $setContentParameters.AsByteStream = $true
-            }
-            else
-            {
-                $setContentParameters.Encoding = 'Byte'
-            }
+                $setContentParameters = @{
+                    Path = $encryptionKeyBackupFile
+                    Value = $backupEncryptionKeyResult.KeyFile
+                }
 
-            Set-Content @setContentParameters
+                if ( $PSVersionTable.PSVersion.Major -gt 5 )
+                {
+                    $setContentParameters.AsByteStream = $true
+                }
+                else
+                {
+                    $setContentParameters.Encoding = 'Byte'
+                }
 
-            if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
-            {
-                Disconnect-UncPath -RemotePath $EncryptionKeyBackupPath
+                Set-Content @setContentParameters
+
+                if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+                {
+                    Disconnect-UncPath -RemotePath $EncryptionKeyBackupPath
+                }
             }
         }
         #endregion Backup Encryption Key

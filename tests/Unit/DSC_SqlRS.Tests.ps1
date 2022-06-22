@@ -940,6 +940,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                         DatabaseServerName      = $mockReportingServicesDatabaseServerName
                         DatabaseInstanceName    = $mockReportingServicesDatabaseNamedInstanceName
                         DatabaseName            = $mockReportingServicesDatabaseName
+                        IsInitialized           = $mockDynamicIsInitialized
                         ReportServerReservedUrl = $mockReportServerApplicationUrl
                         ReportsReservedUrl      = $mockReportsApplicationUrl
                         ServiceName             = "ReportServer`$$mockNamedInstanceName"
