@@ -22,4 +22,5 @@ class DSC_SqlRS : OMI_BaseResource
     [Read, Description("Returns if the _Reporting Services_ instance initialized or not.")] Boolean IsInitialized;
     [Read, Description("Returns the name of the _Reporting Services_ service.")] String ServiceName;
     [Read, Description("Returns the name of the _Reporting Services_ service account.")] String ServiceAccountName;
+    [Read, Description("Returns the name of the encryption key backup file.")] String EncryptionKeyBackupFile;
 };
