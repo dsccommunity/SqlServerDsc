@@ -179,17 +179,17 @@ function Get-TargetResource
                 $encryptionKeyBackupPathIsUnc = $false
             }
 
-            if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+            if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupPathCredential') )
             {
                 Connect-UncPath -RemotePath $EncryptionKeyBackupPath -SourceCredential $EncryptionKeyBackupPathCredential
             }
 
-            $encryptionKeyBackupFileName = "$($env:ComputerName)-$($currentConfig.InstanceName).snk"
+            $encryptionKeyBackupFileName = "$($env:ComputerName)-$InstanceName.snk"
             $encryptionKeyBackupFile = Join-Path -Path $EncryptionKeyBackupPath -ChildPath $encryptionKeyBackupFileName
 
             $getTargetResourceResult.EncryptionKeyBackupFile = ( Get-Item -Path $encryptionKeyBackupFile -ErrorAction SilentlyContinue ).Name
 
-            if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+            if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupPathCredential') )
             {
                 Disconnect-UncPath -RemotePath $EncryptionKeyBackupPath
             }
@@ -456,12 +456,10 @@ function Set-TargetResource
                 Password = $EncryptionKeyBackupCredential.GetNetworkCredential().Password
             }
         }
-        Invoke-RsCimMethod @invokeRsCimMethodParameters > $null
+        $backupEncryptionKeyResult = Invoke-RsCimMethod @invokeRsCimMethodParameters
 
         if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') )
         {
-            Write-Verbose -Message ($script:localizedData.BackupEncryptionKey -f $encryptionKeyBackupFile) -Verbose
-
             $EncryptionKeyBackupPath = [Environment]::ExpandEnvironmentVariables($EncryptionKeyBackupPath)
 
             $encryptionKeyBackupPathIsUnc = $false
@@ -482,10 +480,9 @@ function Set-TargetResource
 
             $encryptionKeyBackupFileName = "$($env:ComputerName)-$($currentConfig.InstanceName).snk"
             $encryptionKeyBackupFile = Join-Path -Path $EncryptionKeyBackupPath -ChildPath $encryptionKeyBackupFileName
+            Write-Verbose -Message ($script:localizedData.BackupEncryptionKey -f $encryptionKeyBackupFile) -Verbose
 
-            $stream = [System.IO.File]::Create($encryptionKeyBackupFile, $backupEncryptionKeyResult.Length)
-            $stream.Write($backupEncryptionKeyResult.KeyFile, 0, $backupEncryptionKeyResult.Length)
-            $stream.Close()
+            Set-Content -Path $encryptionKeyBackupFile -Value $backupEncryptionKeyResult.KeyFile -Encoding Byte
 
             if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
             {
@@ -987,18 +984,7 @@ function Set-TargetResource
                     }
                     $invokeRsCimMethodCreateSSLCertificateBindingParameters.Arguments = $invokeRsCimMethodCreateSSLCertificateBindingParameterArguments
 
-                    $createSSLCertificateBindingResult = Invoke-RsCimMethod @invokeRsCimMethodCreateSSLCertificateBindingParameters
-
-                    if ( $createSSLCertificateBindingResult.HRESULT -ne 0 )
-                    {
-                        $createSslCertficateBindingErrorArguments = @(
-                            $invokeRsCimMethodCreateSSLCertificateBindingParameterArguments.Application
-                            $invokeRsCimMethodCreateSSLCertificateBindingParameterArguments.CertificateHash
-                            $invokeRsCimMethodCreateSSLCertificateBindingParameterArguments.IPAddress
-                            $invokeRsCimMethodCreateSSLCertificateBindingParameterArguments.Port
-                        )
-                        New-InvalidResultException -Message ( $script:localizedData.CreateSslCertficateBindingError -f $createSslCertficateBindingErrorArguments ) -ErrorRecord $createSSLCertificateBindingResult.Error
-                    }
+                    Invoke-RsCimMethod @invokeRsCimMethodCreateSSLCertificateBindingParameters > $null
                 }
             }
         }
@@ -1427,7 +1413,7 @@ function Test-TargetResource
         $result = $false
     }
 
-    if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') -and $null -ne $currentConfig.EncryptionKeyBackupFile )
+    if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') -and [System.String]::IsNullOrEmpty($currentConfig.EncryptionKeyBackupFile) )
     {
         $result = $false
     }
