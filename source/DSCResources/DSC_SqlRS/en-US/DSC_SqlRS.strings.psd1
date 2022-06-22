@@ -17,7 +17,6 @@ ConvertFrom-StringData @'
     HttpsIPAddressNotInDesiredState = The HTTPS IP address binding is '{0}' but should be '{1}'.
     HttpsPortNotInDesiredState = The HTTPS port is '{0}' but should be '{1}'.
     RemoveSslCertficateBindingError = Failed to remove the SSL certificate binding for the application '{0}', certificate thumbprint '{1}', IP Address '{2}', and port '{3}'.
-    CreateSslCertficateBindingError = Failed to create the SSL certificate binding for the application '{0}', certificate thumbprint '{1}', IP Address '{2}', and port '{3}'. Error: {4}
     GetOperatingSystemClassError = Unable to find WMI object Win32_OperatingSystem.
     InvokeRsCimMethodError = Method {0}() failed with an error. Error: {1} (HRESULT:{2})
     GenerateDatabaseCreateScript = Generate database creation script on '{0}\\{1}' for database '{2}'.
