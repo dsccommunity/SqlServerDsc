@@ -512,7 +512,21 @@ function Set-TargetResource
             $encryptionKeyBackupFile = Join-Path -Path $EncryptionKeyBackupPath -ChildPath $encryptionKeyBackupFileName
             Write-Verbose -Message ($script:localizedData.BackupEncryptionKey -f $encryptionKeyBackupFile) -Verbose
 
-            Set-Content -Path $encryptionKeyBackupFile -Value $backupEncryptionKeyResult.KeyFile -Encoding Byte
+            $setContentParameters = @{
+                Path = $encryptionKeyBackupFile
+                Value = $backupEncryptionKeyResult.KeyFile
+            }
+
+            if ( $PSVersionTable.PSVersion.Major -gt 5 )
+            {
+                $setContentParameters.AsByteStream = $true
+            }
+            else
+            {
+                $setContentParameters.Encoding = 'Byte'
+            }
+
+            Set-Content @setContentParameters
 
             if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
             {
