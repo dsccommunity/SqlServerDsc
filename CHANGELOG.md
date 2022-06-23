@@ -124,6 +124,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlDatabaseRole
   - `Test-TargetResource` returns true if the `IsUpdateable` property of the
     database is `$false` to resolve issue #1750.
+- SqlAlwaysOnService
+  - BREAKING CHANGE: The parameter `IsHadrEnabled` is no longer returned by
+    `Get-TargetResource`. The `Ensure` parameter now returns `Present` if
+    Always On HADR is enabled and `Absent` if it is disabled.
 
 ### Fixed
 

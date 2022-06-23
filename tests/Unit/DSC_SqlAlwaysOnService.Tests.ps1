@@ -115,7 +115,7 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.IsHadrEnabled | Should -BeFalse
+                        $result.Ensure | Should -Be 'Absent'
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
@@ -166,7 +166,7 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.IsHadrEnabled | Should -BeTrue
+                        $result.Ensure | Should -Be 'Present'
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
@@ -230,7 +230,7 @@ Describe 'SqlAlwaysOnService\Get-TargetResource' {
                         # Get the current state
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.IsHadrEnabled | Should -BeFalse
+                        $result.Ensure | Should -Be 'Absent'
                     }
 
                     Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
@@ -275,7 +275,6 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
                             Ensure         = 'Absent'
                             ServerName     = 'Server01'
                             RestartTimeout = 120
-                            IsHadrEnabled  = $false
                         }
                     }
                 }
@@ -304,7 +303,6 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
                             Ensure         = 'Present'
                             ServerName     = 'Server01'
                             RestartTimeout = 120
-                            IsHadrEnabled  = $true
                         }
                     }
                 }
@@ -346,7 +344,6 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
                             Ensure         = 'Present'
                             ServerName     = 'Server01'
                             RestartTimeout = 120
-                            IsHadrEnabled  = $true
                         }
                     }
                 }
@@ -375,7 +372,6 @@ Describe 'SqlAlwaysOnService\Test-TargetResource' {
                             Ensure         = 'Absent'
                             ServerName     = 'Server01'
                             RestartTimeout = 120
-                            IsHadrEnabled  = $false
                         }
                     }
                 }
