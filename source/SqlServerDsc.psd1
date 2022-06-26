@@ -1,46 +1,49 @@
 @{
+    # Script module or binary module file associated with this manifest.
+    RootModule           = 'SqlServerDsc.psm1'
+
     # Version number of this module.
-    moduleVersion      = '0.0.1'
+    ModuleVersion        = '0.0.1'
 
     # ID used to uniquely identify this module
-    GUID               = '693ee082-ed36-45a7-b490-88b07c86b42f'
+    GUID                 = '693ee082-ed36-45a7-b490-88b07c86b42f'
 
     # Author of this module
-    Author             = 'DSC Community'
+    Author               = 'DSC Community'
 
     # Company or vendor of this module
-    CompanyName        = 'DSC Community'
+    CompanyName          = 'DSC Community'
 
     # Copyright statement for this module
-    Copyright          = 'Copyright the DSC Community contributors. All rights reserved.'
+    Copyright            = 'Copyright the DSC Community contributors. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description        = 'Module with DSC resources for deployment and configuration of Microsoft SQL Server.'
+    Description          = 'Module with DSC resources for deployment and configuration of Microsoft SQL Server.'
 
     # Minimum version of the Windows PowerShell engine required by this module
-    PowerShellVersion  = '5.0'
+    PowerShellVersion    = '5.0'
 
     # Minimum version of the common language runtime (CLR) required by this module
-    CLRVersion         = '4.0'
+    CLRVersion           = '4.0'
 
     # Functions to export from this module
-    FunctionsToExport  = @()
+    FunctionsToExport    = @()
 
     # Cmdlets to export from this module
-    CmdletsToExport    = @()
+    CmdletsToExport      = @()
 
     # Variables to export from this module
-    VariablesToExport  = @()
+    VariablesToExport    = @()
 
     # Aliases to export from this module
-    AliasesToExport    = @()
+    AliasesToExport      = @()
 
     DscResourcesToExport = @()
 
-    RequiredAssemblies = @()
+    RequiredAssemblies   = @()
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
-    PrivateData        = @{
+    PrivateData          = @{
 
         PSData = @{
             # Set to a prerelease string value if the release should be a prerelease.

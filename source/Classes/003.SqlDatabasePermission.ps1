@@ -87,7 +87,9 @@ class SqlDatabasePermission : ResourceBase
     # Base method Get() call this method to get the current state as a CimInstance.
     [Microsoft.Management.Infrastructure.CimInstance] GetCurrentState([System.Collections.Hashtable] $properties)
     {
-        return (Get-DnsServerDsSetting @properties)
+        Write-Verbose -Message ($properties | Out-String) -Verbose
+
+        return ConvertTo-CimInstance -Hashtable @{} #(Get-DnsServerDsSetting @properties)
     }
 
     [void] Set()
@@ -102,7 +104,9 @@ class SqlDatabasePermission : ResourceBase
     #>
     [void] Modify([System.Collections.Hashtable] $properties)
     {
-        Set-DnsServerDsSetting @properties
+        Write-Verbose -Message ($properties | Out-String) -Verbose
+
+        #Set-DnsServerDsSetting @properties
     }
 
     [System.Boolean] Test()
@@ -113,17 +117,17 @@ class SqlDatabasePermission : ResourceBase
 
     hidden [void] AssertProperties()
     {
-        @(
-            'DirectoryPartitionAutoEnlistInterval',
-            'TombstoneInterval'
-        ) | ForEach-Object -Process {
-            $valueToConvert = $this.$_
+        # @(
+        #     'DirectoryPartitionAutoEnlistInterval',
+        #     'TombstoneInterval'
+        # ) | ForEach-Object -Process {
+        #     $valueToConvert = $this.$_
 
-            # Only evaluate properties that have a value.
-            if ($null -ne $valueToConvert)
-            {
-                Assert-TimeSpan -PropertyName $_ -Value $valueToConvert -Minimum '0.00:00:00'
-            }
-        }
+        #     # Only evaluate properties that have a value.
+        #     if ($null -ne $valueToConvert)
+        #     {
+        #         Assert-TimeSpan -PropertyName $_ -Value $valueToConvert -Minimum '0.00:00:00'
+        #     }
+        # }
     }
 }

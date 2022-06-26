@@ -36,20 +36,22 @@ class ResourceBase
 
         $getParameters = @{}
 
+        $specialKeyProperty = @()
+
         # Set each key property to its value (property DnsServer is handled below).
         $keyProperty |
             Where-Object -FilterScript {
-                $_ -ne 'DnsServer'
+                $_ -notin $specialKeyProperty
             } |
             ForEach-Object -Process {
                 $getParameters[$_] = $this.$_
             }
 
         # Set ComputerName depending on value of DnsServer.
-        if ($this.DnsServer -ne 'localhost')
-        {
-            $getParameters['ComputerName'] = $this.DnsServer
-        }
+        # if ($this.DnsServer -ne 'localhost')
+        # {
+        #     $getParameters['ComputerName'] = $this.DnsServer
+        # }
 
         $getCurrentStateResult = $this.GetCurrentState($getParameters)
 
@@ -87,10 +89,10 @@ class ResourceBase
                 Write-Verbose -Message ($this.localizedData.SetProperty -f $_, $propertiesToModify.$_, $this.GetType().Name)
             }
 
-            if ($this.DnsServer -ne 'localhost')
-            {
-                $propertiesToModify['ComputerName'] = $this.DnsServer
-            }
+            # if ($this.DnsServer -ne 'localhost')
+            # {
+            #     $propertiesToModify['ComputerName'] = $this.DnsServer
+            # }
 
             <#
                 Call the Modify() method with the properties that should be enforced
@@ -187,7 +189,7 @@ class ResourceBase
     # This method should normally not be overridden.
     hidden [void] Assert()
     {
-        Assert-Module -ModuleName 'DnsServer'
+        #Assert-Module -ModuleName 'DnsServer'
 
         $this.AssertProperties()
     }
