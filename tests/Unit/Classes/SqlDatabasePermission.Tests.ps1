@@ -95,4 +95,25 @@ Describe 'SqlDatabasePermission' {
 }
 
 Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
+                Name = 'MockUserName'
+                DatabaseName = 'MockDatabaseName'
+                InstanceName = 'NamedInstance'
+            }
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        Context 'When the desired permission does exist' {
+            It 'Should return the state as absent' {
+                InModuleScope -ScriptBlock {
+                    $currentState = $script:mockSqlDatabasePermissionInstance.Get()
+
+                    $currentState.Ensure | Should -Be 'Absent'
+                }
+            }
+        }
+    }
 }

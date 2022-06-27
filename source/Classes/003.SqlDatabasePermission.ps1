@@ -38,7 +38,10 @@
         current computer name.
 
     .PARAMETER Permission
-        The database permission to enforce.
+        An array of database permissions to enforce.
+
+        This is an array of CIM instances of class `DatabasePermission` from the
+        namespace `root/Microsoft/Windows/DesiredStateConfiguration`.
 
     .PARAMETER Ensure
         If the permission should be granted ('Present') or revoked ('Absent').
@@ -84,12 +87,24 @@ class SqlDatabasePermission : ResourceBase
         return ([ResourceBase] $this).Get()
     }
 
-    # Base method Get() call this method to get the current state as a CimInstance.
-    [Microsoft.Management.Infrastructure.CimInstance] GetCurrentState([System.Collections.Hashtable] $properties)
+    # Base method Get() call this method to get the current state as a hashtable.
+    hidden [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
         Write-Verbose -Message ($properties | Out-String) -Verbose
 
-        return ConvertTo-CimInstance -Hashtable @{} #(Get-DnsServerDsSetting @properties)
+        $currentEnsure = 'Absent'
+
+        # TODO: Evaluate database permission current state
+        #(Get-DnsServerDsSetting @properties)
+
+        $currentState = @{
+            InstanceName = $properties.InstanceName
+            DatabaseName = $properties.DatabaseName
+            Name = $properties.Name
+            Ensure = $currentEnsure
+        }
+
+        return $currentState
     }
 
     [void] Set()
@@ -102,7 +117,7 @@ class SqlDatabasePermission : ResourceBase
         Base method Set() call this method with the properties that should be
         enforced and that are not in desired state.
     #>
-    [void] Modify([System.Collections.Hashtable] $properties)
+    hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
         Write-Verbose -Message ($properties | Out-String) -Verbose
 

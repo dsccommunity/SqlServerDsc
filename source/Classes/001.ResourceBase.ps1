@@ -36,9 +36,16 @@ class ResourceBase
 
         $getParameters = @{}
 
+        # TODO: Should be a member, and for each property it should call back to the derived class for proper handling.
         $specialKeyProperty = @()
 
-        # Set each key property to its value (property DnsServer is handled below).
+        # Set ComputerName depending on value of DnsServer.
+        # if ($this.DnsServer -ne 'localhost')
+        # {
+        #     $getParameters['ComputerName'] = $this.DnsServer
+        # }
+
+        # Set each key property that does not need special handling (those were handle above).
         $keyProperty |
             Where-Object -FilterScript {
                 $_ -notin $specialKeyProperty
@@ -47,26 +54,20 @@ class ResourceBase
                 $getParameters[$_] = $this.$_
             }
 
-        # Set ComputerName depending on value of DnsServer.
-        # if ($this.DnsServer -ne 'localhost')
-        # {
-        #     $getParameters['ComputerName'] = $this.DnsServer
-        # }
-
         $getCurrentStateResult = $this.GetCurrentState($getParameters)
 
         $dscResourceObject = [System.Activator]::CreateInstance($this.GetType())
 
         foreach ($propertyName in $this.PSObject.Properties.Name)
         {
-            if ($propertyName -in @($getCurrentStateResult.PSObject.Properties.Name))
+            if ($propertyName -in @($getCurrentStateResult.Keys))
             {
                 $dscResourceObject.$propertyName = $getCurrentStateResult.$propertyName
             }
         }
 
         # Always set this as it won't be in the $getCurrentStateResult
-        $dscResourceObject.DnsServer = $this.DnsServer
+        #$dscResourceObject.DnsServer = $this.DnsServer
 
         # Return properties.
         return $dscResourceObject
@@ -206,7 +207,7 @@ class ResourceBase
     }
 
     # This method must be overridden by a resource.
-    hidden [Microsoft.Management.Infrastructure.CimInstance] GetCurrentState([System.Collections.Hashtable] $properties)
+    hidden [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
         throw $this.localizedData.GetCurrentStateMethodNotImplemented
     }

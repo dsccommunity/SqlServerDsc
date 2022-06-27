@@ -38,6 +38,7 @@ CopyPaths:
   - DSCResources
   - en-US
   - Modules
+Prefix: prefix.ps1
 Encoding: UTF8
 VersionedOutputDirectory: true
 
