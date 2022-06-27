@@ -17,6 +17,7 @@ class ResourceBase
     # Default constructor
     ResourceBase()
     {
+        # TODO: When this fails the LCM returns 'Failed to create an object of PowerShell class SqlDatabasePermission' instead of the actual error that occurred.
         $this.localizedData = Get-LocalizedDataRecursive -ClassName ($this | Get-ClassName -Recurse)
     }
 
