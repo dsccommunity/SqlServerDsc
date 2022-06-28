@@ -32,12 +32,6 @@ BeforeDiscovery {
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
 
-    # $script:testEnvironment = Initialize-TestEnvironment `
-    #     -DSCModuleName $script:dscModuleName `
-    #     -DSCResourceName $script:dscResourceName `
-    #     -ResourceType 'Class' `
-    #     -TestType 'Unit'
-
     Import-Module -Name $script:dscModuleName
 
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '../../TestHelpers/CommonTestHelper.psm1')
@@ -57,8 +51,6 @@ AfterAll {
     $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force

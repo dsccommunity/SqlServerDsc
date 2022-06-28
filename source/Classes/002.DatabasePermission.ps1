@@ -12,6 +12,7 @@ class DatabasePermission
     [DatabasePermissionState]
     $State
 
+    # TODO: Can we use a validate set for the permissions?
     [DscProperty(Mandatory)]
     [System.String]
     $Permission
