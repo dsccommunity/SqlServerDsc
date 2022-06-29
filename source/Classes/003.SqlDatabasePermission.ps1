@@ -87,11 +87,24 @@ class SqlDatabasePermission : ResourceBase
         return ([ResourceBase] $this).Get()
     }
 
-    # Base method Get() call this method to get the current state as a hashtable.
+    [System.Boolean] Test()
+    {
+        # Call the base method to test all of the properties that should be enforced.
+        return ([ResourceBase] $this).Test()
+    }
+
+    [void] Set()
+    {
+        # Call the base method to enforce the properties.
+        ([ResourceBase] $this).Set()
+    }
+
+    <#
+        Base method Get() call this method to get the current state as a hashtable.
+        The parameter properties will contain the key properties.
+    #>
     hidden [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
-        Write-Verbose -Message ($properties | Out-String) -Verbose
-
         $currentEnsure = 'Absent'
 
         # TODO: Evaluate database permission current state
@@ -107,12 +120,6 @@ class SqlDatabasePermission : ResourceBase
         return $currentState
     }
 
-    [void] Set()
-    {
-        # Call the base method to enforce the properties.
-        ([ResourceBase] $this).Set()
-    }
-
     <#
         Base method Set() call this method with the properties that should be
         enforced and that are not in desired state.
@@ -124,13 +131,11 @@ class SqlDatabasePermission : ResourceBase
         #Set-DnsServerDsSetting @properties
     }
 
-    [System.Boolean] Test()
-    {
-        # Call the base method to test all of the properties that should be enforced.
-        return ([ResourceBase] $this).Test()
-    }
-
-    hidden [void] AssertProperties()
+    <#
+        Base method Assert() call this method with the properties that was passed
+        a value.
+    #>
+    hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
         # @(
         #     'DirectoryPartitionAutoEnlistInterval',

@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.1//EN" "report.dtd"[]>
+<report name="Pester (06/29/2022 18:00:58)">
+  <sessioninfo id="this" start="1656525654287" dump="1656525658858" />
+  <package name="16.0.0">
+    <class name="16.0.0/SqlServerDsc" sourcefilename="SqlServerDsc.psm1">
+      <method name="&lt;script&gt;" desc="()" line="2">
+        <counter type="INSTRUCTION" missed="0" covered="5" />
+        <counter type="LINE" missed="0" covered="5" />
+        <counter type="METHOD" missed="0" covered="1" />
+      </method>
+      <method name="ResourceBase" desc="()" line="47">
+        <counter type="INSTRUCTION" missed="0" covered="3" />
+        <counter type="LINE" missed="0" covered="1" />
+        <counter type="METHOD" missed="0" covered="1" />
+      </method>
+      <method name="Get" desc="()" line="52">
+        <counter type="INSTRUCTION" missed="0" covered="16" />
+        <counter type="LINE" missed="0" covered="10" />
+        <counter type="METHOD" missed="0" covered="1" />
+      </method>
+      <method name="Set" desc="()" line="85">
+        <counter type="INSTRUCTION" missed="2" covered="16" />
+        <counter type="LINE" missed="1" covered="10" />
+        <counter type="METHOD" missed="0" covered="1" />
+      </method>
+      <method name="Test" desc="()" line="117">
+        <counter type="INSTRUCTION" missed="2" covered="15" />
+        <counter type="LINE" missed="1" covered="11" />
+        <counter type="METHOD" missed="0" covered="1" />
+      </method>
+      <method name="Compare" desc="()" line="156">
+        <counter type="INSTRUCTION" missed="0" covered="13" />
+        <counter type="LINE" missed="0" covered="9" />
+        <counter type="METHOD" missed="0" covered="1" />
+      </method>
+      <method name="GetDesiredStateForSplatting" desc="()" line="177">
+        <counter type="INSTRUCTION" missed="0" covered="5" />
+        <counter type="LINE" missed="0" covered="4" />
+        <counter type="METHOD" missed="0" covered="1" />
+      </method>
+      <method name="Assert" desc="()" line="189">
+        <counter type="INSTRUCTION" missed="0" covered="3" />
+        <counter type="LINE" missed="0" covered="2" />
+        <counter type="METHOD" missed="0" covered="1" />
+      </method>
+      <method name="Modify" desc="()" line="211">
+        <counter type="INSTRUCTION" missed="3" covered="1" />
+        <counter type="LINE" missed="1" covered="1" />
+        <counter type="METHOD" missed="0" covered="1" />
+      </method>
+      <method name="GetCurrentState" desc="()" line="220">
+        <counter type="INSTRUCTION" missed="0" covered="8" />
+        <counter type="LINE" missed="0" covered="8" />
+        <counter type="METHOD" missed="0" covered="1" />
+      </method>
+      <method name="Get-ClassName" desc="()" line="440">
+        <counter type="INSTRUCTION" missed="0" covered="8" />
+        <counter type="LINE" missed="0" covered="7" />
+        <counter type="METHOD" missed="0" covered="1" />
+      </method>
+      <method name="Get-DesiredStateProperty" desc="()" line="485">
+        <counter type="INSTRUCTION" missed="0" covered="10" />
+        <counter type="LINE" missed="0" covered="6" />
+        <counter type="METHOD" missed="0" covered="1" />
+      </method>
+      <method name="Get-KeyProperty" desc="()" line="530">
+        <counter type="INSTRUCTION" missed="0" covered="11" />
+        <counter type="LINE" missed="0" covered="9" />
+        <counter type="METHOD" missed="0" covered="1" />
+      </method>
+      <method name="Get-LocalizedDataRecursive" desc="()" line="582">
+        <counter type="INSTRUCTION" missed="0" covered="16" />
+        <counter type="LINE" missed="0" covered="12" />
+        <counter type="METHOD" missed="0" covered="1" />
+      </method>
+      <method name="Connect-SqlDscDatabaseEngine" desc="()" line="678">
+        <counter type="INSTRUCTION" missed="3" covered="0" />
+        <counter type="LINE" missed="2" covered="0" />
+        <counter type="METHOD" missed="1" covered="0" />
+      </method>
+      <method name="Get-SqlDscDatabasePermission" desc="()" line="776">
+        <counter type="INSTRUCTION" missed="24" covered="0" />
+        <counter type="LINE" missed="22" covered="0" />
+        <counter type="METHOD" missed="1" covered="0" />
+      </method>
+      <method name="Test-SqlDscIsDatabasePrincipal" desc="()" line="878">
+        <counter type="INSTRUCTION" missed="15" covered="0" />
+        <counter type="LINE" missed="14" covered="0" />
+        <counter type="METHOD" missed="1" covered="0" />
+      </method>
+      <counter type="INSTRUCTION" missed="49" covered="130" />
+      <counter type="LINE" missed="41" covered="95" />
+      <counter type="METHOD" missed="3" covered="14" />
+      <counter type="CLASS" missed="0" covered="1" />
+    </class>
+    <sourcefile name="SqlServerDsc.psm1">
+      <line nr="2" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="3" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="6" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="7" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="9" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="47" mi="0" ci="3" mb="0" cb="0" />
+      <line nr="52" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="55" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="57" mi="0" ci="4" mb="0" cb="0" />
+      <line nr="66" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="68" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="70" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="72" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="74" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="79" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="85" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="87" mi="0" ci="4" mb="0" cb="0" />
+      <line nr="89" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="92" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="94" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="96" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="98" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="99" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="106" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="110" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="117" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="119" mi="0" ci="4" mb="0" cb="0" />
+      <line nr="121" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="123" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="129" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="131" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="133" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="136" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="138" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="142" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="145" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="156" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="157" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="159" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="160" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="161" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="162" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="163" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="164" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="171" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="177" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="179" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="180" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="183" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="189" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="191" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="211" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="220" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="344" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="350" mi="2" ci="0" mb="0" cb="0" />
+      <line nr="356" mi="2" ci="0" mb="0" cb="0" />
+      <line nr="365" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="370" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="371" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="372" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="373" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="374" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="377" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="386" mi="3" ci="0" mb="0" cb="0" />
+      <line nr="440" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="442" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="444" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="446" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="448" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="450" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="454" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="485" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="491" mi="0" ci="3" mb="0" cb="0" />
+      <line nr="492" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="494" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="496" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="500" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="530" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="531" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="532" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="533" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="534" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="538" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="540" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="541" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="544" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="582" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="587" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="589" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="592" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="597" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="600" mi="0" ci="2" mb="0" cb="0" />
+      <line nr="603" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="606" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="608" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="610" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="618" mi="0" ci="4" mb="0" cb="0" />
+      <line nr="620" mi="0" ci="1" mb="0" cb="0" />
+      <line nr="678" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="704" mi="2" ci="0" mb="0" cb="0" />
+      <line nr="776" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="778" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="780" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="782" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="784" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="786" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="787" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="788" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="791" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="793" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="795" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="796" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="797" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="800" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="802" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="804" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="809" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="810" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="811" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="818" mi="2" ci="0" mb="0" cb="0" />
+      <line nr="823" mi="2" ci="0" mb="0" cb="0" />
+      <line nr="826" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="878" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="880" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="882" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="884" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="887" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="889" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="892" mi="2" ci="0" mb="0" cb="0" />
+      <line nr="893" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="898" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="901" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="903" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="907" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="909" mi="1" ci="0" mb="0" cb="0" />
+      <line nr="912" mi="1" ci="0" mb="0" cb="0" />
+      <counter type="INSTRUCTION" missed="49" covered="130" />
+      <counter type="LINE" missed="41" covered="95" />
+      <counter type="METHOD" missed="3" covered="14" />
+      <counter type="CLASS" missed="0" covered="1" />
+    </sourcefile>
+    <counter type="INSTRUCTION" missed="49" covered="130" />
+    <counter type="LINE" missed="41" covered="95" />
+    <counter type="METHOD" missed="3" covered="14" />
+    <counter type="CLASS" missed="0" covered="1" />
+  </package>
+  <counter type="INSTRUCTION" missed="49" covered="130" />
+  <counter type="LINE" missed="41" covered="95" />
+  <counter type="METHOD" missed="3" covered="14" />
+  <counter type="CLASS" missed="0" covered="1" />
+</report>

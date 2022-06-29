@@ -25,37 +25,19 @@ class ResourceBase
     {
         $this.Assert()
 
-        Write-Verbose -Message ($this.localizedData.GetCurrentState -f $this.DnsServer, $this.GetType().Name)
-
         # Get all key properties.
-        $keyProperty = $this |
-            Get-Member -MemberType 'Property' |
-            Select-Object -ExpandProperty Name |
-            Where-Object -FilterScript {
-                $this.GetType().GetMember($_).CustomAttributes.Where( { $_.NamedArguments.MemberName -eq 'Key' }).NamedArguments.TypedValue.Value -eq $true
-            }
+        $keyProperty = $this | Get-KeyProperty
 
-        $getParameters = @{}
+        Write-Verbose -Verbose -Message ($this.localizedData.GetCurrentState -f $this.GetType().Name, ($keyProperty | ConvertTo-Json -Compress))
 
-        # TODO: Should be a member, and for each property it should call back to the derived class for proper handling.
-        $specialKeyProperty = @()
+        <#
+            TODO: Should call back to the derived class for proper handling of adding
+                  additional parameters to the variable $keyProperty that needs to be
+                  passed to GetCurrentState().
+        #>
+        #$specialKeyProperty = @()
 
-        # Set ComputerName depending on value of DnsServer.
-        # if ($this.DnsServer -ne 'localhost')
-        # {
-        #     $getParameters['ComputerName'] = $this.DnsServer
-        # }
-
-        # Set each key property that does not need special handling (those were handle above).
-        $keyProperty |
-            Where-Object -FilterScript {
-                $_ -notin $specialKeyProperty
-            } |
-            ForEach-Object -Process {
-                $getParameters[$_] = $this.$_
-            }
-
-        $getCurrentStateResult = $this.GetCurrentState($getParameters)
+        $getCurrentStateResult = $this.GetCurrentState($keyProperty)
 
         $dscResourceObject = [System.Activator]::CreateInstance($this.GetType())
 
@@ -67,18 +49,18 @@ class ResourceBase
             }
         }
 
-        # Always set this as it won't be in the $getCurrentStateResult
-        #$dscResourceObject.DnsServer = $this.DnsServer
-
         # Return properties.
         return $dscResourceObject
     }
 
     [void] Set()
     {
-        $this.Assert()
+        # Get all key properties.
+        $keyProperty = $this | Get-KeyProperty
 
-        Write-Verbose -Message ($this.localizedData.SetDesiredState -f $this.DnsServer, $this.GetType().Name)
+        Write-Verbose -Verbose -Message ($this.localizedData.SetDesiredState -f $this.GetType().Name, ($keyProperty | ConvertTo-Json -Compress))
+
+        $this.Assert()
 
         # Call the Compare method to get enforced properties that are not in desired state.
         $propertiesNotInDesiredState = $this.Compare()
@@ -88,13 +70,8 @@ class ResourceBase
             $propertiesToModify = $this.GetDesiredStateForSplatting($propertiesNotInDesiredState)
 
             $propertiesToModify.Keys | ForEach-Object -Process {
-                Write-Verbose -Message ($this.localizedData.SetProperty -f $_, $propertiesToModify.$_, $this.GetType().Name)
+                Write-Verbose -Verbose -Message ($this.localizedData.SetProperty -f $_, $propertiesToModify.$_)
             }
-
-            # if ($this.DnsServer -ne 'localhost')
-            # {
-            #     $propertiesToModify['ComputerName'] = $this.DnsServer
-            # }
 
             <#
                 Call the Modify() method with the properties that should be enforced
@@ -104,13 +81,16 @@ class ResourceBase
         }
         else
         {
-            Write-Verbose -Message $this.localizedData.NoPropertiesToSet
+            Write-Verbose -Verbose -Message $this.localizedData.NoPropertiesToSet
         }
     }
 
     [System.Boolean] Test()
     {
-        Write-Verbose -Message ($this.localizedData.TestDesiredState -f $this.DnsServer, $this.GetType().Name)
+        # Get all key properties.
+        $keyProperty = $this | Get-KeyProperty
+
+        Write-Verbose -Verbose -Message ($this.localizedData.TestDesiredState -f $this.GetType().Name, ($keyProperty | ConvertTo-Json -Compress))
 
         $this.Assert()
 
@@ -129,37 +109,26 @@ class ResourceBase
 
         if ($isInDesiredState)
         {
-            Write-Verbose -Message ($this.localizedData.InDesiredState -f $this.DnsServer, $this.GetType().Name)
+            Write-Verbose -Verbose -Message $this.localizedData.InDesiredState
         }
         else
         {
-            Write-Verbose -Message ($this.localizedData.NotInDesiredState -f $this.DnsServer, $this.GetType().Name)
+            Write-Verbose -Verbose -Message $this.localizedData.NotInDesiredState
         }
 
         return $isInDesiredState
     }
 
     <#
-        Returns a hashtable containing all properties that should be enforced.
+        Returns a hashtable containing all properties that should be enforced and
+        are not in desired state.
+
         This method should normally not be overridden.
     #>
     hidden [System.Collections.Hashtable[]] Compare()
     {
         $currentState = $this.Get() | ConvertFrom-DscResourceInstance
-        $desiredState = $this | ConvertFrom-DscResourceInstance
-
-        <#
-            Remove properties that have $null as the value, and remove read
-            properties so that there is no chance to compare those.
-        #>
-        @($desiredState.Keys) | ForEach-Object -Process {
-            $isReadProperty = $this.GetType().GetMember($_).CustomAttributes.Where( { $_.NamedArguments.MemberName -eq 'NotConfigurable' }).NamedArguments.TypedValue.Value -eq $true
-
-            if ($isReadProperty -or $null -eq $desiredState[$_])
-            {
-                $desiredState.Remove($_)
-            }
-        }
+        $desiredState = $this | Get-DesiredStateProperty
 
         $CompareDscParameterState = @{
             CurrentValues     = $currentState
@@ -191,23 +160,35 @@ class ResourceBase
     # This method should normally not be overridden.
     hidden [void] Assert()
     {
-        #Assert-Module -ModuleName 'DnsServer'
+        $desiredState = $this | Get-DesiredStateProperty
 
-        $this.AssertProperties()
+        $this.AssertProperties($desiredState)
     }
 
-    # This method can be overridden if resource specific asserts are needed.
-    hidden [void] AssertProperties()
+    <#
+        This method can be overridden if resource specific property asserts are
+        needed. The parameter properties will contain the properties that was
+        passed a value.
+    #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidEmptyNamedBlocks', '')]
+    hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
     }
 
-    # This method must be overridden by a resource.
+    <#
+        This method must be overridden by a resource. The parameter properties will
+        contain the properties that should be enforced and that are not in desired
+        state.
+    #>
     hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
         throw $this.localizedData.ModifyMethodNotImplemented
     }
 
-    # This method must be overridden by a resource.
+    <#
+        This method must be overridden by a resource. The parameter properties will
+        contain the key properties.
+    #>
     hidden [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
         throw $this.localizedData.GetCurrentStateMethodNotImplemented

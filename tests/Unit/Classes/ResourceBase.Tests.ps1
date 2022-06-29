@@ -84,7 +84,11 @@ Describe 'ResourceBase\AssertProperties()' -Tag 'AssertProperties' {
 
 
     It 'Should not throw' {
-        { $mockResourceBaseInstance.AssertProperties() } | Should -Not -Throw
+        $mockDesiredState = @{
+            MyProperty1 = 'MyValue1'
+        }
+
+        { $mockResourceBaseInstance.AssertProperties($mockDesiredState) } | Should -Not -Throw
     }
 }
 
