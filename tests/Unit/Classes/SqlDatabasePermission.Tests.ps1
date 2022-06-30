@@ -70,7 +70,7 @@ Describe 'SqlDatabasePermission' {
             }
         }
 
-        It 'SHould have a default or empty constructor' {
+        It 'Should have a default or empty constructor' {
             InModuleScope -ScriptBlock {
                 $instance = [SqlDatabasePermission]::new()
                 $instance | Should -Not -BeNullOrEmpty

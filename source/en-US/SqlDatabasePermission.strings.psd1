@@ -9,8 +9,8 @@ ConvertFrom-StringData @'
     # None
 
     # Strings directly used by the derived class SqlDatabasePermission.
+    EvaluateDatabasePermissionForPrincipal = Evaluate the current permissions for the user '{0}' in the database '{1}' on the instance '{2}'. (SDP0001)
 
-    GetDatabasePermission = Get permissions for the user '{0}' in the database '{1}' on the instance '{2}'. (SDP0001)
     DatabaseNotFound = The database '{0}' does not exist. (SDP0002)
     ChangePermissionForUser = Changing the permission for the user '{0}' in the database '{1}' on the instance '{2}'. (SDP0003)
     NameIsMissing = The name '{0}' is neither a database user, database role (user-defined), or database application role in the database '{1}'. (SDP0004)

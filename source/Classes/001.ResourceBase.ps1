@@ -28,6 +28,7 @@ class ResourceBase
         # Get all key properties.
         $keyProperty = $this | Get-KeyProperty
 
+        # TODO: TA BORT -VERBOSE
         Write-Verbose -Verbose -Message ($this.localizedData.GetCurrentState -f $this.GetType().Name, ($keyProperty | ConvertTo-Json -Compress))
 
         <#

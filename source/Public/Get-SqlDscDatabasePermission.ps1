@@ -5,42 +5,37 @@
     .PARAMETER ServerObject
         Specifies current server connection object.
 
-    # .PARAMETER InstanceName
-    #     Specifies the SQL instance for the database.
-
     .PARAMETER DatabaseName
-        Specifies the SQL database name.
+        Specifies the database name.
 
     .PARAMETER Name
-        Specifies the name of the database principal for which the permission set is returned.
+        Specifies the name of the database principal for which the permissions are
+        returned.
 
-    # .PARAMETER PermissionState
-    #     This is the state of permission set. Valid values are 'Grant' or 'Deny'.
+    .PARAMETER IgnoreMissingPrincipal
+        Specifies that the command ignores if the database principal do not exist
+        which also include if database is not present.
+        If not passed the command throws an error if the database or database
+        principal is missing.
 
-    # .PARAMETER Permissions
-    #     This is a list that represents a SQL Server set of database permissions.
+    .OUTPUTS
+        [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]]
 
     .NOTES
-        This command excludes fixed roles like db_datareader.
-
-        TODO: This function will not throw an error if for example the database
-              does not exist, so that the Get() method of the resource does not
-              throw. Suggest adding optional parmeter 'FailOnError',
-              or 'EvaluateMandatoryProperties', or a combination.
+        This command excludes fixed roles like db_datareader, and will always return
+        $null for such roles.
 #>
 function Get-SqlDscDatabasePermission
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Justification = 'Because Script Analyzer does not understand type even if cast when using comma in return statement')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification = 'Because the code throws based on an prior expression')]
     [CmdletBinding()]
-    [OutputType([System.String[]])]
+    [OutputType([Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]])]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [Microsoft.SqlServer.Management.Smo.Server]
         $ServerObject,
-
-        # [Parameter(Mandatory = $true)]
-        # [System.String]
-        # $InstanceName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -48,73 +43,60 @@ function Get-SqlDscDatabasePermission
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Name
+        $Name,
 
-        # [Parameter(Mandatory = $true)]
-        # [ValidateSet('Grant', 'Deny', 'GrantWithGrant')]
-        # [System.String]
-        # $PermissionState,
-
-        # [Parameter(Mandatory = $true)]
-        # [System.String[]]
-        # $Permissions,
-
-        # [Parameter()]
-        # [ValidateNotNullOrEmpty()]
-        # [System.String]
-        # $ServerName = (Get-ComputerName)
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $IgnoreMissingPrincipal
     )
 
     # Initialize variable permission
-    [System.String[]] $getSqlDatabasePermissionResult = @()
+    $getSqlDscDatabasePermissionResult = $null
 
     $sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName]
 
     if ($sqlDatabaseObject)
     {
-        $isDatabasePrincipal = Test-SqlDscIsDatabasePrincipal @PSBoundParameters -ExcludeFixedRoles
+        $testSqlDscIsDatabasePrincipalParameters = @{
+            ServerObject      = $ServerObject
+            DatabaseName      = $DatabaseName
+            Name              = $Name
+            ExcludeFixedRoles = $true
+        }
+
+        $isDatabasePrincipal = Test-SqlDscIsDatabasePrincipal @testSqlDscIsDatabasePrincipalParameters
 
         if ($isDatabasePrincipal)
         {
-            $databasePermissionInfo = $sqlDatabaseObject.EnumDatabasePermissions($Name) |
-                Where-Object -FilterScript {
-                    $_.PermissionState -eq $PermissionState
-                }
-
-            if ($databasePermissionInfo)
-            {
-                foreach ($currentDatabasePermissionInfo in $databasePermissionInfo)
-                {
-                    $permissionProperty = (
-                        $currentDatabasePermissionInfo.PermissionType |
-                            Get-Member -MemberType Property
-                    ).Name
-
-                    foreach ($currentPermissionProperty in $permissionProperty)
-                    {
-                        if ($currentDatabasePermissionInfo.PermissionType."$currentPermissionProperty")
-                        {
-                            $getSqlDatabasePermissionResult += $currentPermissionProperty
-                        }
-                    }
-
-                    # Remove any duplicate permissions.
-                    $getSqlDatabasePermissionResult = @(
-                        $getSqlDatabasePermissionResult |
-                            Sort-Object -Unique
-                    )
-                }
-            }
+            $getSqlDscDatabasePermissionResult = $sqlDatabaseObject.EnumDatabasePermissions($Name)
         }
         else
         {
-            Write-Verbose -Message ("The database principal '{0}' is neither a user, database role (user-defined), or database application role in the database '{1}'. (GETSDP0001)." -f $Name, $DatabaseName)
+            $missingPrincipalMessage = $script:localizedData.DatabasePermissionMissingPrincipal -f $Name, $DatabaseName
+
+            if ($IgnoreMissingPrincipal.IsPresent)
+            {
+                Write-Verbose -Message $missingPrincipalMessage
+            }
+            else
+            {
+                throw $missingPrincipalMessage
+            }
         }
     }
     else
     {
-        Write-Verbose -Message ("The database '{0}' did not exist. (GETSDP0002)" -f $DatabaseName)
+        $missingPrincipalMessage = $script:localizedData.DatabasePermissionMissingDatabase -f $DatabaseName
+
+        if ($IgnoreMissingPrincipal.IsPresent)
+        {
+            Write-Verbose -Message $missingPrincipalMessage
+        }
+        else
+        {
+            throw $missingPrincipalMessage
+        }
     }
 
-    return [System.String[]] $getSqlDatabasePermissionResult
+    return , $getSqlDscDatabasePermissionResult
 }

@@ -67,7 +67,7 @@ class SqlDatabasePermission : ResourceBase
 
     [DscProperty()]
     [System.String]
-    $ServerName
+    $ServerName = (Get-ComputerName)
 
     [DscProperty(Mandatory)]
     [DatabasePermission[]]
@@ -105,16 +105,77 @@ class SqlDatabasePermission : ResourceBase
     #>
     hidden [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
-        $currentEnsure = 'Absent'
-
-        # TODO: Evaluate database permission current state
-        #(Get-DnsServerDsSetting @properties)
-
         $currentState = @{
+            Ensure       = 'Absent'
+            ServerName   = $this.ServerName
             InstanceName = $properties.InstanceName
             DatabaseName = $properties.DatabaseName
-            Name = $properties.Name
-            Ensure = $currentEnsure
+            Permission   = [DatabasePermission[]] @()
+            Name         = $properties.Name
+        }
+
+        $sqlServerObject = Connect-SqlDscDatabaseEngine -ServerName $this.ServerName -InstanceName $properties.InstanceName
+
+        # TA BORT -VERBOSE!
+        Write-Verbose -Verbose -Message (
+            $script:localizedData.EvaluateDatabasePermissionForPrincipal -f @(
+                $properties.Name,
+                $properties.DatabaseName,
+                $properties.InstanceName
+            )
+        )
+
+        $databasePermissionInfo = $sqlServerObject |
+            Get-SqlDscDatabasePermission -DatabaseName $this.DatabaseName -Name $this.Name -IgnoreMissingPrincipal
+
+        if ($databasePermissionInfo)
+        {
+            $permissionState = $databasePermissionInfo | ForEach-Object -Process {
+                # Convert from the type PermissionState to String.
+                [System.String] $_.PermissionState
+            } | Select-Object -Unique
+
+            foreach ($currentPermissionState in $permissionState)
+            {
+                $filteredDatabasePermission = $databasePermissionInfo |
+                    Where-Object -FilterScript {
+                        $_.PermissionState -eq $currentPermissionState
+                    }
+
+                $databasePermission = [DatabasePermission] @{
+                    State = $currentPermissionState
+                }
+
+                # Initialize variable permission
+                [System.String[]] $statePermissionResult = @()
+
+                foreach ($currentPermission in $filteredDatabasePermission)
+                {
+                    $permissionProperty = (
+                        $currentPermission.PermissionType |
+                            Get-Member -MemberType Property
+                    ).Name
+
+                    foreach ($currentPermissionProperty in $permissionProperty)
+                    {
+                        if ($currentPermission.PermissionType."$currentPermissionProperty")
+                        {
+                            $statePermissionResult += $currentPermissionProperty
+                        }
+                    }
+                }
+
+                <#
+                    Sort and remove any duplicate permissions, also make sure
+                    it is an array even if only one item.
+                #>
+                $databasePermission.Permission = @(
+                    $statePermissionResult |
+                        Sort-Object -Unique
+                )
+
+                $currentState.Permission += $databasePermission
+            }
         }
 
         return $currentState
