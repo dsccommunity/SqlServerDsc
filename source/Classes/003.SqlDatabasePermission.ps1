@@ -118,7 +118,7 @@ class SqlDatabasePermission : ResourceBase
 
         # TA BORT -VERBOSE!
         Write-Verbose -Verbose -Message (
-            $script:localizedData.EvaluateDatabasePermissionForPrincipal -f @(
+            $this.localizedData.EvaluateDatabasePermissionForPrincipal -f @(
                 $properties.Name,
                 $properties.DatabaseName,
                 $properties.InstanceName
@@ -174,7 +174,7 @@ class SqlDatabasePermission : ResourceBase
                         Sort-Object -Unique
                 )
 
-                $currentState.Permission += $databasePermission
+                [DatabasePermission[]] $currentState.Permission += $databasePermission
             }
         }
 

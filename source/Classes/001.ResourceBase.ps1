@@ -40,6 +40,8 @@ class ResourceBase
 
         $getCurrentStateResult = $this.GetCurrentState($keyProperty)
 
+        Write-Verbose -Verbose -Message ($getCurrentStateResult | Out-String)
+
         $dscResourceObject = [System.Activator]::CreateInstance($this.GetType())
 
         foreach ($propertyName in $this.PSObject.Properties.Name)
