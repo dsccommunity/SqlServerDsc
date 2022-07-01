@@ -35,6 +35,10 @@ class ResourceBase
             TODO: Should call back to the derived class for proper handling of adding
                   additional parameters to the variable $keyProperty that needs to be
                   passed to GetCurrentState().
+
+                  Second though, might not be necessary as the override for GetCurrentState
+                  can call $this.<PropertyName> to get any non-key properties.
+                  It might even be that we don't need Get-KeyProperty?
         #>
         #$specialKeyProperty = @()
 
