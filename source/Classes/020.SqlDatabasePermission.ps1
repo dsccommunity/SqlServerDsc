@@ -23,6 +23,12 @@
 
         All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabasePermission).
 
+        ### `PSDscRunAsCredential` not supported
+
+        The built-in property `PSDscRunAsCredential` does not work with class-based
+        resources that using advanced type like the parameter `Permission` does.
+        Use the parameter `Credential` instead of `PSDscRunAsCredential`.
+
         ### Invalid values during compilation
 
         The parameter Permission is of type `[DatabasePermission]`. If a property
@@ -89,6 +95,10 @@ class SqlDatabasePermission : ResourceBase
     $Permission
 
     [DscProperty()]
+    [PSCredential]
+    $Credential
+
+    [DscProperty()]
     [Ensure]
     $Ensure = [Ensure]::Present
 
@@ -129,7 +139,17 @@ class SqlDatabasePermission : ResourceBase
             Name         = $properties.Name
         }
 
-        $sqlServerObject = Connect-SqlDscDatabaseEngine -ServerName $this.ServerName -InstanceName $properties.InstanceName
+        $connectSqlDscDatabaseEngineParameters = @{
+            ServerName = $this.ServerName
+            InstanceName = $properties.InstanceName
+        }
+
+        if ($this.Credential)
+        {
+            $connectSqlDscDatabaseEngineParameters.Credential = $this.Credential
+        }
+
+        $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
         # TA BORT -VERBOSE!
         Write-Verbose -Verbose -Message (

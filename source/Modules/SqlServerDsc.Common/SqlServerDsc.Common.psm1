@@ -481,9 +481,9 @@ function Connect-SQL
 
         [Parameter(ParameterSetName = 'SqlServerWithCredential', Mandatory = $true)]
         [ValidateNotNull()]
-        [Alias('DatabaseCredential')]
+        [Alias('SetupCredential', 'DatabaseCredential')]
         [System.Management.Automation.PSCredential]
-        $SetupCredential,
+        $Credential,
 
         [Parameter(ParameterSetName = 'SqlServerWithCredential')]
         [ValidateSet('WindowsUser', 'SqlLogin')]
@@ -527,7 +527,7 @@ function Connect-SQL
     }
     else
     {
-        $connectUserName = $SetupCredential.UserName
+        $connectUserName = $Credential.UserName
 
         Write-Verbose -Message (
             $script:localizedData.ConnectingUsingImpersonation -f $connectUsername, $LoginType
@@ -537,7 +537,7 @@ function Connect-SQL
         {
             $sqlConnectionContext.LoginSecure = $false
             $sqlConnectionContext.Login = $connectUserName
-            $sqlConnectionContext.SecurePassword = $SetupCredential.Password
+            $sqlConnectionContext.SecurePassword = $Credential.Password
         }
 
         if ($LoginType -eq 'WindowsUser')
@@ -545,7 +545,7 @@ function Connect-SQL
             $sqlConnectionContext.LoginSecure = $true
             $sqlConnectionContext.ConnectAsUser = $true
             $sqlConnectionContext.ConnectAsUserName = $connectUserName
-            $sqlConnectionContext.ConnectAsUserPassword = $SetupCredential.GetNetworkCredential().Password
+            $sqlConnectionContext.ConnectAsUserPassword = $Credential.GetNetworkCredential().Password
         }
     }
 
