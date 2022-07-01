@@ -71,6 +71,8 @@
         Returns the reason a property is not in desired state.
 #>
 
+# TODO: Add this if PsDscRunAsCredential is not supported.
+#[DscResource(RunAsCredential = 'NotSupported')]
 [DscResource()]
 class SqlDatabasePermission : ResourceBase
 {
