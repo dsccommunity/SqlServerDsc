@@ -23,6 +23,21 @@
 
         All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabasePermission).
 
+        ### Invalid values during compilation
+
+        The parameter Permission is of type `[DatabasePermission]`. If a property
+        in the type is set to an invalid value an error will occur, this is expected.
+        This happens when the values are validated against the `[ValidateSet()]`
+        of the resource. In such case the following error will be thrown from
+        PowerShell DSC during the compilation of the configuration:
+
+        ```plaintext
+        Failed to create an object of PowerShell class SqlDatabasePermission.
+            + CategoryInfo          : InvalidOperation: (root/Microsoft/...gurationManager:String) [], CimException
+            + FullyQualifiedErrorId : InstantiatePSClassObjectFailed
+            + PSComputerName        : localhost
+        ```
+
     .PARAMETER InstanceName
         The name of the SQL Server instance to be configured. Default value is
         'MSSQLSERVER'.
