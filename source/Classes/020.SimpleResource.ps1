@@ -4,7 +4,7 @@
 #>
 
 [DscResource()]
-class SimpleResource
+class SimpleResource : ResourceBase
 {
     [DscProperty(Key)]
     [System.String]
@@ -30,9 +30,9 @@ class SimpleResource
     [Ensure]
     $Ensure = [Ensure]::Present
 
-    # [DscProperty(NotConfigurable)]
-    # [Reason[]]
-    # $Reasons
+    [DscProperty(NotConfigurable)]
+    [Reason[]]
+    $Reasons
 
     [SimpleResource] Get()
     {
@@ -52,6 +52,12 @@ class SimpleResource
                         Permission = @('SELECT')
                     }
                 )
+            Reasons = [Reason[]] @(
+                [Reason] @{
+                    Code = '{0}:{0}:Ensure' -f $this.GetType()
+                    Phrase = 'The property Ensure should be Present, but was Absent'
+                }
+            )
         }
 
         return $dscResourceObject
