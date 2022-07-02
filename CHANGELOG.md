@@ -128,6 +128,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - BREAKING CHANGE: The parameter `IsHadrEnabled` is no longer returned by
     `Get-TargetResource`. The `Ensure` parameter now returns `Present` if
     Always On HADR is enabled and `Absent` if it is disabled.
+- SqlDatabasePermission
+  - BREAKING CHANGE: The parameter `ParameterState` has been removed and
+    the parameter `Permission` is now an instance of the type `DatabasePermission`.
+    The type `DatabasePermission` contains two properties; `State` and
+    `Permission`.
+  - Refactored resource as a class-based resource.
 
 ### Fixed
 
@@ -200,6 +206,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     step for each iteration. A line of code was moved outside of the loop.
   - The `SourcePath` parameter is now mandatory for all `*-TargetResource`
     ([issue #1755](https://github.com/dsccommunity/SqlServerDsc/issues/1755)).
+- SqlDatabasePermission
+  - It is no longer possible to have one permission that has two different
+    states in the same configuration, e.g. denying and granting `update`
+    in the same configuration.
 
 ## [15.2.0] - 2021-09-01
 
