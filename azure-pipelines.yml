@@ -68,6 +68,10 @@ stages:
               buildType: 'current'
               artifactName: $(buildArtifactName)
               targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          # This task need to user Windows PowerShell due to a bug in PS7 that cannot
+          # find/use class-based DSC resources that uses inheritance, which result in
+          # the examples cannot compile. See the following issue for more information:
+          # https://github.com/dsccommunity/DnsServerDsc/issues/268#issuecomment-918505230
           - powershell: |
               # Workaround for issue https://github.com/dsccommunity/DscResource.Test/issues/100
               ./build.ps1 -Task noop
@@ -78,7 +82,7 @@ stages:
               $pesterConfig.Output.Verbosity = 'Detailed'
 
               Invoke-Pester -Configuration $pesterConfig
-            name: qualitytest
+            name: qualityTest
             displayName: 'Run SqlServerDsc QA Test'
           - task: PowerShell@2
             name: test
