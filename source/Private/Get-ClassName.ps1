@@ -39,5 +39,5 @@ function Get-ClassName
         }
     }
 
-    return ,$class
+    return , $class
 }

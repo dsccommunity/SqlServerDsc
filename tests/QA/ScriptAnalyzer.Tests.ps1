@@ -50,6 +50,16 @@ Describe 'Script Analyzer Rules' {
         It 'Should pass all PS Script Analyzer rules for file ''<RelativePath>''' -ForEach $testCases {
             $pssaError = Invoke-ScriptAnalyzer -Path $ScriptPath -Settings $scriptAnalyzerSettingsPath
 
+            <#
+                Filter out rule TypeNotFound.
+
+                TODO: The rule "TypeNotFound" is not excluded correctly even if it is
+                      excluded in the file 'analyzersettings.psd1'. This is a workaround
+                      until it is properly excluded for source files, and instead only
+                      ran for the built module script module file (SqlServerDsc.psm1).
+            #>
+            $pssaError = $pssaError | Where-Object -FilterScript { $_.RuleName -ne 'TypeNotFound'}
+
             $report = $pssaError | Format-Table -AutoSize | Out-String -Width 200
             $pssaError | Should -HaveCount 0 -Because "all script analyzer rules should pass.`r`n`r`n $report`r`n"
         }

@@ -235,6 +235,9 @@ class SqlDatabasePermission : ResourceBase
     #>
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
+        # TODO: Add the evaluation so that one permission can't have two different states.
+        Write-Verbose -Verbose -Message 'NotImplemented: AssertProperties()'
+
         # @(
         #     'DirectoryPartitionAutoEnlistInterval',
         #     'TombstoneInterval'

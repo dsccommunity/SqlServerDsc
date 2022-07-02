@@ -70,6 +70,11 @@
         'UseSyntacticallyCorrectExamples'
     )
 
+    # TODO: This is not excluded correctly, see test QA/ScriptAnalyzer.Tests.ps1 for more information.
+    ExcludeRules        = @(
+        'TypeNotFound'
+    )
+
     Rules               = @{
         PSUseConsistentWhitespace  = @{
             Enable                          = $true
@@ -80,7 +85,7 @@
             CheckSeparator                  = $true
             CheckPipe                       = $true
             CheckPipeForRedundantWhitespace = $true
-            CheckParameter                  = $true
+            CheckParameter                  = $false
         }
 
         PSPlaceOpenBrace           = @{

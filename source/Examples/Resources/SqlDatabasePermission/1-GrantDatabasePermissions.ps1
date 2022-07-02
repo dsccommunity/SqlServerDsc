@@ -19,41 +19,56 @@ Configuration Example
     {
         SqlDatabasePermission 'Grant_SqlDatabasePermissions_SQLAdmin_Db01'
         {
-            Ensure               = 'Present'
-            Name                 = 'CONTOSO\SQLAdmin'
-            DatabaseName         = 'AdventureWorks'
-            PermissionState      = 'Grant'
-            Permissions          = @('Connect', 'Update')
-            ServerName           = 'sqltest.company.local'
-            InstanceName         = 'DSC'
-
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            Ensure       = 'Present'
+            Name         = 'CONTOSO\SQLAdmin'
+            DatabaseName = 'AdventureWorks'
+            Permission   = [CimInstance[]] @(
+                (
+                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
+                        State      = 'Grant'
+                        Permission = @('Connect', 'Update')
+                    }
+                )
+            )
+            ServerName      = 'sqltest.company.local'
+            InstanceName    = 'DSC'
+            Credential      = $SqlAdministratorCredential
         }
 
         SqlDatabasePermission 'Grant_SqlDatabasePermissions_SQLUser_Db01'
         {
-            Ensure               = 'Present'
-            Name                 = 'CONTOSO\SQLUser'
-            DatabaseName         = 'AdventureWorks'
-            PermissionState      = 'Grant'
-            Permissions          = @('Connect', 'Update')
-            ServerName           = 'sqltest.company.local'
-            InstanceName         = 'DSC'
-
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            Ensure          = 'Present'
+            Name            = 'CONTOSO\SQLUser'
+            DatabaseName    = 'AdventureWorks'
+            Permission   = [CimInstance[]] @(
+                (
+                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
+                        State      = 'Grant'
+                        Permission = @('Connect', 'Update')
+                    }
+                )
+            )
+            ServerName      = 'sqltest.company.local'
+            InstanceName    = 'DSC'
+            Credential      = $SqlAdministratorCredential
         }
 
         SqlDatabasePermission 'Grant_SqlDatabasePermissions_SQLAdmin_Db02'
         {
-            Ensure               = 'Present'
-            Name                 = 'CONTOSO\SQLAdmin'
-            DatabaseName         = 'AdventureWorksLT'
-            PermissionState      = 'Grant'
-            Permissions          = @('Connect', 'Update')
-            ServerName           = 'sqltest.company.local'
-            InstanceName         = 'DSC'
-
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            Ensure          = 'Present'
+            Name            = 'CONTOSO\SQLAdmin'
+            DatabaseName    = 'AdventureWorksLT'
+            Permission   = [CimInstance[]] @(
+                (
+                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
+                        State      = 'Grant'
+                        Permission = @('Connect', 'Update')
+                    }
+                )
+            )
+            ServerName      = 'sqltest.company.local'
+            InstanceName    = 'DSC'
+            Credential      = $SqlAdministratorCredential
         }
     }
 }

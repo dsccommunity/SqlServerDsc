@@ -70,5 +70,6 @@ class SimpleResource : ResourceBase
 
     [void] Set()
     {
+        Write-Verbose -Verbose -Message 'NotImplemented: Set()'
     }
 }

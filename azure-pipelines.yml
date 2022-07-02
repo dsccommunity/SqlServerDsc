@@ -68,7 +68,7 @@ stages:
               buildType: 'current'
               artifactName: $(buildArtifactName)
               targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
-          - pwsh: |
+          - powershell: |
               # Workaround for issue https://github.com/dsccommunity/DscResource.Test/issues/100
               ./build.ps1 -Task noop
 

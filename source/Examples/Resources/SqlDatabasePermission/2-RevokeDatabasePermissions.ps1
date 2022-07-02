@@ -19,28 +19,38 @@ Configuration Example
     {
         SqlDatabasePermission 'RevokeGrant_SqlDatabasePermissions_SQLAdmin'
         {
-            Ensure               = 'Absent'
-            Name                 = 'CONTOSO\SQLAdmin'
-            DatabaseName         = 'AdventureWorks'
-            PermissionState      = 'Grant'
-            Permissions          = @('Connect', 'Update')
-            ServerName           = 'sqltest.company.local'
-            InstanceName         = 'DSC'
-
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            Ensure          = 'Absent'
+            Name            = 'CONTOSO\SQLAdmin'
+            DatabaseName    = 'AdventureWorks'
+            Permission   = [CimInstance[]] @(
+                (
+                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
+                        State      = 'Grant'
+                        Permission = @('Connect', 'Update')
+                    }
+                )
+            )
+            ServerName      = 'sqltest.company.local'
+            InstanceName    = 'DSC'
+            Credential      = $SqlAdministratorCredential
         }
 
         SqlDatabasePermission 'RevokeDeny_SqlDatabasePermissions_SQLAdmin'
         {
-            Ensure               = 'Absent'
-            Name                 = 'CONTOSO\SQLAdmin'
-            DatabaseName         = 'AdventureWorks'
-            PermissionState      = 'Deny'
-            Permissions          = @('Select', 'CreateTable')
-            ServerName           = 'sqltest.company.local'
-            InstanceName         = 'DSC'
-
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            Ensure          = 'Absent'
+            Name            = 'CONTOSO\SQLAdmin'
+            DatabaseName    = 'AdventureWorks'
+            Permission   = [CimInstance[]] @(
+                (
+                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
+                        State      = 'Deny'
+                        Permission = @('Select', 'CreateTable')
+                    }
+                )
+            )
+            ServerName      = 'sqltest.company.local'
+            InstanceName    = 'DSC'
+            Credential      = $SqlAdministratorCredential
         }
     }
 }
