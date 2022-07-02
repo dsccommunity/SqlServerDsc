@@ -87,10 +87,10 @@ Describe 'SqlDatabasePermission' {
 }
 
 Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
-    BeforeEach {
+    BeforeAll {
         InModuleScope -ScriptBlock {
             $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
-                Name = 'MockUserName'
+                Name         = 'MockUserName'
                 DatabaseName = 'MockDatabaseName'
                 InstanceName = 'NamedInstance'
             }
@@ -99,11 +99,97 @@ Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
 
     Context 'When the system is in the desired state' {
         Context 'When the desired permission does exist' {
-            It 'Should return the state as absent' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    <#
+                        This mocks the method GetCurrentState().
+
+                        Method Get() will call the base method Get() which will
+                        call back to the derived class method GetCurrentState()
+                        to get the result to return from the derived method Get().
+                    #>
+                    $script:mockSqlDatabasePermissionInstance |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                            return [System.Collections.Hashtable] @{
+                                Ensure       = 'Present'
+                                InstanceName = 'NamedInstance'
+                                DatabaseName = 'MockDatabaseName'
+                                Name         = 'MockUserName'
+                                ServerName   = 'localhost'
+                                Permission   = [DatabasePermission[]] @(
+                                    [DatabasePermission] @{
+                                        State      = 'Grant'
+                                        Permission = @('Connect')
+                                    }
+                                )
+                                Credential   = $null
+                                Reasons      = $null
+                            }
+                        }
+                }
+            }
+
+            It 'Should return the state as present' {
+                InModuleScope -ScriptBlock {
+                    $currentState = $script:mockSqlDatabasePermissionInstance.Get()
+
+                    $currentState.Ensure | Should -Be 'Present'
+                    $currentState.InstanceName | Should -Be 'NamedInstance'
+                    $currentState.DatabaseName | Should -Be 'MockDatabaseName'
+                    $currentState.Name | Should -Be 'MockUserName'
+                    $currentState.ServerName | Should -Be 'localhost'
+                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.Reasons | Should -BeNullOrEmpty
+
+                    $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
+
+                    $currentState.Permission[0].State | Should -Be 'Grant'
+                    $currentState.Permission[0].Permission | Should -Be 'Connect'
+                }
+            }
+        }
+
+        Context 'When the desired permission does not exist' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    <#
+                        This mocks the method GetCurrentState().
+
+                        Method Get() will call the base method Get() which will
+                        call back to the derived class method GetCurrentState()
+                        to get the result to return from the derived method Get().
+                    #>
+                    $script:mockSqlDatabasePermissionInstance |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                            return [System.Collections.Hashtable] @{
+                                Ensure       = 'Absent'
+                                InstanceName = 'NamedInstance'
+                                DatabaseName = 'MockDatabaseName'
+                                Name         = 'MockUserName'
+                                ServerName   = 'localhost'
+                                Permission   = [DatabasePermission[]] @()
+                                Credential   = $null
+                                Reasons      = $null
+                            }
+                        }
+                }
+            }
+
+            It 'Should return the state as present' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlDatabasePermissionInstance.Get()
 
                     $currentState.Ensure | Should -Be 'Absent'
+                    $currentState.InstanceName | Should -Be 'NamedInstance'
+                    $currentState.DatabaseName | Should -Be 'MockDatabaseName'
+                    $currentState.Name | Should -Be 'MockUserName'
+                    $currentState.ServerName | Should -Be 'localhost'
+                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.Reasons | Should -BeNullOrEmpty
+
+                    $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
+
+                    $currentState.Permission| Should -BeNullOrEmpty
                 }
             }
         }

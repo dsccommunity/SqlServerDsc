@@ -61,7 +61,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
             $script:mockDatabasePermissionInstance = InModuleScope -ScriptBlock {
                 $databasPermissionInstance = [DatabasePermission]::new()
 
-                $databasPermissionInstance.State = [DatabasePermissionState]::Grant
+                $databasPermissionInstance.State = 'Grant'
                 $databasPermissionInstance.Permission = 'select'
 
                 return $databasPermissionInstance
