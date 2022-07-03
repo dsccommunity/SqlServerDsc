@@ -11,8 +11,11 @@
 
 class ResourceBase
 {
-    # Hidden property for holding localization strings
+    # Property for holding localization strings
     hidden [System.Collections.Hashtable] $localizedData = @{}
+
+    # Property for derived class to set properties that should not be enforced.
+    hidden [System.String[]] $notEnforcedProperties = @()
 
     # Default constructor
     ResourceBase()
@@ -44,8 +47,6 @@ class ResourceBase
 
         $getCurrentStateResult = $this.GetCurrentState($keyProperty)
 
-        Write-Verbose -Verbose -Message ($getCurrentStateResult | Out-String)
-
         $dscResourceObject = [System.Activator]::CreateInstance($this.GetType())
 
         foreach ($propertyName in $this.PSObject.Properties.Name)
@@ -53,6 +54,41 @@ class ResourceBase
             if ($propertyName -in @($getCurrentStateResult.Keys))
             {
                 $dscResourceObject.$propertyName = $getCurrentStateResult.$propertyName
+            }
+        }
+
+        <#
+            Returns all enforced properties not in desires state, or $null if
+            all enforced properties are in desired state.
+        #>
+        $propertiesNotInDesiredState = $this.Compare($getCurrentStateResult)
+
+        <#
+            Return the correct value for Ensure property if it hasn't been already
+            set by GetCurrentState().
+        #>
+        if (($this | Test-ResourceHasEnsureProperty) -and -not $getCurrentStateResult.Ensure)
+        {
+            if ($propertiesNotInDesiredState)
+            {
+                $dscResourceObject.Ensure = [Ensure]::Absent
+            }
+            else
+            {
+                $dscResourceObject.Ensure = [Ensure]::Present
+            }
+        }
+
+        if ($propertiesNotInDesiredState)
+        {
+            foreach ($property in $propertiesNotInDesiredState)
+            {
+                $dscResourceObject.Reasons += [Reason] @{
+                    Code = '{0}:{0}:{1}' -f $this.GetType(), $property.Property
+                    Phrase = 'The property {0} should be {1}, but was {2}' -f $property.Property, ($property.ExpectedValue | ConvertTo-Json -Compress), ($property.ActualValue | ConvertTo-Json -Compress)
+                }
+
+                Write-Verbose -Verbose -Message ($this.Reasons | Out-String)
             }
         }
 
@@ -69,7 +105,10 @@ class ResourceBase
 
         $this.Assert()
 
-        # Call the Compare method to get enforced properties that are not in desired state.
+        <#
+            Returns all enforced properties not in desires state, or $null if
+            all enforced properties are in desired state.
+        #>
         $propertiesNotInDesiredState = $this.Compare()
 
         if ($propertiesNotInDesiredState)
@@ -128,20 +167,27 @@ class ResourceBase
 
     <#
         Returns a hashtable containing all properties that should be enforced and
-        are not in desired state.
+        are not in desired state, or $null if all enforced properties are in
+        desired state.
 
         This method should normally not be overridden.
     #>
     hidden [System.Collections.Hashtable[]] Compare()
     {
         $currentState = $this.Get() | ConvertFrom-DscResourceInstance
+
+        return $this.Compare($currentState)
+    }
+
+    hidden [System.Collections.Hashtable[]] Compare([System.Collections.Hashtable] $currentState)
+    {
         $desiredState = $this | Get-DesiredStateProperty
 
         $CompareDscParameterState = @{
             CurrentValues     = $currentState
             DesiredValues     = $desiredState
             Properties        = $desiredState.Keys
-            ExcludeProperties = @('DnsServer')
+            ExcludeProperties = $this.notEnforcedProperties
             IncludeValue      = $true
         }
 
@@ -153,6 +199,10 @@ class ResourceBase
     }
 
     # Returns a hashtable containing all properties that should be enforced.
+    <#
+        TODO: This should be a private function, e.g ConvertFrom-CompareHashtable,
+              that could have a [Switch] property 'NameAndExpectedValue'
+    #>
     hidden [System.Collections.Hashtable] GetDesiredStateForSplatting([System.Collections.Hashtable[]] $Properties)
     {
         $desiredState = @{}

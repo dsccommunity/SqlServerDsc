@@ -64,11 +64,43 @@
         This is an array of CIM instances of class `DatabasePermission` from the
         namespace `root/Microsoft/Windows/DesiredStateConfiguration`.
 
+    .PARAMETER Credential
+        Specifies the credential to use to connect to the _SQL Server_ instance.
+        The username of the credentials must be in the format `user@domain`, e.g.
+        `MySqlUser@company.local`.
+
+        If parameter **Credential'* is not provided then the resource instance is
+        run using the credential that runs the configuration.
+
     .PARAMETER Ensure
         If the permission should be granted ('Present') or revoked ('Absent').
 
     .PARAMETER Reasons
         Returns the reason a property is not in desired state.
+
+    .EXAMPLE
+        Invoke-DscResource -ModuleName SqlServerDsc -Name SqlDatabasePermission -Method Get -Property @{
+            Ensure               = 'Present'
+            ServerName           = 'localhost'
+            InstanceName         = 'SQL2017'
+            DatabaseName         = 'AdventureWorks'
+            Credential  = $SqlInstallCredential
+            Name                 = 'SQLTEST\sqluser'
+            Permission           = [Microsoft.Management.Infrastructure.CimInstance[]] @(
+                (
+                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
+                            State = 'Grant'
+                            Permission = @('select')
+                    }
+                )
+                (
+                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
+                        State = 'GrantWithGrant'
+                        Permission = @('update')
+                    }
+                )
+            )
+        }
 #>
 
 # TODO: Add this if PsDscRunAsCredential is not supported.
@@ -108,6 +140,18 @@ class SqlDatabasePermission : ResourceBase
     [Reason[]]
     $Reasons
 
+    SqlDatabasePermission() : base ()
+    {
+        # These properties will not be enforced.
+        $this.notEnforcedProperties = @(
+            'ServerName'
+            'InstanceName'
+            'DatabaseName'
+            'Name'
+            'Credential'
+        )
+    }
+
     [SqlDatabasePermission] Get()
     {
         # Call the base method to return the properties.
@@ -132,13 +176,9 @@ class SqlDatabasePermission : ResourceBase
     #>
     hidden [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
+        # The property Ensure will be handled by the base class.
         $currentState = @{
-            Ensure       = 'Absent'
-            ServerName   = $this.ServerName
-            InstanceName = $properties.InstanceName
-            DatabaseName = $properties.DatabaseName
             Permission   = [DatabasePermission[]] @()
-            Name         = $properties.Name
         }
 
         $connectSqlDscDatabaseEngineParameters = @{
@@ -153,7 +193,7 @@ class SqlDatabasePermission : ResourceBase
 
         $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
-        # TA BORT -VERBOSE!
+        # TODO: TA BORT -VERBOSE!
         Write-Verbose -Verbose -Message (
             $this.localizedData.EvaluateDatabasePermissionForPrincipal -f @(
                 $properties.Name,
