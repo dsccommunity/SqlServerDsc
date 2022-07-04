@@ -155,6 +155,55 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
             }
         }
 
+        Context 'When the specified principal is a application role' {
+            BeforeAll {
+                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                    return @{
+                        'AdventureWorks' = New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name Name -Value 'AdventureWorks' -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Users' -Value {
+                                return @{
+                                    'Zebes\SamusAran' = New-Object -TypeName Object |
+                                        Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'Zebes\SamusAran' -PassThru -Force
+                                }
+                            } -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'ApplicationRoles' -Value {
+                                return @{
+                                    'MyAppRole' = New-Object -TypeName Object |
+                                        Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'MyAppRole' -PassThru -Force
+                                }
+                            } -PassThru |
+                            Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
+                                return @{
+                                    'db_datareader' = New-Object -TypeName Object |
+                                        Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'db_datareader' -PassThru |
+                                        Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -PassThru -Force
+
+                                    'UserDefinedRole' = New-Object -TypeName Object |
+                                        Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'UserDefinedRole' -PassThru |
+                                        Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $false -PassThru -Force
+                                }
+                            } -PassThru -Force
+                    }
+                } -PassThru -Force
+            }
+
+            It 'Should return $true' {
+                $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'MyAppRole'
+
+                $result | Should -BeTrue
+            }
+
+            Context 'When application roles are excluded from evaluation' {
+                It 'Should return $false' {
+                    $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'MyAppRole' -ExcludeApplicationRoles
+
+                    $result | Should -BeFalse
+                }
+            }
+        }
+
         Context 'When the specified principal is a user defined role' {
             BeforeAll {
                 $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
