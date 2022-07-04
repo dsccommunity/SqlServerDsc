@@ -22,13 +22,11 @@ Configuration Example
             Ensure          = 'Absent'
             Name            = 'CONTOSO\SQLAdmin'
             DatabaseName    = 'AdventureWorks'
-            Permission   = [CimInstance[]] @(
-                (
-                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
-                        State      = 'Grant'
-                        Permission = @('Connect', 'Update')
-                    }
-                )
+            Permission   = @(
+                DatabasePermission {
+                    State      = 'Grant'
+                    Permission = @('Connect', 'Update')
+                }
             )
             ServerName      = 'sqltest.company.local'
             InstanceName    = 'DSC'
@@ -40,13 +38,11 @@ Configuration Example
             Ensure          = 'Absent'
             Name            = 'CONTOSO\SQLAdmin'
             DatabaseName    = 'AdventureWorks'
-            Permission   = [CimInstance[]] @(
-                (
-                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
-                        State      = 'Deny'
-                        Permission = @('Select', 'CreateTable')
-                    }
-                )
+            Permission   = @(
+                DatabasePermission {
+                    State      = 'Grant'
+                    Permission = @('Connect', 'Update')
+                }
             )
             ServerName      = 'sqltest.company.local'
             InstanceName    = 'DSC'

@@ -28,7 +28,12 @@ function Get-KeyProperty
         Get-Member -MemberType 'Property' |
         Select-Object -ExpandProperty 'Name' |
         Where-Object -FilterScript {
-            $InputObject.GetType().GetMember($_).CustomAttributes.Where( { $_.NamedArguments.MemberName -eq 'Key' }).NamedArguments.TypedValue.Value -eq $true
+            $InputObject.GetType().GetMember($_).CustomAttributes.Where(
+                {
+                    $_.AttributeType.Name -eq 'DscPropertyAttribute' -and
+                    $_.NamedArguments.MemberName -eq 'Key'
+                }
+            ).NamedArguments.TypedValue.Value -eq $true
         }
 
     # Return a hashtable containing each key property and its value.

@@ -1,4 +1,3 @@
-
 <#
     .SYNOPSIS
         Tests wether the class-based resource has an Ensure property.
@@ -27,7 +26,14 @@ function Test-ResourceHasEnsureProperty
 
     # Get all key properties.
     $ensureProperty = $InputObject |
-        Get-Member -MemberType 'Property' -Name 'Ensure'
+        Get-Member -MemberType 'Property' -Name 'Ensure' |
+        Where-Object -FilterScript {
+            $InputObject.GetType().GetMember($_.Name).CustomAttributes.Where(
+                {
+                    $_.AttributeType.Name -eq 'DscPropertyAttribute'
+                }
+            )
+        }
 
     if ($ensureProperty)
     {

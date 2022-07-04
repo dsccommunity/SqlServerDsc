@@ -10,6 +10,20 @@
 
     .PARAMETER Name
         Specifies the name of the database principal.
+
+    .PARAMETER ExcludeUsers
+        Specifies that database users should not be evaluated.
+
+    .PARAMETER ExcludeRoles
+        Specifies that database roles should not be evaluated for the specified
+        name. This will also exclude fixed roles.
+
+    .PARAMETER ExcludeFixedRoles
+        Specifies that fixed roles should not be evaluated for the specified name.
+
+    .PARAMETER ExcludeApplicationRoles
+        Specifies that fixed application roles should not be evaluated for the
+        specified name.
 #>
 function Test-SqlDscIsDatabasePrincipal
 {
@@ -48,7 +62,19 @@ function Test-SqlDscIsDatabasePrincipal
 
     $principalExist = $false
 
-    $sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName]
+    $sqlDatabaseObject = $ServerObject.Databases[$DatabaseName]
+
+    if (-not $sqlDatabaseObject)
+    {
+        $PSCmdlet.ThrowTerminatingError(
+            [System.Management.Automation.ErrorRecord]::new(
+                ($script:localizedData.IsDatabasePrincipal_DatabaseMissing -f $DatabaseName),
+                'TSDISO0001',
+                [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                $DatabaseName
+            )
+        )
+    }
 
     if (-not $ExcludeUsers.IsPresent -and $sqlDatabaseObject.Users[$Name])
     {

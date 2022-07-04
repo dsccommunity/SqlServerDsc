@@ -43,17 +43,18 @@ function Get-SqlDscDatabasePermission
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Name,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $IgnoreMissingPrincipal
+        $Name
     )
 
     # Initialize variable permission
     $getSqlDscDatabasePermissionResult = $null
 
-    $sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName]
+    $sqlDatabaseObject = $null
+
+    if ($sqlServerObject.Databases)
+    {
+        $sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName]
+    }
 
     if ($sqlDatabaseObject)
     {
@@ -72,30 +73,16 @@ function Get-SqlDscDatabasePermission
         }
         else
         {
-            $missingPrincipalMessage = $script:localizedData.DatabasePermissionMissingPrincipal -f $Name, $DatabaseName
+            $missingPrincipalMessage = $script:localizedData.DatabasePermission_MissingPrincipal -f $Name, $DatabaseName
 
-            if ($IgnoreMissingPrincipal.IsPresent)
-            {
-                Write-Verbose -Message $missingPrincipalMessage
-            }
-            else
-            {
-                throw $missingPrincipalMessage
-            }
+            Write-Error -Message $missingPrincipalMessage -Category 'InvalidOperation' -ErrorId 'GSDDP0001' -TargetObject $Name
         }
     }
     else
     {
-        $missingPrincipalMessage = $script:localizedData.DatabasePermissionMissingDatabase -f $DatabaseName
+        $missingDatabaseMessage = $script:localizedData.DatabasePermission_MissingDatabase -f $DatabaseName
 
-        if ($IgnoreMissingPrincipal.IsPresent)
-        {
-            Write-Verbose -Message $missingPrincipalMessage
-        }
-        else
-        {
-            throw $missingPrincipalMessage
-        }
+        Write-Error -Message $missingDatabaseMessage -Category 'InvalidOperation' -ErrorId 'GSDDP0002' -TargetObject $DatabaseName
     }
 
     return , $getSqlDscDatabasePermissionResult

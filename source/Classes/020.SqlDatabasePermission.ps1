@@ -203,7 +203,7 @@ class SqlDatabasePermission : ResourceBase
         )
 
         $databasePermissionInfo = $sqlServerObject |
-            Get-SqlDscDatabasePermission -DatabaseName $this.DatabaseName -Name $this.Name -IgnoreMissingPrincipal
+            Get-SqlDscDatabasePermission -DatabaseName $this.DatabaseName -Name $this.Name -ErrorAction 'SilentlyContinue'
 
         if ($databasePermissionInfo)
         {

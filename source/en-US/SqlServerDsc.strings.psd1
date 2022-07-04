@@ -7,6 +7,9 @@
 
 ConvertFrom-StringData @'
     # Get-SqlDscDatabasePermission
-    DatabasePermissionMissingPrincipal = The database principal '{0}' is neither a user, database role (user-defined), or database application role in the database '{1}'. (GETSDP0001).
-    DatabasePermissionMissingDatabase = The database '{0}' did not exist. (GETSDP0002)
+    DatabasePermission_MissingPrincipal = The database principal '{0}' is neither a user, database role (user-defined), or database application role in the database '{1}'.
+    DatabasePermission_MissingDatabase = The database '{0}' cannot be found.
+
+    # Test-SqlDscIsDatabasePrincipal
+    IsDatabasePrincipal_DatabaseMissing = The database '{0}' cannot be found.
 '@

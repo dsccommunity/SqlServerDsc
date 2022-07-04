@@ -22,13 +22,11 @@ Configuration Example
             Ensure               = 'Present'
             Name                 = 'CONTOSO\SQLAdmin'
             DatabaseName         = 'AdventureWorks'
-            Permission   = [CimInstance[]] @(
-                (
-                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
-                        State      = 'Deny'
-                        Permission = @('Select', 'CreateTable')
-                    }
-                )
+            Permission   = @(
+                DatabasePermission {
+                    State      = 'Deny'
+                    Permission = @('Select', 'CreateTable')
+                }
             )
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
@@ -41,13 +39,11 @@ Configuration Example
             Ensure               = 'Present'
             Name                 = 'CONTOSO\SQLUser'
             DatabaseName         = 'AdventureWorks'
-            Permission   = [CimInstance[]] @(
-                (
-                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
-                        State      = 'Deny'
-                        Permission = @('Select', 'CreateTable')
-                    }
-                )
+            Permission   = @(
+                DatabasePermission {
+                    State      = 'Deny'
+                    Permission = @('Select', 'CreateTable')
+                }
             )
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
@@ -60,13 +56,11 @@ Configuration Example
             Ensure               = 'Present'
             Name                 = 'CONTOSO\SQLAdmin'
             DatabaseName         = 'AdventureWorksLT'
-            Permission   = [CimInstance[]] @(
-                (
-                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
-                        State      = 'Deny'
-                        Permission = @('Select', 'CreateTable')
-                    }
-                )
+            Permission   = @(
+                DatabasePermission {
+                    State      = 'Deny'
+                    Permission = @('Select', 'CreateTable')
+                }
             )
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
