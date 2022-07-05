@@ -12,18 +12,25 @@
         Specifies the name of the database principal for which the permissions are
         returned.
 
-    .PARAMETER IgnoreMissingPrincipal
-        Specifies that the command ignores if the database principal do not exist
-        which also include if database is not present.
-        If not passed the command throws an error if the database or database
-        principal is missing.
-
     .OUTPUTS
         [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]]
 
+    .EXAMPLE
+        $serverInstance = Connect-SqlDscDatabaseEngine
+        Get-SqlDscDatabasePermission -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal'
+
+        Connects to the default instance on the current machine and returns the
+        database permission information for the specified principal.
+
     .NOTES
-        This command excludes fixed roles like db_datareader, and will always return
-        $null for such roles.
+        This command excludes fixed roles like _db_datareader_ by default, and will
+        always return `$null` if a fixed role is specified as **Name**.
+
+        If specifying `-ErrorAction 'SilentlyContinue'` then the command will silently
+        ignore if the database (parameter **DatabaseName**) is not present or the
+        database principal is not present. In such case the command will return `$false`.
+        If specifying `-ErrorAction 'Stop'` the command will throw an error if the
+        database or database principal is missing.
 #>
 function Get-SqlDscDatabasePermission
 {
@@ -46,7 +53,6 @@ function Get-SqlDscDatabasePermission
         $Name
     )
 
-    # Initialize variable permission
     $getSqlDscDatabasePermissionResult = $null
 
     $sqlDatabaseObject = $null

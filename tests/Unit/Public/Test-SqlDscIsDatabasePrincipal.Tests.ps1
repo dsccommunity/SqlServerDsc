@@ -56,59 +56,21 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
                         }
                     )
                 } -PassThru -Force
+
+            $mockErrorMessage = InModuleScope -ScriptBlock {
+                $script:localizedData.IsDatabasePrincipal_DatabaseMissing
+            }
         }
 
         It 'Should throw the correct error' {
             { Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'MissingDatabase' -Name 'KnownUser' } |
-                Should -Throw ('The database ''MissingDatabase'' cannot be found.')
+                Should -Throw -ExpectedMessage ($mockErrorMessage -f 'MissingDatabase')
         }
     }
 
     Context 'When database does not have the specified principal' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-            Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
-                return @{
-                    'AdventureWorks' = New-Object -TypeName Object |
-                        Add-Member -MemberType 'NoteProperty' -Name Name -Value 'AdventureWorks' -PassThru |
-                        Add-Member -MemberType 'ScriptProperty' -Name 'Users' -Value {
-                            return @{
-                                'Zebes\SamusAran' = New-Object -TypeName Object |
-                                    Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'Zebes\SamusAran' -PassThru -Force
-                            }
-                        } -PassThru |
-                        Add-Member -MemberType 'ScriptProperty' -Name 'ApplicationRoles' -Value {
-                            return @{
-                                'MyAppRole' = New-Object -TypeName Object |
-                                    Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'MyAppRole' -PassThru -Force
-                            }
-                        } -PassThru |
-                        Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
-                            return @{
-                                'db_datareader' = New-Object -TypeName Object |
-                                    Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'db_datareader' -PassThru |
-                                    Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -PassThru -Force
-
-                                'UserDefinedRole' = New-Object -TypeName Object |
-                                    Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'UserDefinedRole' -PassThru |
-                                    Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $false -PassThru -Force
-                            }
-                        } -PassThru -Force
-                }
-            } -PassThru -Force
-        }
-
-        It 'Should return $false' {
-            $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'UnknownUser'
-
-            $result | Should -BeFalse
-        }
-    }
-
-    Context 'When database have the specified principal' {
-        Context 'When the specified principal is a user' {
-            BeforeAll {
-                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
                 Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
                     return @{
                         'AdventureWorks' = New-Object -TypeName Object |
@@ -138,12 +100,62 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
                             } -PassThru -Force
                     }
                 } -PassThru -Force
+        }
+
+        It 'Should return $false' {
+            $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'UnknownUser'
+
+            $result | Should -BeFalse
+        }
+    }
+
+    Context 'When database have the specified principal' {
+        Context 'When the specified principal is a user' {
+            BeforeAll {
+                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                    Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                        return @{
+                            'AdventureWorks' = New-Object -TypeName Object |
+                                Add-Member -MemberType 'NoteProperty' -Name Name -Value 'AdventureWorks' -PassThru |
+                                Add-Member -MemberType 'ScriptProperty' -Name 'Users' -Value {
+                                    return @{
+                                        'Zebes\SamusAran' = New-Object -TypeName Object |
+                                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'Zebes\SamusAran' -PassThru -Force
+                                    }
+                                } -PassThru |
+                                Add-Member -MemberType 'ScriptProperty' -Name 'ApplicationRoles' -Value {
+                                    return @{
+                                        'MyAppRole' = New-Object -TypeName Object |
+                                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'MyAppRole' -PassThru -Force
+                                    }
+                                } -PassThru |
+                                Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
+                                    return @{
+                                        'db_datareader' = New-Object -TypeName Object |
+                                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'db_datareader' -PassThru |
+                                            Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -PassThru -Force
+
+                                        'UserDefinedRole' = New-Object -TypeName Object |
+                                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'UserDefinedRole' -PassThru |
+                                            Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $false -PassThru -Force
+                                    }
+                                } -PassThru -Force
+                        }
+                    } -PassThru -Force
             }
 
             It 'Should return $true' {
                 $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'Zebes\SamusAran'
 
                 $result | Should -BeTrue
+            }
+
+            Context 'When passing ServerObject over the pipeline' {
+                It 'Should return $true' {
+                    $result = $mockServerObject | Test-SqlDscIsDatabasePrincipal -DatabaseName 'AdventureWorks' -Name 'Zebes\SamusAran'
+
+                    $result | Should -BeTrue
+                }
             }
 
             Context 'When users are excluded from evaluation' {
@@ -158,35 +170,35 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
         Context 'When the specified principal is a application role' {
             BeforeAll {
                 $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
-                    return @{
-                        'AdventureWorks' = New-Object -TypeName Object |
-                            Add-Member -MemberType 'NoteProperty' -Name Name -Value 'AdventureWorks' -PassThru |
-                            Add-Member -MemberType 'ScriptProperty' -Name 'Users' -Value {
-                                return @{
-                                    'Zebes\SamusAran' = New-Object -TypeName Object |
-                                        Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'Zebes\SamusAran' -PassThru -Force
-                                }
-                            } -PassThru |
-                            Add-Member -MemberType 'ScriptProperty' -Name 'ApplicationRoles' -Value {
-                                return @{
-                                    'MyAppRole' = New-Object -TypeName Object |
-                                        Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'MyAppRole' -PassThru -Force
-                                }
-                            } -PassThru |
-                            Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
-                                return @{
-                                    'db_datareader' = New-Object -TypeName Object |
-                                        Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'db_datareader' -PassThru |
-                                        Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -PassThru -Force
+                    Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                        return @{
+                            'AdventureWorks' = New-Object -TypeName Object |
+                                Add-Member -MemberType 'NoteProperty' -Name Name -Value 'AdventureWorks' -PassThru |
+                                Add-Member -MemberType 'ScriptProperty' -Name 'Users' -Value {
+                                    return @{
+                                        'Zebes\SamusAran' = New-Object -TypeName Object |
+                                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'Zebes\SamusAran' -PassThru -Force
+                                    }
+                                } -PassThru |
+                                Add-Member -MemberType 'ScriptProperty' -Name 'ApplicationRoles' -Value {
+                                    return @{
+                                        'MyAppRole' = New-Object -TypeName Object |
+                                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'MyAppRole' -PassThru -Force
+                                    }
+                                } -PassThru |
+                                Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
+                                    return @{
+                                        'db_datareader' = New-Object -TypeName Object |
+                                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'db_datareader' -PassThru |
+                                            Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -PassThru -Force
 
-                                    'UserDefinedRole' = New-Object -TypeName Object |
-                                        Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'UserDefinedRole' -PassThru |
-                                        Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $false -PassThru -Force
-                                }
-                            } -PassThru -Force
-                    }
-                } -PassThru -Force
+                                        'UserDefinedRole' = New-Object -TypeName Object |
+                                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'UserDefinedRole' -PassThru |
+                                            Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $false -PassThru -Force
+                                    }
+                                } -PassThru -Force
+                        }
+                    } -PassThru -Force
             }
 
             It 'Should return $true' {
