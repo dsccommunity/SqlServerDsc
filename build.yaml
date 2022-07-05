@@ -90,6 +90,7 @@ Pester:
       OutputPath: JaCoCo_coverage.xml
       OutputEncoding: ascii
       # TODO: There is a bug in Pester when running unit tests for class ResourceBase when 'UseBreakpoints' is turned off.
+      # See error in gist: https://gist.github.com/johlju/c16dfd9587c7e066e8825fc54b33a703
       UseBreakpoints: true
     TestResult:
       OutputFormat: NUnitXML
