@@ -46,8 +46,8 @@ Describe 'Get-DesiredStateProperty' -Tag 'Private' {
     BeforeAll {
         <#
             Must use a here-string because we need to pass 'using' which must be
-            first in a scriptblock, but if it outside the here-string PowerShell
-            will fail to parse the test script.
+            first in a scriptblock, but if it is outside the here-string then
+            PowerShell will fail to parse the test script.
         #>
         $inModuleScopeScriptBlock = @'
 using module SqlServerDsc
