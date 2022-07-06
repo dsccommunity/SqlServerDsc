@@ -277,3 +277,89 @@ SQL Server 2016, SQL Server 2017 and SQL Server 2019.
 
 When sending in a Pull Request (PR) all example files will be tested so they can
 be compiled to a .mof file. If the tests find any errors the build will fail.
+
+### Commands
+
+Commands are publicly exported commands from the module, and the source for
+commands are located in the folder `./source/Public`.
+
+#### Non-Terminating Error
+
+A non-terminating error should only be used when a command shall be able to
+handle (ignoring) an error and continue processing and still give the user
+an expected outcome.
+
+With a non-terminating error the user is able to decide whether the command
+should throw or continue processing on error. The user can pass the
+parameter and value `-ErrorAction 'SilentlyContinue'` to the command  to
+ignore the error and allowing the command to continue, for example the
+command could then return `$null`. But if the user passes the parameter
+and value `-ErrorAction 'Stop'` the same error will throw a terminating
+error telling the user the expected outcome could not be achieved.
+
+The below example checks to see if a database exist, if it doesn't a
+non-terminating error are called. The user is able to either ignore the
+error or have it throw depending on what value the user specifies
+in parameter `ErrorAction` (or `$ErrorActionPreference`).
+
+```powershell
+if (-not $databaseExist)
+{
+    $errorMessage = $script:localizedData.MissingDatabase -f $DatabaseName
+
+    Write-Error -Message $errorMessage -Category 'InvalidOperation' -ErrorId 'GS0001' -TargetObject $DatabaseName
+}
+```
+
+#### Terminating Error
+
+A terminating error is an error that the user are not able to ignore by
+passing a parameter to the command (like for non-terminating errors).
+
+If a command shall throw an terminating error the statement `throw` shall
+not be used, neither shall the command `Write-Error` be used with the parameter
+`-ErrorAction `Stop``. Instead the method `$PSCmdlet.ThrowTerminatingError()`
+shall be used to throw a terminating error.
+
+>**NOTE:** Below output assumes `$ErrorView` is set to `'NormalView'` in the
+>PowerShell session.
+
+When using `throw` it will fail on the line with the throw statement
+making it look like it is that statement inside the function that failed,
+which is not correct since it is either a previous command or evaluation
+that failed resulting in the line with the `throw` being called. This is
+an example when using `throw`:
+
+```plaintext
+Exception:
+Line |
+   2 |  throw 'My error'
+     |  ~~~~~~~~~~~~~~~~
+     | My error
+```
+
+When instead using `$PSCmdlet.ThrowTerminatingError()`:
+
+```powershell
+$PSCmdlet.ThrowTerminatingError(
+    [System.Management.Automation.ErrorRecord]::new(
+        'MyError',
+        'GS0001',
+        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+        'MyObjectOrValue'
+    )
+)
+```
+
+The result from `$PSCmdlet.ThrowTerminatingError()` shows that the command
+failed (in this example `Get-Something`) and returns a clear category and
+error code.
+
+```plaintext
+Get-Something : My Error
+At line:1 char:1
++ Get-Something
++ ~~~~~~~~~~~~~
++ CategoryInfo          : InvalidOperation: (MyObjectOrValue:String) [Get-Something], Exception
++ FullyQualifiedErrorId : GS0001,Get-Something
+```
