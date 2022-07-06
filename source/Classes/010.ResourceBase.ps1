@@ -57,19 +57,34 @@ class ResourceBase
             }
         }
 
+        # TODO: If $getCurrentStateResult does not contain Ensure (or null) then
+        # we must remove Ensure from the comparison by calling a Compare() override
+        # that takes an array with properties that should be ignored.
+        $ignoreProperty = @()
+
+        if (($this | Test-ResourceHasEnsureProperty) -and $null -eq $getCurrentStateResult.Ensure)
+        {
+            <#
+                Removing the property Ensure from the comparison since the method
+                GetCurrentState() did not return it, and we don't know the current
+                state value until the method Compare() has run.
+            #>
+            $ignoreProperty += 'Ensure'
+        }
+
         <#
             Returns all enforced properties not in desires state, or $null if
             all enforced properties are in desired state.
         #>
-        $propertiesNotInDesiredState = $this.Compare($getCurrentStateResult)
+        $propertiesNotInDesiredState = $this.Compare($getCurrentStateResult, $ignoreProperty)
 
         <#
             Return the correct value for Ensure property if it hasn't been already
             set by GetCurrentState().
         #>
-        if (($this | Test-ResourceHasEnsureProperty) -and -not $getCurrentStateResult.Ensure)
+        if (($this | Test-ResourceHasEnsureProperty) -and $null -eq $getCurrentStateResult.Ensure)
         {
-            if ($propertiesNotInDesiredState)
+            if ($propertiesNotInDesiredState -or (-not $propertiesNotInDesiredState -and $this.Ensure -eq [Ensure]::Absent))
             {
                 $dscResourceObject.Ensure = [Ensure]::Absent
             }
@@ -79,13 +94,40 @@ class ResourceBase
             }
         }
 
+        # TODO: And only if $getCurrentStateResult no already contain key Reasons
         if ($propertiesNotInDesiredState)
         {
             foreach ($property in $propertiesNotInDesiredState)
             {
+                if ($property.ExpectedValue -is [System.Enum])
+                {
+                    # TODO: Maybe we just convert the advanced types to JSON and do not convert other types?
+                    #       Test that on SqlDatabasePermission
+
+                    # Return the string representation of the value so that conversion to json is correct.
+                    $propertyExpectedValue = $property.ExpectedValue.ToString()
+                }
+                else
+                {
+                    $propertyExpectedValue = $property.ExpectedValue
+                }
+
+                if ($property.ActualValue -is [System.Enum])
+                {
+                    # TODO: Maybe we just convert the advanced types to JSON and do not convert other types?
+                    #       Test that on SqlDatabasePermission
+
+                    # Return the string representation of the value so that conversion to json is correct.
+                    $propertyActualValue = $property.ActualValue.ToString()
+                }
+                else
+                {
+                    $propertyActualValue = $property.ActualValue
+                }
+
                 $dscResourceObject.Reasons += [Reason] @{
                     Code = '{0}:{0}:{1}' -f $this.GetType(), $property.Property
-                    Phrase = 'The property {0} should be {1}, but was {2}' -f $property.Property, ($property.ExpectedValue | ConvertTo-Json -Compress), ($property.ActualValue | ConvertTo-Json -Compress)
+                    Phrase = 'The property {0} should be {1}, but was {2}' -f $property.Property, ($propertyExpectedValue | ConvertTo-Json -Compress), ($propertyActualValue | ConvertTo-Json -Compress)
                 }
 
                 Write-Verbose -Verbose -Message ($this.Reasons | Out-String)
@@ -176,10 +218,16 @@ class ResourceBase
     {
         $currentState = $this.Get() | ConvertFrom-DscResourceInstance
 
-        return $this.Compare($currentState)
+        return $this.Compare($currentState, @())
     }
 
-    hidden [System.Collections.Hashtable[]] Compare([System.Collections.Hashtable] $currentState)
+    # TODO: remove this if not needed.
+    # hidden [System.Collections.Hashtable[]] Compare([System.Collections.Hashtable] $currentState)
+    # {
+    #     return $this.Compare($currentState, @())
+    # }
+
+    hidden [System.Collections.Hashtable[]] Compare([System.Collections.Hashtable] $currentState, [System.String[]] $excludeProperties)
     {
         $desiredState = $this | Get-DesiredStateProperty
 
@@ -187,7 +235,7 @@ class ResourceBase
             CurrentValues     = $currentState
             DesiredValues     = $desiredState
             Properties        = $desiredState.Keys
-            ExcludeProperties = $this.notEnforcedProperties
+            ExcludeProperties = $excludeProperties + $this.notEnforcedProperties
             IncludeValue      = $true
         }
 
@@ -197,7 +245,6 @@ class ResourceBase
         #>
         return (Compare-DscParameterState @CompareDscParameterState)
     }
-
     # Returns a hashtable containing all properties that should be enforced.
     <#
         TODO: This should be a private function, e.g ConvertFrom-CompareHashtable,

@@ -99,13 +99,21 @@ Describe 'ResourceBase\Get()' -Tag 'Get' {
                 # Only return localized strings for this class name.
                 @('ResourceBase')
             }
+        }
 
-            <#
-                Must use a here-string because we need to pass 'using' which must be
-                first in a scriptblock, but if it is outside the here-string then
-                PowerShell will fail to parse the test script.
-            #>
-            $inModuleScopeScriptBlock = @'
+        Context 'When the configuration should be present' {
+            BeforeAll {
+                Mock -CommandName Get-ClassName -MockWith {
+                    # Only return localized strings for this class name.
+                    @('ResourceBase')
+                }
+
+                <#
+                    Must use a here-string because we need to pass 'using' which must be
+                    first in a scriptblock, but if it is outside the here-string then
+                    PowerShell will fail to parse the test script.
+                #>
+                $inModuleScopeScriptBlock = @'
 using module SqlServerDsc
 
 class MyMockResource : ResourceBase
@@ -115,8 +123,16 @@ class MyMockResource : ResourceBase
     $MyResourceKeyProperty1
 
     [DscProperty()]
+    [Ensure]
+    $Ensure = [Ensure]::Present
+
+    [DscProperty()]
     [System.String]
     $MyResourceProperty2
+
+    [DscProperty(NotConfigurable)]
+    [Reason[]]
+    $Reasons
 
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
@@ -130,22 +146,542 @@ class MyMockResource : ResourceBase
 $script:mockResourceBaseInstance = [MyMockResource]::new()
 '@
 
-            InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
-        }
+                InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
+            }
 
-        It 'Should have correctly instantiated the resource class' {
-            InModuleScope -ScriptBlock {
-                $mockResourceBaseInstance | Should -Not -BeNullOrEmpty
-                $mockResourceBaseInstance.GetType().BaseType.Name | Should -Be 'ResourceBase'
+            It 'Should have correctly instantiated the resource class' {
+                InModuleScope -ScriptBlock {
+                    $mockResourceBaseInstance | Should -Not -BeNullOrEmpty
+                    $mockResourceBaseInstance.GetType().BaseType.Name | Should -Be 'ResourceBase'
+                }
+            }
+
+            It 'Should return the correct values for the properties' {
+                InModuleScope -ScriptBlock {
+                    $mockResourceBaseInstance.MyResourceKeyProperty1 = 'MyValue1'
+                    $mockResourceBaseInstance.MyResourceProperty2 = 'MyValue2'
+
+                    $getResult = $mockResourceBaseInstance.Get()
+
+                    $getResult.MyResourceKeyProperty1 | Should -Be 'MyValue1'
+                    $getResult.MyResourceProperty2 | Should -Be 'MyValue2'
+                    $getResult.Ensure | Should -Be ([Ensure]::Present)
+                    $getResult.Reasons | Should -BeNullOrEmpty
+                }
             }
         }
 
-        It 'Should return the correct values for the properties' {
-            InModuleScope -ScriptBlock {
-                $getResult = $mockResourceBaseInstance.Get()
+        Context 'When the configuration should be absent' {
+            BeforeAll {
+                Mock -CommandName Get-ClassName -MockWith {
+                    # Only return localized strings for this class name.
+                    @('ResourceBase')
+                }
 
-                $getResult.MyResourceKeyProperty1 | Should -Be 'MyValue1'
-                $getResult.MyResourceProperty2 | Should -Be 'MyValue2'
+                <#
+                    Must use a here-string because we need to pass 'using' which must be
+                    first in a scriptblock, but if it is outside the here-string then
+                    PowerShell will fail to parse the test script.
+                #>
+                $inModuleScopeScriptBlock = @'
+using module SqlServerDsc
+
+class MyMockResource : ResourceBase
+{
+    [DscProperty(Key)]
+    [System.String]
+    $MyResourceKeyProperty1
+
+    [DscProperty()]
+    [Ensure]
+    $Ensure = [Ensure]::Present
+
+    [DscProperty()]
+    [System.String]
+    $MyResourceProperty2
+
+    [DscProperty(NotConfigurable)]
+    [Reason[]]
+    $Reasons
+
+    [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
+    {
+        return @{
+            MyResourceKeyProperty1 = 'MyValue1'
+            MyResourceProperty2 = $null
+        }
+    }
+}
+
+$script:mockResourceBaseInstance = [MyMockResource]::new()
+'@
+
+                InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
+            }
+
+            It 'Should have correctly instantiated the resource class' {
+                InModuleScope -ScriptBlock {
+                    $mockResourceBaseInstance | Should -Not -BeNullOrEmpty
+                    $mockResourceBaseInstance.GetType().BaseType.Name | Should -Be 'ResourceBase'
+                }
+            }
+
+            It 'Should return the correct values for the properties' {
+                InModuleScope -ScriptBlock {
+                    $mockResourceBaseInstance.Ensure = [Ensure]::Absent
+                    $mockResourceBaseInstance.MyResourceKeyProperty1 = 'MyValue1'
+
+                    $getResult = $mockResourceBaseInstance.Get()
+
+                    $getResult.MyResourceKeyProperty1 | Should -Be 'MyValue1'
+                    $getResult.MyResourceProperty2 | Should -BeNullOrEmpty
+                    $getResult.Ensure | Should -Be ([Ensure]::Absent)
+                    $getResult.Reasons | Should -BeNullOrEmpty
+                }
+            }
+        }
+
+        Context 'When returning Ensure property from method GetCurrentState()' {
+            Context 'When the configuration should be present' {
+                BeforeAll {
+                    Mock -CommandName Get-ClassName -MockWith {
+                        # Only return localized strings for this class name.
+                        @('ResourceBase')
+                    }
+
+                    <#
+                        Must use a here-string because we need to pass 'using' which must be
+                        first in a scriptblock, but if it is outside the here-string then
+                        PowerShell will fail to parse the test script.
+                    #>
+                    $inModuleScopeScriptBlock = @'
+using module SqlServerDsc
+
+class MyMockResource : ResourceBase
+{
+    [DscProperty(Key)]
+    [System.String]
+    $MyResourceKeyProperty1
+
+    [DscProperty()]
+    [Ensure]
+    $Ensure = [Ensure]::Present
+
+    [DscProperty()]
+    [System.String]
+    $MyResourceProperty2
+
+    [DscProperty(NotConfigurable)]
+    [Reason[]]
+    $Reasons
+
+    [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
+    {
+        return @{
+            Ensure = [Ensure]::Present
+            MyResourceKeyProperty1 = 'MyValue1'
+            MyResourceProperty2 = 'MyValue2'
+        }
+    }
+}
+
+$script:mockResourceBaseInstance = [MyMockResource]::new()
+'@
+
+                    InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
+                }
+
+                It 'Should have correctly instantiated the resource class' {
+                    InModuleScope -ScriptBlock {
+                        $mockResourceBaseInstance | Should -Not -BeNullOrEmpty
+                        $mockResourceBaseInstance.GetType().BaseType.Name | Should -Be 'ResourceBase'
+                    }
+                }
+
+                It 'Should return the correct values for the properties' {
+                    InModuleScope -ScriptBlock {
+                        $mockResourceBaseInstance.MyResourceKeyProperty1 = 'MyValue1'
+                        $mockResourceBaseInstance.MyResourceProperty2 = 'MyValue2'
+
+                        $getResult = $mockResourceBaseInstance.Get()
+
+                        $getResult.MyResourceKeyProperty1 | Should -Be 'MyValue1'
+                        $getResult.MyResourceProperty2 | Should -Be 'MyValue2'
+                        $getResult.Ensure | Should -Be ([Ensure]::Present)
+                        $getResult.Reasons | Should -BeNullOrEmpty
+                    }
+                }
+            }
+
+            Context 'When the configuration should be absent' {
+                BeforeAll {
+                    Mock -CommandName Get-ClassName -MockWith {
+                        # Only return localized strings for this class name.
+                        @('ResourceBase')
+                    }
+
+                    <#
+                        Must use a here-string because we need to pass 'using' which must be
+                        first in a scriptblock, but if it is outside the here-string then
+                        PowerShell will fail to parse the test script.
+                    #>
+                    $inModuleScopeScriptBlock = @'
+using module SqlServerDsc
+
+class MyMockResource : ResourceBase
+{
+    [DscProperty(Key)]
+    [System.String]
+    $MyResourceKeyProperty1
+
+    [DscProperty()]
+    [Ensure]
+    $Ensure = [Ensure]::Present
+
+    [DscProperty()]
+    [System.String]
+    $MyResourceProperty2
+
+    [DscProperty(NotConfigurable)]
+    [Reason[]]
+    $Reasons
+
+    [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
+    {
+        return @{
+            Ensure = [Ensure]::Absent
+            MyResourceKeyProperty1 = 'MyValue1'
+            MyResourceProperty2 = $null
+        }
+    }
+}
+
+$script:mockResourceBaseInstance = [MyMockResource]::new()
+'@
+
+                    InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
+                }
+
+                It 'Should have correctly instantiated the resource class' {
+                    InModuleScope -ScriptBlock {
+                        $mockResourceBaseInstance | Should -Not -BeNullOrEmpty
+                        $mockResourceBaseInstance.GetType().BaseType.Name | Should -Be 'ResourceBase'
+                    }
+                }
+
+                It 'Should return the correct values for the properties' {
+                    InModuleScope -ScriptBlock {
+                        $mockResourceBaseInstance.Ensure = [Ensure]::Absent
+                        $mockResourceBaseInstance.MyResourceKeyProperty1 = 'MyValue1'
+
+                        $getResult = $mockResourceBaseInstance.Get()
+
+                        $getResult.MyResourceKeyProperty1 | Should -Be 'MyValue1'
+                        $getResult.MyResourceProperty2 | Should -BeNullOrEmpty
+                        $getResult.Ensure | Should -Be ([Ensure]::Absent)
+                        $getResult.Reasons | Should -BeNullOrEmpty
+                    }
+                }
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            Mock -CommandName Get-ClassName -MockWith {
+                # Only return localized strings for this class name.
+                @('ResourceBase')
+            }
+        }
+
+        Context 'When the configuration should be present' {
+            BeforeAll {
+                <#
+                    Must use a here-string because we need to pass 'using' which must be
+                    first in a scriptblock, but if it is outside the here-string then
+                    PowerShell will fail to parse the test script.
+                #>
+                $inModuleScopeScriptBlock = @'
+using module SqlServerDsc
+
+class MyMockResource : ResourceBase
+{
+    [DscProperty(Key)]
+    [System.String]
+    $MyResourceKeyProperty1
+
+    [DscProperty()]
+    [Ensure]
+    $Ensure = [Ensure]::Present
+
+    [DscProperty()]
+    [System.String]
+    $MyResourceProperty2
+
+    [DscProperty(NotConfigurable)]
+    [Reason[]]
+    $Reasons
+
+    [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
+    {
+        return @{
+            MyResourceKeyProperty1 = 'MyValue1'
+            MyResourceProperty2 = 'MyValue2'
+        }
+    }
+}
+
+$script:mockResourceBaseInstance = [MyMockResource]::new()
+'@
+
+                InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
+            }
+
+            It 'Should have correctly instantiated the resource class' {
+                InModuleScope -ScriptBlock {
+                    $mockResourceBaseInstance | Should -Not -BeNullOrEmpty
+                    $mockResourceBaseInstance.GetType().BaseType.Name | Should -Be 'ResourceBase'
+                }
+            }
+
+            It 'Should return the correct values for the properties' {
+                InModuleScope -ScriptBlock {
+                    $mockResourceBaseInstance.MyResourceKeyProperty1 = 'MyValue1'
+                    $mockResourceBaseInstance.MyResourceProperty2 = 'NewValue2'
+
+                    $getResult = $mockResourceBaseInstance.Get()
+
+                    $getResult.MyResourceKeyProperty1 | Should -Be 'MyValue1'
+                    $getResult.MyResourceProperty2 | Should -Be 'MyValue2'
+                    $getResult.Ensure | Should -Be ([Ensure]::Absent)
+
+                    $getResult.Reasons | Should -HaveCount 1
+                    $getResult.Reasons[0].Code | Should -Be 'MyMockResource:MyMockResource:MyResourceProperty2'
+                    $getResult.Reasons[0].Phrase | Should -Be 'The property MyResourceProperty2 should be "NewValue2", but was "MyValue2"'
+                }
+            }
+        }
+
+        Context 'When the configuration should be absent' {
+            BeforeAll {
+                Mock -CommandName Get-ClassName -MockWith {
+                    # Only return localized strings for this class name.
+                    @('ResourceBase')
+                }
+
+                <#
+                    Must use a here-string because we need to pass 'using' which must be
+                    first in a scriptblock, but if it is outside the here-string then
+                    PowerShell will fail to parse the test script.
+                #>
+                $inModuleScopeScriptBlock = @'
+using module SqlServerDsc
+
+class MyMockResource : ResourceBase
+{
+    [DscProperty(Key)]
+    [System.String]
+    $MyResourceKeyProperty1
+
+    [DscProperty()]
+    [Ensure]
+    $Ensure = [Ensure]::Present
+
+    [DscProperty()]
+    [System.String]
+    $MyResourceProperty2
+
+    [DscProperty(NotConfigurable)]
+    [Reason[]]
+    $Reasons
+
+    [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
+    {
+        return @{
+            MyResourceKeyProperty1 = 'MyValue1'
+            MyResourceProperty2 = 'MyValue2'
+        }
+    }
+}
+
+$script:mockResourceBaseInstance = [MyMockResource]::new()
+'@
+
+                InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
+            }
+
+            It 'Should have correctly instantiated the resource class' {
+                InModuleScope -ScriptBlock {
+                    $mockResourceBaseInstance | Should -Not -BeNullOrEmpty
+                    $mockResourceBaseInstance.GetType().BaseType.Name | Should -Be 'ResourceBase'
+                }
+            }
+
+            It 'Should return the correct values for the properties' {
+                InModuleScope -ScriptBlock {
+                    $mockResourceBaseInstance.Ensure = [Ensure]::Absent
+                    $mockResourceBaseInstance.MyResourceKeyProperty1 = 'MyValue1'
+
+                    $getResult = $mockResourceBaseInstance.Get()
+
+                    $getResult.MyResourceKeyProperty1 | Should -Be 'MyValue1'
+                    $getResult.MyResourceProperty2 | Should -Be 'MyValue2'
+                    $getResult.Ensure | Should -Be ([Ensure]::Present)
+
+                    $getResult.Reasons | Should -HaveCount 1
+                    $getResult.Reasons[0].Code | Should -Be 'MyMockResource:MyMockResource:MyResourceProperty2'
+                    $getResult.Reasons[0].Phrase | Should -Be 'The property MyResourceProperty2 should be "NewValue2", but was "MyValue2"'
+                }
+            }
+        }
+
+        Context 'When returning Ensure property from method GetCurrentState()' {
+            Context 'When the configuration should be present' {
+                BeforeAll {
+                    <#
+                        Must use a here-string because we need to pass 'using' which must be
+                        first in a scriptblock, but if it is outside the here-string then
+                        PowerShell will fail to parse the test script.
+                    #>
+                    $inModuleScopeScriptBlock = @'
+using module SqlServerDsc
+
+class MyMockResource : ResourceBase
+{
+    [DscProperty(Key)]
+    [System.String]
+    $MyResourceKeyProperty1
+
+    [DscProperty()]
+    [Ensure]
+    $Ensure = [Ensure]::Present
+
+    [DscProperty()]
+    [System.String]
+    $MyResourceProperty2
+
+    [DscProperty(NotConfigurable)]
+    [Reason[]]
+    $Reasons
+
+    [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
+    {
+        return @{
+            Ensure = [Ensure]::Absent
+            MyResourceKeyProperty1 = 'MyValue1'
+            MyResourceProperty2 = 'MyValue2'
+        }
+    }
+}
+
+$script:mockResourceBaseInstance = [MyMockResource]::new()
+'@
+
+                    InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
+                }
+
+                It 'Should have correctly instantiated the resource class' {
+                    InModuleScope -ScriptBlock {
+                        $mockResourceBaseInstance | Should -Not -BeNullOrEmpty
+                        $mockResourceBaseInstance.GetType().BaseType.Name | Should -Be 'ResourceBase'
+                    }
+                }
+
+                It 'Should return the correct values for the properties' {
+                    InModuleScope -ScriptBlock {
+                        $mockResourceBaseInstance.MyResourceKeyProperty1 = 'MyValue1'
+                        $mockResourceBaseInstance.MyResourceProperty2 = 'NewValue2'
+
+                        $getResult = $mockResourceBaseInstance.Get()
+
+                        $getResult.MyResourceKeyProperty1 | Should -Be 'MyValue1'
+                        $getResult.MyResourceProperty2 | Should -Be 'MyValue2'
+                        $getResult.Ensure | Should -Be ([Ensure]::Absent)
+
+                        $getResult.Reasons | Should -HaveCount 2
+
+                        # The order in the array was sometimes different so could not use array index ($getResult.Reasons[0]).
+                        $getResult.Reasons.Code | Should -Contain 'MyMockResource:MyMockResource:MyResourceProperty2'
+                        $getResult.Reasons.Code | Should -Contain 'MyMockResource:MyMockResource:Ensure'
+                        $getResult.Reasons.Phrase | Should -Contain 'The property MyResourceProperty2 should be "NewValue2", but was "MyValue2"'
+                        $getResult.Reasons.Phrase | Should -Contain 'The property Ensure should be "Present", but was "Absent"'
+                    }
+                }
+            }
+
+            Context 'When the configuration should be absent' {
+                BeforeAll {
+                    Mock -CommandName Get-ClassName -MockWith {
+                        # Only return localized strings for this class name.
+                        @('ResourceBase')
+                    }
+
+                    <#
+                        Must use a here-string because we need to pass 'using' which must be
+                        first in a scriptblock, but if it is outside the here-string then
+                        PowerShell will fail to parse the test script.
+                    #>
+                    $inModuleScopeScriptBlock = @'
+using module SqlServerDsc
+
+class MyMockResource : ResourceBase
+{
+    [DscProperty(Key)]
+    [System.String]
+    $MyResourceKeyProperty1
+
+    [DscProperty()]
+    [Ensure]
+    $Ensure = [Ensure]::Present
+
+    [DscProperty()]
+    [System.String]
+    $MyResourceProperty2
+
+    [DscProperty(NotConfigurable)]
+    [Reason[]]
+    $Reasons
+
+    [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
+    {
+        return @{
+            Ensure = [Ensure]::Present
+            MyResourceKeyProperty1 = 'MyValue1'
+            MyResourceProperty2 = 'MyValue2'
+        }
+    }
+}
+
+$script:mockResourceBaseInstance = [MyMockResource]::new()
+'@
+
+                    InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
+                }
+
+                It 'Should have correctly instantiated the resource class' {
+                    InModuleScope -ScriptBlock {
+                        $mockResourceBaseInstance | Should -Not -BeNullOrEmpty
+                        $mockResourceBaseInstance.GetType().BaseType.Name | Should -Be 'ResourceBase'
+                    }
+                }
+
+                It 'Should return the correct values for the properties' {
+                    InModuleScope -ScriptBlock {
+                        $mockResourceBaseInstance.Ensure = [Ensure]::Absent
+                        $mockResourceBaseInstance.MyResourceKeyProperty1 = 'MyValue1'
+
+                        $getResult = $mockResourceBaseInstance.Get()
+
+                        $getResult.MyResourceKeyProperty1 | Should -Be 'MyValue1'
+                        $getResult.MyResourceProperty2 | Should -Be 'MyValue2'
+                        $getResult.Ensure | Should -Be ([Ensure]::Present)
+
+                        $getResult.Reasons | Should -HaveCount 1
+
+                        $getResult.Reasons[0].Code | Should -Be 'MyMockResource:MyMockResource:Ensure'
+                        $getResult.Reasons[0].Phrase | Should -Be 'The property Ensure should be "Absent", but was "Present"'
+                    }
+                }
             }
         }
     }
