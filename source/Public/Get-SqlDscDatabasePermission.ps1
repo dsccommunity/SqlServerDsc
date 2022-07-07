@@ -17,10 +17,7 @@
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
-        Get-SqlDscDatabasePermission -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal'
-
-        Connects to the default instance on the current machine and returns the
-        database permission information for the specified principal.
+        $permission = Get-SqlDscDatabasePermission -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal'
 
     .NOTES
         This command excludes fixed roles like _db_datareader_ by default, and will
@@ -57,9 +54,9 @@ function Get-SqlDscDatabasePermission
 
     $sqlDatabaseObject = $null
 
-    if ($sqlServerObject.Databases)
+    if ($ServerObject.Databases)
     {
-        $sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName]
+        $sqlDatabaseObject = $ServerObject.Databases[$DatabaseName]
     }
 
     if ($sqlDatabaseObject)

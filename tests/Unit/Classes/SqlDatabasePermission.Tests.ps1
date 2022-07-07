@@ -87,20 +87,22 @@ Describe 'SqlDatabasePermission' {
 }
 
 Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
-    BeforeAll {
-        InModuleScope -ScriptBlock {
-            $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
-                Name         = 'MockUserName'
-                DatabaseName = 'MockDatabaseName'
-                InstanceName = 'NamedInstance'
-            }
-        }
-    }
-
     Context 'When the system is in the desired state' {
-        Context 'When the desired permission does exist' {
+        Context 'When the desired permission should exist' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
+                        Name         = 'MockUserName'
+                        DatabaseName = 'MockDatabaseName'
+                        InstanceName = 'NamedInstance'
+                        Permission   = [DatabasePermission[]] @(
+                            [DatabasePermission] @{
+                                State      = 'Grant'
+                                Permission = @('Connect')
+                            }
+                        )
+                    }
+
                     <#
                         This mocks the method GetCurrentState().
 
@@ -111,7 +113,6 @@ Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
                     $script:mockSqlDatabasePermissionInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return [System.Collections.Hashtable] @{
-                                Ensure       = 'Present'
                                 InstanceName = 'NamedInstance'
                                 DatabaseName = 'MockDatabaseName'
                                 Name         = 'MockUserName'
@@ -122,8 +123,6 @@ Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
                                         Permission = @('Connect')
                                     }
                                 )
-                                Credential   = $null
-                                Reasons      = $null
                             }
                         }
                 }
@@ -149,9 +148,17 @@ Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
             }
         }
 
-        Context 'When the desired permission does not exist' {
+        Context 'When the desired permission should not exist' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
+                    $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
+                        Ensure       = 'Absent'
+                        Name         = 'MockUserName'
+                        DatabaseName = 'MockDatabaseName'
+                        InstanceName = 'NamedInstance'
+                        Permission   = [DatabasePermission[]] @()
+                    }
+
                     <#
                         This mocks the method GetCurrentState().
 
@@ -162,20 +169,17 @@ Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
                     $script:mockSqlDatabasePermissionInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return [System.Collections.Hashtable] @{
-                                Ensure       = 'Absent'
                                 InstanceName = 'NamedInstance'
                                 DatabaseName = 'MockDatabaseName'
                                 Name         = 'MockUserName'
                                 ServerName   = 'localhost'
                                 Permission   = [DatabasePermission[]] @()
-                                Credential   = $null
-                                Reasons      = $null
                             }
                         }
                 }
             }
 
-            It 'Should return the state as present' {
+            It 'Should return the state as absent' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlDatabasePermissionInstance.Get()
 
@@ -189,7 +193,7 @@ Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
 
                     $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
 
-                    $currentState.Permission| Should -BeNullOrEmpty
+                    $currentState.Permission | Should -BeNullOrEmpty
                 }
             }
         }

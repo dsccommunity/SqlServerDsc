@@ -73,4 +73,112 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
             $mockDatabasePermissionInstance.Permission = 'select'
         }
     }
+
+    Context 'When comparing two objects' {
+        # TODO: See comment in code regarding the code this test was suppose to cover.
+        # Context 'When the object to compare against is the wrong type' {
+        #     It 'Should throw an error on compare' {
+        #         InModuleScope -ScriptBlock {
+        #             $databasPermissionInstance = [DatabasePermission]::new()
+
+        #             $databasPermissionInstance.State = 'Grant'
+        #             $databasPermissionInstance.Permission = 'select'
+
+        #             # Must escape the brackets with ` for expected message comparison to work.
+        #             { $databasPermissionInstance -eq 'invalid type' } |
+        #                 Should -Throw -ExpectedMessage 'Invalid type in comparison. Expected type `[DatabasePermission`], but the type was `[System.String`].'
+        #         }
+        #     }
+        # }
+
+        Context 'When both objects are equal' {
+            Context 'When property Permission has a single value' {
+                It 'Should return $true' {
+                    InModuleScope -ScriptBlock {
+                        $databasPermissionInstance1 = [DatabasePermission]::new()
+
+                        $databasPermissionInstance1.State = 'Grant'
+                        $databasPermissionInstance1.Permission = 'select'
+
+                        $databasPermissionInstance2 = [DatabasePermission]::new()
+
+                        $databasPermissionInstance2.State = 'Grant'
+                        $databasPermissionInstance2.Permission = 'select'
+
+                        $databasPermissionInstance1 -eq $databasPermissionInstance2 | Should -BeTrue
+                    }
+                }
+            }
+
+            Context 'When property Permission has a multiple values' {
+                It 'Should return $true' {
+                    InModuleScope -ScriptBlock {
+                        $databasPermissionInstance1 = [DatabasePermission]::new()
+
+                        $databasPermissionInstance1.State = 'Grant'
+                        $databasPermissionInstance1.Permission = @('select', 'update')
+
+                        $databasPermissionInstance2 = [DatabasePermission]::new()
+
+                        $databasPermissionInstance2.State = 'Grant'
+                        $databasPermissionInstance2.Permission = @('select', 'update')
+
+                        $databasPermissionInstance1 -eq $databasPermissionInstance2 | Should -BeTrue
+                    }
+                }
+            }
+        }
+
+        Context 'When object has different value for property State' {
+            It 'Should instantiate two objects' {
+                $script:mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
+                    $databasPermissionInstance = [DatabasePermission]::new()
+
+                    $databasPermissionInstance.State = 'Deny'
+                    $databasPermissionInstance.Permission = 'select'
+
+                    return $databasPermissionInstance
+                }
+
+                $script:mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
+                    $databasPermissionInstance = [DatabasePermission]::new()
+
+                    $databasPermissionInstance.State = 'Grant'
+                    $databasPermissionInstance.Permission = 'select'
+
+                    return $databasPermissionInstance
+                }
+            }
+
+            It 'Should return $false' {
+                $mockDatabasePermissionInstance1 -eq $mockDatabasePermissionInstance2 | Should -BeFalse
+            }
+        }
+
+        Context 'When object has different value for property Permission' {
+            It 'Should instantiate two objects' {
+                $script:mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
+                    $databasPermissionInstance = [DatabasePermission]::new()
+
+                    $databasPermissionInstance.State = 'Grant'
+                    $databasPermissionInstance.Permission = 'select'
+
+                    return $databasPermissionInstance
+                }
+
+                $script:mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
+                    $databasPermissionInstance = [DatabasePermission]::new()
+
+                    $databasPermissionInstance.State = 'Grant'
+                    $databasPermissionInstance.Permission = 'update'
+
+                    return $databasPermissionInstance
+                }
+            }
+
+            It 'Should return $false' {
+                $mockDatabasePermissionInstance1 -eq $mockDatabasePermissionInstance2 | Should -BeFalse
+            }
+        }
+    }
 }

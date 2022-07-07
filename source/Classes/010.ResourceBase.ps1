@@ -84,9 +84,13 @@ class ResourceBase
         #>
         if (($this | Test-ResourceHasEnsureProperty) -and $null -eq $getCurrentStateResult.Ensure)
         {
-            if ($propertiesNotInDesiredState -or (-not $propertiesNotInDesiredState -and $this.Ensure -eq [Ensure]::Absent))
+            if (($propertiesNotInDesiredState -and $this.Ensure -eq [Ensure]::Present) -or (-not $propertiesNotInDesiredState -and $this.Ensure -eq [Ensure]::Absent))
             {
                 $dscResourceObject.Ensure = [Ensure]::Absent
+            }
+            elseif ($propertiesNotInDesiredState -and $this.Ensure -eq [Ensure]::Absent)
+            {
+                $dscResourceObject.Ensure = [Ensure]::Present
             }
             else
             {
@@ -130,7 +134,7 @@ class ResourceBase
                     Phrase = 'The property {0} should be {1}, but was {2}' -f $property.Property, ($propertyExpectedValue | ConvertTo-Json -Compress), ($propertyActualValue | ConvertTo-Json -Compress)
                 }
 
-                Write-Verbose -Verbose -Message ($this.Reasons | Out-String)
+                Write-Verbose -Verbose -Message ($dscResourceObject.Reasons | Out-String)
             }
         }
 

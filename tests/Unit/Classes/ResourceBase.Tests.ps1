@@ -395,13 +395,14 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
         }
 
         Context 'When the configuration should be present' {
-            BeforeAll {
-                <#
-                    Must use a here-string because we need to pass 'using' which must be
-                    first in a scriptblock, but if it is outside the here-string then
-                    PowerShell will fail to parse the test script.
-                #>
-                $inModuleScopeScriptBlock = @'
+            Context 'When a non-mandatory parameter is not in desired state' {
+                BeforeAll {
+                    <#
+                        Must use a here-string because we need to pass 'using' which must be
+                        first in a scriptblock, but if it is outside the here-string then
+                        PowerShell will fail to parse the test script.
+                    #>
+                    $inModuleScopeScriptBlock = @'
 using module SqlServerDsc
 
 class MyMockResource : ResourceBase
@@ -434,30 +435,96 @@ class MyMockResource : ResourceBase
 $script:mockResourceBaseInstance = [MyMockResource]::new()
 '@
 
-                InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
-            }
+                    InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
+                }
 
-            It 'Should have correctly instantiated the resource class' {
-                InModuleScope -ScriptBlock {
-                    $mockResourceBaseInstance | Should -Not -BeNullOrEmpty
-                    $mockResourceBaseInstance.GetType().BaseType.Name | Should -Be 'ResourceBase'
+                It 'Should have correctly instantiated the resource class' {
+                    InModuleScope -ScriptBlock {
+                        $mockResourceBaseInstance | Should -Not -BeNullOrEmpty
+                        $mockResourceBaseInstance.GetType().BaseType.Name | Should -Be 'ResourceBase'
+                    }
+                }
+
+                It 'Should return the correct values for the properties' {
+                    InModuleScope -ScriptBlock {
+                        $mockResourceBaseInstance.MyResourceKeyProperty1 = 'MyValue1'
+                        $mockResourceBaseInstance.MyResourceProperty2 = 'NewValue2'
+
+                        $getResult = $mockResourceBaseInstance.Get()
+
+                        $getResult.MyResourceKeyProperty1 | Should -Be 'MyValue1'
+                        $getResult.MyResourceProperty2 | Should -Be 'MyValue2'
+                        $getResult.Ensure | Should -Be ([Ensure]::Absent)
+
+                        $getResult.Reasons | Should -HaveCount 1
+                        $getResult.Reasons[0].Code | Should -Be 'MyMockResource:MyMockResource:MyResourceProperty2'
+                        $getResult.Reasons[0].Phrase | Should -Be 'The property MyResourceProperty2 should be "NewValue2", but was "MyValue2"'
+                    }
                 }
             }
 
-            It 'Should return the correct values for the properties' {
-                InModuleScope -ScriptBlock {
-                    $mockResourceBaseInstance.MyResourceKeyProperty1 = 'MyValue1'
-                    $mockResourceBaseInstance.MyResourceProperty2 = 'NewValue2'
+            Context 'When a mandatory parameter is not in desired state' {
+                BeforeAll {
+                    <#
+                        Must use a here-string because we need to pass 'using' which must be
+                        first in a scriptblock, but if it is outside the here-string then
+                        PowerShell will fail to parse the test script.
+                    #>
+                    $inModuleScopeScriptBlock = @'
+using module SqlServerDsc
 
-                    $getResult = $mockResourceBaseInstance.Get()
+class MyMockResource : ResourceBase
+{
+    [DscProperty(Key)]
+    [System.String]
+    $MyResourceKeyProperty1
 
-                    $getResult.MyResourceKeyProperty1 | Should -Be 'MyValue1'
-                    $getResult.MyResourceProperty2 | Should -Be 'MyValue2'
-                    $getResult.Ensure | Should -Be ([Ensure]::Absent)
+    [DscProperty()]
+    [Ensure]
+    $Ensure = [Ensure]::Present
 
-                    $getResult.Reasons | Should -HaveCount 1
-                    $getResult.Reasons[0].Code | Should -Be 'MyMockResource:MyMockResource:MyResourceProperty2'
-                    $getResult.Reasons[0].Phrase | Should -Be 'The property MyResourceProperty2 should be "NewValue2", but was "MyValue2"'
+    [DscProperty()]
+    [System.String]
+    $MyResourceProperty2
+
+    [DscProperty(NotConfigurable)]
+    [Reason[]]
+    $Reasons
+
+    [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
+    {
+        return @{
+            MyResourceKeyProperty1 = $null
+        }
+    }
+}
+
+$script:mockResourceBaseInstance = [MyMockResource]::new()
+'@
+
+                    InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
+                }
+
+                It 'Should have correctly instantiated the resource class' {
+                    InModuleScope -ScriptBlock {
+                        $mockResourceBaseInstance | Should -Not -BeNullOrEmpty
+                        $mockResourceBaseInstance.GetType().BaseType.Name | Should -Be 'ResourceBase'
+                    }
+                }
+
+                It 'Should return the correct values for the properties' {
+                    InModuleScope -ScriptBlock {
+                        $mockResourceBaseInstance.MyResourceKeyProperty1 = 'MyValue1'
+
+                        $getResult = $mockResourceBaseInstance.Get()
+
+                        $getResult.MyResourceKeyProperty1 | Should -BeNullOrEmpty
+                        $getResult.Ensure | Should -Be ([Ensure]::Absent)
+
+                        $getResult.Reasons | Should -HaveCount 1
+                        $getResult.Reasons[0].Code | Should -Be 'MyMockResource:MyMockResource:MyResourceKeyProperty1'
+                        $getResult.Reasons[0].Phrase | Should -Be 'The property MyResourceKeyProperty1 should be "MyValue1", but was null'
+                    }
                 }
             }
         }
@@ -521,6 +588,7 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
                 InModuleScope -ScriptBlock {
                     $mockResourceBaseInstance.Ensure = [Ensure]::Absent
                     $mockResourceBaseInstance.MyResourceKeyProperty1 = 'MyValue1'
+                    $mockResourceBaseInstance.MyResourceProperty2 = $null
 
                     $getResult = $mockResourceBaseInstance.Get()
 
@@ -530,7 +598,7 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
 
                     $getResult.Reasons | Should -HaveCount 1
                     $getResult.Reasons[0].Code | Should -Be 'MyMockResource:MyMockResource:MyResourceProperty2'
-                    $getResult.Reasons[0].Phrase | Should -Be 'The property MyResourceProperty2 should be "NewValue2", but was "MyValue2"'
+                    $getResult.Reasons[0].Phrase | Should -Be 'The property MyResourceProperty2 should be "", but was "MyValue2"'
                 }
             }
         }
