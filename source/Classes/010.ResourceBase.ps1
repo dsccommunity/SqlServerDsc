@@ -49,6 +49,7 @@ class ResourceBase
 
         $dscResourceObject = [System.Activator]::CreateInstance($this.GetType())
 
+        # Set values returned from the derived class' GetCurrentState().
         foreach ($propertyName in $this.PSObject.Properties.Name)
         {
             if ($propertyName -in @($getCurrentStateResult.Keys))
@@ -57,9 +58,30 @@ class ResourceBase
             }
         }
 
-        # TODO: If $getCurrentStateResult does not contain Ensure (or null) then
-        # we must remove Ensure from the comparison by calling a Compare() override
-        # that takes an array with properties that should be ignored.
+        # Set key property values unless it was returned from the derived class' GetCurrentState().
+        foreach ($propertyName in $keyProperty.Keys)
+        {
+            if ($propertyName -notin @($getCurrentStateResult.Keys))
+            {
+                # Add the key value to the instance to be returned.
+                $dscResourceObject.$propertyName = $this.$propertyName
+
+                <#
+                    If the key property should be enforced, add it to the current
+                    state hashtable so Compare() will enforce it. The property will
+                    always be in desired state since it is the desired state value
+                    that is set as the current state value. But this will help so
+                    that a derived class' method GetCurrentState() does not need
+                    to return the key property values if the properties has not
+                    been added to the class property '$this.notEnforcedProperties'.
+                #>
+                if ($propertyName -notin $this.notEnforcedProperties)
+                {
+                    $getCurrentStateResult.$propertyName = $this.$propertyName
+                }
+            }
+        }
+
         $ignoreProperty = @()
 
         if (($this | Test-ResourceHasEnsureProperty) -and $null -eq $getCurrentStateResult.Ensure)
@@ -144,10 +166,7 @@ class ResourceBase
 
     [void] Set()
     {
-        # Get all key properties.
-        $keyProperty = $this | Get-KeyProperty
-
-        Write-Verbose -Verbose -Message ($this.localizedData.SetDesiredState -f $this.GetType().Name, ($keyProperty | ConvertTo-Json -Compress))
+        Write-Verbose -Verbose -Message ($this.localizedData.SetDesiredState -f $this.GetType().Name, ($this | Get-KeyProperty | ConvertTo-Json -Compress))
 
         $this.Assert()
 
@@ -159,11 +178,12 @@ class ResourceBase
 
         if ($propertiesNotInDesiredState)
         {
-            $propertiesToModify = $this.GetDesiredStateForSplatting($propertiesNotInDesiredState)
+            $propertiesToModify = $propertiesNotInDesiredState | ConvertFrom-CompareResult
 
-            $propertiesToModify.Keys | ForEach-Object -Process {
-                Write-Verbose -Verbose -Message ($this.localizedData.SetProperty -f $_, $propertiesToModify.$_)
-            }
+            $propertiesToModify.Keys |
+                ForEach-Object -Process {
+                    Write-Verbose -Verbose -Message ($this.localizedData.SetProperty -f $_, $propertiesToModify.$_)
+                }
 
             <#
                 Call the Modify() method with the properties that should be enforced
@@ -179,10 +199,7 @@ class ResourceBase
 
     [System.Boolean] Test()
     {
-        # Get all key properties.
-        $keyProperty = $this | Get-KeyProperty
-
-        Write-Verbose -Verbose -Message ($this.localizedData.TestDesiredState -f $this.GetType().Name, ($keyProperty | ConvertTo-Json -Compress))
+        Write-Verbose -Verbose -Message ($this.localizedData.TestDesiredState -f $this.GetType().Name, ($this | Get-KeyProperty | ConvertTo-Json -Compress))
 
         $this.Assert()
 
@@ -225,12 +242,13 @@ class ResourceBase
         return $this.Compare($currentState, @())
     }
 
-    # TODO: remove this if not needed.
-    # hidden [System.Collections.Hashtable[]] Compare([System.Collections.Hashtable] $currentState)
-    # {
-    #     return $this.Compare($currentState, @())
-    # }
+    <#
+        Returns a hashtable containing all properties that should be enforced and
+        are not in desired state, or $null if all enforced properties are in
+        desired state.
 
+        This method should normally not be overridden.
+    #>
     hidden [System.Collections.Hashtable[]] Compare([System.Collections.Hashtable] $currentState, [System.String[]] $excludeProperties)
     {
         $desiredState = $this | Get-DesiredStateProperty
@@ -239,7 +257,7 @@ class ResourceBase
             CurrentValues     = $currentState
             DesiredValues     = $desiredState
             Properties        = $desiredState.Keys
-            ExcludeProperties = $excludeProperties + $this.notEnforcedProperties
+            ExcludeProperties = ($excludeProperties + $this.notEnforcedProperties) | Select-Object -Unique
             IncludeValue      = $true
         }
 
@@ -248,21 +266,6 @@ class ResourceBase
             all enforced properties are in desired state.
         #>
         return (Compare-DscParameterState @CompareDscParameterState)
-    }
-    # Returns a hashtable containing all properties that should be enforced.
-    <#
-        TODO: This should be a private function, e.g ConvertFrom-CompareHashtable,
-              that could have a [Switch] property 'NameAndExpectedValue'
-    #>
-    hidden [System.Collections.Hashtable] GetDesiredStateForSplatting([System.Collections.Hashtable[]] $Properties)
-    {
-        $desiredState = @{}
-
-        $Properties | ForEach-Object -Process {
-            $desiredState[$_.Property] = $_.ExpectedValue
-        }
-
-        return $desiredState
     }
 
     # This method should normally not be overridden.

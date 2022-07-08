@@ -134,10 +134,25 @@ class MyMockResource : ResourceBase
     [Reason[]]
     $Reasons
 
+    <#
+        This will test so that a key value do not need to be enforced, and still
+        be returned by Get().
+    #>
+    MyMockResource() : base ()
+    {
+        # These properties will not be enforced.
+        $this.notEnforcedProperties = @(
+            'MyResourceKeyProperty1'
+        )
+    }
+
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
+        <#
+            This does not return the key property that is not being enforce, to let
+            the base class' method Get() return that value.
+        #>
         return @{
-            MyResourceKeyProperty1 = 'MyValue1'
             MyResourceProperty2 = 'MyValue2'
         }
     }
@@ -204,10 +219,20 @@ class MyMockResource : ResourceBase
     [Reason[]]
     $Reasons
 
+    <#
+        Tests to enforce a key property even if we do not return the key property value
+        from the method GetCurrentState.
+    #>
+    MyMockResource() : base ()
+    {
+        # Test not to add the key property to the list of properties that are not enforced.
+        $this.notEnforcedProperties = @()
+    }
+
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
+        # This does not return the key property, to let base class handle that.
         return @{
-            MyResourceKeyProperty1 = 'MyValue1'
             MyResourceProperty2 = $null
         }
     }
@@ -1036,40 +1061,6 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
                 }
             }
         }
-    }
-}
-
-Describe 'ResourceBase\GetDesiredStateForSplatting()' -Tag 'GetDesiredStateForSplatting' {
-    BeforeAll {
-        $mockResourceBaseInstance = InModuleScope -ScriptBlock {
-            [ResourceBase]::new()
-        }
-
-        $mockProperties = @(
-            @{
-                Property      = 'MyResourceProperty1'
-                ExpectedValue = 'MyNewValue1'
-                ActualValue   = 'MyValue1'
-            },
-            @{
-                Property      = 'MyResourceProperty2'
-                ExpectedValue = 'MyNewValue2'
-                ActualValue   = 'MyValue2'
-            }
-        )
-    }
-
-    It 'Should return the correct values in a hashtable' {
-        $getDesiredStateForSplattingResult = $mockResourceBaseInstance.GetDesiredStateForSplatting($mockProperties)
-
-        $getDesiredStateForSplattingResult | Should -BeOfType [System.Collections.Hashtable]
-
-        $getDesiredStateForSplattingResult.Keys | Should -HaveCount 2
-        $getDesiredStateForSplattingResult.Keys | Should -Contain 'MyResourceProperty1'
-        $getDesiredStateForSplattingResult.Keys | Should -Contain 'MyResourceProperty2'
-
-        $getDesiredStateForSplattingResult.MyResourceProperty1 | Should -Be 'MyNewValue1'
-        $getDesiredStateForSplattingResult.MyResourceProperty2 | Should -Be 'MyNewValue2'
     }
 }
 

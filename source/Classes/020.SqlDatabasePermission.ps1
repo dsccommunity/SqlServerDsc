@@ -176,9 +176,25 @@ class SqlDatabasePermission : ResourceBase
     #>
     hidden [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
-        # The property Ensure will be handled by the base class.
+        $currentStateCredential = $null
+
+        if ($this.Credential)
+        {
+            <#
+                TODO: This does not work, Get() will return an empty PSCredential-object.
+                      Using MOF-based resource variant does not work either as it throws
+                      an error: https://github.com/dsccommunity/ActiveDirectoryDsc/blob/b2838d945204e1153cc3cbfca1a3d90671e0a61c/source/Modules/ActiveDirectoryDsc.Common/ActiveDirectoryDsc.Common.psm1#L1834-L1856
+            #>
+            $currentStateCredential = [PSCredential]::new(
+                $this.Credential.UserName,
+                [SecureString]::new()
+            )
+        }
+
+        # The property Ensure and key properties will be handled by the base class.
         $currentState = @{
-            Permission   = [DatabasePermission[]] @()
+            Credential = $currentStateCredential
+            Permission = [DatabasePermission[]] @()
         }
 
         $connectSqlDscDatabaseEngineParameters = @{
