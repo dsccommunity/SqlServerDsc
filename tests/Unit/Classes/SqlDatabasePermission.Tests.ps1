@@ -316,4 +316,267 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
             }
         }
     }
+
+    Context 'When there are permissions for only state Grant' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
+                    Name         = 'MockUserName'
+                    DatabaseName = 'MockDatabaseName'
+                    InstanceName = 'NamedInstance'
+                }
+            }
+
+            Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
+                return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            }
+
+            Mock -CommandName Get-SqlDscDatabasePermission -MockWith {
+                $mockDatabasePermissionInfo = @()
+
+                $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                    Add-Member -MemberType NoteProperty -Name PermissionType -Value (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($true, $false, $false, $false)) -PassThru |
+                    Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                    Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $true, $false, $false)) -PassThru |
+                    Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                return $mockDatabasePermissionInfo
+            }
+        }
+
+        It 'Should return the state as present' {
+            InModuleScope -ScriptBlock {
+                $currentState = $script:mockSqlDatabasePermissionInstance.GetCurrentState(@{
+                    Name         = 'MockUserName'
+                    DatabaseName = 'MockDatabaseName'
+                    InstanceName = 'NamedInstance'
+                })
+
+                $currentState.Credential | Should -BeNullOrEmpty
+
+                $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
+                $currentState.Permission | Should -HaveCount 1
+
+                $currentState.Permission[0].State | Should -Be 'Grant'
+                $currentState.Permission[0].Permission | Should -Contain 'Connect'
+                $currentState.Permission[0].Permission | Should -Contain 'Update'
+            }
+        }
+    }
+
+    Context 'When there are permissions for both state Grant and Deny' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
+                    Name         = 'MockUserName'
+                    DatabaseName = 'MockDatabaseName'
+                    InstanceName = 'NamedInstance'
+                }
+            }
+
+            Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
+                return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            }
+
+            Mock -CommandName Get-SqlDscDatabasePermission -MockWith {
+                $mockDatabasePermissionInfo = @()
+
+                $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                    Add-Member -MemberType NoteProperty -Name PermissionType -Value (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($true, $false, $false, $false)) -PassThru |
+                    Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                    Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $true, $false, $false)) -PassThru |
+                    Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                    Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $false, $true, $false)) -PassThru |
+                    Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Deny' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                    Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                return $mockDatabasePermissionInfo
+            }
+        }
+
+        It 'Should return the state as present' {
+            InModuleScope -ScriptBlock {
+                $currentState = $script:mockSqlDatabasePermissionInstance.GetCurrentState(@{
+                    Name         = 'MockUserName'
+                    DatabaseName = 'MockDatabaseName'
+                    InstanceName = 'NamedInstance'
+                })
+
+                $currentState.Credential | Should -BeNullOrEmpty
+
+                $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
+                $currentState.Permission | Should -HaveCount 2
+
+                $currentState.Permission[0].State | Should -Be 'Grant'
+                $currentState.Permission[0].Permission | Should -Contain 'Connect'
+                $currentState.Permission[0].Permission | Should -Contain 'Update'
+
+                $currentState.Permission[1].State | Should -Be 'Deny'
+                $currentState.Permission[1].Permission | Should -Contain 'Select'
+            }
+        }
+    }
+}
+
+Describe 'SqlDatabasePermission\Set()' -Tag 'Set' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
+                Name         = 'MockUserName'
+                DatabaseName = 'MockDatabaseName'
+                InstanceName = 'NamedInstance'
+            } |
+                # Mock method Modify which is called by the base method Set().
+                Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
+                    $script:mockMethodModifyCallCount += 1
+                } -PassThru
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockMethodModifyCallCount = 0
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlDatabasePermissionInstance |
+                    # Mock method Compare() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                        return $null
+                    }
+            }
+        }
+
+        It 'Should not call method Modify()' {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlDatabasePermissionInstance.Set()
+
+                $script:mockMethodModifyCallCount | Should -Be 0
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlDatabasePermissionInstance |
+                    # Mock method Compare() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                        return @{
+                            Property = 'Permission'
+                            ExpectedValue = [DatabasePermission[]] @(
+                                [DatabasePermission] @{
+                                    State      = 'Grant'
+                                    Permission = @('Connect', 'Update')
+                                }
+                            )
+                            ActualValue = [DatabasePermission[]] @(
+                                [DatabasePermission] @{
+                                    State      = 'Grant'
+                                    Permission = @('Connect')
+                                }
+                            )
+                        }
+                    }
+            }
+        }
+
+        It 'Should not call method Modify()' {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlDatabasePermissionInstance.Set()
+
+                $script:mockMethodModifyCallCount | Should -Be 1
+            }
+        }
+    }
+}
+
+Describe 'SqlDatabasePermission\Test()' -Tag 'Test' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
+                Name         = 'MockUserName'
+                DatabaseName = 'MockDatabaseName'
+                InstanceName = 'NamedInstance'
+            }
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlDatabasePermissionInstance |
+                    # Mock method Compare() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                        return $null
+                    }
+            }
+        }
+
+        It 'Should return $true' {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlDatabasePermissionInstance.Test() | Should -BeTrue
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlDatabasePermissionInstance |
+                    # Mock method Compare() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                        return @{
+                            Property = 'Permission'
+                            ExpectedValue = [DatabasePermission[]] @(
+                                [DatabasePermission] @{
+                                    State      = 'Grant'
+                                    Permission = @('Connect', 'Update')
+                                }
+                            )
+                            ActualValue = [DatabasePermission[]] @(
+                                [DatabasePermission] @{
+                                    State      = 'Grant'
+                                    Permission = @('Connect')
+                                }
+                            )
+                        }
+                    }
+            }
+        }
+
+        It 'Should return $false' {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlDatabasePermissionInstance.Test() | Should -BeFalse
+            }
+        }
+    }
 }

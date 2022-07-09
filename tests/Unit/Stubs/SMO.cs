@@ -212,8 +212,17 @@ namespace Microsoft.SqlServer.Management.Smo
             this.Update = update;
         }
 
+        // Used for testing SqlDatabasePermission
+        public DatabasePermissionSet( bool connect, bool update, bool select, bool insert ) : this ( connect, update )
+        {
+            this.Select = select;
+            this.Insert = insert;
+        }
+
         public bool Connect = false;
         public bool Update = false;
+        public bool Select = false;
+        public bool Insert = false;
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo
