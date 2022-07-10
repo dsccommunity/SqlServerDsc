@@ -68,7 +68,7 @@ stages:
               buildType: 'current'
               artifactName: $(buildArtifactName)
               targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
-          # This task need to user Windows PowerShell due to a bug in PS7 that cannot
+          # This task need to use Windows PowerShell due to a bug in PS7 that cannot
           # find/use class-based DSC resources that uses inheritance, which result in
           # the examples cannot compile. See the following issue for more information:
           # https://github.com/dsccommunity/DnsServerDsc/issues/268#issuecomment-918505230

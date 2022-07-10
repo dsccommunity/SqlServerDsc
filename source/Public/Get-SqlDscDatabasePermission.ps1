@@ -17,7 +17,7 @@
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
-        $permission = Get-SqlDscDatabasePermission -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal'
+        Get-SqlDscDatabasePermission -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal'
 
     .NOTES
         This command excludes fixed roles like _db_datareader_ by default, and will
@@ -25,12 +25,17 @@
 
         If specifying `-ErrorAction 'SilentlyContinue'` then the command will silently
         ignore if the database (parameter **DatabaseName**) is not present or the
-        database principal is not present. In such case the command will return `$false`.
+        database principal is not present. In such case the command will return `$null`.
         If specifying `-ErrorAction 'Stop'` the command will throw an error if the
         database or database principal is missing.
 #>
 function Get-SqlDscDatabasePermission
 {
+    <#
+        The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error
+        in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8
+        When QA test run it loads the stub SMO classes so that the rule passes.
+    #>
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Justification = 'Because Script Analyzer does not understand type even if cast when using comma in return statement')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification = 'Because the code throws based on an prior expression')]
     [CmdletBinding()]

@@ -223,10 +223,13 @@ class SqlDatabasePermission : ResourceBase
 
         if ($databasePermissionInfo)
         {
-            $permissionState = $databasePermissionInfo | ForEach-Object -Process {
-                # Convert from the type PermissionState to String.
-                [System.String] $_.PermissionState
-            } | Select-Object -Unique
+            $permissionState = @(
+                $databasePermissionInfo | ForEach-Object -Process {
+                    # Convert from the type PermissionState to String.
+                    [System.String] $_.PermissionState
+                } |
+                Select-Object -Unique
+            )
 
             foreach ($currentPermissionState in $permissionState)
             {
@@ -244,17 +247,18 @@ class SqlDatabasePermission : ResourceBase
 
                 foreach ($currentPermission in $filteredDatabasePermission)
                 {
-                    $permissionProperty = (
-                        $currentPermission.PermissionType |
-                            Get-Member -MemberType Property
-                    ).Name
+                    # get the permissions that is set to $true
+                    $permissionProperty = $currentPermission.PermissionType |
+                        Get-Member -MemberType 'Property' |
+                        Select-Object -ExpandProperty 'Name' |
+                        Where-Object -FilterScript {
+                            $currentPermission.PermissionType.$_
+                        }
+
 
                     foreach ($currentPermissionProperty in $permissionProperty)
                     {
-                        if ($currentPermission.PermissionType."$currentPermissionProperty")
-                        {
-                            $statePermissionResult += $currentPermissionProperty
-                        }
+                        $statePermissionResult += $currentPermissionProperty
                     }
                 }
 
