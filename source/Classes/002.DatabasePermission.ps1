@@ -17,7 +17,7 @@
 #>
 class DatabasePermission : System.IEquatable[Object]
 {
-    [DscProperty(Key)]
+    [DscProperty(Mandatory)]
     [ValidateSet('Grant', 'GrantWithGrant', 'Deny')]
     [System.String]
     $State
