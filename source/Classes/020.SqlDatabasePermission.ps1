@@ -103,9 +103,7 @@
         }
 #>
 
-# TODO: Add this if PsDscRunAsCredential is not supported.
-#[DscResource(RunAsCredential = 'NotSupported')]
-[DscResource()]
+[DscResource(RunAsCredential = 'NotSupported')]
 class SqlDatabasePermission : ResourceBase
 {
     [DscProperty(Key)]
