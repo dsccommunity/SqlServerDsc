@@ -23,7 +23,8 @@ Configuration Example
             Name            = 'CONTOSO\SQLAdmin'
             DatabaseName    = 'AdventureWorks'
             Permission   = @(
-                DatabasePermission {
+                DatabasePermission
+                {
                     State      = 'Grant'
                     Permission = @('Connect', 'Update')
                 }
@@ -39,7 +40,8 @@ Configuration Example
             Name            = 'CONTOSO\SQLAdmin'
             DatabaseName    = 'AdventureWorks'
             Permission   = @(
-                DatabasePermission {
+                DatabasePermission
+                {
                     State      = 'Grant'
                     Permission = @('Connect', 'Update')
                 }

@@ -23,7 +23,8 @@ Configuration Example
             Name                 = 'CONTOSO\SQLAdmin'
             DatabaseName         = 'AdventureWorks'
             Permission   = @(
-                DatabasePermission {
+                DatabasePermission
+                {
                     State      = 'Deny'
                     Permission = @('Select', 'CreateTable')
                 }
@@ -40,7 +41,8 @@ Configuration Example
             Name                 = 'CONTOSO\SQLUser'
             DatabaseName         = 'AdventureWorks'
             Permission   = @(
-                DatabasePermission {
+                DatabasePermission
+                {
                     State      = 'Deny'
                     Permission = @('Select', 'CreateTable')
                 }
@@ -57,7 +59,8 @@ Configuration Example
             Name                 = 'CONTOSO\SQLAdmin'
             DatabaseName         = 'AdventureWorksLT'
             Permission   = @(
-                DatabasePermission {
+                DatabasePermission
+                {
                     State      = 'Deny'
                     Permission = @('Select', 'CreateTable')
                 }
