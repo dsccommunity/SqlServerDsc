@@ -101,6 +101,16 @@
                 )
             )
         }
+
+    .NOTES
+        The built-in property `PsDscRunAsCredential` is not supported on this DSC
+        resource as it uses a complex type (another class as the type for a DSC
+        property). If the property `PsDscRunAsCredential` would be used, then the
+        complex type will not return any values from Get(). This is most likely an
+        issue (bug) with _PowerShell DSC_. Instead (as a workaround) the property
+        `Credential` must be used to specify how to connect to the SQL Server
+        instance.
+
 #>
 
 [DscResource(RunAsCredential = 'NotSupported')]
