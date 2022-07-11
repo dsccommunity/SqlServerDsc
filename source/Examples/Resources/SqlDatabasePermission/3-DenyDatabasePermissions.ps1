@@ -32,7 +32,7 @@ Configuration Example
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            Credential = $SqlAdministratorCredential
         }
 
         SqlDatabasePermission 'Deny_SqlDatabasePermissions_SQLUser_Db01'
@@ -50,7 +50,7 @@ Configuration Example
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            Credential = $SqlAdministratorCredential
         }
 
         SqlDatabasePermission 'Deny_SqlDatabasePermissions_SQLAdmin_Db02'
@@ -68,7 +68,7 @@ Configuration Example
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
 
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            Credential = $SqlAdministratorCredential
         }
     }
 }
