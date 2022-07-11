@@ -38,7 +38,7 @@ Configuration Example
         {
             Ensure          = 'Absent'
             Name            = 'CONTOSO\SQLAdmin'
-            DatabaseName    = 'AdventureWorks'
+            DatabaseName    = 'AdventureWorksLT'
             Permission   = @(
                 DatabasePermission
                 {
