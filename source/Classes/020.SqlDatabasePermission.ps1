@@ -132,6 +132,7 @@ class SqlDatabasePermission : ResourceBase
     [System.String]
     $ServerName = (Get-ComputerName)
 
+    # TODO: Should also add IncludePermission and ExcludePermission which should be mutually exclusive from Permission
     [DscProperty(Mandatory)]
     [DatabasePermission[]]
     $Permission
@@ -288,13 +289,116 @@ class SqlDatabasePermission : ResourceBase
 
     <#
         Base method Set() call this method with the properties that should be
-        enforced and that are not in desired state.
+        enforced and that are not in desired state. It is not called if all
+        properties are in desired state.
     #>
     hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
+        # TODO: Remove line below
         Write-Verbose -Message ($properties | Out-String) -Verbose
 
-        #Set-DnsServerDsSetting @properties
+        $connectSqlDscDatabaseEngineParameters = @{
+            ServerName = $this.ServerName
+            InstanceName = $this.InstanceName
+        }
+
+        if ($this.Credential)
+        {
+            $connectSqlDscDatabaseEngineParameters.Credential = $this.Credential
+        }
+
+        $serverObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+
+        $testSqlDscIsDatabasePrincipalParameters = @{
+            ServerObject      = $serverObject
+            DatabaseName      = $this.DatabaseName
+            Name              = $this.Name
+            ExcludeFixedRoles = $true
+        }
+
+        # This will test wether the database and the principal exist.
+        $isDatabasePrincipal = Test-SqlDscIsDatabasePrincipal @testSqlDscIsDatabasePrincipalParameters
+
+        if ($isDatabasePrincipal)
+        {
+            if ($properties.ContainsKey('Permission'))
+            {
+                # Write-Verbose -Message (
+                #     $this.localizedData.ChangePermissionForUser -f @(
+                #         $this.Name,
+                #         $this.DatabaseName,
+                #         $this.InstanceName
+                #     )
+                # )
+
+                foreach ($currentPermission in $properties.Permission)
+                {
+                    try
+                    {
+                        $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+
+                        foreach ($permissionName in $currentPermission.Permission)
+                        {
+                            $permissionSet.$permissionName = $true
+                        }
+
+                        $setSqlDscDatabasePermissionParameters = @{
+                            ServerObject = $serverObject
+                            DatabaseName = $this.DatabaseName
+                            Name         = $this.Name
+                            Permission   = $permissionSet
+                        }
+
+                        switch ($this.Ensure)
+                        {
+                            'Present'
+                            {
+                                switch ($currentPermission.State)
+                                {
+                                    'GrantWithGrant'
+                                    {
+                                        Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State 'Grant' -WithGrant
+                                    }
+
+                                    default
+                                    {
+                                        Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State $currentPermission.State
+                                    }
+                                }
+                            }
+
+                            'Absent'
+                            {
+                                if ($currentPermission.State -eq 'GrantWithGrant')
+                                {
+                                    Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State 'Revoke' -WithGrant
+                                }
+                                else
+                                {
+                                    Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State 'Revoke'
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        $errorMessage = $this.localizedData.FailedToSetPermissionDatabase -f $this.Name, $this.DatabaseName
+
+                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                    }
+                }
+            }
+        }
+        else
+        {
+            $missingPrincipalMessage = $this.localizedData.NameIsMissing -f @(
+                $properties.Name,
+                $properties.DatabaseName,
+                $properties.InstanceName
+            )
+
+            New-InvalidOperationException -Message $missingPrincipalMessage
+        }
     }
 
     <#

@@ -12,6 +12,19 @@
         Specifies the name of the database principal for which the permissions are
         returned.
 
+    .PARAMETER State
+        Specifies the state of the permission.
+
+    .PARAMETER Permission
+        Specifies the permissions.
+
+    .PARAMETER WithGrant
+        Specifies that the principal should also be granted the right to grant
+        other principals the same permission. This parameter is only valid when
+        parameter **State** is set to `Grant` or `Revoke`. When the parameter
+        **State** is set to `Revoke` the right to grant will also be revoked,
+        and the revocation will cascade.
+
     .OUTPUTS
         None.
 

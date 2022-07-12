@@ -278,6 +278,14 @@ SQL Server 2016, SQL Server 2017 and SQL Server 2019.
 When sending in a Pull Request (PR) all example files will be tested so they can
 be compiled to a .mof file. If the tests find any errors the build will fail.
 
+### Class-based DSC resource
+
+#### Terminating Error
+
+A terminating error is an error that prevents the resource to continue further.
+If a DSC resource shall throw an terminating error the statement `throw` shall
+be used.
+
 ### Commands
 
 Commands are publicly exported commands from the module, and the source for
@@ -320,6 +328,7 @@ If a command shall throw an terminating error the statement `throw` shall
 not be used, neither shall the command `Write-Error` be used with the parameter
 `-ErrorAction `Stop``. Instead the method `$PSCmdlet.ThrowTerminatingError()`
 shall be used to throw a terminating error.
+
 
 >**NOTE:** Below output assumes `$ErrorView` is set to `'NormalView'` in the
 >PowerShell session.
