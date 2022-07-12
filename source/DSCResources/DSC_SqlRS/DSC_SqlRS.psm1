@@ -470,7 +470,7 @@ function Set-TargetResource
                     $encryptionKeyBackupPathIsUnc = $true
                 }
 
-                if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+                if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupPathCredential') )
                 {
                     Connect-UncPath -RemotePath $EncryptionKeyBackupPath -SourceCredential $EncryptionKeyBackupPathCredential
                 }
@@ -1306,6 +1306,16 @@ function Test-TargetResource
         InstanceName         = $InstanceName
         DatabaseServerName   = $DatabaseServerName
         DatabaseInstanceName = $DatabaseInstanceName
+    }
+
+    if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') )
+    {
+        $getTargetResourceParameters.EncryptionKeyBackupPath = $EncryptionKeyBackupPath
+    }
+
+    if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPathCredential') )
+    {
+        $getTargetResourceParameters.EncryptionKeyBackupPathCredential = $EncryptionKeyBackupPathCredential
     }
 
     $currentConfig = Get-TargetResource @getTargetResourceParameters
