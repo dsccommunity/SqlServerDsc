@@ -36,7 +36,8 @@ function Get-SqlDscDatabasePermission
         in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8
         When QA test run it loads the stub SMO classes so that the rule passes.
     #>
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Justification = 'Because Script Analyzer does not understand type even if cast when using comma in return statement')]
+    # TODO: Remove this if passing HQRM test (HQRM test does not allow overriding this rule)
+    #[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Justification = 'Because Script Analyzer does not understand type even if cast when using comma in return statement')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification = 'Because the code throws based on an prior expression')]
     [CmdletBinding()]
     [OutputType([Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]])]

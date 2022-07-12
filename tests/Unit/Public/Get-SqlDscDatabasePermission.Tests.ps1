@@ -75,7 +75,7 @@ Describe 'Get-SqlDscDatabasePermission' -Tag 'Public' {
         }
     }
 
-    Context 'When the database does not exist' {
+    Context 'When the specified database does not exist among existing database' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
                 Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
