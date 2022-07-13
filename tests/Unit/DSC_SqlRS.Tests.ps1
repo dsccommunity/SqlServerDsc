@@ -2080,6 +2080,7 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
                     DatabaseName            = 'ReportServer'
                     ReportServerReservedUrl = @('http://+:80')
                     ReportsReservedUrl      = @('http://+:80')
+                    ServiceAccountName      = 'NT SERVICE\ReportServer'
                     ServiceName             = 'ReportServer'
                 }
             }

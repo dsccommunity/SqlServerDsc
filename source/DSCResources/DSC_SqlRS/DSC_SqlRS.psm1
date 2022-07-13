@@ -539,24 +539,30 @@ function Set-TargetResource
         #endregion Backup Encryption Key
 
         #region Set the service account
-        $getLocalServiceAccountNameParameters = @{
-            LocalServiceAccountType = $LocalServiceAccountType
-            ServiceName = $currentConfig.ServiceName
-        }
-        $localServiceAccountName = Get-LocalServiceAccountName @getLocalServiceAccountNameParameters
+        $setServiceAccount = $false
 
-        if ( ( $ServiceAccount.UserName -ne $currentConfig.ServiceAccountName) -and ( $localServiceAccountName -ne $currentConfig.ServiceAccountName ) )
+        if ( $PSBoundParameters.ContainsKey('ServiceAccount') -and ( $ServiceAccount.UserName -ne $currentConfig.ServiceAccountName) )
         {
-            if ( $PSBoundParameters.ContainsKey('ServiceAccount') )
-            {
-                $invokeRsCimMethodSetWindowsServiceIdentityParameterArguments = @{
-                    Account           = $ServiceAccount.UserName
-                    Password          = $ServiceAccount.GetNetworkCredential().Password
-                    UseBuiltInAccount = $false
-                }
+            $setServiceAccount = $true
+
+            $invokeRsCimMethodSetWindowsServiceIdentityParameterArguments = @{
+                Account           = $ServiceAccount.UserName
+                Password          = $ServiceAccount.GetNetworkCredential().Password
+                UseBuiltInAccount = $false
             }
-            else
+        }
+        else
+        {
+            $getLocalServiceAccountNameParameters = @{
+                LocalServiceAccountType = $LocalServiceAccountType
+                ServiceName = $currentConfig.ServiceName
+            }
+            $localServiceAccountName = Get-LocalServiceAccountName @getLocalServiceAccountNameParameters
+
+            if ( $localServiceAccountName -ne $currentConfig.ServiceAccountName )
             {
+                $setServiceAccount = $true
+
                 # SQL 2017+ cannot use NT AUTHORITY\SYSTEM or NT AUTHORITY\LocalService as the service account
                 if ( $reportingServicesData.SqlVersion -ge 14 -and $LocalServiceAccountType -in @('LocalService', 'System') )
                 {
@@ -570,7 +576,10 @@ function Set-TargetResource
                     UseBuiltInAccount = $false
                 }
             }
+        }
 
+        if ( $setServiceAccount )
+        {
             Write-Verbose -Message (
                 $script:localizedData.SetServiceAccount -f @(
                     $invokeRsCimMethodSetWindowsServiceIdentityParameterArguments.Account
@@ -593,6 +602,7 @@ function Set-TargetResource
             $currentConfig = Get-TargetResource @getTargetResourceParameters
         }
         #endregion Set the service account
+
 
         #region Database
         if ( $DatabaseInstanceName -eq 'MSSQLSERVER' )
@@ -1521,29 +1531,37 @@ function Test-TargetResource
         $result = $false
     }
 
-    $getLocalServiceAccountNameParameters = @{
-        LocalServiceAccountType = $LocalServiceAccountType
-        ServiceName = $currentConfig.ServiceName
-    }
-    $localServiceAccountName = Get-LocalServiceAccountName @getLocalServiceAccountNameParameters
-
-    if ( ( $ServiceAccount.UserName -ne $currentConfig.ServiceAccountName) -and ( $localServiceAccountName -ne $currentConfig.ServiceAccountName ) )
+    if ( $PSBoundParameters.ContainsKey('ServiceAccount') )
     {
-        if ( $PSBoundParameters.ContainsKey('ServiceAccount') )
+        if ( $ServiceAccount.UserName -ne $currentConfig.ServiceAccountName )
         {
-            $serviceAccountName = $ServiceAccount.UserName
+            Write-Verbose -Message (
+                $script:localizedData.TestServiceAccount -f @(
+                    $ServiceAccount.UserName
+                    $currentConfig.ServiceAccountName
+                )
+            ) -Verbose
+            $result = $false
         }
-        else
+    }
+    else
+    {
+        $getLocalServiceAccountNameParameters = @{
+            LocalServiceAccountType = $LocalServiceAccountType
+            ServiceName = $currentConfig.ServiceName
+        }
+        $localServiceAccountName = Get-LocalServiceAccountName @getLocalServiceAccountNameParameters
+
+        if ( $localServiceAccountName -ne $currentConfig.ServiceAccountName )
         {
-            $serviceAccountName = $localServiceAccountName
+            Write-Verbose -Message (
+                $script:localizedData.TestServiceAccount -f @(
+                    $localServiceAccountName
+                    $currentConfig.ServiceAccountName
+                )
+            ) -Verbose
+            $result = $false
         }
-        Write-Verbose -Message (
-            $script:localizedData.TestServiceAccount -f @(
-                $serviceAccountName
-                $currentConfig.ServiceAccountName
-            )
-        ) -Verbose
-        $result = $false
     }
 
     if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') -and [System.String]::IsNullOrEmpty($currentConfig.EncryptionKeyBackupFile) )
