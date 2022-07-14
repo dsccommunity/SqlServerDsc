@@ -284,6 +284,31 @@ class SqlDatabasePermission : ResourceBase
             }
         }
 
+        <#
+            TODO:
+            Need to handle Absent state: The property Permission is
+            in desired state because the desired state permission
+            ('update') does not exist in current state:
+            {"State":"Grant","Permission":["update"]}, but was {"State":"Grant","Permission":["Connect"]}
+
+            When $this.Ensure is 'Absent' and the node is in desired
+            state the current state permissions will always differ
+            from desired state permissions, since the current permission
+            will never have the permission that desired state says
+            should be removed.
+
+            When $this.Ensure is 'Absent', and the permission does
+            not exist in the current state when we should add 'Permission'
+            to the property $this.notEnforcedProperties so that the
+            Permission property is not compared. This way we return
+            the correct current state. Maybe we can set
+            $this.notEnforcedProperties in the constructor?
+
+            We should also return the property 'Ensure' set to 'Absent'
+            so the base class does not try to evaluate the state itself.
+            The base class does not know and cannot know how to evaluate
+            the permissions correctly.
+        #>
         return $currentState
     }
 

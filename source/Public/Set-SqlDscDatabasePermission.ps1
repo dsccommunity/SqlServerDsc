@@ -121,7 +121,7 @@ function Set-SqlDscDatabasePermission
                 Get-Member -MemberType 'Property' |
                 Select-Object -ExpandProperty 'Name' |
                 Where-Object -FilterScript {
-                    $setPermission.$_
+                    $Permission.$_
                 }
 
             switch ($State)
