@@ -6,7 +6,9 @@
         A class with methods that are equal for all class-based resources.
 
     .NOTES
-        This class should not contain any DSC properties.
+        This class should be able to be inherited by all DSC resources. This class
+        shall not contain any DSC properties, neither shall it contain anything
+        specific to only a single resource.
 #>
 
 class ResourceBase
@@ -84,13 +86,16 @@ class ResourceBase
 
         $ignoreProperty = @()
 
-        if (($this | Test-ResourceHasEnsureProperty) -and $null -eq $getCurrentStateResult.Ensure)
+        <#
+            If the derived DSC resource has a Ensure property and it was not returned
+            by GetCurrentState(), then the property Ensure is removed from the
+            comparison (when calling Compare()). The property Ensure is ignored
+            since the method GetCurrentState() did not return it, and the current
+            state for property Ensure cannot be determined until the method Compare()
+            has run to determined if other properties are not in desired state.
+        #>
+        if (($this | Test-ResourceHasProperty -Name 'Ensure') -and -not $getCurrentStateResult.ContainsKey('Ensure'))
         {
-            <#
-                Removing the property Ensure from the comparison since the method
-                GetCurrentState() did not return it, and we don't know the current
-                state value until the method Compare() has run.
-            #>
             $ignoreProperty += 'Ensure'
         }
 
@@ -101,10 +106,10 @@ class ResourceBase
         $propertiesNotInDesiredState = $this.Compare($getCurrentStateResult, $ignoreProperty)
 
         <#
-            Return the correct value for Ensure property if it hasn't been already
-            set by GetCurrentState().
+            Return the correct values for Ensure property if the derived DSC resource
+            has such property and it hasn't been already set by GetCurrentState().
         #>
-        if (($this | Test-ResourceHasEnsureProperty) -and $null -eq $getCurrentStateResult.Ensure)
+        if (($this | Test-ResourceHasProperty -Name 'Ensure') -and -not $getCurrentStateResult.ContainsKey('Ensure'))
         {
             if (($propertiesNotInDesiredState -and $this.Ensure -eq [Ensure]::Present) -or (-not $propertiesNotInDesiredState -and $this.Ensure -eq [Ensure]::Absent))
             {
@@ -120,43 +125,52 @@ class ResourceBase
             }
         }
 
-        # TODO: And only if $getCurrentStateResult no already contain key Reasons
-        if ($propertiesNotInDesiredState)
+        <#
+            Return the correct values for Reasons property if the derived DSC resource
+            has such property and it hasn't been already set by GetCurrentState().
+        #>
+        if (($this | Test-ResourceHasProperty -Name 'Reasons') -and -not $getCurrentStateResult.ContainsKey('Reasons'))
         {
-            foreach ($property in $propertiesNotInDesiredState)
+            # Always return an empty array if all properties are in desired state.
+            $dscResourceObject.Reasons = [Reason[]] @()
+
+            if ($propertiesNotInDesiredState)
             {
-                if ($property.ExpectedValue -is [System.Enum])
+                foreach ($property in $propertiesNotInDesiredState)
                 {
-                    # TODO: Maybe we just convert the advanced types to JSON and do not convert other types?
-                    #       Test that on SqlDatabasePermission
+                    if ($property.ExpectedValue -is [System.Enum])
+                    {
+                        # TODO: Maybe we just convert the advanced types to JSON and do not convert other types?
+                        #       Test that on SqlDatabasePermission
 
-                    # Return the string representation of the value so that conversion to json is correct.
-                    $propertyExpectedValue = $property.ExpectedValue.ToString()
-                }
-                else
-                {
-                    $propertyExpectedValue = $property.ExpectedValue
-                }
+                        # Return the string representation of the value (instead of the numeric value).
+                        $propertyExpectedValue = $property.ExpectedValue.ToString()
+                    }
+                    else
+                    {
+                        $propertyExpectedValue = $property.ExpectedValue
+                    }
 
-                if ($property.ActualValue -is [System.Enum])
-                {
-                    # TODO: Maybe we just convert the advanced types to JSON and do not convert other types?
-                    #       Test that on SqlDatabasePermission
+                    if ($property.ActualValue -is [System.Enum])
+                    {
+                        # TODO: Maybe we just convert the advanced types to JSON and do not convert other types?
+                        #       Test that on SqlDatabasePermission
 
-                    # Return the string representation of the value so that conversion to json is correct.
-                    $propertyActualValue = $property.ActualValue.ToString()
-                }
-                else
-                {
-                    $propertyActualValue = $property.ActualValue
-                }
+                        # Return the string representation of the value so that conversion to json is correct.
+                        $propertyActualValue = $property.ActualValue.ToString()
+                    }
+                    else
+                    {
+                        $propertyActualValue = $property.ActualValue
+                    }
 
-                $dscResourceObject.Reasons += [Reason] @{
-                    Code = '{0}:{0}:{1}' -f $this.GetType(), $property.Property
-                    Phrase = 'The property {0} should be {1}, but was {2}' -f $property.Property, ($propertyExpectedValue | ConvertTo-Json -Compress), ($propertyActualValue | ConvertTo-Json -Compress)
-                }
+                    $dscResourceObject.Reasons += [Reason] @{
+                        Code = '{0}:{0}:{1}' -f $this.GetType(), $property.Property
+                        Phrase = 'The property {0} should be {1}, but was {2}' -f $property.Property, ($propertyExpectedValue | ConvertTo-Json -Compress), ($propertyActualValue | ConvertTo-Json -Compress)
+                    }
 
-                Write-Verbose -Verbose -Message ($dscResourceObject.Reasons | Out-String)
+                    Write-Verbose -Verbose -Message ($dscResourceObject.Reasons | Out-String)
+                }
             }
         }
 

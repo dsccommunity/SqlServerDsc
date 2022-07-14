@@ -113,7 +113,7 @@ function Set-SqlDscDatabasePermission
         {
             # TODO: Set permissions.
             Write-Verbose -Message (
-                $script:localizedData.DatabasePermission_ChangePermissionForUser -f $Name, $DatabaseName, $InstanceName
+                $script:localizedData.DatabasePermission_ChangePermissionForUser -f $Name, $DatabaseName, $ServerObject.InstanceName
             )
 
             # Get the permissions names that are set to $true in the DatabasePermissionSet.

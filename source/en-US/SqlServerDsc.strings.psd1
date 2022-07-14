@@ -11,7 +11,7 @@ ConvertFrom-StringData @'
     DatabasePermission_MissingDatabase = The database '{0}' cannot be found.
 
     # Set-SqlDscDatabasePermission
-    DatabasePermission_ChangePermissionForUser = Changing the permission for the user '{0}' in the database '{1}' on the instance '{2}'.
+    DatabasePermission_ChangePermissionForUser = Changing the permission for the principal '{0}' in the database '{1}' on the instance '{2}'.
     DatabasePermission_GrantPermission = Grant the permissions '{0}' for the principal '{1}'.
     DatabasePermission_DenyPermission = Deny the permissions '{0}' for the principal '{1}'.
     DatabasePermission_RevokePermission = Revoke the permissions '{0}' for the principal '{1}'.

@@ -323,6 +323,7 @@ class SqlDatabasePermission : ResourceBase
         {
             if ($properties.ContainsKey('Permission'))
             {
+                # TODO: Remove this?
                 # Write-Verbose -Message (
                 #     $this.localizedData.ChangePermissionForUser -f @(
                 #         $this.Name,
@@ -407,7 +408,9 @@ class SqlDatabasePermission : ResourceBase
     #>
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
-        # TODO: Add the evaluation so that one permission can't have two different states.
+        # TODO: Add the evaluation so that one permission can't be added two different states ('Grant' and 'Deny') in the same resource instance.
+
+        # TODO: Add the evaluation so that the same State cannot exist several times in the same resource instance.
         Write-Verbose -Verbose -Message 'NotImplemented: AssertProperties()'
 
         # @(

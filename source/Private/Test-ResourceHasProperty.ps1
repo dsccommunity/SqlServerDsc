@@ -1,17 +1,21 @@
 <#
     .SYNOPSIS
-        Tests wether the class-based resource has an Ensure property.
+        Tests wether the class-based resource has the specified property.
 
     .DESCRIPTION
-        Tests wether the class-based resource has an Ensure property.
+        Tests wether the class-based resource has the specified property.
 
     .PARAMETER InputObject
-        The object that should be tested for existens of property Ensure.
+        Specifies the object that should be tested for existens of the specified
+        property.
+
+    .PARAMETER Name
+        Specifies the name of the property.
 
     .OUTPUTS
         [Boolean]
 #>
-function Test-ResourceHasEnsureProperty
+function Test-ResourceHasProperty
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -19,14 +23,18 @@ function Test-ResourceHasEnsureProperty
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [PSObject]
-        $InputObject
+        $InputObject,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Name
     )
 
     $hasEnsure = $false
 
-    # Get all key properties.
+    # Check to see if the property exist and that is it a DSC property.
     $ensureProperty = $InputObject |
-        Get-Member -MemberType 'Property' -Name 'Ensure' |
+        Get-Member -MemberType 'Property' -Name $Name |
         Where-Object -FilterScript {
             $InputObject.GetType().GetMember($_.Name).CustomAttributes.Where(
                 {
