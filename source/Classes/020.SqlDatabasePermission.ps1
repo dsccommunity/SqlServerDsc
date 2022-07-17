@@ -39,7 +39,7 @@
 
         ```plaintext
         Failed to create an object of PowerShell class SqlDatabasePermission.
-            + CategoryInfo          : InvalidOperation: (root/Microsoft/...gurationManager:String) [], CimException
+            + CategoryInfo          : InvalidOperation: (root/Microsoft/...ConfigurationManager:String) [], CimException
             + FullyQualifiedErrorId : InstantiatePSClassObjectFailed
             + PSComputerName        : localhost
         ```
@@ -85,7 +85,7 @@
             InstanceName         = 'SQL2017'
             DatabaseName         = 'AdventureWorks'
             Credential  = $SqlInstallCredential
-            Name                 = 'SQLTEST\sqluser'
+            Name                 = 'INSTANCE\SqlUser'
             Permission           = [Microsoft.Management.Infrastructure.CimInstance[]] @(
                 (
                     New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
@@ -230,6 +230,7 @@ class SqlDatabasePermission : ResourceBase
         $databasePermissionInfo = $sqlServerObject |
             Get-SqlDscDatabasePermission -DatabaseName $this.DatabaseName -Name $this.Name -ErrorAction 'SilentlyContinue'
 
+        # If permissions was returned, build the current permission array of [DatabasePermission].
         if ($databasePermissionInfo)
         {
             $permissionState = @(
@@ -285,37 +286,98 @@ class SqlDatabasePermission : ResourceBase
         }
 
         <#
-            TODO:
-            Need to handle Absent state: The property Permission is
-            in desired state because the desired state permission
-            ('update') does not exist in current state:
-            {"State":"Grant","Permission":["update"]}, but was {"State":"Grant","Permission":["Connect"]}
-
             When $this.Ensure is 'Absent' and the node is in desired
             state the current state permissions will always differ
             from desired state permissions, since the current permission
-            will never have the permission that desired state says
+            should never have the permission that desired state says
             should be removed.
 
-            When $this.Ensure is 'Absent', and the permission does
-            not exist in the current state when we should add 'Permission'
-            to the property $this.notEnforcedProperties so that the
-            Permission property is not compared. This way we return
-            the correct current state. Maybe we can set
-            $this.notEnforcedProperties in the constructor?
-
-            We should also return the property 'Ensure' set to 'Absent'
-            so the base class does not try to evaluate the state itself.
             The base class does not know and cannot know how to evaluate
-            the permissions correctly.
+            absent permissions correctly. So this needs to evaluated here.
         #>
+        if ($this.Ensure -eq [Ensure]::Absent)
+        {
+            $inDesiredState = $true
+
+            # Evaluate so that the desired state is missing from the current state.
+            foreach ($desiredPermission in $this.Permission)
+            {
+                $currentStatePermissionForState = $currentState.Permission |
+                    Where-Object -FilterScript {
+                        $_.State -eq $desiredPermission.State
+                    }
+
+                foreach ($desiredPermissionName in $desiredPermission.Permission)
+                {
+                    if ($currentStatePermissionForState.Permission -contains $desiredPermissionName)
+                    {
+                        Write-Verbose -Message (
+                            $this.localizedData.DesiredAbsentPermissionArePresent -f @(
+                                $this.Name,
+                                $this.DatabaseName,
+                                $this.InstanceName
+                            )
+                        )
+
+                        $inDesiredState = $false
+                    }
+                }
+            }
+
+            <#
+                When $this.Ensure is 'Absent' then 'Permission' must be added to
+                the property $this.notEnforcedProperties so that the Permission
+                property is not compared. This is especially true when the
+                permissions are in desired state. But when the permissions are not
+                in desired state, if the Permission property would be 0compared by
+                the base class, it would not be intuitive to the user
+                since the verbose messages output from the base class will say
+                that it expects the permissions to be that of what should be absent.
+            #>
+            $this.notEnforcedProperties += 'Permission'
+
+            <#
+                We should also return the property 'Ensure' set to 'Absent' or
+                'Present' so the base class does not try to evaluate the state
+                itself.
+            #>
+            if ($inDesiredState)
+            {
+                <#
+                    The desired permission that should be absent does not exist
+                    in the current state, therefor we return 'Absent'.
+                #>
+                $currentState.Ensure = [Ensure]::Absent
+            }
+            else
+            {
+                <#
+                    The desired permission that should be absent exist in the current
+                    state, therefor we return 'Present'.
+                #>
+                $currentState.Ensure = [Ensure]::Present
+            }
+        }
+        else
+        {
+            <#
+                If the property notEnforcedProperties contains 'Permission', remove it.
+                This is a fail-safe if the same class instance would be re-used.
+            #>
+            if ($this.notEnforcedProperties -contains 'Permission')
+            {
+                $this.notEnforcedProperties = @($this.notEnforcedProperties) -ne 'Permission'
+            }
+        }
+
         return $currentState
     }
 
     <#
         Base method Set() call this method with the properties that should be
         enforced and that are not in desired state. It is not called if all
-        properties are in desired state.
+        properties are in desired state. The variable $properties contain the
+        properties that are not in desired state.
     #>
     hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
@@ -346,18 +408,26 @@ class SqlDatabasePermission : ResourceBase
 
         if ($isDatabasePrincipal)
         {
-            if ($properties.ContainsKey('Permission'))
-            {
-                # TODO: Remove this?
-                # Write-Verbose -Message (
-                #     $this.localizedData.ChangePermissionForUser -f @(
-                #         $this.Name,
-                #         $this.DatabaseName,
-                #         $this.InstanceName
-                #     )
-                # )
+            <#
+                Update permissions if:
 
-                foreach ($currentPermission in $properties.Permission)
+                - $properties contains property Permission
+                - $properties contains property Ensure and it is set to 'Absent'
+
+                First will happen when there are additional permissions to add
+                to the current state.
+
+                Second will happen when there are permissions in the current state
+                that should be absent.
+            #>
+            if ($properties.ContainsKey('Permission') -or
+                (
+                    $properties.ContainsKey('Ensure') -and
+                    $properties.Ensure -eq [Ensure]::Absent
+                )
+            )
+            {
+                foreach ($currentPermission in $this.Permission)
                 {
                     try
                     {
@@ -408,7 +478,10 @@ class SqlDatabasePermission : ResourceBase
                     }
                     catch
                     {
-                        $errorMessage = $this.localizedData.FailedToSetPermissionDatabase -f $this.Name, $this.DatabaseName
+                        $errorMessage = $this.localizedData.FailedToSetPermissionDatabase -f @(
+                            $this.Name,
+                            $this.DatabaseName
+                        )
 
                         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                     }
@@ -418,9 +491,9 @@ class SqlDatabasePermission : ResourceBase
         else
         {
             $missingPrincipalMessage = $this.localizedData.NameIsMissing -f @(
-                $properties.Name,
-                $properties.DatabaseName,
-                $properties.InstanceName
+                $this.Name,
+                $this.DatabaseName,
+                $this.InstanceName
             )
 
             New-InvalidOperationException -Message $missingPrincipalMessage
