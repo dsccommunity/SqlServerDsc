@@ -30,6 +30,7 @@ class ResourceBase
     {
         $this.Assert()
 
+        # TODO: Use: Get-DscProperty -Type 'Key'
         # Get all key properties.
         $keyProperty = $this | Get-KeyProperty
 
@@ -273,6 +274,8 @@ class ResourceBase
             Properties        = $desiredState.Keys
             ExcludeProperties = ($excludeProperties + $this.notEnforcedProperties) | Select-Object -Unique
             IncludeValue      = $true
+            # This is needed to sort complex types.
+            SortArrayValues   = $true
         }
 
         <#

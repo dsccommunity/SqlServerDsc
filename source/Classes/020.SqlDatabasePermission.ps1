@@ -84,7 +84,7 @@
             ServerName           = 'localhost'
             InstanceName         = 'SQL2017'
             DatabaseName         = 'AdventureWorks'
-            Credential  = $SqlInstallCredential
+            Credential           = (Get-Credential -UserName 'myuser@company.local' -Message 'Password:')
             Name                 = 'INSTANCE\SqlUser'
             Permission           = [Microsoft.Management.Infrastructure.CimInstance[]] @(
                 (
@@ -96,11 +96,19 @@
                 (
                     New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
                         State = 'GrantWithGrant'
-                        Permission = @('update')
+                        Permission = [System.String[]] @()
+                    }
+                )
+                (
+                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
+                        State = 'Deny'
+                        Permission = [System.String[]] @()
                     }
                 )
             )
         }
+
+        This example shows how to call the resource using Invoke-DscResource.
 
     .NOTES
         The built-in property `PsDscRunAsCredential` is not supported on this DSC
@@ -132,18 +140,25 @@ class SqlDatabasePermission : ResourceBase
     [System.String]
     $ServerName = (Get-ComputerName)
 
-    # TODO: Should also add IncludePermission and ExcludePermission which should be mutually exclusive from Permission
-    [DscProperty(Mandatory)]
+    [DscProperty()]
     [DatabasePermission[]]
     $Permission
+
+    [DscProperty()]
+    [DatabasePermission[]]
+    $PermissionToInclude
+
+    [DscProperty()]
+    [DatabasePermission[]]
+    $PermissionToExclude
 
     [DscProperty()]
     [PSCredential]
     $Credential
 
-    [DscProperty()]
-    [Ensure]
-    $Ensure = [Ensure]::Present
+    # [DscProperty()]
+    # [Ensure]
+    # $Ensure = [Ensure]::Present
 
     [DscProperty(NotConfigurable)]
     [Reason[]]
@@ -216,7 +231,8 @@ class SqlDatabasePermission : ResourceBase
             $connectSqlDscDatabaseEngineParameters.Credential = $this.Credential
         }
 
-        $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+        # TODO: By adding a hidden property that holds the server object we only need to connect when that property is $null.
+        $serverObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
         # TODO: TA BORT -VERBOSE!
         Write-Verbose -Verbose -Message (
@@ -227,7 +243,7 @@ class SqlDatabasePermission : ResourceBase
             )
         )
 
-        $databasePermissionInfo = $sqlServerObject |
+        $databasePermissionInfo = $serverObject |
             Get-SqlDscDatabasePermission -DatabaseName $this.DatabaseName -Name $this.Name -ErrorAction 'SilentlyContinue'
 
         # If permissions was returned, build the current permission array of [DatabasePermission].
@@ -285,6 +301,18 @@ class SqlDatabasePermission : ResourceBase
             }
         }
 
+        # Always return all State; 'Grant', 'GrantWithGrant', and 'Deny'.
+        foreach ($currentPermissionState in @('Grant', 'GrantWithGrant', 'Deny'))
+        {
+            if ($currentState.Permission.State -notcontains $currentPermissionState)
+            {
+                [DatabasePermission[]] $currentState.Permission += [DatabasePermission] @{
+                    State      = $currentPermissionState
+                    Permission = @()
+                }
+            }
+        }
+
         <#
             When $this.Ensure is 'Absent' and the node is in desired
             state the current state permissions will always differ
@@ -295,80 +323,80 @@ class SqlDatabasePermission : ResourceBase
             The base class does not know and cannot know how to evaluate
             absent permissions correctly. So this needs to evaluated here.
         #>
-        if ($this.Ensure -eq [Ensure]::Absent)
-        {
-            $inDesiredState = $true
+        # if ($this.Ensure -eq [Ensure]::Absent)
+        # {
+        #     $inDesiredState = $true
 
-            # Evaluate so that the desired state is missing from the current state.
-            foreach ($desiredPermission in $this.Permission)
-            {
-                $currentStatePermissionForState = $currentState.Permission |
-                    Where-Object -FilterScript {
-                        $_.State -eq $desiredPermission.State
-                    }
+        #     # Evaluate so that the desired state is missing from the current state.
+        #     foreach ($desiredPermission in $this.Permission)
+        #     {
+        #         $currentStatePermissionForState = $currentState.Permission |
+        #             Where-Object -FilterScript {
+        #                 $_.State -eq $desiredPermission.State
+        #             }
 
-                foreach ($desiredPermissionName in $desiredPermission.Permission)
-                {
-                    if ($currentStatePermissionForState.Permission -contains $desiredPermissionName)
-                    {
-                        Write-Verbose -Message (
-                            $this.localizedData.DesiredAbsentPermissionArePresent -f @(
-                                $this.Name,
-                                $this.DatabaseName,
-                                $this.InstanceName
-                            )
-                        )
+        #         foreach ($desiredPermissionName in $desiredPermission.Permission)
+        #         {
+        #             if ($currentStatePermissionForState.Permission -contains $desiredPermissionName)
+        #             {
+        #                 Write-Verbose -Message (
+        #                     $this.localizedData.DesiredAbsentPermissionArePresent -f @(
+        #                         $this.Name,
+        #                         $this.DatabaseName,
+        #                         $this.InstanceName
+        #                     )
+        #                 )
 
-                        $inDesiredState = $false
-                    }
-                }
-            }
+        #                 $inDesiredState = $false
+        #             }
+        #         }
+        #     }
 
-            <#
-                When $this.Ensure is 'Absent' then 'Permission' must be added to
-                the property $this.notEnforcedProperties so that the Permission
-                property is not compared. This is especially true when the
-                permissions are in desired state. But when the permissions are not
-                in desired state, if the Permission property would be 0compared by
-                the base class, it would not be intuitive to the user
-                since the verbose messages output from the base class will say
-                that it expects the permissions to be that of what should be absent.
-            #>
-            $this.notEnforcedProperties += 'Permission'
+        #     <#
+        #         When $this.Ensure is 'Absent' then 'Permission' must be added to
+        #         the property $this.notEnforcedProperties so that the Permission
+        #         property is not compared. This is especially true when the
+        #         permissions are in desired state. But when the permissions are not
+        #         in desired state, if the Permission property would be 0compared by
+        #         the base class, it would not be intuitive to the user
+        #         since the verbose messages output from the base class will say
+        #         that it expects the permissions to be that of what should be absent.
+        #     #>
+        #     $this.notEnforcedProperties += 'Permission'
 
-            <#
-                We should also return the property 'Ensure' set to 'Absent' or
-                'Present' so the base class does not try to evaluate the state
-                itself.
-            #>
-            if ($inDesiredState)
-            {
-                <#
-                    The desired permission that should be absent does not exist
-                    in the current state, therefor we return 'Absent'.
-                #>
-                $currentState.Ensure = [Ensure]::Absent
-            }
-            else
-            {
-                <#
-                    The desired permission that should be absent exist in the current
-                    state, therefor we return 'Present'.
-                #>
-                $currentState.Ensure = [Ensure]::Present
-            }
-        }
-        else
-        {
-            <#
-                If the property notEnforcedProperties contains 'Permission', remove it.
-                This is a fail-safe if the same class instance would be re-used.
-            #>
-            if ($this.notEnforcedProperties -contains 'Permission')
-            {
-                $this.notEnforcedProperties = @($this.notEnforcedProperties) -ne 'Permission'
-            }
-        }
+        #     <#
+        #         We should also return the property 'Ensure' set to 'Absent' or
+        #         'Present' so the base class does not try to evaluate the state
+        #         itself.
+        #     #>
+        #     if ($inDesiredState)
+        #     {
+        #         <#
+        #             The desired permission that should be absent does not exist
+        #             in the current state, therefor we return 'Absent'.
+        #         #>
+        #         $currentState.Ensure = [Ensure]::Absent
+        #     }
+        #     else
+        #     {
+        #         <#
+        #             The desired permission that should be absent exist in the current
+        #             state, therefor we return 'Present'.
+        #         #>
+        #         $currentState.Ensure = [Ensure]::Present
+        #     }
+        # }
+        # else
+        # {
+        #     <#
+        #         If the property notEnforcedProperties contains 'Permission', remove it.
+        #         This is a fail-safe if the same class instance would be re-used.
+        #     #>
+        #     if ($this.notEnforcedProperties -contains 'Permission')
+        #     {
+        #         $this.notEnforcedProperties = @($this.notEnforcedProperties) -ne 'Permission'
+        #     }
+        # }
 
         return $currentState
     }
@@ -408,7 +436,12 @@ class SqlDatabasePermission : ResourceBase
 
         if ($isDatabasePrincipal)
         {
+            $keyProperty = $this | Get-DscProperty -Type 'Key'
+
+            $currentState = $this.GetCurrentState($keyProperty)
+
             <#
+                TODO: Remove this comment-block.
                 Update permissions if:
 
                 - $properties contains property Permission
@@ -420,16 +453,80 @@ class SqlDatabasePermission : ResourceBase
                 Second will happen when there are permissions in the current state
                 that should be absent.
             #>
-            if ($properties.ContainsKey('Permission') -or
-                (
-                    $properties.ContainsKey('Ensure') -and
-                    $properties.Ensure -eq [Ensure]::Absent
-                )
-            )
+            if ($properties.ContainsKey('Permission'))
             {
                 foreach ($currentPermission in $this.Permission)
                 {
-                    try
+                    $currentPermissionsForState = $currentState.Permission |
+                        Where-Object -FilterScript {
+                            $_.State -eq $currentPermission.State
+                        }
+
+                    # Revoke permissions that are not part of the desired state
+                    if ($currentPermissionsForState)
+                    {
+                        $permissionsToRevoke = @()
+
+                        $revokePermissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+
+                        foreach ($permissionName in $currentPermissionsForState.Permission)
+                        {
+                            if ($permissionName -notin $currentPermission.Permission)
+                            {
+                                $permissionsToRevoke += $permissionName
+
+                                $revokePermissionSet.$permissionName = $true
+                            }
+                        }
+
+                        if ($permissionsToRevoke)
+                        {
+                            Write-Verbose -Message (
+                                $this.localizedData.RevokePermissionNotInDesiredState -f @(
+                                    ($permissionsToRevoke -join "', '"),
+                                    $this.Name,
+                                    $this.DatabaseName
+                                )
+                            )
+
+                            $setSqlDscDatabasePermissionParameters = @{
+                                ServerObject = $serverObject
+                                DatabaseName = $this.DatabaseName
+                                Name         = $this.Name
+                                Permission   = $revokePermissionSet
+                                State        = 'Revoke'
+                            }
+
+                            if ($currentPermission.State -eq 'GrantWithGrant')
+                            {
+                                $setSqlDscDatabasePermissionParameters.WithGrant = $true
+                            }
+
+                            try
+                            {
+                                Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters
+                            }
+                            catch
+                            {
+                                $errorMessage = $this.localizedData.FailedToRevokePermissionFromCurrentState -f @(
+                                    $this.Name,
+                                    $this.DatabaseName
+                                )
+
+                                <#
+                                    TODO: Update the CONTRIBUTING.md section "Class-based DSC resource"
+                                          that now says that 'throw' should be used.. we should use
+                                          helper function instead. Or something similar to commands
+                                          where the ID number is part of code? But might be a problem
+                                          tracing a specific verbose string down?
+                                #>
+                                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                            }
+                        }
+                    }
+
+                    # If there is not an empty array, change permissions.
+                    if (-not [System.String]::IsNullOrEmpty($currentPermission.Permission))
                     {
                         $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
 
@@ -445,45 +542,39 @@ class SqlDatabasePermission : ResourceBase
                             Permission   = $permissionSet
                         }
 
-                        switch ($this.Ensure)
+                        try
                         {
-                            'Present'
+                            switch ($currentPermission.State)
                             {
-                                switch ($currentPermission.State)
+                                'GrantWithGrant'
                                 {
-                                    'GrantWithGrant'
-                                    {
-                                        Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State 'Grant' -WithGrant
-                                    }
+                                    Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State 'Grant' -WithGrant
+                                }
 
-                                    default
-                                    {
-                                        Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State $currentPermission.State
-                                    }
+                                default
+                                {
+                                    Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State $currentPermission.State
                                 }
                             }
 
-                            'Absent'
-                            {
-                                if ($currentPermission.State -eq 'GrantWithGrant')
-                                {
-                                    Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State 'Revoke' -WithGrant
-                                }
-                                else
-                                {
-                                    Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State 'Revoke'
-                                }
-                            }
+                            # if ($currentPermission.State -eq 'GrantWithGrant')
+                            # {
+                            #     Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State 'Revoke' -WithGrant
+                            # }
+                            # else
+                            # {
+                            #     Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State 'Revoke'
+                            # }
                         }
-                    }
-                    catch
-                    {
-                        $errorMessage = $this.localizedData.FailedToSetPermissionDatabase -f @(
-                            $this.Name,
-                            $this.DatabaseName
-                        )
+                        catch
+                        {
+                            $errorMessage = $this.localizedData.FailedToSetPermission -f @(
+                                $this.Name,
+                                $this.DatabaseName
+                            )
 
-                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                        }
                     }
                 }
             }
@@ -508,20 +599,47 @@ class SqlDatabasePermission : ResourceBase
     {
         # TODO: Add the evaluation so that one permission can't be added two different states ('Grant' and 'Deny') in the same resource instance.
 
-        # TODO: Add the evaluation so that the same State cannot exist several times in the same resource instance.
-        Write-Verbose -Verbose -Message 'NotImplemented: AssertProperties()'
+        # PermissionToInclude and PermissionToExclude should be mutually exclusive from Permission
+        $assertBoundParameterParameters = @{
+            BoundParameterList = $this | Get-DscProperty -Type 'Optional' -HasValue
+            MutuallyExclusiveList1 = @(
+                'Permission'
+            )
+            MutuallyExclusiveList2 = @(
+                'PermissionToInclude'
+                'PermissionToExclude'
+            )
+        }
 
-        # @(
-        #     'DirectoryPartitionAutoEnlistInterval',
-        #     'TombstoneInterval'
-        # ) | ForEach-Object -Process {
-        #     $valueToConvert = $this.$_
+        Assert-BoundParameter @assertBoundParameterParameters
 
-        #     # Only evaluate properties that have a value.
-        #     if ($null -ne $valueToConvert)
-        #     {
-        #         Assert-TimeSpan -PropertyName $_ -Value $valueToConvert -Minimum '0.00:00:00'
-        #     }
-        # }
+        $isPropertyPermissionAssigned = $this | Test-ResourceHasProperty -Name 'Permission' -HasValue
+
+        if ($isPropertyPermissionAssigned)
+        {
+            # One State cannot exist several times in the same resource instance.
+            $permissionStateGroupCount = @(
+                $this.Permission |
+                    Group-Object -NoElement -Property 'State' -CaseSensitive:$false |
+                    Select-Object -ExpandProperty 'Count'
+            )
+
+            if ($permissionStateGroupCount -gt 1)
+            {
+                throw $this.localizedData.DuplicatePermissionState
+            }
+
+            # Each State must exist once.
+            $missingPermissionState = (
+                $this.Permission.State -notcontains 'Grant' -or
+                $this.Permission.State -notcontains 'GrantWithGrant' -or
+                $this.Permission.State -notcontains 'Deny'
+            )
+
+            if ($missingPermissionState)
+            {
+                throw $this.localizedData.MissingPermissionState
+            }
+        }
     }
 }

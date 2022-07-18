@@ -18,4 +18,7 @@ ConvertFrom-StringData @'
 
     # Test-SqlDscIsDatabasePrincipal
     IsDatabasePrincipal_DatabaseMissing = The database '{0}' cannot be found.
+
+    # Class DatabasePermission
+    InvalidTypeForCompare = Invalid type in comparison. Expected type [{0}], but the type was [{1}]. (DP0001)
 '@

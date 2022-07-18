@@ -1,13 +1,13 @@
 
 <#
     .SYNOPSIS
-        Returns the DSC resource key property and its value.
+        Returns all of the DSC resource key properties and their values.
 
     .DESCRIPTION
-        Returns the DSC resource key property and its value.
+        Returns all of the DSC resource key properties and their values.
 
     .PARAMETER InputObject
-        The object that contain the key property.
+        The object that contain one or more key properties.
 
     .OUTPUTS
         Hashtable

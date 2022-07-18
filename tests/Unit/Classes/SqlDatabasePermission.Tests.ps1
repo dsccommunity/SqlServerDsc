@@ -128,7 +128,7 @@ Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlDatabasePermissionInstance.Get()
 
-                    $currentState.Ensure | Should -Be ([Ensure]::Present)
+                    #$currentState.Ensure | Should -Be ([Ensure]::Present)
                     $currentState.InstanceName | Should -Be 'NamedInstance'
                     $currentState.DatabaseName | Should -Be 'MockDatabaseName'
                     $currentState.Name | Should -Be 'MockUserName'
@@ -189,7 +189,7 @@ Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlDatabasePermissionInstance.Get()
 
-                    $currentState.Ensure | Should -Be ([Ensure]::Present)
+                    #$currentState.Ensure | Should -Be ([Ensure]::Present)
                     $currentState.InstanceName | Should -Be 'NamedInstance'
                     $currentState.DatabaseName | Should -Be 'MockDatabaseName'
                     $currentState.Name | Should -Be 'MockUserName'
@@ -212,7 +212,7 @@ Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
-                        Ensure       = [Ensure]::Absent
+                        #Ensure       = [Ensure]::Absent
                         Name         = 'MockUserName'
                         DatabaseName = 'MockDatabaseName'
                         InstanceName = 'NamedInstance'
@@ -239,7 +239,7 @@ Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlDatabasePermissionInstance.Get()
 
-                    $currentState.Ensure | Should -Be ([Ensure]::Absent)
+                    #$currentState.Ensure | Should -Be ([Ensure]::Absent)
                     $currentState.InstanceName | Should -Be 'NamedInstance'
                     $currentState.DatabaseName | Should -Be 'MockDatabaseName'
                     $currentState.Name | Should -Be 'MockUserName'
@@ -447,7 +447,7 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
-                        Ensure       = [Ensure]::Absent
+                        #Ensure       = [Ensure]::Absent
                         Name         = 'MockUserName'
                         DatabaseName = 'MockDatabaseName'
                         InstanceName = 'NamedInstance'
@@ -495,7 +495,7 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                         InstanceName = 'NamedInstance'
                     })
 
-                    $currentState.Ensure | Should -Be ([Ensure]::Absent)
+                    #$currentState.Ensure | Should -Be ([Ensure]::Absent)
                     $currentState.Credential | Should -BeNullOrEmpty
 
                     $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
@@ -512,7 +512,7 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
-                        Ensure       = [Ensure]::Absent
+                        #Ensure       = [Ensure]::Absent
                         Name         = 'MockUserName'
                         DatabaseName = 'MockDatabaseName'
                         InstanceName = 'NamedInstance'

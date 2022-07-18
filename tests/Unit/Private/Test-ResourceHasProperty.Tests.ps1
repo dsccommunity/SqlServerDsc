@@ -173,4 +173,96 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
             }
         }
     }
+
+    Context 'When using parameter HasValue' {
+        Context 'When DSC property has a non-null value' {
+            BeforeAll {
+                <#
+                    Must use a here-string because we need to pass 'using' which must be
+                    first in a scriptblock, but if it is outside the here-string then PowerShell
+                    PowerShell will fail to parse the test script.
+                #>
+                $inModuleScopeScriptBlock = @'
+using module SqlServerDsc
+
+class MyMockResource
+{
+    [DscProperty(Key)]
+    [System.String]
+    $MyResourceKeyProperty1
+
+    [DscProperty(Key)]
+    [System.String]
+    $MyResourceKeyProperty2
+
+    [DscProperty()]
+    [System.String]
+    $MyProperty3
+
+    [DscProperty(NotConfigurable)]
+    [System.String]
+    $MyResourceReadProperty
+}
+
+$script:mockResourceBaseInstance = [MyMockResource] @{
+    MyProperty3 = 'AnyValue'
+}
+'@
+
+                InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
+            }
+
+            It 'Should return the correct value' {
+                InModuleScope -ScriptBlock {
+                    $result = Test-ResourceHasProperty -Name 'MyProperty3' -HasValue -InputObject $script:mockResourceBaseInstance
+
+                    $result | Should -BeTrue
+                }
+            }
+        }
+    }
+
+    Context 'When DSC property has a non-null value' {
+        BeforeAll {
+            <#
+                Must use a here-string because we need to pass 'using' which must be
+                first in a scriptblock, but if it is outside the here-string then PowerShell
+                PowerShell will fail to parse the test script.
+            #>
+            $inModuleScopeScriptBlock = @'
+using module SqlServerDsc
+
+class MyMockResource
+{
+[DscProperty(Key)]
+[System.String]
+$MyResourceKeyProperty1
+
+[DscProperty(Key)]
+[System.String]
+$MyResourceKeyProperty2
+
+[DscProperty()]
+[System.String]
+$MyProperty3
+
+[DscProperty(NotConfigurable)]
+[System.String]
+$MyResourceReadProperty
+}
+
+$script:mockResourceBaseInstance = [MyMockResource] @{}
+'@
+
+            InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
+        }
+
+        It 'Should return the correct value' {
+            InModuleScope -ScriptBlock {
+                $result = Test-ResourceHasProperty -Name 'MyProperty3' -HasValue -InputObject $script:mockResourceBaseInstance
+
+                $result | Should -BeFalse
+            }
+        }
+    }
 }

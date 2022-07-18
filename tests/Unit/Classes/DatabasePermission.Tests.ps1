@@ -74,7 +74,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
         }
     }
 
-    Context 'When comparing two objects' {
+    Context 'When comparing two objects using method Equals()' {
         # TODO: See comment in code regarding the code this test was suppose to cover.
         # Context 'When the object to compare against is the wrong type' {
         #     It 'Should throw an error on compare' {
@@ -178,6 +178,195 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
 
             It 'Should return $false' {
                 $mockDatabasePermissionInstance1 -eq $mockDatabasePermissionInstance2 | Should -BeFalse
+            }
+        }
+    }
+
+    Context 'When comparing two objects using method CompareTo()' {
+        Context 'When the instance is compared against an invalid object' {
+            It 'Should return a value less than zero' {
+                $mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
+                    [DatabasePermission] @{
+                        State = 'Grant'
+                        Permission = 'Select'
+                    }
+                }
+
+                $mockErrorMessage = InModuleScope -ScriptBlock {
+                    $script:localizedData.InvalidTypeForCompare
+                }
+
+                $mockErrorMessage = $mockErrorMessage -f @(
+                    $mockDatabasePermissionInstance1.GetType().FullName
+                    'System.String'
+                )
+
+                $mockErrorMessage += " (Parameter 'Object')"
+
+                # Escape the brackets so Pester can evaluate the string correctly.
+                $mockErrorMessage = $mockErrorMessage -replace '\[', '`['
+                $mockErrorMessage = $mockErrorMessage -replace '\]', '`]'
+
+                { $mockDatabasePermissionInstance1.CompareTo('AnyValue') } | Should -Throw -ExpectedMessage $mockErrorMessage
+            }
+        }
+
+        Context 'When the instance precedes the object being compared' {
+            Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach @(
+                @{
+                    MockInstanceState = 'Grant'
+                    MockObjectState = 'GrantWithGrant'
+                }
+                @{
+                    MockInstanceState = 'Grant'
+                    MockObjectState = 'Deny'
+                }
+                @{
+                    MockInstanceState = 'GrantWithGrant'
+                    MockObjectState = 'Deny'
+                }
+            ) {
+                It 'Should return a value less than zero' {
+                    $mockDatabasePermissionInstance1 = InModuleScope -Parameters $_ -ScriptBlock {
+                        [DatabasePermission] @{
+                            State = $MockInstanceState
+                            Permission = 'Select'
+                        }
+                    }
+
+                    $mockDatabasePermissionInstance2 = InModuleScope -Parameters $_ -ScriptBlock {
+                        [DatabasePermission] @{
+                            State = $MockObjectState
+                            Permission = 'Select'
+                        }
+                    }
+
+                    $mockDatabasePermissionInstance1.CompareTo($mockDatabasePermissionInstance2) | Should -BeLessThan 0
+                }
+            }
+        }
+
+        Context 'When the instance follows the object being compared' {
+            Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach @(
+                @{
+                    MockInstanceState = 'Deny'
+                    MockObjectState = 'Grant'
+                }
+                @{
+                    MockInstanceState = 'GrantWithGrant'
+                    MockObjectState = 'Grant'
+                }
+                @{
+                    MockInstanceState = 'Deny'
+                    MockObjectState = 'GrantWithGrant'
+                }
+            ) {
+                It 'Should return a value less than zero' {
+                    $mockDatabasePermissionInstance1 = InModuleScope -Parameters $_ -ScriptBlock {
+                        [DatabasePermission] @{
+                            State = $MockInstanceState
+                            Permission = 'Select'
+                        }
+                    }
+
+                    $mockDatabasePermissionInstance2 = InModuleScope -Parameters $_ -ScriptBlock {
+                        [DatabasePermission] @{
+                            State = $MockObjectState
+                            Permission = 'Select'
+                        }
+                    }
+
+                    $mockDatabasePermissionInstance1.CompareTo($mockDatabasePermissionInstance2) | Should -BeGreaterThan 0
+                }
+            }
+
+            Context 'When the instance is compared against an object that is $null' {
+                It 'Should return a value less than zero' {
+                    $mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
+                        [DatabasePermission] @{
+                            State = 'Grant'
+                            Permission = 'Select'
+                        }
+                    }
+
+                    $mockDatabasePermissionInstance1.CompareTo($null) | Should -BeGreaterThan 0
+                }
+            }
+        }
+
+        Context 'When the instance is in the same position as the object being compared' {
+            Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach @(
+                @{
+                    MockInstanceState = 'Grant'
+                    MockObjectState = 'Grant'
+                }
+                @{
+                    MockInstanceState = 'GrantWithGrant'
+                    MockObjectState = 'GrantWithGrant'
+                }
+                @{
+                    MockInstanceState = 'Deny'
+                    MockObjectState = 'Deny'
+                }
+            ) {
+                It 'Should return a value less than zero' {
+                    $mockDatabasePermissionInstance1 = InModuleScope -Parameters $_ -ScriptBlock {
+                        [DatabasePermission] @{
+                            State = $MockInstanceState
+                            Permission = 'Select'
+                        }
+                    }
+
+                    $mockDatabasePermissionInstance2 = InModuleScope -Parameters $_ -ScriptBlock {
+                        [DatabasePermission] @{
+                            State = $MockObjectState
+                            Permission = 'Select'
+                        }
+                    }
+
+                    $mockDatabasePermissionInstance1.CompareTo($mockDatabasePermissionInstance2) | Should -Be 0
+                }
+            }
+        }
+
+        Context 'When sorting the instances' {
+            It 'Should always sort in the correct order' -ForEach @(
+                @{
+                    MockState = @('Grant', 'GrantWithGrant', 'Deny')
+                }
+                @{
+                    MockState = @('GrantWithGrant', 'Grant', 'Deny')
+                }
+                @{
+                    MockState = @('GrantWithGrant', 'Deny', 'Grant')
+                }
+                @{
+                    MockState = @('Deny', 'GrantWithGrant', 'Grant')
+                }
+                @{
+                    MockState = @('Grant', 'Deny', 'GrantWithGrant')
+                }
+                @{
+                    MockState = @('Deny', 'Grant', 'GrantWithGrant')
+                }
+            ) {
+                $mockDatabasePermissionArray = @(
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        foreach ($currentMockState in $MockState)
+                        {
+                            [DatabasePermission] @{
+                                State = $currentMockState
+                                Permission = 'Select'
+                            }
+                        }
+                    }
+                )
+
+                $mockSortedArray = $mockDatabasePermissionArray | Sort-Object
+
+                $mockSortedArray[0].State | Should -Be 'Grant'
+                $mockSortedArray[1].State | Should -Be 'GrantWithGrant'
+                $mockSortedArray[2].State | Should -Be 'Deny'
             }
         }
     }
