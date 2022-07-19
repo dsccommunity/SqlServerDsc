@@ -11,7 +11,8 @@ ConvertFrom-StringData @'
     # Strings directly used by the derived class SqlDatabasePermission.
     EvaluateDatabasePermissionForPrincipal = Evaluate the current permissions for the user '{0}' in the database '{1}' on the instance '{2}'. (SDP0001)
     NameIsMissing = The name '{0}' is neither a database user, database role (user-defined), or database application role in the database '{1}', or the database '{1}' does not exist on the instance '{2}'. (SDP0004)
-    DesiredAbsentPermissionArePresent = The desired permissions that shall be absent are present for the user '{0}' in the database '{1}' on the instance '{2}'. (SDP0003)
+    DesiredAbsentPermissionArePresent = The desired permission '{0}' that shall be absent are present. (SDP0003)
+    DesiredPermissionAreAbsent = The desired permission '{0}' that shall be present are absent. (SDP0003)
     FailedToRevokePermissionFromCurrentState = Failed to revoke the permissions from the current state for the user '{0}' in the database '{1}'. (SDP0007)
     FailedToSetPermission = Failed to set the desired permissions for the user '{0}' in the database '{1}'. (SDP0007)
     RevokePermissionNotInDesiredState = Revoking permission '{0}' for the user '{1}' in the database '{2}' since the permission is not part of the desired state. (SDP0008)

@@ -94,7 +94,9 @@ function Get-DscProperty
     {
         if ($HasValue.IsPresent)
         {
-            if ($null -eq $InputObject.$currentProperty)
+            $isAssigned = Test-ResourcePropertyIsAssigned -Name $currentProperty -InputObject $InputObject
+
+            if (-not $isAssigned)
             {
                 continue
             }

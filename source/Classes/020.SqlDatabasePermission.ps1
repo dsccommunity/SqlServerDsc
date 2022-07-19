@@ -313,90 +313,105 @@ class SqlDatabasePermission : ResourceBase
             }
         }
 
-        <#
-            When $this.Ensure is 'Absent' and the node is in desired
-            state the current state permissions will always differ
-            from desired state permissions, since the current permission
-            should never have the permission that desired state says
-            should be removed.
+        $isPropertyPermissionToIncludeAssigned = $this | Test-ResourcePropertyIsAssigned -Name 'PermissionToInclude'
 
-            The base class does not know and cannot know how to evaluate
-            absent permissions correctly. So this needs to evaluated here.
-        #>
-        # if ($this.Ensure -eq [Ensure]::Absent)
-        # {
-        #     $inDesiredState = $true
+        if ($isPropertyPermissionToIncludeAssigned)
+        {
+            $currentState.PermissionToInclude = [DatabasePermission[]] @()
 
-        #     # Evaluate so that the desired state is missing from the current state.
-        #     foreach ($desiredPermission in $this.Permission)
-        #     {
-        #         $currentStatePermissionForState = $currentState.Permission |
-        #             Where-Object -FilterScript {
-        #                 $_.State -eq $desiredPermission.State
-        #             }
+            # Evaluate so that the desired state is present in the current state.
+            foreach ($desiredIncludePermission in $this.PermissionToInclude)
+            {
+                <#
+                    Current state will always have all possible states, so this
+                    will always return one item.
+                #>
+                $currentStatePermissionForState = $currentState.Permission |
+                    Where-Object -FilterScript {
+                        $_.State -eq $desiredIncludePermission.State
+                    }
 
-        #         foreach ($desiredPermissionName in $desiredPermission.Permission)
-        #         {
-        #             if ($currentStatePermissionForState.Permission -contains $desiredPermissionName)
-        #             {
-        #                 Write-Verbose -Message (
-        #                     $this.localizedData.DesiredAbsentPermissionArePresent -f @(
-        #                         $this.Name,
-        #                         $this.DatabaseName,
-        #                         $this.InstanceName
-        #                     )
-        #                 )
+                $currentStatePermissionToInclude = [DatabasePermission] @{
+                    State      = $desiredIncludePermission.State
+                    Permission = @()
+                }
 
-        #                 $inDesiredState = $false
-        #             }
-        #         }
-        #     }
+                foreach ($desiredIncludePermissionName in $desiredIncludePermission.Permission)
+                {
+                    if ($currentStatePermissionForState.Permission -contains $desiredIncludePermissionName)
+                    {
+                        <#
+                            If the permission exist in the current state, add the
+                            permission to $currentState.PermissionToInclude so that
+                            the base class's method Compare() sees the property as
+                            being in desired state (when the property PermissionToInclude
+                            in the current state and desired state are equal).
+                        #>
+                        $currentStatePermissionToInclude.Permission += $desiredIncludePermissionName
+                    }
+                    else
+                    {
+                        Write-Verbose -Message (
+                            $this.localizedData.DesiredPermissionAreAbsent -f @(
+                                $desiredIncludePermissionName
+                            )
+                        )
+                    }
+                }
 
-        #     <#
-        #         When $this.Ensure is 'Absent' then 'Permission' must be added to
-        #         the property $this.notEnforcedProperties so that the Permission
-        #         property is not compared. This is especially true when the
-        #         permissions are in desired state. But when the permissions are not
-        #         in desired state, if the Permission property would be 0compared by
-        #         the base class, it would not be intuitive to the user
-        #         since the verbose messages output from the base class will say
-        #         that it expects the permissions to be that of what should be absent.
-        #     #>
-        #     $this.notEnforcedProperties += 'Permission'
+                [DatabasePermission[]] $currentState.PermissionToInclude += $currentStatePermissionToInclude
+            }
+        }
 
-        #     <#
-        #         We should also return the property 'Ensure' set to 'Absent' or
-        #         'Present' so the base class does not try to evaluate the state
-        #         itself.
-        #     #>
-        #     if ($inDesiredState)
-        #     {
-        #         <#
-        #             The desired permission that should be absent does not exist
-        #             in the current state, therefor we return 'Absent'.
-        #         #>
-        #         $currentState.Ensure = [Ensure]::Absent
-        #     }
-        #     else
-        #     {
-        #         <#
-        #             The desired permission that should be absent exist in the current
-        #             state, therefor we return 'Present'.
-        #         #>
-        #         $currentState.Ensure = [Ensure]::Present
-        #     }
-        # }
-        # else
-        # {
-        #     <#
-        #         If the property notEnforcedProperties contains 'Permission', remove it.
-        #         This is a fail-safe if the same class instance would be re-used.
-        #     #>
-        #     if ($this.notEnforcedProperties -contains 'Permission')
-        #     {
-        #         $this.notEnforcedProperties = @($this.notEnforcedProperties) -ne 'Permission'
-        #     }
-        # }
+        $isPropertyPermissionToExcludeAssigned = $this | Test-ResourcePropertyIsAssigned -Name 'PermissionToExclude'
+
+        if ($isPropertyPermissionToExcludeAssigned)
+        {
+            $currentState.PermissionToExclude = [DatabasePermission[]] @()
+
+            # Evaluate so that the desired state is missing from the current state.
+            foreach ($desiredExcludePermission in $this.PermissionToExclude)
+            {
+                <#
+                    Current state will always have all possible states, so this
+                    will always return one item.
+                #>
+                $currentStatePermissionForState = $currentState.Permission |
+                    Where-Object -FilterScript {
+                        $_.State -eq $desiredExcludePermission.State
+                    }
+
+                $currentStatePermissionToExclude = [DatabasePermission] @{
+                    State      = $desiredExcludePermission.State
+                    Permission = @()
+                }
+
+                foreach ($desiredExcludedPermissionName in $desiredExcludePermission.Permission)
+                {
+                    if ($currentStatePermissionForState.Permission -contains $desiredExcludedPermissionName)
+                    {
+                        Write-Verbose -Message (
+                            $this.localizedData.DesiredAbsentPermissionArePresent -f @(
+                                $desiredExcludedPermissionName
+                            )
+                        )
+                    }
+                    else
+                    {
+                        <#
+                            If the permission does _not_ exist in the current state, add
+                            the permission to $currentState.PermissionToExclude so that
+                            the base class's method Compare() sees the property as being
+                            in desired state (when the property PermissionToExclude in
+                            the current state and desired state are equal).
+                        #>
+                        $currentStatePermissionToExclude.Permission += $desiredExcludedPermissionName
+                    }
+                }
+
+                [DatabasePermission[]] $currentState.PermissionToExclude += $currentStatePermissionToExclude
+            }
+        }
 
         return $currentState
     }
@@ -613,7 +628,7 @@ class SqlDatabasePermission : ResourceBase
 
         Assert-BoundParameter @assertBoundParameterParameters
 
-        $isPropertyPermissionAssigned = $this | Test-ResourceHasProperty -Name 'Permission' -HasValue
+        $isPropertyPermissionAssigned = $this | Test-ResourcePropertyIsAssigned -Name 'Permission'
 
         if ($isPropertyPermissionAssigned)
         {
@@ -641,5 +656,7 @@ class SqlDatabasePermission : ResourceBase
                 throw $this.localizedData.MissingPermissionState
             }
         }
+
+        # TODO: PermissionToInclude and PermissionToExclude must not contain an empty collection for property Permission
     }
 }

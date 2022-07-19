@@ -112,6 +112,8 @@ class ResourceBase
         #>
         if (($this | Test-ResourceHasProperty -Name 'Ensure') -and -not $getCurrentStateResult.ContainsKey('Ensure'))
         {
+            # TODO: This should evaluate if the key properties is in desired state, if so set Present, otherwise set Absent
+
             if (($propertiesNotInDesiredState -and $this.Ensure -eq [Ensure]::Present) -or (-not $propertiesNotInDesiredState -and $this.Ensure -eq [Ensure]::Absent))
             {
                 $dscResourceObject.Ensure = [Ensure]::Absent
@@ -132,6 +134,8 @@ class ResourceBase
         #>
         if (($this | Test-ResourceHasProperty -Name 'Reasons') -and -not $getCurrentStateResult.ContainsKey('Reasons'))
         {
+            # TODO: Below should be a private function ConvertTo-Reason.
+
             # Always return an empty array if all properties are in desired state.
             $dscResourceObject.Reasons = [Reason[]] @()
 
