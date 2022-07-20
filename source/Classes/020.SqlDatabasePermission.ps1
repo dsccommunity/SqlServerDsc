@@ -449,152 +449,7 @@ class SqlDatabasePermission : ResourceBase
         # This will test wether the database and the principal exist.
         $isDatabasePrincipal = Test-SqlDscIsDatabasePrincipal @testSqlDscIsDatabasePrincipalParameters
 
-        if ($isDatabasePrincipal)
-        {
-            $keyProperty = $this | Get-DscProperty -Type 'Key'
-
-            $currentState = $this.GetCurrentState($keyProperty)
-
-            <#
-                TODO: Remove this comment-block.
-                Update permissions if:
-
-                - $properties contains property Permission
-                - $properties contains property Ensure and it is set to 'Absent'
-
-                First will happen when there are additional permissions to add
-                to the current state.
-
-                Second will happen when there are permissions in the current state
-                that should be absent.
-            #>
-            if ($properties.ContainsKey('Permission'))
-            {
-                foreach ($currentPermission in $this.Permission)
-                {
-                    $currentPermissionsForState = $currentState.Permission |
-                        Where-Object -FilterScript {
-                            $_.State -eq $currentPermission.State
-                        }
-
-                    # Revoke permissions that are not part of the desired state
-                    if ($currentPermissionsForState)
-                    {
-                        $permissionsToRevoke = @()
-
-                        $revokePermissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
-
-                        foreach ($permissionName in $currentPermissionsForState.Permission)
-                        {
-                            if ($permissionName -notin $currentPermission.Permission)
-                            {
-                                $permissionsToRevoke += $permissionName
-
-                                $revokePermissionSet.$permissionName = $true
-                            }
-                        }
-
-                        if ($permissionsToRevoke)
-                        {
-                            Write-Verbose -Message (
-                                $this.localizedData.RevokePermissionNotInDesiredState -f @(
-                                    ($permissionsToRevoke -join "', '"),
-                                    $this.Name,
-                                    $this.DatabaseName
-                                )
-                            )
-
-                            $setSqlDscDatabasePermissionParameters = @{
-                                ServerObject = $serverObject
-                                DatabaseName = $this.DatabaseName
-                                Name         = $this.Name
-                                Permission   = $revokePermissionSet
-                                State        = 'Revoke'
-                            }
-
-                            if ($currentPermission.State -eq 'GrantWithGrant')
-                            {
-                                $setSqlDscDatabasePermissionParameters.WithGrant = $true
-                            }
-
-                            try
-                            {
-                                Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters
-                            }
-                            catch
-                            {
-                                $errorMessage = $this.localizedData.FailedToRevokePermissionFromCurrentState -f @(
-                                    $this.Name,
-                                    $this.DatabaseName
-                                )
-
-                                <#
-                                    TODO: Update the CONTRIBUTING.md section "Class-based DSC resource"
-                                          that now says that 'throw' should be used.. we should use
-                                          helper function instead. Or something similar to commands
-                                          where the ID number is part of code? But might be a problem
-                                          tracing a specific verbose string down?
-                                #>
-                                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-                            }
-                        }
-                    }
-
-                    # If there is not an empty array, change permissions.
-                    if (-not [System.String]::IsNullOrEmpty($currentPermission.Permission))
-                    {
-                        $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
-
-                        foreach ($permissionName in $currentPermission.Permission)
-                        {
-                            $permissionSet.$permissionName = $true
-                        }
-
-                        $setSqlDscDatabasePermissionParameters = @{
-                            ServerObject = $serverObject
-                            DatabaseName = $this.DatabaseName
-                            Name         = $this.Name
-                            Permission   = $permissionSet
-                        }
-
-                        try
-                        {
-                            switch ($currentPermission.State)
-                            {
-                                'GrantWithGrant'
-                                {
-                                    Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State 'Grant' -WithGrant
-                                }
-
-                                default
-                                {
-                                    Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State $currentPermission.State
-                                }
-                            }
-
-                            # if ($currentPermission.State -eq 'GrantWithGrant')
-                            # {
-                            #     Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State 'Revoke' -WithGrant
-                            # }
-                            # else
-                            # {
-                            #     Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State 'Revoke'
-                            # }
-                        }
-                        catch
-                        {
-                            $errorMessage = $this.localizedData.FailedToSetPermission -f @(
-                                $this.Name,
-                                $this.DatabaseName
-                            )
-
-                            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-                        }
-                    }
-                }
-            }
-        }
-        else
+        if (-not $isDatabasePrincipal)
         {
             $missingPrincipalMessage = $this.localizedData.NameIsMissing -f @(
                 $this.Name,
@@ -603,6 +458,178 @@ class SqlDatabasePermission : ResourceBase
             )
 
             New-InvalidOperationException -Message $missingPrincipalMessage
+        }
+
+        # This holds each state and their permissions to be revoked.
+        [DatabasePermission[]] $permissionsToRevoke = @()
+        [DatabasePermission[]] $permissionsToGrantOrDeny = @()
+
+        if ($properties.ContainsKey('Permission'))
+        {
+            $keyProperty = $this | Get-DscProperty -Type 'Key'
+
+            $currentState = $this.GetCurrentState($keyProperty)
+
+            <#
+                Evaluate if there are any permissions that should be revoked
+                from the current state.
+            #>
+            foreach ($currentDesiredPermissionState in $this.Permission)
+            {
+                $currentPermissionsForState = $currentState.Permission |
+                    Where-Object -FilterScript {
+                        $_.State -eq $currentDesiredPermissionState.State
+                    }
+
+                foreach ($permissionName in $currentPermissionsForState.Permission)
+                {
+                    if ($permissionName -notin $currentDesiredPermissionState.Permission)
+                    {
+                        # Look for an existing object in the array.
+                        $updatePermissionToRevoke = $permissionsToRevoke |
+                            Where-Object -FilterScript {
+                                $_.State -eq $currentDesiredPermissionState.State
+                            }
+
+                        # Update the existing object in the array, or create a new object
+                        if ($updatePermissionToRevoke)
+                        {
+                            $updatePermissionToRevoke.Permission += $permissionName
+                        }
+                        else
+                        {
+                            [DatabasePermission[]] $permissionsToRevoke += [DatabasePermission] @{
+                                State = $currentPermissionsForState.State
+                                Permission = $permissionName
+                            }
+                        }
+                    }
+                }
+            }
+
+            <#
+                At least one permission were missing or should have not be present
+                in the current state. Grant or Deny all permission assigned to the
+                property Permission regardless if they were already present or not.
+            #>
+            [DatabasePermission[]] $permissionsToGrantOrDeny = $this.Permission
+        }
+
+        if ($properties.ContainsKey('PermissionToExclude'))
+        {
+            <#
+                At least one permission were present in the current state. Revoke
+                all permission assigned to the property PermissionToExclude
+                regardless if they were already revoked or not.
+            #>
+            [DatabasePermission[]] $permissionsToRevoke = $this.PermissionToExclude
+        }
+
+        if ($properties.ContainsKey('PermissionToInclude'))
+        {
+            <#
+                At least one permission were missing or should have not be present
+                in the current state. Grant or Deny all permission assigned to the
+                property Permission regardless if they were already present or not.
+            #>
+            [DatabasePermission[]] $permissionsToGrantOrDeny = $this.PermissionToInclude
+        }
+
+        # Revoke all the permissions set in $permissionsToRevoke
+        if ($permissionsToRevoke)
+        {
+            foreach ($currentStateToRevoke in $permissionsToRevoke)
+            {
+                $revokePermissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+
+                foreach ($revokePermissionName in $currentStateToRevoke.Permission)
+                {
+                    $revokePermissionSet.$revokePermissionName = $true
+                }
+
+                $setSqlDscDatabasePermissionParameters = @{
+                    ServerObject = $serverObject
+                    DatabaseName = $this.DatabaseName
+                    Name         = $this.Name
+                    Permission   = $revokePermissionSet
+                    State        = 'Revoke'
+                }
+
+                if ($currentStateToRevoke.State -eq 'GrantWithGrant')
+                {
+                    $setSqlDscDatabasePermissionParameters.WithGrant = $true
+                }
+
+                try
+                {
+                    Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters
+                }
+                catch
+                {
+                    $errorMessage = $this.localizedData.FailedToRevokePermissionFromCurrentState -f @(
+                        $this.Name,
+                        $this.DatabaseName
+                    )
+
+                    <#
+                        TODO: Update the CONTRIBUTING.md section "Class-based DSC resource"
+                                that now says that 'throw' should be used.. we should use
+                                helper function instead. Or something similar to commands
+                                where the ID number is part of code? But might be a problem
+                                tracing a specific verbose string down?
+                    #>
+                    New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                }
+            }
+        }
+
+        if ($permissionsToGrantOrDeny)
+        {
+            foreach ($currentDesiredPermissionState in $permissionsToGrantOrDeny)
+            {
+                # If there is not an empty array, change permissions.
+                if (-not [System.String]::IsNullOrEmpty($currentDesiredPermissionState.Permission))
+                {
+                    $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+
+                    foreach ($permissionName in $currentDesiredPermissionState.Permission)
+                    {
+                        $permissionSet.$permissionName = $true
+                    }
+
+                    $setSqlDscDatabasePermissionParameters = @{
+                        ServerObject = $serverObject
+                        DatabaseName = $this.DatabaseName
+                        Name         = $this.Name
+                        Permission   = $permissionSet
+                    }
+
+                    try
+                    {
+                        switch ($currentDesiredPermissionState.State)
+                        {
+                            'GrantWithGrant'
+                            {
+                                Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State 'Grant' -WithGrant
+                            }
+
+                            default
+                            {
+                                Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State $currentDesiredPermissionState.State
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        $errorMessage = $this.localizedData.FailedToSetPermission -f @(
+                            $this.Name,
+                            $this.DatabaseName
+                        )
+
+                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                    }
+                }
+            }
         }
     }
 
@@ -613,6 +640,8 @@ class SqlDatabasePermission : ResourceBase
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
         # TODO: Add the evaluation so that one permission can't be added two different states ('Grant' and 'Deny') in the same resource instance.
+
+        # TODO: PermissionToInclude and PermissionToExclude must not contain an empty collection for property Permission
 
         # PermissionToInclude and PermissionToExclude should be mutually exclusive from Permission
         $assertBoundParameterParameters = @{
@@ -628,22 +657,40 @@ class SqlDatabasePermission : ResourceBase
 
         Assert-BoundParameter @assertBoundParameterParameters
 
-        $isPropertyPermissionAssigned = $this | Test-ResourcePropertyIsAssigned -Name 'Permission'
+        # Get all assigned permission properties.
+        $assignedPermissionProperty = @(
+            $this | Get-DscProperty -HasValue -Name @(
+                'Permission',
+                'PermissionToInclude',
+                'PermissionToExclude'
+            )
+        )
 
-        if ($isPropertyPermissionAssigned)
+        # Must include either of the permission properties.
+        if (-not $assignedPermissionProperty)
         {
-            # One State cannot exist several times in the same resource instance.
+            # TODO: Should throw ArgumentException
+            throw $this.localizedData.MustAssignOnePermissionProperty
+        }
+
+        # One State cannot exist several times in the same resource instance.
+        foreach ($currentAssignedPermissionProperty in $assignedPermissionProperty)
+        {
             $permissionStateGroupCount = @(
-                $this.Permission |
+                $this.$currentAssignedPermissionProperty |
                     Group-Object -NoElement -Property 'State' -CaseSensitive:$false |
                     Select-Object -ExpandProperty 'Count'
             )
 
             if ($permissionStateGroupCount -gt 1)
             {
+                # TODO: Should throw ArgumentException
                 throw $this.localizedData.DuplicatePermissionState
             }
+        }
 
+        if ($assignedPermissionProperty -contains 'Permission')
+        {
             # Each State must exist once.
             $missingPermissionState = (
                 $this.Permission.State -notcontains 'Grant' -or
@@ -653,10 +700,9 @@ class SqlDatabasePermission : ResourceBase
 
             if ($missingPermissionState)
             {
+                # TODO: Should throw ArgumentException
                 throw $this.localizedData.MissingPermissionState
             }
         }
-
-        # TODO: PermissionToInclude and PermissionToExclude must not contain an empty collection for property Permission
     }
 }

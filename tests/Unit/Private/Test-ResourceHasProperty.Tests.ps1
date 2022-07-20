@@ -51,8 +51,6 @@ Describe 'Test-ResourceHasProperty' -Tag 'Private' {
                 PowerShell will fail to parse the test script.
             #>
             $inModuleScopeScriptBlock = @'
-using module SqlServerDsc
-
 class MyMockResource
 {
     [DscProperty(Key)]
@@ -95,8 +93,6 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
                 PowerShell will fail to parse the test script.
             #>
             $inModuleScopeScriptBlock = @'
-using module SqlServerDsc
-
 class MyMockResource
 {
     [DscProperty(Key)]
@@ -139,8 +135,6 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
                 PowerShell will fail to parse the test script.
             #>
             $inModuleScopeScriptBlock = @'
-using module SqlServerDsc
-
 class MyMockResource
 {
     [DscProperty(Key)]
@@ -183,8 +177,6 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
                     PowerShell will fail to parse the test script.
                 #>
                 $inModuleScopeScriptBlock = @'
-using module SqlServerDsc
-
 class MyMockResource
 {
     [DscProperty(Key)]
@@ -230,8 +222,6 @@ $script:mockResourceBaseInstance = [MyMockResource] @{
                 PowerShell will fail to parse the test script.
             #>
             $inModuleScopeScriptBlock = @'
-using module SqlServerDsc
-
 class MyMockResource
 {
 [DscProperty(Key)]

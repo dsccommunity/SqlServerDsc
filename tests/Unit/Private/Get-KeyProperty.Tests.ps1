@@ -50,8 +50,6 @@ Describe 'Get-KeyProperty' -Tag 'Private' {
             PowerShell will fail to parse the test script.
         #>
         $inModuleScopeScriptBlock = @'
-using module SqlServerDsc
-
 class MyMockResource
 {
     [DscProperty(Key)]

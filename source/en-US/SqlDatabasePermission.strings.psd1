@@ -15,7 +15,7 @@ ConvertFrom-StringData @'
     DesiredPermissionAreAbsent = The desired permission '{0}' that shall be present are absent. (SDP0003)
     FailedToRevokePermissionFromCurrentState = Failed to revoke the permissions from the current state for the user '{0}' in the database '{1}'. (SDP0007)
     FailedToSetPermission = Failed to set the desired permissions for the user '{0}' in the database '{1}'. (SDP0007)
-    RevokePermissionNotInDesiredState = Revoking permission '{0}' for the user '{1}' in the database '{2}' since the permission is not part of the desired state. (SDP0008)
     DuplicatePermissionState = One or more permission states was added more than once. It is only allowed to specify one of each permission state. (SDP0009)
     MissingPermissionState = One or more permission states was missing. One of each permission state must be provided. (SDP0009)
+    MustAssignOnePermissionProperty = At least one of the properties 'Permission', 'PermissionToInclude', or 'PermissionToExclude' must be specified. (SDP0010)
 '@

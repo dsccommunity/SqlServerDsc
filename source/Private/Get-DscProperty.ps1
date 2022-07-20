@@ -23,7 +23,7 @@ function Get-DscProperty
         $InputObject,
 
         [Parameter()]
-        [System.String]
+        [System.String[]]
         $Name,
 
         [Parameter()]
@@ -40,6 +40,13 @@ function Get-DscProperty
         Get-Member -MemberType 'Property' |
         Select-Object -ExpandProperty 'Name' |
         Where-Object -FilterScript {
+            <#
+                Return all properties if $Name is not assigned, or if assigned
+                just those properties.
+            #>
+            (-not $Name -or $_ -in $Name) -and
+
+            # Only return the property if it is a DSC property.
             $InputObject.GetType().GetMember($_).CustomAttributes.Where(
                 {
                     $_.AttributeType.Name -eq 'DscPropertyAttribute'
@@ -47,11 +54,11 @@ function Get-DscProperty
             )
         }
 
-    # Filter out the specified name.
-    if ($PSBoundParameters.ContainsKey('Name'))
-    {
-        $property = @($property) -eq $Name
-    }
+    # # Filter out the specified name.
+    # if ($PSBoundParameters.ContainsKey('Name'))
+    # {
+    #     $property = @($property) -eq $Name
+    # }
 
     if (-not [System.String]::IsNullOrEmpty($property))
     {
