@@ -533,6 +533,362 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
             }
         }
     }
+
+    Context 'When using parameter PermissionToInclude' {
+        Context 'When the system is in the desired state' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
+                        Name                = 'MockUserName'
+                        DatabaseName        = 'MockDatabaseName'
+                        InstanceName        = 'NamedInstance'
+                        PermissionToInclude = [DatabasePermission] @{
+                            State = 'Grant'
+                            Permission = 'update'
+                        }
+                    }
+                }
+
+                Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                }
+
+                Mock -CommandName Get-SqlDscDatabasePermission -MockWith {
+                    $mockDatabasePermissionInfo = @()
+
+                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                        Add-Member -MemberType NoteProperty -Name PermissionType -Value (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($true, $false, $false, $false)) -PassThru |
+                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $true, $false, $false)) -PassThru |
+                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $false, $true, $false)) -PassThru |
+                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Deny' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                    return $mockDatabasePermissionInfo
+                }
+            }
+
+            It 'Should return correct values for the states Grant and Deny and empty collections for the state GrantWithGrant' {
+                InModuleScope -ScriptBlock {
+                    $currentState = $script:mockSqlDatabasePermissionInstance.GetCurrentState(@{
+                        Name         = 'MockUserName'
+                        DatabaseName = 'MockDatabaseName'
+                        InstanceName = 'NamedInstance'
+                    })
+
+                    $currentState.Credential | Should -BeNullOrEmpty
+
+                    $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
+                    $currentState.Permission | Should -HaveCount 3
+
+                    $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
+
+                    $grantState | Should -Not -BeNullOrEmpty
+                    $grantState.State | Should -Be 'Grant'
+                    $grantState.Permission | Should -Contain 'Connect'
+                    $grantState.Permission | Should -Contain 'Update'
+
+                    $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
+
+                    $grantWithGrantState | Should -Not -BeNullOrEmpty
+                    $grantWithGrantState.State | Should -Be 'GrantWithGrant'
+                    $grantWithGrantState.Permission | Should -BeNullOrEmpty
+
+                    $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
+
+                    $denyState | Should -Not -BeNullOrEmpty
+                    $denyState.State | Should -Be 'Deny'
+                    $denyState.Permission | Should -Contain 'Select'
+
+                    $currentState.PermissionToInclude | Should -HaveCount 1
+                    $currentState.PermissionToInclude[0].State | Should -Be 'Grant'
+                    $currentState.PermissionToInclude[0].Permission | Should -Be 'Update'
+                }
+            }
+        }
+
+        Context 'When the system is not in the desired state' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
+                        Name                = 'MockUserName'
+                        DatabaseName        = 'MockDatabaseName'
+                        InstanceName        = 'NamedInstance'
+                        PermissionToInclude = [DatabasePermission] @{
+                            State = 'Grant'
+                            Permission = 'alter'
+                        }
+                    }
+                }
+
+                Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                }
+
+                Mock -CommandName Get-SqlDscDatabasePermission -MockWith {
+                    $mockDatabasePermissionInfo = @()
+
+                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                        Add-Member -MemberType NoteProperty -Name PermissionType -Value (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($true, $false, $false, $false)) -PassThru |
+                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $true, $false, $false)) -PassThru |
+                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $false, $true, $false)) -PassThru |
+                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Deny' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                    return $mockDatabasePermissionInfo
+                }
+            }
+
+            It 'Should return correct values for the states Grant and Deny and empty collections for the state GrantWithGrant' {
+                InModuleScope -ScriptBlock {
+                    $currentState = $script:mockSqlDatabasePermissionInstance.GetCurrentState(@{
+                        Name         = 'MockUserName'
+                        DatabaseName = 'MockDatabaseName'
+                        InstanceName = 'NamedInstance'
+                    })
+
+                    $currentState.Credential | Should -BeNullOrEmpty
+
+                    $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
+                    $currentState.Permission | Should -HaveCount 3
+
+                    $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
+
+                    $grantState | Should -Not -BeNullOrEmpty
+                    $grantState.State | Should -Be 'Grant'
+                    $grantState.Permission | Should -Contain 'Connect'
+                    $grantState.Permission | Should -Contain 'Update'
+
+                    $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
+
+                    $grantWithGrantState | Should -Not -BeNullOrEmpty
+                    $grantWithGrantState.State | Should -Be 'GrantWithGrant'
+                    $grantWithGrantState.Permission | Should -BeNullOrEmpty
+
+                    $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
+
+                    $denyState | Should -Not -BeNullOrEmpty
+                    $denyState.State | Should -Be 'Deny'
+                    $denyState.Permission | Should -Contain 'Select'
+
+                    $currentState.PermissionToInclude | Should -HaveCount 1
+                    $currentState.PermissionToInclude[0].State | Should -Be 'Grant'
+                    $currentState.PermissionToInclude[0].Permission | Should -BeNullOrEmpty
+                }
+            }
+        }
+    }
+
+    Context 'When using parameter PermissionToExclude' {
+        Context 'When the system is in the desired state' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
+                        Name                = 'MockUserName'
+                        DatabaseName        = 'MockDatabaseName'
+                        InstanceName        = 'NamedInstance'
+                        PermissionToExclude = [DatabasePermission] @{
+                            State = 'Grant'
+                            Permission = 'alter'
+                        }
+                    }
+                }
+
+                Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                }
+
+                Mock -CommandName Get-SqlDscDatabasePermission -MockWith {
+                    $mockDatabasePermissionInfo = @()
+
+                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                        Add-Member -MemberType NoteProperty -Name PermissionType -Value (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($true, $false, $false, $false)) -PassThru |
+                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $true, $false, $false)) -PassThru |
+                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $false, $true, $false)) -PassThru |
+                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Deny' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                    return $mockDatabasePermissionInfo
+                }
+            }
+
+            It 'Should return correct values for the states Grant and Deny and empty collections for the state GrantWithGrant' {
+                InModuleScope -ScriptBlock {
+                    $currentState = $script:mockSqlDatabasePermissionInstance.GetCurrentState(@{
+                        Name         = 'MockUserName'
+                        DatabaseName = 'MockDatabaseName'
+                        InstanceName = 'NamedInstance'
+                    })
+
+                    $currentState.Credential | Should -BeNullOrEmpty
+
+                    $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
+                    $currentState.Permission | Should -HaveCount 3
+
+                    $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
+
+                    $grantState | Should -Not -BeNullOrEmpty
+                    $grantState.State | Should -Be 'Grant'
+                    $grantState.Permission | Should -Contain 'Connect'
+                    $grantState.Permission | Should -Contain 'Update'
+
+                    $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
+
+                    $grantWithGrantState | Should -Not -BeNullOrEmpty
+                    $grantWithGrantState.State | Should -Be 'GrantWithGrant'
+                    $grantWithGrantState.Permission | Should -BeNullOrEmpty
+
+                    $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
+
+                    $denyState | Should -Not -BeNullOrEmpty
+                    $denyState.State | Should -Be 'Deny'
+                    $denyState.Permission | Should -Contain 'Select'
+
+                    $currentState.PermissionToExclude | Should -HaveCount 1
+                    $currentState.PermissionToExclude[0].State | Should -Be 'Grant'
+                    $currentState.PermissionToExclude[0].Permission | Should -Be 'Alter'
+                }
+            }
+        }
+
+        Context 'When the system is not in the desired state' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
+                        Name                = 'MockUserName'
+                        DatabaseName        = 'MockDatabaseName'
+                        InstanceName        = 'NamedInstance'
+                        PermissionToExclude = [DatabasePermission] @{
+                            State = 'Grant'
+                            Permission = 'update'
+                        }
+                    }
+                }
+
+                Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                }
+
+                Mock -CommandName Get-SqlDscDatabasePermission -MockWith {
+                    $mockDatabasePermissionInfo = @()
+
+                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                        Add-Member -MemberType NoteProperty -Name PermissionType -Value (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($true, $false, $false, $false)) -PassThru |
+                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $true, $false, $false)) -PassThru |
+                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
+                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $false, $true, $false)) -PassThru |
+                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Deny' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
+                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+
+                    return $mockDatabasePermissionInfo
+                }
+            }
+
+            It 'Should return correct values for the states Grant and Deny and empty collections for the state GrantWithGrant' {
+                InModuleScope -ScriptBlock {
+                    $currentState = $script:mockSqlDatabasePermissionInstance.GetCurrentState(@{
+                        Name         = 'MockUserName'
+                        DatabaseName = 'MockDatabaseName'
+                        InstanceName = 'NamedInstance'
+                    })
+
+                    $currentState.Credential | Should -BeNullOrEmpty
+
+                    $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
+                    $currentState.Permission | Should -HaveCount 3
+
+                    $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
+
+                    $grantState | Should -Not -BeNullOrEmpty
+                    $grantState.State | Should -Be 'Grant'
+                    $grantState.Permission | Should -Contain 'Connect'
+                    $grantState.Permission | Should -Contain 'Update'
+
+                    $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
+
+                    $grantWithGrantState | Should -Not -BeNullOrEmpty
+                    $grantWithGrantState.State | Should -Be 'GrantWithGrant'
+                    $grantWithGrantState.Permission | Should -BeNullOrEmpty
+
+                    $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
+
+                    $denyState | Should -Not -BeNullOrEmpty
+                    $denyState.State | Should -Be 'Deny'
+                    $denyState.Permission | Should -Contain 'Select'
+
+                    $currentState.PermissionToExclude | Should -HaveCount 1
+                    $currentState.PermissionToExclude[0].State | Should -Be 'Grant'
+                    $currentState.PermissionToExclude[0].Permission | Should -BeNullOrEmpty
+                }
+            }
+        }
+    }
 }
 
 Describe 'SqlDatabasePermission\Set()' -Tag 'Set' {
