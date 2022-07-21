@@ -54,12 +54,6 @@ function Get-DscProperty
             )
         }
 
-    # # Filter out the specified name.
-    # if ($PSBoundParameters.ContainsKey('Name'))
-    # {
-    #     $property = @($property) -eq $Name
-    # }
-
     if (-not [System.String]::IsNullOrEmpty($property))
     {
         if ($PSBoundParameters.ContainsKey('Type'))

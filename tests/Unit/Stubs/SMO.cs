@@ -223,6 +223,9 @@ namespace Microsoft.SqlServer.Management.Smo
         public bool Update = false;
         public bool Select = false;
         public bool Insert = false;
+        public bool Alter = false;
+        public bool Create = false;
+        public bool Delete = false;
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo

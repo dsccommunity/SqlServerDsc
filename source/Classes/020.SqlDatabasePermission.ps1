@@ -418,15 +418,12 @@ class SqlDatabasePermission : ResourceBase
 
     <#
         Base method Set() call this method with the properties that should be
-        enforced and that are not in desired state. It is not called if all
-        properties are in desired state. The variable $properties contain the
-        properties that are not in desired state.
+        enforced are not in desired state. It is not called if all properties
+        are in desired state. The variable $properties contain the properties
+        that are not in desired state.
     #>
     hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
-        # TODO: Remove line below
-        Write-Verbose -Message ($properties | Out-String) -Verbose
-
         $connectSqlDscDatabaseEngineParameters = @{
             ServerName = $this.ServerName
             InstanceName = $this.InstanceName
@@ -474,6 +471,7 @@ class SqlDatabasePermission : ResourceBase
                 Evaluate if there are any permissions that should be revoked
                 from the current state.
             #>
+            # TODO: replace all $this.Permission* with $properties.Permission*
             foreach ($currentDesiredPermissionState in $this.Permission)
             {
                 $currentPermissionsForState = $currentState.Permission |
@@ -634,7 +632,7 @@ class SqlDatabasePermission : ResourceBase
     }
 
     <#
-        Base method Assert() call this method with the properties that was passed
+        Base method Assert() call this method with the properties that was assigned
         a value.
     #>
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
@@ -645,7 +643,7 @@ class SqlDatabasePermission : ResourceBase
 
         # PermissionToInclude and PermissionToExclude should be mutually exclusive from Permission
         $assertBoundParameterParameters = @{
-            BoundParameterList = $this | Get-DscProperty -Type 'Optional' -HasValue
+            BoundParameterList = $properties
             MutuallyExclusiveList1 = @(
                 'Permission'
             )
@@ -658,16 +656,16 @@ class SqlDatabasePermission : ResourceBase
         Assert-BoundParameter @assertBoundParameterParameters
 
         # Get all assigned permission properties.
-        $assignedPermissionProperty = @(
-            $this | Get-DscProperty -HasValue -Name @(
+        $assignedPermissionProperty = $properties.Keys.Where({
+            $_ -in @(
                 'Permission',
                 'PermissionToInclude',
                 'PermissionToExclude'
             )
-        )
+        })
 
         # Must include either of the permission properties.
-        if (-not $assignedPermissionProperty)
+        if ([System.String]::IsNullOrEmpty($assignedPermissionProperty))
         {
             # TODO: Should throw ArgumentException
             throw $this.localizedData.MustAssignOnePermissionProperty
@@ -677,7 +675,7 @@ class SqlDatabasePermission : ResourceBase
         foreach ($currentAssignedPermissionProperty in $assignedPermissionProperty)
         {
             $permissionStateGroupCount = @(
-                $this.$currentAssignedPermissionProperty |
+                $properties.$currentAssignedPermissionProperty |
                     Group-Object -NoElement -Property 'State' -CaseSensitive:$false |
                     Select-Object -ExpandProperty 'Count'
             )
@@ -693,9 +691,9 @@ class SqlDatabasePermission : ResourceBase
         {
             # Each State must exist once.
             $missingPermissionState = (
-                $this.Permission.State -notcontains 'Grant' -or
-                $this.Permission.State -notcontains 'GrantWithGrant' -or
-                $this.Permission.State -notcontains 'Deny'
+                $properties.Permission.State -notcontains 'Grant' -or
+                $properties.Permission.State -notcontains 'GrantWithGrant' -or
+                $properties.Permission.State -notcontains 'Deny'
             )
 
             if ($missingPermissionState)

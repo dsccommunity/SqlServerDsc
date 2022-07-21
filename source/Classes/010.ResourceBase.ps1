@@ -256,6 +256,7 @@ class ResourceBase
     #>
     hidden [System.Collections.Hashtable[]] Compare()
     {
+        # TODO: Replace ConvertFrom-DscResourceInstance with Get-DscProperty?
         $currentState = $this.Get() | ConvertFrom-DscResourceInstance
 
         return $this.Compare($currentState, @())
@@ -270,6 +271,7 @@ class ResourceBase
     #>
     hidden [System.Collections.Hashtable[]] Compare([System.Collections.Hashtable] $currentState, [System.String[]] $excludeProperties)
     {
+        # TODO: Replace this with Get-DscProperty
         $desiredState = $this | Get-DesiredStateProperty
 
         $CompareDscParameterState = @{
@@ -292,6 +294,8 @@ class ResourceBase
     # This method should normally not be overridden.
     hidden [void] Assert()
     {
+        # TODO: Replace this with Get-DscProperty
+        # Get the properties that has a non-null value and is not of type Read.
         $desiredState = $this | Get-DesiredStateProperty
 
         $this.AssertProperties($desiredState)
@@ -300,7 +304,7 @@ class ResourceBase
     <#
         This method can be overridden if resource specific property asserts are
         needed. The parameter properties will contain the properties that was
-        passed a value.
+        assigned a value.
     #>
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidEmptyNamedBlocks', '')]
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
