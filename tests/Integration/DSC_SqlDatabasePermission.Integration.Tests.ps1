@@ -1,3 +1,7 @@
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'because ConvertTo-SecureString is used to simplify the tests.')]
+param ()
+
 BeforeDiscovery {
     try
     {
@@ -576,6 +580,177 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
         It 'Should return $true when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose | Should -Be 'True'
+        }
+    }
+
+    Context 'When using Invoke-DscResource' {
+        BeforeAll {
+            $mockDefaultInvokeDscResourceParameters = @{
+                ModuleName = $script:dscModuleName
+                Name       = $script:dscResourceFriendlyName
+                Verbode    = $true
+            }
+
+            $mockSqlCredential = [System.Management.Automation.PSCredential]::new(
+                $ConfigurationData.AllNodes.UserName,
+                ($ConfigurationData.AllNodes.Password | ConvertTo-SecureString -AsPlainText -Force)
+            )
+
+            $mockDefaultInvokeDscResourceProperty = @{
+                ServerName   = $ConfigurationData.AllNodes.ServerName
+                InstanceName = $ConfigurationData.AllNodes.InstanceName
+                DatabaseName = $ConfigurationData.AllNodes.DatabaseName
+                Name         = $ConfigurationData.AllNodes.User1_Name
+                Credential   = $mockSqlCredential
+            }
+
+            $mockDefaultNewCimInstanceParameters = @{
+                ClientOnly = $true
+                Namespace = 'root/Microsoft/Windows/DesiredStateConfiguration'
+                ClassName = 'DatabasePermission'
+            }
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        Context 'When assigning parameter Permission' {
+            Context 'When the system is not in the desired state' {
+                It 'Should run method Get() and return the correct values' {
+                    {
+                        $mockInvokeDscResourceProperty = $mockDefaultInvokeDscResourceProperty.Clone()
+
+                        $mockInvokeDscResourceProperty.Permission = [Microsoft.Management.Infrastructure.CimInstance[]] @(
+                            (New-CimInstance @mockDefaultNewCimInstanceParameters -Property @{
+                                State = 'Grant'
+                                Permission = @(
+                                    'connect',
+                                    'update',
+                                    'alter'
+                                )
+                            })
+                            (New-CimInstance @mockDefaultNewCimInstanceParameters -Property @{
+                                State = 'GrantWithGrant'
+                                Permission = [System.String[]] @()
+                            })
+                            (New-CimInstance @mockDefaultNewCimInstanceParameters -Property @{
+                                State = 'Deny'
+                                Permission = [System.String[]] @()
+                            })
+                        )
+
+                        $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
+
+                        $mockInvokeDscResourceParameters.Method = 'Get'
+                        $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
+
+                        $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
+                    } | Should -Not -Throw
+
+                    $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+                    $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+                    $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
+                    $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
+                    $resourceCurrentState.Permission | Should -HaveCount 3
+
+                    $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
+                    $grantState.State | Should -Be 'Grant'
+                    $grantState.Permission | Should -HaveCount 1
+                    $grantState.Permission | Should -Contain 'Connect'
+
+                    $grantWithGrantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
+                    $grantWithGrantState.State | Should -Be 'GrantWithGrant'
+                    $grantWithGrantState.Permission | Should -BeNullOrEmpty
+
+                    $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
+                    $denyState.State | Should -Be 'Deny'
+                    $denyState.Permission | Should -BeNullOrEmpty
+
+                    # TODO: Make sure to test that this returns the correct output.
+                    $grant.Reasons | Should -HaveCount 1
+                }
+
+                # It 'Should run method Test() and return the correct value' {
+                #     Test-DscConfiguration -Verbose | Should -Be 'True'
+                # }
+
+                # It 'Should run method Set() without throwing' {
+                #     {
+                #         $configurationParameters = @{
+                #             OutputPath           = $TestDrive
+                #             # The variable $ConfigurationData was dot-sourced above.
+                #             ConfigurationData    = $ConfigurationData
+                #         }
+
+                #         & $configurationName @configurationParameters
+
+                #         $startDscConfigurationParameters = @{
+                #             Path         = $TestDrive
+                #             ComputerName = 'localhost'
+                #             Wait         = $true
+                #             Verbose      = $true
+                #             Force        = $true
+                #             ErrorAction  = 'Stop'
+                #         }
+
+                #         Start-DscConfiguration @startDscConfigurationParameters
+                #     } | Should -Not -Throw
+                # }
+            }
+
+            Context 'When the system is in the desired state' {
+                # It 'Should run method Get() and return the correct values' {
+                #     {
+                #         $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                #     } | Should -Not -Throw
+
+                #     $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                #         $_.ConfigurationName -eq $configurationName `
+                #         -and $_.ResourceId -eq $resourceId
+                #     }
+
+                #     $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+                #     $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+                #     $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
+                #     $resourceCurrentState.Name | Should -Be 'public'
+                #     $resourceCurrentState.Permission | Should -HaveCount 3
+
+                #     $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
+
+                #     $grantState.State | Should -Be 'Grant'
+                #     $grantState.Permission | Should -HaveCount 1
+                #     $grantState.Permission | Should -Contain 'Connect'
+                #     $grantState.Permission | Should -Not -Contain 'Select'
+                # }
+
+                # It 'Should run method Test() and return the correct value' {
+                #     Test-DscConfiguration -Verbose | Should -Be 'True'
+                # }
+
+                # It 'Should run method Set() without throwing' {
+                #     {
+                #         $configurationParameters = @{
+                #             OutputPath           = $TestDrive
+                #             # The variable $ConfigurationData was dot-sourced above.
+                #             ConfigurationData    = $ConfigurationData
+                #         }
+
+                #         & $configurationName @configurationParameters
+
+                #         $startDscConfigurationParameters = @{
+                #             Path         = $TestDrive
+                #             ComputerName = 'localhost'
+                #             Wait         = $true
+                #             Verbose      = $true
+                #             Force        = $true
+                #             ErrorAction  = 'Stop'
+                #         }
+
+                #         Start-DscConfiguration @startDscConfigurationParameters
+                #     } | Should -Not -Throw
+                # }
+            }
         }
     }
 }
