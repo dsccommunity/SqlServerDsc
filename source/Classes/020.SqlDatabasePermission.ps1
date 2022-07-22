@@ -249,18 +249,17 @@ class SqlDatabasePermission : ResourceBase
         # If permissions was returned, build the current permission array of [DatabasePermission].
         if ($databasePermissionInfo)
         {
+            # TODO: Below code could be a command ConvertTo-DatabasePermission that returns an array of [DatabasePermission]
+            <#
+                Single out all unique states since every single permission can be
+                one object in the $databasePermissionInfo
+            #>
             $permissionState = @(
                 $databasePermissionInfo | ForEach-Object -Process {
                     # Convert from the type PermissionState to String.
                     [System.String] $_.PermissionState
                 }
-            )
-
-            <#
-                Single out unique permission in case it possible to receive the
-                same permission name twice.
-            #>
-            $permissionState = $permissionState | Select-Object -Unique
+            ) | Select-Object -Unique
 
             foreach ($currentPermissionState in $permissionState)
             {

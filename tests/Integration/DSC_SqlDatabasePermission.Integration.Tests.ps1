@@ -305,7 +305,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
 
             $denyState.State | Should -Be 'Deny'
-            $denyState.Permission | Should -HaveCount 0
+            <#
+                Using '-HaveCount 0' does not work as it returns the error
+                'Expected an empty collection, but got collection with size 1 @($null).'
+                even though the array is empty (does not contain oen item that is $null).
+                Probably due to issue: https://github.com/pester/Pester/issues/1000
+            #>
+            $denyState.Permission | Should -BeNullOrEmpty
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {

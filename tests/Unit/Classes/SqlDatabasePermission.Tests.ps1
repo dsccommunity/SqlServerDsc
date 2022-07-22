@@ -466,6 +466,7 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
 
                 $grantState | Should -Not -BeNullOrEmpty
                 $grantState.State | Should -Be 'Grant'
+                $grantState.Permission | Should -HaveCount 2
                 $grantState.Permission | Should -Contain 'Connect'
                 $grantState.Permission | Should -Contain 'Update'
 
