@@ -253,9 +253,14 @@ class SqlDatabasePermission : ResourceBase
                 $databasePermissionInfo | ForEach-Object -Process {
                     # Convert from the type PermissionState to String.
                     [System.String] $_.PermissionState
-                } |
-                Select-Object -Unique
+                }
             )
+
+            <#
+                Single out unique permission in case it possible to receive the
+                same permission name twice.
+            #>
+            $permissionState = $permissionState | Select-Object -Unique
 
             foreach ($currentPermissionState in $permissionState)
             {
@@ -266,17 +271,15 @@ class SqlDatabasePermission : ResourceBase
 
                 $databasePermission = [DatabasePermission] @{
                     State = $currentPermissionState
+                    Permission = [System.String[]] @()
                 }
-
-                # Initialize variable permission
-                [System.String[]] $statePermissionResult = @()
 
                 foreach ($currentPermission in $filteredDatabasePermission)
                 {
-                    # get the permissions that is set to $true
+                    # Get the permission names that is set to $true
                     $permissionProperty = $currentPermission.PermissionType |
                         Get-Member -MemberType 'Property' |
-                        Select-Object -ExpandProperty 'Name' |
+                        Select-Object -ExpandProperty 'Name' -Unique |
                         Where-Object -FilterScript {
                             $currentPermission.PermissionType.$_
                         }
@@ -284,18 +287,9 @@ class SqlDatabasePermission : ResourceBase
 
                     foreach ($currentPermissionProperty in $permissionProperty)
                     {
-                        $statePermissionResult += $currentPermissionProperty
+                        $databasePermission.Permission += $currentPermissionProperty
                     }
                 }
-
-                <#
-                    Sort and remove any duplicate permissions, also make sure
-                    it is an array even if only one item.
-                #>
-                $databasePermission.Permission = @(
-                    $statePermissionResult |
-                        Sort-Object -Unique
-                )
 
                 [DatabasePermission[]] $currentState.Permission += $databasePermission
             }
