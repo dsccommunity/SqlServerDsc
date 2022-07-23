@@ -818,6 +818,11 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         # Import the module SqlServer to the complex types can be parsed by Mock below.
                         Import-Module -Name 'SqlServer'
 
+                        <#
+                            Mocking the command Set-SqlDscDatabasePermission to make
+                            sure it is not called in this test, since this test tests
+                            so that the configuration is already in desired state.
+                        #>
                         Mock -CommandName Set-SqlDscDatabasePermission -ModuleName $script:dscModuleName
                         # -MockWith {
                         #     throw 'The mock of command Set-SqlDscDatabasePermission was called by a code path, but the command Set-SqlDscDatabasePermission should not have been called by the test.'
@@ -825,7 +830,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                         {
                             # TODO: Remove this
-                            $mockInvokeDscResourceProperty.Permission[0].Permission += 'create'
+                            $mockInvokeDscResourceProperty.Permission[0].Permission += 'delete'
 
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
