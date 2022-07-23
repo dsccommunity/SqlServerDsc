@@ -29,6 +29,20 @@
         resources that using advanced type like the parameter `Permission` does.
         Use the parameter `Credential` instead of `PSDscRunAsCredential`.
 
+        ### Using `Credential` property.
+
+        SQL Authentication and Group Managed Service Accounts is not supported as
+        impersonation credentials. Currently only Windows Integrated Security is
+        supported to use as credentials.
+
+        For Windows Authentication the username must either be provided with the User
+        Principal Name (UPN), e.g. 'username@domain.local' or if using non-domain
+        (for example a local Windows Server account) account the username must be
+        provided without the NetBIOS name, e.g. 'username'. The format 'DOMAIN\username'
+        will not work.
+
+        See more information in [Credential Overview](https://github.com/dsccommunity/SqlServerDsc/wiki/CredentialOverview).
+
         ### Invalid values during compilation
 
         The parameter Permission is of type `[DatabasePermission]`. If a property
@@ -59,7 +73,28 @@
         current computer name.
 
     .PARAMETER Permission
-        An array of database permissions to enforce.
+        An array of database permissions to enforce. Any permission that is not
+        part of the desired state will be revoked.
+
+        Must provide all permission states (`Grant`, `Deny`, `GrantWithGrant`) with
+        at least an empty string array for the class `DatabasePermission`'s property
+        `Permission`.
+
+        This is an array of CIM instances of class `DatabasePermission` from the
+        namespace `root/Microsoft/Windows/DesiredStateConfiguration`.
+
+    .PARAMETER PermissionToInclude
+        An array of database permissions to include to the current state. The
+        current state will not be affected unless the current state contradict the
+        desired state. For example if the desired state specifies a deny permissions
+        but in the current state that permission is granted, that permission will
+        be changed to be denied.
+
+        This is an array of CIM instances of class `DatabasePermission` from the
+        namespace `root/Microsoft/Windows/DesiredStateConfiguration`.
+
+    .PARAMETER PermissionToExclude
+        An array of database permissions to exclude (revoke) from the current state.
 
         This is an array of CIM instances of class `DatabasePermission` from the
         namespace `root/Microsoft/Windows/DesiredStateConfiguration`.
@@ -155,10 +190,6 @@ class SqlDatabasePermission : ResourceBase
     [DscProperty()]
     [PSCredential]
     $Credential
-
-    # [DscProperty()]
-    # [Ensure]
-    # $Ensure = [Ensure]::Present
 
     [DscProperty(NotConfigurable)]
     [Reason[]]

@@ -653,6 +653,8 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
                     $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
                     $resourceCurrentState.Permission | Should -HaveCount 3
+                    $resourceCurrentState.PermissionToInclude | Should -BeNullOrEmpty
+                    $resourceCurrentState.PermissionToExclude | Should -BeNullOrEmpty
 
                     $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
                     $grantState.State | Should -Be 'Grant'
