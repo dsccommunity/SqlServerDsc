@@ -669,10 +669,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     $denyState.State | Should -Be 'Deny'
                     $denyState.Permission | Should -BeNullOrEmpty
 
-                    # TODO: Make sure to test that this returns the correct output.
-                    $grant.Reasons | Should -HaveCount 1
-                    Write-Verbose -Verbose -Message ($grant.Reasons[0].Code | Out-String)
-                    Write-Verbose -Verbose -Message ($grant.Reasons[0].Phrase | Out-String)
+                    $resourceCurrentState.Reasons | Should -HaveCount 1
+                    $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
+                    Write-Verbose -Verbose -Message ($resourceCurrentState.Reasons[0].Phrase | Out-String)
                 }
 
                 # It 'Should run method Test() and return the correct value' {
