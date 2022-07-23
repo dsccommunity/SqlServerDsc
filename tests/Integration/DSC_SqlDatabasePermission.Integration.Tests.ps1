@@ -718,7 +718,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     }
                 }
 
-                Context 'When the system is not in the desired state' {
+                Context 'When the system is in the desired state' {
                     BeforeAll {
                         $mockInvokeDscResourceProperty = $mockDefaultInvokeDscResourceProperty.Clone()
 
