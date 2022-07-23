@@ -742,6 +742,14 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         )
                     }
 
+                    AfterAll {
+                        <#
+                            This will remove the module SqlServer from the session
+                            after it was imported by a test below).
+                        #>
+                        Get-Module -Name 'SqlServer' -All | Remove-Module -Force
+                    }
+
                     It 'Should run method Get() and return the correct values' {
                         {
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
@@ -808,7 +816,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     # TODO: This test is meant to show that Set does not call
                     It 'Should run method Set() without throwing and not require reboot' {
                         # Import the module SqlServer to the complex types can be parsed by Mock below.
-                        Import-Module -Name SqlServer
+                        Import-Module -Name 'SqlServer'
 
                         Mock -CommandName Set-SqlDscDatabasePermission -ModuleName $script:dscModuleName
                         # -MockWith {
