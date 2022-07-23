@@ -1,7 +1,13 @@
-#region HEADER
-# Integration Test Config Template Version: 1.2.0
-#endregion
+<#
+    .NOTES
+        There are integration tests in the file DSC_SqlDatabasePermission.Integration.Tests.ps1
+        that is using the command Invoke-DscResource to run tests. Those test does
+        not have a configuration in this file, but do use the $ConfigurationData.
 
+        The tests using the command Invoke-DscResource assumes that only permission
+        left for test user 'User1' after running the configurations in this file is
+        a grant for permission 'Connect'.
+#>
 $configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
 if (Test-Path -Path $configFile)
 {
