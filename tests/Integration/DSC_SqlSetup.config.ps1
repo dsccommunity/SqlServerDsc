@@ -275,7 +275,7 @@ Configuration DSC_SqlSetup_CreateDependencies_Config
         This module might already be installed on the build worker. This is needed
         to install SQL Server Analysis Services instances.
 
-        Thre SqlServer module is purposely not added to 'RequiredModule.psd1' so
+        The SqlServer module is purposely not added to 'RequiredModule.psd1' so
         that it does not conflict with the SqlServerStubs module that is used by
         unit tests.
 #>
