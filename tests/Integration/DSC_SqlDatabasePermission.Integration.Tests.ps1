@@ -685,7 +685,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                         $resourceCurrentState.Reasons | Should -HaveCount 1
                         $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
-                        $resourceCurrentState.Reasons[0].Code | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["connect","update","alter"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["Connect"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
+                        $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["connect","update","alter"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["Connect"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
 
                         # TODO: Remove this
                         Write-Verbose -Verbose -Message ($resourceCurrentState.Reasons[0].Phrase | Out-String)
@@ -762,8 +762,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
                         $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -HaveCount 1
+                        $grantState.Permission | Should -HaveCount 3
                         $grantState.Permission | Should -Contain 'Connect'
+                        $grantState.Permission | Should -Contain 'Update'
+                        $grantState.Permission | Should -Contain 'Alter'
 
                         $grantWithGrantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
                         $grantWithGrantState.State | Should -Be 'GrantWithGrant'
@@ -793,7 +795,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     It 'Should run method Set() without throwing and not require reboot' {
                         Mock -CommandName Set-SqlDscDatabasePermission -ModuleName $script:dscModuleName -MockWith {
                             throw 'The mock of command Set-SqlDscDatabasePermission was called by a code path, but the command Set-SqlDscDatabasePermission should not have been called by the test.'
-                        }
+                        } -RemoveParameterType @('ServerObject', 'Permission')
 
                         {
                             # TODO: Remove this
