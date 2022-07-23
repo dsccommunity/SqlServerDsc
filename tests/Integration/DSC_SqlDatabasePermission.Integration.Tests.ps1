@@ -799,7 +799,19 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $resourceCurrentState.InDesiredState | Should -BeTrue
                     }
 
-                    # TODO: This is a duplicate with the next test, if the next test works, this should be removed.
+                    <#
+                        This test is meant to validate that method Set() also evaluates
+                        the current state against the desired state, and if they match
+                        the Set() method returns without calling Set-SqlDscDatabasePermission
+                        to change permissions.
+
+                        It is not possible to validate that Set-SqlDscDatabasePermission
+                        is not call since it is not possible to mock the command in
+                        the session when LCM runs (which Invoke-DscResource invokes).
+                        There are no other indications that can be caught to validate
+                        this, unless looking for the verbose output that says that
+                        all properties are in desired state.
+                    #>
                     It 'Should run method Set() without throwing and not require reboot' {
                         {
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
@@ -811,38 +823,6 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         } | Should -Not -Throw
 
                         $resourceCurrentState.RebootRequired | Should -BeFalse
-                    }
-
-                    # TODO: This test is meant to show that Set does not call
-                    It 'Should run method Set() without throwing and not require reboot' {
-                        # Import the module SqlServer to the complex types can be parsed by Mock below.
-                        Import-Module -Name 'SqlServer'
-
-                        <#
-                            Mocking the command Set-SqlDscDatabasePermission to make
-                            sure it is not called in this test, since this test tests
-                            so that the configuration is already in desired state.
-                        #>
-                        Mock -CommandName Set-SqlDscDatabasePermission -ModuleName $script:dscModuleName
-                        # -MockWith {
-                        #     throw 'The mock of command Set-SqlDscDatabasePermission was called by a code path, but the command Set-SqlDscDatabasePermission should not have been called by the test.'
-                        # }
-
-                        {
-                            # TODO: Remove this
-                            $mockInvokeDscResourceProperty.Permission[0].Permission += 'delete'
-
-                            $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
-
-                            $mockInvokeDscResourceParameters.Method = 'Set'
-                            $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
-
-                            $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
-
-                        $resourceCurrentState.RebootRequired | Should -BeFalse
-
-                        Should -Not -Invoke -CommandName Set-SqlDscDatabasePermission -ModuleName $script:dscModuleName
                     }
                 }
             }
