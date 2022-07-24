@@ -377,7 +377,12 @@ AsymmetricKey1 | RSA_2048 | P@ssw0rd1
 
 **Depends on:** SqlDatabaseUser
 
-The integration test will not leave anything on any instance.
+The integration test will leave the following database permission on
+principals.
+
+Principal | State | Permission
+--- | --- | ---
+User1 | Grant | Connect
 
 ## SqlWindowsFirewall
 
