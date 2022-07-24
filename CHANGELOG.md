@@ -129,11 +129,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `Get-TargetResource`. The `Ensure` parameter now returns `Present` if
     Always On HADR is enabled and `Absent` if it is disabled.
 - SqlDatabasePermission
-  - BREAKING CHANGE: The parameter `ParameterState` has been removed and
-    the parameter `Permission` is now an instance of the type `DatabasePermission`.
+  - BREAKING CHANGE: The resource has been refactored. The parameters
+    `ParameterState` and `Permissions` has been replaced by parameters
+    `Permission`, `PermissionToInclude`, and `PermissionToExclude`. These
+    permissions parameters are now an instance of the type `DatabasePermission`.
     The type `DatabasePermission` contains two properties; `State` and
     `Permission`.
-  - Refactored resource as a class-based resource.
+  - The resource was refactored into a class-based resource.
 
 ### Fixed
 
