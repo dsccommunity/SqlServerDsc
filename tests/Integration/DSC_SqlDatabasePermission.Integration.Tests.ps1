@@ -1517,11 +1517,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $grantWithGrantState.Permission | Should -HaveCount 1
                         $grantWithGrantState.Permission | Should -Contain 'Select'
 
-                        $denyState = $resourceCurrentState.PermissionToInclude.Where({ $_.State -eq 'GrDenyant' })
+                        $denyState = $resourceCurrentState.PermissionToInclude.Where({ $_.State -eq 'Deny' })
                         $denyState.State | Should -Be 'Deny'
                         $denyState.Permission | Should -HaveCount 1
                         $denyState.Permission | Should -Contain 'Delete'
-                        $denyState.Permission | Should -BeNullOrEmpty
 
                         # Property Reasons
                         $resourceCurrentState.Reasons | Should -BeNullOrEmpty
@@ -1733,7 +1732,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $grantWithGrantState.Permission | Should -HaveCount 1
                         $grantWithGrantState.Permission | Should -Contain 'Select'
 
-                        $denyState = $resourceCurrentState.PermissionToExclude.Where({ $_.State -eq 'GrDenyant' })
+                        $denyState = $resourceCurrentState.PermissionToExclude.Where({ $_.State -eq 'Deny' })
                         $denyState.State | Should -Be 'Deny'
                         $denyState.Permission | Should -HaveCount 1
                         $denyState.Permission | Should -Contain 'Delete'
