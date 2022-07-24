@@ -1069,7 +1069,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                         $resourceCurrentState.Reasons | Should -HaveCount 1
                         $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
-                        $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["connect"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["connect"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":["delete","update"]}]'
+                        $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["connect"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["connect"]},{"State":"Deny","Permission":["delete","update"]},{"State":"GrantWithGrant","Permission":[]}]'
 
                         # TODO: Remove this
                         Write-Verbose -Verbose -Message ($resourceCurrentState.Reasons[0].Phrase | Out-String)
@@ -1406,9 +1406,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
                         $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
                         $resourceCurrentState.Permission | Should -HaveCount 3
-                        $resourceCurrentState.PermissionToInclude | Should -BeNullOrEmpty
                         $resourceCurrentState.PermissionToExclude | Should -BeNullOrEmpty
 
+                        # Property Permission
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
                         $grantState.State | Should -Be 'Grant'
                         $grantState.Permission | Should -HaveCount 1
@@ -1422,6 +1422,20 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $denyState.State | Should -Be 'Deny'
                         $denyState.Permission | Should -BeNullOrEmpty
 
+                        # Property PermissionToInclude
+                        $grantState = $resourceCurrentState.PermissionToInclude.Where({ $_.State -eq 'Grant' })
+                        $grantState.State | Should -Be 'Grant'
+                        $grantState.Permission | Should -BeNullOrEmpty
+
+                        $grantWithGrantState = $resourceCurrentState.PermissionToInclude.Where({ $_.State -eq 'GrantWithGrant' })
+                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should -BeNullOrEmpty
+
+                        $denyState = $resourceCurrentState.PermissionToInclude.Where({ $_.State -eq 'Deny' })
+                        $denyState.State | Should -Be 'Deny'
+                        $denyState.Permission | Should -BeNullOrEmpty
+
+                        # Property Reasons
                         $resourceCurrentState.Reasons | Should -HaveCount 1
                         $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:PermissionToInclude'
                         $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property PermissionToInclude should be [{"State":"Grant","Permission":["update"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":["delete"]}], but was [{"State":"Grant","Permission":[]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
@@ -1473,9 +1487,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
                         $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
                         $resourceCurrentState.Permission | Should -HaveCount 3
-                        $resourceCurrentState.PermissionToInclude | Should -BeNullOrEmpty
                         $resourceCurrentState.PermissionToExclude | Should -BeNullOrEmpty
 
+                        # Property Permission
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
                         $grantState.State | Should -Be 'Grant'
                         $grantState.Permission | Should -HaveCount 2
@@ -1492,6 +1506,24 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $denyState.Permission | Should -HaveCount 1
                         $denyState.Permission | Should -Contain 'Delete'
 
+                        # Property PermissionToInclude
+                        $grantState = $resourceCurrentState.PermissionToInclude.Where({ $_.State -eq 'Grant' })
+                        $grantState.State | Should -Be 'Grant'
+                        $grantState.Permission | Should -HaveCount 1
+                        $grantState.Permission | Should -Contain 'Update'
+
+                        $grantWithGrantState = $resourceCurrentState.PermissionToInclude.Where({ $_.State -eq 'GrantWithGrant' })
+                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should -HaveCount 1
+                        $grantWithGrantState.Permission | Should -Contain 'Select'
+
+                        $denyState = $resourceCurrentState.PermissionToInclude.Where({ $_.State -eq 'GrDenyant' })
+                        $denyState.State | Should -Be 'Deny'
+                        $denyState.Permission | Should -HaveCount 1
+                        $denyState.Permission | Should -Contain 'Delete'
+                        $denyState.Permission | Should -BeNullOrEmpty
+
+                        # Property Reasons
                         $resourceCurrentState.Reasons | Should -BeNullOrEmpty
                     }
 
@@ -1591,8 +1623,8 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
                         $resourceCurrentState.Permission | Should -HaveCount 3
                         $resourceCurrentState.PermissionToInclude | Should -BeNullOrEmpty
-                        $resourceCurrentState.PermissionToExclude | Should -BeNullOrEmpty
 
+                        # Property Permission
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
                         $grantState.State | Should -Be 'Grant'
                         $grantState.Permission | Should -HaveCount 2
@@ -1609,7 +1641,20 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $denyState.Permission | Should -HaveCount 1
                         $denyState.Permission | Should -Contain 'Delete'
 
+                        # Property PermissionToExclude
+                        $grantState = $resourceCurrentState.PermissionToExclude.Where({ $_.State -eq 'Grant' })
+                        $grantState.State | Should -Be 'Grant'
+                        $grantState.Permission | Should -BeNullOrEmpty
 
+                        $grantWithGrantState = $resourceCurrentState.PermissionToExclude.Where({ $_.State -eq 'GrantWithGrant' })
+                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should -BeNullOrEmpty
+
+                        $denyState = $resourceCurrentState.PermissionToExclude.Where({ $_.State -eq 'Deny' })
+                        $denyState.State | Should -Be 'Deny'
+                        $denyState.Permission | Should -BeNullOrEmpty
+
+                        # Property Reasons
                         $resourceCurrentState.Reasons | Should -HaveCount 1
                         $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:PermissionToExclude'
                         $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property PermissionToExclude should be [{"State":"Grant","Permission":["update"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":["delete"]}], but was [{"State":"Grant","Permission":[]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
@@ -1662,8 +1707,8 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
                         $resourceCurrentState.Permission | Should -HaveCount 3
                         $resourceCurrentState.PermissionToInclude | Should -BeNullOrEmpty
-                        $resourceCurrentState.PermissionToExclude | Should -BeNullOrEmpty
 
+                        # Property Permission
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
                         $grantState.State | Should -Be 'Grant'
                         $grantState.Permission | Should -HaveCount 1
@@ -1677,6 +1722,23 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $denyState.State | Should -Be 'Deny'
                         $denyState.Permission | Should -BeNullOrEmpty
 
+                        # Property PermissionToExclude
+                        $grantState = $resourceCurrentState.PermissionToExclude.Where({ $_.State -eq 'Grant' })
+                        $grantState.State | Should -Be 'Grant'
+                        $grantState.Permission | Should -HaveCount 1
+                        $grantState.Permission | Should -Contain 'Update'
+
+                        $grantWithGrantState = $resourceCurrentState.PermissionToExclude.Where({ $_.State -eq 'GrantWithGrant' })
+                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should -HaveCount 1
+                        $grantWithGrantState.Permission | Should -Contain 'Select'
+
+                        $denyState = $resourceCurrentState.PermissionToExclude.Where({ $_.State -eq 'GrDenyant' })
+                        $denyState.State | Should -Be 'Deny'
+                        $denyState.Permission | Should -HaveCount 1
+                        $denyState.Permission | Should -Contain 'Delete'
+
+                        # Property Reasons
                         $resourceCurrentState.Reasons | Should -BeNullOrEmpty
                     }
 
