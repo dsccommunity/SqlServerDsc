@@ -327,6 +327,15 @@ class SqlDatabasePermission : ResourceBase
 
                 [DatabasePermission[]] $currentState.Permission += $databasePermission
             }
+
+            # TODO: This need to be done for other permission properties as well.
+            <#
+                Sort the permissions so they are in the order Grant, GrantWithGrant,
+                and Deny. It is because tests that evaluates property $Reasons
+                can know the expected order. If there is a better way of handling
+                tests for Reasons this can be removed.
+            #>
+            $currentState.Permission = $currentState.Permission | Sort-Object
         }
 
         # Always return all State; 'Grant', 'GrantWithGrant', and 'Deny'.
