@@ -12,8 +12,6 @@
         >grantee and _all the other users the grantee has granted the same permission to_,
         >will also get their permission revoked.
 
-        Valid permission names can be found in the article [DatabasePermissionSet Class properties](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.databasepermissionset#properties).
-
         ## Requirements
 
         * Target machine must be running Windows Server 2012 or later.
@@ -77,11 +75,13 @@
         part of the desired state will be revoked.
 
         Must provide all permission states (`Grant`, `Deny`, `GrantWithGrant`) with
-        at least an empty string array for the class `DatabasePermission`'s property
-        `Permission`.
+        at least an empty string array for the advanced type `DatabasePermission`'s
+        property `Permission`.
 
-        This is an array of CIM instances of class `DatabasePermission` from the
-        namespace `root/Microsoft/Windows/DesiredStateConfiguration`.
+        Valid permission names can be found in the article [DatabasePermissionSet Class properties](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.databasepermissionset#properties).
+
+        This is an array of CIM instances of advanced type `DatabasePermission` from
+        the namespace `root/Microsoft/Windows/DesiredStateConfiguration`.
 
     .PARAMETER PermissionToInclude
         An array of database permissions to include to the current state. The
@@ -90,14 +90,18 @@
         but in the current state that permission is granted, that permission will
         be changed to be denied.
 
-        This is an array of CIM instances of class `DatabasePermission` from the
-        namespace `root/Microsoft/Windows/DesiredStateConfiguration`.
+        Valid permission names can be found in the article [DatabasePermissionSet Class properties](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.databasepermissionset#properties).
+
+        This is an array of CIM instances of advanced type `DatabasePermission` from
+        the namespace `root/Microsoft/Windows/DesiredStateConfiguration`.
 
     .PARAMETER PermissionToExclude
         An array of database permissions to exclude (revoke) from the current state.
 
-        This is an array of CIM instances of class `DatabasePermission` from the
-        namespace `root/Microsoft/Windows/DesiredStateConfiguration`.
+        Valid permission names can be found in the article [DatabasePermissionSet Class properties](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.databasepermissionset#properties).
+
+        This is an array of CIM instances of advanced type `DatabasePermission` from
+        the namespace `root/Microsoft/Windows/DesiredStateConfiguration`.
 
     .PARAMETER Credential
         Specifies the credential to use to connect to the _SQL Server_ instance.
