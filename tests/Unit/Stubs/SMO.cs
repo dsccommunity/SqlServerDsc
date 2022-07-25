@@ -224,7 +224,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public bool Select = false;
         public bool Insert = false;
         public bool Alter = false;
-        public bool Create = false;
+        public bool CreateDatabase = false;
         public bool Delete = false;
     }
 

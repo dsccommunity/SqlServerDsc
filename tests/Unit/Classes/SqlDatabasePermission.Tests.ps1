@@ -1267,7 +1267,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
                                     }
                                     [DatabasePermission] @{
                                         State      = 'Deny'
-                                        Permission = @('Create')
+                                        Permission = @('CreateDatabase')
                                     }
                                 )
                             }
@@ -1319,7 +1319,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
                 # Revoking Denies
                 Should -Invoke -CommandName Set-SqlDscDatabasePermission -ParameterFilter {
-                    $State -eq 'Revoke' -and $Permission.Create -eq $true
+                    $State -eq 'Revoke' -and $Permission.CreateDatabase -eq $true
                 } -Exactly -Times 1 -Scope It
 
                 # Adding new Grant

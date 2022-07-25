@@ -39,9 +39,77 @@ class DatabasePermission : IComparable, System.IEquatable[Object]
     [System.String]
     $State
 
-    # TODO: Can we use a validate set for the permissions?
     [DscProperty(Mandatory)]
     [AllowEmptyCollection()]
+    [ValidateSet(
+        'Alter',
+        'AlterAnyAsymmetricKey',
+        'AlterAnyApplicationRole',
+        'AlterAnyAssembly',
+        'AlterAnyCertificate',
+        'AlterAnyDatabaseAudit',
+        'AlterAnyDataspace',
+        'AlterAnyDatabaseEventNotification',
+        'AlterAnyExternalDataSource',
+        'AlterAnyExternalFileFormat',
+        'AlterAnyFulltextCatalog',
+        'AlterAnyMask',
+        'AlterAnyMessageType',
+        'AlterAnyRole',
+        'AlterAnyRoute',
+        'AlterAnyRemoteServiceBinding',
+        'AlterAnyContract',
+        'AlterAnySymmetricKey',
+        'AlterAnySchema',
+        'AlterAnySecurityPolicy',
+        'AlterAnyService',
+        'AlterAnyDatabaseDdlTrigger',
+        'AlterAnyUser',
+        'Authenticate',
+        'BackupDatabase',
+        'BackupLog',
+        'Control',
+        'Connect',
+        'ConnectReplication',
+        'Checkpoint',
+        'CreateAggregate',
+        'CreateAsymmetricKey',
+        'CreateAssembly',
+        'CreateCertificate',
+        'CreateDatabase',
+        'CreateDefault',
+        'CreateDatabaseDdlEventNotification',
+        'CreateFunction',
+        'CreateFulltextCatalog',
+        'CreateMessageType',
+        'CreateProcedure',
+        'CreateQueue',
+        'CreateRole',
+        'CreateRoute',
+        'CreateRule',
+        'CreateRemoteServiceBinding',
+        'CreateContract',
+        'CreateSymmetricKey',
+        'CreateSchema',
+        'CreateSynonym',
+        'CreateService',
+        'CreateTable',
+        'CreateType',
+        'CreateView',
+        'CreateXmlSchemaCollection',
+        'Delete',
+        'Execute',
+        'Insert',
+        'References',
+        'Select',
+        'Showplan',
+        'SubscribeQueryNotifications',
+        'TakeOwnership',
+        'Unmask',
+        'Update',
+        'ViewDefinition',
+        'ViewDatabaseState'
+    )]
     [System.String[]]
     $Permission
 
@@ -124,7 +192,6 @@ class DatabasePermission : IComparable, System.IEquatable[Object]
         }
         else
         {
-            # TODO: This should be an terminating error as an ArgumentException.
             $errorMessage = $script:localizedData.InvalidTypeForCompare -f @(
                 $this.GetType().FullName,
                 $object.GetType().FullName

@@ -44,10 +44,11 @@
         ### Invalid values during compilation
 
         The parameter Permission is of type `[DatabasePermission]`. If a property
-        in the type is set to an invalid value an error will occur, this is expected.
+        in the type is set to an invalid value an error will occur, correct the
+        values in the properties to valid values.
         This happens when the values are validated against the `[ValidateSet()]`
-        of the resource. In such case the following error will be thrown from
-        PowerShell DSC during the compilation of the configuration:
+        of the resource. When there is an invalid value the following error will
+        be thrown when the configuration is run (it will not show during compilation):
 
         ```plaintext
         Failed to create an object of PowerShell class SqlDatabasePermission.
