@@ -212,16 +212,15 @@ $script:mockResourceBaseInstance = [MyMockResource] @{
                 }
             }
         }
-    }
 
-    Context 'When DSC property has a non-null value' {
-        BeforeAll {
-            <#
-                Must use a here-string because we need to pass 'using' which must be
-                first in a scriptblock, but if it is outside the here-string then PowerShell
-                PowerShell will fail to parse the test script.
-            #>
-            $inModuleScopeScriptBlock = @'
+        Context 'When DSC property has a null value' {
+            BeforeAll {
+                <#
+                    Must use a here-string because we need to pass 'using' which must be
+                    first in a scriptblock, but if it is outside the here-string then PowerShell
+                    PowerShell will fail to parse the test script.
+                #>
+                $inModuleScopeScriptBlock = @'
 class MyMockResource
 {
 [DscProperty(Key)]
@@ -244,14 +243,15 @@ $MyResourceReadProperty
 $script:mockResourceBaseInstance = [MyMockResource] @{}
 '@
 
-            InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
-        }
+                InModuleScope -ScriptBlock ([Scriptblock]::Create($inModuleScopeScriptBlock))
+            }
 
-        It 'Should return the correct value' {
-            InModuleScope -ScriptBlock {
-                $result = Test-ResourceHasProperty -Name 'MyProperty3' -HasValue -InputObject $script:mockResourceBaseInstance
+            It 'Should return the correct value' {
+                InModuleScope -ScriptBlock {
+                    $result = Test-ResourceHasProperty -Name 'MyProperty3' -HasValue -InputObject $script:mockResourceBaseInstance
 
-                $result | Should -BeFalse
+                    $result | Should -BeFalse
+                }
             }
         }
     }

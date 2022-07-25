@@ -40,30 +40,11 @@ function Test-ResourceHasProperty
 
     $hasProperty = $false
 
-    # TODO: This should call Get-DscProperty instead.
-
-    # Check to see if the property exist and that is it a DSC property.
-    $isDscProperty = $InputObject |
-        Get-Member -MemberType 'Property' -Name $Name |
-        Where-Object -FilterScript {
-            $InputObject.GetType().GetMember($_.Name).CustomAttributes.Where(
-                {
-                    $_.AttributeType.Name -eq 'DscPropertyAttribute'
-                }
-            )
-        }
+    $isDscProperty = (Get-DscProperty @PSBoundParameters).ContainsKey($Name)
 
     if ($isDscProperty)
     {
         $hasProperty = $true
-
-        if ($HasValue.IsPresent)
-        {
-            if ($null -eq $InputObject.$Name)
-            {
-                $hasProperty = $false
-            }
-        }
     }
 
     return $hasProperty
