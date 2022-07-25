@@ -34,8 +34,7 @@ class ResourceBase
         # Get all key properties.
         $keyProperty = $this | Get-KeyProperty
 
-        # TODO: TA BORT -VERBOSE
-        Write-Verbose -Verbose -Message ($this.localizedData.GetCurrentState -f $this.GetType().Name, ($keyProperty | ConvertTo-Json -Compress))
+        Write-Verbose -Message ($this.localizedData.GetCurrentState -f $this.GetType().Name, ($keyProperty | ConvertTo-Json -Compress))
 
         <#
             TODO: Should call back to the derived class for proper handling of adding
@@ -173,8 +172,6 @@ class ResourceBase
                         Code = '{0}:{0}:{1}' -f $this.GetType(), $property.Property
                         Phrase = 'The property {0} should be {1}, but was {2}' -f $property.Property, ($propertyExpectedValue | ConvertTo-Json -Compress), ($propertyActualValue | ConvertTo-Json -Compress)
                     }
-
-                    Write-Verbose -Verbose -Message ($dscResourceObject.Reasons | Out-String)
                 }
             }
         }
@@ -185,7 +182,7 @@ class ResourceBase
 
     [void] Set()
     {
-        Write-Verbose -Verbose -Message ($this.localizedData.SetDesiredState -f $this.GetType().Name, ($this | Get-KeyProperty | ConvertTo-Json -Compress))
+        Write-Verbose -Message ($this.localizedData.SetDesiredState -f $this.GetType().Name, ($this | Get-KeyProperty | ConvertTo-Json -Compress))
 
         $this.Assert()
 
@@ -201,7 +198,7 @@ class ResourceBase
 
             $propertiesToModify.Keys |
                 ForEach-Object -Process {
-                    Write-Verbose -Verbose -Message ($this.localizedData.SetProperty -f $_, $propertiesToModify.$_)
+                    Write-Verbose -Message ($this.localizedData.SetProperty -f $_, $propertiesToModify.$_)
                 }
 
             <#
@@ -212,13 +209,13 @@ class ResourceBase
         }
         else
         {
-            Write-Verbose -Verbose -Message $this.localizedData.NoPropertiesToSet
+            Write-Verbose -Message $this.localizedData.NoPropertiesToSet
         }
     }
 
     [System.Boolean] Test()
     {
-        Write-Verbose -Verbose -Message ($this.localizedData.TestDesiredState -f $this.GetType().Name, ($this | Get-KeyProperty | ConvertTo-Json -Compress))
+        Write-Verbose -Message ($this.localizedData.TestDesiredState -f $this.GetType().Name, ($this | Get-KeyProperty | ConvertTo-Json -Compress))
 
         $this.Assert()
 
@@ -237,11 +234,11 @@ class ResourceBase
 
         if ($isInDesiredState)
         {
-            Write-Verbose -Verbose -Message $this.localizedData.InDesiredState
+            Write-Verbose $this.localizedData.InDesiredState
         }
         else
         {
-            Write-Verbose -Verbose -Message $this.localizedData.NotInDesiredState
+            Write-Verbose $this.localizedData.NotInDesiredState
         }
 
         return $isInDesiredState
