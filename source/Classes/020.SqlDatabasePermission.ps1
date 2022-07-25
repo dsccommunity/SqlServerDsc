@@ -589,6 +589,7 @@ class SqlDatabasePermission : ResourceBase
                     Name         = $this.Name
                     Permission   = $revokePermissionSet
                     State        = 'Revoke'
+                    Force        = $true
                 }
 
                 if ($currentStateToRevoke.State -eq 'GrantWithGrant')
@@ -638,6 +639,7 @@ class SqlDatabasePermission : ResourceBase
                         DatabaseName = $this.DatabaseName
                         Name         = $this.Name
                         Permission   = $permissionSet
+                        Force        = $true
                     }
 
                     try

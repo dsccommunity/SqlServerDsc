@@ -25,6 +25,9 @@
         **State** is set to `Revoke` the right to grant will also be revoked,
         and the revocation will cascade.
 
+    .PARAMETER Permission
+        Specifies that the permissions will
+
     .OUTPUTS
         None.
 
@@ -46,11 +49,6 @@
         ignore if the database (parameter **DatabaseName**) is not present or the
         database principal is not present. If specifying `-ErrorAction 'Stop'` the
         command will throw an error if the database or database principal is missing.
-
-        # TODO: This command should support ShouldProcess and Force parameter. Also,
-                the ScriptAnalyzer rule should be run on Public functions.
-
-        # TODO: Document the public commands using PlatyPS, might use Sampler/ActiveDirectoryDsc as an example?
 #>
 function Set-SqlDscDatabasePermission
 {
@@ -58,9 +56,11 @@ function Set-SqlDscDatabasePermission
         The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error
         in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8
         When QA test run it loads the stub SMO classes so that the rule passes.
+        To get the rule to pass in the editor, in the Integrated Console run:
+        Add-Type -Path 'Tests/Unit/Stubs/SMO.cs'
     #>
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification = 'Because the code throws based on an prior expression')]
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType()]
     param
     (
@@ -87,10 +87,23 @@ function Set-SqlDscDatabasePermission
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $WithGrant
+        $WithGrant,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Force
     )
 
-    # TODO: Assert properties to WithGrant it only possible for Grant and Revoke
+    if ($State -eq 'Deny' -and $WithGrant.IsPresent)
+    {
+        Write-Warning -Message $script:localizedData.DatabasePermission_IgnoreWithGrantForStateDeny
+    }
+
+    if ($Force.IsPresent)
+    {
+        $ConfirmPreference = 'None'
+    }
+
     $sqlDatabaseObject = $null
 
     if ($ServerObject.Databases)
@@ -111,11 +124,6 @@ function Set-SqlDscDatabasePermission
 
         if ($isDatabasePrincipal)
         {
-            # TODO: Set permissions.
-            Write-Verbose -Message (
-                $script:localizedData.DatabasePermission_ChangePermissionForUser -f $Name, $DatabaseName, $ServerObject.InstanceName
-            )
-
             # Get the permissions names that are set to $true in the DatabasePermissionSet.
             $permissionName = $Permission |
                 Get-Member -MemberType 'Property' |
@@ -123,6 +131,16 @@ function Set-SqlDscDatabasePermission
                 Where-Object -FilterScript {
                     $Permission.$_
                 }
+
+            $changePermissionShouldProcessVerboseDescriptionMessage = $script:localizedData.DatabasePermission_ChangePermissionShouldProcessVerboseDescription -f $Name, $DatabaseName, $ServerObject.InstanceName
+            $changePermissionShouldProcessVerboseWarningMessage = $script:localizedData.DatabasePermission_ChangePermissionShouldProcessVerboseWarning -f $Name
+            $changePermissionShouldProcessCaptionMessage = $script:localizedData.DatabasePermission_ChangePermissionShouldProcessCaption
+
+            if (-not $PSCmdlet.ShouldProcess($changePermissionShouldProcessVerboseDescriptionMessage, $changePermissionShouldProcessVerboseWarningMessage, $changePermissionShouldProcessCaptionMessage))
+            {
+                # Return without doing anything if the user did not want to continue processing.
+                return
+            }
 
             switch ($State)
             {
@@ -172,13 +190,27 @@ function Set-SqlDscDatabasePermission
         {
             $missingPrincipalMessage = $script:localizedData.DatabasePermission_MissingPrincipal -f $Name, $DatabaseName
 
-            Write-Error -Message $missingPrincipalMessage -Category 'InvalidOperation' -ErrorId 'GSDDP0001' -TargetObject $Name
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    $missingPrincipalMessage,
+                    'GSDDP0001',
+                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                    $Name
+                )
+            )
         }
     }
     else
     {
         $missingDatabaseMessage = $script:localizedData.DatabasePermission_MissingDatabase -f $DatabaseName
 
-        Write-Error -Message $missingDatabaseMessage -Category 'InvalidOperation' -ErrorId 'GSDDP0002' -TargetObject $DatabaseName
+        $PSCmdlet.ThrowTerminatingError(
+            [System.Management.Automation.ErrorRecord]::new(
+                $missingDatabaseMessage,
+                'GSDDP0002',
+                [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                $DatabaseName
+            )
+        )
     }
 }

@@ -61,24 +61,13 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
             }
         }
 
-        Context 'When specifying to throw on error' {
-            BeforeAll {
-                $mockErrorMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.DatabasePermission_MissingDatabase
-                }
+        It 'Should throw the correct error' {
+            $mockErrorMessage = InModuleScope -ScriptBlock {
+                $script:localizedData.DatabasePermission_MissingDatabase
             }
 
-            It 'Should throw the correct error' {
-                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject -ErrorAction 'Stop' @mockDefaultParameters } |
-                    Should -Throw -ExpectedMessage ($mockErrorMessage -f 'MissingDatabase')
-            }
-        }
-
-        Context 'When ignoring the error' {
-            It 'Should not throw an exception and return $null' {
-                Set-SqlDscDatabasePermission -ServerObject $mockServerObject -ErrorAction 'SilentlyContinue' @mockDefaultParameters |
-                    Should -BeNullOrEmpty
-            }
+            { Set-SqlDscDatabasePermission -ServerObject $mockServerObject @mockDefaultParameters } |
+                Should -Throw -ExpectedMessage ($mockErrorMessage -f 'MissingDatabase')
         }
     }
 
@@ -100,24 +89,14 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
             }
         }
 
-        Context 'When specifying to throw on error' {
-            BeforeAll {
-                $mockErrorMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.DatabasePermission_MissingDatabase
-                }
+
+        It 'Should throw the correct error' {
+            $mockErrorMessage = InModuleScope -ScriptBlock {
+                $script:localizedData.DatabasePermission_MissingDatabase
             }
 
-            It 'Should throw the correct error' {
-                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject -ErrorAction 'Stop' @mockDefaultParameters } |
-                    Should -Throw -ExpectedMessage ($mockErrorMessage -f 'MissingDatabase')
-            }
-        }
-
-        Context 'When ignoring the error' {
-            It 'Should not throw an exception and return $null' {
-                Set-SqlDscDatabasePermission -ServerObject $mockServerObject -ErrorAction 'SilentlyContinue' @mockDefaultParameters |
-                    Should -BeNullOrEmpty
-            }
+            { Set-SqlDscDatabasePermission -ServerObject $mockServerObject @mockDefaultParameters } |
+                Should -Throw -ExpectedMessage ($mockErrorMessage -f 'MissingDatabase')
         }
     }
 
@@ -143,28 +122,137 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
             }
         }
 
-        Context 'When specifying to throw on error' {
-            BeforeAll {
-                $mockErrorMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.DatabasePermission_MissingPrincipal
-                }
+        It 'Should throw the correct error' {
+            $mockErrorMessage = InModuleScope -ScriptBlock {
+                $script:localizedData.DatabasePermission_MissingPrincipal
             }
 
-            It 'Should throw the correct error' {
-                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject -ErrorAction 'Stop' @mockDefaultParameters } |
-                    Should -Throw -ExpectedMessage ($mockErrorMessage -f 'UnknownUser', 'AdventureWorks')
-            }
-        }
-
-        Context 'When ignoring the error' {
-            It 'Should not throw an exception and return $null' {
-                Set-SqlDscDatabasePermission -ServerObject $mockServerObject -ErrorAction 'SilentlyContinue' @mockDefaultParameters |
-                    Should -BeNullOrEmpty
-            }
+            { Set-SqlDscDatabasePermission -ServerObject $mockServerObject @mockDefaultParameters } |
+                Should -Throw -ExpectedMessage ($mockErrorMessage -f 'UnknownUser', 'AdventureWorks')
         }
     }
 
     Context 'When the database principal exist' {
+        Context 'When using parameter Confirm with value $false' {
+            BeforeAll {
+                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                    Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                        return @{
+                            'AdventureWorks' = New-Object -TypeName Object |
+                                Add-Member -MemberType 'NoteProperty' -Name Name -Value 'AdventureWorks' -PassThru |
+                                Add-Member -MemberType 'ScriptMethod' -Name 'Deny' -Value {
+                                    $script:mockMethodDenyCallCount += 1
+                                } -PassThru -Force
+                        }
+                    } -PassThru -Force
+
+                Mock -CommandName Test-SqlDscIsDatabasePrincipal -MockWith {
+                    return $true
+                }
+
+                $script:mockDefaultParameters = @{
+                    Confirm = $false
+                    DatabaseName = 'AdventureWorks'
+                    Name = 'Zebes\SamusAran'
+                    State = 'Deny'
+                    Permission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
+                        Connect = $true
+                    }
+                }
+            }
+
+            BeforeEach {
+                $script:mockMethodDenyCallCount = 0
+            }
+
+            It 'Should call the correct mocked method' {
+                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject @mockDefaultParameters } |
+                    Should -Not -Throw
+
+                $script:mockMethodDenyCallCount | Should -Be 1
+            }
+        }
+
+        Context 'When using parameter Force' {
+            BeforeAll {
+                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                    Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                        return @{
+                            'AdventureWorks' = New-Object -TypeName Object |
+                                Add-Member -MemberType 'NoteProperty' -Name Name -Value 'AdventureWorks' -PassThru |
+                                Add-Member -MemberType 'ScriptMethod' -Name 'Deny' -Value {
+                                    $script:mockMethodDenyCallCount += 1
+                                } -PassThru -Force
+                        }
+                    } -PassThru -Force
+
+                Mock -CommandName Test-SqlDscIsDatabasePrincipal -MockWith {
+                    return $true
+                }
+
+                $script:mockDefaultParameters = @{
+                    Force = $true
+                    DatabaseName = 'AdventureWorks'
+                    Name = 'Zebes\SamusAran'
+                    State = 'Deny'
+                    Permission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
+                        Connect = $true
+                    }
+                }
+            }
+
+            BeforeEach {
+                $script:mockMethodDenyCallCount = 0
+            }
+
+            It 'Should call the correct mocked method' {
+                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject @mockDefaultParameters } |
+                    Should -Not -Throw
+
+                $script:mockMethodDenyCallCount | Should -Be 1
+            }
+        }
+
+        Context 'When using parameter WhatIf' {
+            BeforeAll {
+                $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                    Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {
+                        return @{
+                            'AdventureWorks' = New-Object -TypeName Object |
+                                Add-Member -MemberType 'NoteProperty' -Name Name -Value 'AdventureWorks' -PassThru |
+                                Add-Member -MemberType 'ScriptMethod' -Name 'Deny' -Value {
+                                    $script:mockMethodDenyCallCount += 1
+                                } -PassThru -Force
+                        }
+                    } -PassThru -Force
+
+                Mock -CommandName Test-SqlDscIsDatabasePrincipal -MockWith {
+                    return $true
+                }
+
+                $script:mockDefaultParameters = @{
+                    WhatIf = $true
+                    DatabaseName = 'AdventureWorks'
+                    Name = 'Zebes\SamusAran'
+                    State = 'Deny'
+                    Permission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
+                        Connect = $true
+                    }
+                }
+            }
+
+            BeforeEach {
+                $script:mockMethodDenyCallCount = 0
+            }
+
+            It 'Should not call the mocked method' {
+                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject @mockDefaultParameters } |
+                    Should -Not -Throw
+
+                $script:mockMethodDenyCallCount | Should -Be 0
+            }
+        }
+
         Context 'When permission should be granted' {
             BeforeAll {
                 $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
@@ -183,6 +271,7 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 }
 
                 $script:mockDefaultParameters = @{
+                    Confirm = $false
                     DatabaseName = 'AdventureWorks'
                     Name = 'Zebes\SamusAran'
                     State = 'Grant'
@@ -196,16 +285,16 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 $script:mockMethodGrantCallCount = 0
             }
 
-            It 'Should return the correct values' {
-                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject -ErrorAction 'Stop' @mockDefaultParameters } |
+            It 'Should call the correct mocked method' {
+                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject @mockDefaultParameters } |
                     Should -Not -Throw
 
                 $script:mockMethodGrantCallCount | Should -Be 1
             }
 
             Context 'When passing ServerObject over the pipeline' {
-                It 'Should return the correct values' {
-                    { $mockServerObject | Set-SqlDscDatabasePermission -ErrorAction 'Stop' @mockDefaultParameters } |
+                It 'Should call the correct mocked method' {
+                    { $mockServerObject | Set-SqlDscDatabasePermission @mockDefaultParameters } |
                         Should -Not -Throw
 
                     $script:mockMethodGrantCallCount | Should -Be 1
@@ -246,6 +335,7 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 }
 
                 $script:mockDefaultParameters = @{
+                    Confirm = $false
                     DatabaseName = 'AdventureWorks'
                     Name = 'Zebes\SamusAran'
                     State = 'Grant'
@@ -260,16 +350,16 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 $script:mockMethodGrantUsingWithGrantCallCount = 0
             }
 
-            It 'Should return the correct values' {
-                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject -ErrorAction 'Stop' @mockDefaultParameters } |
+            It 'Should call the correct mocked method' {
+                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject @mockDefaultParameters } |
                     Should -Not -Throw
 
                 $script:mockMethodGrantUsingWithGrantCallCount | Should -Be 1
             }
 
             Context 'When passing ServerObject over the pipeline' {
-                It 'Should return the correct values' {
-                    { $mockServerObject | Set-SqlDscDatabasePermission -ErrorAction 'Stop' @mockDefaultParameters } |
+                It 'Should call the correct mocked method' {
+                    { $mockServerObject | Set-SqlDscDatabasePermission @mockDefaultParameters } |
                         Should -Not -Throw
 
                     $script:mockMethodGrantUsingWithGrantCallCount | Should -Be 1
@@ -295,6 +385,7 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 }
 
                 $script:mockDefaultParameters = @{
+                    Confirm = $false
                     DatabaseName = 'AdventureWorks'
                     Name = 'Zebes\SamusAran'
                     State = 'Revoke'
@@ -308,16 +399,16 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 $script:mockMethodRevokeCallCount = 0
             }
 
-            It 'Should return the correct values' {
-                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject -ErrorAction 'Stop' @mockDefaultParameters } |
+            It 'Should call the correct mocked method' {
+                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject @mockDefaultParameters } |
                     Should -Not -Throw
 
                 $script:mockMethodRevokeCallCount | Should -Be 1
             }
 
             Context 'When passing ServerObject over the pipeline' {
-                It 'Should return the correct values' {
-                    { $mockServerObject | Set-SqlDscDatabasePermission -ErrorAction 'Stop' @mockDefaultParameters } |
+                It 'Should call the correct mocked method' {
+                    { $mockServerObject | Set-SqlDscDatabasePermission @mockDefaultParameters } |
                         Should -Not -Throw
 
                     $script:mockMethodRevokeCallCount | Should -Be 1
@@ -361,6 +452,7 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 }
 
                 $script:mockDefaultParameters = @{
+                    Confirm = $false
                     DatabaseName = 'AdventureWorks'
                     Name = 'Zebes\SamusAran'
                     State = 'Revoke'
@@ -375,16 +467,16 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 $script:mockMethodRevokeUsingWithGrantCallCount = 0
             }
 
-            It 'Should return the correct values' {
-                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject -ErrorAction 'Stop' @mockDefaultParameters } |
+            It 'Should call the correct mocked method' {
+                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject @mockDefaultParameters } |
                     Should -Not -Throw
 
                 $script:mockMethodRevokeUsingWithGrantCallCount | Should -Be 1
             }
 
             Context 'When passing ServerObject over the pipeline' {
-                It 'Should return the correct values' {
-                    { $mockServerObject | Set-SqlDscDatabasePermission -ErrorAction 'Stop' @mockDefaultParameters } |
+                It 'Should call the correct mocked method' {
+                    { $mockServerObject | Set-SqlDscDatabasePermission @mockDefaultParameters } |
                         Should -Not -Throw
 
                     $script:mockMethodGrantUsingWithGrantCallCount | Should -Be 1
@@ -410,6 +502,7 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 }
 
                 $script:mockDefaultParameters = @{
+                    Confirm = $false
                     DatabaseName = 'AdventureWorks'
                     Name = 'Zebes\SamusAran'
                     State = 'Deny'
@@ -423,19 +516,40 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 $script:mockMethodDenyCallCount = 0
             }
 
-            It 'Should return the correct values' {
-                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject -ErrorAction 'Stop' @mockDefaultParameters } |
+            It 'Should call the correct mocked method' {
+                { Set-SqlDscDatabasePermission -ServerObject $mockServerObject @mockDefaultParameters } |
                     Should -Not -Throw
 
                 $script:mockMethodDenyCallCount | Should -Be 1
             }
 
             Context 'When passing ServerObject over the pipeline' {
-                It 'Should return the correct values' {
-                    { $mockServerObject | Set-SqlDscDatabasePermission -ErrorAction 'Stop' @mockDefaultParameters } |
+                It 'Should call the correct mocked method' {
+                    { $mockServerObject | Set-SqlDscDatabasePermission @mockDefaultParameters } |
                         Should -Not -Throw
 
                     $script:mockMethodDenyCallCount | Should -Be 1
+                }
+            }
+
+            Context 'When passing WithGrant' {
+                BeforeAll {
+                    Mock -CommandName Write-Warning
+                }
+
+                It 'Should output the correct warning message and return the correct values' {
+                    $mockWarningMessage = InModuleScope -ScriptBlock {
+                        $script:localizedData.DatabasePermission_IgnoreWithGrantForStateDeny
+                    }
+
+                    { $mockServerObject | Set-SqlDscDatabasePermission -WithGrant @mockDefaultParameters } |
+                        Should -Not -Throw
+
+                    $script:mockMethodDenyCallCount | Should -Be 1
+
+                    Should -Invoke -CommandName 'Write-Warning' -ParameterFilter {
+                        $Message -eq $mockWarningMessage
+                    }
                 }
             }
         }

@@ -7,48 +7,49 @@
     IncludeDefaultRules = $true
     IncludeRules        = @(
         # DSC Community style guideline rules from the module ScriptAnalyzer.
-        'PSAvoidDefaultValueForMandatoryParameter',
-        'PSAvoidDefaultValueSwitchParameter',
-        'PSAvoidInvokingEmptyMembers',
-        'PSAvoidNullOrEmptyHelpMessageAttribute',
-        'PSAvoidUsingCmdletAliases',
-        'PSAvoidUsingComputerNameHardcoded',
-        'PSAvoidUsingDeprecatedManifestFields',
-        'PSAvoidUsingEmptyCatchBlock',
-        'PSAvoidUsingInvokeExpression',
-        'PSAvoidUsingPositionalParameters',
-        'PSAvoidShouldContinueWithoutForce',
-        'PSAvoidUsingWMICmdlet',
-        'PSAvoidUsingWriteHost',
-        'PSDSCReturnCorrectTypesForDSCFunctions',
-        'PSDSCStandardDSCFunctionsInResource',
-        'PSDSCUseIdenticalMandatoryParametersForDSC',
-        'PSDSCUseIdenticalParametersForDSC',
-        'PSMisleadingBacktick',
-        'PSMissingModuleManifestField',
-        'PSPossibleIncorrectComparisonWithNull',
-        'PSProvideCommentHelp',
-        'PSReservedCmdletChar',
-        'PSReservedParams',
-        'PSUseApprovedVerbs',
-        'PSUseCmdletCorrectly',
-        'PSUseOutputTypeCorrectly',
-        'PSAvoidGlobalVars',
-        'PSAvoidUsingConvertToSecureStringWithPlainText',
-        'PSAvoidUsingPlainTextForPassword',
-        'PSAvoidUsingUsernameAndPasswordParams',
-        'PSDSCUseVerboseMessageInDSCResource',
-        'PSShouldProcess',
-        'PSUseDeclaredVarsMoreThanAssignments',
-        'PSUsePSCredentialType',
+        'PSAvoidDefaultValueForMandatoryParameter'
+        'PSAvoidDefaultValueSwitchParameter'
+        'PSAvoidInvokingEmptyMembers'
+        'PSAvoidNullOrEmptyHelpMessageAttribute'
+        'PSAvoidUsingCmdletAliases'
+        'PSAvoidUsingComputerNameHardcoded'
+        'PSAvoidUsingDeprecatedManifestFields'
+        'PSAvoidUsingEmptyCatchBlock'
+        'PSAvoidUsingInvokeExpression'
+        'PSAvoidUsingPositionalParameters'
+        'PSAvoidShouldContinueWithoutForce'
+        'PSAvoidUsingWMICmdlet'
+        'PSAvoidUsingWriteHost'
+        'PSDSCReturnCorrectTypesForDSCFunctions'
+        'PSDSCStandardDSCFunctionsInResource'
+        'PSDSCUseIdenticalMandatoryParametersForDSC'
+        'PSDSCUseIdenticalParametersForDSC'
+        'PSMisleadingBacktick'
+        'PSMissingModuleManifestField'
+        'PSPossibleIncorrectComparisonWithNull'
+        'PSProvideCommentHelp'
+        'PSReservedCmdletChar'
+        'PSReservedParams'
+        'PSUseApprovedVerbs'
+        'PSUseCmdletCorrectly'
+        'PSUseOutputTypeCorrectly'
+        'PSAvoidGlobalVars'
+        'PSAvoidUsingConvertToSecureStringWithPlainText'
+        'PSAvoidUsingPlainTextForPassword'
+        'PSAvoidUsingUsernameAndPasswordParams'
+        'PSDSCUseVerboseMessageInDSCResource'
+        'PSShouldProcess'
+        'PSUseDeclaredVarsMoreThanAssignments'
+        'PSUsePSCredentialType'
 
         # Additional rules from the module ScriptAnalyzer
-        'PSUseConsistentWhitespace',
-        'UseCorrectCasing',
-        'PSPlaceOpenBrace',
-        'PSPlaceCloseBrace',
-        'AlignAssignmentStatement',
-        'AvoidUsingDoubleQuotesForConstantString',
+        'PSUseConsistentWhitespace'
+        'UseCorrectCasing'
+        'PSPlaceOpenBrace'
+        'PSPlaceCloseBrace'
+        'AlignAssignmentStatement'
+        'AvoidUsingDoubleQuotesForConstantString'
+        'UseShouldProcessForStateChangingFunctions'
 
         # Rules from the modules DscResource.AnalyzerRules and SqlServerDsc.AnalyzerRules
         'Measure-*'
