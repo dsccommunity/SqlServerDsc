@@ -75,22 +75,6 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
     }
 
     Context 'When comparing two objects using method Equals()' {
-        # TODO: See comment in code regarding the code this test was suppose to cover.
-        # Context 'When the object to compare against is the wrong type' {
-        #     It 'Should throw an error on compare' {
-        #         InModuleScope -ScriptBlock {
-        #             $databasPermissionInstance = [DatabasePermission]::new()
-
-        #             $databasPermissionInstance.State = 'Grant'
-        #             $databasPermissionInstance.Permission = 'select'
-
-        #             # Must escape the brackets with ` for expected message comparison to work.
-        #             { $databasPermissionInstance -eq 'invalid type' } |
-        #                 Should -Throw -ExpectedMessage 'Invalid type in comparison. Expected type `[DatabasePermission`], but the type was `[System.String`].'
-        #         }
-        #     }
-        # }
-
         Context 'When both objects are equal' {
             Context 'When property Permission has a single value' {
                 It 'Should return $true' {

@@ -58,7 +58,7 @@ Describe 'Script Analyzer Rules' {
                       until it is properly excluded for source files, and instead only
                       ran for the built module script module file (SqlServerDsc.psm1).
             #>
-            $pssaError = $pssaError | Where-Object -FilterScript { $_.RuleName -ne 'TypeNotFound'}
+            $pssaError = $pssaError | Where-Object -FilterScript { $_.RuleName -ne 'TypeNotFound' }
 
             $report = $pssaError | Format-Table -AutoSize | Out-String -Width 200
             $pssaError | Should -HaveCount 0 -Because "all script analyzer rules should pass.`r`n`r`n $report`r`n"

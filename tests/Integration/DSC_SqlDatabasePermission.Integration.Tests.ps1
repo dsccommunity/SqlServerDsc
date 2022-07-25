@@ -714,9 +714,6 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $resourceCurrentState.Reasons | Should -HaveCount 1
                         $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
                         $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["connect","update","alter"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["Connect"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
-
-                        # TODO: Remove this
-                        Write-Verbose -Verbose -Message ($resourceCurrentState.Reasons[0].Phrase | Out-String)
                     }
 
                     It 'Should run method Test() and return the state as $false' {
@@ -893,9 +890,6 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $resourceCurrentState.Reasons | Should -HaveCount 1
                         $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
                         $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["connect"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":["delete","update"]}], but was [{"State":"Grant","Permission":["alter","connect","update"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
-
-                        # TODO: Remove this
-                        Write-Verbose -Verbose -Message ($resourceCurrentState.Reasons[0].Phrase | Out-String)
                     }
 
                     It 'Should run method Test() and return the state as $false' {
@@ -1070,9 +1064,6 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $resourceCurrentState.Reasons | Should -HaveCount 1
                         $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
                         $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["connect"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["connect"]},{"State":"Deny","Permission":["delete","update"]},{"State":"GrantWithGrant","Permission":[]}]'
-
-                        # TODO: Remove this
-                        Write-Verbose -Verbose -Message ($resourceCurrentState.Reasons[0].Phrase | Out-String)
                     }
 
                     It 'Should run method Test() and return the state as $false' {
@@ -1241,9 +1232,6 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $resourceCurrentState.Reasons | Should -HaveCount 1
                         $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
                         $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["connect"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["connect"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":[]}]'
-
-                        # TODO: Remove this
-                        Write-Verbose -Verbose -Message ($resourceCurrentState.Reasons[0].Phrase | Out-String)
                     }
 
                     It 'Should run method Test() and return the state as $false' {
@@ -1439,9 +1427,6 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $resourceCurrentState.Reasons | Should -HaveCount 1
                         $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:PermissionToInclude'
                         $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property PermissionToInclude should be [{"State":"Grant","Permission":["update"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":["delete"]}], but was [{"State":"Grant","Permission":[]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
-
-                        # TODO: Remove this
-                        Write-Verbose -Verbose -Message ($resourceCurrentState.Reasons[0].Phrase | Out-String)
                     }
 
                     It 'Should run method Test() and return the state as $false' {
@@ -1657,9 +1642,6 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $resourceCurrentState.Reasons | Should -HaveCount 1
                         $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:PermissionToExclude'
                         $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property PermissionToExclude should be [{"State":"Grant","Permission":["update"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":["delete"]}], but was [{"State":"Grant","Permission":[]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
-
-                        # TODO: Remove this
-                        Write-Verbose -Verbose -Message ($resourceCurrentState.Reasons[0].Phrase | Out-String)
                     }
 
                     It 'Should run method Test() and return the state as $false' {
