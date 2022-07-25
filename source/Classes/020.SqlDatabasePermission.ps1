@@ -164,6 +164,14 @@
 [DscResource(RunAsCredential = 'NotSupported')]
 class SqlDatabasePermission : ResourceBase
 {
+    <#
+        Property for holding the server connection object.
+        This should be an object of type [Microsoft.SqlServer.Management.Smo.Server]
+        but using that type fails the build process currently.
+        See issue https://github.com/dsccommunity/DscResource.DocGenerator/issues/121.
+    #>
+    hidden [System.Object] $sqlServerObject = $null
+
     [DscProperty(Key)]
     [System.String]
     $InstanceName
@@ -231,6 +239,34 @@ class SqlDatabasePermission : ResourceBase
     }
 
     <#
+        Returns and reuses the server connection object. If the server connection
+        object does not exist a connection to the SQL Server instance will occur.
+
+        This should return an object of type [Microsoft.SqlServer.Management.Smo.Server]
+        but using that type fails the build process currently.
+        See issue https://github.com/dsccommunity/DscResource.DocGenerator/issues/121.
+    #>
+    hidden [System.Object] GetServerObject()
+    {
+        if (-not $this.sqlServerObject)
+        {
+            $connectSqlDscDatabaseEngineParameters = @{
+                ServerName = $this.ServerName
+                InstanceName = $this.InstanceName
+            }
+
+            if ($this.Credential)
+            {
+                $connectSqlDscDatabaseEngineParameters.Credential = $this.Credential
+            }
+
+            $this.sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+        }
+
+        return $this.sqlServerObject
+    }
+
+    <#
         Base method Get() call this method to get the current state as a hashtable.
         The parameter properties will contain the key properties.
     #>
@@ -241,9 +277,9 @@ class SqlDatabasePermission : ResourceBase
         if ($this.Credential)
         {
             <#
-                TODO: This does not work, Get() will return an empty PSCredential-object.
-                      Using MOF-based resource variant does not work either as it throws
-                      an error: https://github.com/dsccommunity/ActiveDirectoryDsc/blob/b2838d945204e1153cc3cbfca1a3d90671e0a61c/source/Modules/ActiveDirectoryDsc.Common/ActiveDirectoryDsc.Common.psm1#L1834-L1856
+                This does not work, even if username is set, the method Get() will
+                return an empty PSCredential-object. Kept it here so it at least
+                return a Credential object.
             #>
             $currentStateCredential = [PSCredential]::new(
                 $this.Credential.UserName,
@@ -257,27 +293,15 @@ class SqlDatabasePermission : ResourceBase
             Permission = [DatabasePermission[]] @()
         }
 
-        $connectSqlDscDatabaseEngineParameters = @{
-            ServerName = $this.ServerName
-            InstanceName = $properties.InstanceName
-        }
-
-        if ($this.Credential)
-        {
-            $connectSqlDscDatabaseEngineParameters.Credential = $this.Credential
-        }
-
-        # TODO: By adding a hidden property that holds the server object we only need to connect when that property is $null.
-        $serverObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
-
-        # TODO: TA BORT -VERBOSE!
-        Write-Verbose -Verbose -Message (
+        Write-Verbose -Message (
             $this.localizedData.EvaluateDatabasePermissionForPrincipal -f @(
                 $properties.Name,
                 $properties.DatabaseName,
                 $properties.InstanceName
             )
         )
+
+        $serverObject = $this.GetServerObject()
 
         $databasePermissionInfo = $serverObject |
             Get-SqlDscDatabasePermission -DatabaseName $this.DatabaseName -Name $this.Name -ErrorAction 'SilentlyContinue'
@@ -328,15 +352,6 @@ class SqlDatabasePermission : ResourceBase
 
                 [DatabasePermission[]] $currentState.Permission += $databasePermission
             }
-
-            # # TODO: This need to be done for other permission properties as well.
-            # <#
-            #     Sort the permissions so they are in the order Grant, GrantWithGrant,
-            #     and Deny. It is because tests that evaluates property $Reasons
-            #     can know the expected order. If there is a better way of handling
-            #     tests for Reasons this can be removed.
-            # #>
-            # $currentState.Permission = $currentState.Permission | Sort-Object
         }
 
         # Always return all State; 'Grant', 'GrantWithGrant', and 'Deny'.
@@ -462,17 +477,7 @@ class SqlDatabasePermission : ResourceBase
     #>
     hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
-        $connectSqlDscDatabaseEngineParameters = @{
-            ServerName = $this.ServerName
-            InstanceName = $this.InstanceName
-        }
-
-        if ($this.Credential)
-        {
-            $connectSqlDscDatabaseEngineParameters.Credential = $this.Credential
-        }
-
-        $serverObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+        $serverObject = $this.GetServerObject()
 
         $testSqlDscIsDatabasePrincipalParameters = @{
             ServerObject      = $serverObject
