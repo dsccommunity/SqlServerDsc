@@ -39,6 +39,8 @@ function Test-SqlDscIsDatabasePrincipal
         The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error
         in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8
         When QA test run it loads the stub SMO classes so that the rule passes.
+        To get the rule to pass in the editor, in the Integrated Console run:
+        Add-Type -Path 'Tests/Unit/Stubs/SMO.cs'
     #>
     [CmdletBinding()]
     [OutputType([System.Boolean])]
