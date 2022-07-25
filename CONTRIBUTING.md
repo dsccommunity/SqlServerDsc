@@ -217,7 +217,7 @@ class DSC_SqlConfiguration : OMI_BaseResource
 ### Composite or class-based resource
 
 Any composite (with a Configuration) or class-based resources should be prefixed
-with just 'Sql'
+with 'Sql'
 
 ### Localization
 
