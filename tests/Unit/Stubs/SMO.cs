@@ -236,16 +236,16 @@ namespace Microsoft.SqlServer.Management.Smo
     {
         public DatabasePermissionInfo()
         {
-            Microsoft.SqlServer.Management.Smo.DatabasePermissionSet[] permissionSet = { new Microsoft.SqlServer.Management.Smo.DatabasePermissionSet() };
+            Microsoft.SqlServer.Management.Smo.DatabasePermissionSet permissionSet = new Microsoft.SqlServer.Management.Smo.DatabasePermissionSet();
             this.PermissionType = permissionSet;
         }
 
-        public DatabasePermissionInfo( Microsoft.SqlServer.Management.Smo.DatabasePermissionSet[] permissionSet )
+        public DatabasePermissionInfo( Microsoft.SqlServer.Management.Smo.DatabasePermissionSet permissionSet )
         {
             this.PermissionType = permissionSet;
         }
 
-        public Microsoft.SqlServer.Management.Smo.DatabasePermissionSet[] PermissionType;
+        public Microsoft.SqlServer.Management.Smo.DatabasePermissionSet PermissionType;
         public string PermissionState = "Grant";
     }
 
@@ -565,17 +565,6 @@ namespace Microsoft.SqlServer.Management.Smo
         public Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[] EnumDatabasePermissions( string granteeName )
         {
             List<Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo> listOfDatabasePermissionInfo = new List<Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo>();
-
-            if( Globals.GenerateMockData ) {
-                Microsoft.SqlServer.Management.Smo.DatabasePermissionSet[] permissionSet = {
-                    new Microsoft.SqlServer.Management.Smo.DatabasePermissionSet( true, false ),
-                    new Microsoft.SqlServer.Management.Smo.DatabasePermissionSet( false, true )
-                };
-
-                listOfDatabasePermissionInfo.Add( new Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo( permissionSet ) );
-            } else {
-                listOfDatabasePermissionInfo.Add( new Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo() );
-            }
 
             Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[] permissionInfo = listOfDatabasePermissionInfo.ToArray();
 
