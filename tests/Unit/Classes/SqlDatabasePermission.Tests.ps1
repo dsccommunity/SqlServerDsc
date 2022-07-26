@@ -427,25 +427,27 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
             }
 
             Mock -CommandName Get-SqlDscDatabasePermission -MockWith {
-                $mockDatabasePermissionInfo = @()
+                [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]] $mockDatabasePermissionInfoCollection = @()
 
-                $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                    Add-Member -MemberType NoteProperty -Name PermissionType -Value (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($true, $false, $false, $false)) -PassThru |
-                    Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                $mockDatabasePermissionSet1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+                $mockDatabasePermissionSet1.Connect = $true
 
-                $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                    Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $true, $false, $false)) -PassThru |
-                    Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                $mockDatabasePermissionInfo1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo'
+                $mockDatabasePermissionInfo1.PermissionState = 'Grant'
+                $mockDatabasePermissionInfo1.PermissionType = $mockDatabasePermissionSet1
 
-                return $mockDatabasePermissionInfo
+                $mockDatabasePermissionInfoCollection += $mockDatabasePermissionInfo1
+
+                $mockDatabasePermissionSet2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+                $mockDatabasePermissionSet2.Update = $true
+
+                $mockDatabasePermissionInfo2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo'
+                $mockDatabasePermissionInfo2.PermissionState = 'Grant'
+                $mockDatabasePermissionInfo2.PermissionType = $mockDatabasePermissionSet2
+
+                $mockDatabasePermissionInfoCollection += $mockDatabasePermissionInfo2
+
+                return $mockDatabasePermissionInfoCollection
             }
         }
 
@@ -500,33 +502,28 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
             }
 
             Mock -CommandName Get-SqlDscDatabasePermission -MockWith {
-                $mockDatabasePermissionInfo = @()
+                [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]] $mockDatabasePermissionInfoCollection = @()
 
-                $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                    Add-Member -MemberType NoteProperty -Name PermissionType -Value (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($true, $false, $false, $false)) -PassThru |
-                    Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                $mockDatabasePermissionSet1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+                $mockDatabasePermissionSet1.Connect = $true
+                $mockDatabasePermissionSet1.Update = $true
 
-                $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                    Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $true, $false, $false)) -PassThru |
-                    Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                $mockDatabasePermissionInfo1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo'
+                $mockDatabasePermissionInfo1.PermissionState = 'Grant'
+                $mockDatabasePermissionInfo1.PermissionType = $mockDatabasePermissionSet1
 
-                $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                    Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $false, $true, $false)) -PassThru |
-                    Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Deny' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                    Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                $mockDatabasePermissionInfoCollection += $mockDatabasePermissionInfo1
 
-                return $mockDatabasePermissionInfo
+                $mockDatabasePermissionSet2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+                $mockDatabasePermissionSet2.Select = $true
+
+                $mockDatabasePermissionInfo2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo'
+                $mockDatabasePermissionInfo2.PermissionState = 'Deny'
+                $mockDatabasePermissionInfo2.PermissionType = $mockDatabasePermissionSet2
+
+                $mockDatabasePermissionInfoCollection += $mockDatabasePermissionInfo2
+
+                return $mockDatabasePermissionInfoCollection
             }
         }
 
@@ -585,33 +582,28 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                 }
 
                 Mock -CommandName Get-SqlDscDatabasePermission -MockWith {
-                    $mockDatabasePermissionInfo = @()
+                    [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]] $mockDatabasePermissionInfoCollection = @()
 
-                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name PermissionType -Value (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($true, $false, $false, $false)) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                    $mockDatabasePermissionSet1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+                    $mockDatabasePermissionSet1.Connect = $true
+                    $mockDatabasePermissionSet1.Update = $true
 
-                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $true, $false, $false)) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                    $mockDatabasePermissionInfo1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo'
+                    $mockDatabasePermissionInfo1.PermissionState = 'Grant'
+                    $mockDatabasePermissionInfo1.PermissionType = $mockDatabasePermissionSet1
 
-                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $false, $true, $false)) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Deny' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                    $mockDatabasePermissionInfoCollection += $mockDatabasePermissionInfo1
 
-                    return $mockDatabasePermissionInfo
+                    $mockDatabasePermissionSet2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+                    $mockDatabasePermissionSet2.Select = $true
+
+                    $mockDatabasePermissionInfo2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo'
+                    $mockDatabasePermissionInfo2.PermissionState = 'Deny'
+                    $mockDatabasePermissionInfo2.PermissionType = $mockDatabasePermissionSet2
+
+                    $mockDatabasePermissionInfoCollection += $mockDatabasePermissionInfo2
+
+                    return $mockDatabasePermissionInfoCollection
                 }
             }
 
@@ -673,33 +665,28 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                 }
 
                 Mock -CommandName Get-SqlDscDatabasePermission -MockWith {
-                    $mockDatabasePermissionInfo = @()
+                    [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]] $mockDatabasePermissionInfoCollection = @()
 
-                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name PermissionType -Value (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($true, $false, $false, $false)) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                    $mockDatabasePermissionSet1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+                    $mockDatabasePermissionSet1.Connect = $true
+                    $mockDatabasePermissionSet1.Update = $true
 
-                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $true, $false, $false)) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                    $mockDatabasePermissionInfo1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo'
+                    $mockDatabasePermissionInfo1.PermissionState = 'Grant'
+                    $mockDatabasePermissionInfo1.PermissionType = $mockDatabasePermissionSet1
 
-                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $false, $true, $false)) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Deny' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                    $mockDatabasePermissionInfoCollection += $mockDatabasePermissionInfo1
 
-                    return $mockDatabasePermissionInfo
+                    $mockDatabasePermissionSet2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+                    $mockDatabasePermissionSet2.Select = $true
+
+                    $mockDatabasePermissionInfo2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo'
+                    $mockDatabasePermissionInfo2.PermissionState = 'Deny'
+                    $mockDatabasePermissionInfo2.PermissionType = $mockDatabasePermissionSet2
+
+                    $mockDatabasePermissionInfoCollection += $mockDatabasePermissionInfo2
+
+                    return $mockDatabasePermissionInfoCollection
                 }
             }
 
@@ -763,33 +750,28 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                 }
 
                 Mock -CommandName Get-SqlDscDatabasePermission -MockWith {
-                    $mockDatabasePermissionInfo = @()
+                    [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]] $mockDatabasePermissionInfoCollection = @()
 
-                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name PermissionType -Value (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($true, $false, $false, $false)) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                    $mockDatabasePermissionSet1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+                    $mockDatabasePermissionSet1.Connect = $true
+                    $mockDatabasePermissionSet1.Update = $true
 
-                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $true, $false, $false)) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                    $mockDatabasePermissionInfo1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo'
+                    $mockDatabasePermissionInfo1.PermissionState = 'Grant'
+                    $mockDatabasePermissionInfo1.PermissionType = $mockDatabasePermissionSet1
 
-                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $false, $true, $false)) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Deny' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                    $mockDatabasePermissionInfoCollection += $mockDatabasePermissionInfo1
 
-                    return $mockDatabasePermissionInfo
+                    $mockDatabasePermissionSet2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+                    $mockDatabasePermissionSet2.Select = $true
+
+                    $mockDatabasePermissionInfo2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo'
+                    $mockDatabasePermissionInfo2.PermissionState = 'Deny'
+                    $mockDatabasePermissionInfo2.PermissionType = $mockDatabasePermissionSet2
+
+                    $mockDatabasePermissionInfoCollection += $mockDatabasePermissionInfo2
+
+                    return $mockDatabasePermissionInfoCollection
                 }
             }
 
@@ -851,33 +833,28 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                 }
 
                 Mock -CommandName Get-SqlDscDatabasePermission -MockWith {
-                    $mockDatabasePermissionInfo = @()
+                    [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]] $mockDatabasePermissionInfoCollection = @()
 
-                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name PermissionType -Value (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($true, $false, $false, $false)) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                    $mockDatabasePermissionSet1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+                    $mockDatabasePermissionSet1.Connect = $true
+                    $mockDatabasePermissionSet1.Update = $true
 
-                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $true, $false, $false)) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                    $mockDatabasePermissionInfo1 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo'
+                    $mockDatabasePermissionInfo1.PermissionState = 'Grant'
+                    $mockDatabasePermissionInfo1.PermissionType = $mockDatabasePermissionSet1
 
-                    $mockDatabasePermissionInfo += New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $false, $true, $false)) -PassThru |
-                        Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Deny' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name Grantee -Value 'MockUserName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                        Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                    $mockDatabasePermissionInfoCollection += $mockDatabasePermissionInfo1
 
-                    return $mockDatabasePermissionInfo
+                    $mockDatabasePermissionSet2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
+                    $mockDatabasePermissionSet2.Select = $true
+
+                    $mockDatabasePermissionInfo2 = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo'
+                    $mockDatabasePermissionInfo2.PermissionState = 'Deny'
+                    $mockDatabasePermissionInfo2.PermissionType = $mockDatabasePermissionSet2
+
+                    $mockDatabasePermissionInfoCollection += $mockDatabasePermissionInfo2
+
+                    return $mockDatabasePermissionInfoCollection
                 }
             }
 

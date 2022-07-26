@@ -310,48 +310,7 @@ class SqlDatabasePermission : ResourceBase
         if ($databasePermissionInfo)
         {
             # TODO: Below code could be a command ConvertTo-DatabasePermission that returns an array of [DatabasePermission]
-            <#
-                Single out all unique states since every single permission can be
-                one object in the $databasePermissionInfo
-            #>
-            $permissionState = @(
-                $databasePermissionInfo | ForEach-Object -Process {
-                    # Convert from the type PermissionState to String.
-                    [System.String] $_.PermissionState
-                }
-            ) | Select-Object -Unique
-
-            foreach ($currentPermissionState in $permissionState)
-            {
-                $filteredDatabasePermission = $databasePermissionInfo |
-                    Where-Object -FilterScript {
-                        $_.PermissionState -eq $currentPermissionState
-                    }
-
-                $databasePermission = [DatabasePermission] @{
-                    State = $currentPermissionState
-                    Permission = [System.String[]] @()
-                }
-
-                foreach ($currentPermission in $filteredDatabasePermission)
-                {
-                    # Get the permission names that is set to $true
-                    $permissionProperty = $currentPermission.PermissionType |
-                        Get-Member -MemberType 'Property' |
-                        Select-Object -ExpandProperty 'Name' -Unique |
-                        Where-Object -FilterScript {
-                            $currentPermission.PermissionType.$_
-                        }
-
-
-                    foreach ($currentPermissionProperty in $permissionProperty)
-                    {
-                        $databasePermission.Permission += $currentPermissionProperty
-                    }
-                }
-
-                [DatabasePermission[]] $currentState.Permission += $databasePermission
-            }
+            [DatabasePermission[]] $currentState.Permission = $databasePermissionInfo | ConvertTo-DatabasePermission
         }
 
         # Always return all State; 'Grant', 'GrantWithGrant', and 'Deny'.
@@ -581,6 +540,7 @@ class SqlDatabasePermission : ResourceBase
         {
             foreach ($currentStateToRevoke in $permissionsToRevoke)
             {
+                # TODO: Make this a ConvertFrom-DatabasePermission
                 $revokePermissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
 
                 foreach ($revokePermissionName in $currentStateToRevoke.Permission)
@@ -632,6 +592,7 @@ class SqlDatabasePermission : ResourceBase
                 # If there is not an empty array, change permissions.
                 if (-not [System.String]::IsNullOrEmpty($currentDesiredPermissionState.Permission))
                 {
+                    # TODO: Make this a ConvertFrom-DatabasePermission
                     $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
 
                     foreach ($permissionName in $currentDesiredPermissionState.Permission)
