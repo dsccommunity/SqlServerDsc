@@ -283,8 +283,13 @@ be compiled to a .mof file. If the tests find any errors the build will fail.
 #### Terminating Error
 
 A terminating error is an error that prevents the resource to continue further.
-If a DSC resource shall throw an terminating error the statement `throw` shall
-be used.
+If a DSC resource shall throw an terminating error the commands of the module
+**DscResource.Common** shall be used primarily; [`New-InvalidArgumentException`](https://github.com/dsccommunity/DscResource.Common#new-invalidargumentexception),
+[`New-InvalidDataExcpetion`](https://github.com/dsccommunity/DscResource.Common#new-invaliddataexception),
+[`New-InvalidOperationException`](https://github.com/dsccommunity/DscResource.Common#new-invalidoperationexception),
+[`New-InvalidResultException`](https://github.com/dsccommunity/DscResource.Common#new-invalidresultexception),
+or [`New-NotImplementedException`](https://github.com/dsccommunity/DscResource.Common#new-notimplementedexception).
+If neither of those commands works in the scenarion then `throw` shall be used.
 
 ### Commands
 

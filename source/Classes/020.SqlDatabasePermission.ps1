@@ -472,8 +472,7 @@ class SqlDatabasePermission : ResourceBase
                 Evaluate if there are any permissions that should be revoked
                 from the current state.
             #>
-            # TODO: replace all $this.Permission* with $properties.Permission*
-            foreach ($currentDesiredPermissionState in $this.Permission)
+            foreach ($currentDesiredPermissionState in $properties.Permission)
             {
                 $currentPermissionsForState = $currentState.Permission |
                     Where-Object -FilterScript {
@@ -511,7 +510,7 @@ class SqlDatabasePermission : ResourceBase
                 in the current state. Grant or Deny all permission assigned to the
                 property Permission regardless if they were already present or not.
             #>
-            [DatabasePermission[]] $permissionsToGrantOrDeny = $this.Permission
+            [DatabasePermission[]] $permissionsToGrantOrDeny = $properties.Permission
         }
 
         if ($properties.ContainsKey('PermissionToExclude'))
@@ -521,7 +520,7 @@ class SqlDatabasePermission : ResourceBase
                 all permission assigned to the property PermissionToExclude
                 regardless if they were already revoked or not.
             #>
-            [DatabasePermission[]] $permissionsToRevoke = $this.PermissionToExclude
+            [DatabasePermission[]] $permissionsToRevoke = $properties.PermissionToExclude
         }
 
         if ($properties.ContainsKey('PermissionToInclude'))
@@ -531,7 +530,7 @@ class SqlDatabasePermission : ResourceBase
                 in the current state. Grant or Deny all permission assigned to the
                 property Permission regardless if they were already present or not.
             #>
-            [DatabasePermission[]] $permissionsToGrantOrDeny = $this.PermissionToInclude
+            [DatabasePermission[]] $permissionsToGrantOrDeny = $properties.PermissionToInclude
         }
 
         # Revoke all the permissions set in $permissionsToRevoke
@@ -566,13 +565,6 @@ class SqlDatabasePermission : ResourceBase
                         $this.DatabaseName
                     )
 
-                    <#
-                        TODO: Update the CONTRIBUTING.md section "Class-based DSC resource"
-                                that now says that 'throw' should be used.. we should use
-                                helper function instead. Or something similar to commands
-                                where the ID number is part of code? But might be a problem
-                                tracing a specific verbose string down?
-                    #>
                     New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
             }
@@ -660,8 +652,9 @@ class SqlDatabasePermission : ResourceBase
         # Must include either of the permission properties.
         if ([System.String]::IsNullOrEmpty($assignedPermissionProperty))
         {
-            # TODO: Should throw ArgumentException
-            throw $this.localizedData.MustAssignOnePermissionProperty
+            $errorMessage = $script:localizedData.MustAssignOnePermissionProperty
+
+            New-InvalidArgumentException -ArgumentName 'Permission, PermissionToInclude, PermissionToExclude' -Message $errorMessage
         }
 
         # One State cannot exist several times in the same resource instance.
@@ -675,8 +668,9 @@ class SqlDatabasePermission : ResourceBase
 
             if ($permissionStateGroupCount -gt 1)
             {
-                # TODO: Should throw ArgumentException
-                throw $this.localizedData.DuplicatePermissionState
+                $errorMessage = $script:localizedData.DuplicatePermissionState
+
+                New-InvalidArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
             }
         }
 
@@ -691,8 +685,9 @@ class SqlDatabasePermission : ResourceBase
 
             if ($missingPermissionState)
             {
-                # TODO: Should throw ArgumentException
-                throw $this.localizedData.MissingPermissionState
+                $errorMessage = $script:localizedData.MissingPermissionState
+
+                New-InvalidArgumentException -ArgumentName 'Permission' -Message $errorMessage
             }
         }
     }
