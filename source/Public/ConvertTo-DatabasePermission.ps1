@@ -1,26 +1,19 @@
 <#
     .SYNOPSIS
-        Returns the current permissions for the database principal.
+        Converts a collection of Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo
+        objects into an array of DatabasePermission objects.
 
     .PARAMETER DatabasePermissionInfo
-        Specifies current server connection object.
-
-    .PARAMETER DatabaseName
-        Specifies the database name.
-
-    .PARAMETER Name
-        Specifies the name of the database principal for which the permissions are
-        returned.
+        Specifies a collection of Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo
+        objects.
 
     .OUTPUTS
-        [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]]
+        [DatabasePermission[]]
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $databasePermissionInfo = Get-SqlDscDatabasePermission -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal'
         ConvertTo-DatabasePermission -DatabasePermissionInfo $databasePermissionInfo
-
-    .NOTES
 #>
 function ConvertTo-DatabasePermission
 {

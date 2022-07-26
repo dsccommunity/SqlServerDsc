@@ -540,13 +540,7 @@ class SqlDatabasePermission : ResourceBase
         {
             foreach ($currentStateToRevoke in $permissionsToRevoke)
             {
-                # TODO: Make this a ConvertFrom-DatabasePermission
-                $revokePermissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
-
-                foreach ($revokePermissionName in $currentStateToRevoke.Permission)
-                {
-                    $revokePermissionSet.$revokePermissionName = $true
-                }
+                $revokePermissionSet = $currentStateToRevoke | ConvertFrom-DatabasePermission
 
                 $setSqlDscDatabasePermissionParameters = @{
                     ServerObject = $serverObject
@@ -592,13 +586,7 @@ class SqlDatabasePermission : ResourceBase
                 # If there is not an empty array, change permissions.
                 if (-not [System.String]::IsNullOrEmpty($currentDesiredPermissionState.Permission))
                 {
-                    # TODO: Make this a ConvertFrom-DatabasePermission
-                    $permissionSet = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet'
-
-                    foreach ($permissionName in $currentDesiredPermissionState.Permission)
-                    {
-                        $permissionSet.$permissionName = $true
-                    }
+                    $permissionSet = $currentDesiredPermissionState | ConvertFrom-DatabasePermission
 
                     $setSqlDscDatabasePermissionParameters = @{
                         ServerObject = $serverObject
