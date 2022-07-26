@@ -309,8 +309,7 @@ class SqlDatabasePermission : ResourceBase
         # If permissions was returned, build the current permission array of [DatabasePermission].
         if ($databasePermissionInfo)
         {
-            # TODO: Below code could be a command ConvertTo-DatabasePermission that returns an array of [DatabasePermission]
-            [DatabasePermission[]] $currentState.Permission = $databasePermissionInfo | ConvertTo-DatabasePermission
+            [DatabasePermission[]] $currentState.Permission = $databasePermissionInfo | ConvertTo-SqlDscDatabasePermission
         }
 
         # Always return all State; 'Grant', 'GrantWithGrant', and 'Deny'.
@@ -540,7 +539,7 @@ class SqlDatabasePermission : ResourceBase
         {
             foreach ($currentStateToRevoke in $permissionsToRevoke)
             {
-                $revokePermissionSet = $currentStateToRevoke | ConvertFrom-DatabasePermission
+                $revokePermissionSet = $currentStateToRevoke | ConvertFrom-SqlDscDatabasePermission
 
                 $setSqlDscDatabasePermissionParameters = @{
                     ServerObject = $serverObject
@@ -586,7 +585,7 @@ class SqlDatabasePermission : ResourceBase
                 # If there is not an empty array, change permissions.
                 if (-not [System.String]::IsNullOrEmpty($currentDesiredPermissionState.Permission))
                 {
-                    $permissionSet = $currentDesiredPermissionState | ConvertFrom-DatabasePermission
+                    $permissionSet = $currentDesiredPermissionState | ConvertFrom-SqlDscDatabasePermission
 
                     $setSqlDscDatabasePermissionParameters = @{
                         ServerObject = $serverObject

@@ -13,9 +13,9 @@
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $databasePermissionInfo = Get-SqlDscDatabasePermission -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal'
-        ConvertTo-DatabasePermission -DatabasePermissionInfo $databasePermissionInfo
+        ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $databasePermissionInfo
 #>
-function ConvertTo-DatabasePermission
+function ConvertTo-SqlDscDatabasePermission
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when the output type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [CmdletBinding()]

@@ -13,9 +13,9 @@
         [DatabasePermission] @{
             State = 'Grant'
             Permission = 'Connect'
-        } | ConvertFrom-DatabasePermission
+        } | ConvertFrom-SqlDscDatabasePermission
 #>
-function ConvertFrom-DatabasePermission
+function ConvertFrom-SqlDscDatabasePermission
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when the output type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [CmdletBinding()]

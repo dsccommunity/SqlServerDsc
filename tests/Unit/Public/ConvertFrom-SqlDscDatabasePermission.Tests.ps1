@@ -45,7 +45,7 @@ AfterAll {
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 }
 
-Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
+Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag 'Public' {
     BeforeAll {
         $mockPermission = InModuleScope -ScriptBlock {
             [DatabasePermission] @{
@@ -59,7 +59,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
     }
 
     It 'Should return the correct values' {
-        $mockResult = ConvertFrom-DatabasePermission -Permission $mockPermission
+        $mockResult = ConvertFrom-SqlDscDatabasePermission -Permission $mockPermission
 
         $mockResult.Connect | Should -BeTrue
         $mockResult.Alter | Should -BeTrue
@@ -68,7 +68,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
 
     Context 'When passing DatabasePermissionInfo over the pipeline' {
         It 'Should return the correct values' {
-            $mockResult = $mockPermission | ConvertFrom-DatabasePermission
+            $mockResult = $mockPermission | ConvertFrom-SqlDscDatabasePermission
 
             $mockResult.Connect | Should -BeTrue
             $mockResult.Alter | Should -BeTrue

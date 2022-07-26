@@ -45,21 +45,21 @@ AfterAll {
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 }
 
-Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
+Describe 'ConvertTo-SqlDscDatabasePermission' -Tag 'Public' {
     Context 'When passing empty collection as PermissionInfo' {
         BeforeAll {
             [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]] $mockDatabasePermissionInfoCollection = @()
         }
 
         It 'Should return the correct values' {
-            $mockResult = ConvertTo-DatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
+            $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
             $mockResult | Should -HaveCount 0
         }
 
         Context 'When passing DatabasePermissionInfo over the pipeline' {
             It 'Should return the correct values' {
-                $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-DatabasePermission
+                $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
                 $mockResult | Should -HaveCount 0
             }
@@ -82,7 +82,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
             }
 
             It 'Should return the correct values' {
-                $mockResult = ConvertTo-DatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
+                $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
                 $mockResult | Should -HaveCount 1
 
@@ -92,7 +92,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
-                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-DatabasePermission
+                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
                     $mockResult | Should -HaveCount 1
 
@@ -126,7 +126,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
             }
 
             It 'Should return the correct values' {
-                $mockResult = ConvertTo-DatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
+                $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
                 $mockResult | Should -HaveCount 1
 
@@ -137,7 +137,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
-                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-DatabasePermission
+                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
                     $mockResult | Should -HaveCount 1
 
@@ -174,7 +174,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
             }
 
             It 'Should return the correct values' {
-                $mockResult = ConvertTo-DatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
+                $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
                 $mockResult | Should -HaveCount 1
 
@@ -187,7 +187,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
-                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-DatabasePermission
+                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
                     $mockResult | Should -HaveCount 1
 
@@ -217,7 +217,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
             }
 
             It 'Should return the correct values' {
-                $mockResult = ConvertTo-DatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
+                $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
                 $mockResult | Should -HaveCount 1
 
@@ -227,7 +227,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
-                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-DatabasePermission
+                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
                     $mockResult | Should -HaveCount 1
 
@@ -261,7 +261,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
             }
 
             It 'Should return the correct values' {
-                $mockResult = ConvertTo-DatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
+                $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
                 $mockResult | Should -HaveCount 1
 
@@ -272,7 +272,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
-                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-DatabasePermission
+                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
                     $mockResult | Should -HaveCount 1
 
@@ -309,7 +309,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
             }
 
             It 'Should return the correct values' {
-                $mockResult = ConvertTo-DatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
+                $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
                 $mockResult | Should -HaveCount 1
 
@@ -322,7 +322,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
-                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-DatabasePermission
+                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
                     $mockResult | Should -HaveCount 1
 
@@ -352,7 +352,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
             }
 
             It 'Should return the correct values' {
-                $mockResult = ConvertTo-DatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
+                $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
                 $mockResult | Should -HaveCount 1
 
@@ -362,7 +362,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
-                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-DatabasePermission
+                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
                     $mockResult | Should -HaveCount 1
 
@@ -396,7 +396,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
             }
 
             It 'Should return the correct values' {
-                $mockResult = ConvertTo-DatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
+                $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
                 $mockResult | Should -HaveCount 1
 
@@ -407,7 +407,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
-                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-DatabasePermission
+                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
                     $mockResult | Should -HaveCount 1
 
@@ -444,7 +444,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
             }
 
             It 'Should return the correct values' {
-                $mockResult = ConvertTo-DatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
+                $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
                 $mockResult | Should -HaveCount 1
 
@@ -457,7 +457,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
-                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-DatabasePermission
+                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
                     $mockResult | Should -HaveCount 1
 
@@ -508,7 +508,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
             }
 
             It 'Should return the correct values' {
-                $mockResult = ConvertTo-DatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
+                $mockResult = ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $mockDatabasePermissionInfoCollection
 
                 $mockResult | Should -HaveCount 3
 
@@ -534,7 +534,7 @@ Describe 'ConvertTo-DatabasePermission' -Tag 'Public' {
 
             Context 'When passing DatabasePermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
-                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-DatabasePermission
+                    $mockResult = $mockDatabasePermissionInfoCollection | ConvertTo-SqlDscDatabasePermission
 
                     $mockResult | Should -HaveCount 3
 
