@@ -234,7 +234,7 @@ Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
                     $currentState.Permission[0].State | Should -Be 'Grant'
                     $currentState.Permission[0].Permission | Should -Be 'Connect'
 
-                    $currentState.Reasons | Should -HaveCount 0
+                    $currentState.Reasons | Should -BeNullOrEmpty
                 }
             }
         }

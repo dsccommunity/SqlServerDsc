@@ -22,7 +22,11 @@ class ResourceBase
     # Default constructor
     ResourceBase()
     {
-        # TODO: When this fails the LCM returns 'Failed to create an object of PowerShell class SqlDatabasePermission' instead of the actual error that occurred.
+        <#
+            TODO: When this fails, for example when the localized string file is missing
+                  the LCM returns the error 'Failed to create an object of PowerShell
+                  class SqlDatabasePermission' instead of the actual error that occurred.
+        #>
         $this.localizedData = Get-LocalizedDataRecursive -ClassName ($this | Get-ClassName -Recurse)
     }
 
@@ -61,6 +65,10 @@ class ResourceBase
         $ignoreProperty = @()
 
         <#
+            TODO: This need to be re-evaluated for a resource that is using Ensure
+                  property. How Ensure is handled might need to be refactored, or
+                  removed altogether from this base class.
+
             If the derived DSC resource has a Ensure property and it was not returned
             by GetCurrentState(), then the property Ensure is removed from the
             comparison (when calling Compare()). The property Ensure is ignored
@@ -130,47 +138,9 @@ class ResourceBase
         #>
         if (($this | Test-ResourceHasProperty -Name 'Reasons') -and -not $getCurrentStateResult.ContainsKey('Reasons'))
         {
-            # TODO: Below should be a private function ConvertTo-Reason.
-
             # Always return an empty array if all properties are in desired state.
-            $dscResourceObject.Reasons = [Reason[]] @()
-
-            if ($propertiesNotInDesiredState)
-            {
-                foreach ($property in $propertiesNotInDesiredState)
-                {
-                    if ($property.ExpectedValue -is [System.Enum])
-                    {
-                        # TODO: Maybe we just convert the advanced types to JSON and do not convert other types?
-                        #       Test that on SqlDatabasePermission
-
-                        # Return the string representation of the value (instead of the numeric value).
-                        $propertyExpectedValue = $property.ExpectedValue.ToString()
-                    }
-                    else
-                    {
-                        $propertyExpectedValue = $property.ExpectedValue
-                    }
-
-                    if ($property.ActualValue -is [System.Enum])
-                    {
-                        # TODO: Maybe we just convert the advanced types to JSON and do not convert other types?
-                        #       Test that on SqlDatabasePermission
-
-                        # Return the string representation of the value so that conversion to json is correct.
-                        $propertyActualValue = $property.ActualValue.ToString()
-                    }
-                    else
-                    {
-                        $propertyActualValue = $property.ActualValue
-                    }
-
-                    $dscResourceObject.Reasons += [Reason] @{
-                        Code = '{0}:{0}:{1}' -f $this.GetType(), $property.Property
-                        Phrase = 'The property {0} should be {1}, but was {2}' -f $property.Property, ($propertyExpectedValue | ConvertTo-Json -Compress), ($propertyActualValue | ConvertTo-Json -Compress)
-                    }
-                }
-            }
+            $dscResourceObject.Reasons = $propertiesNotInDesiredState |
+                ConvertTo-Reason -ResourceName $this.GetType()
         }
 
         # Return properties.

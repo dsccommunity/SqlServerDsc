@@ -42,7 +42,31 @@ AfterAll {
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 }
 
-Describe 'ConvertFrom-CompareResult' -Tag 'Private' {
+Describe 'ConvertTo-Reason' -Tag 'Private' {
+    Context 'When passing an empty collection' {
+        It 'Should return an empty collection' {
+            InModuleScope -ScriptBlock {
+                $mockProperties = @()
+
+                $result = ConvertTo-Reason -Property $mockProperties -ResourceName 'MyResource'
+
+                $result | Should -HaveCount 0
+            }
+        }
+    }
+
+    Context 'When passing a null value' {
+        It 'Should return an empty collection' {
+            InModuleScope -ScriptBlock {
+                $mockProperties = @()
+
+                $result = ConvertTo-Reason -Property $null -ResourceName 'MyResource'
+
+                $result | Should -HaveCount 0
+            }
+        }
+    }
+
     Context 'When passing as named parameter' {
         It 'Should return the correct values in a hashtable' {
             InModuleScope -ScriptBlock {
@@ -54,21 +78,20 @@ Describe 'ConvertFrom-CompareResult' -Tag 'Private' {
                     },
                     @{
                         Property      = 'MyResourceProperty2'
-                        ExpectedValue = 'MyNewValue2'
-                        ActualValue   = 'MyValue2'
+                        ExpectedValue = @('MyNewValue2', 'MyNewValue3')
+                        ActualValue   = @('MyValue2', 'MyValue3')
                     }
                 )
 
-                $result = ConvertFrom-CompareResult -CompareResult $mockProperties
+                $result = ConvertTo-Reason -Property $mockProperties -ResourceName 'MyResource'
 
-                $result | Should -BeOfType [System.Collections.Hashtable]
+                $result | Should -HaveCount 2
 
-                $result.Keys | Should -HaveCount 2
-                $result.Keys | Should -Contain 'MyResourceProperty1'
-                $result.Keys | Should -Contain 'MyResourceProperty2'
+                $result.Code | Should -Contain 'MyResource:MyResource:MyResourceProperty1'
+                $result.Phrase | Should -Contain 'The property MyResourceProperty1 should be "MyNewValue1", but was "MyValue1"'
 
-                $result.MyResourceProperty1 | Should -Be 'MyNewValue1'
-                $result.MyResourceProperty2 | Should -Be 'MyNewValue2'
+                $result.Code | Should -Contain 'MyResource:MyResource:MyResourceProperty2'
+                $result.Phrase | Should -Contain 'The property MyResourceProperty2 should be ["MyNewValue2","MyNewValue3"], but was ["MyValue2","MyValue3"]'
             }
         }
     }
@@ -84,21 +107,20 @@ Describe 'ConvertFrom-CompareResult' -Tag 'Private' {
                     },
                     @{
                         Property      = 'MyResourceProperty2'
-                        ExpectedValue = 'MyNewValue2'
-                        ActualValue   = 'MyValue2'
+                        ExpectedValue = @('MyNewValue2', 'MyNewValue3')
+                        ActualValue   = @('MyValue2', 'MyValue3')
                     }
                 )
 
-                $result = $mockProperties | ConvertFrom-CompareResult
+                $result = $mockProperties | ConvertTo-Reason -ResourceName 'MyResource'
 
-                $result | Should -BeOfType [System.Collections.Hashtable]
+                $result | Should -HaveCount 2
 
-                $result.Keys | Should -HaveCount 2
-                $result.Keys | Should -Contain 'MyResourceProperty1'
-                $result.Keys | Should -Contain 'MyResourceProperty2'
+                $result.Code | Should -Contain 'MyResource:MyResource:MyResourceProperty1'
+                $result.Phrase | Should -Contain 'The property MyResourceProperty1 should be "MyNewValue1", but was "MyValue1"'
 
-                $result.MyResourceProperty1 | Should -Be 'MyNewValue1'
-                $result.MyResourceProperty2 | Should -Be 'MyNewValue2'
+                $result.Code | Should -Contain 'MyResource:MyResource:MyResourceProperty2'
+                $result.Phrase | Should -Contain 'The property MyResourceProperty2 should be ["MyNewValue2","MyNewValue3"], but was ["MyValue2","MyValue3"]'
             }
         }
     }
