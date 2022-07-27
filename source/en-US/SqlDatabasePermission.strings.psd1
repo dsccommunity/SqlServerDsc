@@ -18,4 +18,6 @@ ConvertFrom-StringData @'
     DuplicatePermissionState = One or more permission states was added more than once. It is only allowed to specify one of each permission state. (SDP0009)
     MissingPermissionState = One or more permission states was missing. One of each permission state must be provided. (SDP0009)
     MustAssignOnePermissionProperty = At least one of the properties 'Permission', 'PermissionToInclude', or 'PermissionToExclude' must be specified. (SDP0010)
+    DuplicatePermissionBetweenState = One or more permission state specifies the same permission. It is only allowed to specify a specific permission in one permission state. (SDP0011)
+    MustHaveMinimumOnePermissionInState = At least one state does not specify a permission in the property '{0}'.
 '@

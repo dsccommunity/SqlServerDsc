@@ -1790,4 +1790,76 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
             }
         }
     }
+
+    Context 'When a permission Property contain the same permission name twice' {
+        It 'Should throw the correct error for property <MockPropertyName>' -ForEach @(
+            @{
+                MockPropertyName = 'Permission'
+            }
+            @{
+                MockPropertyName = 'PermissionToInclude'
+            }
+            @{
+                MockPropertyName = 'PermissionToExclude'
+            }
+        ) {
+            $mockErrorMessage = InModuleScope -ScriptBlock {
+                $mockSqlDatabasePermissionInstance.localizedData.DuplicatePermissionBetweenState
+            }
+
+            InModuleScope -Parameters $_ -ScriptBlock {
+                {
+                    $mockSqlDatabasePermissionInstance.AssertProperties(@{
+                        $MockPropertyName = [DatabasePermission[]] @(
+                            [DatabasePermission] @{
+                                State = 'Grant'
+                                Permission = 'Select'
+                            }
+                            [DatabasePermission] @{
+                                State = 'Deny'
+                                Permission = 'Select'
+                            }
+                        )
+                    })
+                } | Should -Throw -ExpectedMessage $mockErrorMessage
+            }
+        }
+    }
+
+    Context 'When a permission Property does not specify any permission name' {
+        It 'Should throw the correct error for property <MockPropertyName>' -ForEach @(
+            @{
+                MockPropertyName = 'PermissionToInclude'
+            }
+            @{
+                MockPropertyName = 'PermissionToExclude'
+            }
+        ) {
+            $mockErrorMessage = InModuleScope -ScriptBlock {
+                $mockSqlDatabasePermissionInstance.localizedData.MustHaveMinimumOnePermissionInState
+            }
+
+            InModuleScope -Parameters $_ -ScriptBlock {
+                {
+                    $mockSqlDatabasePermissionInstance.AssertProperties(@{
+                        $MockPropertyName = [DatabasePermission[]] @(
+                            [DatabasePermission] @{
+                                State = 'Grant'
+                                <#
+                                    This should not be able to be $null since the property
+                                    is mandatory but do allow empty collection. So no need
+                                    to test using $null value.
+                                #>
+                                Permission = @()
+                            }
+                            [DatabasePermission] @{
+                                State = 'Deny'
+                                Permission = 'Select'
+                            }
+                        )
+                    })
+                } | Should -Throw -ExpectedMessage $mockErrorMessage
+            }
+        }
+    }
 }

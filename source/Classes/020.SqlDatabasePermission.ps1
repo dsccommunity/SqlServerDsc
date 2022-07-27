@@ -622,10 +622,6 @@ class SqlDatabasePermission : ResourceBase
     #>
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
-        # TODO: Add the evaluation so that one permission can't be added two different states ('Grant' and 'Deny') in the same resource instance.
-
-        # TODO: PermissionToInclude and PermissionToExclude must not contain an empty collection for property Permission
-
         # PermissionToInclude and PermissionToExclude should be mutually exclusive from Permission
         $assertBoundParameterParameters = @{
             BoundParameterList = $properties
@@ -657,9 +653,9 @@ class SqlDatabasePermission : ResourceBase
             New-InvalidArgumentException -ArgumentName 'Permission, PermissionToInclude, PermissionToExclude' -Message $errorMessage
         }
 
-        # One State cannot exist several times in the same resource instance.
         foreach ($currentAssignedPermissionProperty in $assignedPermissionProperty)
         {
+            # One State cannot exist several times in the same resource instance.
             $permissionStateGroupCount = @(
                 $properties.$currentAssignedPermissionProperty |
                     Group-Object -NoElement -Property 'State' -CaseSensitive:$false |
@@ -672,9 +668,21 @@ class SqlDatabasePermission : ResourceBase
 
                 New-InvalidArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
             }
+
+            # A specific permission must only exist in one permission state.
+            $permissionGroupCount = $properties.$currentAssignedPermissionProperty.Permission |
+                Group-Object -NoElement -CaseSensitive:$false |
+                Select-Object -ExpandProperty 'Count'
+
+            if ($permissionGroupCount -gt 1)
+            {
+                $errorMessage = $script:localizedData.DuplicatePermissionBetweenState
+
+                New-InvalidArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
+            }
         }
 
-        if ($assignedPermissionProperty -contains 'Permission')
+        if ($properties.Keys -contains 'Permission')
         {
             # Each State must exist once.
             $missingPermissionState = (
@@ -688,6 +696,26 @@ class SqlDatabasePermission : ResourceBase
                 $errorMessage = $script:localizedData.MissingPermissionState
 
                 New-InvalidArgumentException -ArgumentName 'Permission' -Message $errorMessage
+            }
+        }
+
+        <#
+            Each permission state in the properties PermissionToInclude and PermissionToExclude
+            must have specified at minimum one permission.
+        #>
+        foreach ($currentAssignedPermissionProperty in @('PermissionToInclude', 'PermissionToExclude'))
+        {
+            if ($properties.Keys -contains $currentAssignedPermissionProperty)
+            {
+                foreach ($currentDatabasePermission in $properties.$currentAssignedPermissionProperty)
+                {
+                    if ($currentDatabasePermission.Permission.Count -eq 0)
+                    {
+                        $errorMessage = $script:localizedData.MustHaveMinimumOnePermissionInState -f $currentAssignedPermissionProperty
+
+                        New-InvalidArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
+                    }
+                }
             }
         }
     }
