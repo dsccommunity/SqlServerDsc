@@ -1548,7 +1548,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
             } -Exactly -Times 1 -Scope It
 
-            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 4 -Scope It
+            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 5 -Scope It
             Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 2 -Scope It
             Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
         }
