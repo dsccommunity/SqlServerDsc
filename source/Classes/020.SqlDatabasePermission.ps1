@@ -648,7 +648,7 @@ class SqlDatabasePermission : ResourceBase
         # Must include either of the permission properties.
         if ([System.String]::IsNullOrEmpty($assignedPermissionProperty))
         {
-            $errorMessage = $script:localizedData.MustAssignOnePermissionProperty
+            $errorMessage = $this.localizedData.MustAssignOnePermissionProperty
 
             New-InvalidArgumentException -ArgumentName 'Permission, PermissionToInclude, PermissionToExclude' -Message $errorMessage
         }
@@ -664,7 +664,7 @@ class SqlDatabasePermission : ResourceBase
 
             if ($permissionStateGroupCount -gt 1)
             {
-                $errorMessage = $script:localizedData.DuplicatePermissionState
+                $errorMessage = $this.localizedData.DuplicatePermissionState
 
                 New-InvalidArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
             }
@@ -676,7 +676,7 @@ class SqlDatabasePermission : ResourceBase
 
             if ($permissionGroupCount -gt 1)
             {
-                $errorMessage = $script:localizedData.DuplicatePermissionBetweenState
+                $errorMessage = $this.localizedData.DuplicatePermissionBetweenState
 
                 New-InvalidArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
             }
@@ -693,7 +693,7 @@ class SqlDatabasePermission : ResourceBase
 
             if ($missingPermissionState)
             {
-                $errorMessage = $script:localizedData.MissingPermissionState
+                $errorMessage = $this.localizedData.MissingPermissionState
 
                 New-InvalidArgumentException -ArgumentName 'Permission' -Message $errorMessage
             }
@@ -711,7 +711,7 @@ class SqlDatabasePermission : ResourceBase
                 {
                     if ($currentDatabasePermission.Permission.Count -eq 0)
                     {
-                        $errorMessage = $script:localizedData.MustHaveMinimumOnePermissionInState -f $currentAssignedPermissionProperty
+                        $errorMessage = $this.localizedData.MustHaveMinimumOnePermissionInState -f $currentAssignedPermissionProperty
 
                         New-InvalidArgumentException -ArgumentName $currentAssignedPermissionProperty -Message $errorMessage
                     }
