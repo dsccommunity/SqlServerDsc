@@ -1075,6 +1075,8 @@ function Set-TargetResource
             {
                 if ( $_.Exception -match 'The report server was unable to validate the integrity of encrypted data in the database' )
                 {
+                    Write-Verbose -Message 'Received a runtime exception'
+
                     # Restore key here
                     $invokeRsCimMethodRestoreEncryptionKeyParameters = @{
                         CimInstance = $reportingServicesData.Configuration
