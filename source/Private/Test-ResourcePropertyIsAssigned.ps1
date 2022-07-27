@@ -29,7 +29,7 @@ function Test-ResourcePropertyIsAssigned
         $Name
     )
 
-    $isAssigned = -not $null -eq $InputObject.$Name
+    $isAssigned = -not ($null -eq $InputObject.$Name)
 
     return $isAssigned
 }

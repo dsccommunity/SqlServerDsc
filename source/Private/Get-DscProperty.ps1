@@ -36,9 +36,7 @@ function Get-DscProperty
         $HasValue
     )
 
-    $property = $InputObject |
-        Get-Member -MemberType 'Property' |
-        Select-Object -ExpandProperty 'Name' |
+    $property = $InputObject.PSObject.Properties.Name |
         Where-Object -FilterScript {
             <#
                 Return all properties if $Name is not assigned, or if assigned

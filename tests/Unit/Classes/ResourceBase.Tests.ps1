@@ -231,8 +231,8 @@ class MyMockResource : ResourceBase
 
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
-        # This does not return the key property, to let base class handle that.
         return @{
+            MyResourceKeyProperty1 = $null
             MyResourceProperty2 = $null
         }
     }
@@ -258,10 +258,12 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
 
                     $getResult = $mockResourceBaseInstance.Get()
 
-                    $getResult.MyResourceKeyProperty1 | Should -Be 'MyValue1'
+                    $getResult.MyResourceKeyProperty1 | Should -BeNullOrEmpty
                     $getResult.MyResourceProperty2 | Should -BeNullOrEmpty
                     $getResult.Ensure | Should -Be ([Ensure]::Absent)
-                    $getResult.Reasons | Should -BeNullOrEmpty
+
+                    $getResult.Reasons | Should -HaveCount 1
+                    $getResult.Reasons[0].Code | Should -Be 'MyMockResource:MyMockResource:MyResourceKeyProperty1'
                 }
             }
         }
@@ -613,7 +615,6 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
                 InModuleScope -ScriptBlock {
                     $mockResourceBaseInstance.Ensure = [Ensure]::Absent
                     $mockResourceBaseInstance.MyResourceKeyProperty1 = 'MyValue1'
-                    $mockResourceBaseInstance.MyResourceProperty2 = $null
 
                     $getResult = $mockResourceBaseInstance.Get()
 
@@ -621,9 +622,7 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
                     $getResult.MyResourceProperty2 | Should -Be 'MyValue2'
                     $getResult.Ensure | Should -Be ([Ensure]::Present)
 
-                    $getResult.Reasons | Should -HaveCount 1
-                    $getResult.Reasons[0].Code | Should -Be 'MyMockResource:MyMockResource:MyResourceProperty2'
-                    $getResult.Reasons[0].Phrase | Should -Be 'The property MyResourceProperty2 should be "", but was "MyValue2"'
+                    $getResult.Reasons | Should -BeNullOrEmpty
                 }
             }
         }
@@ -647,7 +646,7 @@ class MyMockResource : ResourceBase
 
     [DscProperty()]
     [Ensure]
-    $Ensure = [Ensure]::Present
+    $Ensure = ([Ensure]::Present)
 
     [DscProperty()]
     [System.String]
@@ -660,7 +659,7 @@ class MyMockResource : ResourceBase
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
         return @{
-            Ensure = [Ensure]::Absent
+            Ensure = ([Ensure]::Absent)
             MyResourceKeyProperty1 = 'MyValue1'
             MyResourceProperty2 = 'MyValue2'
         }

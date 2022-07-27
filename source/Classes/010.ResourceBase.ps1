@@ -30,22 +30,10 @@ class ResourceBase
     {
         $this.Assert()
 
-        # TODO: Use: Get-DscProperty -Type 'Key'
         # Get all key properties.
-        $keyProperty = $this | Get-KeyProperty
+        $keyProperty = $this | Get-DscProperty -Type 'Key'
 
         Write-Verbose -Message ($this.localizedData.GetCurrentState -f $this.GetType().Name, ($keyProperty | ConvertTo-Json -Compress))
-
-        <#
-            TODO: Should call back to the derived class for proper handling of adding
-                  additional parameters to the variable $keyProperty that needs to be
-                  passed to GetCurrentState().
-
-                  Second though, might not be necessary as the override for GetCurrentState
-                  can call $this.<PropertyName> to get any non-key properties.
-                  It might even be that we don't need Get-KeyProperty?
-        #>
-        #$specialKeyProperty = @()
 
         $getCurrentStateResult = $this.GetCurrentState($keyProperty)
 
@@ -67,20 +55,6 @@ class ResourceBase
             {
                 # Add the key value to the instance to be returned.
                 $dscResourceObject.$propertyName = $this.$propertyName
-
-                <#
-                    If the key property should be enforced, add it to the current
-                    state hashtable so Compare() will enforce it. The property will
-                    always be in desired state since it is the desired state value
-                    that is set as the current state value. But this will help so
-                    that a derived class' method GetCurrentState() does not need
-                    to return the key property values if the properties has not
-                    been added to the class property '$this.notEnforcedProperties'.
-                #>
-                if ($propertyName -notin $this.notEnforcedProperties)
-                {
-                    $getCurrentStateResult.$propertyName = $this.$propertyName
-                }
             }
         }
 
@@ -111,18 +85,41 @@ class ResourceBase
         #>
         if (($this | Test-ResourceHasProperty -Name 'Ensure') -and -not $getCurrentStateResult.ContainsKey('Ensure'))
         {
-            # TODO: This should evaluate if the key properties is in desired state, if so set Present, otherwise set Absent
+            if ($propertiesNotInDesiredState)
+            {
+                <#
+                    Get all the key properties that might not be in desired state.
+                    This will return $null if all key properties are in desired state.
+                #>
+                $keyPropertiesNotInDesiredState = $this | Get-DscProperty -Name $propertiesNotInDesiredState.Property -Type 'Key'
 
-            if (($propertiesNotInDesiredState -and $this.Ensure -eq [Ensure]::Present) -or (-not $propertiesNotInDesiredState -and $this.Ensure -eq [Ensure]::Absent))
-            {
-                $dscResourceObject.Ensure = [Ensure]::Absent
-            }
-            elseif ($propertiesNotInDesiredState -and $this.Ensure -eq [Ensure]::Absent)
-            {
-                $dscResourceObject.Ensure = [Ensure]::Present
+                if ($keyPropertiesNotInDesiredState)
+                {
+                    <#
+                        The compare come back with at least one key property that was
+                        not in desired state. That only happens if the object does not
+                        exist on the node, so the Ensure value is set to Absent since
+                        the object does not exist.
+                    #>
+                    $dscResourceObject.Ensure = [Ensure]::Absent
+                }
+                else
+                {
+                    <#
+                        The compare come back with all key properties in desired state.
+                        That only happens if the object exist on the node, so the Ensure
+                        value is set to Present since the object exist.
+                    #>
+                    $dscResourceObject.Ensure = [Ensure]::Present
+                }
             }
             else
             {
+                <#
+                    The compare come back with $null, meaning that all key properties
+                    match. That only happens if the object exist on the node, so the
+                    Ensure value is set to Present since the object exist.
+                #>
                 $dscResourceObject.Ensure = [Ensure]::Present
             }
         }
@@ -182,7 +179,10 @@ class ResourceBase
 
     [void] Set()
     {
-        Write-Verbose -Message ($this.localizedData.SetDesiredState -f $this.GetType().Name, ($this | Get-KeyProperty | ConvertTo-Json -Compress))
+        # Get all key properties.
+        $keyProperty = $this | Get-DscProperty -Type 'Key'
+
+        Write-Verbose -Message ($this.localizedData.SetDesiredState -f $this.GetType().Name, ($keyProperty | ConvertTo-Json -Compress))
 
         $this.Assert()
 
@@ -215,7 +215,10 @@ class ResourceBase
 
     [System.Boolean] Test()
     {
-        Write-Verbose -Message ($this.localizedData.TestDesiredState -f $this.GetType().Name, ($this | Get-KeyProperty | ConvertTo-Json -Compress))
+        # Get all key properties.
+        $keyProperty = $this | Get-DscProperty -Type 'Key'
+
+        Write-Verbose -Message ($this.localizedData.TestDesiredState -f $this.GetType().Name, ($keyProperty | ConvertTo-Json -Compress))
 
         $this.Assert()
 
@@ -253,8 +256,8 @@ class ResourceBase
     #>
     hidden [System.Collections.Hashtable[]] Compare()
     {
-        # TODO: Replace ConvertFrom-DscResourceInstance with Get-DscProperty?
-        $currentState = $this.Get() | ConvertFrom-DscResourceInstance
+        # Get the current state, all properties except Read properties .
+        $currentState = $this.Get() | Get-DscProperty -Type @('Key', 'Mandatory', 'Optional')
 
         return $this.Compare($currentState, @())
     }
@@ -268,8 +271,8 @@ class ResourceBase
     #>
     hidden [System.Collections.Hashtable[]] Compare([System.Collections.Hashtable] $currentState, [System.String[]] $excludeProperties)
     {
-        # TODO: Replace this with Get-DscProperty
-        $desiredState = $this | Get-DesiredStateProperty
+        # Get the desired state, all assigned properties that has an non-null value.
+        $desiredState = $this | Get-DscProperty -Type @('Key', 'Mandatory', 'Optional') -HasValue
 
         $CompareDscParameterState = @{
             CurrentValues     = $currentState
@@ -291,9 +294,8 @@ class ResourceBase
     # This method should normally not be overridden.
     hidden [void] Assert()
     {
-        # TODO: Replace this with Get-DscProperty
         # Get the properties that has a non-null value and is not of type Read.
-        $desiredState = $this | Get-DesiredStateProperty
+        $desiredState = $this | Get-DscProperty -Type @('Key', 'Mandatory', 'Optional') -HasValue
 
         $this.AssertProperties($desiredState)
     }
