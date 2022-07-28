@@ -606,6 +606,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         $mockInvokeRsCimMethod_InitializeReportServer = {
             return @{
                 HRESULT = 0
+                ReturnValue = $true
             }
         }
 

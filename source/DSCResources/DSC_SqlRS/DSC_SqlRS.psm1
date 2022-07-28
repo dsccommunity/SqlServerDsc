@@ -1058,26 +1058,13 @@ function Set-TargetResource
             )
 
             $restartReportingService = $true
+            $restoreKey = $false
+            $reportingServicesInitialized = $reportingServicesData.Configuration.IsInitialized
 
-            $invokeRsCimMethodInitializeReportServerParameters = @{
-                CimInstance = $reportingServicesData.Configuration
-                MethodName  = 'InitializeReportServer'
-                Arguments   = @{
-                    InstallationId = $reportingServicesData.Configuration.InstallationID
-                }
-            }
-
-            try
+            do
             {
-                Invoke-RsCimMethod @invokeRsCimMethodInitializeReportServerParameters
-            }
-            catch [System.Management.Automation.RuntimeException]
-            {
-                if ( $_.Exception -match 'The report server was unable to validate the integrity of encrypted data in the database' )
+                if ( $restoreKey )
                 {
-                    Write-Verbose -Message 'Received a runtime exception' -Verbose
-
-                    # Restore key here
                     $invokeRsCimMethodRestoreEncryptionKeyParameters = @{
                         CimInstance = $reportingServicesData.Configuration
                         MethodName  = 'RestoreEncryptionKey'
@@ -1089,18 +1076,38 @@ function Set-TargetResource
                     }
 
                     $restoreEncryptionKeyResult = Invoke-RsCimMethod @invokeRsCimMethodRestoreEncryptionKeyParameters
+                }
 
-                    if ( $restoreEncryptionKeyResult.HRESULT -eq 0 )
+                try
+                {
+                    $invokeRsCimMethodInitializeReportServerParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName  = 'InitializeReportServer'
+                        Arguments   = @{
+                            InstallationId = $reportingServicesData.Configuration.InstallationID
+                        }
+                    }
+
+                    $initializeReportServerResult = Invoke-RsCimMethod @invokeRsCimMethodInitializeReportServerParameters
+                    $reportingServicesInitialized = $initializeReportServerResult.ReturnValue
+                }
+                catch [System.Management.Automation.RuntimeException]
+                {
+                    if ( $_.Exception -match 'The report server was unable to validate the integrity of encrypted data in the database' )
                     {
-                        # Finally, try and initialize the server again
-                        Invoke-RsCimMethod @invokeRsCimMethodInitializeReportServerParameters
+                        # Restore the encryption key before trying again
+                        $restoreKey = $true
+                    }
+                    else
+                    {
+                        throw $_
                     }
                 }
-                else
-                {
-                    throw $_
-                }
             }
+            while ( -not $reportingServicesInitialized )
+
+            # Refresh the reportingServicesData
+            $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
         }
         else
         {
