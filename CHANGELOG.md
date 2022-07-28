@@ -124,6 +124,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlDatabaseRole
   - `Test-TargetResource` returns true if the `IsUpdateable` property of the
     database is `$false` to resolve issue #1750.
+- SqlAlwaysOnService
+  - BREAKING CHANGE: The parameter `IsHadrEnabled` is no longer returned by
+    `Get-TargetResource`. The `Ensure` parameter now returns `Present` if
+    Always On HADR is enabled and `Absent` if it is disabled.
 
 ### Fixed
 
@@ -131,6 +135,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - URLs the referenced TechNet in the documentation has been update to link to
     new pages at docs.microsoft.com.
   - Fix pipeline so code coverage is published on fail.
+  - Remove duplicate deploy step (already present in `azure-pipelines.yml`).
 - CommonTestHelper
   - The test helper function `Import-SqlModuleStub` was using wrong casing for
     one of the stub  modules which failed test when running cross plattform.

@@ -62,10 +62,12 @@ function Get-TargetResource
     if ($isAlwaysOnEnabled -eq $true)
     {
         $statusString = 'enabled'
+        $EnsureStatus = 'Present'
     }
     elseif ($isAlwaysOnEnabled -eq $false)
     {
         $statusString = 'disabled'
+        $EnsureStatus = 'Absent'
     }
 
     Write-Verbose -Message (
@@ -74,10 +76,9 @@ function Get-TargetResource
 
     return @{
         InstanceName   = $InstanceName
-        Ensure         = $Ensure
+        Ensure         = $EnsureStatus
         ServerName     = $ServerName
         RestartTimeout = $RestartTimeout
-        IsHadrEnabled  = $isAlwaysOnEnabled
     }
 }
 
@@ -244,7 +245,7 @@ function Test-TargetResource
 
     $isInDesiredState = $true
 
-    if ($state.IsHadrEnabled)
+    if ($state.Ensure -eq 'Present')
     {
         if ($Ensure -eq 'Present')
         {
