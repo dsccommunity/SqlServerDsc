@@ -51,8 +51,8 @@ function ConvertTo-SqlDscDatabasePermission
                 }
 
             $databasePermissionStateExist = $permissions.Where({
-                $_.State -contains $currentPermissionState
-            }) |
+                    $_.State -contains $currentPermissionState
+                }) |
                 Select-Object -First 1
 
             if ($databasePermissionStateExist)
@@ -62,7 +62,7 @@ function ConvertTo-SqlDscDatabasePermission
             else
             {
                 $databasePermission = [DatabasePermission] @{
-                    State = $currentPermissionState
+                    State      = $currentPermissionState
                     Permission = [System.String[]] @()
                 }
             }

@@ -171,7 +171,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
             It 'Should return a value less than zero' {
                 $mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
                     [DatabasePermission] @{
-                        State = 'Grant'
+                        State      = 'Grant'
                         Permission = 'Select'
                     }
                 }
@@ -199,28 +199,28 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
             Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach @(
                 @{
                     MockInstanceState = 'Grant'
-                    MockObjectState = 'GrantWithGrant'
+                    MockObjectState   = 'GrantWithGrant'
                 }
                 @{
                     MockInstanceState = 'Grant'
-                    MockObjectState = 'Deny'
+                    MockObjectState   = 'Deny'
                 }
                 @{
                     MockInstanceState = 'GrantWithGrant'
-                    MockObjectState = 'Deny'
+                    MockObjectState   = 'Deny'
                 }
             ) {
                 It 'Should return a value less than zero' {
                     $mockDatabasePermissionInstance1 = InModuleScope -Parameters $_ -ScriptBlock {
                         [DatabasePermission] @{
-                            State = $MockInstanceState
+                            State      = $MockInstanceState
                             Permission = 'Select'
                         }
                     }
 
                     $mockDatabasePermissionInstance2 = InModuleScope -Parameters $_ -ScriptBlock {
                         [DatabasePermission] @{
-                            State = $MockObjectState
+                            State      = $MockObjectState
                             Permission = 'Select'
                         }
                     }
@@ -234,28 +234,28 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
             Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach @(
                 @{
                     MockInstanceState = 'Deny'
-                    MockObjectState = 'Grant'
+                    MockObjectState   = 'Grant'
                 }
                 @{
                     MockInstanceState = 'GrantWithGrant'
-                    MockObjectState = 'Grant'
+                    MockObjectState   = 'Grant'
                 }
                 @{
                     MockInstanceState = 'Deny'
-                    MockObjectState = 'GrantWithGrant'
+                    MockObjectState   = 'GrantWithGrant'
                 }
             ) {
                 It 'Should return a value less than zero' {
                     $mockDatabasePermissionInstance1 = InModuleScope -Parameters $_ -ScriptBlock {
                         [DatabasePermission] @{
-                            State = $MockInstanceState
+                            State      = $MockInstanceState
                             Permission = 'Select'
                         }
                     }
 
                     $mockDatabasePermissionInstance2 = InModuleScope -Parameters $_ -ScriptBlock {
                         [DatabasePermission] @{
-                            State = $MockObjectState
+                            State      = $MockObjectState
                             Permission = 'Select'
                         }
                     }
@@ -268,7 +268,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
                 It 'Should return a value less than zero' {
                     $mockDatabasePermissionInstance1 = InModuleScope -ScriptBlock {
                         [DatabasePermission] @{
-                            State = 'Grant'
+                            State      = 'Grant'
                             Permission = 'Select'
                         }
                     }
@@ -282,28 +282,28 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
             Context 'When the instance has the state ''<MockInstanceState>'' and object has state ''<MockObjectState>''' -ForEach @(
                 @{
                     MockInstanceState = 'Grant'
-                    MockObjectState = 'Grant'
+                    MockObjectState   = 'Grant'
                 }
                 @{
                     MockInstanceState = 'GrantWithGrant'
-                    MockObjectState = 'GrantWithGrant'
+                    MockObjectState   = 'GrantWithGrant'
                 }
                 @{
                     MockInstanceState = 'Deny'
-                    MockObjectState = 'Deny'
+                    MockObjectState   = 'Deny'
                 }
             ) {
                 It 'Should return a value less than zero' {
                     $mockDatabasePermissionInstance1 = InModuleScope -Parameters $_ -ScriptBlock {
                         [DatabasePermission] @{
-                            State = $MockInstanceState
+                            State      = $MockInstanceState
                             Permission = 'Select'
                         }
                     }
 
                     $mockDatabasePermissionInstance2 = InModuleScope -Parameters $_ -ScriptBlock {
                         [DatabasePermission] @{
-                            State = $MockObjectState
+                            State      = $MockObjectState
                             Permission = 'Select'
                         }
                     }
@@ -339,7 +339,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
                         foreach ($currentMockState in $MockState)
                         {
                             [DatabasePermission] @{
-                                State = $currentMockState
+                                State      = $currentMockState
                                 Permission = 'Select'
                             }
                         }

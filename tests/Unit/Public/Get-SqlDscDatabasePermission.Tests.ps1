@@ -82,8 +82,8 @@ Describe 'Get-SqlDscDatabasePermission' -Tag 'Public' {
                     return @{
                         'AdventureWorks' = New-Object -TypeName Object |
                             Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'AdventureWorks' -PassThru -Force
-                    }
-                } -PassThru -Force
+                        }
+                    } -PassThru -Force
         }
 
         Context 'When specifying to throw on error' {
@@ -114,8 +114,8 @@ Describe 'Get-SqlDscDatabasePermission' -Tag 'Public' {
                     return @{
                         'AdventureWorks' = New-Object -TypeName Object |
                             Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'AdventureWorks' -PassThru -Force
-                    }
-                } -PassThru -Force
+                        }
+                    } -PassThru -Force
 
             Mock -CommandName Test-SqlDscIsDatabasePrincipal -MockWith {
                 return $false

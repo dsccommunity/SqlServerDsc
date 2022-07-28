@@ -97,7 +97,7 @@ Describe 'Get-LocalizedDataRecursive' -Tag 'Private' {
         Context 'When passing value with named parameter' {
             It 'Should return the correct localization strings' {
                 InModuleScope -ScriptBlock {
-                    $result = Get-LocalizedDataRecursive -ClassName @('MyClassResource','MyBaseClass')
+                    $result = Get-LocalizedDataRecursive -ClassName @('MyClassResource', 'MyBaseClass')
 
                     $result.Keys | Should -HaveCount 2
                     $result.Keys | Should -Contain 'ClassStringKey'
@@ -111,7 +111,7 @@ Describe 'Get-LocalizedDataRecursive' -Tag 'Private' {
         Context 'When passing value in pipeline' {
             It 'Should return the correct localization strings' {
                 InModuleScope -ScriptBlock {
-                    $result = @('MyClassResource','MyBaseClass') | Get-LocalizedDataRecursive
+                    $result = @('MyClassResource', 'MyBaseClass') | Get-LocalizedDataRecursive
 
                     $result.Keys | Should -HaveCount 2
                     $result.Keys | Should -Contain 'ClassStringKey'

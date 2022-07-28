@@ -65,7 +65,7 @@ function ConvertTo-Reason
             }
 
             $reasons += [Reason] @{
-                Code = '{0}:{0}:{1}' -f $ResourceName, $currentProperty.Property
+                Code   = '{0}:{0}:{1}' -f $ResourceName, $currentProperty.Property
                 # Convert the object to JSON to handle complex types.
                 Phrase = 'The property {0} should be {1}, but was {2}' -f $currentProperty.Property, ($propertyExpectedValue | ConvertTo-Json -Compress), ($propertyActualValue | ConvertTo-Json -Compress)
             }

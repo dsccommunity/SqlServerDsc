@@ -89,7 +89,7 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
                             } -PassThru |
                             Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
                                 return @{
-                                    'db_datareader' = New-Object -TypeName Object |
+                                    'db_datareader'   = New-Object -TypeName Object |
                                         Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'db_datareader' -PassThru |
                                         Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -PassThru -Force
 
@@ -131,7 +131,7 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
                                 } -PassThru |
                                 Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
                                     return @{
-                                        'db_datareader' = New-Object -TypeName Object |
+                                        'db_datareader'   = New-Object -TypeName Object |
                                             Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'db_datareader' -PassThru |
                                             Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -PassThru -Force
 
@@ -188,7 +188,7 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
                                 } -PassThru |
                                 Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
                                     return @{
-                                        'db_datareader' = New-Object -TypeName Object |
+                                        'db_datareader'   = New-Object -TypeName Object |
                                             Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'db_datareader' -PassThru |
                                             Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -PassThru -Force
 
@@ -237,7 +237,7 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
                                 } -PassThru |
                                 Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
                                     return @{
-                                        'db_datareader' = New-Object -TypeName Object |
+                                        'db_datareader'   = New-Object -TypeName Object |
                                             Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'db_datareader' -PassThru |
                                             Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -PassThru -Force
 
@@ -286,7 +286,7 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
                                     Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
                                         return (
                                             @{
-                                                'db_datareader' = New-Object -TypeName Object |
+                                                'db_datareader'   = New-Object -TypeName Object |
                                                     Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'db_datareader' -PassThru |
                                                     Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -PassThru -Force
 
@@ -329,7 +329,7 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
                                 } -PassThru |
                                 Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
                                     return @{
-                                        'db_datareader' = New-Object -TypeName Object |
+                                        'db_datareader'   = New-Object -TypeName Object |
                                             Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'db_datareader' -PassThru |
                                             Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -PassThru -Force
 
@@ -378,7 +378,7 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
                                     Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
                                         return (
                                             @{
-                                                'db_datareader' = New-Object -TypeName Object |
+                                                'db_datareader'   = New-Object -TypeName Object |
                                                     Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'db_datareader' -PassThru |
                                                     Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -PassThru -Force
 

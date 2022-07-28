@@ -49,7 +49,7 @@ Describe 'ConvertFrom-SqlDscDatabasePermission' -Tag 'Public' {
     BeforeAll {
         $mockPermission = InModuleScope -ScriptBlock {
             [DatabasePermission] @{
-                State = 'Grant'
+                State      = 'Grant'
                 Permission = @(
                     'Connect'
                     'Alter'

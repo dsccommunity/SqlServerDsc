@@ -251,7 +251,7 @@ class SqlDatabasePermission : ResourceBase
         if (-not $this.sqlServerObject)
         {
             $connectSqlDscDatabaseEngineParameters = @{
-                ServerName = $this.ServerName
+                ServerName   = $this.ServerName
                 InstanceName = $this.InstanceName
             }
 
@@ -497,7 +497,7 @@ class SqlDatabasePermission : ResourceBase
                         else
                         {
                             [DatabasePermission[]] $permissionsToRevoke += [DatabasePermission] @{
-                                State = $currentPermissionsForState.State
+                                State      = $currentPermissionsForState.State
                                 Permission = $permissionName
                             }
                         }
@@ -624,7 +624,7 @@ class SqlDatabasePermission : ResourceBase
     {
         # PermissionToInclude and PermissionToExclude should be mutually exclusive from Permission
         $assertBoundParameterParameters = @{
-            BoundParameterList = $properties
+            BoundParameterList     = $properties
             MutuallyExclusiveList1 = @(
                 'Permission'
             )
@@ -638,12 +638,12 @@ class SqlDatabasePermission : ResourceBase
 
         # Get all assigned permission properties.
         $assignedPermissionProperty = $properties.Keys.Where({
-            $_ -in @(
-                'Permission',
-                'PermissionToInclude',
-                'PermissionToExclude'
-            )
-        })
+                $_ -in @(
+                    'Permission',
+                    'PermissionToInclude',
+                    'PermissionToExclude'
+                )
+            })
 
         # Must include either of the permission properties.
         if ([System.String]::IsNullOrEmpty($assignedPermissionProperty))

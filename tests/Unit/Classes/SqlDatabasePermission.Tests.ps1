@@ -339,10 +339,10 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
         It 'Should return empty collections for each state' {
             InModuleScope -ScriptBlock {
                 $currentState = $script:mockSqlDatabasePermissionInstance.GetCurrentState(@{
-                    Name         = 'MockUserName'
-                    DatabaseName = 'MockDatabaseName'
-                    InstanceName = 'NamedInstance'
-                })
+                        Name         = 'MockUserName'
+                        DatabaseName = 'MockDatabaseName'
+                        InstanceName = 'NamedInstance'
+                    })
 
                 $currentState.Credential | Should -BeNullOrEmpty
 
@@ -378,10 +378,10 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                     )
 
                     $currentState = $script:mockSqlDatabasePermissionInstance.GetCurrentState(@{
-                        Name         = 'MockUserName'
-                        DatabaseName = 'MockDatabaseName'
-                        InstanceName = 'NamedInstance'
-                    })
+                            Name         = 'MockUserName'
+                            DatabaseName = 'MockDatabaseName'
+                            InstanceName = 'NamedInstance'
+                        })
 
                     $currentState.Credential | Should -BeOfType [System.Management.Automation.PSCredential]
 
@@ -454,10 +454,10 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
         It 'Should return correct values for state Grant and empty collections for the two other states' {
             InModuleScope -ScriptBlock {
                 $currentState = $script:mockSqlDatabasePermissionInstance.GetCurrentState(@{
-                    Name         = 'MockUserName'
-                    DatabaseName = 'MockDatabaseName'
-                    InstanceName = 'NamedInstance'
-                })
+                        Name         = 'MockUserName'
+                        DatabaseName = 'MockDatabaseName'
+                        InstanceName = 'NamedInstance'
+                    })
 
                 $currentState.Credential | Should -BeNullOrEmpty
 
@@ -530,10 +530,10 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
         It 'Should return correct values for the states Grant and Deny and empty collections for the state GrantWithGrant' {
             InModuleScope -ScriptBlock {
                 $currentState = $script:mockSqlDatabasePermissionInstance.GetCurrentState(@{
-                    Name         = 'MockUserName'
-                    DatabaseName = 'MockDatabaseName'
-                    InstanceName = 'NamedInstance'
-                })
+                        Name         = 'MockUserName'
+                        DatabaseName = 'MockDatabaseName'
+                        InstanceName = 'NamedInstance'
+                    })
 
                 $currentState.Credential | Should -BeNullOrEmpty
 
@@ -571,7 +571,7 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                         DatabaseName        = 'MockDatabaseName'
                         InstanceName        = 'NamedInstance'
                         PermissionToInclude = [DatabasePermission] @{
-                            State = 'Grant'
+                            State      = 'Grant'
                             Permission = 'update'
                         }
                     }
@@ -610,10 +610,10 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
             It 'Should return correct values for the states Grant and Deny and empty collections for the state GrantWithGrant' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlDatabasePermissionInstance.GetCurrentState(@{
-                        Name         = 'MockUserName'
-                        DatabaseName = 'MockDatabaseName'
-                        InstanceName = 'NamedInstance'
-                    })
+                            Name         = 'MockUserName'
+                            DatabaseName = 'MockDatabaseName'
+                            InstanceName = 'NamedInstance'
+                        })
 
                     $currentState.Credential | Should -BeNullOrEmpty
 
@@ -654,7 +654,7 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                         DatabaseName        = 'MockDatabaseName'
                         InstanceName        = 'NamedInstance'
                         PermissionToInclude = [DatabasePermission] @{
-                            State = 'Grant'
+                            State      = 'Grant'
                             Permission = 'alter'
                         }
                     }
@@ -693,10 +693,10 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
             It 'Should return correct values for the states Grant and Deny and empty collections for the state GrantWithGrant' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlDatabasePermissionInstance.GetCurrentState(@{
-                        Name         = 'MockUserName'
-                        DatabaseName = 'MockDatabaseName'
-                        InstanceName = 'NamedInstance'
-                    })
+                            Name         = 'MockUserName'
+                            DatabaseName = 'MockDatabaseName'
+                            InstanceName = 'NamedInstance'
+                        })
 
                     $currentState.Credential | Should -BeNullOrEmpty
 
@@ -739,7 +739,7 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                         DatabaseName        = 'MockDatabaseName'
                         InstanceName        = 'NamedInstance'
                         PermissionToExclude = [DatabasePermission] @{
-                            State = 'Grant'
+                            State      = 'Grant'
                             Permission = 'alter'
                         }
                     }
@@ -778,10 +778,10 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
             It 'Should return correct values for the states Grant and Deny and empty collections for the state GrantWithGrant' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlDatabasePermissionInstance.GetCurrentState(@{
-                        Name         = 'MockUserName'
-                        DatabaseName = 'MockDatabaseName'
-                        InstanceName = 'NamedInstance'
-                    })
+                            Name         = 'MockUserName'
+                            DatabaseName = 'MockDatabaseName'
+                            InstanceName = 'NamedInstance'
+                        })
 
                     $currentState.Credential | Should -BeNullOrEmpty
 
@@ -822,7 +822,7 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                         DatabaseName        = 'MockDatabaseName'
                         InstanceName        = 'NamedInstance'
                         PermissionToExclude = [DatabasePermission] @{
-                            State = 'Grant'
+                            State      = 'Grant'
                             Permission = 'update'
                         }
                     }
@@ -861,10 +861,10 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
             It 'Should return correct values for the states Grant and Deny and empty collections for the state GrantWithGrant' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlDatabasePermissionInstance.GetCurrentState(@{
-                        Name         = 'MockUserName'
-                        DatabaseName = 'MockDatabaseName'
-                        InstanceName = 'NamedInstance'
-                    })
+                            Name         = 'MockUserName'
+                            DatabaseName = 'MockDatabaseName'
+                            InstanceName = 'NamedInstance'
+                        })
 
                     $currentState.Credential | Should -BeNullOrEmpty
 
@@ -961,14 +961,14 @@ Describe 'SqlDatabasePermission\Set()' -Tag 'Set' {
                     # Mock method Compare() which is called by the base method Set()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         return @{
-                            Property = 'Permission'
+                            Property      = 'Permission'
                             ExpectedValue = [DatabasePermission[]] @(
                                 [DatabasePermission] @{
                                     State      = 'Grant'
                                     Permission = @('Connect', 'Update')
                                 }
                             )
-                            ActualValue = [DatabasePermission[]] @(
+                            ActualValue   = [DatabasePermission[]] @(
                                 [DatabasePermission] @{
                                     State      = 'Grant'
                                     Permission = @('Connect')
@@ -1039,14 +1039,14 @@ Describe 'SqlDatabasePermission\Test()' -Tag 'Test' {
                     # Mock method Compare() which is called by the base method Set()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         return @{
-                            Property = 'Permission'
+                            Property      = 'Permission'
                             ExpectedValue = [DatabasePermission[]] @(
                                 [DatabasePermission] @{
                                     State      = 'Grant'
                                     Permission = @('Connect', 'Update')
                                 }
                             )
-                            ActualValue = [DatabasePermission[]] @(
+                            ActualValue   = [DatabasePermission[]] @(
                                 [DatabasePermission] @{
                                     State      = 'Grant'
                                     Permission = @('Connect')
@@ -1108,8 +1108,8 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
                 {
                     # This test does not pass any properties to set as it is not necessary for this test.
                     $mockSqlDatabasePermissionInstance.Modify(@{
-                        Permission = [DatabasePermission[]] @()
-                    })
+                            Permission = [DatabasePermission[]] @()
+                        })
                 } | Should -Throw -ExpectedMessage $mockErrorRecord
             }
         }
@@ -1176,21 +1176,21 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
                 InModuleScope -ScriptBlock {
                     {
                         $mockSqlDatabasePermissionInstance.Modify(@{
-                            Permission = [DatabasePermission[]] @(
-                                [DatabasePermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('Connect')
-                                }
-                                [DatabasePermission] @{
-                                    State      = 'GrantWithGrant'
-                                    Permission = @('Update')
-                                }
-                                [DatabasePermission] @{
-                                    State      = 'Deny'
-                                    Permission = @()
-                                }
-                            )
-                        })
+                                Permission = [DatabasePermission[]] @(
+                                    [DatabasePermission] @{
+                                        State      = 'Grant'
+                                        Permission = @('Connect')
+                                    }
+                                    [DatabasePermission] @{
+                                        State      = 'GrantWithGrant'
+                                        Permission = @('Update')
+                                    }
+                                    [DatabasePermission] @{
+                                        State      = 'Deny'
+                                        Permission = @()
+                                    }
+                                )
+                            })
                     } | Should -Not -Throw
                 }
 
@@ -1266,21 +1266,21 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
                 InModuleScope -ScriptBlock {
                     {
                         $mockSqlDatabasePermissionInstance.Modify(@{
-                            Permission = [DatabasePermission[]] @(
-                                [DatabasePermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('Connect')
-                                }
-                                [DatabasePermission] @{
-                                    State      = 'GrantWithGrant'
-                                    Permission = @()
-                                }
-                                [DatabasePermission] @{
-                                    State      = 'Deny'
-                                    Permission = @()
-                                }
-                            )
-                        })
+                                Permission = [DatabasePermission[]] @(
+                                    [DatabasePermission] @{
+                                        State      = 'Grant'
+                                        Permission = @('Connect')
+                                    }
+                                    [DatabasePermission] @{
+                                        State      = 'GrantWithGrant'
+                                        Permission = @()
+                                    }
+                                    [DatabasePermission] @{
+                                        State      = 'Deny'
+                                        Permission = @()
+                                    }
+                                )
+                            })
                     } | Should -Not -Throw
                 }
 
@@ -1312,10 +1312,10 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
-                        Name         = 'MockUserName'
-                        DatabaseName = 'MockDatabaseName'
-                        InstanceName = 'NamedInstance'
-                        PermissionToInclude   = [DatabasePermission[]] @(
+                        Name                = 'MockUserName'
+                        DatabaseName        = 'MockDatabaseName'
+                        InstanceName        = 'NamedInstance'
+                        PermissionToInclude = [DatabasePermission[]] @(
                             [DatabasePermission] @{
                                 State      = 'Grant'
                                 Permission = @('Connect')
@@ -1368,21 +1368,21 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
                 InModuleScope -ScriptBlock {
                     {
                         $mockSqlDatabasePermissionInstance.Modify(@{
-                            PermissionToInclude = [DatabasePermission[]] @(
-                                [DatabasePermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('Connect')
-                                }
-                                [DatabasePermission] @{
-                                    State      = 'GrantWithGrant'
-                                    Permission = @('Update')
-                                }
-                                [DatabasePermission] @{
-                                    State      = 'Deny'
-                                    Permission = @()
-                                }
-                            )
-                        })
+                                PermissionToInclude = [DatabasePermission[]] @(
+                                    [DatabasePermission] @{
+                                        State      = 'Grant'
+                                        Permission = @('Connect')
+                                    }
+                                    [DatabasePermission] @{
+                                        State      = 'GrantWithGrant'
+                                        Permission = @('Update')
+                                    }
+                                    [DatabasePermission] @{
+                                        State      = 'Deny'
+                                        Permission = @()
+                                    }
+                                )
+                            })
                     } | Should -Not -Throw
                 }
 
@@ -1404,10 +1404,10 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:mockSqlDatabasePermissionInstance = [SqlDatabasePermission] @{
-                        Name         = 'MockUserName'
-                        DatabaseName = 'MockDatabaseName'
-                        InstanceName = 'NamedInstance'
-                        PermissionToExclude   = [DatabasePermission[]] @(
+                        Name                = 'MockUserName'
+                        DatabaseName        = 'MockDatabaseName'
+                        InstanceName        = 'NamedInstance'
+                        PermissionToExclude = [DatabasePermission[]] @(
                             [DatabasePermission] @{
                                 State      = 'Grant'
                                 Permission = @('Connect')
@@ -1460,21 +1460,21 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
                 InModuleScope -ScriptBlock {
                     {
                         $mockSqlDatabasePermissionInstance.Modify(@{
-                            PermissionToExclude = [DatabasePermission[]] @(
-                                [DatabasePermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('Connect')
-                                }
-                                [DatabasePermission] @{
-                                    State      = 'GrantWithGrant'
-                                    Permission = @('Update')
-                                }
-                                [DatabasePermission] @{
-                                    State      = 'Deny'
-                                    Permission = @()
-                                }
-                            )
-                        })
+                                PermissionToExclude = [DatabasePermission[]] @(
+                                    [DatabasePermission] @{
+                                        State      = 'Grant'
+                                        Permission = @('Connect')
+                                    }
+                                    [DatabasePermission] @{
+                                        State      = 'GrantWithGrant'
+                                        Permission = @('Update')
+                                    }
+                                    [DatabasePermission] @{
+                                        State      = 'Deny'
+                                        Permission = @()
+                                    }
+                                )
+                            })
                     } | Should -Not -Throw
                 }
 
@@ -1565,21 +1565,21 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
                 InModuleScope -ScriptBlock {
                     {
                         $mockSqlDatabasePermissionInstance.Modify(@{
-                            Permission = [DatabasePermission[]] @(
-                                [DatabasePermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('Connect')
-                                }
-                                [DatabasePermission] @{
-                                    State      = 'GrantWithGrant'
-                                    Permission = @()
-                                }
-                                [DatabasePermission] @{
-                                    State      = 'Deny'
-                                    Permission = @()
-                                }
-                            )
-                        })
+                                Permission = [DatabasePermission[]] @(
+                                    [DatabasePermission] @{
+                                        State      = 'Grant'
+                                        Permission = @('Connect')
+                                    }
+                                    [DatabasePermission] @{
+                                        State      = 'GrantWithGrant'
+                                        Permission = @()
+                                    }
+                                    [DatabasePermission] @{
+                                        State      = 'Deny'
+                                        Permission = @()
+                                    }
+                                )
+                            })
                     } | Should -Throw -ExpectedMessage $mockErrorRecord
                 }
             }
@@ -1658,21 +1658,21 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
                 InModuleScope -ScriptBlock {
                     {
                         $mockSqlDatabasePermissionInstance.Modify(@{
-                            Permission = [DatabasePermission[]] @(
-                                [DatabasePermission] @{
-                                    State      = 'Grant'
-                                    Permission = @('Connect')
-                                }
-                                [DatabasePermission] @{
-                                    State      = 'GrantWithGrant'
-                                    Permission = @()
-                                }
-                                [DatabasePermission] @{
-                                    State      = 'Deny'
-                                    Permission = @()
-                                }
-                            )
-                        })
+                                Permission = [DatabasePermission[]] @(
+                                    [DatabasePermission] @{
+                                        State      = 'Grant'
+                                        Permission = @('Connect')
+                                    }
+                                    [DatabasePermission] @{
+                                        State      = 'GrantWithGrant'
+                                        Permission = @()
+                                    }
+                                    [DatabasePermission] @{
+                                        State      = 'Deny'
+                                        Permission = @()
+                                    }
+                                )
+                            })
                     } | Should -Throw -ExpectedMessage $mockErrorRecord
                 }
             }
@@ -1698,9 +1698,9 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
                 InModuleScope -ScriptBlock {
                     {
                         $mockSqlDatabasePermissionInstance.AssertProperties(@{
-                            Permission = [DatabasePermission[]] @([DatabasePermission] @{})
-                            PermissionToInclude = [DatabasePermission[]] @([DatabasePermission] @{})
-                        })
+                                Permission          = [DatabasePermission[]] @([DatabasePermission] @{})
+                                PermissionToInclude = [DatabasePermission[]] @([DatabasePermission] @{})
+                            })
                     } | Should -Throw -ExpectedMessage '*DRC0010*'
                 }
             }
@@ -1711,9 +1711,9 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
                 InModuleScope -ScriptBlock {
                     {
                         $mockSqlDatabasePermissionInstance.AssertProperties(@{
-                            Permission = [DatabasePermission[]] @([DatabasePermission] @{})
-                            PermissionToExclude = [DatabasePermission[]] @([DatabasePermission] @{})
-                        })
+                                Permission          = [DatabasePermission[]] @([DatabasePermission] @{})
+                                PermissionToExclude = [DatabasePermission[]] @([DatabasePermission] @{})
+                            })
                     } | Should -Throw -ExpectedMessage '*DRC0010*'
                 }
             }
@@ -1753,15 +1753,15 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     $mockSqlDatabasePermissionInstance.AssertProperties(@{
-                        $MockPropertyName = [DatabasePermission[]] @(
-                            [DatabasePermission] @{
-                                State = 'Grant'
-                            }
-                            [DatabasePermission] @{
-                                State = 'Grant'
-                            }
-                        )
-                    })
+                            $MockPropertyName = [DatabasePermission[]] @(
+                                [DatabasePermission] @{
+                                    State = 'Grant'
+                                }
+                                [DatabasePermission] @{
+                                    State = 'Grant'
+                                }
+                            )
+                        })
                 } | Should -Throw -ExpectedMessage $mockErrorMessage
             }
         }
@@ -1776,16 +1776,16 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     $mockSqlDatabasePermissionInstance.AssertProperties(@{
-                        Permission = [DatabasePermission[]] @(
-                            # Missing state Deny.
-                            [DatabasePermission] @{
-                                State = 'Grant'
-                            }
-                            [DatabasePermission] @{
-                                State = 'GrantWithGrant'
-                            }
-                        )
-                    })
+                            Permission = [DatabasePermission[]] @(
+                                # Missing state Deny.
+                                [DatabasePermission] @{
+                                    State = 'Grant'
+                                }
+                                [DatabasePermission] @{
+                                    State = 'GrantWithGrant'
+                                }
+                            )
+                        })
                 } | Should -Throw -ExpectedMessage $mockErrorMessage
             }
         }
@@ -1810,17 +1810,17 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     $mockSqlDatabasePermissionInstance.AssertProperties(@{
-                        $MockPropertyName = [DatabasePermission[]] @(
-                            [DatabasePermission] @{
-                                State = 'Grant'
-                                Permission = 'Select'
-                            }
-                            [DatabasePermission] @{
-                                State = 'Deny'
-                                Permission = 'Select'
-                            }
-                        )
-                    })
+                            $MockPropertyName = [DatabasePermission[]] @(
+                                [DatabasePermission] @{
+                                    State      = 'Grant'
+                                    Permission = 'Select'
+                                }
+                                [DatabasePermission] @{
+                                    State      = 'Deny'
+                                    Permission = 'Select'
+                                }
+                            )
+                        })
                 } | Should -Throw -ExpectedMessage $mockErrorMessage
             }
         }
@@ -1842,22 +1842,22 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     $mockSqlDatabasePermissionInstance.AssertProperties(@{
-                        $MockPropertyName = [DatabasePermission[]] @(
-                            [DatabasePermission] @{
-                                State = 'Grant'
-                                <#
+                            $MockPropertyName = [DatabasePermission[]] @(
+                                [DatabasePermission] @{
+                                    State      = 'Grant'
+                                    <#
                                     This should not be able to be $null since the property
                                     is mandatory but do allow empty collection. So no need
                                     to test using $null value.
                                 #>
-                                Permission = @()
-                            }
-                            [DatabasePermission] @{
-                                State = 'Deny'
-                                Permission = 'Select'
-                            }
-                        )
-                    })
+                                    Permission = @()
+                                }
+                                [DatabasePermission] @{
+                                    State      = 'Deny'
+                                    Permission = 'Select'
+                                }
+                            )
+                        })
                 } | Should -Throw -ExpectedMessage $mockErrorMessage
             }
         }

@@ -55,9 +55,9 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
 
             $script:mockDefaultParameters = @{
                 DatabaseName = 'MissingDatabase'
-                Name = 'KnownUser'
-                State = 'Grant'
-                Permission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]::new()
+                Name         = 'KnownUser'
+                State        = 'Grant'
+                Permission   = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]::new()
             }
         }
 
@@ -83,9 +83,9 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
 
             $script:mockDefaultParameters = @{
                 DatabaseName = 'MissingDatabase'
-                Name = 'KnownUser'
-                State = 'Grant'
-                Permission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]::new()
+                Name         = 'KnownUser'
+                State        = 'Grant'
+                Permission   = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]::new()
             }
         }
 
@@ -116,9 +116,9 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
 
             $script:mockDefaultParameters = @{
                 DatabaseName = 'AdventureWorks'
-                Name = 'UnknownUser'
-                State = 'Grant'
-                Permission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]::new()
+                Name         = 'UnknownUser'
+                State        = 'Grant'
+                Permission   = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]::new()
             }
         }
 
@@ -151,11 +151,11 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 }
 
                 $script:mockDefaultParameters = @{
-                    Confirm = $false
+                    Confirm      = $false
                     DatabaseName = 'AdventureWorks'
-                    Name = 'Zebes\SamusAran'
-                    State = 'Deny'
-                    Permission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
+                    Name         = 'Zebes\SamusAran'
+                    State        = 'Deny'
+                    Permission   = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
                         Connect = $true
                     }
                 }
@@ -191,11 +191,11 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 }
 
                 $script:mockDefaultParameters = @{
-                    Force = $true
+                    Force        = $true
                     DatabaseName = 'AdventureWorks'
-                    Name = 'Zebes\SamusAran'
-                    State = 'Deny'
-                    Permission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
+                    Name         = 'Zebes\SamusAran'
+                    State        = 'Deny'
+                    Permission   = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
                         Connect = $true
                     }
                 }
@@ -231,11 +231,11 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 }
 
                 $script:mockDefaultParameters = @{
-                    WhatIf = $true
+                    WhatIf       = $true
                     DatabaseName = 'AdventureWorks'
-                    Name = 'Zebes\SamusAran'
-                    State = 'Deny'
-                    Permission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
+                    Name         = 'Zebes\SamusAran'
+                    State        = 'Deny'
+                    Permission   = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
                         Connect = $true
                     }
                 }
@@ -271,11 +271,11 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 }
 
                 $script:mockDefaultParameters = @{
-                    Confirm = $false
+                    Confirm      = $false
                     DatabaseName = 'AdventureWorks'
-                    Name = 'Zebes\SamusAran'
-                    State = 'Grant'
-                    Permission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
+                    Name         = 'Zebes\SamusAran'
+                    State        = 'Grant'
+                    Permission   = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
                         Connect = $true
                     }
                 }
@@ -335,12 +335,12 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 }
 
                 $script:mockDefaultParameters = @{
-                    Confirm = $false
+                    Confirm      = $false
                     DatabaseName = 'AdventureWorks'
-                    Name = 'Zebes\SamusAran'
-                    State = 'Grant'
-                    WithGrant = $true
-                    Permission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
+                    Name         = 'Zebes\SamusAran'
+                    State        = 'Grant'
+                    WithGrant    = $true
+                    Permission   = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
                         Connect = $true
                     }
                 }
@@ -385,11 +385,11 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 }
 
                 $script:mockDefaultParameters = @{
-                    Confirm = $false
+                    Confirm      = $false
                     DatabaseName = 'AdventureWorks'
-                    Name = 'Zebes\SamusAran'
-                    State = 'Revoke'
-                    Permission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
+                    Name         = 'Zebes\SamusAran'
+                    State        = 'Revoke'
+                    Permission   = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
                         Connect = $true
                     }
                 }
@@ -452,12 +452,12 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 }
 
                 $script:mockDefaultParameters = @{
-                    Confirm = $false
+                    Confirm      = $false
                     DatabaseName = 'AdventureWorks'
-                    Name = 'Zebes\SamusAran'
-                    State = 'Revoke'
-                    WithGrant = $true
-                    Permission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
+                    Name         = 'Zebes\SamusAran'
+                    State        = 'Revoke'
+                    WithGrant    = $true
+                    Permission   = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
                         Connect = $true
                     }
                 }
@@ -502,11 +502,11 @@ Describe 'Set-SqlDscDatabasePermission' -Tag 'Public' {
                 }
 
                 $script:mockDefaultParameters = @{
-                    Confirm = $false
+                    Confirm      = $false
                     DatabaseName = 'AdventureWorks'
-                    Name = 'Zebes\SamusAran'
-                    State = 'Deny'
-                    Permission = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
+                    Name         = 'Zebes\SamusAran'
+                    State        = 'Deny'
+                    Permission   = [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
                         Connect = $true
                     }
                 }
