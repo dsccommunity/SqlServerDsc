@@ -183,6 +183,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the maximum memory is not specified.
   - In a certain scenario the maximum memory would be enforced even if it was
     not specified in the configuration.
+- SqlPermission
+  - The `Permission` parameter is now mandatory for all `*-TargetResource`
+    ([issue #1761](https://github.com/dsccommunity/SqlServerDsc/issues/1761)).
 - SqlWindowsFirewall
   - Now the variables in `Get-TargetResource` are correctly initialized so
     they pass the new unit test that use strict mode.

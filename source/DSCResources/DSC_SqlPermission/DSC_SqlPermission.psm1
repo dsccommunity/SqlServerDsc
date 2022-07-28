@@ -41,7 +41,7 @@ function Get-TargetResource
         [System.String]
         $Principal,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('ConnectSql', 'AlterAnyAvailabilityGroup', 'ViewServerState', 'AlterAnyEndPoint')]
         [System.String[]]
         $Permission
@@ -140,7 +140,7 @@ function Set-TargetResource
         [System.String]
         $Principal,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('ConnectSql', 'AlterAnyAvailabilityGroup', 'ViewServerState', 'AlterAnyEndPoint')]
         [System.String[]]
         $Permission
@@ -238,7 +238,7 @@ function Test-TargetResource
         [System.String]
         $Principal,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('ConnectSql', 'AlterAnyAvailabilityGroup', 'ViewServerState', 'AlterAnyEndPoint')]
         [System.String[]]
         $Permission
