@@ -142,7 +142,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag 'Skip'  {
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.IsHadrEnabled | Should -Be $true
+            $resourceCurrentState.Ensure | Should -Be 'Present'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -196,7 +196,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag 'Skip'  {
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.IsHadrEnabled | Should -Be $false
+            $resourceCurrentState.Ensure | Should -Be 'Absent'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
