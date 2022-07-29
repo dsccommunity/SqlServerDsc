@@ -1,9 +1,5 @@
 version: 1.0.{build}
 
-branches:
-  except:
-  - main
-
 # Do not build on full releases.
 skip_tags: true
 
