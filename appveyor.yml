@@ -18,8 +18,9 @@ environment:
   # DEBUG: Un-comment this to get the same password for the RDP session for each build
   #APPVEYOR_RDP_PASSWORD: D5c1234!
   matrix:
+  # DEBUG: Comment and un-comment the different SQL Server version that should be tested.
   - TEST_CONFIGURATION: Integration_SQL2016
-  #- TEST_CONFIGURATION: Integration_SQL2017
+  - TEST_CONFIGURATION: Integration_SQL2017
   #- TEST_CONFIGURATION: Integration_SQL2019
 
 init:
