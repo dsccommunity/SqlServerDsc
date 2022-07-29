@@ -1067,6 +1067,15 @@ function Set-TargetResource
                 {
                     Write-Verbose -Message "Encryption Key Backup Username: $($EncryptionKeyBackupCredential.UserName)"
 
+                    try
+                    {
+                        $EncryptionKeyBackupCredential.GetNetworkCredential()
+                    }
+                    catch
+                    {
+                        throw 'Failed getting the network credential.'
+                    }
+
                     $invokeRsCimMethodRestoreEncryptionKeyParameters = @{
                         CimInstance = $reportingServicesData.Configuration
                         MethodName  = 'RestoreEncryptionKey'
