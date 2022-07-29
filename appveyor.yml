@@ -15,23 +15,27 @@ environment:
   APPVEYOR_RDP_PASSWORD: dsccommunity
   matrix:
   - TEST_CONFIGURATION: Integration_SQL2016
+  #- TEST_CONFIGURATION: Integration_SQL2017
+  #- TEST_CONFIGURATION: Integration_SQL2019
 
 init:
-- ps: >-
+- ps: |
     #$blockRdp = $true
+
     iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 install:
-- ps: >-
+- ps: |
     winrm quickconfig -quiet
 
 build_script:
-- pwsh: >-
+- pwsh: |
     # Build the module
+
     ./build.ps1 -ResolveDependency -tasks build
 
 test_script:
-- ps: >-
+- ps: |
     ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $env:TEST_CONFIGURATION -PesterPath @(
         # Run the integration tests in a specific group order.
         # Group 1
