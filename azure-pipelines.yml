@@ -161,8 +161,6 @@ stages:
         variables:
           # This sets environment variable $env:CI.
           CI: true
-          # This sets environment variable $env:CONFIGURATION.
-          configuration: $(TEST_CONFIGURATION)
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'

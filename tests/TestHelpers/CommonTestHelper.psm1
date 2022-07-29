@@ -331,7 +331,7 @@ function New-SQLSelfSignedCertificate
         passed in the parameter Category.
 
     .PARAMETER Category
-        One or more categories to check if they are set in $env:CONFIGURATION.
+        One or more categories to check if they are set in $env:TEST_CONFIGURATION.
 #>
 function Test-ContinuousIntegrationTaskCategory
 {
@@ -346,7 +346,7 @@ function Test-ContinuousIntegrationTaskCategory
 
     $result = $false
 
-    if ($env:CONFIGURATION -in $Category)
+    if ($env:TEST_CONFIGURATION -in $Category)
     {
         $result = $true
     }
