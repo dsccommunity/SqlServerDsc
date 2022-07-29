@@ -1,5 +1,31 @@
 # Integration tests for SqlServerDsc
 
+## Debugging
+
+There is a build worker that runs on the service Appveyor. Appveyor allows
+you to use RDP to access the build worker which can be helpful when debugging
+integration test.
+
+What images is used, what SQL Server version that is installed, and what
+integration tests is run is controlled by the file `appveyor.yml` in the
+project folder.
+
+For debug purpose every contributor is allowed to change the file `appveyor.yml`
+on a PR for debug purpose. But before a PR will be merged the file `appveyor.yml`
+must be reverted so that is looks like it does on the **main** branch (unless
+an issue is being fixed or a maintainer says otherwise).
+
+On each build run Appveyor outputs the IP address, account, and password
+for the connection. This information is at the top of each builds output
+log and can be found here: https://ci.appveyor.com/project/dsccommunity/sqlserverdsc
+
+By default the build worker is terminated once the build finishes, to keep
+the build worker online after the build finishes uncomment the line in
+`appveyor.yml`. The build worker will always be terminated after 60 minutes
+which is the run time open source projects gets.
+
+## Depends On
+
 For it to be easier to write integration tests for a resource that depends on
 other resources, this will list the run order of the integration tests that keep
 their configuration on the AppVeyor build worker. For example, the integration
@@ -14,7 +40,7 @@ tests.
 **Below are the integration tests listed in the run order, and with the dependency
 to each other. Dependencies are made to speed up the testing.**
 
-## SqlSetup
+### SqlSetup
 
 Installs the Database Engine, Analysis Service for SQL Server 2016, SQL Server 2017
 and SQL Server 2019 in three different Azure Pipelines jobs with the configuration
@@ -44,13 +70,13 @@ both Named Pipes and TCP/IP protocol enabled.
 >**Note:** Some services are stopped to save memory on the build worker. See the
 >column *State*.
 
-### Properties for all instances
+#### Properties for all instances
 
 - **Collation:** Finnish\_Swedish\_CI\_AS
 - **InstallSharedDir:** C:\Program Files\Microsoft SQL Server
 - **InstallSharedWOWDir:** C:\Program Files (x86)\Microsoft SQL Server
 
-### Users
+#### Users
 
 The following local users are created on the AppVeyor build worker and can
 be used by other integration tests.
@@ -73,7 +99,7 @@ sa | P@ssw0rd1 | Administrator of the Database Engine instances DSCSQLTEST. |
 with this user and that means that this user must have permission to access the
 properties `IsClustered` and `IsHadrEnable`.*
 
-### Image media (ISO)
+#### Image media (ISO)
 
 The path to the image media is set in the environment variable `$env:IsoImagePath`
 and the drive letter used to mount the image media is save in `$env:IsoDriveLetter`.
@@ -82,7 +108,7 @@ This information can be used for other integration tests that depends on
 the image media. Those integration test must be run after integration tests
 for resource SqlSetup has run.
 
-## SqlRSSetup
+### SqlRSSetup
 
 Installs _Microsoft SQL Server 2017 Reporting Services_ in Azure Pipelines job
 when the configuration name is `'Integration_SQL2017'`.
@@ -111,7 +137,7 @@ SSRS | Stopped
 >Services installed on the build worker, it could have been configured.
 >Other integration tests need to take that into consideration.
 
-### Properties for the instance SSRS 2017
+#### Properties for the instance SSRS 2017
 
 - **InstanceName:** SSRS
 - **CurrentVersion:** ^14.0.6981.38291 (depends on the version downloaded)
@@ -121,7 +147,7 @@ SSRS | Stopped
 - **ServiceName:** SQLServerReportingServices
 - **Edition:** Developer
 
-### Properties for the instance SSRS 2019
+#### Properties for the instance SSRS 2019
 
 - **InstanceName:** SSRS
 - **CurrentVersion:** ^15.0.7842.32355 (depends on the version downloaded)
@@ -131,7 +157,7 @@ SSRS | Stopped
 - **ServiceName:** SQLServerReportingServices
 - **Edition:** Developer
 
-### Users
+#### Users
 
 <!-- markdownlint-disable MD013 -->
 User | Password | Description
@@ -139,7 +165,7 @@ User | Password | Description
 .\SqlInstall | P@ssw0rd1 | The Reporting Services instance is installed using this account.
 <!-- markdownlint-enable MD013 -->
 
-## SqlAlwaysOnService
+### SqlAlwaysOnService
 
 *This integration test has been temporarily disabled because when*
 *the cluster feature is installed it requires a reboot.*
@@ -166,7 +192,7 @@ tests creates an Active Directory Detached Cluster with an IP address of
 
 The tests will leave the AlwaysOn service disabled.
 
-## SqlDatabase
+### SqlDatabase
 
 **Run order:** 2
 
@@ -179,7 +205,7 @@ Database | Collation
 --- | ---
 Database1 | Finnish_Swedish_CI_AS
 
-## SqlDatabaseDefaultLocation
+### SqlDatabaseDefaultLocation
 
 **Run order:** 2
 
@@ -192,7 +218,7 @@ Data | Log | Backup
 --- | --- | ---
 C:\SQLData | C:\SQLLog | C:\Backups
 
-## SqlLogin
+### SqlLogin
 
 **Run order:** 2
 
@@ -232,7 +258,7 @@ DscUser4 | SQL | P@ssw0rd1 | *None*
 >`SqlLogin`, integration tests and then set back again in a subsequent test.
 <!-- markdownlint-disable MD028 -->
 
-## SqlAgentAlert
+### SqlAgentAlert
 
 **Run order:** 2
 
@@ -241,7 +267,7 @@ DscUser4 | SQL | P@ssw0rd1 | *None*
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlAgentOperator
+### SqlAgentOperator
 
 **Run order:** 2
 
@@ -250,7 +276,7 @@ worker.*
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlDatabaseMail
+### SqlDatabaseMail
 
 **Run order:** 2
 
@@ -259,7 +285,7 @@ worker.*
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlEndpoint
+### SqlEndpoint
 
 **Run order:** 2
 
@@ -268,7 +294,7 @@ worker.*
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlServiceAccount
+### SqlServiceAccount
 
 **Run order:** 2
 
@@ -277,7 +303,7 @@ worker.*
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlRS
+### SqlRS
 
 Configures _SQL Server Reporting Services 2016_,  _SQL Server Reporting_
 _Services 2017_ and _SQL Server Reporting_
@@ -309,7 +335,7 @@ SSRS | - | The Reporting Services (2017 or 2019) is initialized, and in a workin
 >**Note:** The Reporting Services service is stopped to save memory on the build
 >worker.
 
-### Properties for the instance
+#### Properties for the instance
 
 - **Collation:** Finnish\_Swedish\_CI\_AS
 - **InstallSharedDir:** C:\Program Files\Microsoft SQL Server
@@ -317,7 +343,7 @@ SSRS | - | The Reporting Services (2017 or 2019) is initialized, and in a workin
 - **DatabaseServerName:** `$env:COMPUTERNAME`
 - **DatabaseInstanceName:** DSCSQLTEST
 
-## SqlRole
+### SqlRole
 
 **Run order:** 3
 
@@ -331,7 +357,7 @@ Server Role | Members
 DscServerRole1 | DscUser1, DscUser2
 DscServerRole2 | DscUser4
 
-## SqlDatabaseUser
+### SqlDatabaseUser
 
 **Run order:** 3
 
@@ -371,7 +397,7 @@ Name | Algorithm | Password
 --- | --- | ---
 AsymmetricKey1 | RSA_2048 | P@ssw0rd1
 
-## SqlDatabasePermission
+### SqlDatabasePermission
 
 **Run order:** 4
 
@@ -384,7 +410,7 @@ Principal | State | Permission
 --- | --- | ---
 User1 | Grant | Connect
 
-## SqlWindowsFirewall
+### SqlWindowsFirewall
 
 **Run order:** 4
 
@@ -394,7 +420,7 @@ This integration test are dependent on the environment variables that are
 set by the resource SqlSetup's integration tests. The integration test will
 not leave anything on any instance.
 
-## SqlReplication
+### SqlReplication
 
 **Run order:** 3
 
@@ -405,7 +431,7 @@ and the named instance `DSCSQLTEST` have the feature `REPLICATION` installed.
 
 The integration test will not leave anything on any instance.
 
-## SqlScript
+### SqlScript
 
 **Run order:** 4
 
@@ -433,7 +459,7 @@ Database name | Owner
 ScriptDatabase1 | $env:COMPUTERNAME\SqlAdmin
 ScriptDatabase2 | DscAdmin1
 
-## SqlScriptQuery
+### SqlScriptQuery
 
 **Run order:** 5
 
@@ -447,7 +473,7 @@ Database name | Owner
 ScriptDatabase3 | $env:COMPUTERNAME\SqlAdmin
 ScriptDatabase4 | DscAdmin1
 
-## SqlSecureConnection
+### SqlSecureConnection
 
 **Run order:** 5
 
@@ -456,7 +482,7 @@ ScriptDatabase4 | DscAdmin1
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlProtocol
+### SqlProtocol
 
 **Run order:** 5
 
@@ -468,7 +494,7 @@ enabled (SqlSetup is run with `NpEnabled = $true`).
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlProtocolTcpIp
+### SqlProtocolTcpIp
 
 **Run order:** 6
 
@@ -477,7 +503,7 @@ worker.*
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
-## SqlDatabaseObjectPermission
+### SqlDatabaseObjectPermission
 
 **Run order:** 6
 
