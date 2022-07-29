@@ -7,12 +7,16 @@ branches:
 # Do not build on full releases.
 skip_tags: true
 
+# See https://www.appveyor.com/docs/windows-images-software
+# DEBUG: for debug purpose, comment and un-comment images as needed.
 image:
-- Visual Studio 2019
-- Visual Studio 2017
+- Visual Studio 2019 # Windows Server 2019
+#- Visual Studio 2017 # Windows Server 2016
+#- Visual Studio 2013 # Windows Server 2012 R2
 
 environment:
-  APPVEYOR_RDP_PASSWORD: D5c1234!
+  # DEBUG: Un-comment this to get the same password for the RDP session for each build
+  #APPVEYOR_RDP_PASSWORD: D5c1234!
   matrix:
   - TEST_CONFIGURATION: Integration_SQL2016
   #- TEST_CONFIGURATION: Integration_SQL2017
@@ -20,6 +24,7 @@ environment:
 
 init:
 - ps: |
+    # DEBUG: Un-comment the following line so that build worker is kept up all of the 60 minutes.
     #$blockRdp = $true
     iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
@@ -34,6 +39,10 @@ build_script:
 
 test_script:
 - ps: |
+    # DEBUG: See start of each build run how to connect with RDP to build server for debugging.
+    # DEBUG: Remove integration tests as needed for the purpose of debugging. Note that some
+    # integration tests depend on each other to work. See the README for more information:
+    # https://github.com/dsccommunity/SqlServerDsc/blob/main/tests/Integration/README.md
     ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $env:TEST_CONFIGURATION -PesterPath @(
         # Run the integration tests in a specific group order.
         # Group 1
