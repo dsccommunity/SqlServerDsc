@@ -119,6 +119,8 @@ DscTest:
       - output
     ExcludeModuleFile:
       - Modules/DscResource.Common
+      # Must exclude built module file because it should not be tested like MOF-based resources
+      - SqlServerDsc.psm1
     MainGitBranch: main
 
 ####################################################
