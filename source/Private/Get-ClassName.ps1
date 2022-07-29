@@ -6,13 +6,25 @@
     .PARAMETER InputObject
        The object to be evaluated.
 
+    .PARAMETER Recurse
+       Specifies if the class name of inherited classes shall be returned. The
+       recursive stops when the first object of the type `[System.Object]` is
+       found.
+
+    .EXAMPLE
+        Get-ClassName -InputObject $this -Recurse
+
+        Get the class name of the current instance and all the inherited (parent)
+        classes.
+
     .OUTPUTS
-        Returns a string array with at least one item.
+        [System.String[]]
 #>
 function Get-ClassName
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Justification = 'Because the rule does not understands that the command returns [System.String[]] when using , (comma) in the return statement')]
     [CmdletBinding()]
-    [OutputType([System.Object[]])]
+    [OutputType([System.String[]])]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
@@ -39,5 +51,5 @@ function Get-ClassName
         }
     }
 
-    return , $class
+    return , [System.String[]] $class
 }

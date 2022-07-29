@@ -10,8 +10,15 @@
     .PARAMETER Property
        The result from the command Compare-DscParameterState.
 
+    .PARAMETER ResourceName
+       The name of the resource. Will be used to populate the property Code with
+       the correct value.
+
     .EXAMPLE
-        ConvertTo-Reason -Property (Compare-DscParameterState)
+        ConvertTo-Reason -Property (Compare-DscParameterState) -ResourceName 'MyResource'
+
+        Returns an array of `[Reason]` that contain all the properties not in desired
+        state and why a specific property is not in desired state.
 
     .OUTPUTS
         [Reason[]]

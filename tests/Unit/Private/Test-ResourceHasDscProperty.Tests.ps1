@@ -42,7 +42,7 @@ AfterAll {
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 }
 
-Describe 'Test-ResourceHasProperty' -Tag 'Private' {
+Describe 'Test-ResourceHasDscProperty' -Tag 'Private' {
     Context 'When resource does not have an Ensure property' {
         BeforeAll {
             <#
@@ -78,7 +78,7 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
 
         It 'Should return the correct value' {
             InModuleScope -ScriptBlock {
-                $result = Test-ResourceHasProperty -Name 'Ensure' -InputObject $script:mockResourceBaseInstance
+                $result = Test-ResourceHasDscProperty -Name 'Ensure' -InputObject $script:mockResourceBaseInstance
 
                 $result | Should -BeFalse
             }
@@ -120,7 +120,7 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
 
         It 'Should return the correct value' {
             InModuleScope -ScriptBlock {
-                $result = Test-ResourceHasProperty -Name 'Ensure' -InputObject $script:mockResourceBaseInstance
+                $result = Test-ResourceHasDscProperty -Name 'Ensure' -InputObject $script:mockResourceBaseInstance
 
                 $result | Should -BeTrue
             }
@@ -161,7 +161,7 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
 
         It 'Should return the correct value' {
             InModuleScope -ScriptBlock {
-                $result = Test-ResourceHasProperty -Name 'Ensure' -InputObject $script:mockResourceBaseInstance
+                $result = Test-ResourceHasDscProperty -Name 'Ensure' -InputObject $script:mockResourceBaseInstance
 
                 $result | Should -BeFalse
             }
@@ -206,7 +206,7 @@ $script:mockResourceBaseInstance = [MyMockResource] @{
 
             It 'Should return the correct value' {
                 InModuleScope -ScriptBlock {
-                    $result = Test-ResourceHasProperty -Name 'MyProperty3' -HasValue -InputObject $script:mockResourceBaseInstance
+                    $result = Test-ResourceHasDscProperty -Name 'MyProperty3' -HasValue -InputObject $script:mockResourceBaseInstance
 
                     $result | Should -BeTrue
                 }
@@ -248,7 +248,7 @@ $script:mockResourceBaseInstance = [MyMockResource] @{}
 
             It 'Should return the correct value' {
                 InModuleScope -ScriptBlock {
-                    $result = Test-ResourceHasProperty -Name 'MyProperty3' -HasValue -InputObject $script:mockResourceBaseInstance
+                    $result = Test-ResourceHasDscProperty -Name 'MyProperty3' -HasValue -InputObject $script:mockResourceBaseInstance
 
                     $result | Should -BeFalse
                 }

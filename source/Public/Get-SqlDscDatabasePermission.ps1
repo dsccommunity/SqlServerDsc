@@ -19,6 +19,8 @@
         $serverInstance = Connect-SqlDscDatabaseEngine
         Get-SqlDscDatabasePermission -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal'
 
+        Get the permissions for the principal 'MyPrincipal'.
+
     .NOTES
         This command excludes fixed roles like _db_datareader_ by default, and will
         always return `$null` if a fixed role is specified as **Name**.
@@ -31,16 +33,11 @@
 #>
 function Get-SqlDscDatabasePermission
 {
-    <#
-        The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error
-        in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8
-        When QA test run it loads the stub SMO classes so that the rule passes.
-        To get the rule to pass in the editor, in the Integrated Console run:
-        Add-Type -Path 'Tests/Unit/Stubs/SMO.cs'
-    #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Justification = 'Because the rule does not understands that the command returns [System.String[]] when using , (comma) in the return statement')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification = 'Because the code throws based on an prior expression')]
     [CmdletBinding()]
-    [OutputType([System.Object[]])]
+    [OutputType([Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]])]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
@@ -94,5 +91,5 @@ function Get-SqlDscDatabasePermission
         Write-Error -Message $missingDatabaseMessage -Category 'InvalidOperation' -ErrorId 'GSDDP0002' -TargetObject $DatabaseName
     }
 
-    return , $getSqlDscDatabasePermissionResult
+    return , [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]] $getSqlDscDatabasePermissionResult
 }

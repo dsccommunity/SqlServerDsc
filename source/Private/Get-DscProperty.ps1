@@ -1,16 +1,51 @@
 
 <#
     .SYNOPSIS
-        Returns all of the DSC resource key properties and their values.
+        Returns DSC resource properties that is part of a class-based DSC resource.
 
     .DESCRIPTION
-        Returns all of the DSC resource key properties and their values.
+        Returns DSC resource properties that is part of a class-based DSC resource.
+        The properties can be filtered using name, type, or has been assigned a value.
 
     .PARAMETER InputObject
         The object that contain one or more key properties.
 
+    .PARAMETER Name
+        Specifies one or more property names to return. If left out all properties
+        are returned.
+
+    .PARAMETER Type
+        Specifies one or more property types to return. If left out all property
+        types are returned.
+
+    .PARAMETER HasValue
+        Specifies to return only properties that has been assigned a non-null value.
+        If left out all properties are returned regardless if there is a value
+        assigned or not.
+
+    .EXAMPLE
+        Get-DscProperty -InputObject $this
+
+        Returns all DSC resource properties of the DSC resource.
+
+    .EXAMPLE
+        Get-DscProperty -InputObject $this -Name @('MyProperty1', 'MyProperty2')
+
+        Returns the specified DSC resource properties names of the DSC resource.
+
+    .EXAMPLE
+        Get-DscProperty -InputObject $this -Type @('Mandatory', 'Optional')
+
+        Returns the specified DSC resource property types of the DSC resource.
+
+    .EXAMPLE
+        Get-DscProperty -InputObject $this -Type @('Optional') -HasValue
+
+        Returns the specified DSC resource property types of the DSC resource,
+        but only those properties that has been assigned a non-null value.
+
     .OUTPUTS
-        Hashtable
+        [System.Collections.Hashtable]
 #>
 function Get-DscProperty
 {
@@ -93,7 +128,7 @@ function Get-DscProperty
     {
         if ($HasValue.IsPresent)
         {
-            $isAssigned = Test-ResourcePropertyIsAssigned -Name $currentProperty -InputObject $InputObject
+            $isAssigned = Test-ResourceDscPropertyIsAssigned -Name $currentProperty -InputObject $InputObject
 
             if (-not $isAssigned)
             {

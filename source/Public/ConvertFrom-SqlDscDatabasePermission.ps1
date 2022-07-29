@@ -6,14 +6,17 @@
     .PARAMETER Permission
         Specifies a DatabasePermission object.
 
-    .OUTPUTS
-        [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]]
-
     .EXAMPLE
         [DatabasePermission] @{
             State = 'Grant'
             Permission = 'Connect'
         } | ConvertFrom-SqlDscDatabasePermission
+
+        Returns an object of `[Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]`
+        with all the permissions set to $true that was part of the `[DatabasePermission]`.
+
+    .OUTPUTS
+        [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet]
 #>
 function ConvertFrom-SqlDscDatabasePermission
 {

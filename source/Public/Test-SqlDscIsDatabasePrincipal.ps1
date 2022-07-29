@@ -32,16 +32,35 @@
         $serverInstance = Connect-SqlDscDatabaseEngine
         Test-SqlDscIsDatabasePrincipal -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal'
 
+        Returns $true if the principal exist in the database, if not $false is returned.
+
+    .EXAMPLE
+        $serverInstance = Connect-SqlDscDatabaseEngine
+        Test-SqlDscIsDatabasePrincipal -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal' -ExcludeUsers
+
+        Returns $true if the principal exist in the database and is not a user, if not $false is returned.
+
+    .EXAMPLE
+        $serverInstance = Connect-SqlDscDatabaseEngine
+        Test-SqlDscIsDatabasePrincipal -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal' -ExcludeRoles
+
+        Returns $true if the principal exist in the database and is not a role, if not $false is returned.
+
+    .EXAMPLE
+        $serverInstance = Connect-SqlDscDatabaseEngine
+        Test-SqlDscIsDatabasePrincipal -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal' -ExcludeFixedRoles
+
+        Returns $true if the principal exist in the database and is not a fixed role, if not $false is returned.
+
+    .EXAMPLE
+        $serverInstance = Connect-SqlDscDatabaseEngine
+        Test-SqlDscIsDatabasePrincipal -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal' -ExcludeApplicationRoles
+
+        Returns $true if the principal exist in the database and is not a application role, if not $false is returned.
 #>
 function Test-SqlDscIsDatabasePrincipal
 {
-    <#
-        The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error
-        in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8
-        When QA test run it loads the stub SMO classes so that the rule passes.
-        To get the rule to pass in the editor, in the Integrated Console run:
-        Add-Type -Path 'Tests/Unit/Stubs/SMO.cs'
-    #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param

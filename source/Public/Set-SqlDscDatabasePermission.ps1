@@ -25,8 +25,8 @@
         **State** is set to `Revoke` the right to grant will also be revoked,
         and the revocation will cascade.
 
-    .PARAMETER Permission
-        Specifies that the permissions will
+    .PARAMETER Force
+        Specifies that the permissions should be set with out any confirmation.
 
     .OUTPUTS
         None.
@@ -41,6 +41,8 @@
 
         Set-SqlDscDatabasePermission -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal' -State 'Grant' -Permission $setPermission
 
+        Sets the permissions for the principal 'MyPrincipal'.
+
     .NOTES
         This command excludes fixed roles like _db_datareader_ by default, and will
         always throw a non-terminating error if a fixed role is specified as **Name**.
@@ -52,13 +54,7 @@
 #>
 function Set-SqlDscDatabasePermission
 {
-    <#
-        The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error
-        in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8
-        When QA test run it loads the stub SMO classes so that the rule passes.
-        To get the rule to pass in the editor, in the Integrated Console run:
-        Add-Type -Path 'Tests/Unit/Stubs/SMO.cs'
-    #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification = 'Because the code throws based on an prior expression')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType()]

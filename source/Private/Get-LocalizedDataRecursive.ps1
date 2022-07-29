@@ -16,8 +16,20 @@
     .PARAMETER ClassName
         An array of class names, normally provided by `Get-ClassName -Recurse`.
 
+    .EXAMPLE
+        Get-LocalizedDataRecursive -ClassName $InputObject.GetType().FullName
+
+        Returns a hashtable containing all the localized strings for the current
+        instance.
+
+    .EXAMPLE
+        Get-LocalizedDataRecursive -ClassName (Get-ClassNamn -InputObject $this -Recurse)
+
+        Returns a hashtable containing all the localized strings for the current
+        instance and any inherited (parent) classes.
+
     .OUTPUTS
-        Returns a string array with at least one item.
+        [System.Collections.Hashtable]
 #>
 function Get-LocalizedDataRecursive
 {

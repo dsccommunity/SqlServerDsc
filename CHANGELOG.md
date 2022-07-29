@@ -56,8 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Get-ClassName`
     - `Get-DscProperty`
     - `Get-LocalizedDataRecursive`
-    - `Test-ResourceHasProperty`
-    - `Test-ResourcePropertyIsAssigned`
+    - `Test-ResourceHasDscProperty`
+    - `Test-ResourceDscPropertyIsAssigned`
   - The following public functions were added to the module (see comment-based
     help for more information):
     - `Connect-SqlDscDatabaseEngine`

@@ -42,7 +42,7 @@ AfterAll {
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 }
 
-Describe 'Test-ResourcePropertyIsAssigned' -Tag 'Private' {
+Describe 'Test-ResourceDscPropertyIsAssigned' -Tag 'Private' {
     Context 'When DSC property has a non-null value' {
         BeforeAll {
             <#
@@ -80,7 +80,7 @@ $script:mockResourceBaseInstance = [MyMockResource] @{
 
         It 'Should return the correct value' {
             InModuleScope -ScriptBlock {
-                $result = Test-ResourcePropertyIsAssigned -Name 'MyProperty3' -InputObject $script:mockResourceBaseInstance
+                $result = Test-ResourceDscPropertyIsAssigned -Name 'MyProperty3' -InputObject $script:mockResourceBaseInstance
 
                 $result | Should -BeTrue
             }
@@ -123,7 +123,7 @@ $script:mockResourceBaseInstance = [MyMockResource] @{}
 
         It 'Should return the correct value' {
             InModuleScope -ScriptBlock {
-                $result = Test-ResourcePropertyIsAssigned -Name 'MyProperty3' -InputObject $script:mockResourceBaseInstance
+                $result = Test-ResourceDscPropertyIsAssigned -Name 'MyProperty3' -InputObject $script:mockResourceBaseInstance
 
                 $result | Should -BeFalse
             }

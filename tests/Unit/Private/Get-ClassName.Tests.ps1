@@ -49,7 +49,7 @@ Describe 'Get-ClassName' -Tag 'Private' {
                 InModuleScope -ScriptBlock {
                     $result = Get-ClassName -InputObject ([System.UInt32] 3)
 
-                    $result.GetType().FullName | Should -Be 'System.Object[]'
+                    $result.GetType().FullName | Should -Be 'System.String[]'
 
                     $result | Should -HaveCount 1
                     $result | Should -Contain 'System.UInt32'
@@ -62,7 +62,7 @@ Describe 'Get-ClassName' -Tag 'Private' {
                 InModuleScope -ScriptBlock {
                     $result = ([System.UInt32] 3) | Get-ClassName
 
-                    $result.GetType().FullName | Should -Be 'System.Object[]'
+                    $result.GetType().FullName | Should -Be 'System.String[]'
 
                     $result | Should -HaveCount 1
                     $result | Should -Contain 'System.UInt32'
@@ -77,7 +77,7 @@ Describe 'Get-ClassName' -Tag 'Private' {
                 InModuleScope -ScriptBlock {
                     $result = Get-ClassName -InputObject ([System.UInt32] 3) -Recurse
 
-                    $result.GetType().FullName | Should -Be 'System.Object[]'
+                    $result.GetType().FullName | Should -Be 'System.String[]'
 
                     $result | Should -HaveCount 2
                     $result | Should -Contain 'System.UInt32'
@@ -94,7 +94,7 @@ Describe 'Get-ClassName' -Tag 'Private' {
                 InModuleScope -ScriptBlock {
                     $result = ([System.UInt32] 3) | Get-ClassName -Recurse
 
-                    $result.GetType().FullName | Should -Be 'System.Object[]'
+                    $result.GetType().FullName | Should -Be 'System.String[]'
 
                     $result | Should -HaveCount 2
                     $result | Should -Contain 'System.UInt32'

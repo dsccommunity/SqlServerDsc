@@ -41,6 +41,9 @@
         Connect-SqlDscDatabaseEngine -ServerName 'sql.company.local' -InstanceName 'MyInstance'
 
         Connects to the instance 'MyInstance' on the server 'sql.company.local'.
+
+    .OUTPUTS
+        None.
 #>
 function Connect-SqlDscDatabaseEngine
 {

@@ -202,22 +202,10 @@ namespace Microsoft.SqlServer.Management.Smo
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionSetBase
     // Used by:
     //  SqlDatabasePermission.Tests.ps1
+    //  Get-SqlDscDatabasePermission.Tests.ps1
     public class DatabasePermissionSet
     {
         public DatabasePermissionSet(){}
-
-        public DatabasePermissionSet( bool connect, bool update )
-        {
-            this.Connect = connect;
-            this.Update = update;
-        }
-
-        // Used for testing SqlDatabasePermission
-        public DatabasePermissionSet( bool connect, bool update, bool select, bool insert ) : this ( connect, update )
-        {
-            this.Select = select;
-            this.Insert = insert;
-        }
 
         public bool Connect = false;
         public bool Update = false;
@@ -232,6 +220,7 @@ namespace Microsoft.SqlServer.Management.Smo
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionInfo
     // Used by:
     //  SqlDatabasePermission.Tests.ps1
+    //  Get-SqlDscDatabasePermission.Tests.ps1
     public class DatabasePermissionInfo
     {
         public DatabasePermissionInfo()
@@ -246,7 +235,11 @@ namespace Microsoft.SqlServer.Management.Smo
         }
 
         public Microsoft.SqlServer.Management.Smo.DatabasePermissionSet PermissionType;
-        public string PermissionState = "Grant";
+        public string PermissionState;
+        public string Grantee;
+        public string GrantorType;
+        public string ObjectClass;
+        public string ObjectName;
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.Server

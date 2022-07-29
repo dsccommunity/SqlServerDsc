@@ -76,7 +76,7 @@ class ResourceBase
             state for property Ensure cannot be determined until the method Compare()
             has run to determined if other properties are not in desired state.
         #>
-        if (($this | Test-ResourceHasProperty -Name 'Ensure') -and -not $getCurrentStateResult.ContainsKey('Ensure'))
+        if (($this | Test-ResourceHasDscProperty -Name 'Ensure') -and -not $getCurrentStateResult.ContainsKey('Ensure'))
         {
             $ignoreProperty += 'Ensure'
         }
@@ -91,7 +91,7 @@ class ResourceBase
             Return the correct values for Ensure property if the derived DSC resource
             has such property and it hasn't been already set by GetCurrentState().
         #>
-        if (($this | Test-ResourceHasProperty -Name 'Ensure') -and -not $getCurrentStateResult.ContainsKey('Ensure'))
+        if (($this | Test-ResourceHasDscProperty -Name 'Ensure') -and -not $getCurrentStateResult.ContainsKey('Ensure'))
         {
             if ($propertiesNotInDesiredState)
             {
@@ -136,7 +136,7 @@ class ResourceBase
             Return the correct values for Reasons property if the derived DSC resource
             has such property and it hasn't been already set by GetCurrentState().
         #>
-        if (($this | Test-ResourceHasProperty -Name 'Reasons') -and -not $getCurrentStateResult.ContainsKey('Reasons'))
+        if (($this | Test-ResourceHasDscProperty -Name 'Reasons') -and -not $getCurrentStateResult.ContainsKey('Reasons'))
         {
             # Always return an empty array if all properties are in desired state.
             $dscResourceObject.Reasons = $propertiesNotInDesiredState |

@@ -158,23 +158,29 @@ Describe 'Get-SqlDscDatabasePermission' -Tag 'Public' {
                                     $SqlServerLogin
                                 )
 
-                                $mockEnumDatabasePermissions = @()
+                                $mockEnumDatabasePermissions = [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]] @()
 
-                                $mockEnumDatabasePermissions += New-Object -TypeName Object |
-                                    Add-Member -MemberType NoteProperty -Name PermissionType -Value (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($true, $false)) -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name Grantee -Value 'Zebes\SamusAran' -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                                $mockEnumDatabasePermissions += [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo] @{
+                                    PermissionType  =  [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
+                                        Connect = $true
+                                    }
+                                    PermissionState = 'Grant'
+                                    Grantee         = 'Zebes\SamusAran'
+                                    GrantorType     = 'User'
+                                    ObjectClass     = 'DatabaseName'
+                                    ObjectName      = 'AdventureWork'
+                                }
 
-                                $mockEnumDatabasePermissions += New-Object -TypeName Object |
-                                    Add-Member -MemberType NoteProperty -Name PermissionType -Value $(New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.DatabasePermissionSet' -ArgumentList @($false, $true)) -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name PermissionState -Value 'Grant' -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name Grantee -Value 'Zebes\SamusAran' -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name GrantorType -Value 'User' -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name ObjectClass -Value 'DatabaseName' -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name ObjectName -Value 'AdventureWorks' -PassThru
+                                $mockEnumDatabasePermissions += [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo] @{
+                                    PermissionType  =  [Microsoft.SqlServer.Management.Smo.DatabasePermissionSet] @{
+                                        Update = $true
+                                    }
+                                    PermissionState = 'Grant'
+                                    Grantee         = 'Zebes\SamusAran'
+                                    GrantorType     = 'User'
+                                    ObjectClass     = 'DatabaseName'
+                                    ObjectName      = 'AdventureWork'
+                                }
 
                                 return $mockEnumDatabasePermissions
                             } -PassThru -Force

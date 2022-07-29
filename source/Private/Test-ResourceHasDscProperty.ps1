@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-        Tests wether the class-based resource has the specified property.
+        Tests whether the class-based resource has the specified property.
 
     .DESCRIPTION
-        Tests wether the class-based resource has the specified property.
+        Tests whether the class-based resource has the specified property.
 
     .PARAMETER InputObject
         Specifies the object that should be tested for existens of the specified
@@ -16,10 +16,21 @@
         Specifies if the property should be evaluated to have a non-value. If
         the property exist but is assigned `$null` the command returns `$false`.
 
+    .EXAMPLE
+        Test-ResourceHasDscProperty -InputObject $this -Name 'MyDscProperty'
+
+        Returns $true or $false whether the property exist or not.
+
+    .EXAMPLE
+        Test-ResourceHasDscProperty -InputObject $this -Name 'MyDscProperty' -HasValue
+
+        Returns $true if the property exist and is assigned a non-null value, if not
+        $false is returned.
+
     .OUTPUTS
-        [Boolean]
+        [System.Boolean]
 #>
-function Test-ResourceHasProperty
+function Test-ResourceHasDscProperty
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]

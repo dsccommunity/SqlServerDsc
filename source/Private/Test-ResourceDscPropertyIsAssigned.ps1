@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-        Tests wether the class-based resource property is assigned a non-null value.
+        Tests whether the class-based resource property is assigned a non-null value.
 
     .DESCRIPTION
-        Tests wether the class-based resource property is assigned a non-null value.
+        Tests whether the class-based resource property is assigned a non-null value.
 
     .PARAMETER InputObject
         Specifies the object that contain the property.
@@ -11,10 +11,15 @@
     .PARAMETER Name
         Specifies the name of the property.
 
+    .EXAMPLE
+        Test-ResourceDscPropertyIsAssigned -InputObject $this -Name 'MyDscProperty'
+
+        Returns $true or $false whether the property is assigned or not.
+
     .OUTPUTS
-        [Boolean]
+        [System.Boolean]
 #>
-function Test-ResourcePropertyIsAssigned
+function Test-ResourceDscPropertyIsAssigned
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]

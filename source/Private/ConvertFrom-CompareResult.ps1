@@ -8,6 +8,9 @@
     .EXAMPLE
         ConvertFrom-CompareResult -CompareResult (Compare-DscParameterState)
 
+        Returns a hashtable that contain all the properties not in desired state
+        and their expected value.
+
     .OUTPUTS
         [System.Collections.Hashtable]
 #>

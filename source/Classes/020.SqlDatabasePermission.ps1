@@ -324,7 +324,7 @@ class SqlDatabasePermission : ResourceBase
             }
         }
 
-        $isPropertyPermissionToIncludeAssigned = $this | Test-ResourcePropertyIsAssigned -Name 'PermissionToInclude'
+        $isPropertyPermissionToIncludeAssigned = $this | Test-ResourceDscPropertyIsAssigned -Name 'PermissionToInclude'
 
         if ($isPropertyPermissionToIncludeAssigned)
         {
@@ -374,7 +374,7 @@ class SqlDatabasePermission : ResourceBase
             }
         }
 
-        $isPropertyPermissionToExcludeAssigned = $this | Test-ResourcePropertyIsAssigned -Name 'PermissionToExclude'
+        $isPropertyPermissionToExcludeAssigned = $this | Test-ResourceDscPropertyIsAssigned -Name 'PermissionToExclude'
 
         if ($isPropertyPermissionToExcludeAssigned)
         {

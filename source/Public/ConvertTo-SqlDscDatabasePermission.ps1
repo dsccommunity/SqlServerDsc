@@ -7,13 +7,16 @@
         Specifies a collection of Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo
         objects.
 
-    .OUTPUTS
-        [DatabasePermission[]]
-
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
         $databasePermissionInfo = Get-SqlDscDatabasePermission -ServerObject $serverInstance -DatabaseName 'MyDatabase' -Name 'MyPrincipal'
         ConvertTo-SqlDscDatabasePermission -DatabasePermissionInfo $databasePermissionInfo
+
+        Get all permissions for the principal 'MyPrincipal' and converts the permissions
+        into an array of `[DatabasePermission[]]`.
+
+    .OUTPUTS
+        [DatabasePermission[]]
 #>
 function ConvertTo-SqlDscDatabasePermission
 {
