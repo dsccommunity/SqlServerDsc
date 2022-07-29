@@ -1065,6 +1065,8 @@ function Set-TargetResource
             {
                 if ( $restoreKey )
                 {
+                    Write-Verbose -Message "Encryption Key Backup Username: $($EncryptionKeyBackupCredential.UserName)"
+
                     $invokeRsCimMethodRestoreEncryptionKeyParameters = @{
                         CimInstance = $reportingServicesData.Configuration
                         MethodName  = 'RestoreEncryptionKey'
@@ -1090,11 +1092,14 @@ function Set-TargetResource
 
                     $initializeReportServerResult = Invoke-RsCimMethod @invokeRsCimMethodInitializeReportServerParameters
                     $reportingServicesInitialized = $initializeReportServerResult.ReturnValue
+                    Write-Verbose -Message "Reporting Services Initialized: $reportingServicesInitialized" -Verbose
                 }
                 catch [System.Management.Automation.RuntimeException]
                 {
                     if ( $_.Exception -match 'The report server was unable to validate the integrity of encrypted data in the database' )
                     {
+                        Write-Verbose -Message $_.Exception -Verbose
+
                         # Restore the encryption key before trying again
                         $restoreKey = $true
                     }
