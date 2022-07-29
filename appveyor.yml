@@ -12,7 +12,6 @@ image:
 - Visual Studio 2017
 
 environment:
-  APPVEYOR_RDP_PASSWORD: D5Community1234!
   matrix:
   - TEST_CONFIGURATION: Integration_SQL2016
   #- TEST_CONFIGURATION: Integration_SQL2017
