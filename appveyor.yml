@@ -1,0 +1,77 @@
+version: 1.0.{build}
+
+# Do not build on full releases.
+skip_tags: true
+
+# See https://www.appveyor.com/docs/windows-images-software
+# DEBUG: for debug purpose, comment and un-comment images as needed.
+image:
+- Visual Studio 2019 # Windows Server 2019
+#- Visual Studio 2017 # Windows Server 2016
+#- Visual Studio 2013 # Windows Server 2012 R2
+
+environment:
+  # DEBUG: Un-comment this to get the same password for the RDP session for each build
+  #APPVEYOR_RDP_PASSWORD: D5c1234!
+  matrix:
+  # DEBUG: Comment and un-comment the different SQL Server version that should be tested.
+  - TEST_CONFIGURATION: Integration_SQL2016
+  - TEST_CONFIGURATION: Integration_SQL2017
+  #- TEST_CONFIGURATION: Integration_SQL2019
+
+init:
+- ps: |
+    # DEBUG: Un-comment the following line so that build worker is kept up all of the 60 minutes.
+    #$blockRdp = $true
+    iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+install:
+- ps: |
+    winrm quickconfig -quiet
+
+build_script:
+- pwsh: |
+    # Build the module
+    ./build.ps1 -ResolveDependency -tasks build
+
+test_script:
+- ps: |
+    # DEBUG: See start of each build run how to connect with RDP to build server for debugging.
+    # DEBUG: Comment and un-comment integration tests as needed for the purpose of debugging.
+    # Note that some integration tests depend on each other to work. See the README for more
+    # information: https://github.com/dsccommunity/SqlServerDsc/blob/main/tests/Integration/README.md
+    ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $env:TEST_CONFIGURATION -PesterPath @(
+        ### Run the integration tests in a specific group order.
+        ## Group 1
+        'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
+        # Group 2
+        #'tests/Integration/DSC_SqlAgentAlert.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlLogin.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
+        'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlDatabase.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlAlwaysOnService.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlAgentOperator.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlServiceAccount.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
+        ## Group 3
+        #'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
+        'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
+        ## Group 4
+        #'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlWindowsFirewall.Integration.Tests.ps1'
+        ## Group 5
+        #'tests/Integration/DSC_SqlSecureConnection.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlProtocol.Integration.Tests.ps1'
+        ## Group 6 (tests makes changes that could make SQL Server to loose connectivity)
+        #'tests/Integration/DSC_SqlProtocolTcpIp.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlDatabaseObjectPermission.Integration.Tests.ps1'
+    )
+
+deploy: off
