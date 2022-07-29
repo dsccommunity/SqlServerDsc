@@ -12,7 +12,7 @@ image:
 - Visual Studio 2017
 
 environment:
-  APPVEYOR_RDP_PASSWORD: dsccommunity
+  APPVEYOR_RDP_PASSWORD: D5Community1234!
   matrix:
   - TEST_CONFIGURATION: Integration_SQL2016
   #- TEST_CONFIGURATION: Integration_SQL2017
@@ -21,7 +21,6 @@ environment:
 init:
 - ps: |
     #$blockRdp = $true
-
     iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 install:
@@ -31,7 +30,6 @@ install:
 build_script:
 - pwsh: |
     # Build the module
-
     ./build.ps1 -ResolveDependency -tasks build
 
 test_script:
