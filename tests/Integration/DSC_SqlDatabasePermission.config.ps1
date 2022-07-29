@@ -1,7 +1,13 @@
-#region HEADER
-# Integration Test Config Template Version: 1.2.0
-#endregion
+<#
+    .NOTES
+        There are integration tests in the file DSC_SqlDatabasePermission.Integration.Tests.ps1
+        that is using the command Invoke-DscResource to run tests. Those test does
+        not have a configuration in this file, but do use the $ConfigurationData.
 
+        The tests using the command Invoke-DscResource assumes that only permission
+        left for test user 'User1' after running the configurations in this file is
+        a grant for permission 'Connect'.
+#>
 $configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
 if (Test-Path -Path $configFile)
 {
@@ -19,7 +25,12 @@ else
                 NodeName          = 'localhost'
                 CertificateFile   = $env:DscPublicCertificatePath
 
-                UserName          = "$env:COMPUTERNAME\SqlAdmin"
+                <#
+                    This must be either the UPN username (e.g. username@domain.local)
+                    or the user name without the NetBIOS name (e.g. username). Using
+                    the NetBIOS name (e.g. DOMAIN\username) will not work.
+                #>
+                UserName          = 'SqlAdmin'
                 Password          = 'P@ssw0rd1'
 
                 ServerName        = $env:COMPUTERNAME
@@ -47,19 +58,33 @@ Configuration DSC_SqlDatabasePermission_Grant_Config
     {
         SqlDatabasePermission 'Integration_Test'
         {
-            Ensure               = 'Present'
-            Name                 = $Node.User1_Name
-            DatabaseName         = $Node.DatabaseName
-            PermissionState      = 'Grant'
-            Permissions          = @(
-                'Select'
-                'CreateTable'
-            )
-
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
+            DatabaseName         = $Node.DatabaseName
+            Name                 = $Node.User1_Name
+            Permission   = @(
+                DatabasePermission
+                {
+                    State      = 'Grant'
+                    Permission = @(
+                        'Connect'
+                        'Select'
+                        'CreateTable'
+                    )
+                }
+                DatabasePermission
+                {
+                    State      = 'GrantWithGrant'
+                    Permission = @()
+                }
+                DatabasePermission
+                {
+                    State      = 'Deny'
+                    Permission = @()
+                }
+            )
 
-            PsDscRunAsCredential = New-Object `
+            Credential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
@@ -78,21 +103,28 @@ Configuration DSC_SqlDatabasePermission_RemoveGrant_Config
     {
         SqlDatabasePermission 'Integration_Test'
         {
-            Ensure               = 'Absent'
-            Name                 = $Node.User1_Name
-            DatabaseName         = $Node.DatabaseName
-            PermissionState      = 'Grant'
-            Permissions          = @(
-                'Select'
-                'CreateTable'
-            )
-
-            ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
-
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+            DatabaseName         = $Node.DatabaseName
+            Name                 = $Node.User1_Name
+            Permission   = @(
+                DatabasePermission
+                {
+                    State      = 'Grant'
+                    Permission = @(
+                        'Connect'
+                    )
+                }
+                DatabasePermission
+                {
+                    State      = 'GrantWithGrant'
+                    Permission = @()
+                }
+                DatabasePermission
+                {
+                    State      = 'Deny'
+                    Permission = @()
+                }
+            )
         }
     }
 }
@@ -109,21 +141,31 @@ Configuration DSC_SqlDatabasePermission_Deny_Config
     {
         SqlDatabasePermission 'Integration_Test'
         {
-            Ensure               = 'Present'
-            Name                 = $Node.User1_Name
-            DatabaseName         = $Node.DatabaseName
-            PermissionState      = 'Deny'
-            Permissions          = @(
-                'Select'
-                'CreateTable'
-            )
-
-            ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
-
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+            DatabaseName         = $Node.DatabaseName
+            Name                 = $Node.User1_Name
+            Permission   = @(
+                DatabasePermission
+                {
+                    State      = 'Deny'
+                    Permission = @(
+                        'Select'
+                        'CreateTable'
+                    )
+                }
+                DatabasePermission
+                {
+                    State      = 'GrantWithGrant'
+                    Permission = @()
+                }
+                DatabasePermission
+                {
+                    State      = 'Grant'
+                    Permission = @(
+                        'Connect'
+                    )
+                }
+            )
         }
     }
 }
@@ -140,21 +182,28 @@ Configuration DSC_SqlDatabasePermission_RemoveDeny_Config
     {
         SqlDatabasePermission 'Integration_Test'
         {
-            Ensure               = 'Absent'
-            Name                 = $Node.User1_Name
-            DatabaseName         = $Node.DatabaseName
-            PermissionState      = 'Deny'
-            Permissions          = @(
-                'Select'
-                'CreateTable'
-            )
-
-            ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
-
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+            DatabaseName         = $Node.DatabaseName
+            Name                 = $Node.User1_Name
+            Permission   = @(
+                DatabasePermission
+                {
+                    State      = 'Deny'
+                    Permission = @()
+                }
+                DatabasePermission
+                {
+                    State      = 'GrantWithGrant'
+                    Permission = @()
+                }
+                DatabasePermission
+                {
+                    State      = 'Grant'
+                    Permission = @(
+                        'Connect'
+                    )
+                }
+            )
         }
     }
 }
@@ -174,20 +223,33 @@ Configuration DSC_SqlDatabasePermission_GrantGuest_Config
     {
         SqlDatabasePermission 'Integration_Test'
         {
-            Ensure               = 'Present'
-            Name                 = 'guest'
-            DatabaseName         = $Node.DatabaseName
-            PermissionState      = 'Grant'
-            Permissions          = @(
-                'Select'
-            )
-
-            ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
-
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+            DatabaseName         = $Node.DatabaseName
+            Name                 = 'guest'
+            Permission   = @(
+                <#
+                    These are in the order Deny, Grant, and GrantWithGrant on purpose,
+                    to verify the objects are sorted correctly by Compare().
+                #>
+                DatabasePermission
+                {
+                    State      = 'Deny'
+                    Permission = @()
+                }
+                DatabasePermission
+                {
+                    State      = 'Grant'
+                    Permission = @(
+                        'Connect'
+                        'Select'
+                    )
+                }
+                DatabasePermission
+                {
+                    State      = 'GrantWithGrant'
+                    Permission = @()
+                }
+            )
         }
     }
 }
@@ -207,20 +269,32 @@ Configuration DSC_SqlDatabasePermission_RemoveGrantGuest_Config
     {
         SqlDatabasePermission 'Integration_Test'
         {
-            Ensure               = 'Absent'
-            Name                 = 'guest'
-            DatabaseName         = $Node.DatabaseName
-            PermissionState      = 'Grant'
-            Permissions          = @(
-                'Select'
-            )
-
-            ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
-
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+            DatabaseName         = $Node.DatabaseName
+            Name                 = 'guest'
+            Permission   = @(
+                <#
+                    These are in the order Deny, Grant, and GrantWithGrant on purpose,
+                    to verify the objects are sorted correctly by Compare().
+                #>
+                DatabasePermission
+                {
+                    State      = 'Deny'
+                    Permission = @()
+                }
+                DatabasePermission
+                {
+                    State      = 'Grant'
+                    Permission = @(
+                        'Connect'
+                    )
+                }
+                DatabasePermission
+                {
+                    State      = 'GrantWithGrant'
+                    Permission = @()
+                }
+            )
         }
     }
 }
@@ -240,20 +314,33 @@ Configuration DSC_SqlDatabasePermission_GrantPublic_Config
     {
         SqlDatabasePermission 'Integration_Test'
         {
-            Ensure               = 'Present'
-            Name                 = 'public'
-            DatabaseName         = $Node.DatabaseName
-            PermissionState      = 'Grant'
-            Permissions          = @(
-                'Select'
-            )
-
-            ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
-
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+            DatabaseName         = $Node.DatabaseName
+            Name                 = 'public'
+            Permission   = @(
+                <#
+                    These are in the order Deny, Grant, and GrantWithGrant on purpose,
+                    to verify the objects are sorted correctly by Compare().
+                #>
+                DatabasePermission
+                {
+                    State      = 'Deny'
+                    Permission = @()
+                }
+                DatabasePermission
+                {
+                    State      = 'Grant'
+                    Permission = @(
+                        'Connect'
+                        'Select'
+                    )
+                }
+                DatabasePermission
+                {
+                    State      = 'GrantWithGrant'
+                    Permission = @()
+                }
+            )
         }
     }
 }
@@ -273,20 +360,32 @@ Configuration DSC_SqlDatabasePermission_RemoveGrantPublic_Config
     {
         SqlDatabasePermission 'Integration_Test'
         {
-            Ensure               = 'Absent'
-            Name                 = 'public'
-            DatabaseName         = $Node.DatabaseName
-            PermissionState      = 'Grant'
-            Permissions          = @(
-                'Select'
-            )
-
-            ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
-
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.UserName, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+            DatabaseName         = $Node.DatabaseName
+            Name                 = 'public'
+            Permission   = @(
+                <#
+                    These are in the order Deny, Grant, and GrantWithGrant on purpose,
+                    to verify the objects are sorted correctly by Compare().
+                #>
+                DatabasePermission
+                {
+                    State      = 'Deny'
+                    Permission = @()
+                }
+                DatabasePermission
+                {
+                    State      = 'Grant'
+                    Permission = @(
+                        'Connect'
+                    )
+                }
+                DatabasePermission
+                {
+                    State      = 'GrantWithGrant'
+                    Permission = @()
+                }
+            )
         }
     }
 }

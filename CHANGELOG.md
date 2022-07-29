@@ -38,6 +38,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the existing DSC Community rules and style guideline were added.
   - Added the Visual Studio Code extension _Code Spell Checker_ to the list
     of recommended Visual Studio Code extensions.
+  - Added a file `prefix.ps1` which content is placed first in the built module
+    (.psm1). This file imports dependent modules, and imports localized strings
+    used by private and public commands.
+  - The following classes were added to the module:
+    - `DatabasePermission` - complex type for the DSC resource SqlDatabasePermission.
+    - `Ensure` - Enum to be used for the property `Ensure` in class-based
+      resources.
+    - `Reason` - Used by method `Get()` to return the reason a property is not
+      in desired state.
+    - `ResourceBase` - class that can be inherited by class-based resource and
+      provides functionality meant simplify the creating of class-based resource.
+  - The following private functions were added to the module (see comment-based
+    help for more information):
+    - `ConvertFrom-CompareResult`
+    - `ConvertTo-Reason`
+    - `Get-ClassName`
+    - `Get-DscProperty`
+    - `Get-LocalizedDataRecursive`
+    - `Test-ResourceHasDscProperty`
+    - `Test-ResourceDscPropertyIsAssigned`
+  - The following public functions were added to the module (see comment-based
+    help for more information):
+    - `Connect-SqlDscDatabaseEngine`
+    - `ConvertFrom-SqlDscDatabasePermission`
+    - `ConvertTo-SqlDscDatabasePermission`
+    - `Get-SqlDscDatabasePermission`
+    - `Set-SqlDscDatabasePermission`
+    - `Test-SqlDscIsDatabasePrincipal`
 - CommonTestHelper
   - `Import-SqlModuleStub`
     - Added the optional parameter **PasThru** that, if used, will return the
@@ -59,8 +87,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Bumped Stale task to v5 in the GitHub workflow.
   - Make it possible to publish code coverage on failed test runs, and
     when re-run a fail job.
+  - Exclude Script Analyzer rule **TypeNotFound** in the file `.vscode/analyzersettings.psd1`.
+  - Update CONTRIBUTING.md describing error handling in commands and class-based
+    resources.
+  - The QA tests are now run in Windows PowerShell due to a bug in PowerShell 7
+    that makes class-based resource using inheritance to not work.
+  - The QA test are excluding the rule **TypeNotFound** because it cannot
+    run on the source files (there is a new issue that is tracking so this
+    rule is only run on the built module).
+  - The Pester code coverage has been switched to use the older functionality
+    that uses breakpoints to calculate coverage. Newer functionality sometimes
+    throw an exception when used in conjunction with class-based resources.¨
+  - The SMO stubs (used in the unit tests) was updated to remove a bug related
+    to the type `DatabasePermissionInfo` when used with the type `DatabasePermissionSet`.
+    The stubs suggested that the property `PermissionType` (of type `DatabasePermissionSet`)
+     in `DatabasePermissionInfo` should have been a array `DatabasePermissionSet[]`.
+     This conflicted with real SMO as it does not pass an array, but instead
+     a single `DatabasePermissionSet`. The stubs was modified to mimic the
+     real SMO. At the same time some old mock code in the SMO stubs was removed
+     as it was no longer in use.
 - Wiki
   - add introduction and links to DSC technology
+- SqlServerDsc.Common
+  - The parameter `SetupCredential` of the function `Connect-SQL` was renamed
+    to `Credential` and the parameter name `SetupCredential` was made a
+    parameter alias.
 - SqlLogin
   - BREAKING CHANGE: The parameters `LoginMustChangePassword`, `LoginPasswordExpirationEnabled`,
     and `LoginPasswordPolicyEnforced` no longer have a default value of `$true`.
@@ -128,6 +179,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - BREAKING CHANGE: The parameter `IsHadrEnabled` is no longer returned by
     `Get-TargetResource`. The `Ensure` parameter now returns `Present` if
     Always On HADR is enabled and `Absent` if it is disabled.
+- SqlDatabasePermission
+  - BREAKING CHANGE: The resource has been refactored. The parameters
+    `ParameterState` and `Permissions` has been replaced by parameters
+    `Permission`, `PermissionToInclude`, and `PermissionToExclude`. These
+    permissions parameters are now an instance of the type `DatabasePermission`.
+    The type `DatabasePermission` contains two properties; `State` and
+    `Permission`.
+  - The resource was refactored into a class-based resource.
 
 ### Fixed
 
@@ -203,6 +262,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     step for each iteration. A line of code was moved outside of the loop.
   - The `SourcePath` parameter is now mandatory for all `*-TargetResource`
     ([issue #1755](https://github.com/dsccommunity/SqlServerDsc/issues/1755)).
+- SqlDatabasePermission
+  - It is no longer possible to have one permission that has two different
+    states in the same configuration, e.g. denying and granting `update`
+    in the same configuration.
 
 ## [15.2.0] - 2021-09-01
 

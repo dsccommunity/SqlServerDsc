@@ -202,39 +202,44 @@ namespace Microsoft.SqlServer.Management.Smo
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionSetBase
     // Used by:
     //  SqlDatabasePermission.Tests.ps1
+    //  Get-SqlDscDatabasePermission.Tests.ps1
     public class DatabasePermissionSet
     {
         public DatabasePermissionSet(){}
 
-        public DatabasePermissionSet( bool connect, bool update )
-        {
-            this.Connect = connect;
-            this.Update = update;
-        }
-
         public bool Connect = false;
         public bool Update = false;
+        public bool Select = false;
+        public bool Insert = false;
+        public bool Alter = false;
+        public bool CreateDatabase = false;
+        public bool Delete = false;
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionInfo
     // Used by:
     //  SqlDatabasePermission.Tests.ps1
+    //  Get-SqlDscDatabasePermission.Tests.ps1
     public class DatabasePermissionInfo
     {
         public DatabasePermissionInfo()
         {
-            Microsoft.SqlServer.Management.Smo.DatabasePermissionSet[] permissionSet = { new Microsoft.SqlServer.Management.Smo.DatabasePermissionSet() };
+            Microsoft.SqlServer.Management.Smo.DatabasePermissionSet permissionSet = new Microsoft.SqlServer.Management.Smo.DatabasePermissionSet();
             this.PermissionType = permissionSet;
         }
 
-        public DatabasePermissionInfo( Microsoft.SqlServer.Management.Smo.DatabasePermissionSet[] permissionSet )
+        public DatabasePermissionInfo( Microsoft.SqlServer.Management.Smo.DatabasePermissionSet permissionSet )
         {
             this.PermissionType = permissionSet;
         }
 
-        public Microsoft.SqlServer.Management.Smo.DatabasePermissionSet[] PermissionType;
-        public string PermissionState = "Grant";
+        public Microsoft.SqlServer.Management.Smo.DatabasePermissionSet PermissionType;
+        public string PermissionState;
+        public string Grantee;
+        public string GrantorType;
+        public string ObjectClass;
+        public string ObjectName;
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.Server
@@ -553,17 +558,6 @@ namespace Microsoft.SqlServer.Management.Smo
         public Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[] EnumDatabasePermissions( string granteeName )
         {
             List<Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo> listOfDatabasePermissionInfo = new List<Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo>();
-
-            if( Globals.GenerateMockData ) {
-                Microsoft.SqlServer.Management.Smo.DatabasePermissionSet[] permissionSet = {
-                    new Microsoft.SqlServer.Management.Smo.DatabasePermissionSet( true, false ),
-                    new Microsoft.SqlServer.Management.Smo.DatabasePermissionSet( false, true )
-                };
-
-                listOfDatabasePermissionInfo.Add( new Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo( permissionSet ) );
-            } else {
-                listOfDatabasePermissionInfo.Add( new Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo() );
-            }
 
             Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[] permissionInfo = listOfDatabasePermissionInfo.ToArray();
 
