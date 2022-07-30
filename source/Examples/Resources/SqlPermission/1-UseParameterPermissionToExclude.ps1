@@ -1,8 +1,7 @@
 <#
     .DESCRIPTION
-        This example shows how to enforce that if the user account CONTOSO\SQLAdmin
-        in the databases DB01 would be granted the permission "Delete" outside of
-        DSC, it is revoked.
+        This example shows how to enforce that if the login CONTOSO\SQLAdmin would
+        be granted the permission "CreateEndpoint" outside of DSC, it is revoked.
         Any other existing permissions in the states Grant, Deny, and GrantWithGrant
         will not be changed (unless the contradict with the desired state).
 #>
@@ -19,18 +18,17 @@ Configuration Example
 
     node localhost
     {
-        SqlDatabasePermission 'Set_Database_Permissions_SQLAdmin_DB01'
+        SqlPermission 'Set_Permissions_SQLAdmin'
         {
             ServerName            = 'sql01.company.local'
             InstanceName          = 'DSC'
-            DatabaseName          = 'DB01'
             Name                  = 'CONTOSO\SQLAdmin'
             Credential            = $SqlAdministratorCredential
             PermissionToExclude   = @(
-                DatabasePermission
+                ServerPermission
                 {
                     State      = 'Grant'
-                    Permission = @('Delete')
+                    Permission = @('CreateEndpoint')
                 }
             )
         }
