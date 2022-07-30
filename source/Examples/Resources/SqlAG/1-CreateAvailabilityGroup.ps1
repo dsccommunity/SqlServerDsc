@@ -34,7 +34,7 @@ Configuration Example
             DependsOn    = '[SqlLogin]AddNTServiceClusSvc'
             ServerName   = $Node.NodeName
             InstanceName = 'MSSQLSERVER'
-            Principal    = 'NT SERVICE\ClusSvc'
+            Name         = 'NT SERVICE\ClusSvc'
             Credential   = $SqlAdministratorCredential
             Permission   = @(
                 ServerPermission
