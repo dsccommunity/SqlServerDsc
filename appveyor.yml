@@ -19,10 +19,9 @@ environment:
   - TEST_CONFIGURATION: Integration_SQL2017
   #- TEST_CONFIGURATION: Integration_SQL2019
 
+# DEBUG: See section on_finish last in this file on how to block build to keep RDP open.
 init:
 - ps: |
-    # DEBUG: Un-comment the following line so that build worker is kept up all of the 60 minutes.
-    #$blockRdp = $true
     iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 install:
@@ -73,5 +72,11 @@ test_script:
         #'tests/Integration/DSC_SqlProtocolTcpIp.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlDatabaseObjectPermission.Integration.Tests.ps1'
     )
+
+# DEBUG: Un-comment the following line so that build worker is kept up all of the 60 minutes.
+on_finish:
+- ps: |
+    #$blockRdp = $true
+    iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 deploy: off

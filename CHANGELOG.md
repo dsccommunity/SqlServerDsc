@@ -107,6 +107,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
      a single `DatabasePermissionSet`. The stubs was modified to mimic the
      real SMO. At the same time some old mock code in the SMO stubs was removed
      as it was no longer in use.
+  - Updated integration tests README.md to describe how to use Appveyor to
+    debug integration tests.
 - Wiki
   - add introduction and links to DSC technology
 - SqlServerDsc.Common
