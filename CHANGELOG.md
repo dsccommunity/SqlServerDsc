@@ -67,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Set-SqlDscDatabasePermission`
     - `Test-SqlDscIsDatabasePrincipal`
   - Support for debugging of integration tests in AppVeyor.
+    - Only runs on changed to the folder 'source'.
 - CommonTestHelper
   - `Import-SqlModuleStub`
     - Added the optional parameter **PasThru** that, if used, will return the
