@@ -1,7 +1,7 @@
 <#
     .SYNOPSIS
         The `SqlDatabasePermission` DSC resource is used to grant, deny or revoke
-        permissions for a user in a database
+        permissions for a user in a database.
 
     .DESCRIPTION
         The `SqlDatabasePermission` DSC resource is used to grant, deny or revoke
@@ -58,8 +58,8 @@
         ```
 
     .PARAMETER InstanceName
-        The name of the SQL Server instance to be configured. Default value is
-        'MSSQLSERVER'.
+        The name of the _SQL Server_ instance to be configured. Default value is
+        `'MSSQLSERVER'`.
 
     .PARAMETER DatabaseName
         The name of the database.
@@ -68,7 +68,7 @@
         The name of the user that should be granted or denied the permission.
 
     .PARAMETER ServerName
-        The host name of the SQL Server to be configured. Default value is the
+        The host name of the _SQL Server_ to be configured. Default value is the
         current computer name.
 
     .PARAMETER Permission
@@ -106,21 +106,15 @@
 
     .PARAMETER Credential
         Specifies the credential to use to connect to the _SQL Server_ instance.
-        The username of the credentials must be in the format `user@domain`, e.g.
-        `MySqlUser@company.local`.
 
         If parameter **Credential'* is not provided then the resource instance is
         run using the credential that runs the configuration.
-
-    .PARAMETER Ensure
-        If the permission should be granted ('Present') or revoked ('Absent').
 
     .PARAMETER Reasons
         Returns the reason a property is not in desired state.
 
     .EXAMPLE
         Invoke-DscResource -ModuleName SqlServerDsc -Name SqlDatabasePermission -Method Get -Property @{
-            Ensure               = 'Present'
             ServerName           = 'localhost'
             InstanceName         = 'SQL2017'
             DatabaseName         = 'AdventureWorks'
@@ -156,9 +150,8 @@
         property). If the property `PsDscRunAsCredential` would be used, then the
         complex type will not return any values from Get(). This is most likely an
         issue (bug) with _PowerShell DSC_. Instead (as a workaround) the property
-        `Credential` must be used to specify how to connect to the SQL Server
+        `Credential` must be used to specify how to connect to the _SQL Server_
         instance.
-
 #>
 
 [DscResource(RunAsCredential = 'NotSupported')]
@@ -287,7 +280,6 @@ class SqlDatabasePermission : ResourceBase
             )
         }
 
-        # The property Ensure and key properties will be handled by the base class.
         $currentState = @{
             Credential = $currentStateCredential
             Permission = [DatabasePermission[]] @()

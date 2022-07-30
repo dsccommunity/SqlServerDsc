@@ -24,13 +24,14 @@
         evaluate during runtime so that no two states are enforcing the same
         permission.
 
-        The method Equals() returns $false if type is not [DatabasePermission]
-        on both sides of the comparison. There was a though to throw an exception
-        if the object being compared was of another type, but since there was issues
-        with using [DatabasePermission[]] it was left out. This can be the correct
-        way since if moving [DatabasePermission[]] to the left side and the
-        [DatabasePermission] to the right side, then the left side array is filtered
-        with the matching values on the right side.
+        The method Equals() returns $false if type is not the same on both sides
+        of the comparison. There was a thought to throw an exception if the object
+        being compared was of another type, but since there was issues with using
+        for example [ServerPermission[]], it was left out. This can be the correct
+        way since if moving for example [ServerPermission[]] to the left side and
+        the for example [ServerPermission] to the right side, then the left side
+        array is filtered with the matching values on the right side. This is the
+        normal behavior for other types.
 #>
 class DatabasePermission : IComparable, System.IEquatable[Object]
 {
@@ -130,7 +131,6 @@ class DatabasePermission : IComparable, System.IEquatable[Object]
 
         return $isEqual
     }
-
 
     [System.Int32] CompareTo([Object] $object)
     {

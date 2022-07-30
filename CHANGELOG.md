@@ -192,6 +192,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     The type `DatabasePermission` contains two properties; `State` and
     `Permission`.
   - The resource was refactored into a class-based resource.
+  - The class `[DatabasePermission]` now inherit from `[PermissionBase]`.
 
 ### Fixed
 
@@ -271,6 +272,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - It is no longer possible to have one permission that has two different
     states in the same configuration, e.g. denying and granting `update`
     in the same configuration.
+  - Fixed comment-based help and cleaned up comments.
+  - Fix localized string that referenced 'user' instead of 'principal',
+    and correct localized string ID for each string.
+- `Set-SqlDscDatabasePermission`
+  - Minor code cleanup.
 
 ## [15.2.0] - 2021-09-01
 
