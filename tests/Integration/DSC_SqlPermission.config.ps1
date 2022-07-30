@@ -36,8 +36,8 @@ else
                 ServerName        = $env:COMPUTERNAME
                 InstanceName      = 'DSCSQLTEST'
 
-                # This is created by the SqlDatabaseUser integration tests.
-                User1_Name        = 'User1'
+                # This is created by the SqlLogin integration tests.
+                User1_Name        = ('{0}\{1}' -f $env:COMPUTERNAME, 'DscUser1')
             }
         )
     }
