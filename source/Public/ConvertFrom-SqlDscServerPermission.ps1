@@ -4,7 +4,7 @@
         Microsoft.SqlServer.Management.Smo.ServerPermissionSet.
 
     .PARAMETER Permission
-        Specifies a Server
+        Specifies a ServerPermission object.
 
     .EXAMPLE
         [ServerPermission] @{
