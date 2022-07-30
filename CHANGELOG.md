@@ -73,7 +73,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Get-SqlDscServerPermission`
     - `Set-SqlDscServerPermission`
   - Support for debugging of integration tests in AppVeyor.
-    - Only runs on changed to the folder 'source'.
     - Only run for pull requests
 - CommonTestHelper
   - `Import-SqlModuleStub`

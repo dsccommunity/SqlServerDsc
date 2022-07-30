@@ -16,14 +16,14 @@ BeforeDiscovery {
         Need to define that variables here to be used in the Pester Discover to
         build the ForEach-blocks.
     #>
-    $script:dscResourceFriendlyName = 'SqlDatabasePermission'
+    $script:dscResourceFriendlyName = 'SqlPermission'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 }
 
 BeforeAll {
     # Need to define the variables here which will be used in Pester Run.
     $script:dscModuleName = 'SqlServerDsc'
-    $script:dscResourceFriendlyName = 'SqlDatabasePermission'
+    $script:dscResourceFriendlyName = 'SqlPermission'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
     $script:testEnvironment = Initialize-TestEnvironment `
