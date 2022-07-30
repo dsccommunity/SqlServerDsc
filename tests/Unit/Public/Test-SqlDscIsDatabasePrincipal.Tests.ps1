@@ -46,7 +46,7 @@ AfterAll {
 }
 
 Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
-    Context 'When database does not have the specified principal' {
+    Context 'When database does not exist' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
                 Add-Member -MemberType 'ScriptProperty' -Name 'Databases' -Value {

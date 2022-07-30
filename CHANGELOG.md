@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       in desired state.
     - `ResourceBase` - class that can be inherited by class-based resource and
       provides functionality meant simplify the creating of class-based resource.
+    - `ServerPermission` - complex type for the DSC resource SqlPermission.
   - The following private functions were added to the module (see comment-based
     help for more information):
     - `ConvertFrom-CompareResult`
@@ -66,6 +67,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Get-SqlDscDatabasePermission`
     - `Set-SqlDscDatabasePermission`
     - `Test-SqlDscIsDatabasePrincipal`
+    - `Test-SqlDscIsLogin`
+    - `ConvertFrom-SqlDscServerPermission`
+    - `ConvertTo-SqlDscServerPermission`
+    - `Get-SqlDscServerPermission`
+    - `Set-SqlDscServerPermission`
   - Support for debugging of integration tests in AppVeyor.
     - Only runs on changed to the folder 'source'.
     - Only run for pull requests
@@ -101,14 +107,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The Pester code coverage has been switched to use the older functionality
     that uses breakpoints to calculate coverage. Newer functionality sometimes
     throw an exception when used in conjunction with class-based resources.¨
-  - The SMO stubs (used in the unit tests) was updated to remove a bug related
-    to the type `DatabasePermissionInfo` when used with the type `DatabasePermissionSet`.
-    The stubs suggested that the property `PermissionType` (of type `DatabasePermissionSet`)
-     in `DatabasePermissionInfo` should have been a array `DatabasePermissionSet[]`.
-     This conflicted with real SMO as it does not pass an array, but instead
-     a single `DatabasePermissionSet`. The stubs was modified to mimic the
-     real SMO. At the same time some old mock code in the SMO stubs was removed
-     as it was no longer in use.
+  - SMO stubs (used in the unit tests)
+    - Was updated to remove a bug related to the type `DatabasePermissionInfo`
+      when used with the type `DatabasePermissionSet`.
+      The stubs suggested that the property `PermissionType` (of type `DatabasePermissionSet`)
+      in `DatabasePermissionInfo` should have been a array `DatabasePermissionSet[]`.
+      This conflicted with real SMO as it does not pass an array, but instead
+      a single `DatabasePermissionSet`. The stubs was modified to mimic the
+      real SMO. At the same time some old mock code in the SMO stubs was removed
+      as it was no longer in use.
+    - Was updated to remove a bug related to the type `ServerPermissionInfo`
+      when used with the type `ServerPermissionSet`. The stubs suggested that
+      the property `PermissionType` (of type `ServerPermissionSet`)
+      in `ServerPermissionInfo` should have been a array `ServerPermissionSet[]`.
+      This conflicted with real SMO as it does not pass an array, but instead
+      a single `ServerPermissionSet`. The stubs was modified to mimic the
+      real SMO. At the same time some old mock code in the SMO stubs was removed
+      as it was no longer in use.
   - Updated integration tests README.md to describe how to use Appveyor to
     debug integration tests.
 - Wiki
@@ -190,9 +205,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `Permission`, `PermissionToInclude`, and `PermissionToExclude`. These
     permissions parameters are now an instance of the type `DatabasePermission`.
     The type `DatabasePermission` contains two properties; `State` and
-    `Permission`.
+    `Permission`. This fixes issue [issue #1555](https://github.com/dsccommunity/SqlServerDsc/issues/1555).
   - The resource was refactored into a class-based resource.
-  - The class `[DatabasePermission]` now inherit from `[PermissionBase]`.
+- SqlPermission
+  - BREAKING CHANGE: The resource has been refactored. The parameters
+    `Permissions` has been replaced by parameters `Permission`,
+    `PermissionToInclude`, and `PermissionToExclude`. These permissions
+    parameters are now an instance of the type `ServerPermission`.
+    The type `ServerPermission` contains two properties; `State` and
+    `Permission`. This closes the issue [issue #1761](https://github.com/dsccommunity/SqlServerDsc/issues/1761),
+    it also fixes the issues [issue #1773](https://github.com/dsccommunity/SqlServerDsc/issues/1773),
+    [issue #1704](https://github.com/dsccommunity/SqlServerDsc/issues/1704),
+    and [issue #752](https://github.com/dsccommunity/SqlServerDsc/issues/752).
+  - The resource was refactored into a class-based resource.
 
 ### Fixed
 
@@ -248,9 +273,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the maximum memory is not specified.
   - In a certain scenario the maximum memory would be enforced even if it was
     not specified in the configuration.
-- SqlPermission
-  - The `Permission` parameter is now mandatory for all `*-TargetResource`
-    ([issue #1761](https://github.com/dsccommunity/SqlServerDsc/issues/1761)).
 - SqlWindowsFirewall
   - Now the variables in `Get-TargetResource` are correctly initialized so
     they pass the new unit test that use strict mode.
