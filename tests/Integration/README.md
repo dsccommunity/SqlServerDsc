@@ -410,6 +410,19 @@ Principal | State | Permission
 --- | --- | ---
 User1 | Grant | Connect
 
+### SqlPermission
+
+**Run order:** 4
+
+**Depends on:** SqlLogin
+
+The integration test will leave the following server permission on
+principals.
+
+Principal | State | Permission
+--- | --- | ---
+`$env:COMPUTERNAME`\DscUser1  | Grant | ConnectSql
+
 ### SqlWindowsFirewall
 
 **Run order:** 4
