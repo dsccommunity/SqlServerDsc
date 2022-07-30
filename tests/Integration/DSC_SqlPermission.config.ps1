@@ -1,6 +1,6 @@
 <#
     .NOTES
-        There are integration tests in the file DSC_SqlServerPermission.Integration.Tests.ps1
+        There are integration tests in the file DSC_SqlPermission.Integration.Tests.ps1
         that is using the command Invoke-DscResource to run tests. Those test does
         not have a configuration in this file, but do use the $ConfigurationData.
 
@@ -47,13 +47,13 @@ else
     .SYNOPSIS
         Grant rights for a user.
 #>
-Configuration DSC_SqlServerPermission_Grant_Config
+Configuration DSC_SqlPermission_Grant_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerPermission 'Integration_Test'
+        SqlPermission 'Integration_Test'
         {
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
@@ -91,13 +91,13 @@ Configuration DSC_SqlServerPermission_Grant_Config
     .SYNOPSIS
         Remove granted rights for a user.
 #>
-Configuration DSC_SqlServerPermission_RemoveGrant_Config
+Configuration DSC_SqlPermission_RemoveGrant_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerPermission 'Integration_Test'
+        SqlPermission 'Integration_Test'
         {
             InstanceName         = $Node.InstanceName
             Name                 = $Node.User1_Name
@@ -128,13 +128,13 @@ Configuration DSC_SqlServerPermission_RemoveGrant_Config
     .SYNOPSIS
         Deny rights for a user.
 #>
-Configuration DSC_SqlServerPermission_Deny_Config
+Configuration DSC_SqlPermission_Deny_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerPermission 'Integration_Test'
+        SqlPermission 'Integration_Test'
         {
             InstanceName         = $Node.InstanceName
             Name                 = $Node.User1_Name
@@ -168,13 +168,13 @@ Configuration DSC_SqlServerPermission_Deny_Config
     .SYNOPSIS
         Remove deny rights for a user.
 #>
-Configuration DSC_SqlServerPermission_RemoveDeny_Config
+Configuration DSC_SqlPermission_RemoveDeny_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerPermission 'Integration_Test'
+        SqlPermission 'Integration_Test'
         {
             InstanceName         = $Node.InstanceName
             Name                 = $Node.User1_Name
