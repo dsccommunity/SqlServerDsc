@@ -1,7 +1,15 @@
+# DEBUG: See start of each build run's output how to connect with RDP to build server
+# for debugging.
+
 version: 1.0.{build}
 
 # Do not build on full releases.
 skip_tags: true
+
+# Only run when there is a diff in folder 'source'
+only_commits:
+  files:
+    - source/
 
 # See https://www.appveyor.com/docs/windows-images-software
 # DEBUG: for debug purpose, comment and un-comment images as needed.
@@ -22,23 +30,46 @@ environment:
 # DEBUG: See section on_finish last in this file on how to block build to keep RDP open.
 init:
 - ps: |
+    # Only run for pull requests
+    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER)
+    {
+        return
+    }
+
     iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 install:
 - ps: |
+    # Only run for pull requests
+    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER)
+    {
+        return
+    }
+
     winrm quickconfig -quiet
 
 build_script:
 - pwsh: |
+    # Only run for pull requests
+    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER)
+    {
+        return
+    }
+
     # Build the module
     ./build.ps1 -ResolveDependency -tasks build
 
+# DEBUG: Comment and un-comment integration tests as needed for the purpose of debugging.
+# Note that some integration tests depend on each other to work. See the README for more
+# information: https://github.com/dsccommunity/SqlServerDsc/blob/main/tests/Integration/README.md
 test_script:
 - ps: |
-    # DEBUG: See start of each build run how to connect with RDP to build server for debugging.
-    # DEBUG: Comment and un-comment integration tests as needed for the purpose of debugging.
-    # Note that some integration tests depend on each other to work. See the README for more
-    # information: https://github.com/dsccommunity/SqlServerDsc/blob/main/tests/Integration/README.md
+    # Only run for pull requests
+    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER)
+    {
+        return
+    }
+
     ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $env:TEST_CONFIGURATION -PesterPath @(
         ### Run the integration tests in a specific group order.
         ## Group 1
@@ -73,10 +104,10 @@ test_script:
         #'tests/Integration/DSC_SqlDatabaseObjectPermission.Integration.Tests.ps1'
     )
 
+deploy: off
+
 # DEBUG: Un-comment the following line so that build worker is kept up all of the 60 minutes.
 on_finish:
 - ps: |
     #$blockRdp = $true
     iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-
-deploy: off
