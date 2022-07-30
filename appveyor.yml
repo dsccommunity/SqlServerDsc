@@ -1,3 +1,6 @@
+# DEBUG: See start of each build run's output how to connect with RDP to build server
+# for debugging.
+
 version: 1.0.{build}
 
 # Do not build on full releases.
@@ -56,6 +59,9 @@ build_script:
     # Build the module
     ./build.ps1 -ResolveDependency -tasks build
 
+# DEBUG: Comment and un-comment integration tests as needed for the purpose of debugging.
+# Note that some integration tests depend on each other to work. See the README for more
+# information: https://github.com/dsccommunity/SqlServerDsc/blob/main/tests/Integration/README.md
 test_script:
 - ps: |
     # Only run for pull requests
@@ -64,10 +70,6 @@ test_script:
         return
     }
 
-    # DEBUG: See start of each build run how to connect with RDP to build server for debugging.
-    # DEBUG: Comment and un-comment integration tests as needed for the purpose of debugging.
-    # Note that some integration tests depend on each other to work. See the README for more
-    # information: https://github.com/dsccommunity/SqlServerDsc/blob/main/tests/Integration/README.md
     ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $env:TEST_CONFIGURATION -PesterPath @(
         ### Run the integration tests in a specific group order.
         ## Group 1
