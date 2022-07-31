@@ -31,14 +31,28 @@ Configuration Example
         # Add the required permissions to the cluster service login
         SqlPermission 'AddNTServiceClusSvcPermissions'
         {
-            DependsOn            = '[SqlLogin]AddNTServiceClusSvc'
-            Ensure               = 'Present'
-            ServerName           = $Node.NodeName
-            InstanceName         = 'MSSQLSERVER'
-            Principal            = 'NT SERVICE\ClusSvc'
-            Permission           = 'AlterAnyAvailabilityGroup', 'ViewServerState'
-
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            DependsOn    = '[SqlLogin]AddNTServiceClusSvc'
+            ServerName   = $Node.NodeName
+            InstanceName = 'MSSQLSERVER'
+            Name         = 'NT SERVICE\ClusSvc'
+            Credential   = $SqlAdministratorCredential
+            Permission   = @(
+                ServerPermission
+                {
+                    State      = 'Grant'
+                    Permission = @('AlterAnyAvailabilityGroup', 'ViewServerState')
+                }
+                ServerPermission
+                {
+                    State      = 'GrantWithGrant'
+                    Permission = @()
+                }
+                ServerPermission
+                {
+                    State      = 'Deny'
+                    Permission = @()
+                }
+            )
         }
 
         # Create a DatabaseMirroring endpoint

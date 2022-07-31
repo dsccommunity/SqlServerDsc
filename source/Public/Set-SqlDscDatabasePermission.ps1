@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Returns the current permissions for the database principal.
+        Set permission for a database principal.
 
     .PARAMETER ServerObject
         Specifies current server connection object.
@@ -10,7 +10,7 @@
 
     .PARAMETER Name
         Specifies the name of the database principal for which the permissions are
-        returned.
+        set.
 
     .PARAMETER State
         Specifies the state of the permission.
@@ -128,11 +128,11 @@ function Set-SqlDscDatabasePermission
                     $Permission.$_
                 }
 
-            $changePermissionShouldProcessVerboseDescriptionMessage = $script:localizedData.DatabasePermission_ChangePermissionShouldProcessVerboseDescription -f $Name, $DatabaseName, $ServerObject.InstanceName
-            $changePermissionShouldProcessVerboseWarningMessage = $script:localizedData.DatabasePermission_ChangePermissionShouldProcessVerboseWarning -f $Name
-            $changePermissionShouldProcessCaptionMessage = $script:localizedData.DatabasePermission_ChangePermissionShouldProcessCaption
+            $verboseDescriptionMessage = $script:localizedData.DatabasePermission_ChangePermissionShouldProcessVerboseDescription -f $Name, $DatabaseName, $ServerObject.InstanceName
+            $verboseWarningMessage = $script:localizedData.DatabasePermission_ChangePermissionShouldProcessVerboseWarning -f $Name
+            $captionMessage = $script:localizedData.DatabasePermission_ChangePermissionShouldProcessCaption
 
-            if (-not $PSCmdlet.ShouldProcess($changePermissionShouldProcessVerboseDescriptionMessage, $changePermissionShouldProcessVerboseWarningMessage, $changePermissionShouldProcessCaptionMessage))
+            if (-not $PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
             {
                 # Return without doing anything if the user did not want to continue processing.
                 return

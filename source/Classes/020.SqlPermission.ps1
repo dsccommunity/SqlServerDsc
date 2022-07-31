@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
-        The `SqlDatabasePermission` DSC resource is used to grant, deny or revoke
-        permissions for a user in a database.
+        The `SqlPermission` DSC resource is used to grant, deny or revoke
+        server permissions for a login.
 
     .DESCRIPTION
-        The `SqlDatabasePermission` DSC resource is used to grant, deny or revoke
-        permissions for a user in a database. For more information about permissions,
+        The `SqlPermission` DSC resource is used to grant, deny or revoke
+        Server permissions for a login. For more information about permissions,
         please read the article [Permissions (Database Engine)](https://docs.microsoft.com/en-us/sql/relational-databases/security/permissions-database-engine).
 
         >**Note:** When revoking permission with PermissionState 'GrantWithGrant', both the
@@ -16,10 +16,12 @@
 
         * Target machine must be running Windows Server 2012 or later.
         * Target machine must be running SQL Server Database Engine 2012 or later.
+        * Target machine must have access to the SQLPS PowerShell module or the SqlServer
+          PowerShell module.
 
         ## Known issues
 
-        All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlDatabasePermission).
+        All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlPermission).
 
         ### `PSDscRunAsCredential` not supported
 
@@ -43,7 +45,7 @@
 
         ### Invalid values during compilation
 
-        The parameter Permission is of type `[DatabasePermission]`. If a property
+        The parameter Permission is of type `[ServerPermission]`. If a property
         in the type is set to an invalid value an error will occur, correct the
         values in the properties to valid values.
         This happens when the values are validated against the `[ValidateSet()]`
@@ -51,7 +53,7 @@
         be thrown when the configuration is run (it will not show during compilation):
 
         ```plaintext
-        Failed to create an object of PowerShell class SqlDatabasePermission.
+        Failed to create an object of PowerShell class SqlPermission.
             + CategoryInfo          : InvalidOperation: (root/Microsoft/...ConfigurationManager:String) [], CimException
             + FullyQualifiedErrorId : InstantiatePSClassObjectFailed
             + PSComputerName        : localhost
@@ -61,9 +63,6 @@
         The name of the _SQL Server_ instance to be configured. Default value is
         `'MSSQLSERVER'`.
 
-    .PARAMETER DatabaseName
-        The name of the database.
-
     .PARAMETER Name
         The name of the user that should be granted or denied the permission.
 
@@ -72,36 +71,36 @@
         current computer name.
 
     .PARAMETER Permission
-        An array of database permissions to enforce. Any permission that is not
+        An array of server permissions to enforce. Any permission that is not
         part of the desired state will be revoked.
 
         Must provide all permission states (`Grant`, `Deny`, `GrantWithGrant`) with
-        at least an empty string array for the advanced type `DatabasePermission`'s
+        at least an empty string array for the advanced type `ServerPermission`'s
         property `Permission`.
 
-        Valid permission names can be found in the article [DatabasePermissionSet Class properties](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.databasepermissionset#properties).
+        Valid permission names can be found in the article [ServerPermissionSet Class properties](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.serverpermissionset#properties).
 
-        This is an array of CIM instances of advanced type `DatabasePermission` from
+        This is an array of CIM instances of advanced type `ServerPermission` from
         the namespace `root/Microsoft/Windows/DesiredStateConfiguration`.
 
     .PARAMETER PermissionToInclude
-        An array of database permissions to include to the current state. The
+        An array of server permissions to include to the current state. The
         current state will not be affected unless the current state contradict the
         desired state. For example if the desired state specifies a deny permissions
         but in the current state that permission is granted, that permission will
         be changed to be denied.
 
-        Valid permission names can be found in the article [DatabasePermissionSet Class properties](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.databasepermissionset#properties).
+        Valid permission names can be found in the article [ServerPermissionSet Class properties](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.serverpermissionset#properties).
 
-        This is an array of CIM instances of advanced type `DatabasePermission` from
+        This is an array of CIM instances of advanced type `ServerPermission` from
         the namespace `root/Microsoft/Windows/DesiredStateConfiguration`.
 
     .PARAMETER PermissionToExclude
-        An array of database permissions to exclude (revoke) from the current state.
+        An array of server permissions to exclude (revoke) from the current state.
 
-        Valid permission names can be found in the article [DatabasePermissionSet Class properties](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.databasepermissionset#properties).
+        Valid permission names can be found in the article [ServerPermissionSet Class properties](https://docs.microsoft.com/en-us/dotnet/api/microsoft.sqlserver.management.smo.serverpermissionset#properties).
 
-        This is an array of CIM instances of advanced type `DatabasePermission` from
+        This is an array of CIM instances of advanced type `ServerPermission` from
         the namespace `root/Microsoft/Windows/DesiredStateConfiguration`.
 
     .PARAMETER Credential
@@ -114,27 +113,26 @@
         Returns the reason a property is not in desired state.
 
     .EXAMPLE
-        Invoke-DscResource -ModuleName SqlServerDsc -Name SqlDatabasePermission -Method Get -Property @{
+        Invoke-DscResource -ModuleName SqlServerDsc -Name SqlPermission -Method Get -Property @{
             ServerName           = 'localhost'
             InstanceName         = 'SQL2017'
-            DatabaseName         = 'AdventureWorks'
             Credential           = (Get-Credential -UserName 'myuser@company.local' -Message 'Password:')
             Name                 = 'INSTANCE\SqlUser'
             Permission           = [Microsoft.Management.Infrastructure.CimInstance[]] @(
                 (
-                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
+                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName ServerPermission -Property @{
                             State = 'Grant'
                             Permission = @('select')
                     }
                 )
                 (
-                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
+                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName ServerPermission -Property @{
                         State = 'GrantWithGrant'
                         Permission = [System.String[]] @()
                     }
                 )
                 (
-                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName DatabasePermission -Property @{
+                    New-CimInstance -ClientOnly -Namespace root/Microsoft/Windows/DesiredStateConfiguration -ClassName ServerPermission -Property @{
                         State = 'Deny'
                         Permission = [System.String[]] @()
                     }
@@ -150,12 +148,12 @@
         property). If the property `PsDscRunAsCredential` would be used, then the
         complex type will not return any values from Get(). This is most likely an
         issue (bug) with _PowerShell DSC_. Instead (as a workaround) the property
-        `Credential` must be used to specify how to connect to the _SQL Server_
+        `Credential` must be used to specify how to connect to the SQL Server
         instance.
 #>
 
 [DscResource(RunAsCredential = 'NotSupported')]
-class SqlDatabasePermission : ResourceBase
+class SqlPermission : ResourceBase
 {
     <#
         Property for holding the server connection object.
@@ -171,10 +169,6 @@ class SqlDatabasePermission : ResourceBase
 
     [DscProperty(Key)]
     [System.String]
-    $DatabaseName
-
-    [DscProperty(Key)]
-    [System.String]
     $Name
 
     [DscProperty()]
@@ -182,15 +176,15 @@ class SqlDatabasePermission : ResourceBase
     $ServerName = (Get-ComputerName)
 
     [DscProperty()]
-    [DatabasePermission[]]
+    [ServerPermission[]]
     $Permission
 
     [DscProperty()]
-    [DatabasePermission[]]
+    [ServerPermission[]]
     $PermissionToInclude
 
     [DscProperty()]
-    [DatabasePermission[]]
+    [ServerPermission[]]
     $PermissionToExclude
 
     [DscProperty()]
@@ -201,19 +195,18 @@ class SqlDatabasePermission : ResourceBase
     [Reason[]]
     $Reasons
 
-    SqlDatabasePermission() : base ()
+    SqlPermission() : base ()
     {
         # These properties will not be enforced.
         $this.notEnforcedProperties = @(
             'ServerName'
             'InstanceName'
-            'DatabaseName'
             'Name'
             'Credential'
         )
     }
 
-    [SqlDatabasePermission] Get()
+    [SqlPermission] Get()
     {
         # Call the base method to return the properties.
         return ([ResourceBase] $this).Get()
@@ -231,6 +224,13 @@ class SqlDatabasePermission : ResourceBase
         ([ResourceBase] $this).Set()
     }
 
+    <#
+        TODO: This method can be moved to a parent class "SqlServerDscResource" that
+              instead inherits ResourceBase. Then this method does not need to be
+              duplicated. Make sure to create a localized strings file for the new
+              class.
+              The property 'sqlServerObject' should also be moved (but still be hidden).
+    #>
     <#
         Returns and reuses the server connection object. If the server connection
         object does not exist a connection to the SQL Server instance will occur.
@@ -282,26 +282,25 @@ class SqlDatabasePermission : ResourceBase
 
         $currentState = @{
             Credential = $currentStateCredential
-            Permission = [DatabasePermission[]] @()
+            Permission = [ServerPermission[]] @()
         }
 
         Write-Verbose -Message (
-            $this.localizedData.EvaluateDatabasePermissionForPrincipal -f @(
+            $this.localizedData.EvaluateServerPermissionForPrincipal -f @(
                 $properties.Name,
-                $properties.DatabaseName,
                 $properties.InstanceName
             )
         )
 
         $serverObject = $this.GetServerObject()
 
-        $databasePermissionInfo = $serverObject |
-            Get-SqlDscDatabasePermission -DatabaseName $this.DatabaseName -Name $this.Name -ErrorAction 'SilentlyContinue'
+        $serverPermissionInfo = $serverObject |
+            Get-SqlDscServerPermission -Name $this.Name -ErrorAction 'SilentlyContinue'
 
-        # If permissions was returned, build the current permission array of [DatabasePermission].
-        if ($databasePermissionInfo)
+        # If permissions was returned, build the current permission array of [ServerPermission].
+        if ($serverPermissionInfo)
         {
-            [DatabasePermission[]] $currentState.Permission = $databasePermissionInfo | ConvertTo-SqlDscDatabasePermission
+            [ServerPermission[]] $currentState.Permission = $serverPermissionInfo | ConvertTo-SqlDscServerPermission
         }
 
         # Always return all State; 'Grant', 'GrantWithGrant', and 'Deny'.
@@ -309,7 +308,7 @@ class SqlDatabasePermission : ResourceBase
         {
             if ($currentState.Permission.State -notcontains $currentPermissionState)
             {
-                [DatabasePermission[]] $currentState.Permission += [DatabasePermission] @{
+                [ServerPermission[]] $currentState.Permission += [ServerPermission] @{
                     State      = $currentPermissionState
                     Permission = @()
                 }
@@ -320,7 +319,7 @@ class SqlDatabasePermission : ResourceBase
 
         if ($isPropertyPermissionToIncludeAssigned)
         {
-            $currentState.PermissionToInclude = [DatabasePermission[]] @()
+            $currentState.PermissionToInclude = [ServerPermission[]] @()
 
             # Evaluate so that the desired state is present in the current state.
             foreach ($desiredIncludePermission in $this.PermissionToInclude)
@@ -334,7 +333,7 @@ class SqlDatabasePermission : ResourceBase
                         $_.State -eq $desiredIncludePermission.State
                     }
 
-                $currentStatePermissionToInclude = [DatabasePermission] @{
+                $currentStatePermissionToInclude = [ServerPermission] @{
                     State      = $desiredIncludePermission.State
                     Permission = @()
                 }
@@ -362,7 +361,7 @@ class SqlDatabasePermission : ResourceBase
                     }
                 }
 
-                [DatabasePermission[]] $currentState.PermissionToInclude += $currentStatePermissionToInclude
+                [ServerPermission[]] $currentState.PermissionToInclude += $currentStatePermissionToInclude
             }
         }
 
@@ -370,7 +369,7 @@ class SqlDatabasePermission : ResourceBase
 
         if ($isPropertyPermissionToExcludeAssigned)
         {
-            $currentState.PermissionToExclude = [DatabasePermission[]] @()
+            $currentState.PermissionToExclude = [ServerPermission[]] @()
 
             # Evaluate so that the desired state is missing from the current state.
             foreach ($desiredExcludePermission in $this.PermissionToExclude)
@@ -384,7 +383,7 @@ class SqlDatabasePermission : ResourceBase
                         $_.State -eq $desiredExcludePermission.State
                     }
 
-                $currentStatePermissionToExclude = [DatabasePermission] @{
+                $currentStatePermissionToExclude = [ServerPermission] @{
                     State      = $desiredExcludePermission.State
                     Permission = @()
                 }
@@ -412,7 +411,7 @@ class SqlDatabasePermission : ResourceBase
                     }
                 }
 
-                [DatabasePermission[]] $currentState.PermissionToExclude += $currentStatePermissionToExclude
+                [ServerPermission[]] $currentState.PermissionToExclude += $currentStatePermissionToExclude
             }
         }
 
@@ -429,21 +428,18 @@ class SqlDatabasePermission : ResourceBase
     {
         $serverObject = $this.GetServerObject()
 
-        $testSqlDscIsDatabasePrincipalParameters = @{
+        $testSqlDscIsLoginParameters = @{
             ServerObject      = $serverObject
-            DatabaseName      = $this.DatabaseName
             Name              = $this.Name
-            ExcludeFixedRoles = $true
         }
 
-        # This will test wether the database and the principal exist.
-        $isDatabasePrincipal = Test-SqlDscIsDatabasePrincipal @testSqlDscIsDatabasePrincipalParameters
+        # This will test wether the principal exist.
+        $isLogin = Test-SqlDscIsLogin @testSqlDscIsLoginParameters
 
-        if (-not $isDatabasePrincipal)
+        if (-not $isLogin)
         {
             $missingPrincipalMessage = $this.localizedData.NameIsMissing -f @(
                 $this.Name,
-                $this.DatabaseName,
                 $this.InstanceName
             )
 
@@ -451,8 +447,8 @@ class SqlDatabasePermission : ResourceBase
         }
 
         # This holds each state and their permissions to be revoked.
-        [DatabasePermission[]] $permissionsToRevoke = @()
-        [DatabasePermission[]] $permissionsToGrantOrDeny = @()
+        [ServerPermission[]] $permissionsToRevoke = @()
+        [ServerPermission[]] $permissionsToGrantOrDeny = @()
 
         if ($properties.ContainsKey('Permission'))
         {
@@ -488,7 +484,7 @@ class SqlDatabasePermission : ResourceBase
                         }
                         else
                         {
-                            [DatabasePermission[]] $permissionsToRevoke += [DatabasePermission] @{
+                            [ServerPermission[]] $permissionsToRevoke += [ServerPermission] @{
                                 State      = $currentPermissionsForState.State
                                 Permission = $permissionName
                             }
@@ -502,7 +498,7 @@ class SqlDatabasePermission : ResourceBase
                 in the current state. Grant or Deny all permission assigned to the
                 property Permission regardless if they were already present or not.
             #>
-            [DatabasePermission[]] $permissionsToGrantOrDeny = $properties.Permission
+            [ServerPermission[]] $permissionsToGrantOrDeny = $properties.Permission
         }
 
         if ($properties.ContainsKey('PermissionToExclude'))
@@ -512,7 +508,7 @@ class SqlDatabasePermission : ResourceBase
                 all permission assigned to the property PermissionToExclude
                 regardless if they were already revoked or not.
             #>
-            [DatabasePermission[]] $permissionsToRevoke = $properties.PermissionToExclude
+            [ServerPermission[]] $permissionsToRevoke = $properties.PermissionToExclude
         }
 
         if ($properties.ContainsKey('PermissionToInclude'))
@@ -522,19 +518,22 @@ class SqlDatabasePermission : ResourceBase
                 in the current state. Grant or Deny all permission assigned to the
                 property Permission regardless if they were already present or not.
             #>
-            [DatabasePermission[]] $permissionsToGrantOrDeny = $properties.PermissionToInclude
+            [ServerPermission[]] $permissionsToGrantOrDeny = $properties.PermissionToInclude
         }
 
         # Revoke all the permissions set in $permissionsToRevoke
         if ($permissionsToRevoke)
         {
+            <#
+                TODO: Could verify with $sqlServerObject.EnumServerPermissions($Principal, $desiredPermissionSet)
+                      which permissions are not already revoked.
+            #>
             foreach ($currentStateToRevoke in $permissionsToRevoke)
             {
-                $revokePermissionSet = $currentStateToRevoke | ConvertFrom-SqlDscDatabasePermission
+                $revokePermissionSet = $currentStateToRevoke | ConvertFrom-SqlDscServerPermission
 
-                $setSqlDscDatabasePermissionParameters = @{
+                $setSqlDscServerPermissionParameters = @{
                     ServerObject = $serverObject
-                    DatabaseName = $this.DatabaseName
                     Name         = $this.Name
                     Permission   = $revokePermissionSet
                     State        = 'Revoke'
@@ -543,18 +542,17 @@ class SqlDatabasePermission : ResourceBase
 
                 if ($currentStateToRevoke.State -eq 'GrantWithGrant')
                 {
-                    $setSqlDscDatabasePermissionParameters.WithGrant = $true
+                    $setSqlDscServerPermissionParameters.WithGrant = $true
                 }
 
                 try
                 {
-                    Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters
+                    Set-SqlDscServerPermission @setSqlDscServerPermissionParameters
                 }
                 catch
                 {
                     $errorMessage = $this.localizedData.FailedToRevokePermissionFromCurrentState -f @(
-                        $this.Name,
-                        $this.DatabaseName
+                        $this.Name
                     )
 
                     New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
@@ -564,16 +562,19 @@ class SqlDatabasePermission : ResourceBase
 
         if ($permissionsToGrantOrDeny)
         {
+            <#
+                TODO: Could verify with $sqlServerObject.EnumServerPermissions($Principal, $desiredPermissionSet)
+                      which permissions are not already set.
+            #>
             foreach ($currentDesiredPermissionState in $permissionsToGrantOrDeny)
             {
                 # If there is not an empty array, change permissions.
                 if (-not [System.String]::IsNullOrEmpty($currentDesiredPermissionState.Permission))
                 {
-                    $permissionSet = $currentDesiredPermissionState | ConvertFrom-SqlDscDatabasePermission
+                    $permissionSet = $currentDesiredPermissionState | ConvertFrom-SqlDscServerPermission
 
-                    $setSqlDscDatabasePermissionParameters = @{
+                    $setSqlDscServerPermissionParameters = @{
                         ServerObject = $serverObject
-                        DatabaseName = $this.DatabaseName
                         Name         = $this.Name
                         Permission   = $permissionSet
                         Force        = $true
@@ -585,20 +586,19 @@ class SqlDatabasePermission : ResourceBase
                         {
                             'GrantWithGrant'
                             {
-                                Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State 'Grant' -WithGrant
+                                Set-SqlDscServerPermission @setSqlDscServerPermissionParameters -State 'Grant' -WithGrant
                             }
 
                             default
                             {
-                                Set-SqlDscDatabasePermission @setSqlDscDatabasePermissionParameters -State $currentDesiredPermissionState.State
+                                Set-SqlDscServerPermission @setSqlDscServerPermissionParameters -State $currentDesiredPermissionState.State
                             }
                         }
                     }
                     catch
                     {
                         $errorMessage = $this.localizedData.FailedToSetPermission -f @(
-                            $this.Name,
-                            $this.DatabaseName
+                            $this.Name
                         )
 
                         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
@@ -699,9 +699,9 @@ class SqlDatabasePermission : ResourceBase
         {
             if ($properties.Keys -contains $currentAssignedPermissionProperty)
             {
-                foreach ($currentDatabasePermission in $properties.$currentAssignedPermissionProperty)
+                foreach ($currentServerPermission in $properties.$currentAssignedPermissionProperty)
                 {
-                    if ($currentDatabasePermission.Permission.Count -eq 0)
+                    if ($currentServerPermission.Permission.Count -eq 0)
                     {
                         $errorMessage = $this.localizedData.MustHaveMinimumOnePermissionInState -f $currentAssignedPermissionProperty
 

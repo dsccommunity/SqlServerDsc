@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        The possible database permission states.
+        The possible server permission states.
 
     .PARAMETER State
         The state of the permission.
@@ -13,11 +13,11 @@
         to be attribute Key, but those attributes are not honored correctly during
         compilation in the current implementation of PowerShell DSC. If the
         attribute would have been left as Key then it would not have been possible
-        to add an identical instance of DatabasePermission in two separate DSC
+        to add an identical instance of ServerPermission in two separate DSC
         resource instances in a DSC configuration. The Key property only works
         on the top level DSC properties. E.g. two resources instances of
-        SqlDatabasePermission in a DSC configuration trying to grant the database
-        permission 'connect' in two separate databases would have failed compilation
+        SqlPermission in a DSC configuration trying to grant the database
+        permission 'AlterAnyDatabase' in two separate databases would have failed compilation
         as a the property State would have been seen as "duplicate resource".
 
         Since it is not possible to use the attribute Key the State property is
@@ -33,7 +33,7 @@
         array is filtered with the matching values on the right side. This is the
         normal behavior for other types.
 #>
-class DatabasePermission : IComparable, System.IEquatable[Object]
+class ServerPermission : IComparable, System.IEquatable[Object]
 {
     [DscProperty(Mandatory)]
     [ValidateSet('Grant', 'GrantWithGrant', 'Deny')]
@@ -43,77 +43,49 @@ class DatabasePermission : IComparable, System.IEquatable[Object]
     [DscProperty(Mandatory)]
     [AllowEmptyCollection()]
     [ValidateSet(
-        'Alter',
-        'AlterAnyAsymmetricKey',
-        'AlterAnyApplicationRole',
-        'AlterAnyAssembly',
-        'AlterAnyCertificate',
-        'AlterAnyDatabaseAudit',
-        'AlterAnyDataspace',
-        'AlterAnyDatabaseEventNotification',
-        'AlterAnyExternalDataSource',
-        'AlterAnyExternalFileFormat',
-        'AlterAnyFulltextCatalog',
-        'AlterAnyMask',
-        'AlterAnyMessageType',
-        'AlterAnyRole',
-        'AlterAnyRoute',
-        'AlterAnyRemoteServiceBinding',
-        'AlterAnyContract',
-        'AlterAnySymmetricKey',
-        'AlterAnySchema',
-        'AlterAnySecurityPolicy',
-        'AlterAnyService',
-        'AlterAnyDatabaseDdlTrigger',
-        'AlterAnyUser',
-        'Authenticate',
-        'BackupDatabase',
-        'BackupLog',
-        'Control',
-        'Connect',
-        'ConnectReplication',
-        'Checkpoint',
-        'CreateAggregate',
-        'CreateAsymmetricKey',
-        'CreateAssembly',
-        'CreateCertificate',
-        'CreateDatabase',
-        'CreateDefault',
-        'CreateDatabaseDdlEventNotification',
-        'CreateFunction',
-        'CreateFulltextCatalog',
-        'CreateMessageType',
-        'CreateProcedure',
-        'CreateQueue',
-        'CreateRole',
-        'CreateRoute',
-        'CreateRule',
-        'CreateRemoteServiceBinding',
-        'CreateContract',
-        'CreateSymmetricKey',
-        'CreateSchema',
-        'CreateSynonym',
-        'CreateService',
-        'CreateTable',
-        'CreateType',
-        'CreateView',
-        'CreateXmlSchemaCollection',
-        'Delete',
-        'Execute',
-        'Insert',
-        'References',
-        'Select',
-        'Showplan',
-        'SubscribeQueryNotifications',
-        'TakeOwnership',
-        'Unmask',
-        'Update',
-        'ViewDefinition',
-        'ViewDatabaseState'
+        'AdministerBulkOperations',
+        'AlterAnyServerAudit',
+        'AlterAnyCredential',
+        'AlterAnyConnection',
+        'AlterAnyDatabase',
+        'AlterAnyEventNotification',
+        'AlterAnyEndpoint',
+        'AlterAnyLogin',
+        'AlterAnyLinkedServer',
+        'AlterResources',
+        'AlterServerState',
+        'AlterSettings',
+        'AlterTrace',
+        'AuthenticateServer',
+        'ControlServer',
+        'ConnectSql',
+        'CreateAnyDatabase',
+        'CreateDdlEventNotification',
+        'CreateEndpoint',
+        'CreateTraceEventNotification',
+        'Shutdown',
+        'ViewAnyDefinition',
+        'ViewAnyDatabase',
+        'ViewServerState',
+        'ExternalAccessAssembly',
+        'UnsafeAssembly',
+        'AlterAnyServerRole',
+        'CreateServerRole',
+        'AlterAnyAvailabilityGroup',
+        'CreateAvailabilityGroup',
+        'AlterAnyEventSession',
+        'SelectAllUserSecurables',
+        'ConnectAnyDatabase',
+        'ImpersonateAnyLogin'
     )]
     [System.String[]]
     $Permission
 
+    <#
+        TODO: It was not possible to move this to a parent class. But since these are
+              generic functions for DatabasePermission and ServerPermission we
+              could make this a private function.
+    #>
     [System.Boolean] Equals([System.Object] $object)
     {
         $isEqual = $false
@@ -132,6 +104,11 @@ class DatabasePermission : IComparable, System.IEquatable[Object]
         return $isEqual
     }
 
+    <#
+        TODO: It was not possible to move this to a parent class. But since these are
+              generic functions for DatabasePermission and ServerPermission we
+              could make this a private function.
+    #>
     [System.Int32] CompareTo([Object] $object)
     {
         [System.Int32] $returnValue = 0

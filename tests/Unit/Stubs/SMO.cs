@@ -174,6 +174,8 @@ namespace Microsoft.SqlServer.Management.Smo
         public bool AlterAnyEndpoint = false;
         public bool ConnectSql = false;
         public bool ViewServerState = false;
+        public bool ControlServer = false;
+        public bool CreateEndpoint = false;
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.ServerPermissionInfo
@@ -184,18 +186,17 @@ namespace Microsoft.SqlServer.Management.Smo
     {
         public ServerPermissionInfo()
         {
-            Microsoft.SqlServer.Management.Smo.ServerPermissionSet[] permissionSet = { new Microsoft.SqlServer.Management.Smo.ServerPermissionSet() };
+            Microsoft.SqlServer.Management.Smo.ServerPermissionSet permissionSet = new Microsoft.SqlServer.Management.Smo.ServerPermissionSet();
             this.PermissionType = permissionSet;
         }
 
-        public ServerPermissionInfo(
-            Microsoft.SqlServer.Management.Smo.ServerPermissionSet[] permissionSet )
+        public ServerPermissionInfo( Microsoft.SqlServer.Management.Smo.ServerPermissionSet permissionSet )
         {
             this.PermissionType = permissionSet;
         }
 
-        public Microsoft.SqlServer.Management.Smo.ServerPermissionSet[] PermissionType;
-        public string PermissionState = "Grant";
+        public Microsoft.SqlServer.Management.Smo.ServerPermissionSet PermissionType;
+        public string PermissionState;
     }
 
     // TypeName: Microsoft.SqlServer.Management.Smo.DatabasePermissionSet
@@ -249,8 +250,6 @@ namespace Microsoft.SqlServer.Management.Smo
     //  DSC_SqlLogin
     public class Server
     {
-        public string MockGranteeName;
-
         public AvailabilityGroupCollection AvailabilityGroups = new AvailabilityGroupCollection();
         public ServerConnection ConnectionContext;
         public string ComputerNamePhysicalNetBIOS;
@@ -283,7 +282,6 @@ namespace Microsoft.SqlServer.Management.Smo
         {
             return new Server()
             {
-                MockGranteeName = this.MockGranteeName,
                 AvailabilityGroups = this.AvailabilityGroups,
                 ConnectionContext = this.ConnectionContext,
                 ComputerNamePhysicalNetBIOS = this.ComputerNamePhysicalNetBIOS,
@@ -309,45 +307,17 @@ namespace Microsoft.SqlServer.Management.Smo
             Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[] permissionInfo = null;
             List<Microsoft.SqlServer.Management.Smo.ServerPermissionInfo> listOfServerPermissionInfo = null;
 
-            if( Globals.GenerateMockData ) {
-                listOfServerPermissionInfo = new List<Microsoft.SqlServer.Management.Smo.ServerPermissionInfo>();
-
-                Microsoft.SqlServer.Management.Smo.ServerPermissionSet[] permissionSet = {
-                    // AlterAnyEndpoint is set to false to test when permissions are missing.
-
-                    // AlterAnyAvailabilityGroup is set to true.
-                    new Microsoft.SqlServer.Management.Smo.ServerPermissionSet( true, false, false, false ),
-                    // ConnectSql is set to true.
-                    new Microsoft.SqlServer.Management.Smo.ServerPermissionSet( false, false, true, false ),
-                    // ViewServerState is set to true.
-                    new Microsoft.SqlServer.Management.Smo.ServerPermissionSet( false, false, false, true ) };
-
-                listOfServerPermissionInfo.Add( new Microsoft.SqlServer.Management.Smo.ServerPermissionInfo( permissionSet ) );
-            }
-
-            if( listOfServerPermissionInfo != null ) {
-                permissionInfo = listOfServerPermissionInfo.ToArray();
-            }
+            permissionInfo = listOfServerPermissionInfo.ToArray();
 
             return permissionInfo;
         }
 
         public void Grant( Microsoft.SqlServer.Management.Smo.ServerPermissionSet permission, string granteeName )
         {
-            if( granteeName != this.MockGranteeName )
-            {
-                string errorMessage = "Expected to get granteeName == '" + this.MockGranteeName + "'. But got '" + granteeName + "'";
-                throw new System.ArgumentException(errorMessage, "granteeName");
-            }
         }
 
         public void Revoke( Microsoft.SqlServer.Management.Smo.ServerPermissionSet permission, string granteeName )
         {
-            if( granteeName != this.MockGranteeName )
-            {
-                string errorMessage = "Expected to get granteeName == '" + this.MockGranteeName + "'. But got '" + granteeName + "'";
-                throw new System.ArgumentException(errorMessage, "granteeName");
-            }
         }
     }
 
@@ -528,7 +498,6 @@ namespace Microsoft.SqlServer.Management.Smo
         public bool IsMirroringEnabled = false;
         public DateTime LastBackupDate = DateTime.Now;
         public Hashtable LogFiles;
-        public string MockGranteeName;
         public string Owner = "sa";
         public bool ReadOnly = false;
         public string RecoveryModel = "Full";
@@ -566,20 +535,10 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public void Grant( Microsoft.SqlServer.Management.Smo.DatabasePermissionSet permission, string granteeName )
         {
-            if( granteeName != this.MockGranteeName )
-            {
-                string errorMessage = "Expected to get granteeName == '" + this.MockGranteeName + "'. But got '" + granteeName + "'";
-                throw new System.ArgumentException(errorMessage, "granteeName");
-            }
         }
 
         public void Deny( Microsoft.SqlServer.Management.Smo.DatabasePermissionSet permission, string granteeName )
         {
-            if( granteeName != this.MockGranteeName )
-            {
-                string errorMessage = "Expected to get granteeName == '" + this.MockGranteeName + "'. But got '" + granteeName + "'";
-                throw new System.ArgumentException(errorMessage, "granteeName");
-            }
         }
     }
 
