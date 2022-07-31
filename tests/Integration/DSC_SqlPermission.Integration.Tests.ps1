@@ -796,7 +796,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                         $resourceCurrentState.Reasons | Should -HaveCount 1
                         $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlPermission:SqlPermission:Permission'
-                        $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["ConnectSql"]},{"State":"GrantWithGrant","Permission":["AlterAnyAvailabilityGroup"]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["ConnectSql"]},{"State":"Deny","Permission":["ControlServer","ViewServerState"]},{"State":"GrantWithGrant","Permission":[]}]'
+                        $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["ConnectSql"]},{"State":"GrantWithGrant","Permission":["AlterAnyAvailabilityGroup"]},{"State":"Deny","Permission":[]}], but was [{"State":"Deny","Permission":["ControlServer","ViewServerState"]},{"State":"Grant","Permission":["ConnectSql"]},{"State":"GrantWithGrant","Permission":[]}]'
                     }
 
                     It 'Should run method Test() and return the state as $false' {
@@ -963,7 +963,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                         $resourceCurrentState.Reasons | Should -HaveCount 1
                         $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlPermission:SqlPermission:Permission'
-                        $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["ConnectSql"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["ConnectSql"]},{"State":"GrantWithGrant","Permission":["AlterAnyAvailabilityGroup"]},{"State":"Deny","Permission":[]}]'
+                        $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["ConnectSql"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"GrantWithGrant","Permission":["AlterAnyAvailabilityGroup"]},{"State":"Grant","Permission":["ConnectSql"]},{"State":"Deny","Permission":[]}]'
                     }
 
                     It 'Should run method Test() and return the state as $false' {
