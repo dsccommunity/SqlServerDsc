@@ -448,7 +448,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $denyState.Permission | Should -BeNullOrEmpty
 
                         $resourceCurrentState.Reasons | Should -HaveCount 1
-                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
+                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlPermission:SqlPermission:Permission'
                         $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["ConnectSql","ViewServerState","AlterAnyEndpoint"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["ConnectSql"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
                     }
 
@@ -531,10 +531,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     <#
                         This test is meant to validate that method Set() also evaluates
                         the current state against the desired state, and if they match
-                        the Set() method returns without calling Set-SqlDscDatabasePermission
+                        the Set() method returns without calling Set-SqlDscServerPermission
                         to change permissions.
 
-                        It is not possible to validate that Set-SqlDscDatabasePermission
+                        It is not possible to validate that Set-SqlDscServerPermission
                         is not call since it is not possible to mock the command in
                         the session when LCM runs (which Invoke-DscResource invokes).
                         There are no other indications that can be caught to validate
@@ -622,7 +622,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $denyState.Permission | Should -BeNullOrEmpty
 
                         $resourceCurrentState.Reasons | Should -HaveCount 1
-                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
+                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlPermission:SqlPermission:Permission'
                         $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["ConnectSql"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":["ControlServer","ViewServerState"]}], but was [{"State":"Grant","Permission":["AlterAnyEndpoint","ConnectSql","ViewServerState"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
                     }
 
@@ -705,10 +705,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     <#
                         This test is meant to validate that method Set() also evaluates
                         the current state against the desired state, and if they match
-                        the Set() method returns without calling Set-SqlDscDatabasePermission
+                        the Set() method returns without calling Set-SqlDscServerPermission
                         to change permissions.
 
-                        It is not possible to validate that Set-SqlDscDatabasePermission
+                        It is not possible to validate that Set-SqlDscServerPermission
                         is not call since it is not possible to mock the command in
                         the session when LCM runs (which Invoke-DscResource invokes).
                         There are no other indications that can be caught to validate
@@ -795,7 +795,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $denyState.Permission | Should -Contain 'ViewServerState'
 
                         $resourceCurrentState.Reasons | Should -HaveCount 1
-                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
+                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlPermission:SqlPermission:Permission'
                         $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["ConnectSql"]},{"State":"GrantWithGrant","Permission":["AlterAnyAvailabilityGroup"]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["ConnectSql"]},{"State":"Deny","Permission":["ControlServer","ViewServerState"]},{"State":"GrantWithGrant","Permission":[]}]'
                     }
 
@@ -877,10 +877,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     <#
                         This test is meant to validate that method Set() also evaluates
                         the current state against the desired state, and if they match
-                        the Set() method returns without calling Set-SqlDscDatabasePermission
+                        the Set() method returns without calling Set-SqlDscServerPermission
                         to change permissions.
 
-                        It is not possible to validate that Set-SqlDscDatabasePermission
+                        It is not possible to validate that Set-SqlDscServerPermission
                         is not call since it is not possible to mock the command in
                         the session when LCM runs (which Invoke-DscResource invokes).
                         There are no other indications that can be caught to validate
@@ -962,7 +962,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $denyState.Permission | Should -BeNullOrEmpty
 
                         $resourceCurrentState.Reasons | Should -HaveCount 1
-                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
+                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlPermission:SqlPermission:Permission'
                         $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["ConnectSql"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["ConnectSql"]},{"State":"GrantWithGrant","Permission":["AlterAnyAvailabilityGroup"]},{"State":"Deny","Permission":[]}]'
                     }
 
@@ -1043,10 +1043,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     <#
                         This test is meant to validate that method Set() also evaluates
                         the current state against the desired state, and if they match
-                        the Set() method returns without calling Set-SqlDscDatabasePermission
+                        the Set() method returns without calling Set-SqlDscServerPermission
                         to change permissions.
 
-                        It is not possible to validate that Set-SqlDscDatabasePermission
+                        It is not possible to validate that Set-SqlDscServerPermission
                         is not call since it is not possible to mock the command in
                         the session when LCM runs (which Invoke-DscResource invokes).
                         There are no other indications that can be caught to validate
@@ -1155,7 +1155,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                         # Property Reasons
                         $resourceCurrentState.Reasons | Should -HaveCount 1
-                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:PermissionToInclude'
+                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlPermission:SqlPermission:PermissionToInclude'
                         $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property PermissionToInclude should be [{"State":"Grant","Permission":["ViewServerState"]},{"State":"GrantWithGrant","Permission":["AlterAnyAvailabilityGroup"]},{"State":"Deny","Permission":["ControlServer"]}], but was [{"State":"Grant","Permission":[]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
                     }
 
@@ -1256,10 +1256,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     <#
                         This test is meant to validate that method Set() also evaluates
                         the current state against the desired state, and if they match
-                        the Set() method returns without calling Set-SqlDscDatabasePermission
+                        the Set() method returns without calling Set-SqlDscServerPermission
                         to change permissions.
 
-                        It is not possible to validate that Set-SqlDscDatabasePermission
+                        It is not possible to validate that Set-SqlDscServerPermission
                         is not call since it is not possible to mock the command in
                         the session when LCM runs (which Invoke-DscResource invokes).
                         There are no other indications that can be caught to validate
@@ -1368,7 +1368,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                         # Property Reasons
                         $resourceCurrentState.Reasons | Should -HaveCount 1
-                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:PermissionToExclude'
+                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlPermission:SqlPermission:PermissionToExclude'
                         $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property PermissionToExclude should be [{"State":"Grant","Permission":["ViewServerState"]},{"State":"GrantWithGrant","Permission":["AlterAnyAvailabilityGroup"]},{"State":"Deny","Permission":["ControlServer"]}], but was [{"State":"Grant","Permission":[]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
                     }
 
@@ -1466,10 +1466,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     <#
                         This test is meant to validate that method Set() also evaluates
                         the current state against the desired state, and if they match
-                        the Set() method returns without calling Set-SqlDscDatabasePermission
+                        the Set() method returns without calling Set-SqlDscServerPermission
                         to change permissions.
 
-                        It is not possible to validate that Set-SqlDscDatabasePermission
+                        It is not possible to validate that Set-SqlDscServerPermission
                         is not call since it is not possible to mock the command in
                         the session when LCM runs (which Invoke-DscResource invokes).
                         There are no other indications that can be caught to validate
