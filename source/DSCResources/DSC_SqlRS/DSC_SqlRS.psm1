@@ -467,6 +467,7 @@ function Set-TargetResource
         #endregion Get Operating System Information
 
         #region Backup Encryption Key
+        Write-Verbose -Message ( $script:localizedData.ReportingServicesIsIntialized -f $DatabaseServerName, $DatabaseInstanceName ) -Verbose
         if ( $currentConfig.IsInitialized )
         {
             if ( -not $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
@@ -603,9 +604,9 @@ function Set-TargetResource
 
             # Get the current configuration since it changed the reserved URLs
             $currentConfig = Get-TargetResource @getTargetResourceParameters
+            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsIntialized -f $DatabaseServerName, $DatabaseInstanceName ) -Verbose
         }
         #endregion Set the service account
-
 
         #region Database
         if ( $DatabaseInstanceName -eq 'MSSQLSERVER' )
@@ -754,7 +755,12 @@ function Set-TargetResource
             }
 
             Invoke-RsCimMethod @invokeRsCimMethodParameters
+
+            # Get the current configuration since the database connection was updated
+            $currentConfig = Get-TargetResource @getTargetResourceParameters
+            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsIntialized -f $DatabaseServerName, $DatabaseInstanceName ) -Verbose
         }
+
         #endregion Database
 
         #region Virtual Directories
@@ -833,8 +839,9 @@ function Set-TargetResource
 
             Invoke-RsCimMethod @invokeRsCimMethodParameters
 
-            # Get the current configuration since it changed the reserved URLs
+            # Get the current configuration since it changed the virtual directories
             $currentConfig = Get-TargetResource @getTargetResourceParameters
+            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsIntialized -f $DatabaseServerName, $DatabaseInstanceName ) -Verbose
         }
 
         if ( -not [System.String]::IsNullOrEmpty($ReportsVirtualDirectory) -and ($ReportsVirtualDirectory -ne $currentConfig.ReportsVirtualDirectory) )
@@ -875,8 +882,9 @@ function Set-TargetResource
 
             Invoke-RsCimMethod @invokeRsCimMethodParameters
 
-            # Get the current configuration since it changed the reserved URLs
+            # Get the current configuration since it changed the virtual directories
             $currentConfig = Get-TargetResource @getTargetResourceParameters
+            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsIntialized -f $DatabaseServerName, $DatabaseInstanceName ) -Verbose
         }
         #endregion Virtual Directories
 
