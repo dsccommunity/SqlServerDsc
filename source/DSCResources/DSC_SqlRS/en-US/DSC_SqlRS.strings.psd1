@@ -34,4 +34,8 @@ ConvertFrom-StringData @'
     TestUseSsl = The value for using SSL is not in desired state. Should be '{0}', but is '{1}'.
     TestServiceAccount = The ServiceAccount should be '{0}' but is '{1}'.
     GetLocalServiceAccountNameServiceNotSpecified = The 'ServiceName' parameter is required with the 'LocalServiceAccountType' is '{0}'.
+    InitializeReportingServices = Initializing Reporting Services on '{0}\{1}'.
+    ReportingServicesIsIntialized = Reporting Services on '{0}\{1}' is initialized.
+    EncryptionKeyBackupCredentialNotSpecified = An encryption key backup credential was not specified. Generating a random credential.
+    EncryptionKeyBackupCredentialUserName = The encryption key backup credential user name is '{0}'.
 '@
