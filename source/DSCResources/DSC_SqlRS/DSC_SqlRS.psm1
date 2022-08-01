@@ -471,6 +471,8 @@ function Set-TargetResource
         {
             if ( -not $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
             {
+                Write-Verbose -Message $script:localizedData.EncryptionKeyBackupCredentialNotSpecified -Verbose
+
                 $characterSet = ( @(33..126) | Foreach-Object -Process { [System.Char][System.Byte]$_ } )
                 $encryptionKeyBackupPassword = [System.Security.SecureString]::new()
                 for ( $loop=1; $loop -le 16; $loop++ )
@@ -480,6 +482,7 @@ function Set-TargetResource
 
                 $EncryptionKeyBackupCredential = [System.Management.Automation.PSCredential]::new('BackupUser', $encryptionKeyBackupPassword)
             }
+            Write-Verbose -Message ( $script:localizedData.EncryptionKeyBackupCredentialUserName -f $EncryptionKeyBackupCredential.UserName ) -Verbose
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
@@ -1070,7 +1073,7 @@ function Set-TargetResource
         #endregion SSL Certificate Bindings
 
         #region Initialize
-        Write-Verbose -Message "Initializing Reporting Services on $DatabaseServerName\$DatabaseInstanceName."
+        Write-Verbose -Message ( $script:localizedData.InitializeReportingServices -f $DatabaseServerName, $DatabaseInstanceName ) -Verbose
 
         <#
             When initializing SSRS 2019, the call to InitializeReportServer
@@ -1117,7 +1120,7 @@ function Set-TargetResource
             {
                 if ( $restoreKey )
                 {
-                    Write-Verbose -Message "Encryption Key Backup Username: $($EncryptionKeyBackupCredential.UserName)"
+                    Write-Verbose -Message ( $script:localizedData.EncryptionKeyBackupCredentialUserName -f $EncryptionKeyBackupCredential.UserName ) -Verbose
 
                     try
                     {
@@ -1177,7 +1180,7 @@ function Set-TargetResource
         }
         else
         {
-            Write-Verbose -Message "Reporting Services on $DatabaseServerName\$DatabaseInstanceName is initialized."
+            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsIntialized -f $DatabaseServerName, $DatabaseInstanceName ) -Verbose
             Write-Verbose -Message (
                 $script:localizedData.ReportingServicesInitialized -f @(
                     $DatabaseServerName
