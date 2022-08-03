@@ -26,6 +26,7 @@ $script:localizedData = Get-LocalizedData -ResourceName 'DSC_SqlServerAuditSpeci
 #>
 function Get-TargetResource
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Invoke-Query is used which calls the command Connect-Sql')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -101,8 +102,6 @@ function Get-TargetResource
         Enabled                               = $false
     }
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
-
     # Default parameters for the cmdlet Invoke-Query used throughout.
     $invokeQueryParameters = @{
         ServerName   = $ServerName
@@ -110,7 +109,7 @@ function Get-TargetResource
         Database     = 'MASTER'
     }
 
-    $DataSetAudit = Invoke-Query @invokeQueryParameters -WithResults -Query (
+    $dataSetAudit = Invoke-Query @invokeQueryParameters -WithResults -Query (
         'Select
             s.server_specification_id,
             s.is_state_enabled,
@@ -121,24 +120,24 @@ function Get-TargetResource
         where s.name = ''{0}''' -f
         $Name)
 
-    if ($null -ne $DataSetAudit -and $DataSetAudit.Tables[0].Rows.Count -gt 0)
+    if ($null -ne $dataSetAudit -and $dataSetAudit.Tables[0].Rows.Count -gt 0)
     {
         Write-Verbose -Message (
             $script:localizedData.AuditSpecificationExist -f $Name, $ServerName, $InstanceName
         )
 
-        $dataSetRow = $DataSetAudit.Tables[0].Rows[0]
+        $dataSetRow = $dataSetAudit.Tables[0].Rows[0]
 
-        $DataSetAuditSpecification = Invoke-Query @invokeQueryParameters -WithResults -Query (
+        $dataSetAuditSpecification = Invoke-Query @invokeQueryParameters -WithResults -Query (
             'Select audit_action_name
                 from sys.server_audit_specification_details
                 where server_specification_id = {0}' -f
             $dataSetRow.server_specification_id)
 
-        #this should always happen!!!!!
-        if ($null -ne $DataSetAuditSpecification -and $DataSetAuditSpecification.Tables.Count -gt 0)
+        # This should always happen!
+        if ($null -ne $dataSetAuditSpecification -and $dataSetAuditSpecification.Tables.Count -gt 0)
         {
-            $resultSet = Convert-ToHashTable -DataTable $DataSetAuditSpecification.Tables[0]
+            $resultSet = Convert-ToHashTable -DataTable $dataSetAuditSpecification.Tables[0]
 
             $returnValue['Ensure'] = 'Present'
             $returnValue['AuditName'] = $dataSetRow.auditName
@@ -187,6 +186,7 @@ function Get-TargetResource
             $returnValue['Enabled'] = $dataSetRow.is_state_enabled
         }
     }
+
     return $returnValue
 }
 
@@ -345,6 +345,7 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Invoke-Query is used which calls the command Connect-Sql')]
     [CmdletBinding()]
     param
     (
@@ -569,6 +570,7 @@ function Set-TargetResource
     $desiredValues = @{ } + $PSBoundParameters
 
     $auditSpecificationAddDropString = Get-AuditSpecificationMutationString -CurrentValues $getTargetResourceResult -DesiredValues $desiredValues
+
     Write-Verbose -Message $(
         Get-AuditSpecificationMutationString -CurrentValues $getTargetResourceResult -DesiredValues $desiredValues
     )
@@ -679,7 +681,7 @@ function Set-TargetResource
             New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
         }
 
-        # Create, if needed and posible.
+        # Create, if needed and possible.
         try
         {
             Invoke-Query @invokeQueryParameters -Query (
@@ -858,6 +860,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Invoke-Query is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -1084,55 +1087,58 @@ function Test-TargetResource
             $desiredValues = @{ } + $PSBoundParameters
             $desiredValues['Ensure'] = $Ensure
 
-            $testTargetResourceReturnValue = Test-DscParameterState -CurrentValues $getTargetResourceResult `
-                -DesiredValues $desiredValues `
-                -ValuesToCheck @(
-                'Ensure'
-                'AuditName'
-                'ApplicationRoleChangePasswordGroup'
-                'AuditChangeGroup'
-                'BackupRestoreGroup'
-                'BrokerLoginGroup'
-                'DatabaseChangeGroup'
-                'DatabaseLogoutGroup'
-                'DatabaseMirroringLoginGroup'
-                'DatabaseObjectAccessGroup'
-                'DatabaseObjectChangeGroup'
-                'DatabaseObjectOwnershipChangeGroup'
-                'DatabaseObjectPermissionChangeGroup'
-                'DatabaseOperationGroup'
-                'DatabaseOwnershipChangeGroup'
-                'DatabasePermissionChangeGroup'
-                'DatabasePrincipalChangeGroup'
-                'DatabasePrincipalImpersonationGroup'
-                'DatabaseRoleMemberChangeGroup'
-                'DbccGroup'
-                'FailedDatabaseAuthenticationGroup'
-                'FailedLoginGroup'
-                'FulltextGroup'
-                'LoginChangePasswordGroup'
-                'LogoutGroup'
-                'SchemaObjectAccessGroup'
-                'SchemaObjectChangeGroup'
-                'SchemaObjectOwnershipChangeGroup'
-                'SchemaObjectPermissionChangeGroup'
-                'ServerObjectChangeGroup'
-                'ServerObjectOwnershipChangeGroup'
-                'ServerObjectPermissionChangeGroup'
-                'ServerOperationGroup'
-                'ServerPermissionChangeGroup'
-                'ServerPrincipalChangeGroup'
-                'ServerPrincipalImpersonationGroup'
-                'ServerRoleMemberChangeGroup'
-                'ServerStateChangeGroup'
-                'SuccessfulDatabaseAuthenticationGroup'
-                'SuccessfulLoginGroup'
-                'TraceChangeGroup'
-                'UserChangePasswordGroup'
-                'UserDefinedAuditGroup'
-                'TransactionGroup'
-                'Enabled'
-            )
+            $testDscParameterStateParameters = @{
+                CurrentValues = $getTargetResourceResult
+                DesiredValues = $desiredValues
+                ValuesToCheck = @(
+                    'Ensure'
+                    'AuditName'
+                    'ApplicationRoleChangePasswordGroup'
+                    'AuditChangeGroup'
+                    'BackupRestoreGroup'
+                    'BrokerLoginGroup'
+                    'DatabaseChangeGroup'
+                    'DatabaseLogoutGroup'
+                    'DatabaseMirroringLoginGroup'
+                    'DatabaseObjectAccessGroup'
+                    'DatabaseObjectChangeGroup'
+                    'DatabaseObjectOwnershipChangeGroup'
+                    'DatabaseObjectPermissionChangeGroup'
+                    'DatabaseOperationGroup'
+                    'DatabaseOwnershipChangeGroup'
+                    'DatabasePermissionChangeGroup'
+                    'DatabasePrincipalChangeGroup'
+                    'DatabasePrincipalImpersonationGroup'
+                    'DatabaseRoleMemberChangeGroup'
+                    'DbccGroup'
+                    'FailedDatabaseAuthenticationGroup'
+                    'FailedLoginGroup'
+                    'FulltextGroup'
+                    'LoginChangePasswordGroup'
+                    'LogoutGroup'
+                    'SchemaObjectAccessGroup'
+                    'SchemaObjectChangeGroup'
+                    'SchemaObjectOwnershipChangeGroup'
+                    'SchemaObjectPermissionChangeGroup'
+                    'ServerObjectChangeGroup'
+                    'ServerObjectOwnershipChangeGroup'
+                    'ServerObjectPermissionChangeGroup'
+                    'ServerOperationGroup'
+                    'ServerPermissionChangeGroup'
+                    'ServerPrincipalChangeGroup'
+                    'ServerPrincipalImpersonationGroup'
+                    'ServerRoleMemberChangeGroup'
+                    'ServerStateChangeGroup'
+                    'SuccessfulDatabaseAuthenticationGroup'
+                    'SuccessfulLoginGroup'
+                    'TraceChangeGroup'
+                    'UserChangePasswordGroup'
+                    'UserDefinedAuditGroup'
+                    'TransactionGroup'
+                    'Enabled'
+                )
+            }
+            $testTargetResourceReturnValue = Test-DscParameterState @testDscParameterStateParameters
         }
         else
         {
@@ -1158,12 +1164,12 @@ function Test-TargetResource
 
 <#
     .SYNOPSIS
-        Converts a datatable to a HashTable
+        Converts a data table to a HashTable
 
     .PARAMETER DataTable
-        The datatable to be converted to a hashtable.
-        The datatable can have one or two columns.
-        When the datatable has one column, the hashtable wil use $true as value for the second collomn.
+        The data table to be converted to a hashtable. The data table can have one
+        or two columns. When the data table has one column, the hashtable will use
+        $true as value for the second column.
 #>
 function Convert-ToHashTable
 {
@@ -1175,16 +1181,18 @@ function Convert-ToHashTable
         [system.Data.DataTable]
         $DataTable
     )
-    $resultSet = @{ }
-    foreach ($Item in $DataTable)
+
+    $resultSet = @{}
+
+    foreach ($item in $DataTable)
     {
         if ($DataTable.Columns.Count -eq 1)
         {
-            $resultSet.Add($Item[0], $true)
+            $resultSet.Add($item[0], $true)
         }
         if ($DataSet.Columns.Count -eq 2)
         {
-            $resultSet.Add($Item[0], $Item[1])
+            $resultSet.Add($item[0], $item[1])
         }
     }
     return $resultSet
@@ -1219,6 +1227,7 @@ function Disable-AuditSpecification
         [System.String]
         $Name
     )
+
     Write-Verbose -Message (
         $script:localizedData.DisableAuditSpecification -f $Name, $serverName, $instanceName
     )
@@ -1263,6 +1272,7 @@ function Enable-AuditSpecification
         [System.String]
         $Name
     )
+
     Write-Verbose -Message (
         $script:localizedData.EnableAuditSpecification -f $Name, $serverName, $instanceName
     )
@@ -1309,18 +1319,22 @@ function Get-DatabaseObjectNameFromPSParamName
         [System.String]
         $InString
     )
+
     return ($InString -creplace '([A-Z\W_]|\d+)(?<![a-z])', '_$&').ToString().Remove(0, 1).ToUpper()
 }
 
 <#
     .SYNOPSIS
-        Builds a ADD/DROP string for all the needed changes of the database audit specification
+        Builds a ADD/DROP string for all the needed changes of the database audit
+        specification
 
     .PARAMETER $CurrentValues
-        Specifies the hashtable containing the current settings. Usualy this should be the output of Get-TargetResource
+        Specifies the hashtable containing the current settings. Usually this
+        should be the output of Get-TargetResource
 
     .PARAMETER $DesiredValues
-        Specifies the hashtable containing the desired settings. Usualy this should be all of the input parameters of Set-TargetResource.
+        Specifies the hashtable containing the desired settings. Usually this
+        should be all of the input parameters of Set-TargetResource.
 #>
 function Get-AuditSpecificationMutationString
 {
@@ -1336,7 +1350,9 @@ function Get-AuditSpecificationMutationString
         [hashtable]
         $DesiredValues
     )
+
     $resultString = ''
+
     $CurrentValues.GetEnumerator() | ForEach-Object {
         if ($null -eq $_.Value -or $_.Value -eq '')
         {
@@ -1348,12 +1364,14 @@ function Get-AuditSpecificationMutationString
         }
         $resultString += Test-SingleRow -CurrentKey $_.Key -CurrentValue $val -DesiredValues $DesiredValues
     }
+
     return $resultString.TrimEnd(',')
 }
 
 <#
     .SYNOPSIS
-        Builds a ADD/DROP string for all the needed changes of the database audit specification
+        Builds a ADD/DROP string for all the needed changes of the database audit
+        specification
 
     .PARAMETER $CurrentKey
         Specifies the current Key to be checked against the hash DesiredValues.
@@ -1362,7 +1380,8 @@ function Get-AuditSpecificationMutationString
         Specifies the current Value to be checked against the hash DesiredValues.
 
     .PARAMETER $DesiredValues
-        Specifies the hashtable containing the desired settings. Usualy this should be all of the input parameters of Set-TargetResource.
+        Specifies the hashtable containing the desired settings. Usually this
+        should be all of the input parameters of Set-TargetResource.
 #>
 function Test-SingleRow
 {
@@ -1422,5 +1441,3 @@ function Test-SingleRow
 
     return $return
 }
-
-Export-ModuleMember -Function *-TargetResource

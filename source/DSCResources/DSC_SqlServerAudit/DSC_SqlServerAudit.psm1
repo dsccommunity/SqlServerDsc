@@ -127,7 +127,7 @@ function Get-TargetResource
         This can be CONTINUE, FAIL_OPERATION or SHUTDOWN.
 
     .PARAMETER QueueDelay
-        Specifies the maximum delay before a event is writen to the store.
+        Specifies the maximum delay before a event is written to the store.
         When set to low this could impact server performance.
         When set to high events could be missing when a server crashes.
 
@@ -146,6 +146,7 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Invoke-Query is used which calls the command Connect-Sql')]
     [CmdletBinding()]
     param
     (
@@ -230,15 +231,15 @@ function Set-TargetResource
     }
     if ($FilePath)
     {
-        $FilePath = $FilePath.Trimend('\') + '\'
+        $FilePath = $FilePath.TrimEnd('\') + '\'
 
         #Test if audit file location exists, and create if it does not.
         if (-not (Test-Path -Path $FilePath))
         {
             Write-Verbose -Message (
-                $script:localizedData.CreateFolder -f $FilePath.Trimend('\')
+                $script:localizedData.CreateFolder -f $FilePath.TrimEnd('\')
             )
-            New-Item -ItemType directory -Path $FilePath.Trimend('\')
+            New-Item -ItemType directory -Path $FilePath.TrimEnd('\')
         }
     }
 
@@ -325,7 +326,7 @@ function Set-TargetResource
                     WithPart     = $withPart
                 }
 
-                #if curent audit state is enabled, disable it before edit.
+                # If current audit state is enabled, disable it before edit.
                 if ($getTargetResourceResult.Enabled -eq $true)
                 {
                     Disable-Audit -Name $Name -ServerName $ServerName -InstanceName $InstanceName
@@ -340,7 +341,8 @@ function Set-TargetResource
                     $errorMessage = $script:localizedData.FailedUpdateAudit -f $Name, $ServerName, $InstanceName
                     New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
                 }
-                #if audit state was disabled for edit, Re-enable it.
+
+                # If audit state was disabled for edit, Re-enable it.
                 if ($getTargetResourceResult.Enabled -eq $true)
                 {
                     Enable-Audit -Name $Name -ServerName $ServerName -InstanceName $InstanceName
@@ -349,9 +351,9 @@ function Set-TargetResource
             else
             {
                 <#
-                        Current server audit has a diferent storage type, the
-                        server audit needs to be re-created.
-                    #>
+                    Current server audit has a different storage type, the
+                    server audit needs to be re-created.
+                #>
                 Write-Verbose -Message (
                     $script:localizedData.ChangingAuditDestinationType -f
                     $Name,
@@ -363,7 +365,6 @@ function Set-TargetResource
 
                 $recreateAudit = $true
             }
-
         }
     }
 
@@ -383,7 +384,7 @@ function Set-TargetResource
                 $script:localizedData.DropAudit -f $Name, $serverName, $instanceName
             )
 
-            #if curent audit state is enabled, disable it before removal.
+            #if current audit state is enabled, disable it before removal.
             if ($getTargetResourceResult.Enabled -eq $true)
             {
                 Disable-Audit -Name $Name -ServerName $ServerName -InstanceName $InstanceName
@@ -488,7 +489,7 @@ function Set-TargetResource
                 $script:localizedData.AddFilter -f $Filter, $Name, $serverName, $instanceName
             )
 
-            #if curent audit state is enabled, disable it before setting filter.
+            #if current audit state is enabled, disable it before setting filter.
             if ($getTargetResourceResult.Enabled -eq $true)
             {
                 Disable-Audit -Name $Name -ServerName $ServerName -InstanceName $InstanceName
@@ -565,7 +566,7 @@ function Set-TargetResource
         This can be CONTINUE, FAIL_OPERATION or SHUTDOWN.
 
      .PARAMETER QueueDelay
-        Specifies the maximum delay before a event is writen to the store.
+        Specifies the maximum delay before a event is written to the store.
         When set to low this could impact server performance.
         When set to high events could be missing when a server crashes.
 
@@ -584,6 +585,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     [CmdletBinding()]
@@ -665,8 +667,8 @@ function Test-TargetResource
     #sanitize user input.
     if ($FilePath)
     {
-        $FilePath = $FilePath.Trimend('\') + '\'
-        $PSBoundParameters['FilePath'] = $FilePath.Trimend('\') + '\'
+        $FilePath = $FilePath.TrimEnd('\') + '\'
+        $PSBoundParameters['FilePath'] = $FilePath.TrimEnd('\') + '\'
     }
 
     $TargetResourceParameters = @{
@@ -689,29 +691,34 @@ function Test-TargetResource
             $desiredValues = @{ } + $PSBoundParameters
             $desiredValues['Ensure'] = $Ensure
 
-            $testTargetResourceReturnValue = Test-DscParameterState -CurrentValues $getTargetResourceResult `
-                -DesiredValues $desiredValues `
-                -ValuesToCheck @(
-                'FilePath'
-                'MaximumFileSize'
-                'MaximumFileSizeUnit'
-                'QueueDelay'
-                'OnFailure'
-                'Enabled'
-                'Ensure'
-                'DestinationType'
-                'MaximumFiles'
-                'MaximumRolloverFiles'
-                'ReserveDiskSpace'
-                'Filter'
-            )
+            $testDscParameterStateParameters = @{
+                CurrentValues = $getTargetResourceResult
+                DesiredValues = $desiredValues
+                ValuesToCheck = @(
+                    'FilePath'
+                    'MaximumFileSize'
+                    'MaximumFileSizeUnit'
+                    'QueueDelay'
+                    'OnFailure'
+                    'Enabled'
+                    'Ensure'
+                    'DestinationType'
+                    'MaximumFiles'
+                    'MaximumRolloverFiles'
+                    'ReserveDiskSpace'
+                    'Filter'
+                )
+            }
+
+            $testTargetResourceReturnValue = Test-DscParameterState @testDscParameterStateParameters
+
             <#
                 WORKAROUND for possible bug?
                 Test-DscParameterState does not see if a parameter is removed as parameter
                 but still exists in the DSC resource.
 
-                When in desired state do some aditional tests.
-                When not in desired state, aditional testing is not needed.
+                When in desired state do some additional tests.
+                When not in desired state, additional testing is not needed.
             #>
             if ($testTargetResourceReturnValue)
             {
@@ -895,5 +902,3 @@ function Set-ServerAudit
         $WithPart
     )
 }
-
-Export-ModuleMember -Function *-TargetResource
