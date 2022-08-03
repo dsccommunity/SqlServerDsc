@@ -16,14 +16,14 @@ else
     $ConfigurationData = @{
         AllNodes = @(
             @{
-                NodeName        = 'localhost'
-                CertificateFile = $env:DscPublicCertificatePath
+                NodeName              = 'localhost'
+                CertificateFile       = $env:DscPublicCertificatePath
 
-                UserName        = "$env:COMPUTERNAME\SqlAdmin"
-                Password        = 'P@ssw0rd1'
+                UserName              = "$env:COMPUTERNAME\SqlAdmin"
+                Password              = 'P@ssw0rd1'
 
-                ServerName      = $env:COMPUTERNAME
-                InstanceName    = 'DSCSQLTEST'
+                ServerName            = $env:COMPUTERNAME
+                InstanceName          = 'DSCSQLTEST'
 
                 AuditName1            = 'FileAudit'
                 DestinationType1      = 'File'
@@ -71,7 +71,7 @@ Configuration DSC_SqlServerAudit_AddFileAudit_Config
 
 <#
     .SYNOPSIS
-        Creates a audit to the securitylog, with a filer.
+        Creates a audit to the security log, with a filter.
 #>
 Configuration DSC_SqlServerAudit_AddSecLogAudit_Config
 {
@@ -86,7 +86,7 @@ Configuration DSC_SqlServerAudit_AddSecLogAudit_Config
             InstanceName    = $Node.InstanceName
             Name            = $Node.AuditName2
             DestinationType = $Node.DestinationType2
-            Filter          = $Node.Filter2
+            Filter = $Node.Filter2
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `

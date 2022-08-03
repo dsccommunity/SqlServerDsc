@@ -16,21 +16,21 @@ else
     $ConfigurationData = @{
         AllNodes = @(
             @{
-                NodeName        = 'localhost'
-                CertificateFile = $env:DscPublicCertificatePath
+                NodeName               = 'localhost'
+                CertificateFile        = $env:DscPublicCertificatePath
 
-                UserName        = "$env:COMPUTERNAME\SqlAdmin"
-                Password        = 'P@ssw0rd1'
+                UserName               = "$env:COMPUTERNAME\SqlAdmin"
+                Password               = 'P@ssw0rd1'
 
-                ServerName      = $env:COMPUTERNAME
-                InstanceName    = 'DSCSQLTEST'
+                ServerName             = $env:COMPUTERNAME
+                InstanceName           = 'DSCSQLTEST'
 
-                AuditName1            = 'FileAudit'
-                DestinationType1      = 'File'
-                FilePath1             = 'C:\Temp\audit\'
-                MaximumFileSize1      = 10
-                MaximumFileSizeUnit1  = 'MB'
-                MaximumRolloverFiles1 = 11
+                AuditName1             = 'FileAudit'
+                DestinationType1       = 'File'
+                FilePath1              = 'C:\Temp\audit\'
+                MaximumFileSize1       = 10
+                MaximumFileSizeUnit1   = 'MB'
+                MaximumRolloverFiles1  = 11
 
                 AuditSpecificationName = 'AdminAudit'
             }
@@ -67,37 +67,38 @@ Configuration DSC_SqlServerAuditSpecification_AddAudit1_Config
 
         SqlServerAuditSpecification 'Integration_Test'
         {
-            Ensure                    = 'Present'
-            ServerName                = $Node.ServerName
-            InstanceName              = $Node.InstanceName
-            Name                      = $Node.AuditSpecificationName
-            AuditName                 = $Node.AuditName1
-            Enabled                   = $true
-            AuditChangeGroup                      = $true
-            BackupRestoreGroup                    = $true
-            DatabaseObjectChangeGroup             = $true
-            DatabaseObjectOwnershipChangeGroup    = $true
-            DatabaseObjectPermissionChangeGroup   = $true
-            DatabaseOwnershipChangeGroup          = $true
-            DatabasePermissionChangeGroup         = $true
-            DatabasePrincipalChangeGroup          = $true
-            DatabasePrincipalImpersonationGroup   = $true
-            DatabaseRoleMemberChangeGroup         = $true
-            SchemaObjectChangeGroup               = $true
-            SchemaObjectOwnershipChangeGroup      = $true
-            SchemaObjectPermissionChangeGroup     = $true
-            ServerObjectChangeGroup               = $true
-            ServerObjectOwnershipChangeGroup      = $true
-            ServerObjectPermissionChangeGroup     = $true
-            ServerOperationGroup                  = $true
-            ServerPermissionChangeGroup           = $true
-            ServerPrincipalChangeGroup            = $true
-            ServerPrincipalImpersonationGroup     = $true
-            ServerRoleMemberChangeGroup           = $true
-            ServerStateChangeGroup                = $true
-            TraceChangeGroup                      = $true
-            DependsOn                 = "[SqlServerAudit]Integration_TestPrepare"
-            PsDscRunAsCredential      = $SqlAdministratorCredential
+            Ensure                              = 'Present'
+            ServerName                          = $Node.ServerName
+            InstanceName                        = $Node.InstanceName
+            Name                                = $Node.AuditSpecificationName
+            AuditName                           = $Node.AuditName1
+            Enabled                             = $true
+            AuditChangeGroup                    = $true
+            BackupRestoreGroup                  = $true
+            DatabaseObjectChangeGroup           = $true
+            DatabaseObjectOwnershipChangeGroup  = $true
+            DatabaseObjectPermissionChangeGroup = $true
+            DatabaseOwnershipChangeGroup        = $true
+            DatabasePermissionChangeGroup       = $true
+            DatabasePrincipalChangeGroup        = $true
+            DatabasePrincipalImpersonationGroup = $true
+            DatabaseRoleMemberChangeGroup       = $true
+            SchemaObjectChangeGroup             = $true
+            SchemaObjectOwnershipChangeGroup    = $true
+            SchemaObjectPermissionChangeGroup   = $true
+            ServerObjectChangeGroup             = $true
+            ServerObjectOwnershipChangeGroup    = $true
+            ServerObjectPermissionChangeGroup   = $true
+            ServerOperationGroup                = $true
+            ServerPermissionChangeGroup         = $true
+            ServerPrincipalChangeGroup          = $true
+            ServerPrincipalImpersonationGroup   = $true
+            ServerRoleMemberChangeGroup         = $true
+            ServerStateChangeGroup              = $true
+            TraceChangeGroup                    = $true
+            DependsOn                           = '[SqlServerAudit]Integration_TestPrepare'
+
+            PsDscRunAsCredential                = $SqlAdministratorCredential
         }
     }
 }
@@ -119,46 +120,47 @@ Configuration DSC_SqlServerAudit_AddSecLogAudit_Config
             InstanceName    = $Node.InstanceName
             Name            = $Node.AuditName2
             DestinationType = $Node.DestinationType2
-            Filter          = $Node.Filter2
+            Filter = $Node.Filter2
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
 
-         SqlServerAuditSpecification 'Integration_Test'
+        SqlServerAuditSpecification 'Integration_Test'
         {
-            Ensure                    = 'Present'
-            ServerName                = $Node.ServerName
-            InstanceName              = $Node.InstanceName
-            Name                      = $Node.AuditSpecificationName
-            AuditName                 = $Node.AuditName1
-            Enabled                   = $true
-            AuditChangeGroup                      = $true
-            BackupRestoreGroup                    = $true
-            DatabaseObjectChangeGroup             = $true
-            DatabaseObjectOwnershipChangeGroup    = $true
-            DatabaseObjectPermissionChangeGroup   = $true
-            DatabaseOwnershipChangeGroup          = $true
-            DatabasePermissionChangeGroup         = $true
-            DatabasePrincipalChangeGroup          = $true
-            DatabasePrincipalImpersonationGroup   = $true
-            DatabaseRoleMemberChangeGroup         = $true
-            SchemaObjectChangeGroup               = $true
-            SchemaObjectOwnershipChangeGroup      = $true
-            SchemaObjectPermissionChangeGroup     = $true
-            ServerObjectChangeGroup               = $true
-            ServerObjectOwnershipChangeGroup      = $true
-            ServerObjectPermissionChangeGroup     = $true
-            ServerOperationGroup                  = $true
-            ServerPermissionChangeGroup           = $true
-            ServerPrincipalChangeGroup            = $true
-            ServerPrincipalImpersonationGroup     = $true
-            ServerRoleMemberChangeGroup           = $true
-            ServerStateChangeGroup                = $true
-            TraceChangeGroup                      = $true
-            DependsOn                 = "[SqlServerAudit]Integration_TestPrepare"
-            PsDscRunAsCredential      = $SqlAdministratorCredential
+            Ensure                              = 'Present'
+            ServerName                          = $Node.ServerName
+            InstanceName                        = $Node.InstanceName
+            Name                                = $Node.AuditSpecificationName
+            AuditName                           = $Node.AuditName1
+            Enabled                             = $true
+            AuditChangeGroup                    = $true
+            BackupRestoreGroup                  = $true
+            DatabaseObjectChangeGroup           = $true
+            DatabaseObjectOwnershipChangeGroup  = $true
+            DatabaseObjectPermissionChangeGroup = $true
+            DatabaseOwnershipChangeGroup        = $true
+            DatabasePermissionChangeGroup       = $true
+            DatabasePrincipalChangeGroup        = $true
+            DatabasePrincipalImpersonationGroup = $true
+            DatabaseRoleMemberChangeGroup       = $true
+            SchemaObjectChangeGroup             = $true
+            SchemaObjectOwnershipChangeGroup    = $true
+            SchemaObjectPermissionChangeGroup   = $true
+            ServerObjectChangeGroup             = $true
+            ServerObjectOwnershipChangeGroup    = $true
+            ServerObjectPermissionChangeGroup   = $true
+            ServerOperationGroup                = $true
+            ServerPermissionChangeGroup         = $true
+            ServerPrincipalChangeGroup          = $true
+            ServerPrincipalImpersonationGroup   = $true
+            ServerRoleMemberChangeGroup         = $true
+            ServerStateChangeGroup              = $true
+            TraceChangeGroup                    = $true
+            DependsOn                           = '[SqlServerAudit]Integration_TestPrepare'
+
+            PsDscRunAsCredential                = $SqlAdministratorCredential
         }
     }
 }
@@ -186,39 +188,40 @@ Configuration DSC_SqlServerAudit_AddSecLogAuditNoFilter_Config
                 -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
 
-         SqlServerAuditSpecification 'Integration_Test'
+        SqlServerAuditSpecification 'Integration_Test'
         {
-            Ensure                    = 'Present'
-            ServerName                = $Node.ServerName
-            InstanceName              = $Node.InstanceName
-            Name                      = $Node.AuditSpecificationName
-            AuditName                 = $Node.AuditName1
-            Enabled                   = $true
-            AuditChangeGroup                      = $true
-            BackupRestoreGroup                    = $true
-            DatabaseObjectChangeGroup             = $true
-            DatabaseObjectOwnershipChangeGroup    = $true
-            DatabaseObjectPermissionChangeGroup   = $true
-            DatabaseOwnershipChangeGroup          = $true
-            DatabasePermissionChangeGroup         = $true
-            DatabasePrincipalChangeGroup          = $true
-            DatabasePrincipalImpersonationGroup   = $true
-            DatabaseRoleMemberChangeGroup         = $true
-            SchemaObjectChangeGroup               = $true
-            SchemaObjectOwnershipChangeGroup      = $true
-            SchemaObjectPermissionChangeGroup     = $true
-            ServerObjectChangeGroup               = $true
-            ServerObjectOwnershipChangeGroup      = $true
-            ServerObjectPermissionChangeGroup     = $true
-            ServerOperationGroup                  = $true
-            ServerPermissionChangeGroup           = $true
-            ServerPrincipalChangeGroup            = $true
-            ServerPrincipalImpersonationGroup     = $true
-            ServerRoleMemberChangeGroup           = $true
-            ServerStateChangeGroup                = $true
-            TraceChangeGroup                      = $true
-            DependsOn                 = "[SqlServerAudit]Integration_TestPrepare"
-            PsDscRunAsCredential      = $SqlAdministratorCredential
+            Ensure                              = 'Present'
+            ServerName                          = $Node.ServerName
+            InstanceName                        = $Node.InstanceName
+            Name                                = $Node.AuditSpecificationName
+            AuditName                           = $Node.AuditName1
+            Enabled                             = $true
+            AuditChangeGroup                    = $true
+            BackupRestoreGroup                  = $true
+            DatabaseObjectChangeGroup           = $true
+            DatabaseObjectOwnershipChangeGroup  = $true
+            DatabaseObjectPermissionChangeGroup = $true
+            DatabaseOwnershipChangeGroup        = $true
+            DatabasePermissionChangeGroup       = $true
+            DatabasePrincipalChangeGroup        = $true
+            DatabasePrincipalImpersonationGroup = $true
+            DatabaseRoleMemberChangeGroup       = $true
+            SchemaObjectChangeGroup             = $true
+            SchemaObjectOwnershipChangeGroup    = $true
+            SchemaObjectPermissionChangeGroup   = $true
+            ServerObjectChangeGroup             = $true
+            ServerObjectOwnershipChangeGroup    = $true
+            ServerObjectPermissionChangeGroup   = $true
+            ServerOperationGroup                = $true
+            ServerPermissionChangeGroup         = $true
+            ServerPrincipalChangeGroup          = $true
+            ServerPrincipalImpersonationGroup   = $true
+            ServerRoleMemberChangeGroup         = $true
+            ServerStateChangeGroup              = $true
+            TraceChangeGroup                    = $true
+            DependsOn                           = '[SqlServerAudit]Integration_TestPrepare'
+
+            PsDscRunAsCredential                = $SqlAdministratorCredential
         }
     }
 }
@@ -247,37 +250,38 @@ Configuration DSC_SqlServerAudit_RemoveAudit1_Config
 
         SqlServerAuditSpecification 'Integration_Test'
         {
-            Ensure                    = 'Present'
-            ServerName                = $Node.ServerName
-            InstanceName              = $Node.InstanceName
-            Name                      = $Node.AuditSpecificationName
-            AuditName                 = $Node.AuditName1
-            Enabled                   = $true
-            AuditChangeGroup                      = $true
-            BackupRestoreGroup                    = $true
-            DatabaseObjectChangeGroup             = $true
-            DatabaseObjectOwnershipChangeGroup    = $true
-            DatabaseObjectPermissionChangeGroup   = $true
-            DatabaseOwnershipChangeGroup          = $true
-            DatabasePermissionChangeGroup         = $true
-            DatabasePrincipalChangeGroup          = $true
-            DatabasePrincipalImpersonationGroup   = $true
-            DatabaseRoleMemberChangeGroup         = $true
-            SchemaObjectChangeGroup               = $true
-            SchemaObjectOwnershipChangeGroup      = $true
-            SchemaObjectPermissionChangeGroup     = $true
-            ServerObjectChangeGroup               = $true
-            ServerObjectOwnershipChangeGroup      = $true
-            ServerObjectPermissionChangeGroup     = $true
-            ServerOperationGroup                  = $true
-            ServerPermissionChangeGroup           = $true
-            ServerPrincipalChangeGroup            = $true
-            ServerPrincipalImpersonationGroup     = $true
-            ServerRoleMemberChangeGroup           = $true
-            ServerStateChangeGroup                = $true
-            TraceChangeGroup                      = $true
-            DependsOn                 = "[SqlServerAudit]Integration_TestPrepare"
-            PsDscRunAsCredential      = $SqlAdministratorCredential
+            Ensure                              = 'Present'
+            ServerName                          = $Node.ServerName
+            InstanceName                        = $Node.InstanceName
+            Name                                = $Node.AuditSpecificationName
+            AuditName                           = $Node.AuditName1
+            Enabled                             = $true
+            AuditChangeGroup                    = $true
+            BackupRestoreGroup                  = $true
+            DatabaseObjectChangeGroup           = $true
+            DatabaseObjectOwnershipChangeGroup  = $true
+            DatabaseObjectPermissionChangeGroup = $true
+            DatabaseOwnershipChangeGroup        = $true
+            DatabasePermissionChangeGroup       = $true
+            DatabasePrincipalChangeGroup        = $true
+            DatabasePrincipalImpersonationGroup = $true
+            DatabaseRoleMemberChangeGroup       = $true
+            SchemaObjectChangeGroup             = $true
+            SchemaObjectOwnershipChangeGroup    = $true
+            SchemaObjectPermissionChangeGroup   = $true
+            ServerObjectChangeGroup             = $true
+            ServerObjectOwnershipChangeGroup    = $true
+            ServerObjectPermissionChangeGroup   = $true
+            ServerOperationGroup                = $true
+            ServerPermissionChangeGroup         = $true
+            ServerPrincipalChangeGroup          = $true
+            ServerPrincipalImpersonationGroup   = $true
+            ServerRoleMemberChangeGroup         = $true
+            ServerStateChangeGroup              = $true
+            TraceChangeGroup                    = $true
+            DependsOn                           = '[SqlServerAudit]Integration_TestPrepare'
+
+            PsDscRunAsCredential                = $SqlAdministratorCredential
         }
     }
 }
