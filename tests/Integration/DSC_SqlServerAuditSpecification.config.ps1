@@ -105,9 +105,9 @@ Configuration DSC_SqlServerAuditSpecification_AddAudit1_Config
 
 <#
     .SYNOPSIS
-        Creates a audit to the securitylog, with a filer.
+        Creates a audit to the security log, with a filer.
 #>
-Configuration DSC_SqlServerAudit_AddSecLogAudit_Config
+Configuration DSC_SqlServerAuditSpecification_AddSecLogAudit_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -120,7 +120,7 @@ Configuration DSC_SqlServerAudit_AddSecLogAudit_Config
             InstanceName    = $Node.InstanceName
             Name            = $Node.AuditName2
             DestinationType = $Node.DestinationType2
-            Filter = $Node.Filter2
+            Filter          = $Node.Filter2
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -169,7 +169,7 @@ Configuration DSC_SqlServerAudit_AddSecLogAudit_Config
     .SYNOPSIS
         Should remove the filter
 #>
-Configuration DSC_SqlServerAudit_AddSecLogAuditNoFilter_Config
+Configuration DSC_SqlServerAuditSpecification_AddSecLogAuditNoFilter_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -230,7 +230,7 @@ Configuration DSC_SqlServerAudit_AddSecLogAuditNoFilter_Config
     .SYNOPSIS
         Removes the file audit.
 #>
-Configuration DSC_SqlServerAudit_RemoveAudit1_Config
+Configuration DSC_SqlServerAuditSpecification_RemoveAudit1_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -250,7 +250,7 @@ Configuration DSC_SqlServerAudit_RemoveAudit1_Config
 
         SqlServerAuditSpecification 'Integration_Test'
         {
-            Ensure                              = 'Present'
+            Ensure                              = 'Absent'
             ServerName                          = $Node.ServerName
             InstanceName                        = $Node.InstanceName
             Name                                = $Node.AuditSpecificationName
