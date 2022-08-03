@@ -87,6 +87,7 @@ stages:
           - task: PowerShell@2
             name: test
             displayName: 'Run HQRM Test'
+            condition: succeededOrFailed()
             inputs:
               filePath: './build.ps1'
               arguments: '-Tasks hqrmtest'
