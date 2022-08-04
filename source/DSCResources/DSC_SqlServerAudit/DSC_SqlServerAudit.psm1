@@ -6,7 +6,6 @@ Import-Module -Name $script:resourceHelperModulePath
 
 $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
-
 <#
     .SYNOPSIS
         Returns the current state of the audit on a server.
@@ -19,6 +18,12 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
     .PARAMETER InstanceName
         Specifies the SQL instance in which the audit exists.
+
+    .PARAMETER DestinationType
+        Specifies the location where the audit should write to.
+        This can be File, SecurityLog or ApplicationLog.
+
+        Not used in Get-TargetResource.
 #>
 function Get-TargetResource
 {
@@ -36,7 +41,12 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName
+        $InstanceName,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('File', 'SecurityLog', 'ApplicationLog')]
+        [System.String]
+        $DestinationType
     )
 
     $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
@@ -109,6 +119,9 @@ function Get-TargetResource
     .PARAMETER FilePath
         Specifies the location where te log files wil be placed.
 
+    .PARAMETER Filter
+        Specifies the filter that should be used on the audit.
+
     .PARAMETER MaximumFiles
         Specifies the number of files on disk.
 
@@ -143,10 +156,14 @@ function Get-TargetResource
         then the audit will be added to the server and, if needed, the audit
         will be updated. If 'Absent' then the audit will be removed from
         the server. Defaults to 'Present'.
+
+    .PARAMETER Force
+        Specifies if it is allowed to re-create the server audit when the DestinationType
+        changes. Defaults to $false not allowing server audits to be re-created.
 #>
 function Set-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Invoke-Query is used which calls the command Connect-Sql')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Invoke-Query is used which calls the command Connect-Sql')]
     [CmdletBinding()]
     param
     (
@@ -162,10 +179,10 @@ function Set-TargetResource
         [System.String]
         $InstanceName,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('File', 'SecurityLog', 'ApplicationLog')]
         [System.String]
-        $DestinationType = 'SecurityLog',
+        $DestinationType,
 
         [Parameter()]
         [System.String]
@@ -216,7 +233,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $Force = $false
+        $Force
     )
 
     Write-Verbose -Message (
@@ -548,6 +565,9 @@ function Set-TargetResource
     .PARAMETER FilePath
         Specifies the location where te log files wil be placed.
 
+    .PARAMETER Filter
+        Specifies the filter that should be used on the audit.
+
     .PARAMETER MaximumFiles
         Specifies the number of files on disk.
 
@@ -582,10 +602,14 @@ function Set-TargetResource
         then the audit will be added to the server and, if needed, the audit
         will be updated. If 'Absent' then the audit will be removed from
         the server. Defaults to 'Present'.
+
+    .PARAMETER Force
+        Specifies if it is allowed to re-create the server audit when the DestinationType
+        changes. Defaults to $false not allowing server audits to be re-created.
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     [CmdletBinding()]
@@ -603,10 +627,10 @@ function Test-TargetResource
         [System.String]
         $InstanceName,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('File', 'SecurityLog', 'ApplicationLog')]
         [System.String]
-        $DestinationType = 'SecurityLog',
+        $DestinationType,
 
         [Parameter()]
         [System.String]
@@ -657,7 +681,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $Force = $false
+        $Force
     )
 
     Write-Verbose -Message (
@@ -680,57 +704,47 @@ function Test-TargetResource
     # Get-TargetResource will also help us to test if the audit exist.
     $getTargetResourceResult = Get-TargetResource @TargetResourceParameters
 
+    $testTargetResourceReturnValue = $true
+
     if ($getTargetResourceResult.Ensure -eq $Ensure)
     {
         if ($Ensure -eq 'Present')
         {
-            <#
-                Make sure default values are part of desired values if the user did
-                not specify them in the configuration.
-            #>
-            $desiredValues = @{ } + $PSBoundParameters
-            $desiredValues['Ensure'] = $Ensure
-
             $testDscParameterStateParameters = @{
-                CurrentValues = $getTargetResourceResult
-                DesiredValues = $desiredValues
-                ValuesToCheck = @(
-                    'FilePath'
-                    'MaximumFileSize'
-                    'MaximumFileSizeUnit'
-                    'QueueDelay'
-                    'OnFailure'
-                    'Enabled'
+                CurrentValues     = $getTargetResourceResult
+                DesiredValues     = $PSBoundParameters
+                ExcludeProperties = @(
+                    'Name'
+                    'ServerName'
+                    'InstanceName'
+                    'Force'
+                    # Ensure was already evaluated prior, no need to check it again.
                     'Ensure'
-                    'DestinationType'
-                    'MaximumFiles'
-                    'MaximumRolloverFiles'
-                    'ReserveDiskSpace'
-                    'Filter'
                 )
             }
 
-            $testTargetResourceReturnValue = Test-DscParameterState @testDscParameterStateParameters
+            $propertiesNotInDesiredState = Compare-DscParameterState @testDscParameterStateParameters
 
-            <#
-                WORKAROUND for possible bug?
-                Test-DscParameterState does not see if a parameter is removed as parameter
-                but still exists in the DSC resource.
-
-                When in desired state do some additional tests.
-                When not in desired state, additional testing is not needed.
-            #>
-            if ($testTargetResourceReturnValue)
+            if ($propertiesNotInDesiredState)
             {
-                if ($getTargetResourceResult.Filter -ne $Filter)
-                {
-                    $testTargetResourceReturnValue = $false
-                }
+                $testTargetResourceReturnValue = $false
             }
-        }
-        else
-        {
-            $testTargetResourceReturnValue = $true
+
+            # <#
+            #     WORKAROUND for possible bug?
+            #     Test-DscParameterState does not see if a parameter is removed as parameter
+            #     but still exists in the DSC resource.
+
+            #     When in desired state do some additional tests.
+            #     When not in desired state, additional testing is not needed.
+            # #>
+            # if ($testTargetResourceReturnValue)
+            # {
+            #     if ($getTargetResourceResult.Filter -ne $Filter)
+            #     {
+            #         $testTargetResourceReturnValue = $false
+            #     }
+            # }
         }
     }
     else
