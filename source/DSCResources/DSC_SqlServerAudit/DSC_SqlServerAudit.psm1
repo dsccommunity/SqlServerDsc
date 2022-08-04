@@ -246,6 +246,7 @@ function Set-TargetResource
         $errorMessage = $script:localizedData.ImpossibleFileCombination
         New-InvalidOperationException -Message $errorMessage
     }
+
     if ($FilePath)
     {
         $FilePath = $FilePath.TrimEnd('\') + '\'
@@ -695,14 +696,14 @@ function Test-TargetResource
         $PSBoundParameters['FilePath'] = $FilePath.TrimEnd('\') + '\'
     }
 
-    $TargetResourceParameters = @{
+    $getTargetResourceParameters = @{
         ServerName   = $ServerName
         InstanceName = $InstanceName
         Name         = $Name
     }
 
     # Get-TargetResource will also help us to test if the audit exist.
-    $getTargetResourceResult = Get-TargetResource @TargetResourceParameters
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
     $testTargetResourceReturnValue = $true
 

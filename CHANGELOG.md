@@ -72,6 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `ConvertTo-SqlDscServerPermission`
     - `Get-SqlDscServerPermission`
     - `Set-SqlDscServerPermission`
+    - `Invoke-SqlDscQuery`
   - Support for debugging of integration tests in AppVeyor.
     - Only run for pull requests
   - Add new resource SqlServerAudit.
