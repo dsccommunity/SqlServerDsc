@@ -92,7 +92,7 @@ function New-SqlDscAudit
 
         [Parameter()]
         [System.String]
-        $Filter,
+        $AuditFilter,
 
         [Parameter()]
         [ValidateSet('Continue', 'FailOperation', 'Shutdown')]
@@ -274,9 +274,9 @@ function New-SqlDscAudit
         $auditObject.Guid = $AuditGuid
     }
 
-    if ($PSBoundParameters.ContainsKey('Filter'))
+    if ($PSBoundParameters.ContainsKey('AuditFilter'))
     {
-        $auditObject.Filter = $Filter
+        $auditObject.Filter = $AuditFilter
     }
 
     $verboseDescriptionMessage = $script:localizedData.Audit_ChangePermissionShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName

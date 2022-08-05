@@ -49,31 +49,31 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName = 'Log'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Type <string> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Type <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'File'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithSize'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithMaxFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFiles <uint> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithMaxRolloverFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumRolloverFiles <uint> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithSizeAndMaxFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumFiles <uint> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithSizeAndMaxRolloverFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumRolloverFiles <uint> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'New-SqlDscAudit').ParameterSets |
@@ -851,7 +851,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
         }
 
         It 'Should call the mocked method and have correct values in the object' {
-            New-SqlDscAudit -Filter "([server_principal_name] like '%ADMINISTRATOR'" @mockDefaultParameters
+            New-SqlDscAudit -AuditFilter "([server_principal_name] like '%ADMINISTRATOR'" @mockDefaultParameters
 
             # This is the object created by the mock and modified by the command.
             $mockCreateAuditObject.Name | Should -Be 'Log1'
