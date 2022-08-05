@@ -26,7 +26,7 @@ ConvertFrom-StringData @'
     ## Get-SqlDscServerPermission, Set-SqlDscServerPermission
     ServerPermission_MissingPrincipal = The principal '{0}' is not a login on the instance '{1}'.
 
-    ## Set-SqlDscDatabasePermission
+    ## Set-SqlDscServerPermission
     ServerPermission_IgnoreWithGrantForStateDeny = The parameter WithGrant cannot be used together with the state Deny, the parameter WithGrant is ignored.
     ServerPermission_ChangePermissionShouldProcessVerboseDescription = Changing the permission for the principal '{0}' on the instance '{1}'.
     ServerPermission_ChangePermissionShouldProcessVerboseWarning = Are you sure you want you change the permission for the principal '{0}'?
@@ -38,4 +38,11 @@ ConvertFrom-StringData @'
 
     ## Class DatabasePermission
     InvalidTypeForCompare = Invalid type in comparison. Expected type [{0}], but the type was [{1}]. (DP0001)
+
+    ## New-SqlDscAudit
+    Audit_PathParameterValueInvalid = The path '{0}' does not exist. Audit file can only be created in a path that already exist and where the SQL Server instance has permission to write.
+    Audit_ChangePermissionShouldProcessVerboseDescription = Adding the audit '{0}' on the instance '{1}'.
+    Audit_ChangePermissionShouldProcessVerboseWarning = Are you sure you want you add the audit '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Audit_ChangePermissionShouldProcessCaption = Add audit on instance
 '@

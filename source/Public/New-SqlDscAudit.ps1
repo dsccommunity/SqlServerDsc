@@ -9,7 +9,8 @@
         Specifies the name of the server audit to be added.
 
     .PARAMETER Filter
-        Specifies the filter that should be used on the audit.
+        Specifies the filter that should be used on the audit. See [predicate expression](https://docs.microsoft.com/en-us/sql/t-sql/statements/create-server-audit-transact-sql)
+        how to write the syntax for the filter.
 
     .PARAMETER OnFailure
         Specifies what should happen when writing events to the store fails.
@@ -19,6 +20,14 @@
         Specifies the maximum delay before a event is written to the store.
         When set to low this could impact server performance.
         When set to high events could be missing when a server crashes.
+
+    .PARAMETER AuditGuid
+        Specifies the GUID found in the mirrored database. To support scenarios such
+        as database mirroring an audit needs a specific GUID.
+
+    .PARAMETER OperatorAudit
+        Specifies if auditing will capture Microsoft support engineers operations
+        during support requests. Applies to Azure SQL Managed Instance only.
 
     .PARAMETER Type
         Specifies the log location where the audit should write to.
@@ -48,16 +57,22 @@
         None.
 
     .NOTES
-        TODO: Update comment-based help from here: https://docs.microsoft.com/en-us/sql/t-sql/statements/create-server-audit-transact-sql?view=sql-server-ver16
+        See the SQL Server documentation: https://docs.microsoft.com/en-us/sql/t-sql/statements/create-server-audit-transact-sql
 #>
 function New-SqlDscAudit
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [OutputType()]
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param
     (
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(ParameterSetName = 'Log', Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(ParameterSetName = 'File', Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(ParameterSetName = 'FileWithSize', Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(ParameterSetName = 'FileWithMaxFiles', Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(ParameterSetName = 'FileWithMaxRolloverFiles', Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(ParameterSetName = 'FileWithSizeAndMaxFiles', Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(ParameterSetName = 'FileWithSizeAndMaxRolloverFiles', Mandatory = $true, ValueFromPipeline = $true)]
         [Microsoft.SqlServer.Management.Smo.Server]
         $ServerObject,
 
@@ -69,16 +84,28 @@ function New-SqlDscAudit
         [System.String]
         $Filter,
 
-        # TODO:Maybe not use default it the parameter inte not necessary?
         [Parameter()]
         [ValidateSet('Continue', 'FailOperation', 'Shutdown')]
         [System.String]
-        $OnFailure = 'Continue',
+        $OnFailure,
 
-        # TODO:Maybe not use default it the parameter inte not necessary?
         [Parameter()]
+        [ValidateRange(1000, 2147483647)]
         [System.UInt32]
-        $QueueDelay = 1000,
+        $QueueDelay,
+
+        [Parameter()]
+        [ValidatePattern('^[0-9a-fA-F]{8}-(?:[0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$')]
+        [System.String]
+        $AuditGuid,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $OperatorAudit,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Force,
 
         [Parameter(ParameterSetName = 'Log', Mandatory = $true)]
         [ValidateSet('SecurityLog', 'ApplicationLog')]
@@ -87,41 +114,66 @@ function New-SqlDscAudit
         $Type,
 
         [Parameter(ParameterSetName = 'File', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'FileWithSize', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'FileWithMaxFiles', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'FileWithMaxRolloverFiles', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'FileWithSizeAndMaxFiles', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'FileWithSizeAndMaxRolloverFiles', Mandatory = $true)]
+        [ValidateScript({
+                if (-not (Test-Path -Path $_))
+                {
+                    throw ($script:localizedData.Audit_PathParameterValueInvalid -f $_)
+                }
+
+                return $true
+            })]
         [System.String]
-        $FilePath,
+        $Path,
 
-        [Parameter(ParameterSetName = 'File')]
-        [System.Management.Automation.SwitchParameter]
-        $ReserveDiskSpace,
+        [Parameter(ParameterSetName = 'FileWithSize', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'FileWithSizeAndMaxFiles', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'FileWithSizeAndMaxRolloverFiles', Mandatory = $true)]
+        [ValidateRange(2, 2147483647)]
+        [System.UInt32]
+        $MaximumFileSize,
 
-        [Parameter(ParameterSetName = 'File')]
+        [Parameter(ParameterSetName = 'FileWithSize', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'FileWithSizeAndMaxFiles', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'FileWithSizeAndMaxRolloverFiles', Mandatory = $true)]
+        [ValidateSet('Megabyte', 'Gigabyte', 'Terabyte')]
+        [System.String]
+        $MaximumFileSizeUnit,
+
+        [Parameter(ParameterSetName = 'FileWithSizeAndMaxFiles', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'FileWithMaxFiles', Mandatory = $true)]
         [System.UInt32]
         $MaximumFiles,
 
-        # TODO:Maybe not use default it the parameter inte not necessary?
-        [Parameter(ParameterSetName = 'File')]
-        [System.UInt32]
-        $MaximumFileSize = 10,
+        [Parameter(ParameterSetName = 'FileWithMaxFiles')]
+        [Parameter(ParameterSetName = 'FileWithSizeAndMaxFiles')]
+        [System.Management.Automation.SwitchParameter]
+        $ReserveDiskSpace,
 
-        # TODO:Maybe not use default it the parameter inte not necessary?
-        [Parameter(ParameterSetName = 'File')]
-        [ValidateSet('KB', 'MB', 'GB')]
-        [System.String]
-        $MaximumFileSizeUnit = 'MB',
-
-        [Parameter(ParameterSetName = 'File')]
+        [Parameter(ParameterSetName = 'FileWithSizeAndMaxRolloverFiles', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'FileWithMaxRolloverFiles', Mandatory = $true)]
+        [ValidateRange(0, 2147483647)]
         [System.UInt32]
         $MaximumRolloverFiles
     )
 
-    switch ($PSCmdlet.ParameterSetName)
+    if ($Force.IsPresent)
+    {
+        $ConfirmPreference = 'None'
+    }
+
+    $queryType = switch ($PSCmdlet.ParameterSetName)
     {
         'Log'
         {
             # Translate the value for Type.
-            $queryType = (
+            (
                 @{
-                    SecurityLog = 'SECURITY_LOG'
+                    SecurityLog    = 'SECURITY_LOG'
                     ApplicationLog = 'APPLICATION_LOG'
                 }
             ).$Type
@@ -129,73 +181,186 @@ function New-SqlDscAudit
 
         'File'
         {
-            $queryType = 'FILE'
+            'FILE'
         }
     }
 
     $query = 'CREATE SERVER AUDIT [{0}] TO {1}' -f $Name, $queryType
 
-    # Translate the value for OnFailure.
-    $queryOnFailure = (
-        @{
-            Continue = 'CONTINUE'
-            FailOperation = 'FAIL_OPERATION'
-            ShutDown = 'SHUTDOWN'
+    if ($PSCmdlet.ParameterSetName -match 'File')
+    {
+        $query += (" (FILEPATH = '{0}'" -f $Path)
+
+        if ($PSCmdlet.ParameterSetName -match 'FileWithSize')
+        {
+            $queryMaximumFileSizeUnit = (
+                @{
+                    Megabyte = 'MB'
+                    Gigabyte = 'GB'
+                    Terabyte = 'TB'
+                }
+            ).$MaximumFileSizeUnit
+
+            # MAXSIZE: cspell: disable-line cspell: disable-next-line
+            $query += (', MAXSIZE {0} {1}' -f $MaximumFileSize, $queryMaximumFileSizeUnit)
         }
-    ).$OnFailure
 
-    # 'File'
-    # {
-    #     $strReserveDiskSpace = 'OFF'
-    #     if ($ReserveDiskSpace)
-    #     {
-    #         $strReserveDiskSpace = 'ON'
-    #     }
+        <#
+            TODO: For Set-SqlDscAudit: Switching between MaximumFiles and MaximumRolloverFiles must
+                  run alter() between.
 
-    #     $strFiles = ''
-    #     if ($MaximumFiles)
-    #     {
-    #         $strFiles = 'MAX_FILES = {0},' -f $MaximumFiles
-    #     }
-    #     if ($MaximumRolloverFiles)
-    #     {
-            # TODO: If not passed then UNLIMITED should be used (it is default when not adding MAX_ROLLOVER_FILES to the query).
-    #         $strFiles = 'MAX_ROLLOVER_FILES = {0},' -f $MaximumRolloverFiles
-    #     }
+                   $sqlServerObject.Audits['File1'].MaximumRolloverFiles = 0
+                   $sqlServerObject.Audits['File1'].Alter()
+                   $sqlServerObject.Audits['File1'].MaximumFiles = 1
+                   $sqlServerObject.Audits['File1'].Alter()
+        #>
+        if ($PSCmdlet.ParameterSetName -in @('FileWithMaxFiles', 'FileWithSizeAndMaxFiles'))
+        {
+            $query += (', MAX_FILES = {0}' -f $MaximumFiles)
 
-    #     # TODO: Should handle Filter (WHERE-clause)
+            if ($PSBoundParameters.ContainsKey('ReserveDiskSpace'))
+            {
+                # Translate the value for ReserveDiskSpace.
+                $queryReservDiskSpace = (
+                    @{
+                        True  = 'ON'
+                        False = 'OFF'
+                    }
+                ).($ReserveDiskSpace.IsPresent.ToString())
 
-    #     $target = 'FILE (
-    #             FILEPATH = N''{0}'',
-    #             MAXSIZE = {1} {2},
-    #             {3}
-    #             RESERVE_DISK_SPACE = {4} )' -f
-    #     $FilePath,
-    #     $MaximumFileSize,
-    #     $MaximumFileSizeUnit,
-    #     $strFiles,
-    #     $strReserveDiskSpace
-    # }
+                $query += (', RESERVE_DISK_SPACE = {0}' -f $queryReservDiskSpace)
+            }
+        }
 
-    # $withPart = 'QUEUE_DELAY = {0}, ON_FAILURE = {1}' -f @(
-    #     $QueueDelay,
-    #     $queryOnFailure
-    # )
+        if ($PSCmdlet.ParameterSetName -in @('FileWithMaxRolloverFiles', 'FileWithSizeAndMaxRolloverFiles'))
+        {
+            $query += (', MAX_ROLLOVER_FILES = {0}' -f $MaximumFiles)
+        }
 
-    # $invokeQueryParameters = @{
-    #     ServerName   = $ServerName
-    #     InstanceName = $InstanceName
-    #     Database     = 'MASTER'
-    # }
+        $query += ')'
+    }
 
-    Invoke-Query @invokeQueryParameters -Query $query
 
-    #     'CREATE SERVER AUDIT [{0}] TO {1}
-    #     WITH (
-    #         {2}
-    #     );' -f
-    #     $Name,
-    #     $Target,
-    #     $WithPart
-    # )
+    $needWithPart = (
+        $PSBoundParameters.ContainsKey('OnFailure') -or
+        $PSBoundParameters.ContainsKey('QueueDelay') -or
+        $PSBoundParameters.ContainsKey('AuditGuid') -or
+        $PSBoundParameters.ContainsKey('OperatorAudit')
+    )
+
+    if ($needWithPart)
+    {
+        $query += ' WITH ('
+
+        $hasWithPartOption = $false
+
+        foreach ($option in @('OnFailure', 'QueueDelay', 'AuditGuid', 'OperatorAudit'))
+        {
+            if ($PSBoundParameters.ContainsKey($option))
+            {
+                <#
+                    If there was already an option added, and another need to be
+                    added, split them with a comma.
+                #>
+                if ($hasWithPartOption)
+                {
+                    $query += ', '
+                }
+
+                switch ($option)
+                {
+                    'QueueDelay'
+                    {
+                        $query += ('QUEUE_DELAY = {0}' -f $QueueDelay)
+
+                        $hasWithPartOption = $true
+                    }
+
+                    'OnFailure'
+                    {
+                        # Translate the value for OnFailure.
+                        $queryOnFailure = (
+                            @{
+                                Continue      = 'CONTINUE'
+                                FailOperation = 'FAIL_OPERATION'
+                                ShutDown      = 'SHUTDOWN'
+                            }
+                        ).$OnFailure
+
+                        $query += ('ON_FAILURE = {0}' -f $queryOnFailure)
+
+                        $hasWithPartOption = $true
+                    }
+
+                    'AuditGuid'
+                    {
+                        $query += ("AUDIT_GUID = '{0}'" -f $AuditGuid)
+
+                        $hasWithPartOption = $true
+                    }
+
+                    'OperatorAudit'
+                    {
+                        # Translate the value for OperatorAudit.
+                        $queryOperatorAudit = (
+                            @{
+                                True  = 'ON'
+                                False = 'OFF'
+                            }
+                        ).($OperatorAudit.IsPresent.ToString())
+
+                        $query += ('OPERATOR_AUDIT = {0}' -f $queryOperatorAudit)
+
+                        $hasWithPartOption = $true
+                    }
+                }
+            }
+        }
+
+        $query += ')'
+    }
+
+    # TODO: This cannot allow SQL Injection
+    if ($PSBoundParameters.ContainsKey('Filter'))
+    {
+        $query += ' WHERE ('
+
+        # <predicate_expression>::=
+        # {
+        #     [NOT ] <predicate_factor>
+        #     [ { AND | OR } [NOT ] { <predicate_factor> } ]
+        #     [,...n ]
+        # }
+
+        # <predicate_factor>::=
+        #     event_field_name { = | < > | ! = | > | > = | < | < = | LIKE } { number | ' string ' }
+
+        # WHERE ([server_principal_name] like '%ADMINISTRATOR')
+
+        # WHERE [Schema_Name] = 'sys' AND [Object_Name] = 'all_objects'
+
+        # WHERE (
+        #    [Schema_Name] = 'sys' AND [Object_Name] = 'all_objects'
+        #) OR (
+        #    [Schema_Name] = 'sys' AND [Object_Name] = 'database_permissions'
+        #)
+
+        $query += ')'
+    }
+
+    $verboseDescriptionMessage = $script:localizedData.Audit_ChangePermissionShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
+    $verboseWarningMessage = $script:localizedData.Audit_ChangePermissionShouldProcessVerboseWarning -f $Name
+    $captionMessage = $script:localizedData.Audit_ChangePermissionShouldProcessCaption
+
+    if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+    {
+        $invokeSqlDscQueryParameters = @{
+            ServerObject = $ServerObject
+            DatabaseName = 'master'
+            Query        = $query
+            ErrorAction  = 'Stop'
+        }
+
+        Invoke-SqlDscQuery @invokeSqlDscQueryParameters
+    }
 }
