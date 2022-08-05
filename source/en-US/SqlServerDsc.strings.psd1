@@ -45,4 +45,5 @@ ConvertFrom-StringData @'
     Audit_ChangePermissionShouldProcessVerboseWarning = Are you sure you want you add the audit '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Audit_ChangePermissionShouldProcessCaption = Add audit on instance
+    Audit_AlreadyPresent = There is already an audit with the name '{0}'.
 '@

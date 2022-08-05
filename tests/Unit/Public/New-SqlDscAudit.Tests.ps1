@@ -49,31 +49,31 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName = 'Log'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Type <string> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-OperatorAudit] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Type <string> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'File'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-OperatorAudit] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithSize'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-OperatorAudit] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithMaxFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFiles <uint> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-OperatorAudit] [-Force] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFiles <uint> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithMaxRolloverFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumRolloverFiles <uint> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-OperatorAudit] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumRolloverFiles <uint> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithSizeAndMaxFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumFiles <uint> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-OperatorAudit] [-Force] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumFiles <uint> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithSizeAndMaxRolloverFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumRolloverFiles <uint> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-OperatorAudit] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumRolloverFiles <uint> [-Filter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'New-SqlDscAudit').ParameterSets |
@@ -97,10 +97,32 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
 
     Context 'When adding an application log audit using mandatory parameters' {
         BeforeAll {
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-            $mockServerObject.InstanceName = 'TestInstance'
+            $script:mockCreateAuditObject = $null
 
-            Mock -CommandName Invoke-SqlDscQuery
+            Mock -CommandName New-Object -ParameterFilter {
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Audit'
+            } -MockWith {
+                <#
+                    The Audit object is created in the script scope so that the
+                    properties can be validated.
+                #>
+                $script:mockCreateAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                    $PesterBoundParameters.ArgumentList[0],
+                    $PesterBoundParameters.ArgumentList[1]
+                ) |
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
+                        $script:mockMethodCreateCallCount += 1
+                    } -PassThru -Force
+
+                return $script:mockCreateAuditObject
+            }
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                    return @{}
+                } -PassThru -Force
+
+            $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
@@ -109,54 +131,87 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             }
         }
 
+        BeforeEach {
+            $script:mockMethodCreateCallCount = 0
+        }
+
         Context 'When using parameter Confirm with value $false' {
-            It 'Should call the mock with the expected query' {
+            It 'Should call the mocked method and have correct values in the object' {
                 New-SqlDscAudit -Confirm:$false @mockDefaultParameters
 
-                Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
-                    $Query -eq 'CREATE SERVER AUDIT [Log1] TO APPLICATION_LOG'
-                }
+                # This is the object created by the mock and modified by the command.
+                $mockCreateAuditObject.Name | Should -Be 'Log1'
+                $mockCreateAuditObject.DestinationType | Should -Be 'ApplicationLog'
+
+                $mockMethodCreateCallCount | Should -Be 1
             }
         }
 
         Context 'When using parameter Force' {
-            It 'Should call the mock with the expected query' {
+            It 'Should call the mocked method and have correct values in the object' {
                 New-SqlDscAudit -Force @mockDefaultParameters
 
-                Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
-                    $Query -eq 'CREATE SERVER AUDIT [Log1] TO APPLICATION_LOG'
-                }
+                # This is the object created by the mock and modified by the command.
+                $mockCreateAuditObject.Name | Should -Be 'Log1'
+                $mockCreateAuditObject.DestinationType | Should -Be 'ApplicationLog'
+
+                $mockMethodCreateCallCount | Should -Be 1
             }
         }
 
         Context 'When using parameter WhatIf' {
-            It 'Should call the mock with the expected query' {
+            It 'Should call the mocked method and have correct values in the object' {
                 New-SqlDscAudit -WhatIf @mockDefaultParameters
 
-                Should -Not -Invoke -CommandName Invoke-SqlDscQuery
+                # This is the object created by the mock and modified by the command.
+                $mockCreateAuditObject.Name | Should -Be 'Log1'
+                $mockCreateAuditObject.DestinationType | Should -Be 'ApplicationLog'
+
+                $mockMethodCreateCallCount | Should -Be 0
             }
         }
 
         Context 'When passing parameter ServerObject over the pipeline' {
-            It 'Should call the mock with the expected query' {
+            It 'Should call the mocked method and have correct values in the object' {
                 $mockServerObject | New-SqlDscAudit -Type 'ApplicationLog' -Name 'Log1'
 
-                Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
-                    $Query -eq 'CREATE SERVER AUDIT [Log1] TO APPLICATION_LOG'
-                }
+                # This is the object created by the mock and modified by the command.
+                $mockCreateAuditObject.Name | Should -Be 'Log1'
+                $mockCreateAuditObject.DestinationType | Should -Be 'ApplicationLog'
+
+                $mockMethodCreateCallCount | Should -Be 1
             }
         }
     }
 
     Context 'When adding an security log audit using mandatory parameters' {
         BeforeAll {
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-            $mockServerObject.InstanceName = 'TestInstance'
+            $script:mockCreateAuditObject = $null
 
-            Mock -CommandName Invoke-SqlDscQuery
-            Mock -CommandName Test-Path -MockWith {
-                return $true
+            Mock -CommandName New-Object -ParameterFilter {
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Audit'
+            } -MockWith {
+                <#
+                    The Audit object is created in the script scope so that the
+                    properties can be validated.
+                #>
+                $script:mockCreateAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                    $PesterBoundParameters.ArgumentList[0],
+                    $PesterBoundParameters.ArgumentList[1]
+                ) |
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
+                        $script:mockMethodCreateCallCount += 1
+                    } -PassThru -Force
+
+                return $script:mockCreateAuditObject
             }
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                    return @{}
+                } -PassThru -Force
+
+            $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
@@ -165,51 +220,87 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             }
         }
 
+        BeforeEach {
+            $script:mockMethodCreateCallCount = 0
+        }
+
         Context 'When using parameter Confirm with value $false' {
-            It 'Should call the mock with the expected query' {
+            It 'Should call the mocked method and have correct values in the object' {
                 New-SqlDscAudit -Confirm:$false @mockDefaultParameters
 
-                Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
-                    $Query -eq 'CREATE SERVER AUDIT [Log1] TO SECURITY_LOG'
-                }
+                # This is the object created by the mock and modified by the command.
+                $mockCreateAuditObject.Name | Should -Be 'Log1'
+                $mockCreateAuditObject.DestinationType | Should -Be 'SecurityLog'
+
+                $mockMethodCreateCallCount | Should -Be 1
             }
         }
 
         Context 'When using parameter Force' {
-            It 'Should call the mock with the expected query' {
+            It 'Should call the mocked method and have correct values in the object' {
                 New-SqlDscAudit -Force @mockDefaultParameters
 
-                Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
-                    $Query -eq 'CREATE SERVER AUDIT [Log1] TO SECURITY_LOG'
-                }
+                # This is the object created by the mock and modified by the command.
+                $mockCreateAuditObject.Name | Should -Be 'Log1'
+                $mockCreateAuditObject.DestinationType | Should -Be 'SecurityLog'
+
+                $mockMethodCreateCallCount | Should -Be 1
             }
         }
 
         Context 'When using parameter WhatIf' {
-            It 'Should call the mock with the expected query' {
+            It 'Should call the mocked method and have correct values in the object' {
                 New-SqlDscAudit -WhatIf @mockDefaultParameters
 
-                Should -Not -Invoke -CommandName Invoke-SqlDscQuery
+                # This is the object created by the mock and modified by the command.
+                $mockCreateAuditObject.Name | Should -Be 'Log1'
+                $mockCreateAuditObject.DestinationType | Should -Be 'SecurityLog'
+
+                $mockMethodCreateCallCount | Should -Be 0
             }
         }
 
         Context 'When passing parameter ServerObject over the pipeline' {
-            It 'Should call the mock with the expected query' {
+            It 'Should call the mocked method and have correct values in the object' {
                 $mockServerObject | New-SqlDscAudit -Type 'SecurityLog' -Name 'Log1'
 
-                Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
-                    $Query -eq 'CREATE SERVER AUDIT [Log1] TO SECURITY_LOG'
-                }
+                # This is the object created by the mock and modified by the command.
+                $mockCreateAuditObject.Name | Should -Be 'Log1'
+                $mockCreateAuditObject.DestinationType | Should -Be 'SecurityLog'
+
+                $mockMethodCreateCallCount | Should -Be 1
             }
         }
     }
 
     Context 'When adding an file audit using mandatory parameters' {
         BeforeAll {
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-            $mockServerObject.InstanceName = 'TestInstance'
+            $script:mockCreateAuditObject = $null
 
-            Mock -CommandName Invoke-SqlDscQuery
+            Mock -CommandName New-Object -ParameterFilter {
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Audit'
+            } -MockWith {
+                <#
+                    The Audit object is created in the script scope so that the
+                    properties can be validated.
+                #>
+                $script:mockCreateAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                    $PesterBoundParameters.ArgumentList[0],
+                    $PesterBoundParameters.ArgumentList[1]
+                ) |
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
+                        $script:mockMethodCreateCallCount += 1
+                    } -PassThru -Force
+
+                return $script:mockCreateAuditObject
+            }
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                    return @{}
+                } -PassThru -Force
+
+            $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
@@ -218,41 +309,59 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             }
         }
 
+        BeforeEach {
+            $script:mockMethodCreateCallCount = 0
+        }
+
         Context 'When using parameter Confirm with value $false' {
-            It 'Should call the mock with the expected query' {
+            It 'Should call the mocked method and have correct values in the object' {
                 New-SqlDscAudit -Confirm:$false @mockDefaultParameters
 
-                Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
-                    $Query -eq "CREATE SERVER AUDIT [Log1] TO FILE (FILEPATH = 'C:\Temp')"
-                }
+                # This is the object created by the mock and modified by the command.
+                $mockCreateAuditObject.Name | Should -Be 'Log1'
+                $mockCreateAuditObject.DestinationType | Should -Be 'File'
+                $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+
+                $mockMethodCreateCallCount | Should -Be 1
             }
         }
 
         Context 'When using parameter Force' {
-            It 'Should call the mock with the expected query' {
+            It 'Should call the mocked method and have correct values in the object' {
                 New-SqlDscAudit -Force @mockDefaultParameters
 
-                Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
-                    $Query -eq "CREATE SERVER AUDIT [Log1] TO FILE (FILEPATH = 'C:\Temp')"
-                }
+                # This is the object created by the mock and modified by the command.
+                $mockCreateAuditObject.Name | Should -Be 'Log1'
+                $mockCreateAuditObject.DestinationType | Should -Be 'File'
+                $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+
+                $mockMethodCreateCallCount | Should -Be 1
             }
         }
 
         Context 'When using parameter WhatIf' {
-            It 'Should call the mock with the expected query' {
+            It 'Should call the mocked method and have correct values in the object' {
                 New-SqlDscAudit -WhatIf @mockDefaultParameters
 
-                Should -Not -Invoke -CommandName Invoke-SqlDscQuery
+                # This is the object created by the mock and modified by the command.
+                $mockCreateAuditObject.Name | Should -Be 'Log1'
+                $mockCreateAuditObject.DestinationType | Should -Be 'File'
+                $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+
+                $mockMethodCreateCallCount | Should -Be 0
             }
         }
 
         Context 'When passing parameter ServerObject over the pipeline' {
-            It 'Should call the mock with the expected query' {
+            It 'Should call the mocked method and have correct values in the object' {
                 $mockServerObject | New-SqlDscAudit -Path 'C:\Temp' -Name 'Log1'
 
-                Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
-                    $Query -eq "CREATE SERVER AUDIT [Log1] TO FILE (FILEPATH = 'C:\Temp')"
-                }
+                # This is the object created by the mock and modified by the command.
+                $mockCreateAuditObject.Name | Should -Be 'Log1'
+                $mockCreateAuditObject.DestinationType | Should -Be 'File'
+                $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+
+                $mockMethodCreateCallCount | Should -Be 1
             }
         }
     }
@@ -277,33 +386,298 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
 
             $mockErrorMessage = "Cannot validate argument on parameter 'Path'. " + ($mockErrorMessage -f 'C:\Temp')
 
-
             { New-SqlDscAudit @mockNewSqlDscAuditParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
         }
     }
 
-    Context 'When passing file audit optional parameter AuditGuid' {
+    Context 'When passing file audit optional parameters MaximumFileSize and MaximumFileSizeUnit' {
         BeforeAll {
-            Mock -CommandName Invoke-SqlDscQuery
+            $script:mockCreateAuditObject = $null
+
+            Mock -CommandName New-Object -ParameterFilter {
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Audit'
+            } -MockWith {
+                <#
+                    The Audit object is created in the script scope so that the
+                    properties can be validated.
+                #>
+                $script:mockCreateAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                    $PesterBoundParameters.ArgumentList[0],
+                    $PesterBoundParameters.ArgumentList[1]
+                ) |
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
+                        $script:mockMethodCreateCallCount += 1
+                    } -PassThru -Force
+
+                return $script:mockCreateAuditObject
+            }
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                    return @{}
+                } -PassThru -Force
+
+            $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
-                ServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                ServerObject = $mockServerObject
                 Name = 'Log1'
                 Path = 'C:\Temp'
                 Force = $true
             }
         }
 
-        It 'Should call the mock with the expected query' {
-            New-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' @mockDefaultParameters
+        BeforeEach {
+            $script:mockMethodCreateCallCount = 0
+        }
 
-            Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
-                $Query -eq "CREATE SERVER AUDIT [Log1] TO FILE (FILEPATH = 'C:\Temp') WITH (AUDIT_GUID = 'b5962b93-a359-42ef-bf1e-193e8a5f6222')"
+        It 'Should call the mocked method and have correct values in the object' {
+            New-SqlDscAudit -MaximumFileSize 1000 -MaximumFileSizeUnit 'Megabyte' @mockDefaultParameters
+
+            # This is the object created by the mock and modified by the command.
+            $mockCreateAuditObject.Name | Should -Be 'Log1'
+            $mockCreateAuditObject.DestinationType | Should -Be 'File'
+            $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+            $mockCreateAuditObject.MaximumFileSize | Should -Be 1000
+            $mockCreateAuditObject.MaximumFileSizeUnit | Should -Be 'Mb'
+
+            $mockMethodCreateCallCount | Should -Be 1
+        }
+    }
+
+    Context 'When passing file audit optional parameters MaximumFiles' {
+        BeforeAll {
+            $script:mockCreateAuditObject = $null
+
+            Mock -CommandName New-Object -ParameterFilter {
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Audit'
+            } -MockWith {
+                <#
+                    The Audit object is created in the script scope so that the
+                    properties can be validated.
+                #>
+                $script:mockCreateAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                    $PesterBoundParameters.ArgumentList[0],
+                    $PesterBoundParameters.ArgumentList[1]
+                ) |
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
+                        $script:mockMethodCreateCallCount += 1
+                    } -PassThru -Force
+
+                return $script:mockCreateAuditObject
+            }
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                    return @{}
+                } -PassThru -Force
+
+            $mockServerObject.InstanceName = 'TestInstance'
+
+            $mockDefaultParameters = @{
+                ServerObject = $mockServerObject
+                Name = 'Log1'
+                Path = 'C:\Temp'
+                Force = $true
             }
         }
 
+        BeforeEach {
+            $script:mockMethodCreateCallCount = 0
+        }
+
+        It 'Should call the mocked method and have correct values in the object' {
+            New-SqlDscAudit -MaximumFiles 2 @mockDefaultParameters
+
+            # This is the object created by the mock and modified by the command.
+            $mockCreateAuditObject.Name | Should -Be 'Log1'
+            $mockCreateAuditObject.DestinationType | Should -Be 'File'
+            $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+            $mockCreateAuditObject.MaximumFiles | Should -Be 2
+
+            $mockMethodCreateCallCount | Should -Be 1
+        }
+    }
+
+    Context 'When passing file audit optional parameters MaximumFiles and ReserveDiskSpace' {
+        BeforeAll {
+            $script:mockCreateAuditObject = $null
+
+            Mock -CommandName New-Object -ParameterFilter {
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Audit'
+            } -MockWith {
+                <#
+                    The Audit object is created in the script scope so that the
+                    properties can be validated.
+                #>
+                $script:mockCreateAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                    $PesterBoundParameters.ArgumentList[0],
+                    $PesterBoundParameters.ArgumentList[1]
+                ) |
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
+                        $script:mockMethodCreateCallCount += 1
+                    } -PassThru -Force
+
+                return $script:mockCreateAuditObject
+            }
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                    return @{}
+                } -PassThru -Force
+
+            $mockServerObject.InstanceName = 'TestInstance'
+
+            $mockDefaultParameters = @{
+                ServerObject = $mockServerObject
+                Name = 'Log1'
+                Path = 'C:\Temp'
+                Force = $true
+            }
+        }
+
+        BeforeEach {
+            $script:mockMethodCreateCallCount = 0
+        }
+
+        It 'Should call the mocked method and have correct values in the object' {
+            New-SqlDscAudit -MaximumFiles 2 -ReserveDiskSpace @mockDefaultParameters
+
+            # This is the object created by the mock and modified by the command.
+            $mockCreateAuditObject.Name | Should -Be 'Log1'
+            $mockCreateAuditObject.DestinationType | Should -Be 'File'
+            $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+            $mockCreateAuditObject.MaximumFiles | Should -Be 2
+            $mockCreateAuditObject.ReserveDiskSpace | Should -BeTrue
+
+            $mockMethodCreateCallCount | Should -Be 1
+        }
+
+        Context 'When ReserveDiskSpace is set to $false' {
+            It 'Should call the mocked method and have correct values in the object' {
+                New-SqlDscAudit -MaximumFiles 2 -ReserveDiskSpace:$false @mockDefaultParameters
+
+                # This is the object created by the mock and modified by the command.
+                $mockCreateAuditObject.Name | Should -Be 'Log1'
+                $mockCreateAuditObject.DestinationType | Should -Be 'File'
+                $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+                $mockCreateAuditObject.MaximumFiles | Should -Be 2
+                $mockCreateAuditObject.ReserveDiskSpace | Should -BeFalse
+
+                $mockMethodCreateCallCount | Should -Be 1
+            }
+        }
+    }
+
+    Context 'When passing file audit optional parameters MaximumRolloverFiles' {
+        BeforeAll {
+            $script:mockCreateAuditObject = $null
+
+            Mock -CommandName New-Object -ParameterFilter {
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Audit'
+            } -MockWith {
+                <#
+                    The Audit object is created in the script scope so that the
+                    properties can be validated.
+                #>
+                $script:mockCreateAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                    $PesterBoundParameters.ArgumentList[0],
+                    $PesterBoundParameters.ArgumentList[1]
+                ) |
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
+                        $script:mockMethodCreateCallCount += 1
+                    } -PassThru -Force
+
+                return $script:mockCreateAuditObject
+            }
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                    return @{}
+                } -PassThru -Force
+
+            $mockServerObject.InstanceName = 'TestInstance'
+
+            $mockDefaultParameters = @{
+                ServerObject = $mockServerObject
+                Name = 'Log1'
+                Path = 'C:\Temp'
+                Force = $true
+            }
+        }
+
+        BeforeEach {
+            $script:mockMethodCreateCallCount = 0
+        }
+
+        It 'Should call the mocked method and have correct values in the object' {
+            New-SqlDscAudit -MaximumRolloverFiles 2 @mockDefaultParameters
+
+            # This is the object created by the mock and modified by the command.
+            $mockCreateAuditObject.Name | Should -Be 'Log1'
+            $mockCreateAuditObject.DestinationType | Should -Be 'File'
+            $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+            $mockCreateAuditObject.MaximumRolloverFiles | Should -Be 2
+
+            $mockMethodCreateCallCount | Should -Be 1
+        }
+    }
+
+    Context 'When passing audit optional parameter AuditGuid' {
+        BeforeAll {
+            $script:mockCreateAuditObject = $null
+
+            Mock -CommandName New-Object -ParameterFilter {
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Audit'
+            } -MockWith {
+                <#
+                    The Audit object is created in the script scope so that the
+                    properties can be validated.
+                #>
+                $script:mockCreateAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                    $PesterBoundParameters.ArgumentList[0],
+                    $PesterBoundParameters.ArgumentList[1]
+                ) |
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
+                        $script:mockMethodCreateCallCount += 1
+                    } -PassThru -Force
+
+                return $script:mockCreateAuditObject
+            }
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                    return @{}
+                } -PassThru -Force
+
+            $mockServerObject.InstanceName = 'TestInstance'
+
+            $mockDefaultParameters = @{
+                ServerObject = $mockServerObject
+                Name = 'Log1'
+                Path = 'C:\Temp'
+                Force = $true
+            }
+        }
+
+        BeforeEach {
+            $script:mockMethodCreateCallCount = 0
+        }
+
+        It 'Should call the mocked method and have correct values in the object' {
+            New-SqlDscAudit -AuditGuid 'b5962b93-a359-42ef-bf1e-193e8a5f6222' @mockDefaultParameters
+
+            # This is the object created by the mock and modified by the command.
+            $mockCreateAuditObject.Name | Should -Be 'Log1'
+            $mockCreateAuditObject.DestinationType | Should -Be 'File'
+            $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+            $mockCreateAuditObject.Guid | Should -Be 'b5962b93-a359-42ef-bf1e-193e8a5f6222'
+
+            $mockMethodCreateCallCount | Should -Be 1
+        }
+
         Context 'When passing an invalid GUID' {
-            It 'Should call the mock with the expected query' {
+            It 'Should throw the correct error' {
                 $mockErrorMessage = 'Cannot validate argument on parameter ''AuditGuid''. The argument "not a guid" does not match the "^[0-9a-fA-F]{8}-(?:[0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$" pattern.'
 
                 # Escape bracket so that Should -Throw works.
@@ -315,71 +689,204 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
         }
     }
 
-    Context 'When passing file audit optional parameter OperatorAudit' {
+    Context 'When passing audit optional parameter OnFailure' {
         BeforeAll {
-            Mock -CommandName Invoke-SqlDscQuery
+            $script:mockCreateAuditObject = $null
+
+            Mock -CommandName New-Object -ParameterFilter {
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Audit'
+            } -MockWith {
+                <#
+                    The Audit object is created in the script scope so that the
+                    properties can be validated.
+                #>
+                $script:mockCreateAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                    $PesterBoundParameters.ArgumentList[0],
+                    $PesterBoundParameters.ArgumentList[1]
+                ) |
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
+                        $script:mockMethodCreateCallCount += 1
+                    } -PassThru -Force
+
+                return $script:mockCreateAuditObject
+            }
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                    return @{}
+                } -PassThru -Force
+
+            $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
-                ServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                ServerObject = $mockServerObject
                 Name = 'Log1'
                 Path = 'C:\Temp'
                 Force = $true
             }
         }
 
-        It 'Should call the mock with the expected query' {
-            New-SqlDscAudit -OperatorAudit @mockDefaultParameters
-
-            Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
-                $Query -eq "CREATE SERVER AUDIT [Log1] TO FILE (FILEPATH = 'C:\Temp') WITH (OPERATOR_AUDIT = ON)"
-            }
-        }
-
-        Context 'When passing $false for parameter OperatorAudit' {
-            It 'Should call the mock with the expected query' {
-                New-SqlDscAudit -OperatorAudit:$false @mockDefaultParameters
-
-                Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
-                    $Query -eq "CREATE SERVER AUDIT [Log1] TO FILE (FILEPATH = 'C:\Temp') WITH (OPERATOR_AUDIT = OFF)"
-                }
-            }
-        }
-    }
-
-    Context 'When passing file audit optional parameter OnFailure' {
-        BeforeAll {
-            Mock -CommandName Invoke-SqlDscQuery
-
-            $mockDefaultParameters = @{
-                ServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                Name = 'Log1'
-                Path = 'C:\Temp'
-                Force = $true
-            }
+        BeforeEach {
+            $script:mockMethodCreateCallCount = 0
         }
 
         Context 'When passing the value <MockOnFailureValue>' -ForEach @(
             @{
                 MockOnFailureValue = 'Continue'
-                MockExpectedQueryValue = 'CONTINUE'
             }
             @{
                 MockOnFailureValue = 'FailOperation'
-                MockExpectedQueryValue = 'FAIL_OPERATION'
             }
             @{
                 MockOnFailureValue = 'ShutDown'
-                MockExpectedQueryValue = 'SHUTDOWN'
             }
         ) {
-            It 'Should call the mock with the expected query' {
-                New-SqlDscAudit -OperatorAudit @mockDefaultParameters
+            It 'Should call the mocked method and have correct values in the object' {
+                New-SqlDscAudit -OnFailure $MockOnFailureValue @mockDefaultParameters
 
-                Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
-                    Write-Verbose -Verbose -Message $Query
-                    $Query -eq "CREATE SERVER AUDIT [Log1] TO FILE (FILEPATH = 'C:\Temp') WITH (ON_FAILURE = $MockExpectedQueryValue)"
-                }
+                # This is the object created by the mock and modified by the command.
+                $mockCreateAuditObject.Name | Should -Be 'Log1'
+                $mockCreateAuditObject.DestinationType | Should -Be 'File'
+                $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+                $mockCreateAuditObject.OnFailure | Should -Be $MockOnFailureValue
+
+                $mockMethodCreateCallCount | Should -Be 1
             }
+        }
+    }
+
+    Context 'When passing audit optional parameter QueueDelay' {
+        BeforeAll {
+            $script:mockCreateAuditObject = $null
+
+            Mock -CommandName New-Object -ParameterFilter {
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Audit'
+            } -MockWith {
+                <#
+                    The Audit object is created in the script scope so that the
+                    properties can be validated.
+                #>
+                $script:mockCreateAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                    $PesterBoundParameters.ArgumentList[0],
+                    $PesterBoundParameters.ArgumentList[1]
+                ) |
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
+                        $script:mockMethodCreateCallCount += 1
+                    } -PassThru -Force
+
+                return $script:mockCreateAuditObject
+            }
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                    return @{}
+                } -PassThru -Force
+
+            $mockServerObject.InstanceName = 'TestInstance'
+
+            $mockDefaultParameters = @{
+                ServerObject = $mockServerObject
+                Name = 'Log1'
+                Path = 'C:\Temp'
+                Force = $true
+            }
+        }
+
+        BeforeEach {
+            $script:mockMethodCreateCallCount = 0
+        }
+
+        It 'Should call the mocked method and have correct values in the object' {
+            New-SqlDscAudit -QueueDelay 1000 @mockDefaultParameters
+
+            # This is the object created by the mock and modified by the command.
+            $mockCreateAuditObject.Name | Should -Be 'Log1'
+            $mockCreateAuditObject.DestinationType | Should -Be 'File'
+            $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+            $mockCreateAuditObject.QueueDelay | Should -Be 1000
+
+            $mockMethodCreateCallCount | Should -Be 1
+        }
+    }
+
+    Context 'When passing audit optional parameter Filter' {
+        BeforeAll {
+            $script:mockCreateAuditObject = $null
+
+            Mock -CommandName New-Object -ParameterFilter {
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Audit'
+            } -MockWith {
+                <#
+                    The Audit object is created in the script scope so that the
+                    properties can be validated.
+                #>
+                $script:mockCreateAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                    $PesterBoundParameters.ArgumentList[0],
+                    $PesterBoundParameters.ArgumentList[1]
+                ) |
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
+                        $script:mockMethodCreateCallCount += 1
+                    } -PassThru -Force
+
+                return $script:mockCreateAuditObject
+            }
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                    return @{}
+                } -PassThru -Force
+
+            $mockServerObject.InstanceName = 'TestInstance'
+
+            $mockDefaultParameters = @{
+                ServerObject = $mockServerObject
+                Name = 'Log1'
+                Path = 'C:\Temp'
+                Force = $true
+            }
+        }
+
+        BeforeEach {
+            $script:mockMethodCreateCallCount = 0
+        }
+
+        It 'Should call the mocked method and have correct values in the object' {
+            New-SqlDscAudit -Filter "([server_principal_name] like '%ADMINISTRATOR'" @mockDefaultParameters
+
+            # This is the object created by the mock and modified by the command.
+            $mockCreateAuditObject.Name | Should -Be 'Log1'
+            $mockCreateAuditObject.DestinationType | Should -Be 'File'
+            $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+            $mockCreateAuditObject.Filter | Should -Be "([server_principal_name] like '%ADMINISTRATOR'"
+
+            $mockMethodCreateCallCount | Should -Be 1
+        }
+    }
+
+    Context 'When the audit already exist' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                    return @{
+                        'Log1' = New-Object -TypeName Object
+                    }
+                } -PassThru -Force
+
+            $mockDefaultParameters = @{
+                ServerObject = $mockServerObject
+                Name = 'Log1'
+                Type = 'ApplicationLog'
+                Force = $true
+            }
+        }
+
+        It 'Should throw the correct error' {
+            $mockErrorMessage = InModuleScope -ScriptBlock {
+                $script:localizedData.Audit_AlreadyPresent
+            }
+
+            { New-SqlDscAudit @mockDefaultParameters } |
+                Should -Throw -ExpectedMessage ($mockErrorMessage -f 'Log1')
         }
     }
 }

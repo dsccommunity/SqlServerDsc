@@ -25,6 +25,16 @@
         Specifies the GUID found in the mirrored database. To support scenarios such
         as database mirroring an audit needs a specific GUID.
 
+    .PARAMETER Force
+        Specifies that the audit should be created with out any confirmation.
+
+    .PARAMETER Refresh
+        Specifies that the **ServerObject**'s audits should be refreshed before creating
+        the audit object. This is helpful when audits could have been modified outside
+        of the **ServerObject**, for example through T-SQL. But on instances with
+        a large amount of audits it might be better to make sure the ServerObject
+        is recent enough.
+
     .PARAMETER OperatorAudit
         Specifies if auditing will capture Microsoft support engineers operations
         during support requests. Applies to Azure SQL Managed Instance only.
@@ -101,15 +111,14 @@ function New-SqlDscAudit
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $OperatorAudit,
+        $Force,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $Force,
+        $Refresh,
 
         [Parameter(ParameterSetName = 'Log', Mandatory = $true)]
         [ValidateSet('SecurityLog', 'ApplicationLog')]
-        #[ValidateSet('File', 'SecurityLog', 'ApplicationLog')]
         [System.String]
         $Type,
 
@@ -166,30 +175,50 @@ function New-SqlDscAudit
         $ConfirmPreference = 'None'
     }
 
+    if ($Refresh.IsPresent)
+    {
+        # Make sure the audits are up-to-date to get any newly created audits.
+        $ServerObject.Audits.Refresh()
+    }
+
+    if ($ServerObject.Audits[$Name])
+    {
+        $missingDatabaseMessage = $script:localizedData.Audit_AlreadyPresent -f $Name
+
+        $PSCmdlet.ThrowTerminatingError(
+            [System.Management.Automation.ErrorRecord]::new(
+                $missingDatabaseMessage,
+                'NSDA0001', # cspell: disable-line
+                [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                $DatabaseName
+            )
+        )
+    }
+
+    # TODO: This is for Set-SqlDscAudit
+    # $auditObject = $ServerObject.Audits[$Name]
+    # $auditObject.Refresh()
+
+    $auditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @($ServerObject, $Name)
+
     $queryType = switch ($PSCmdlet.ParameterSetName)
     {
         'Log'
         {
-            # Translate the value for Type.
-            (
-                @{
-                    SecurityLog    = 'SECURITY_LOG'
-                    ApplicationLog = 'APPLICATION_LOG'
-                }
-            ).$Type
+            $Type
         }
 
-        'File'
+        default
         {
-            'FILE'
+            'File'
         }
     }
 
-    $query = 'CREATE SERVER AUDIT [{0}] TO {1}' -f $Name, $queryType
+    $auditObject.DestinationType = $queryType
 
     if ($PSCmdlet.ParameterSetName -match 'File')
     {
-        $query += (" (FILEPATH = '{0}'" -f $Path)
+        $auditObject.FilePath = $Path
 
         if ($PSCmdlet.ParameterSetName -match 'FileWithSize')
         {
@@ -201,151 +230,53 @@ function New-SqlDscAudit
                 }
             ).$MaximumFileSizeUnit
 
-            # MAXSIZE: cspell: disable-line cspell: disable-next-line
-            $query += (', MAXSIZE {0} {1}' -f $MaximumFileSize, $queryMaximumFileSizeUnit)
+            $auditObject.MaximumFileSize = $MaximumFileSize
+            $auditObject.MaximumFileSizeUnit = $queryMaximumFileSizeUnit
         }
 
         <#
             TODO: For Set-SqlDscAudit: Switching between MaximumFiles and MaximumRolloverFiles must
                   run alter() between.
 
-                   $sqlServerObject.Audits['File1'].MaximumRolloverFiles = 0
-                   $sqlServerObject.Audits['File1'].Alter()
-                   $sqlServerObject.Audits['File1'].MaximumFiles = 1
-                   $sqlServerObject.Audits['File1'].Alter()
+                   $ServerObject.Audits['File1'].MaximumRolloverFiles = 0
+                   $ServerObject.Audits['File1'].Alter()
+                   $ServerObject.Audits['File1'].MaximumFiles = 1
+                   $ServerObject.Audits['File1'].Alter()
         #>
         if ($PSCmdlet.ParameterSetName -in @('FileWithMaxFiles', 'FileWithSizeAndMaxFiles'))
         {
-            $query += (', MAX_FILES = {0}' -f $MaximumFiles)
+            $auditObject.MaximumFiles = $MaximumFiles
 
             if ($PSBoundParameters.ContainsKey('ReserveDiskSpace'))
             {
-                # Translate the value for ReserveDiskSpace.
-                $queryReservDiskSpace = (
-                    @{
-                        True  = 'ON'
-                        False = 'OFF'
-                    }
-                ).($ReserveDiskSpace.IsPresent.ToString())
-
-                $query += (', RESERVE_DISK_SPACE = {0}' -f $queryReservDiskSpace)
+                $auditObject.ReserveDiskSpace = $ReserveDiskSpace.IsPresent
             }
         }
 
         if ($PSCmdlet.ParameterSetName -in @('FileWithMaxRolloverFiles', 'FileWithSizeAndMaxRolloverFiles'))
         {
-            $query += (', MAX_ROLLOVER_FILES = {0}' -f $MaximumFiles)
+            $auditObject.MaximumRolloverFiles = $MaximumRolloverFiles
         }
-
-        $query += ')'
     }
 
-
-    $needWithPart = (
-        $PSBoundParameters.ContainsKey('OnFailure') -or
-        $PSBoundParameters.ContainsKey('QueueDelay') -or
-        $PSBoundParameters.ContainsKey('AuditGuid') -or
-        $PSBoundParameters.ContainsKey('OperatorAudit')
-    )
-
-    if ($needWithPart)
+    if ($PSBoundParameters.ContainsKey('OnFailure'))
     {
-        $query += ' WITH ('
-
-        $hasWithPartOption = $false
-
-        foreach ($option in @('OnFailure', 'QueueDelay', 'AuditGuid', 'OperatorAudit'))
-        {
-            if ($PSBoundParameters.ContainsKey($option))
-            {
-                <#
-                    If there was already an option added, and another need to be
-                    added, split them with a comma.
-                #>
-                if ($hasWithPartOption)
-                {
-                    $query += ', '
-                }
-
-                switch ($option)
-                {
-                    'QueueDelay'
-                    {
-                        $query += ('QUEUE_DELAY = {0}' -f $QueueDelay)
-
-                        $hasWithPartOption = $true
-                    }
-
-                    'OnFailure'
-                    {
-                        # Translate the value for OnFailure.
-                        $queryOnFailure = (
-                            @{
-                                Continue      = 'CONTINUE'
-                                FailOperation = 'FAIL_OPERATION'
-                                ShutDown      = 'SHUTDOWN'
-                            }
-                        ).$OnFailure
-
-                        $query += ('ON_FAILURE = {0}' -f $queryOnFailure)
-
-                        $hasWithPartOption = $true
-                    }
-
-                    'AuditGuid'
-                    {
-                        $query += ("AUDIT_GUID = '{0}'" -f $AuditGuid)
-
-                        $hasWithPartOption = $true
-                    }
-
-                    'OperatorAudit'
-                    {
-                        # Translate the value for OperatorAudit.
-                        $queryOperatorAudit = (
-                            @{
-                                True  = 'ON'
-                                False = 'OFF'
-                            }
-                        ).($OperatorAudit.IsPresent.ToString())
-
-                        $query += ('OPERATOR_AUDIT = {0}' -f $queryOperatorAudit)
-
-                        $hasWithPartOption = $true
-                    }
-                }
-            }
-        }
-
-        $query += ')'
+        $auditObject.OnFailure = $OnFailure
     }
 
-    # TODO: This cannot allow SQL Injection
+    if ($PSBoundParameters.ContainsKey('QueueDelay'))
+    {
+        $auditObject.QueueDelay = $QueueDelay
+    }
+
+    if ($PSBoundParameters.ContainsKey('AuditGuid'))
+    {
+        $auditObject.Guid = $AuditGuid
+    }
+
     if ($PSBoundParameters.ContainsKey('Filter'))
     {
-        $query += ' WHERE ('
-
-        # <predicate_expression>::=
-        # {
-        #     [NOT ] <predicate_factor>
-        #     [ { AND | OR } [NOT ] { <predicate_factor> } ]
-        #     [,...n ]
-        # }
-
-        # <predicate_factor>::=
-        #     event_field_name { = | < > | ! = | > | > = | < | < = | LIKE } { number | ' string ' }
-
-        # WHERE ([server_principal_name] like '%ADMINISTRATOR')
-
-        # WHERE [Schema_Name] = 'sys' AND [Object_Name] = 'all_objects'
-
-        # WHERE (
-        #    [Schema_Name] = 'sys' AND [Object_Name] = 'all_objects'
-        #) OR (
-        #    [Schema_Name] = 'sys' AND [Object_Name] = 'database_permissions'
-        #)
-
-        $query += ')'
+        $auditObject.Filter = $Filter
     }
 
     $verboseDescriptionMessage = $script:localizedData.Audit_ChangePermissionShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
@@ -354,13 +285,6 @@ function New-SqlDscAudit
 
     if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
     {
-        $invokeSqlDscQueryParameters = @{
-            ServerObject = $ServerObject
-            DatabaseName = 'master'
-            Query        = $query
-            ErrorAction  = 'Stop'
-        }
-
-        Invoke-SqlDscQuery @invokeSqlDscQueryParameters
+        $auditObject.Create()
     }
 }
