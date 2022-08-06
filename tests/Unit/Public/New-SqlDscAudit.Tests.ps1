@@ -305,7 +305,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
                 Name = 'Log1'
-                Path = 'C:\Temp'
+                Path = Get-TemporaryFolder
             }
         }
 
@@ -320,7 +320,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 # This is the object created by the mock and modified by the command.
                 $mockCreateAuditObject.Name | Should -Be 'Log1'
                 $mockCreateAuditObject.DestinationType | Should -Be 'File'
-                $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+                $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
 
                 $mockMethodCreateCallCount | Should -Be 1
             }
@@ -333,7 +333,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 # This is the object created by the mock and modified by the command.
                 $mockCreateAuditObject.Name | Should -Be 'Log1'
                 $mockCreateAuditObject.DestinationType | Should -Be 'File'
-                $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+                $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
 
                 $mockMethodCreateCallCount | Should -Be 1
             }
@@ -346,7 +346,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 # This is the object created by the mock and modified by the command.
                 $mockCreateAuditObject.Name | Should -Be 'Log1'
                 $mockCreateAuditObject.DestinationType | Should -Be 'File'
-                $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+                $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
 
                 $mockMethodCreateCallCount | Should -Be 0
             }
@@ -354,12 +354,12 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should call the mocked method and have correct values in the object' {
-                $mockServerObject | New-SqlDscAudit -Path 'C:\Temp' -Name 'Log1' -Force
+                $mockServerObject | New-SqlDscAudit -Path (Get-TemporaryFolder) -Name 'Log1' -Force
 
                 # This is the object created by the mock and modified by the command.
                 $mockCreateAuditObject.Name | Should -Be 'Log1'
                 $mockCreateAuditObject.DestinationType | Should -Be 'File'
-                $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+                $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
 
                 $mockMethodCreateCallCount | Should -Be 1
             }
@@ -376,7 +376,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
         It 'Should throw the correct error' {
             $mockNewSqlDscAuditParameters = @{
                 ServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                Path = 'C:\Temp'
+                Path = Get-TemporaryFolder
                 Name = 'Log1'
             }
 
@@ -384,7 +384,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 $script:localizedData.Audit_PathParameterValueInvalid
             }
 
-            $mockErrorMessage = "Cannot validate argument on parameter 'Path'. " + ($mockErrorMessage -f 'C:\Temp')
+            $mockErrorMessage = "Cannot validate argument on parameter 'Path'. " + ($mockErrorMessage -f (Get-TemporaryFolder))
 
             { New-SqlDscAudit @mockNewSqlDscAuditParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
         }
@@ -422,7 +422,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
                 Name = 'Log1'
-                Path = 'C:\Temp'
+                Path = Get-TemporaryFolder
                 Force = $true
             }
         }
@@ -437,7 +437,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             # This is the object created by the mock and modified by the command.
             $mockCreateAuditObject.Name | Should -Be 'Log1'
             $mockCreateAuditObject.DestinationType | Should -Be 'File'
-            $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+            $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
             $mockCreateAuditObject.MaximumFileSize | Should -Be 1000
             $mockCreateAuditObject.MaximumFileSizeUnit | Should -Be 'Mb'
 
@@ -477,7 +477,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
                 Name = 'Log1'
-                Path = 'C:\Temp'
+                Path = Get-TemporaryFolder
                 Force = $true
             }
         }
@@ -492,7 +492,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             # This is the object created by the mock and modified by the command.
             $mockCreateAuditObject.Name | Should -Be 'Log1'
             $mockCreateAuditObject.DestinationType | Should -Be 'File'
-            $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+            $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
             $mockCreateAuditObject.MaximumFiles | Should -Be 2
 
             $mockMethodCreateCallCount | Should -Be 1
@@ -531,7 +531,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
                 Name = 'Log1'
-                Path = 'C:\Temp'
+                Path = Get-TemporaryFolder
                 Force = $true
             }
         }
@@ -546,7 +546,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             # This is the object created by the mock and modified by the command.
             $mockCreateAuditObject.Name | Should -Be 'Log1'
             $mockCreateAuditObject.DestinationType | Should -Be 'File'
-            $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+            $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
             $mockCreateAuditObject.MaximumFiles | Should -Be 2
             $mockCreateAuditObject.ReserveDiskSpace | Should -BeTrue
 
@@ -560,7 +560,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 # This is the object created by the mock and modified by the command.
                 $mockCreateAuditObject.Name | Should -Be 'Log1'
                 $mockCreateAuditObject.DestinationType | Should -Be 'File'
-                $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+                $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
                 $mockCreateAuditObject.MaximumFiles | Should -Be 2
                 $mockCreateAuditObject.ReserveDiskSpace | Should -BeFalse
 
@@ -601,7 +601,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
                 Name = 'Log1'
-                Path = 'C:\Temp'
+                Path = Get-TemporaryFolder
                 Force = $true
             }
         }
@@ -616,7 +616,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             # This is the object created by the mock and modified by the command.
             $mockCreateAuditObject.Name | Should -Be 'Log1'
             $mockCreateAuditObject.DestinationType | Should -Be 'File'
-            $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+            $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
             $mockCreateAuditObject.MaximumRolloverFiles | Should -Be 2
 
             $mockMethodCreateCallCount | Should -Be 1
@@ -655,7 +655,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
                 Name = 'Log1'
-                Path = 'C:\Temp'
+                Path = Get-TemporaryFolder
                 Force = $true
             }
         }
@@ -670,7 +670,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             # This is the object created by the mock and modified by the command.
             $mockCreateAuditObject.Name | Should -Be 'Log1'
             $mockCreateAuditObject.DestinationType | Should -Be 'File'
-            $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+            $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
             $mockCreateAuditObject.Guid | Should -Be 'b5962b93-a359-42ef-bf1e-193e8a5f6222'
 
             $mockMethodCreateCallCount | Should -Be 1
@@ -721,7 +721,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
                 Name = 'Log1'
-                Path = 'C:\Temp'
+                Path = Get-TemporaryFolder
                 Force = $true
             }
         }
@@ -747,7 +747,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 # This is the object created by the mock and modified by the command.
                 $mockCreateAuditObject.Name | Should -Be 'Log1'
                 $mockCreateAuditObject.DestinationType | Should -Be 'File'
-                $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+                $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
                 $mockCreateAuditObject.OnFailure | Should -Be $MockOnFailureValue
 
                 $mockMethodCreateCallCount | Should -Be 1
@@ -787,7 +787,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
                 Name = 'Log1'
-                Path = 'C:\Temp'
+                Path = Get-TemporaryFolder
                 Force = $true
             }
         }
@@ -802,7 +802,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             # This is the object created by the mock and modified by the command.
             $mockCreateAuditObject.Name | Should -Be 'Log1'
             $mockCreateAuditObject.DestinationType | Should -Be 'File'
-            $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+            $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
             $mockCreateAuditObject.QueueDelay | Should -Be 1000
 
             $mockMethodCreateCallCount | Should -Be 1
@@ -841,7 +841,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
                 Name = 'Log1'
-                Path = 'C:\Temp'
+                Path = Get-TemporaryFolder
                 Force = $true
             }
         }
@@ -856,7 +856,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             # This is the object created by the mock and modified by the command.
             $mockCreateAuditObject.Name | Should -Be 'Log1'
             $mockCreateAuditObject.DestinationType | Should -Be 'File'
-            $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
+            $mockCreateAuditObject.FilePath | Should -Be (Get-TemporaryFolder)
             $mockCreateAuditObject.Filter | Should -Be "([server_principal_name] like '%ADMINISTRATOR'"
 
             $mockMethodCreateCallCount | Should -Be 1
@@ -889,7 +889,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
                 Name = 'Log1'
-                Path = 'C:\Temp'
+                Path = Get-TemporaryFolder
                 Force = $true
             }
         }
@@ -903,7 +903,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
 
             $newSqlDscAuditResult.Name | Should -Be 'Log1'
             $newSqlDscAuditResult.DestinationType | Should -Be 'File'
-            $newSqlDscAuditResult.FilePath | Should -Be 'C:\Temp'
+            $newSqlDscAuditResult.FilePath | Should -Be (Get-TemporaryFolder)
 
             $mockMethodCreateCallCount | Should -Be 1
         }

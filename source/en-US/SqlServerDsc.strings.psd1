@@ -47,10 +47,24 @@ ConvertFrom-StringData @'
     Audit_Add_ShouldProcessCaption = Add audit on instance
     Audit_AlreadyPresent = There is already an audit with the name '{0}'.
 
-    ## New-SqlDscAudit
+    ## Remove-SqlDscAudit, Enable-SqlDscAudit
+    Audit_Missing = There is no audit with the name '{0}'.
+
+    ## Remove-SqlDscAudit
     Audit_Remove_ShouldProcessVerboseDescription = Removing the audit '{0}' on the instance '{1}'.
     Audit_Remove_ShouldProcessVerboseWarning = Are you sure you want you remove the audit '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Audit_Remove_ShouldProcessCaption = Remove audit on instance
-    Audit_Missing = There is no audit with the name '{0}'.
+
+    ## Enable-SqlDscAudit
+    Audit_Enable_ShouldProcessVerboseDescription = Enabling the audit '{0}' on the instance '{1}'.
+    Audit_Enable_ShouldProcessVerboseWarning = Are you sure you want you enable the audit '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Audit_Enable_ShouldProcessCaption = Enable audit on instance
+
+    ## Disable-SqlDscAudit
+    Audit_Disable_ShouldProcessVerboseDescription = Disabling the audit '{0}' on the instance '{1}'.
+    Audit_Disable_ShouldProcessVerboseWarning = Are you sure you want you disable the audit '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Audit_Disable_ShouldProcessCaption = Disable audit on instance
 '@

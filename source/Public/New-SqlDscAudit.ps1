@@ -194,12 +194,14 @@ function New-SqlDscAudit
         $ConfirmPreference = 'None'
     }
 
+    # TODO: this should use Get-SqlDscAudit
     if ($Refresh.IsPresent)
     {
         # Make sure the audits are up-to-date to get any newly created audits.
         $ServerObject.Audits.Refresh()
     }
 
+    # TODO: this should use Get-SqlDscAudit
     if ($ServerObject.Audits[$Name])
     {
         $missingDatabaseMessage = $script:localizedData.Audit_AlreadyPresent -f $Name
