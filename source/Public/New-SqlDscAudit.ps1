@@ -29,11 +29,11 @@
         Specifies that the audit should be created with out any confirmation.
 
     .PARAMETER Refresh
-        Specifies that the **ServerObject**'s audits should be refreshed before creating
-        the audit object. This is helpful when audits could have been modified outside
-        of the **ServerObject**, for example through T-SQL. But on instances with
-        a large amount of audits it might be better to make sure the ServerObject
-        is recent enough.
+        Specifies that the **ServerObject**'s audits should be refreshed before
+        creating the audit object. This is helpful when audits could have been
+        modified outside of the **ServerObject**, for example through T-SQL. But
+        on instances with a large amount of audits it might be better to make
+        sure the ServerObject is recent enough.
 
     .PARAMETER OperatorAudit
         Specifies if auditing will capture Microsoft support engineers operations
@@ -64,15 +64,20 @@
         the files. If not specified then it is set to unlimited.
 
     .OUTPUTS
-        None.
+        `[Microsoft.SqlServer.Management.Smo.Audit]` is passing parameter **PassThru**,
+         otherwise none.
 
     .NOTES
-        See the SQL Server documentation: https://docs.microsoft.com/en-us/sql/t-sql/statements/create-server-audit-transact-sql
+        This command has the confirm impact level set to medium since an audit is
+        created but by default is is not enabled.
+
+        See the SQL Server documentation for more information for the possible
+        parameter values to pass to this command: https://docs.microsoft.com/en-us/sql/t-sql/statements/create-server-audit-transact-sql
 #>
 function New-SqlDscAudit
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
-    [OutputType()]
+    [OutputType([Microsoft.SqlServer.Management.Smo.Audit])]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
     param
     (
@@ -116,6 +121,10 @@ function New-SqlDscAudit
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
         $Refresh,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $PassThru,
 
         [Parameter(ParameterSetName = 'Log', Mandatory = $true)]
         [ValidateSet('SecurityLog', 'ApplicationLog')]
@@ -170,6 +179,16 @@ function New-SqlDscAudit
         $MaximumRolloverFiles
     )
 
+    <#
+        TODO: Skapa Enable-SqlDscAudit eller Disable-SqlDscAudit
+
+        TODO: Skapa Set-SqlDscAudit
+
+        TODO: Skapa Remove-SqlDscAudit
+
+        TODO: Skapa Get-SqlDscAudit som ska returnera alla Audit's om man inte
+              anger ett Filter-scriptblock
+    #>
     if ($Force.IsPresent)
     {
         $ConfirmPreference = 'None'
@@ -279,12 +298,17 @@ function New-SqlDscAudit
         $auditObject.Filter = $AuditFilter
     }
 
-    $verboseDescriptionMessage = $script:localizedData.Audit_ChangePermissionShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
-    $verboseWarningMessage = $script:localizedData.Audit_ChangePermissionShouldProcessVerboseWarning -f $Name
-    $captionMessage = $script:localizedData.Audit_ChangePermissionShouldProcessCaption
+    $verboseDescriptionMessage = $script:localizedData.Audit_Add_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
+    $verboseWarningMessage = $script:localizedData.Audit_Add_ShouldProcessVerboseWarning -f $Name
+    $captionMessage = $script:localizedData.Audit_Add_ShouldProcessCaption
 
     if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
     {
         $auditObject.Create()
+    }
+
+    if ($PassThru.IsPresent)
+    {
+        return $auditObject
     }
 }

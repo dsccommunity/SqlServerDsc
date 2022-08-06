@@ -41,9 +41,9 @@ ConvertFrom-StringData @'
 
     ## New-SqlDscAudit
     Audit_PathParameterValueInvalid = The path '{0}' does not exist. Audit file can only be created in a path that already exist and where the SQL Server instance has permission to write.
-    Audit_ChangePermissionShouldProcessVerboseDescription = Adding the audit '{0}' on the instance '{1}'.
-    Audit_ChangePermissionShouldProcessVerboseWarning = Are you sure you want you add the audit '{0}'?
+    Audit_Add_ShouldProcessVerboseDescription = Adding the audit '{0}' on the instance '{1}'.
+    Audit_Add_ShouldProcessVerboseWarning = Are you sure you want you add the audit '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
-    Audit_ChangePermissionShouldProcessCaption = Add audit on instance
+    Audit_Add_ShouldProcessCaption = Add audit on instance
     Audit_AlreadyPresent = There is already an audit with the name '{0}'.
 '@

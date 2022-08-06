@@ -49,31 +49,31 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName = 'Log'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Type <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Type <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'File'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithSize'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithMaxFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithMaxRolloverFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithSizeAndMaxFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-ReserveDiskSpace] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'FileWithSizeAndMaxRolloverFiles'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Path <string> -MaximumFileSize <uint> -MaximumFileSizeUnit <string> -MaximumRolloverFiles <uint> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'New-SqlDscAudit').ParameterSets |
@@ -173,7 +173,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should call the mocked method and have correct values in the object' {
-                $mockServerObject | New-SqlDscAudit -Type 'ApplicationLog' -Name 'Log1'
+                $mockServerObject | New-SqlDscAudit -Type 'ApplicationLog' -Name 'Log1' -Force
 
                 # This is the object created by the mock and modified by the command.
                 $mockCreateAuditObject.Name | Should -Be 'Log1'
@@ -262,7 +262,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should call the mocked method and have correct values in the object' {
-                $mockServerObject | New-SqlDscAudit -Type 'SecurityLog' -Name 'Log1'
+                $mockServerObject | New-SqlDscAudit -Type 'SecurityLog' -Name 'Log1' -Force
 
                 # This is the object created by the mock and modified by the command.
                 $mockCreateAuditObject.Name | Should -Be 'Log1'
@@ -354,7 +354,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should call the mocked method and have correct values in the object' {
-                $mockServerObject | New-SqlDscAudit -Path 'C:\Temp' -Name 'Log1'
+                $mockServerObject | New-SqlDscAudit -Path 'C:\Temp' -Name 'Log1' -Force
 
                 # This is the object created by the mock and modified by the command.
                 $mockCreateAuditObject.Name | Should -Be 'Log1'
@@ -858,6 +858,52 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             $mockCreateAuditObject.DestinationType | Should -Be 'File'
             $mockCreateAuditObject.FilePath | Should -Be 'C:\Temp'
             $mockCreateAuditObject.Filter | Should -Be "([server_principal_name] like '%ADMINISTRATOR'"
+
+            $mockMethodCreateCallCount | Should -Be 1
+        }
+    }
+
+    Context 'When passing optional parameter PassThru' {
+        BeforeAll {
+            Mock -CommandName New-Object -ParameterFilter {
+                $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Audit'
+            } -MockWith {
+                $mockNewCreateAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                    $PesterBoundParameters.ArgumentList[0],
+                    $PesterBoundParameters.ArgumentList[1]
+                ) |
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Create' -Value {
+                        $script:mockMethodCreateCallCount += 1
+                    } -PassThru -Force
+
+                return $mockNewCreateAuditObject
+            }
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                    return @{}
+                } -PassThru -Force
+
+            $mockServerObject.InstanceName = 'TestInstance'
+
+            $mockDefaultParameters = @{
+                ServerObject = $mockServerObject
+                Name = 'Log1'
+                Path = 'C:\Temp'
+                Force = $true
+            }
+        }
+
+        BeforeEach {
+            $script:mockMethodCreateCallCount = 0
+        }
+
+        It 'Should call the mocked method and have correct values in the object' {
+            $newSqlDscAuditResult = New-SqlDscAudit -PassThru @mockDefaultParameters
+
+            $newSqlDscAuditResult.Name | Should -Be 'Log1'
+            $newSqlDscAuditResult.DestinationType | Should -Be 'File'
+            $newSqlDscAuditResult.FilePath | Should -Be 'C:\Temp'
 
             $mockMethodCreateCallCount | Should -Be 1
         }
