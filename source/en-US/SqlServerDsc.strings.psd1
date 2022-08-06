@@ -46,4 +46,11 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Audit_Add_ShouldProcessCaption = Add audit on instance
     Audit_AlreadyPresent = There is already an audit with the name '{0}'.
+
+    ## New-SqlDscAudit
+    Audit_Remove_ShouldProcessVerboseDescription = Removing the audit '{0}' on the instance '{1}'.
+    Audit_Remove_ShouldProcessVerboseWarning = Are you sure you want you remove the audit '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Audit_Remove_ShouldProcessCaption = Remove audit on instance
+    Audit_Missing = There is no audit with the name '{0}'.
 '@
