@@ -898,25 +898,25 @@ namespace Microsoft.SqlServer.Management.Smo
         }
 
         // Property
-        public Microsoft.SqlServer.Management.Smo.Server Parent { get; set; } = null;
-        public System.DateTime? CreateDate { get; set; } = null;
-        public System.DateTime? DateLastModified { get; set; } = null;
-        public Microsoft.SqlServer.Management.Smo.AuditDestinationType? DestinationType { get; set; } = null;
-        public System.Boolean? Enabled { get; set; } = null;
-        public System.String FileName { get; set; } = null;
-        public System.String FilePath { get; set; } = null;
-        public System.String Filter { get; set; } = null;
-        public System.Guid? Guid { get; set; } = null;
-        public System.Int32? ID { get; set; } = null;
-        public System.Int32? MaximumFiles { get; set; } = null;
-        public System.Int32? MaximumFileSize { get; set; } = null;
-        public Microsoft.SqlServer.Management.Smo.AuditFileSizeUnit? MaximumFileSizeUnit { get; set; } = null;
-        public System.Int64? MaximumRolloverFiles { get; set; } = null;
-        public Microsoft.SqlServer.Management.Smo.OnFailureAction? OnFailure { get; set; } = null;
-        public System.Int32? QueueDelay { get; set; } = null;
-        public System.Boolean? ReserveDiskSpace { get; set; } = null;
-        public System.Int32? RetentionDays { get; set; }  = null;
-        public System.String Name { get; set; } = null;
+        public Microsoft.SqlServer.Management.Smo.Server Parent { get; set; }
+        public System.DateTime? CreateDate { get; set; }
+        public System.DateTime? DateLastModified { get; set; }
+        public Microsoft.SqlServer.Management.Smo.AuditDestinationType? DestinationType { get; set; }
+        public System.Boolean? Enabled { get; set; }
+        public System.String FileName { get; set; }
+        public System.String FilePath { get; set; }
+        public System.String Filter { get; set; }
+        public System.Guid? Guid { get; set; }
+        public System.Int32? ID { get; set; }
+        public System.Int32? MaximumFiles { get; set; }
+        public System.Int32? MaximumFileSize { get; set; }
+        public Microsoft.SqlServer.Management.Smo.AuditFileSizeUnit? MaximumFileSizeUnit { get; set; }
+        public System.Int64? MaximumRolloverFiles { get; set; }
+        public Microsoft.SqlServer.Management.Smo.OnFailureAction? OnFailure { get; set; }
+        public System.Int32? QueueDelay { get; set; }
+        public System.Boolean? ReserveDiskSpace { get; set; }
+        public System.Int32? RetentionDays { get; set; }
+        public System.String Name { get; set; }
         // public Microsoft.SqlServer.Management.Smo.AbstractCollectionBase ParentCollection { get; set; }
         // public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
         // public Microsoft.SqlServer.Management.Smo.SqlPropertyCollection Properties { get; set; }
@@ -924,8 +924,8 @@ namespace Microsoft.SqlServer.Management.Smo
         // public Microsoft.SqlServer.Management.Common.DatabaseEngineType DatabaseEngineType { get; set; }
         // public Microsoft.SqlServer.Management.Common.DatabaseEngineEdition DatabaseEngineEdition { get; set; }
         // public Microsoft.SqlServer.Management.Smo.ExecutionManager ExecutionManager { get; set; }
-        public System.Object UserData { get; set; } = null;
-        public Microsoft.SqlServer.Management.Smo.SqlSmoState? State { get; set; } = null;
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState? State { get; set; }
     }
 
     #endregion Public Classes
