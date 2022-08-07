@@ -45,7 +45,7 @@ AfterAll {
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 }
 
-Describe 'Remove-SqlDscAudit' -Tag 'Public' {
+Describe 'Disable-SqlDscAudit' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName = 'ServerObject'
@@ -56,7 +56,7 @@ Describe 'Remove-SqlDscAudit' -Tag 'Public' {
             MockExpectedParameters = '-AuditObject <Audit> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
-        $result = (Get-Command -Name 'Remove-SqlDscAudit').ParameterSets |
+        $result = (Get-Command -Name 'Disable-SqlDscAudit').ParameterSets |
             Where-Object -FilterScript {
                 $_.Name -eq $mockParameterSetName
             } |
@@ -75,7 +75,7 @@ Describe 'Remove-SqlDscAudit' -Tag 'Public' {
         $result.ParameterListAsString | Should -Be $MockExpectedParameters
     }
 
-    Context 'When removing an audit by ServerObject' {
+    Context 'When enabling an audit by ServerObject' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
@@ -85,8 +85,8 @@ Describe 'Remove-SqlDscAudit' -Tag 'Public' {
                     $mockServerObject,
                     'Log1'
                 ) |
-                    Add-Member -MemberType 'ScriptMethod' -Name 'DropIfExist' -Value {
-                        $script:mockMethodDropIfExistCallCount += 1
+                    Add-Member -MemberType 'ScriptMethod' -Name 'Disable' -Value {
+                        $script:mockMethodDisableCallCount += 1
                     } -PassThru -Force
             }
 
@@ -97,38 +97,38 @@ Describe 'Remove-SqlDscAudit' -Tag 'Public' {
         }
 
         BeforeEach {
-            $script:mockMethodDropIfExistCallCount = 0
+            $script:mockMethodDisableCallCount = 0
         }
 
         Context 'When using parameter Confirm with value $false' {
             It 'Should call the mocked method and have correct values in the object' {
-                Remove-SqlDscAudit -Confirm:$false @mockDefaultParameters
+                Disable-SqlDscAudit -Confirm:$false @mockDefaultParameters
 
-                $mockMethodDropIfExistCallCount | Should -Be 1
+                $mockMethodDisableCallCount | Should -Be 1
             }
         }
 
         Context 'When using parameter Force' {
             It 'Should call the mocked method and have correct values in the object' {
-                Remove-SqlDscAudit -Force @mockDefaultParameters
+                Disable-SqlDscAudit -Force @mockDefaultParameters
 
-                $mockMethodDropIfExistCallCount | Should -Be 1
+                $mockMethodDisableCallCount | Should -Be 1
             }
         }
 
         Context 'When using parameter WhatIf' {
             It 'Should call the mocked method and have correct values in the object' {
-                Remove-SqlDscAudit -WhatIf @mockDefaultParameters
+                Disable-SqlDscAudit -WhatIf @mockDefaultParameters
 
-                $mockMethodDropIfExistCallCount | Should -Be 0
+                $mockMethodDisableCallCount | Should -Be 0
             }
         }
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should call the mocked method and have correct values in the object' {
-                $mockServerObject | Remove-SqlDscAudit -Name 'Log1' -Force
+                $mockServerObject | Disable-SqlDscAudit -Name 'Log1' -Force
 
-                $mockMethodDropIfExistCallCount | Should -Be 1
+                $mockMethodDisableCallCount | Should -Be 1
             }
         }
     }
@@ -142,8 +142,8 @@ Describe 'Remove-SqlDscAudit' -Tag 'Public' {
                 $mockServerObject,
                 'Log1'
             ) |
-                Add-Member -MemberType 'ScriptMethod' -Name 'DropIfExist' -Value {
-                    $script:mockMethodDropIfExistCallCount += 1
+                Add-Member -MemberType 'ScriptMethod' -Name 'Disable' -Value {
+                    $script:mockMethodDisableCallCount += 1
                 } -PassThru -Force
 
             $mockDefaultParameters = @{
@@ -152,38 +152,38 @@ Describe 'Remove-SqlDscAudit' -Tag 'Public' {
         }
 
         BeforeEach {
-            $script:mockMethodDropIfExistCallCount = 0
+            $script:mockMethodDisableCallCount = 0
         }
 
         Context 'When using parameter Confirm with value $false' {
             It 'Should call the mocked method and have correct values in the object' {
-                Remove-SqlDscAudit -Confirm:$false @mockDefaultParameters
+                Disable-SqlDscAudit -Confirm:$false @mockDefaultParameters
 
-                $mockMethodDropIfExistCallCount | Should -Be 1
+                $mockMethodDisableCallCount | Should -Be 1
             }
         }
 
         Context 'When using parameter Force' {
             It 'Should call the mocked method and have correct values in the object' {
-                Remove-SqlDscAudit -Force @mockDefaultParameters
+                Disable-SqlDscAudit -Force @mockDefaultParameters
 
-                $mockMethodDropIfExistCallCount | Should -Be 1
+                $mockMethodDisableCallCount | Should -Be 1
             }
         }
 
         Context 'When using parameter WhatIf' {
             It 'Should call the mocked method and have correct values in the object' {
-                Remove-SqlDscAudit -WhatIf @mockDefaultParameters
+                Disable-SqlDscAudit -WhatIf @mockDefaultParameters
 
-                $mockMethodDropIfExistCallCount | Should -Be 0
+                $mockMethodDisableCallCount | Should -Be 0
             }
         }
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should call the mocked method and have correct values in the object' {
-                $mockAuditObject | Remove-SqlDscAudit -Force
+                $mockAuditObject | Disable-SqlDscAudit -Force
 
-                $mockMethodDropIfExistCallCount | Should -Be 1
+                $mockMethodDisableCallCount | Should -Be 1
             }
         }
     }

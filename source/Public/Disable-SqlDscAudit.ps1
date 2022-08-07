@@ -6,7 +6,7 @@
         Specifies current server connection object.
 
     .PARAMETER AuditObject
-        Specifies a audit object to disable.
+        Specifies an audit object to disable.
 
     .PARAMETER Name
         Specifies the name of the server audit to be disabled.
@@ -20,6 +20,19 @@
         been modified outside of the **ServerObject**, for example through T-SQL.
         But on instances with a large amount of audits it might be better to make
         sure the **ServerObject** is recent enough, or pass in **AuditObject**.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $auditObject = $sqlServerObject | Get-SqlDscAudit -Name 'MyFileAudit'
+        $auditObject | Disable-SqlDscAudit
+
+        Disables the audit named **MyFileAudit**.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $sqlServerObject | Disable-SqlDscAudit -Name 'MyFileAudit'
+
+        Disables the audit named **MyFileAudit**.
 
     .OUTPUTS
         None.
@@ -57,30 +70,17 @@ function Disable-SqlDscAudit
         $ConfirmPreference = 'None'
     }
 
-    # TODO: this should use Get-SqlDscAudit
     if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
     {
-        if ($Refresh.IsPresent)
-        {
-            # Make sure the audits are up-to-date to get any newly created audits.
-            $ServerObject.Audits.Refresh()
+        $getSqlDscAuditParameters = @{
+            ServerObject = $ServerObject
+            Name = $Name
+            Refresh = $Refresh
+            ErrorAction = 'Stop'
         }
 
-        $AuditObject = $ServerObject.Audits[$Name]
-
-        if (-not $AuditObject)
-        {
-            $missingDatabaseMessage = $script:localizedData.Audit_Missing -f $Name
-
-            $PSCmdlet.ThrowTerminatingError(
-                [System.Management.Automation.ErrorRecord]::new(
-                    $missingDatabaseMessage,
-                    'DSDA0001', # cspell: disable-line
-                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                    $DatabaseName
-                )
-            )
-        }
+        # If this command does not find the audit it will throw an exception.
+        $AuditObject = Get-SqlDscAudit @getSqlDscAuditParameters
     }
 
     $verboseDescriptionMessage = $script:localizedData.Audit_Disable_ShouldProcessVerboseDescription -f $AuditObject.Name, $AuditObject.Parent.InstanceName

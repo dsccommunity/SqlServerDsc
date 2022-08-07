@@ -39,15 +39,23 @@ ConvertFrom-StringData @'
     ## Class DatabasePermission
     InvalidTypeForCompare = Invalid type in comparison. Expected type [{0}], but the type was [{1}]. (DP0001)
 
-    ## New-SqlDscAudit
+    ## New-SqlDscAudit, Set-SqlDscAudit
     Audit_PathParameterValueInvalid = The path '{0}' does not exist. Audit file can only be created in a path that already exist and where the SQL Server instance has permission to write.
+
+    ## New-SqlDscAudit
     Audit_Add_ShouldProcessVerboseDescription = Adding the audit '{0}' on the instance '{1}'.
     Audit_Add_ShouldProcessVerboseWarning = Are you sure you want you add the audit '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Audit_Add_ShouldProcessCaption = Add audit on instance
     Audit_AlreadyPresent = There is already an audit with the name '{0}'.
 
-    ## Remove-SqlDscAudit, Enable-SqlDscAudit
+    ## Set-SqlDscAudit
+    Audit_Update_ShouldProcessVerboseDescription = Updating the audit '{0}' on the instance '{1}'.
+    Audit_Update_ShouldProcessVerboseWarning = Are you sure you want you update the audit '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Audit_Update_ShouldProcessCaption = Update audit on instance
+
+    ## Get-SqlDscAudit
     Audit_Missing = There is no audit with the name '{0}'.
 
     ## Remove-SqlDscAudit

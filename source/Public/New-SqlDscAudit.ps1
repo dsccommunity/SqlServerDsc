@@ -35,10 +35,6 @@
         on instances with a large amount of audits it might be better to make
         sure the ServerObject is recent enough.
 
-    .PARAMETER OperatorAudit
-        Specifies if auditing will capture Microsoft support engineers operations
-        during support requests. Applies to Azure SQL Managed Instance only.
-
     .PARAMETER Type
         Specifies the log location where the audit should write to.
         This can be SecurityLog or ApplicationLog.
@@ -47,8 +43,8 @@
         Specifies the location where te log files wil be placed.
 
     .PARAMETER ReserveDiskSpace
-        Specifies if the needed file space should be reserved. only needed
-        when writing to a file log.
+        Specifies if the needed file space should be reserved. To use this parameter
+        the parameter **MaximumFiles** must also be used.
 
     .PARAMETER MaximumFiles
         Specifies the number of files on disk.
@@ -66,6 +62,24 @@
     .OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.Audit]` is passing parameter **PassThru**,
          otherwise none.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $sqlServerObject | New-SqlDscAudit -Name 'MyFileAudit' -Path 'E:\auditFolder'
+
+        Create a new file audit named **MyFileAudit**.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $sqlServerObject | New-SqlDscAudit -Name 'MyAppLogAudit' -Type 'ApplicationLog'
+
+        Create a new application log audit named **MyAppLogAudit**.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $sqlServerObject | New-SqlDscAudit -Name 'MyFileAudit' -Path 'E:\auditFolder' -PassThru
+
+        Create a new file audit named **MyFileAudit** and returns the Audit object.
 
     .NOTES
         This command has the confirm impact level set to medium since an audit is
@@ -179,46 +193,33 @@ function New-SqlDscAudit
         $MaximumRolloverFiles
     )
 
-    <#
-        TODO: Skapa Enable-SqlDscAudit eller Disable-SqlDscAudit
-
-        TODO: Skapa Set-SqlDscAudit
-
-        TODO: Skapa Remove-SqlDscAudit
-
-        TODO: Skapa Get-SqlDscAudit som ska returnera alla Audit's om man inte
-              anger ett Filter-scriptblock
-    #>
     if ($Force.IsPresent)
     {
         $ConfirmPreference = 'None'
     }
 
-    # TODO: this should use Get-SqlDscAudit
-    if ($Refresh.IsPresent)
-    {
-        # Make sure the audits are up-to-date to get any newly created audits.
-        $ServerObject.Audits.Refresh()
+    $getSqlDscAuditParameters = @{
+        ServerObject = $ServerObject
+        Name = $Name
+        Refresh = $Refresh
+        ErrorAction = 'SilentlyContinue'
     }
 
-    # TODO: this should use Get-SqlDscAudit
-    if ($ServerObject.Audits[$Name])
+    $auditObject = Get-SqlDscAudit @getSqlDscAuditParameters
+
+    if ($auditObject)
     {
-        $missingDatabaseMessage = $script:localizedData.Audit_AlreadyPresent -f $Name
+        $auditAlreadyPresentMessage = $script:localizedData.Audit_AlreadyPresent -f $Name
 
         $PSCmdlet.ThrowTerminatingError(
             [System.Management.Automation.ErrorRecord]::new(
-                $missingDatabaseMessage,
+                $auditAlreadyPresentMessage,
                 'NSDA0001', # cspell: disable-line
                 [System.Management.Automation.ErrorCategory]::InvalidOperation,
                 $DatabaseName
             )
         )
     }
-
-    # TODO: This is for Set-SqlDscAudit
-    # $auditObject = $ServerObject.Audits[$Name]
-    # $auditObject.Refresh()
 
     $auditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @($ServerObject, $Name)
 
@@ -255,15 +256,6 @@ function New-SqlDscAudit
             $auditObject.MaximumFileSizeUnit = $queryMaximumFileSizeUnit
         }
 
-        <#
-            TODO: For Set-SqlDscAudit: Switching between MaximumFiles and MaximumRolloverFiles must
-                  run alter() between.
-
-                   $ServerObject.Audits['File1'].MaximumRolloverFiles = 0
-                   $ServerObject.Audits['File1'].Alter()
-                   $ServerObject.Audits['File1'].MaximumFiles = 1
-                   $ServerObject.Audits['File1'].Alter()
-        #>
         if ($PSCmdlet.ParameterSetName -in @('FileWithMaxFiles', 'FileWithSizeAndMaxFiles'))
         {
             $auditObject.MaximumFiles = $MaximumFiles
@@ -307,10 +299,10 @@ function New-SqlDscAudit
     if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
     {
         $auditObject.Create()
-    }
 
-    if ($PassThru.IsPresent)
-    {
-        return $auditObject
+        if ($PassThru.IsPresent)
+        {
+            return $auditObject
+        }
     }
 }

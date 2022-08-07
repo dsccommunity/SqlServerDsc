@@ -73,7 +73,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Get-SqlDscServerPermission`
     - `Set-SqlDscServerPermission`
     - `Invoke-SqlDscQuery`
+    - `Get-SqlDscAudit`
     - `New-SqlDscAudit`
+    - `Set-SqlDscAudit`
     - `Remove-SqlDscAudit`
     - `Enable-SqlDscAudit`
     - `Disable-SqlDscAudit`

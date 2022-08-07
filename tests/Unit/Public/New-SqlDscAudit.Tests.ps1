@@ -117,11 +117,9 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 return $script:mockCreateAuditObject
             }
 
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
-                    return @{}
-                } -PassThru -Force
+            Mock -CommandName Get-SqlDscAudit
 
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
@@ -206,11 +204,9 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 return $script:mockCreateAuditObject
             }
 
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
-                    return @{}
-                } -PassThru -Force
+            Mock -CommandName Get-SqlDscAudit
 
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
@@ -295,11 +291,9 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 return $script:mockCreateAuditObject
             }
 
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
-                    return @{}
-                } -PassThru -Force
+            Mock -CommandName Get-SqlDscAudit
 
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
@@ -412,11 +406,9 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 return $script:mockCreateAuditObject
             }
 
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
-                    return @{}
-                } -PassThru -Force
+            Mock -CommandName Get-SqlDscAudit
 
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
@@ -467,11 +459,9 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 return $script:mockCreateAuditObject
             }
 
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
-                    return @{}
-                } -PassThru -Force
+            Mock -CommandName Get-SqlDscAudit
 
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
@@ -521,11 +511,9 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 return $script:mockCreateAuditObject
             }
 
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
-                    return @{}
-                } -PassThru -Force
+            Mock -CommandName Get-SqlDscAudit
 
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
@@ -591,11 +579,9 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 return $script:mockCreateAuditObject
             }
 
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
-                    return @{}
-                } -PassThru -Force
+            Mock -CommandName Get-SqlDscAudit
 
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
@@ -645,11 +631,9 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 return $script:mockCreateAuditObject
             }
 
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
-                    return @{}
-                } -PassThru -Force
+            Mock -CommandName Get-SqlDscAudit
 
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
@@ -711,11 +695,9 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 return $script:mockCreateAuditObject
             }
 
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
-                    return @{}
-                } -PassThru -Force
+            Mock -CommandName Get-SqlDscAudit
 
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
@@ -777,11 +759,9 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 return $script:mockCreateAuditObject
             }
 
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
-                    return @{}
-                } -PassThru -Force
+            Mock -CommandName Get-SqlDscAudit
 
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
@@ -831,11 +811,9 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 return $script:mockCreateAuditObject
             }
 
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
-                    return @{}
-                } -PassThru -Force
+            Mock -CommandName Get-SqlDscAudit
 
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
@@ -879,11 +857,9 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
                 return $mockNewCreateAuditObject
             }
 
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
-                    return @{}
-                } -PassThru -Force
+            Mock -CommandName Get-SqlDscAudit
 
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
 
             $mockDefaultParameters = @{
@@ -911,12 +887,11 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
 
     Context 'When the audit already exist' {
         BeforeAll {
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
-                    return @{
-                        'Log1' = New-Object -TypeName Object
-                    }
-                } -PassThru -Force
+            Mock -CommandName Get-SqlDscAudit -MockWith {
+                return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit'
+            }
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
 
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
