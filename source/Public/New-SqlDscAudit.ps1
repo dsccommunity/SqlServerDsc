@@ -35,7 +35,7 @@
         on instances with a large amount of audits it might be better to make
         sure the ServerObject is recent enough.
 
-    .PARAMETER Type
+    .PARAMETER LogType
         Specifies the log location where the audit should write to.
         This can be SecurityLog or ApplicationLog.
 
@@ -71,7 +71,7 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $sqlServerObject | New-SqlDscAudit -Name 'MyAppLogAudit' -Type 'ApplicationLog'
+        $sqlServerObject | New-SqlDscAudit -Name 'MyAppLogAudit' -LogType 'ApplicationLog'
 
         Create a new application log audit named **MyAppLogAudit**.
 
@@ -143,7 +143,7 @@ function New-SqlDscAudit
         [Parameter(ParameterSetName = 'Log', Mandatory = $true)]
         [ValidateSet('SecurityLog', 'ApplicationLog')]
         [System.String]
-        $Type,
+        $LogType,
 
         [Parameter(ParameterSetName = 'File', Mandatory = $true)]
         [Parameter(ParameterSetName = 'FileWithSize', Mandatory = $true)]
@@ -227,7 +227,7 @@ function New-SqlDscAudit
     {
         'Log'
         {
-            $Type
+            $LogType
         }
 
         default

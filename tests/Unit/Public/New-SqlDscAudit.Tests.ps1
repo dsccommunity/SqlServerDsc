@@ -49,7 +49,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName = 'Log'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -Type <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -LogType <string> [-AuditFilter <string>] [-OnFailure <string>] [-QueueDelay <uint>] [-AuditGuid <string>] [-Force] [-Refresh] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'File'
@@ -124,7 +124,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
-                Type = 'ApplicationLog'
+                LogType = 'ApplicationLog'
                 Name = 'Log1'
             }
         }
@@ -171,7 +171,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should call the mocked method and have correct values in the object' {
-                $mockServerObject | New-SqlDscAudit -Type 'ApplicationLog' -Name 'Log1' -Force
+                $mockServerObject | New-SqlDscAudit -LogType 'ApplicationLog' -Name 'Log1' -Force
 
                 # This is the object created by the mock and modified by the command.
                 $mockCreateAuditObject.Name | Should -Be 'Log1'
@@ -211,7 +211,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
 
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
-                Type = 'SecurityLog'
+                LogType = 'SecurityLog'
                 Name = 'Log1'
             }
         }
@@ -258,7 +258,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should call the mocked method and have correct values in the object' {
-                $mockServerObject | New-SqlDscAudit -Type 'SecurityLog' -Name 'Log1' -Force
+                $mockServerObject | New-SqlDscAudit -LogType 'SecurityLog' -Name 'Log1' -Force
 
                 # This is the object created by the mock and modified by the command.
                 $mockCreateAuditObject.Name | Should -Be 'Log1'
@@ -896,7 +896,7 @@ Describe 'New-SqlDscAudit' -Tag 'Public' {
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
                 Name = 'Log1'
-                Type = 'ApplicationLog'
+                LogType = 'ApplicationLog'
                 Force = $true
             }
         }
