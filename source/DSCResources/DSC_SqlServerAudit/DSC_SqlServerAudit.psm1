@@ -43,7 +43,7 @@ function Get-TargetResource
         [System.String]
         $InstanceName,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet('File', 'SecurityLog', 'ApplicationLog')]
         [System.String]
         $DestinationType
@@ -179,7 +179,7 @@ function Set-TargetResource
         [System.String]
         $InstanceName,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet('File', 'SecurityLog', 'ApplicationLog')]
         [System.String]
         $DestinationType,
@@ -628,7 +628,7 @@ function Test-TargetResource
         [System.String]
         $InstanceName,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet('File', 'SecurityLog', 'ApplicationLog')]
         [System.String]
         $DestinationType,

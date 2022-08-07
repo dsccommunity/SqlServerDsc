@@ -4,7 +4,7 @@ class DSC_SqlServerAudit : OMI_BaseResource
     [Key, Description("Specifies the host name of the SQL Server on which the instance exist.")] String ServerName;
     [Key, Description("Specifies the SQL instance in which the Audit exist.")] String InstanceName;
     [Key, Description("Specifies the name of the SQL audit to be added or removed.")] String Name;
-    [Required, Description("Specifies the location where the audit should write to."), ValueMap{"File", "SecurityLog", "ApplicationLog"}, Values{"File", "SecurityLog", "ApplicationLog"}] String DestinationType;
+    [Write, Description("Specifies the location where the audit should write to."), ValueMap{"File", "SecurityLog", "ApplicationLog"}, Values{"File", "SecurityLog", "ApplicationLog"}] String DestinationType;
     [Write, Description("Specifies the path where the audit files are stored when DestinationType is set to `File`.")] String FilePath;
     [Write, Description("Specifies if the audit should be enabled. Defaults to `$false`.")] Boolean Enabled;
     [Write, Description("Specifies the filter that should be used on the audit.")] String Filter;
