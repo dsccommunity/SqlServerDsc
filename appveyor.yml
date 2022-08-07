@@ -23,33 +23,27 @@ environment:
   #- TEST_CONFIGURATION: Integration_SQL2019
 
 # DEBUG: See section on_finish last in this file on how to block build to keep RDP open.
+# DEBUG: If running on own AppVeyor project on-comment the line below that skips if it is not a pull request
 init:
 - ps: |
     # Only run for pull requests
-    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER)
-    {
-        return
-    }
+    #if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { return }
 
     iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
+# DEBUG: If running on own AppVeyor project on-comment the line below that skips if it is not a pull request
 install:
 - ps: |
     # Only run for pull requests
-    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER)
-    {
-        return
-    }
+    #if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { return }
 
     winrm quickconfig -quiet
 
+# DEBUG: If running on own AppVeyor project on-comment the line below that skips if it is not a pull request
 build_script:
 - pwsh: |
     # Only run for pull requests
-    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER)
-    {
-        return
-    }
+    #if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { return }
 
     # Build the module
     ./build.ps1 -ResolveDependency -tasks build
@@ -57,13 +51,11 @@ build_script:
 # DEBUG: Comment and un-comment integration tests as needed for the purpose of debugging.
 # Note that some integration tests depend on each other to work. See the README for more
 # information: https://github.com/dsccommunity/SqlServerDsc/blob/main/tests/Integration/README.md
+# DEBUG: If running on own AppVeyor project on-comment the line below that skips if it is not a pull request
 test_script:
 - ps: |
     # Only run for pull requests
-    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER)
-    {
-        return
-    }
+    #if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { return }
 
     ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $env:TEST_CONFIGURATION -PesterPath @(
         ### Run the integration tests in a specific group order.
@@ -104,8 +96,8 @@ test_script:
 
 deploy: off
 
-# DEBUG: Un-comment the following line so that build worker is kept up all of the 60 minutes.
+# DEBUG: Un-comment the line "$blockRdp = $true" so that build worker is kept up all of the 60 minutes.
 on_finish:
 - ps: |
-    $blockRdp = $true
-    iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+    #$blockRdp = $true
+    iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
