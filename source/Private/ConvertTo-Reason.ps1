@@ -71,6 +71,24 @@ function ConvertTo-Reason
                 $propertyActualValue = $currentProperty.ActualValue
             }
 
+            <#
+                In PowerShell 7 the command ConvertTo-Json returns 'null' on null
+                value, but not in Windows PowerShell. Switch to output empty string
+                if value is null.
+            #>
+            if ($PSVersionTable.PSEdition -eq 'Desktop')
+            {
+                if ($null -eq $propertyExpectedValue)
+                {
+                    $propertyExpectedValue = ''
+                }
+
+                if ($null -eq $propertyActualValue)
+                {
+                    $propertyActualValue = ''
+                }
+            }
+
             $reasons += [Reason] @{
                 Code   = '{0}:{0}:{1}' -f $ResourceName, $currentProperty.Property
                 # Convert the object to JSON to handle complex types.

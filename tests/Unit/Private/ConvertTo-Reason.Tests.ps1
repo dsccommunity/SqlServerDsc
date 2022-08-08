@@ -124,4 +124,68 @@ Describe 'ConvertTo-Reason' -Tag 'Private' {
             }
         }
     }
+
+    Context 'When ExpectedValue has $null for a property' {
+        Context 'When on Windows PowerShell' {
+            BeforeAll {
+                $script:originalPSEdition = $PSVersionTable.PSEdition
+
+                $PSVersionTable.PSEdition = 'Desktop'
+            }
+
+            AfterAll {
+                $PSVersionTable.PSEdition = $script:originalPSEdition
+            }
+            It 'Should return the correct values in a hashtable' {
+                InModuleScope -ScriptBlock {
+                    $mockProperties = @(
+                        @{
+                            Property      = 'MyResourceProperty1'
+                            ExpectedValue = $null
+                            ActualValue   = 'MyValue1'
+                        }
+                    )
+
+                    $result = ConvertTo-Reason -Property $mockProperties -ResourceName 'MyResource'
+
+                    $result | Should -HaveCount 1
+
+                    $result.Code | Should -Contain 'MyResource:MyResource:MyResourceProperty1'
+                    $result.Phrase | Should -Contain 'The property MyResourceProperty1 should be "", but was "MyValue1"'
+                }
+            }
+        }
+    }
+
+    Context 'When ActualValue has $null for a property' {
+        Context 'When on Windows PowerShell' {
+            BeforeAll {
+                $script:originalPSEdition = $PSVersionTable.PSEdition
+
+                $PSVersionTable.PSEdition = 'Desktop'
+            }
+
+            AfterAll {
+                $PSVersionTable.PSEdition = $script:originalPSEdition
+            }
+            It 'Should return the correct values in a hashtable' {
+                InModuleScope -ScriptBlock {
+                    $mockProperties = @(
+                        @{
+                            Property      = 'MyResourceProperty1'
+                            ExpectedValue = 'MyValue1'
+                            ActualValue   = $null
+                        }
+                    )
+
+                    $result = ConvertTo-Reason -Property $mockProperties -ResourceName 'MyResource'
+
+                    $result | Should -HaveCount 1
+
+                    $result.Code | Should -Contain 'MyResource:MyResource:MyResourceProperty1'
+                    $result.Phrase | Should -Contain 'The property MyResourceProperty1 should be "MyValue1", but was ""'
+                }
+            }
+        }
+    }
 }
