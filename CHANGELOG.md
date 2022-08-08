@@ -307,6 +307,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed comment-based help and cleaned up comments.
   - Fix localized string that referenced 'user' instead of 'principal',
     and correct localized string ID for each string.
+  - Fix comment-based help.
+- SqlPermission
+  - Fix comment-based help.
 - `Set-SqlDscDatabasePermission`
   - Minor code cleanup.
 - `ConvertTo-Reason`
