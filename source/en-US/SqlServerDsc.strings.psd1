@@ -54,6 +54,8 @@ ConvertFrom-StringData @'
     Audit_Update_ShouldProcessVerboseWarning = Are you sure you want you update the audit '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Audit_Update_ShouldProcessCaption = Update audit on instance
+    Audit_MaximumFileSizeParameterValueInvalid = The maximum file size must be set to a value of 0 or a value between 2 and 2147483647.
+    Audit_QueueDelayParameterValueInvalid = The queue delay must be set to a value of 0 or a value between 1000 and 2147483647.
 
     ## Get-SqlDscAudit
     Audit_Missing = There is no audit with the name '{0}'.
