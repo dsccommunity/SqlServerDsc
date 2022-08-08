@@ -93,6 +93,6 @@ function Remove-SqlDscAudit
             If the passed audit object has already been dropped, then we silently
             do nothing, using the method DropIfExist(), since the job is done.
         #>
-        $AuditObject.DropIfExist()
+        $AuditObject.DropIfExists()
     }
 }
