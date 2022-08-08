@@ -33,7 +33,7 @@ else
 
                 AuditName2            = 'SecLogAudit'
                 LogType2              = 'SecurityLog'
-                Filter2               = '([server_principal_name] like ''%ADMINISTRATOR'')'
+                AuditFilter2          = '([server_principal_name] like ''%ADMINISTRATOR'')'
             }
         )
     }
@@ -89,7 +89,7 @@ Configuration DSC_SqlAudit_AddSecLogAudit_Config
             InstanceName    = $Node.InstanceName
             Name            = $Node.AuditName2
             LogType         = $Node.LogType2
-            Filter          = $Node.Filter2
+            AuditFilter     = $Node.AuditFilter2
 
             Credential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -114,7 +114,7 @@ Configuration DSC_SqlAudit_AddSecLogAuditNoFilter_Config
             ServerName      = $Node.ServerName
             InstanceName    = $Node.InstanceName
             Name            = $Node.AuditName2
-            Filter          = ''
+            AuditFilter     = ''
 
             Credential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `

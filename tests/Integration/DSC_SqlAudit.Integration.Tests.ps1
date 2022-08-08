@@ -153,7 +153,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
             $resourceCurrentState.LogType | Should -Be $ConfigurationData.AllNodes.LogType2
-            $resourceCurrentState.Filter | Should -Be $ConfigurationData.AllNodes.Filter2
+            $resourceCurrentState.AuditFilter | Should -Be $ConfigurationData.AllNodes.AuditFilter2
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -212,7 +212,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
             $resourceCurrentState.LogType | Should -Be $ConfigurationData.AllNodes.LogType2
-            $resourceCurrentState.Filter | Should -BeNullOrEmpty
+            $resourceCurrentState.AuditFilter | Should -BeNullOrEmpty
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {

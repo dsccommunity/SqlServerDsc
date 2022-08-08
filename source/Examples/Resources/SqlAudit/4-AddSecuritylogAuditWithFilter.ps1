@@ -25,7 +25,7 @@ Configuration Example
             Name         = 'SecLogAudit'
             LogType      = 'SecurityLog'
             Enabled      = $true
-            Filter       = '([server_principal_name] like ''%ADMINISTRATOR'')'
+            AuditFilter  = '([server_principal_name] like ''%ADMINISTRATOR'')'
             Credential   = $SqlAdministratorCredential
         }
     }
