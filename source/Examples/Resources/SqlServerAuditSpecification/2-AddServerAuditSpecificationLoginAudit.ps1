@@ -16,13 +16,13 @@ Configuration Example
 
     node localhost
     {
-        SqlServerAudit SecurityLogAudit_Server
+        SqlAudit SecurityLogAudit_Server
         {
             Ensure               = 'Present'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
             Name                 = 'SecLogAudit'
-            DestinationType      = 'SecurityLog'
+            LogType              = 'SecurityLog'
             Enabled              = $true
             PsDscRunAsCredential = $SqlAdministratorCredential
         }
@@ -42,7 +42,7 @@ Configuration Example
             LogoutGroup                           = $true
             SuccessfulDatabaseAuthenticationGroup = $true
             SuccessfulLoginGroup                  = $true
-            DependsOn                             = '[SqlServerAudit]SecurityLogAudit_Server'
+            DependsOn                             = '[SqlAudit]SecurityLogAudit_Server'
             PsDscRunAsCredential                  = $SqlAdministratorCredential
         }
     }

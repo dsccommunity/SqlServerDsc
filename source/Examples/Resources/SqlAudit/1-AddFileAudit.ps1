@@ -16,13 +16,18 @@ Configuration Example
 
     node localhost
     {
-        SqlServerAudit FileAudit_Server
+        SqlAudit FileAudit_Server
         {
-            Ensure               = 'Absent'
-            ServerName           = 'sqltest.company.local'
-            InstanceName         = 'DSC'
+            Ensure               = 'Present'
+            ServerName           = 'SQL2019-01'
+            InstanceName         = 'INST01'
             Name                 = 'FileAudit'
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            Path                 = 'C:\Temp\audit'
+            MaximumFileSize      = 10
+            MaximumFileSizeUnit  = 'MB'
+            MaximumRolloverFiles = 11
+            Enabled              = $true
+            Credential           = $SqlAdministratorCredential
         }
     }
 }

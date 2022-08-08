@@ -12,14 +12,14 @@ BeforeDiscovery {
         Need to define that variables here to be used in the Pester Discover to
         build the ForEach-blocks.
     #>
-    $script:dscResourceFriendlyName = 'SqlServerAudit'
+    $script:dscResourceFriendlyName = 'SqlAudit'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 }
 
 BeforeAll {
     # Need to define the variables here which will be used in Pester Run.
     $script:dscModuleName = 'SqlServerDsc'
-    $script:dscResourceFriendlyName = 'SqlServerAudit'
+    $script:dscResourceFriendlyName = 'SqlAudit'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
     $script:testEnvironment = Initialize-TestEnvironment `
@@ -91,8 +91,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName1
             $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DestinationType | Should -Be $ConfigurationData.AllNodes.DestinationType1
-            $resourceCurrentState.FilePath | Should -Be $ConfigurationData.AllNodes.FilePath1
+            $resourceCurrentState.Path | Should -Be $ConfigurationData.AllNodes.Path1
             $resourceCurrentState.MaximumFileSize | Should -Be $ConfigurationData.AllNodes.MaximumFileSize1
             $resourceCurrentState.MaximumFileSizeUnit | Should -Be $ConfigurationData.AllNodes.MaximumFileSizeUnit1
             $resourceCurrentState.MaximumRolloverFiles | Should -Be $ConfigurationData.AllNodes.MaximumRolloverFiles1
@@ -153,7 +152,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName2
             $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DestinationType | Should -Be $ConfigurationData.AllNodes.DestinationType2
+            $resourceCurrentState.LogType | Should -Be $ConfigurationData.AllNodes.LogType2
             $resourceCurrentState.Filter | Should -Be $ConfigurationData.AllNodes.Filter2
         }
 
@@ -212,7 +211,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName2
             $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DestinationType | Should -Be $ConfigurationData.AllNodes.DestinationType2
+            $resourceCurrentState.LogType | Should -Be $ConfigurationData.AllNodes.LogType2
             $resourceCurrentState.Filter | Should -BeNullOrEmpty
         }
 
@@ -271,8 +270,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName1
             $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DestinationType | Should -BeNullOrEmpty
-            $resourceCurrentState.FilePath | Should -BeNullOrEmpty
+            $resourceCurrentState.Path | Should -BeNullOrEmpty
             $resourceCurrentState.MaximumFileSize | Should -BeNullOrEmpty
             $resourceCurrentState.MaximumFileSizeUnit | Should -BeNullOrEmpty
             $resourceCurrentState.MaximumRolloverFiles | Should -BeNullOrEmpty

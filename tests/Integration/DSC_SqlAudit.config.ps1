@@ -26,43 +26,46 @@ else
                 InstanceName          = 'DSCSQLTEST'
 
                 AuditName1            = 'FileAudit'
-                DestinationType1      = 'File'
-                FilePath1             = 'C:\Temp\audit\'
+                Path1                 = 'C:\Temp\audit'
                 MaximumFileSize1      = 10
                 MaximumFileSizeUnit1  = 'MB'
                 MaximumRolloverFiles1 = 11
 
                 AuditName2            = 'SecLogAudit'
-                DestinationType2      = 'SecurityLog'
+                LogType2              = 'SecurityLog'
                 Filter2               = '([server_principal_name] like ''%ADMINISTRATOR'')'
             }
         )
     }
+
+    # TODO: This leaves the SecLogAudit, if so it should be documented.
+
+    # TODO: This folder should be created with DSC.
+    New-Item -Path 'C:\Temp\audit' -ItemType 'Directory' -Force | Out-Null
 }
 
 <#
     .SYNOPSIS
         Creates a Server Audit with File destination.
 #>
-Configuration DSC_SqlServerAudit_AddFileAudit_Config
+Configuration DSC_SqlAudit_AddFileAudit_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerAudit 'Integration_Test'
+        SqlAudit 'Integration_Test'
         {
             Ensure               = 'Present'
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
             Name                 = $Node.AuditName1
-            DestinationType      = $Node.DestinationType1
-            FilePath             = $Node.FilePath1
+            Path                 = $Node.Path1
             MaximumFileSize      = $Node.MaximumFileSize1
             MaximumFileSizeUnit  = $Node.MaximumFileSizeUnit1
             MaximumRolloverFiles = $Node.MaximumRolloverFiles1
 
-            PsDscRunAsCredential = New-Object `
+            Credential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
@@ -73,22 +76,22 @@ Configuration DSC_SqlServerAudit_AddFileAudit_Config
     .SYNOPSIS
         Creates a audit to the security log, with a filter.
 #>
-Configuration DSC_SqlServerAudit_AddSecLogAudit_Config
+Configuration DSC_SqlAudit_AddSecLogAudit_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerAudit 'Integration_Test'
+        SqlAudit 'Integration_Test'
         {
             Ensure          = 'Present'
             ServerName      = $Node.ServerName
             InstanceName    = $Node.InstanceName
             Name            = $Node.AuditName2
-            DestinationType = $Node.DestinationType2
-            Filter = $Node.Filter2
+            LogType         = $Node.LogType2
+            Filter          = $Node.Filter2
 
-            PsDscRunAsCredential = New-Object `
+            Credential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
@@ -99,21 +102,21 @@ Configuration DSC_SqlServerAudit_AddSecLogAudit_Config
     .SYNOPSIS
         Should remove the filter
 #>
-Configuration DSC_SqlServerAudit_AddSecLogAuditNoFilter_Config
+Configuration DSC_SqlAudit_AddSecLogAuditNoFilter_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerAudit 'Integration_Test'
+        SqlAudit 'Integration_Test'
         {
             Ensure          = 'Present'
             ServerName      = $Node.ServerName
             InstanceName    = $Node.InstanceName
             Name            = $Node.AuditName2
-            DestinationType = $Node.DestinationType2
+            Filter          = ''
 
-            PsDscRunAsCredential = New-Object `
+            Credential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
@@ -124,20 +127,20 @@ Configuration DSC_SqlServerAudit_AddSecLogAuditNoFilter_Config
     .SYNOPSIS
         Removes the file audit.
 #>
-Configuration DSC_SqlServerAudit_RemoveAudit1_Config
+Configuration DSC_SqlAudit_RemoveAudit1_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        SqlServerAudit 'Integration_Test'
+        SqlAudit 'Integration_Test'
         {
             Ensure       = 'Absent'
             ServerName   = $Node.ServerName
             InstanceName = $Node.InstanceName
             Name         = $Node.AuditName1
 
-            PsDscRunAsCredential = New-Object `
+            Credential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }

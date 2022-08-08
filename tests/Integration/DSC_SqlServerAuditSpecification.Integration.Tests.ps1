@@ -1,4 +1,7 @@
 BeforeDiscovery {
+    # TODO: THIS IS NOT RUN YET
+    return
+
     try
     {
         Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
@@ -87,11 +90,6 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName1
             $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DestinationType | Should -Be $ConfigurationData.AllNodes.DestinationType1
-            $resourceCurrentState.FilePath | Should -Be $ConfigurationData.AllNodes.FilePath1
-            $resourceCurrentState.MaximumFileSize | Should -Be $ConfigurationData.AllNodes.MaximumFileSize1
-            $resourceCurrentState.MaximumFileSizeUnit | Should -Be $ConfigurationData.AllNodes.MaximumFileSizeUnit1
-            $resourceCurrentState.MaximumRolloverFiles | Should -Be $ConfigurationData.AllNodes.MaximumRolloverFiles1
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -149,67 +147,6 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName2
             $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DestinationType | Should -Be $ConfigurationData.AllNodes.DestinationType2
-            $resourceCurrentState.Filter | Should -Be $ConfigurationData.AllNodes.Filter2
-        }
-
-        It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
-        }
-    }
-
-    Context ('When using configuration <_>') -ForEach @(
-        "$($script:dscResourceName)_AddSecLogAuditNoFilter_Config"
-    ) {
-        BeforeAll {
-            $configurationName = $_
-        }
-
-        AfterAll {
-            Wait-ForIdleLcm
-        }
-
-        It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath           = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData    = $ConfigurationData
-                }
-
-                & $configurationName @configurationParameters
-
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
-
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
-        }
-
-        It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
-        }
-
-        It 'Should have set the resource and all the parameters should match' {
-            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                $_.ConfigurationName -eq $configurationName `
-                -and $_.ResourceId -eq $resourceId
-            }
-
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName2
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DestinationType | Should -Be $ConfigurationData.AllNodes.DestinationType2
-            $resourceCurrentState.Filter | Should -BeNullOrEmpty
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -267,11 +204,6 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName1
             $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DestinationType | Should -BeNullOrEmpty
-            $resourceCurrentState.FilePath | Should -BeNullOrEmpty
-            $resourceCurrentState.MaximumFileSize | Should -BeNullOrEmpty
-            $resourceCurrentState.MaximumFileSizeUnit | Should -BeNullOrEmpty
-            $resourceCurrentState.MaximumRolloverFiles | Should -BeNullOrEmpty
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {

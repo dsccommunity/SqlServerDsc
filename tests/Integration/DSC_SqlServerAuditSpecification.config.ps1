@@ -26,11 +26,12 @@ else
                 InstanceName           = 'DSCSQLTEST'
 
                 AuditName1             = 'FileAudit'
-                DestinationType1       = 'File'
-                FilePath1              = 'C:\Temp\audit\'
+                Path1                  = 'C:\Temp\audit\'
                 MaximumFileSize1       = 10
                 MaximumFileSizeUnit1   = 'MB'
                 MaximumRolloverFiles1  = 11
+
+                LogType2               = 'SecurityLog'
 
                 AuditSpecificationName = 'AdminAudit'
             }
@@ -48,14 +49,13 @@ Configuration DSC_SqlServerAuditSpecification_AddAudit1_Config
 
     node $AllNodes.NodeName
     {
-        SqlServerAudit 'Integration_TestPrepare'
+        SqlAudit 'Integration_TestPrepare'
         {
             Ensure               = 'Present'
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
             Name                 = $Node.AuditName1
-            DestinationType      = $Node.DestinationType1
-            FilePath             = $Node.FilePath1
+            Path                 = $Node.Path1
             MaximumFileSize      = $Node.MaximumFileSize1
             MaximumFileSizeUnit  = $Node.MaximumFileSizeUnit1
             MaximumRolloverFiles = $Node.MaximumRolloverFiles1
@@ -96,7 +96,7 @@ Configuration DSC_SqlServerAuditSpecification_AddAudit1_Config
             ServerRoleMemberChangeGroup         = $true
             ServerStateChangeGroup              = $true
             TraceChangeGroup                    = $true
-            DependsOn                           = '[SqlServerAudit]Integration_TestPrepare'
+            DependsOn                           = '[SqlAudit]Integration_TestPrepare'
 
             PsDscRunAsCredential                = $SqlAdministratorCredential
         }
@@ -113,14 +113,13 @@ Configuration DSC_SqlServerAuditSpecification_AddSecLogAudit_Config
 
     node $AllNodes.NodeName
     {
-        SqlServerAudit 'Integration_TestPrepare'
+        SqlAudit 'Integration_TestPrepare'
         {
-            Ensure          = 'Present'
-            ServerName      = $Node.ServerName
-            InstanceName    = $Node.InstanceName
-            Name            = $Node.AuditName2
-            DestinationType = $Node.DestinationType2
-            Filter          = $Node.Filter2
+            Ensure       = 'Present'
+            ServerName   = $Node.ServerName
+            InstanceName = $Node.InstanceName
+            Name         = $Node.AuditName2
+            LogType      = $Node.LogType2
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -158,68 +157,7 @@ Configuration DSC_SqlServerAuditSpecification_AddSecLogAudit_Config
             ServerRoleMemberChangeGroup         = $true
             ServerStateChangeGroup              = $true
             TraceChangeGroup                    = $true
-            DependsOn                           = '[SqlServerAudit]Integration_TestPrepare'
-
-            PsDscRunAsCredential                = $SqlAdministratorCredential
-        }
-    }
-}
-
-<#
-    .SYNOPSIS
-        Should remove the filter
-#>
-Configuration DSC_SqlServerAuditSpecification_AddSecLogAuditNoFilter_Config
-{
-    Import-DscResource -ModuleName 'SqlServerDsc'
-
-    node $AllNodes.NodeName
-    {
-        SqlServerAudit 'Integration_TestPrepare'
-        {
-            Ensure          = 'Present'
-            ServerName      = $Node.ServerName
-            InstanceName    = $Node.InstanceName
-            Name            = $Node.AuditName2
-            DestinationType = $Node.DestinationType2
-
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
-        }
-
-        SqlServerAuditSpecification 'Integration_Test'
-        {
-            Ensure                              = 'Present'
-            ServerName                          = $Node.ServerName
-            InstanceName                        = $Node.InstanceName
-            Name                                = $Node.AuditSpecificationName
-            AuditName                           = $Node.AuditName1
-            Enabled                             = $true
-            AuditChangeGroup                    = $true
-            BackupRestoreGroup                  = $true
-            DatabaseObjectChangeGroup           = $true
-            DatabaseObjectOwnershipChangeGroup  = $true
-            DatabaseObjectPermissionChangeGroup = $true
-            DatabaseOwnershipChangeGroup        = $true
-            DatabasePermissionChangeGroup       = $true
-            DatabasePrincipalChangeGroup        = $true
-            DatabasePrincipalImpersonationGroup = $true
-            DatabaseRoleMemberChangeGroup       = $true
-            SchemaObjectChangeGroup             = $true
-            SchemaObjectOwnershipChangeGroup    = $true
-            SchemaObjectPermissionChangeGroup   = $true
-            ServerObjectChangeGroup             = $true
-            ServerObjectOwnershipChangeGroup    = $true
-            ServerObjectPermissionChangeGroup   = $true
-            ServerOperationGroup                = $true
-            ServerPermissionChangeGroup         = $true
-            ServerPrincipalChangeGroup          = $true
-            ServerPrincipalImpersonationGroup   = $true
-            ServerRoleMemberChangeGroup         = $true
-            ServerStateChangeGroup              = $true
-            TraceChangeGroup                    = $true
-            DependsOn                           = '[SqlServerAudit]Integration_TestPrepare'
+            DependsOn                           = '[SqlAudit]Integration_TestPrepare'
 
             PsDscRunAsCredential                = $SqlAdministratorCredential
         }
@@ -236,12 +174,12 @@ Configuration DSC_SqlServerAuditSpecification_RemoveAudit1_Config
 
     node $AllNodes.NodeName
     {
-        SqlServerAudit 'Integration_TestPrepare'
+        SqlAudit 'Integration_TestPrepare'
         {
-            Ensure       = 'Absent'
-            ServerName   = $Node.ServerName
-            InstanceName = $Node.InstanceName
-            Name         = $Node.AuditName1
+            Ensure               = 'Absent'
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            Name                 = $Node.AuditName1
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -279,7 +217,7 @@ Configuration DSC_SqlServerAuditSpecification_RemoveAudit1_Config
             ServerRoleMemberChangeGroup         = $true
             ServerStateChangeGroup              = $true
             TraceChangeGroup                    = $true
-            DependsOn                           = '[SqlServerAudit]Integration_TestPrepare'
+            DependsOn                           = '[SqlAudit]Integration_TestPrepare'
 
             PsDscRunAsCredential                = $SqlAdministratorCredential
         }

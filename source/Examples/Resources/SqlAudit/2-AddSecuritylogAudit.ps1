@@ -2,7 +2,6 @@
     .EXAMPLE
         This example shows how to ensure that the windows security event log
         audit destination is present on the instance sqltest.company.local\DSC.
-        The server should shutdown when logging is not possible.
 #>
 Configuration Example
 {
@@ -17,16 +16,15 @@ Configuration Example
 
     node localhost
     {
-        SqlServerAudit SecurityLogAudit_Server
+        SqlAudit SecurityLogAudit_Server
         {
             Ensure               = 'Present'
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
             Name                 = 'SecLogAudit'
-            DestinationType      = 'SecurityLog'
-            OnFailure            = 'SHUTDOWN'
+            LogType              = 'SecurityLog'
             Enabled              = $true
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            Credential           = $SqlAdministratorCredential
         }
     }
 }

@@ -17,16 +17,16 @@ Configuration Example
 
     node localhost
     {
-        SqlServerAudit SecurityLogAudit_Server
+        SqlAudit SecurityLogAudit_Server
         {
-            Ensure               = 'Present'
-            ServerName           = 'sqltest.company.local'
-            InstanceName         = 'DSC'
-            Name                 = 'SecLogAudit'
-            DestinationType      = 'SecurityLog'
-            Enabled              = $true
-            Filter               = '([server_principal_name] like ''%ADMINISTRATOR'')'
-            PsDscRunAsCredential = $SqlAdministratorCredential
+            Ensure       = 'Present'
+            ServerName   = 'sqltest.company.local'
+            InstanceName = 'DSC'
+            Name         = 'SecLogAudit'
+            LogType      = 'SecurityLog'
+            Enabled      = $true
+            Filter       = '([server_principal_name] like ''%ADMINISTRATOR'')'
+            Credential   = $SqlAdministratorCredential
         }
     }
 }
