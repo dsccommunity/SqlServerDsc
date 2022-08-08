@@ -91,7 +91,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName1
             $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.Path | Should -Be $ConfigurationData.AllNodes.Path1
+            $resourceCurrentState.Path | Should -Be 'C:\Temp\audit\'
             $resourceCurrentState.MaximumFileSize | Should -Be $ConfigurationData.AllNodes.MaximumFileSize1
             $resourceCurrentState.MaximumFileSizeUnit | Should -Be $ConfigurationData.AllNodes.MaximumFileSizeUnit1
             $resourceCurrentState.MaximumRolloverFiles | Should -Be $ConfigurationData.AllNodes.MaximumRolloverFiles1
