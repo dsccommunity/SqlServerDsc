@@ -7,6 +7,11 @@
         The `SqlAudit` DSC resource is used to create, modify, or remove
         server audits.
 
+        The built-in parameter **PSDscRunAsCredential** can be used to run the resource
+        as another user. The resource will then authenticate to the SQL Server
+        instance as that user. It also possible to instead use impersonation by the
+        parameter **Credential**.
+
         ## Requirements
 
         * Target machine must be running Windows Server 2012 or later.
@@ -18,13 +23,14 @@
 
         All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlAudit).
 
-        ### `PSDscRunAsCredential` not supported
+        ### Property **Reasons** does not work with **PSDscRunAsCredential**
 
-        The built-in property `PSDscRunAsCredential` does not work with class-based
-        resources that using advanced type like the parameter `Permission` does.
-        Use the parameter `Credential` instead of `PSDscRunAsCredential`.
+        When using the built-in parameter `**PSDscRunAsCredential** the read-only
+        property `Reasons` will return empty values for Code and Phrase. The
+        built-in property **PSDscRunAsCredential** does not work with class-based
+        resources that using advanced type like the parameter `Reasons` have.
 
-        ### Using `Credential` property.
+        ### Using **Credential** property.
 
         SQL Authentication and Group Managed Service Accounts is not supported as
         impersonation credentials. Currently only Windows Integrated Security is
@@ -51,7 +57,7 @@
 
     .PARAMETER LogType
         Specifies the to which log an audit logs to. Mutually exclusive to parameter
-        **Path**. This can be set to `SecurityLog` or `ApplicationLog`.
+        **Path**.
 
     .PARAMETER Path
         Specifies the destination path for a file audit. Mutually exclusive to parameter
@@ -62,21 +68,23 @@
 
     .PARAMETER MaximumFiles
         Specifies the number of files on disk. Mutually exclusive to parameter
-        **MaximumRolloverFiles**.
+        **MaximumRolloverFiles**. Mutually exclusive to parameter **LogType**.
 
     .PARAMETER MaximumFileSize
         Specifies the maximum file size in units by parameter **MaximumFileSizeUnit**.
         If this is specified the parameter **MaximumFileSizeUnit** must also be
-        specified.
+        specified. Mutually exclusive to parameter **LogType**. Minimum allowed value
+        is 2 (MB). It also allowed to set the value to 0 which mean unlimited file
+        size.
 
     .PARAMETER MaximumFileSizeUnit
-        Specifies the unit that is used for the file size. this can be KB, MB or GB.
+        Specifies the unit that is used for the file size.
         If this is specified the parameter **MaximumFileSize** must also be
-        specified.
+        specified. Mutually exclusive to parameter **LogType**.
 
     .PARAMETER MaximumRolloverFiles
         Specifies the amount of files on disk before SQL Server starts reusing
-        the files. Mutually exclusive to parameter **MaximumFiles**.
+        the files. Mutually exclusive to parameter **MaximumFiles** and **LogType**.
 
     .PARAMETER OnFailure
         Specifies what should happen when writing events to the store fails.
@@ -89,7 +97,7 @@
 
     .PARAMETER ReserveDiskSpace
         Specifies if the needed file space should be reserved. only needed
-        when writing to a file log.
+        when writing to a file log. Mutually exclusive to parameter **LogType**.
 
     .PARAMETER Enabled
         Specifies if the audit should be enabled. Defaults to `$false`.
@@ -125,8 +133,7 @@
         This example shows how to call the resource using Invoke-DscResource.
 #>
 
-# TODO: verify RunAsCredential = 'NotSupported' - remove in comment-based help
-[DscResource()]
+[DscResource(RunAsCredential = 'Optional')]
 class SqlAudit : ResourceBase
 {
     <#
@@ -164,12 +171,13 @@ class SqlAudit : ResourceBase
     $AuditFilter
 
     [DscProperty()]
-    [System.UInt32]
+    [Nullable[System.UInt32]]
     $MaximumFiles
 
     [DscProperty()]
-    [ValidateRange(2, 2147483647)]
-    [System.UInt32]
+    # There is an extra evaluation in AssertProperties() for this range.
+    [ValidateRange(0, 2147483647)]
+    [Nullable[System.UInt32]]
     $MaximumFileSize
 
     [DscProperty()]
@@ -178,7 +186,8 @@ class SqlAudit : ResourceBase
     $MaximumFileSizeUnit
 
     [DscProperty()]
-    [System.UInt32]
+    [ValidateRange(0, 2147483647)]
+    [Nullable[System.UInt32]]
     $MaximumRolloverFiles
 
     [DscProperty()]
@@ -187,8 +196,9 @@ class SqlAudit : ResourceBase
     $OnFailure
 
     [DscProperty()]
-    [ValidateRange(1000, 2147483647)]
-    [System.UInt32]
+    # There is an extra evaluation in AssertProperties() for this range.
+    [ValidateRange(0, 2147483647)]
+    [Nullable[System.UInt32]]
     $QueueDelay
 
     [DscProperty()]
@@ -197,20 +207,19 @@ class SqlAudit : ResourceBase
     $AuditGuid
 
     [DscProperty()]
-    [System.Boolean]
+    [Nullable[System.Boolean]]
     $ReserveDiskSpace
 
     [DscProperty()]
-    [System.Boolean]
+    [Nullable[System.Boolean]]
     $Enabled
 
     [DscProperty()]
-    [ValidateSet('Present', 'Absent')]
-    [System.String]
-    $Ensure = 'Present'
+    [Ensure]
+    $Ensure = [Ensure]::Present
 
     [DscProperty()]
-    [System.Boolean]
+    [Nullable[System.Boolean]]
     $Force
 
     [DscProperty()]
@@ -223,12 +232,14 @@ class SqlAudit : ResourceBase
 
     SqlAudit() : base ()
     {
+        # TODO:_Rename this to ExcludeDscProperties or ExcludeProperties
         # These properties will not be enforced.
         $this.notEnforcedProperties = @(
             'ServerName'
             'InstanceName'
             'Name'
             'Credential'
+            'Force'
         )
     }
 
@@ -291,6 +302,13 @@ class SqlAudit : ResourceBase
     #>
     hidden [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
+        Write-Verbose -Message (
+            $this.localizedData.EvaluateServerAudit -f @(
+                $properties.Name,
+                $properties.InstanceName
+            )
+        )
+
         $currentStateCredential = $null
 
         if ($this.Credential)
@@ -306,25 +324,55 @@ class SqlAudit : ResourceBase
             )
         }
 
+        <#
+            Only set key property Name if the audit exist. Base class will set it
+            and handle Ensure.
+        #>
         $currentState = @{
-            Credential = $currentStateCredential
+            Credential   = $currentStateCredential
+            InstanceName = $properties.InstanceName
+            ServerName   = $this.ServerName
+            Force        = $this.Force
         }
-
-        Write-Verbose -Message (
-            $this.localizedData.EvaluateServerPermissionForPrincipal -f @(
-                $properties.Name,
-                $properties.InstanceName
-            )
-        )
 
         $serverObject = $this.GetServerObject()
 
         $auditObject = $serverObject |
-            Get-SqlDscAudit -Name $this.Name -ErrorAction 'SilentlyContinue'
+            Get-SqlDscAudit -Name $properties.Name -ErrorAction 'SilentlyContinue'
 
-        # If permissions was returned, build the current permission array of [ServerPermission].
         if ($auditObject)
         {
+            $currentState.Name = $properties.Name
+
+            if ($auditObject.DestinationType -in @('ApplicationLog', 'SecurityLog'))
+            {
+                $currentState.LogType = $auditObject.DestinationType
+            }
+
+            $currentState.Path = $auditObject.FilePath
+            $currentState.AuditFilter = $auditObject.Filter
+            $currentState.MaximumFiles = [System.UInt32] $auditObject.MaximumFiles
+            $currentState.MaximumFileSize = [System.UInt32] $auditObject.MaximumFileSize
+
+            if ($auditObject.MaximumFileSizeUnit)
+            {
+                $convertedMaximumFileSizeUnit = (
+                    @{
+                        Mb = 'Megabyte'
+                        Gb = 'Gigabyte'
+                        Tb = 'Terabyte'
+                    }
+                ).($auditObject.MaximumFileSizeUnit)
+
+                $currentState.MaximumFileSizeUnit = $convertedMaximumFileSizeUnit
+            }
+
+            $currentState.MaximumRolloverFiles = [System.UInt32] $auditObject.MaximumRolloverFiles
+            $currentState.OnFailure = $auditObject.OnFailure
+            $currentState.QueueDelay = [System.UInt32] $auditObject.QueueDelay
+            $currentState.AuditGuid = $auditObject.Guid
+            $currentState.ReserveDiskSpace = $auditObject.ReserveDiskSpace
+            $currentState.Enabled = $auditObject.Enabled
         }
 
         return $currentState
@@ -339,17 +387,97 @@ class SqlAudit : ResourceBase
     hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
         $serverObject = $this.GetServerObject()
+        $auditObject = $null
 
-        # if (-not $isLogin)
-        # {
-        #     $missingPrincipalMessage = $this.localizedData.NameIsMissing -f @(
-        #         $this.Name,
-        #         $this.InstanceName
-        #     )
+        if ($properties.Keys -contains 'Ensure')
+        {
+            # Evaluate the desired state for property Ensure.
+            switch ($properties.Ensure)
+            {
+                'Present'
+                {
+                    # Get all properties that has an assigned value.
+                    $assignedDscProperties = $this | Get-DscProperty -HasValue -Type @(
+                        'Key'
+                        'Mandatory'
+                        'Optional'
+                    ) -ExcludeName @(
+                        # Remove properties that is not an audit property.
+                        'InstanceName'
+                        'ServerName'
+                        'Enabled'
+                        'Ensure'
+                        'Force'
+                        'Credential'
 
-        #     New-InvalidOperationException -Message $missingPrincipalMessage
-        # }
+                        # Remove this audit property since it must be handled later.
+                        'Enabled'
+                    )
 
+                    if ($assignedDscProperties.Keys -notcontains 'LogType' -and $assignedDscProperties.Keys -notcontains 'Path')
+                    {
+                        New-InvalidOperationException -Message $this.localizedData.CannotCreateNewAudit
+                    }
+
+                    # Create the audit since it was missing. Always created disabled.
+                    $auditObject = $serverObject | New-SqlDscAudit @assignedDscProperties -Force -PassThru
+                }
+
+                'Absent'
+                {
+                    # Remove the audit since it was present
+                    $serverObject | Remove-SqlDscAudit -Name $this.Name -Force
+                }
+            }
+        }
+        else
+        {
+            <#
+                Update any properties not in desired state if the audit should be present.
+                At this point it is assumed the audit exist since Ensure property was
+                in desired state.
+
+                If the desired state happens to be Absent then ignore any properties not
+                in desired state (user have in that case wrongly added properties to an
+                "absent configuration").
+            #>
+            if ($this.Ensure -eq [Ensure]::Present)
+            {
+                $auditObject = $serverObject |
+                    Get-SqlDscAudit -Name $this.Name -ErrorAction 'Stop'
+
+                if ($auditObject)
+                {
+                }
+
+                # TODO: Should evaluate if Path is assigned and DestinationType is *Log it should recreate if Force is $true
+
+                # TODO: Should evaluate if LogType is assigned and DestinationType is File it should recreate if Force is $true
+
+                # TODO: Should evaluate DestinationType so that is does not try to set File properties when type is Log (and LogType and Path is not also present)
+            }
+        }
+
+        <#
+            If there is an audit object either from a newly created or fetched from
+            current state, and if the desired state is Present, evaluate if the
+            audit should be enable or disable.
+        #>
+        if ($auditObject -and $this.Ensure -eq [Ensure]::Present -and $properties.Keys -contains 'Enabled')
+        {
+            switch ($properties.Enabled)
+            {
+                $true
+                {
+                    $serverObject | Enable-SqlDscAudit -Name $this.Name -Force
+                }
+
+                $false
+                {
+                    $serverObject | Disable-SqlDscAudit -Name $this.Name -Force
+                }
+            }
+        }
     }
 
     <#
@@ -358,7 +486,7 @@ class SqlAudit : ResourceBase
     #>
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
-        # PermissionToInclude and PermissionToExclude should be mutually exclusive from Permission
+        # The properties MaximumFiles and MaximumRolloverFiles are mutually exclusive.
         $assertBoundParameterParameters = @{
             BoundParameterList     = $properties
             MutuallyExclusiveList1 = @(
@@ -371,7 +499,25 @@ class SqlAudit : ResourceBase
 
         Assert-BoundParameter @assertBoundParameterParameters
 
-        # Get all assigned permission properties.
+        # LogType is mutually exclusive from any of the File audit properties.
+        $assertBoundParameterParameters = @{
+            BoundParameterList     = $properties
+            MutuallyExclusiveList1 = @(
+                'LogType'
+            )
+            MutuallyExclusiveList2 = @(
+                'Path'
+                'MaximumFiles'
+                'MaximumFileSize'
+                'MaximumFileSizeUnit'
+                'MaximumRolloverFiles'
+                'ReserveDiskSpace'
+            )
+        }
+
+        Assert-BoundParameter @assertBoundParameterParameters
+
+        # Get all assigned *FileSize properties.
         $assignedSizeProperty = $properties.Keys.Where({
                 $_ -in @(
                     'MaximumFileSize',
@@ -379,18 +525,53 @@ class SqlAudit : ResourceBase
                 )
             })
 
-        # TODO: Above count should be either 0 or 2, if 1 throw an error.
-        # if ([System.String]::IsNullOrEmpty($assignedPermissionProperty))
-        # {
-        #     $errorMessage = $this.localizedData.MustAssignOnePermissionProperty
+        <#
+            Neither or both of the properties MaximumFileSize and MaximumFileSizeUnit
+            must be assigned.
+        #>
+        if ($assignedSizeProperty.Count -eq 1)
+        {
+            $errorMessage = $this.localizedData.BothFileSizePropertiesMustBeSet
 
-        #     New-InvalidArgumentException -ArgumentName 'Permission, PermissionToInclude, PermissionToExclude' -Message $errorMessage
-        # }
+            New-InvalidArgumentException -ArgumentName 'MaximumFileSize, MaximumFileSizeUnit' -Message $errorMessage
+        }
 
-        # TODO: Test path
-        # if (-not (Test-Path -Path $_))
-        # {
-        #     throw ($script:localizedData.Audit_PathParameterValueInvalid -f $_)
-        # }
+        <#
+            Since we cannot use [ValidateScript()], and it is no possible to exclude
+            a value in the [ValidateRange()], evaluate so 1 is not assigned.
+        #>
+        if ($properties.Keys -contains 'MaximumFileSize' -and $properties.MaximumFileSize -eq 1)
+        {
+            $errorMessage = $this.localizedData.MaximumFileSizeValueInvalid
+
+            New-InvalidArgumentException -ArgumentName 'MaximumFileSize' -Message $errorMessage
+        }
+
+        <#
+            Since we cannot use [ValidateScript()], and it is no possible to exclude
+            a value in the [ValidateRange()], evaluate so 1-999 is not assigned.
+        #>
+        if ($properties.Keys -contains 'QueueDelay' -and $properties.QueueDelay -in 1..999)
+        {
+            $errorMessage = $this.localizedData.QueueDelayValueInvalid
+
+            New-InvalidArgumentException -ArgumentName 'QueueDelay' -Message $errorMessage
+        }
+
+        # ReserveDiskSpace can only be used with MaximumFiles.
+        if ($properties.Keys -contains 'ReserveDiskSpace' -and $properties.Keys -notcontains 'MaximumFiles')
+        {
+            $errorMessage = $this.localizedData.BothFileSizePropertiesMustBeSet
+
+            New-InvalidArgumentException -ArgumentName 'ReserveDiskSpace' -Message $errorMessage
+        }
+
+        # Test so that the path exist.
+        if ($properties.Keys -contains 'Path' -and -not (Test-Path -Path $properties.Path))
+        {
+            $errorMessage = $this.localizedData.PathInvalid
+
+            New-InvalidArgumentException -ArgumentName 'Path' -Message $errorMessage
+        }
     }
 }
