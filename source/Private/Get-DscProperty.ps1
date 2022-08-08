@@ -62,6 +62,10 @@ function Get-DscProperty
         $Name,
 
         [Parameter()]
+        [System.String[]]
+        $ExcludeName,
+
+        [Parameter()]
         [ValidateSet('Key', 'Mandatory', 'NotConfigurable', 'Optional')]
         [System.String[]]
         $Type,
@@ -78,6 +82,12 @@ function Get-DscProperty
                 just those properties.
             #>
             (-not $Name -or $_ -in $Name) -and
+
+            <#
+                Return all properties if $ExcludeName is not assigned. Skip
+                property if it is included in $ExcludeName.
+            #>
+            (-not $ExcludeName -or ($_ -notin $ExcludeName)) -and
 
             # Only return the property if it is a DSC property.
             $InputObject.GetType().GetMember($_).CustomAttributes.Where(

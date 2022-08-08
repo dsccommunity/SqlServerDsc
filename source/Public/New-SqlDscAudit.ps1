@@ -53,7 +53,8 @@
         Specifies the maximum file size in units by parameter MaximumFileSizeUnit.
 
     .PARAMETER MaximumFileSizeUnit
-        Specifies the unit that is used for the file size. this can be KB, MB or GB.
+        Specifies the unit that is used for the file size. This can be set to `Megabyte`,
+        `Gigabyte`, or `Terabyte`.
 
     .PARAMETER MaximumRolloverFiles
         Specifies the amount of files on disk before SQL Server starts reusing
@@ -244,7 +245,7 @@ function New-SqlDscAudit
 
         if ($PSCmdlet.ParameterSetName -match 'FileWithSize')
         {
-            $queryMaximumFileSizeUnit = (
+            $convertedMaximumFileSizeUnit = (
                 @{
                     Megabyte = 'MB'
                     Gigabyte = 'GB'
@@ -253,7 +254,7 @@ function New-SqlDscAudit
             ).$MaximumFileSizeUnit
 
             $auditObject.MaximumFileSize = $MaximumFileSize
-            $auditObject.MaximumFileSizeUnit = $queryMaximumFileSizeUnit
+            $auditObject.MaximumFileSizeUnit = $convertedMaximumFileSizeUnit
         }
 
         if ($PSCmdlet.ParameterSetName -in @('FileWithMaxFiles', 'FileWithSizeAndMaxFiles'))
