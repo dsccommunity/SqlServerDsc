@@ -19,7 +19,12 @@ else
                 NodeName              = 'localhost'
                 CertificateFile       = $env:DscPublicCertificatePath
 
-                UserName              = "$env:COMPUTERNAME\SqlAdmin"
+                <#
+                    This must be either the UPN username (e.g. username@domain.local)
+                    or the user name without the NetBIOS name (e.g. username). Using
+                    the NetBIOS name (e.g. DOMAIN\username) will not work.
+                #>
+                UserName              = "SqlAdmin"
                 Password              = 'P@ssw0rd1'
 
                 ServerName            = $env:COMPUTERNAME
@@ -28,7 +33,7 @@ else
                 AuditName1            = 'FileAudit'
                 Path1                 = 'C:\Temp\audit'
                 MaximumFileSize1      = 10
-                MaximumFileSizeUnit1  = 'MB'
+                MaximumFileSizeUnit1  = 'Megabyte'
                 MaximumRolloverFiles1 = 11
 
                 AuditName2            = 'SecLogAudit'

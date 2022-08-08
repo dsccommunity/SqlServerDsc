@@ -24,7 +24,7 @@ Configuration Example
             Name                 = 'FileAudit'
             Path                 = 'C:\Temp\audit'
             MaximumFileSize      = 10
-            MaximumFileSizeUnit  = 'MB'
+            MaximumFileSizeUnit  = 'Megabyte'
             MaximumRolloverFiles = 11
             Enabled              = $true
             Credential           = $SqlAdministratorCredential

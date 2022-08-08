@@ -28,7 +28,7 @@ else
                 AuditName1             = 'FileAudit'
                 Path1                  = 'C:\Temp\audit\'
                 MaximumFileSize1       = 10
-                MaximumFileSizeUnit1   = 'MB'
+                MaximumFileSizeUnit1   = 'Megabyte'
                 MaximumRolloverFiles1  = 11
 
                 LogType2               = 'SecurityLog'
