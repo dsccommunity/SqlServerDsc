@@ -292,6 +292,40 @@ Describe 'Set-SqlDscAudit' -Tag 'Public' {
         }
     }
 
+    Context 'When adding an file audit and passing an invalid MaximumFileSize' {
+        It 'Should throw the correct error when the value is <_>' -ForEach @(1, 2147483648) {
+            $mockNewSqlDscAuditParameters = @{
+                ServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                Name = 'Log1'
+                MaximumFileSize = $_
+            }
+
+            $mockErrorMessage = 'Cannot validate argument on parameter ''MaximumFileSize''. '
+            $mockErrorMessage += InModuleScope -ScriptBlock {
+                $script:localizedData.Audit_MaximumFileSizeParameterValueInvalid
+            }
+
+            { Set-SqlDscAudit @mockNewSqlDscAuditParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+        }
+    }
+
+    Context 'When adding an file audit and passing an invalid QueueDelay' {
+        It 'Should throw the correct error when the value is <_>' -ForEach @(1, 457, 999, 2147483648) {
+            $mockNewSqlDscAuditParameters = @{
+                ServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                Name = 'Log1'
+                QueueDelay = $_
+            }
+
+            $mockErrorMessage = 'Cannot validate argument on parameter ''QueueDelay''. '
+            $mockErrorMessage += InModuleScope -ScriptBlock {
+                $script:localizedData.Audit_QueueDelayParameterValueInvalid
+            }
+
+            { Set-SqlDscAudit @mockNewSqlDscAuditParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+        }
+    }
+
     Context 'When passing file audit optional parameter Path' {
         BeforeAll {
             $script:mockAuditObject = $null

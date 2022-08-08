@@ -49,6 +49,8 @@
 
     .PARAMETER MaximumFileSize
         Specifies the maximum file size in units by parameter MaximumFileSizeUnit.
+        Minimum allowed value is 2 (MB). It also allowed to set the value to 0 which
+        mean unlimited file size.
 
     .PARAMETER MaximumFileSizeUnit
         Specifies the unit that is used for the file size. this can be KB, MB or GB.
@@ -133,7 +135,14 @@ function Set-SqlDscAudit
         $OnFailure,
 
         [Parameter()]
-        [ValidateRange(1000, 2147483647)]
+        [ValidateScript({
+            if ($_ -in 1..999 -or $_ -gt 2147483647)
+            {
+                throw ($script:localizedData.Audit_QueueDelayParameterValueInvalid -f $_)
+            }
+
+            return $true
+        })]
         [System.UInt32]
         $QueueDelay,
 
@@ -183,7 +192,14 @@ function Set-SqlDscAudit
         [Parameter(ParameterSetName = 'AuditObjectWithSize', Mandatory = $true)]
         [Parameter(ParameterSetName = 'AuditObjectWithSizeAndMaxFiles', Mandatory = $true)]
         [Parameter(ParameterSetName = 'AuditObjectWithSizeAndMaxRolloverFiles', Mandatory = $true)]
-        [ValidateRange(2, 2147483647)]
+        [ValidateScript({
+            if ($_ -eq 1 -or $_ -gt 2147483647)
+            {
+                throw ($script:localizedData.Audit_MaximumFileSizeParameterValueInvalid -f $_)
+            }
+
+            return $true
+        })]
         [System.UInt32]
         $MaximumFileSize,
 
