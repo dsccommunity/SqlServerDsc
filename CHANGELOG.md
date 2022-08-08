@@ -311,6 +311,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Minor code cleanup.
 - `ConvertTo-Reason`
   - Fix to handle `$null` values on Windows PowerShell.
+- `ResourceBase`
+  - Now handles `Ensure` correctly from derived `GetCurrentState()`. But
+    requires that the `GetCurrentState()` only return key property if object
+    is present, and does not return key property if object is absent.
+    Optionally the resource's derived `GetCurrentState()` can handle `Ensure`
+    itself.
 
 ## [15.2.0] - 2021-09-01
 

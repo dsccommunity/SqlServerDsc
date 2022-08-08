@@ -101,7 +101,7 @@ Describe 'ResourceBase\Get()' -Tag 'Get' {
             }
         }
 
-        Context 'When the configuration should be present' {
+        Context 'When the object should be Present' {
             BeforeAll {
                 Mock -CommandName Get-ClassName -MockWith {
                     # Only return localized strings for this class name.
@@ -153,6 +153,7 @@ class MyMockResource : ResourceBase
             the base class' method Get() return that value.
         #>
         return @{
+            MyResourceKeyProperty1 = 'MyValue1'
             MyResourceProperty2 = 'MyValue2'
         }
     }
@@ -186,7 +187,7 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
             }
         }
 
-        Context 'When the configuration should be absent' {
+        Context 'When the object should be Absent' {
             BeforeAll {
                 Mock -CommandName Get-ClassName -MockWith {
                     # Only return localized strings for this class name.
@@ -226,13 +227,12 @@ class MyMockResource : ResourceBase
     MyMockResource() : base ()
     {
         # Test not to add the key property to the list of properties that are not enforced.
-        $this.notEnforcedProperties = @()
+        $this.notEnforcedProperties = @('MyResourceKeyProperty1')
     }
 
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
         return @{
-            MyResourceKeyProperty1 = $null
             MyResourceProperty2 = $null
         }
     }
@@ -258,12 +258,10 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
 
                     $getResult = $mockResourceBaseInstance.Get()
 
-                    $getResult.MyResourceKeyProperty1 | Should -BeNullOrEmpty
+                    $getResult.MyResourceKeyProperty1 | Should -Be 'MyValue1'
                     $getResult.MyResourceProperty2 | Should -BeNullOrEmpty
                     $getResult.Ensure | Should -Be ([Ensure]::Absent)
-
-                    $getResult.Reasons | Should -HaveCount 1
-                    $getResult.Reasons[0].Code | Should -Be 'MyMockResource:MyMockResource:MyResourceKeyProperty1'
+                    $getResult.Reasons | Should -BeNullOrEmpty
                 }
             }
         }
@@ -450,6 +448,12 @@ class MyMockResource : ResourceBase
     [Reason[]]
     $Reasons
 
+    MyMockResource() : base ()
+    {
+        # Test not to add the key property to the list of properties that are not enforced.
+        $this.notEnforcedProperties = @('MyResourceKeyProperty1')
+    }
+
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
         return @{
@@ -481,7 +485,7 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
 
                         $getResult.MyResourceKeyProperty1 | Should -Be 'MyValue1'
                         $getResult.MyResourceProperty2 | Should -Be 'MyValue2'
-                        $getResult.Ensure | Should -Be ([Ensure]::Absent)
+                        $getResult.Ensure | Should -Be ([Ensure]::Present)
 
                         $getResult.Reasons | Should -HaveCount 1
                         $getResult.Reasons[0].Code | Should -Be 'MyMockResource:MyMockResource:MyResourceProperty2'
@@ -490,7 +494,7 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
                 }
             }
 
-            Context 'When a mandatory parameter is not in desired state' {
+            Context 'When the object should be Present' {
                 BeforeAll {
                     <#
                         Must use a here-string because we need to pass 'using' which must be
@@ -518,10 +522,15 @@ class MyMockResource : ResourceBase
     [Reason[]]
     $Reasons
 
+    MyMockResource() : base ()
+    {
+        # Test not to add the key property to the list of properties that are not enforced.
+        $this.notEnforcedProperties = @('MyResourceKeyProperty1')
+    }
+
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
         return @{
-            MyResourceKeyProperty1 = $null
         }
     }
 }
@@ -545,18 +554,18 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
 
                         $getResult = $mockResourceBaseInstance.Get()
 
-                        $getResult.MyResourceKeyProperty1 | Should -BeNullOrEmpty
+                        $getResult.MyResourceKeyProperty1 | Should -Be 'MyValue1'
                         $getResult.Ensure | Should -Be ([Ensure]::Absent)
 
                         $getResult.Reasons | Should -HaveCount 1
-                        $getResult.Reasons[0].Code | Should -Be 'MyMockResource:MyMockResource:MyResourceKeyProperty1'
-                        $getResult.Reasons[0].Phrase | Should -Be 'The property MyResourceKeyProperty1 should be "MyValue1", but was null'
+                        $getResult.Reasons[0].Code | Should -Be 'MyMockResource:MyMockResource:Ensure'
+                        $getResult.Reasons[0].Phrase | Should -Be 'The property Ensure should be "Present", but was "Absent"'
                     }
                 }
             }
         }
 
-        Context 'When the configuration should be absent' {
+        Context 'When the object should be Absent' {
             BeforeAll {
                 Mock -CommandName Get-ClassName -MockWith {
                     # Only return localized strings for this class name.
@@ -588,6 +597,12 @@ class MyMockResource : ResourceBase
     [DscProperty(NotConfigurable)]
     [Reason[]]
     $Reasons
+
+    MyMockResource() : base ()
+    {
+        # Test not to add the key property to the list of properties that are not enforced.
+        $this.notEnforcedProperties = @('MyResourceKeyProperty1')
+    }
 
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
@@ -622,7 +637,9 @@ $script:mockResourceBaseInstance = [MyMockResource]::new()
                     $getResult.MyResourceProperty2 | Should -Be 'MyValue2'
                     $getResult.Ensure | Should -Be ([Ensure]::Present)
 
-                    $getResult.Reasons | Should -BeNullOrEmpty
+                    $getResult.Reasons | Should -HaveCount 1
+                    $getResult.Reasons[0].Code | Should -Be 'MyMockResource:MyMockResource:Ensure'
+                    $getResult.Reasons[0].Phrase | Should -Be 'The property Ensure should be "Absent", but was "Present"'
                 }
             }
         }
