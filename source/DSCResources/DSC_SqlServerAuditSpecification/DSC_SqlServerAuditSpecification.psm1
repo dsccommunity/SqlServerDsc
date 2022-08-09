@@ -1142,7 +1142,7 @@ function Test-TargetResource
                 Verbose = $true
             }
 
-            $propertiesNotInDesiredState = Compare-ResourcePropertyState @testDscParameterStateParameters
+            $propertiesNotInDesiredState = Compare-DscParameterState @testDscParameterStateParameters
 
             if ($propertiesNotInDesiredState)
             {
