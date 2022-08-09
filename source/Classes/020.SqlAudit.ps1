@@ -349,7 +349,12 @@ class SqlAudit : ResourceBase
                 $currentState.LogType = $auditObject.DestinationType
             }
 
-            $currentState.Path = $auditObject.FilePath
+            if ($auditObject.FilePath)
+            {
+                # Remove trailing slash or backslash.
+                $currentState.Path = $auditObject.FilePath -replace '[\\|/]*$'
+            }
+
             $currentState.AuditFilter = $auditObject.Filter
             $currentState.MaximumFiles = [System.UInt32] $auditObject.MaximumFiles
             $currentState.MaximumFileSize = [System.UInt32] $auditObject.MaximumFileSize
