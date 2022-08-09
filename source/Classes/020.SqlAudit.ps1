@@ -434,6 +434,12 @@ class SqlAudit : SqlResourceBase
                     #>
                     if ($assignedOptionalDscProperties.Count -gt 0)
                     {
+                        <#
+                            This calls Set-SqlDscAudit to set all the desired value
+                            even if they were in desired state. Then the no logic is
+                            needed to make sure we call using the correct parameter
+                            set that Set-SqlDscAudit requires.
+                        #>
                         $auditObject | Set-SqlDscAudit @assignedOptionalDscProperties -Force
                     }
                 }

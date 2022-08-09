@@ -822,6 +822,210 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                 }
             }
         }
+
+        Context 'When the property <MockPropertyName> is not in desired state' -ForEach @(
+            @{
+                MockPropertyName = 'Path'
+                MockExpectedValue = 'C:\NewValue'
+            }
+            @{
+                MockPropertyName = 'AuditFilter'
+                MockExpectedValue = 'object -like ''something'''
+            }
+            @{
+                MockPropertyName = 'MaximumFiles'
+                MockExpectedValue = 2
+            }
+            @{
+                MockPropertyName = 'MaximumRolloverFiles'
+                MockExpectedValue = 2
+            }
+            @{
+                MockPropertyName = 'OnFailure'
+                MockExpectedValue = 'FailOperation'
+            }
+            @{
+                MockPropertyName = 'QueueDelay'
+                MockExpectedValue = 2000
+            }
+            @{
+                MockPropertyName = 'AuditGuid'
+                MockExpectedValue = 'cfa0d47e-bf93-41ab-bc9a-b8511acbcdd6'
+            }
+        ) {
+            BeforeAll {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $script:mockSqlAuditInstance = [SqlAudit] @{
+                        Name              = 'MockAuditName'
+                        InstanceName      = 'NamedInstance'
+                        $MockPropertyName = $MockExpectedValue
+                    } |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
+                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                        }  -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        } -PassThru
+                }
+
+                Mock -CommandName Get-SqlDscAudit -MockWith {
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                        'MockAuditName'
+                    )
+                }
+
+                Mock -CommandName Set-SqlDscAudit -RemoveParameterValidation 'Path'
+            }
+
+            It 'Should call the correct mocks' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $script:mockSqlAuditInstance.Modify(
+                        # This is the properties not in desired state.
+                        @{
+                            $MockPropertyName = $MockExpectedValue
+                        }
+                    )
+
+                    Should -Invoke -CommandName Get-SqlDscAudit -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Set-SqlDscAudit -ParameterFilter {
+                        $PesterBoundParameters.$MockPropertyName -eq $MockExpectedValue
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When the property MaximumFileSize is not in desired state' {
+            BeforeAll {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $script:mockSqlAuditInstance = [SqlAudit] @{
+                        Name                   = 'MockAuditName'
+                        InstanceName           = 'NamedInstance'
+                        MaximumFileSize        = 20
+                        MaximumFileSizeUnit    = 'Megabyte'
+                    } |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
+                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                        }  -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        } -PassThru
+                }
+
+                Mock -CommandName Get-SqlDscAudit -MockWith {
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                        'MockAuditName'
+                    )
+                }
+
+                Mock -CommandName Set-SqlDscAudit -RemoveParameterValidation 'Path'
+            }
+
+            It 'Should call the correct mocks' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $script:mockSqlAuditInstance.Modify(
+                        # This is the properties not in desired state.
+                        @{
+                            MaximumFileSize = 20
+                        }
+                    )
+
+                    Should -Invoke -CommandName Get-SqlDscAudit -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Set-SqlDscAudit -ParameterFilter {
+                        $MaximumFileSize -eq 20
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When the property MaximumFileSizeUnit is not in desired state' {
+            BeforeAll {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $script:mockSqlAuditInstance = [SqlAudit] @{
+                        Name                   = 'MockAuditName'
+                        InstanceName           = 'NamedInstance'
+                        MaximumFileSize        = 20
+                        MaximumFileSizeUnit    = 'Megabyte'
+                    } |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
+                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                        }  -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        } -PassThru
+                }
+
+                Mock -CommandName Get-SqlDscAudit -MockWith {
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                        'MockAuditName'
+                    )
+                }
+
+                Mock -CommandName Set-SqlDscAudit -RemoveParameterValidation 'Path'
+            }
+
+            It 'Should call the correct mocks' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $script:mockSqlAuditInstance.Modify(
+                        # This is the properties not in desired state.
+                        @{
+                            MaximumFileSizeUnit = 'Megabyte'
+                        }
+                    )
+
+                    Should -Invoke -CommandName Get-SqlDscAudit -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Set-SqlDscAudit -ParameterFilter {
+                        $MaximumFileSizeUnit -eq 'Megabyte'
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When the property ReservDiskSpace is not in desired state' {
+            BeforeAll {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $script:mockSqlAuditInstance = [SqlAudit] @{
+                        Name             = 'MockAuditName'
+                        InstanceName     = 'NamedInstance'
+                        MaximumFiles     = 20
+                        ReserveDiskSpace = $true
+                    } |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
+                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                        }  -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        } -PassThru
+                }
+
+                Mock -CommandName Get-SqlDscAudit -MockWith {
+                    return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                        'MockAuditName'
+                    )
+                }
+
+                Mock -CommandName Set-SqlDscAudit -RemoveParameterValidation 'Path'
+            }
+
+            It 'Should call the correct mocks' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $script:mockSqlAuditInstance.Modify(
+                        # This is the properties not in desired state.
+                        @{
+                            MaximumFileSizeUnit = 'Megabyte'
+                        }
+                    )
+
+                    Should -Invoke -CommandName Get-SqlDscAudit -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Set-SqlDscAudit -ParameterFilter {
+                        $ReserveDiskSpace -eq $true
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+        }
     }
 }
 
