@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     other values that the default values.
   - Now updates GitHub Actions automatically by allowing dependabot sending
     in pull requests.
+  - Add new resource SqlAuditSpecification.
 
 ### Changed
 
