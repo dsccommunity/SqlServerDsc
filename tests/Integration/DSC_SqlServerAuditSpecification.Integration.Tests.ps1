@@ -84,7 +84,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             }
 
             $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName1
+            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditSpecificationName
             $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
         }
@@ -141,7 +141,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             }
 
             $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName2
+            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditSpecificationName
             $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
         }
@@ -198,7 +198,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             }
 
             $resourceCurrentState.Ensure | Should -Be 'Absent'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName1
+            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditSpecificationName
             $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
         }

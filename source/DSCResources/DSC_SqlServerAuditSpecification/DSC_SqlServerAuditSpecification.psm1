@@ -571,7 +571,7 @@ function Set-TargetResource
 
     $auditSpecificationAddDropString = Get-AuditSpecificationMutationString -CurrentValues $getTargetResourceResult -DesiredValues $desiredValues
 
-    Write-Verbose -Message $(
+    Write-Debug -Message $(
         Get-AuditSpecificationMutationString -CurrentValues $getTargetResourceResult -DesiredValues $desiredValues
     )
 
@@ -1090,7 +1090,7 @@ function Test-TargetResource
             $testDscParameterStateParameters = @{
                 CurrentValues = $getTargetResourceResult
                 DesiredValues = $desiredValues
-                ValuesToCheck = @(
+                Properties = @(
                     'Ensure'
                     'AuditName'
                     'ApplicationRoleChangePasswordGroup'
@@ -1137,8 +1137,21 @@ function Test-TargetResource
                     'TransactionGroup'
                     'Enabled'
                 )
+                TurnOffTypeChecking = $true
+                # TODO: Remove verbose
+                Verbose = $true
             }
-            $testTargetResourceReturnValue = Test-DscParameterState @testDscParameterStateParameters
+
+            $propertiesNotInDesiredState = Compare-ResourcePropertyState @testDscParameterStateParameters
+
+            if ($propertiesNotInDesiredState)
+            {
+                $testTargetResourceReturnValue = $false
+            }
+            else
+            {
+                $testTargetResourceReturnValue = $true
+            }
         }
         else
         {
