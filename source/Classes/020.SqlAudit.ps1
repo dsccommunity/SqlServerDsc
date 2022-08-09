@@ -44,16 +44,8 @@
 
         See more information in [Credential Overview](https://github.com/dsccommunity/SqlServerDsc/wiki/CredentialOverview).
 
-    .PARAMETER InstanceName
-        The name of the _SQL Server_ instance to be configured. Default value is
-        `'MSSQLSERVER'`.
-
     .PARAMETER Name
         The name of the audit.
-
-    .PARAMETER ServerName
-        The host name of the _SQL Server_ to be configured. Default value is the
-        current computer name.
 
     .PARAMETER LogType
         Specifies the to which log an audit logs to. Mutually exclusive to parameter
@@ -113,15 +105,6 @@
         exist with the same name but of a different audit type. Defaults to `$false`
         not allowing server audits to be re-created.
 
-    .PARAMETER Credential
-        Specifies the credential to use to connect to the _SQL Server_ instance.
-
-        If parameter **Credential'* is not provided then the resource instance is
-        run using the credential that runs the configuration.
-
-    .PARAMETER Reasons
-        Returns the reason a property is not in desired state.
-
     .EXAMPLE
         Invoke-DscResource -ModuleName SqlServerDsc -Name SqlAudit -Method Get -Property @{
             ServerName           = 'localhost'
@@ -132,21 +115,12 @@
 
         This example shows how to call the resource using Invoke-DscResource.
 #>
-
 [DscResource(RunAsCredential = 'Optional')]
 class SqlAudit : SqlResourceBase
 {
     [DscProperty(Key)]
     [System.String]
-    $InstanceName
-
-    [DscProperty(Key)]
-    [System.String]
     $Name
-
-    [DscProperty()]
-    [System.String]
-    $ServerName = (Get-ComputerName)
 
     [DscProperty()]
     [ValidateSet('SecurityLog', 'ApplicationLog')]
@@ -213,14 +187,6 @@ class SqlAudit : SqlResourceBase
     [DscProperty()]
     [Nullable[System.Boolean]]
     $Force
-
-    [DscProperty()]
-    [PSCredential]
-    $Credential
-
-    [DscProperty(NotConfigurable)]
-    [Reason[]]
-    $Reasons
 
     SqlAudit () : base ()
     {
