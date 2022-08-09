@@ -168,6 +168,7 @@ Describe 'ConvertTo-Reason' -Tag 'Private' {
             AfterAll {
                 $PSVersionTable.PSEdition = $script:originalPSEdition
             }
+
             It 'Should return the correct values in a hashtable' {
                 InModuleScope -ScriptBlock {
                     $mockProperties = @(
@@ -185,6 +186,27 @@ Describe 'ConvertTo-Reason' -Tag 'Private' {
                     $result.Code | Should -Contain 'MyResource:MyResource:MyResourceProperty1'
                     $result.Phrase | Should -Contain 'The property MyResourceProperty1 should be "MyValue1", but was ""'
                 }
+            }
+        }
+    }
+
+    Context 'When a path property contain double backslash' {
+        It 'Should return the correct values in a hashtable' {
+            InModuleScope -ScriptBlock {
+                $mockProperties = @(
+                    @{
+                        Property      = 'MyResourcePathProperty'
+                        ExpectedValue = 'C:\Temp\MyFolder'
+                        ActualValue   = 'C:\Temp\MyNewFolder'
+                    }
+                )
+
+                $result = ConvertTo-Reason -Property $mockProperties -ResourceName 'MyResource'
+
+                $result | Should -HaveCount 1
+
+                $result.Code | Should -Contain 'MyResource:MyResource:MyResourcePathProperty'
+                $result.Phrase | Should -Contain 'The property MyResourcePathProperty should be "C:\Temp\MyFolder", but was "C:\Temp\MyNewFolder"'
             }
         }
     }
