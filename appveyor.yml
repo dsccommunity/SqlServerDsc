@@ -79,7 +79,6 @@ test_script:
         #'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
         'tests/Integration/DSC_SqlAudit.Integration.Tests.ps1'
-        'tests/Integration/DSC_SqlServerAuditSpecification.Integration.Tests.ps1'
         ## Group 4
         #'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
