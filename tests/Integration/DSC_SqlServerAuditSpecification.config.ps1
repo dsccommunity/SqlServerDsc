@@ -31,9 +31,11 @@ else
                 MaximumFileSizeUnit1   = 'Megabyte'
                 MaximumRolloverFiles1  = 11
 
+                AuditName2             = 'SecLogAudit'
                 LogType2               = 'SecurityLog'
 
-                AuditSpecificationName = 'AdminAudit'
+                AuditSpecificationName1 = 'AdminAudit1'
+                AuditSpecificationName2 = 'AdminAudit2'
             }
         )
     }
@@ -70,7 +72,7 @@ Configuration DSC_SqlServerAuditSpecification_AddAudit1_Config
             Ensure                              = 'Present'
             ServerName                          = $Node.ServerName
             InstanceName                        = $Node.InstanceName
-            Name                                = $Node.AuditSpecificationName
+            Name                                = $Node.AuditSpecificationName1
             AuditName                           = $Node.AuditName1
             Enabled                             = $true
             AuditChangeGroup                    = $true
@@ -131,8 +133,8 @@ Configuration DSC_SqlServerAuditSpecification_AddSecLogAudit_Config
             Ensure                              = 'Present'
             ServerName                          = $Node.ServerName
             InstanceName                        = $Node.InstanceName
-            Name                                = $Node.AuditSpecificationName
-            AuditName                           = $Node.AuditName1
+            Name                                = $Node.AuditSpecificationName2
+            AuditName                           = $Node.AuditName2
             Enabled                             = $true
             AuditChangeGroup                    = $true
             BackupRestoreGroup                  = $true
@@ -191,7 +193,7 @@ Configuration DSC_SqlServerAuditSpecification_RemoveAudit1_Config
             Ensure                              = 'Absent'
             ServerName                          = $Node.ServerName
             InstanceName                        = $Node.InstanceName
-            Name                                = $Node.AuditSpecificationName
+            Name                                = $Node.AuditSpecificationName1
             AuditName                           = $Node.AuditName1
             Enabled                             = $true
             AuditChangeGroup                    = $true
