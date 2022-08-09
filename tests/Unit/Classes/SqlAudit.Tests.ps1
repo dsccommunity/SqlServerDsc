@@ -483,10 +483,75 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
                     $currentState.MaximumFileSize | Should -Be 2
                     $currentState.MaximumFileSizeUnit | Should -Be 'Megabyte'
                     $currentState.MaximumRolloverFiles | Should -Be 2
+                    $currentState.ReserveDiskSpace | Should -BeTrue
                     $currentState.OnFailure | Should -Be 'Continue'
                     $currentState.QueueDelay | Should -Be 1000
                     $currentState.AuditGuid | Should -Be '06962963-ddd1-4a6b-86d6-0ef8d99b8e7b'
-                    $currentState.ReserveDiskSpace | Should -BeTrue
+                    $currentState.Enabled | Should -BeTrue
+                }
+            }
+        }
+
+        Context 'When the audit is of type log' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlAuditInstance = [SqlAudit] @{
+                        Name         = 'MockAuditName'
+                        InstanceName = 'NamedInstance'
+                    } |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
+                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                        } -PassThru
+                }
+
+                Mock -CommandName Get-SqlDscAudit -MockWith {
+                    $mockAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                        'MockAuditName'
+                    )
+
+                    <#
+                        All file properties is set to a value in this test regardless
+                        that they can not all be set at the same time in a real scenario,
+                        e.g. MaximumFiles and MaximumRolloverFiles that are not allowed
+                        to be set to a non-zero value at the same time.
+                    #>
+                    $mockAuditObject.DestinationType = 'SecurityLog'
+                    $mockAuditObject.Filter = '([server_principal_name] like ''%ADMINISTRATOR'')'
+                    $mockAuditObject.OnFailure = 'Continue'
+                    $mockAuditObject.QueueDelay = 1000
+                    $mockAuditObject.Guid = '06962963-ddd1-4a6b-86d6-0ef8d99b8e7b'
+                    $mockAuditObject.Enabled = $true
+
+                    return $mockAuditObject
+                }
+            }
+
+            It 'Should return the correct values' {
+                InModuleScope -ScriptBlock {
+                    $currentState = $script:mockSqlAuditInstance.GetCurrentState(
+                        @{
+                            Name         = 'MockAuditName'
+                            InstanceName = 'NamedInstance'
+                        }
+                    )
+
+                    $currentState.InstanceName | Should -Be 'NamedInstance'
+                    $currentState.ServerName | Should -Be (Get-ComputerName)
+                    $currentState.Force | Should -BeFalse
+                    $currentState.Credential | Should -BeNullOrEmpty
+
+                    $currentState.LogType | Should -Be 'SecurityLog'
+                    $currentState.Path | Should -BeNullOrEmpty
+                    $currentState.AuditFilter | Should -Be '([server_principal_name] like ''%ADMINISTRATOR'')'
+                    $currentState.MaximumFiles | Should -Be 0
+                    $currentState.MaximumFileSize | Should -Be 0
+                    $currentState.MaximumFileSizeUnit | Should -BeNullOrEmpty
+                    $currentState.MaximumRolloverFiles | Should -Be 0
+                    $currentState.ReserveDiskSpace | Should -BeNullOrEmpty
+                    $currentState.OnFailure | Should -Be 'Continue'
+                    $currentState.QueueDelay | Should -Be 1000
+                    $currentState.AuditGuid | Should -Be '06962963-ddd1-4a6b-86d6-0ef8d99b8e7b'
                     $currentState.Enabled | Should -BeTrue
                 }
             }

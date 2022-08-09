@@ -134,7 +134,7 @@
 #>
 
 [DscResource(RunAsCredential = 'Optional')]
-class SqlAudit : ResourceBase
+class SqlAudit : SqlResourceBase
 {
     <#
         Property for holding the server connection object.
@@ -142,7 +142,7 @@ class SqlAudit : ResourceBase
         but using that type fails the build process currently.
         See issue https://github.com/dsccommunity/DscResource.DocGenerator/issues/121.
     #>
-    hidden [System.Object] $sqlServerObject = $null
+    #hidden [System.Object] $sqlServerObject = $null
 
     [DscProperty(Key)]
     [System.String]
@@ -276,25 +276,25 @@ class SqlAudit : ResourceBase
         but using that type fails the build process currently.
         See issue https://github.com/dsccommunity/DscResource.DocGenerator/issues/121.
     #>
-    hidden [System.Object] GetServerObject()
-    {
-        if (-not $this.sqlServerObject)
-        {
-            $connectSqlDscDatabaseEngineParameters = @{
-                ServerName   = $this.ServerName
-                InstanceName = $this.InstanceName
-            }
+    # hidden [System.Object] GetServerObject()
+    # {
+    #     if (-not $this.sqlServerObject)
+    #     {
+    #         $connectSqlDscDatabaseEngineParameters = @{
+    #             ServerName   = $this.ServerName
+    #             InstanceName = $this.InstanceName
+    #         }
 
-            if ($this.Credential)
-            {
-                $connectSqlDscDatabaseEngineParameters.Credential = $this.Credential
-            }
+    #         if ($this.Credential)
+    #         {
+    #             $connectSqlDscDatabaseEngineParameters.Credential = $this.Credential
+    #         }
 
-            $this.sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
-        }
+    #         $this.sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+    #     }
 
-        return $this.sqlServerObject
-    }
+    #     return $this.sqlServerObject
+    # }
 
     <#
         Base method Get() call this method to get the current state as a hashtable.
