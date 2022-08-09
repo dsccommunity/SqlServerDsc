@@ -405,7 +405,6 @@ class SqlAudit : ResourceBase
                     # Get all properties that has an assigned value.
                     $assignedDscProperties = $this | Get-DscProperty -HasValue -Type @(
                         'Key'
-                        'Mandatory'
                         'Optional'
                     ) -ExcludeName @(
                         # Remove properties that is not an audit property.
@@ -453,13 +452,34 @@ class SqlAudit : ResourceBase
 
                 if ($auditObject)
                 {
+                    # TODO: Should evaluate if Path is assigned and DestinationType is *Log it should recreate if Force is $true
+
+                    # TODO: Should evaluate if LogType is assigned and DestinationType is File it should recreate if Force is $true
+
+                    # TODO: Should evaluate DestinationType so that is does not try to set File properties when type is Log (and LogType and Path is not also present)
+
+                    # Get all optional properties that has an assigned value.
+                    $assignedOptionalDscProperties = $this | Get-DscProperty -HasValue -Type 'Optional' -ExcludeName @(
+                        # Remove optional properties that is not an audit property.
+                        'ServerName'
+                        'Ensure'
+                        'Force'
+                        'Credential'
+
+                        # Remove this audit property since it must be handled later.
+                        'Enabled'
+                    )
+
+                    <#
+                        Only call Set when there is a property to Set. The property
+                        Enabled was ignored, so it could be the only one that was
+                        not in desired state (Enabled is handled later).
+                    #>
+                    if ($assignedOptionalDscProperties.Count -gt 0)
+                    {
+                        $auditObject | Set-SqlDscAudit @assignedOptionalDscProperties -Force
+                    }
                 }
-
-                # TODO: Should evaluate if Path is assigned and DestinationType is *Log it should recreate if Force is $true
-
-                # TODO: Should evaluate if LogType is assigned and DestinationType is File it should recreate if Force is $true
-
-                # TODO: Should evaluate DestinationType so that is does not try to set File properties when type is Log (and LogType and Path is not also present)
             }
         }
 
