@@ -354,15 +354,16 @@ class SqlAudit : ResourceBase
             $currentState.MaximumFiles = [System.UInt32] $auditObject.MaximumFiles
             $currentState.MaximumFileSize = [System.UInt32] $auditObject.MaximumFileSize
 
-            if ($auditObject.MaximumFileSizeUnit)
+            # The value of MaximumFileSizeUnit can be zero, so have to check against $null
+            if ($null -ne $auditObject.MaximumFileSizeUnit)
             {
                 $convertedMaximumFileSizeUnit = (
                     @{
-                        Mb = 'Megabyte'
-                        Gb = 'Gigabyte'
-                        Tb = 'Terabyte'
+                        0 = 'Megabyte'
+                        1 = 'Gigabyte'
+                        2 = 'Terabyte'
                     }
-                ).($auditObject.MaximumFileSizeUnit)
+                ).($auditObject.MaximumFileSizeUnit.value__)
 
                 $currentState.MaximumFileSizeUnit = $convertedMaximumFileSizeUnit
             }
@@ -405,7 +406,6 @@ class SqlAudit : ResourceBase
                         # Remove properties that is not an audit property.
                         'InstanceName'
                         'ServerName'
-                        'Enabled'
                         'Ensure'
                         'Force'
                         'Credential'
@@ -569,7 +569,7 @@ class SqlAudit : ResourceBase
         # Test so that the path exist.
         if ($properties.Keys -contains 'Path' -and -not (Test-Path -Path $properties.Path))
         {
-            $errorMessage = $this.localizedData.PathInvalid
+            $errorMessage = $this.localizedData.PathInvalid -f $properties.Path
 
             New-InvalidArgumentException -ArgumentName 'Path' -Message $errorMessage
         }
