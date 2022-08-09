@@ -1,7 +1,4 @@
 BeforeDiscovery {
-    # TODO: THIS IS NOT RUN YET
-    return
-
     try
     {
         Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
