@@ -16,7 +16,6 @@ These are the links to the examples for each individual resource.
 - [SqlAlias](Resources/SqlAlias)
 - [SqlAlwaysOnService](Resources/SqlAlwaysOnService)
 - [SqlAudit](Resources/SqlAudit)
-- [SqlServerAuditSpecification](Resources/SqlServerAuditSpecification)
 - [SqlDatabase](Resources/SqlDatabase)
 - [SqlDatabaseDefaultLocation](Resources/SqlDatabaseDefaultLocation)
 - [SqlDatabasePermission](Resources/SqlDatabasePermission)
