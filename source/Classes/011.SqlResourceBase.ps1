@@ -1,6 +1,7 @@
 <#
     .SYNOPSIS
-        The SqlResource base have...
+        The SqlResource base have generic properties and methods for the class-based
+        resources.
 #>
 class SqlResourceBase : ResourceBase
 {
@@ -10,9 +11,12 @@ class SqlResourceBase : ResourceBase
         but using that type fails the build process currently.
         See issue https://github.com/dsccommunity/DscResource.DocGenerator/issues/121.
     #>
-    hidden [System.Object] $SqlServerObject = $null
+    hidden [System.Object] $SqlServerObject
 
-    SqlResourceBase() : base () {}
+    SqlResourceBase () : base ()
+    {
+        $this.SqlServerObject = $null
+    }
 
     <#
         Returns and reuses the server connection object. If the server connection

@@ -136,14 +136,6 @@
 [DscResource(RunAsCredential = 'Optional')]
 class SqlAudit : SqlResourceBase
 {
-    <#
-        Property for holding the server connection object.
-        This should be an object of type [Microsoft.SqlServer.Management.Smo.Server]
-        but using that type fails the build process currently.
-        See issue https://github.com/dsccommunity/DscResource.DocGenerator/issues/121.
-    #>
-    #hidden [System.Object] $sqlServerObject = $null
-
     [DscProperty(Key)]
     [System.String]
     $InstanceName
@@ -161,7 +153,7 @@ class SqlAudit : SqlResourceBase
     [System.String]
     $LogType
 
-    # TODO: Must assert the path at run time
+    # The Path is evaluated if exist in AssertProperties().
     [DscProperty()]
     [System.String]
     $Path
@@ -230,7 +222,7 @@ class SqlAudit : SqlResourceBase
     [Reason[]]
     $Reasons
 
-    SqlAudit() : base ()
+    SqlAudit () : base ()
     {
         # TODO:_Rename this to ExcludeDscProperties or ExcludeProperties
         # These properties will not be enforced.
@@ -260,41 +252,6 @@ class SqlAudit : SqlResourceBase
         # Call the base method to enforce the properties.
         ([ResourceBase] $this).Set()
     }
-
-    <#
-        TODO: This method can be moved to a parent class "SqlServerDscResource" that
-              instead inherits ResourceBase. Then this method does not need to be
-              duplicated. Make sure to create a localized strings file for the new
-              class.
-              The property 'sqlServerObject' should also be moved (but still be hidden).
-    #>
-    <#
-        Returns and reuses the server connection object. If the server connection
-        object does not exist a connection to the SQL Server instance will occur.
-
-        This should return an object of type [Microsoft.SqlServer.Management.Smo.Server]
-        but using that type fails the build process currently.
-        See issue https://github.com/dsccommunity/DscResource.DocGenerator/issues/121.
-    #>
-    # hidden [System.Object] GetServerObject()
-    # {
-    #     if (-not $this.sqlServerObject)
-    #     {
-    #         $connectSqlDscDatabaseEngineParameters = @{
-    #             ServerName   = $this.ServerName
-    #             InstanceName = $this.InstanceName
-    #         }
-
-    #         if ($this.Credential)
-    #         {
-    #             $connectSqlDscDatabaseEngineParameters.Credential = $this.Credential
-    #         }
-
-    #         $this.sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
-    #     }
-
-    #     return $this.sqlServerObject
-    # }
 
     <#
         Base method Get() call this method to get the current state as a hashtable.
