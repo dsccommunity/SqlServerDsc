@@ -1026,6 +1026,54 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                 }
             }
         }
+
+        Context 'When trying to change a File audit property when audit type is of a Log-type' {
+            BeforeAll {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $script:mockSqlAuditInstance = [SqlAudit] @{
+                        Name             = 'MockAuditName'
+                        InstanceName     = 'NamedInstance'
+                        MaximumFiles     = 20
+                    } |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
+                            return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                        }  -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        } -PassThru
+                }
+
+                Mock -CommandName Get-SqlDscAudit -MockWith {
+                    $mockAuditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                        (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'),
+                        'MockAuditName'
+                    )
+
+                    $mockAuditObject.DestinationType = 'SecurityLog'
+
+                    return $mockAuditObject
+                }
+
+                Mock -CommandName Set-SqlDscAudit -RemoveParameterValidation 'Path'
+            }
+
+            It 'Should call the correct mocks' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $mockErrorMessage = Get-InvalidOperationRecord -Message (
+                        $mockSqlAuditInstance.localizedData.AuditOfWrongTypeForUseWithProperty -f 'SecurityLog'
+                    )
+
+                    {
+                        $script:mockSqlAuditInstance.Modify(
+                            # This is the properties not in desired state.
+                            @{
+                                MaximumFiles = 20
+                            }
+                        )
+                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                }
+            }
+        }
     }
 }
 

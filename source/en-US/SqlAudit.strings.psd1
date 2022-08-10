@@ -16,4 +16,5 @@ ConvertFrom-StringData @'
     MaximumFileSizeValueInvalid = The maximum file size must be set to a value of 0 or a value between 2 and 2147483647. (SA0004)
     QueueDelayValueInvalid = The queue delay must be set to a value of 0 or a value between 1000 and 2147483647.
     CannotCreateNewAudit = Cannot create a new audit because neither of the properties LogType or Path is specified. One of those properties must be specified to create a new audit.
+    AuditOfWrongTypeForUseWithProperty = A property that is not in desired state is not compatible with the audit type '{0}'.
 '@

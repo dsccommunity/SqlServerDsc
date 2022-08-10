@@ -152,7 +152,6 @@ Configuration DSC_SqlAudit_RemoveAudit1_Config
     }
 }
 
-
 <#
     .SYNOPSIS
         Removes the log audit.

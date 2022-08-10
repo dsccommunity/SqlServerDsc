@@ -379,7 +379,30 @@ class SqlAudit : SqlResourceBase
 
                     # TODO: Should evaluate if LogType is assigned and DestinationType is File it should recreate if Force is $true
 
-                    # TODO: Should evaluate DestinationType so that is does not try to set File properties when type is Log (and LogType and Path is not also present)
+                    <#
+                        Should evaluate DestinationType so that is does not try to set a
+                        File audit property when audit type is of a Log-type.
+                    #>
+                    if ($null -ne $auditObject.DestinationType -and $auditObject.DestinationType -ne 'File')
+                    {
+                        # Look for file audit properties not in desired state
+                        $fileAuditProperty = $properties.Keys.Where({
+                            $_ -in @(
+                                'Path'
+                                'MaximumFiles'
+                                'MaximumFileSize'
+                                'MaximumFileSizeUnit'
+                                'MaximumRolloverFiles'
+                                'ReserveDiskSpace'
+                            )
+                        })
+
+                        # If a property was found, throw an exception.
+                        if ($fileAuditProperty.Count -gt 0)
+                        {
+                            New-InvalidOperationException -Message ($this.localizedData.AuditOfWrongTypeForUseWithProperty -f $auditObject.DestinationType)
+                        }
+                    }
 
                     # Get all optional properties that has an assigned value.
                     $assignedOptionalDscProperties = $this | Get-DscProperty -HasValue -Type 'Optional' -ExcludeName @(
