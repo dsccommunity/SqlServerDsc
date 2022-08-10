@@ -151,3 +151,28 @@ Configuration DSC_SqlAudit_RemoveAudit1_Config
         }
     }
 }
+
+
+<#
+    .SYNOPSIS
+        Removes the log audit.
+#>
+Configuration DSC_SqlAudit_RemoveSecLogAudit_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlAudit 'Integration_Test'
+        {
+            Ensure       = 'Absent'
+            ServerName   = $Node.ServerName
+            InstanceName = $Node.InstanceName
+            Name         = $Node.AuditName2
+
+            Credential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
