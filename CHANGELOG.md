@@ -49,6 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       in desired state.
     - `ResourceBase` - class that can be inherited by class-based resource and
       provides functionality meant simplify the creating of class-based resource.
+    - `SqlResourceBase` - class that can be inherited by class-based resource and
+      provides default DSC properties and method for get a `[Server]`-object.
     - `ServerPermission` - complex type for the DSC resource SqlPermission.
   - The following private functions were added to the module (see comment-based
     help for more information):
@@ -313,6 +315,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Minor code cleanup.
 - `ConvertTo-Reason`
   - Fix to handle `$null` values on Windows PowerShell.
+  - If the property name contain the word 'Path' the value will be parsed to
+    replace backslash or slashes at the end of the string, e.g. `'/mypath/'`
+    will become `'/mypath'`.
 - `ResourceBase`
   - Now handles `Ensure` correctly from derived `GetCurrentState()`. But
     requires that the `GetCurrentState()` only return key property if object
