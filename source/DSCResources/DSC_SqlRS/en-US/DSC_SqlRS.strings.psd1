@@ -26,7 +26,6 @@ ConvertFrom-StringData @'
     SetReportsVirtualDirectory = Setting report server virtual directory on '{0}\\{1}' to '{2}'.
     AddReportsUrlReservation = Adding reports URL reservation on '{0}\\{1}': '{2}'.
     RestartDidNotHelp = Did not help restarting the Reporting Services service, running the CIM method to initialize report server on '{0}\\{1}' for instance ID '{2}'.
-    ReportingServicesInitialized = Reporting Services on '{0}\\{1}' is initialized.
     SetUseSsl = Changing value for using SSL to '{0}'.
     TestNotInitialized = Reporting services '{0}\\{1}' is not initialized.
     TestReportServerVirtualDirectory = Report server virtual directory on '{0}\\{1}' is '{2}', should be '{3}'.
@@ -35,7 +34,7 @@ ConvertFrom-StringData @'
     TestServiceAccount = The ServiceAccount should be '{0}' but is '{1}'.
     GetLocalServiceAccountNameServiceNotSpecified = The 'ServiceName' parameter is required with the 'LocalServiceAccountType' is '{0}'.
     InitializeReportingServices = Initializing Reporting Services on '{0}\{1}'.
-    ReportingServicesIsIntialized = Reporting Services on '{0}\{1}' is initialized.
+    ReportingServicesIsInitialized = Reporting Services on '{0}\{1}' is initialized: {2}.
     EncryptionKeyBackupCredentialNotSpecified = An encryption key backup credential was not specified. Generating a random credential.
     EncryptionKeyBackupCredentialUserName = The encryption key backup credential user name is '{0}'.
 '@

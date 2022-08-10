@@ -467,7 +467,7 @@ function Set-TargetResource
         #endregion Get Operating System Information
 
         #region Backup Encryption Key
-        Write-Verbose -Message ( $script:localizedData.ReportingServicesIsIntialized -f $DatabaseServerName, $DatabaseInstanceName ) -Verbose
+        Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
         if ( $currentConfig.IsInitialized )
         {
             if ( -not $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
@@ -493,6 +493,7 @@ function Set-TargetResource
                 }
             }
             $backupEncryptionKeyResult = Invoke-RsCimMethod @invokeRsCimMethodParameters
+
 
             if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') )
             {
@@ -604,7 +605,7 @@ function Set-TargetResource
 
             # Get the current configuration since it changed the reserved URLs
             $currentConfig = Get-TargetResource @getTargetResourceParameters
-            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsIntialized -f $DatabaseServerName, $DatabaseInstanceName ) -Verbose
+            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
         }
         #endregion Set the service account
 
@@ -758,7 +759,7 @@ function Set-TargetResource
 
             # Get the current configuration since the database connection was updated
             $currentConfig = Get-TargetResource @getTargetResourceParameters
-            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsIntialized -f $DatabaseServerName, $DatabaseInstanceName ) -Verbose
+            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
         }
 
         #endregion Database
@@ -841,7 +842,7 @@ function Set-TargetResource
 
             # Get the current configuration since it changed the virtual directories
             $currentConfig = Get-TargetResource @getTargetResourceParameters
-            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsIntialized -f $DatabaseServerName, $DatabaseInstanceName ) -Verbose
+            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
         }
 
         if ( -not [System.String]::IsNullOrEmpty($ReportsVirtualDirectory) -and ($ReportsVirtualDirectory -ne $currentConfig.ReportsVirtualDirectory) )
@@ -884,7 +885,7 @@ function Set-TargetResource
 
             # Get the current configuration since it changed the virtual directories
             $currentConfig = Get-TargetResource @getTargetResourceParameters
-            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsIntialized -f $DatabaseServerName, $DatabaseInstanceName ) -Verbose
+            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
         }
         #endregion Virtual Directories
 
@@ -1188,7 +1189,7 @@ function Set-TargetResource
         }
         else
         {
-            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsIntialized -f $DatabaseServerName, $DatabaseInstanceName ) -Verbose
+            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
             Write-Verbose -Message (
                 $script:localizedData.ReportingServicesInitialized -f @(
                     $DatabaseServerName
