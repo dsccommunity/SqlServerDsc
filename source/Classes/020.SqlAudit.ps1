@@ -325,29 +325,7 @@ class SqlAudit : SqlResourceBase
             {
                 'Present'
                 {
-                    # Get all properties that has an assigned value.
-                    $assignedDscProperties = $this | Get-DscProperty -HasValue -Type @(
-                        'Key'
-                        'Optional'
-                    ) -ExcludeName @(
-                        # Remove properties that is not an audit property.
-                        'InstanceName'
-                        'ServerName'
-                        'Ensure'
-                        'Force'
-                        'Credential'
-
-                        # Remove this audit property since it must be handled later.
-                        'Enabled'
-                    )
-
-                    if ($assignedDscProperties.Keys -notcontains 'LogType' -and $assignedDscProperties.Keys -notcontains 'Path')
-                    {
-                        New-InvalidOperationException -Message $this.localizedData.CannotCreateNewAudit
-                    }
-
-                    # Create the audit since it was missing. Always created disabled.
-                    $auditObject = $serverObject | New-SqlDscAudit @assignedDscProperties -Force -PassThru
+                    $auditObject = $this.CreateAudit()
                 }
 
                 'Absent'
@@ -373,12 +351,43 @@ class SqlAudit : SqlResourceBase
                 $auditObject = $serverObject |
                     Get-SqlDscAudit -Name $this.Name -ErrorAction 'Stop'
 
+                <#
+                    This logic need to be here in a separate block since we might
+                    get an audit object back from the re-creation that then will
+                    be used in the next if-block.
+                #>
                 if ($auditObject)
                 {
-                    # TODO: Should evaluate if Path is assigned and DestinationType is *Log it should recreate if Force is $true
+                    # Does the audit need to be re-created?
+                    $auditIsWrongType = (
+                        # If $auditObject.DestinationType is not null.
+                        $null -ne $auditObject.DestinationType -and (
+                            # Path is not in desired state but the audit is not of type File.
+                            $properties.ContainsKey('Path') -and $auditObject.DestinationType -ne 'File'
+                        ) -or (
+                            # LogType is not in desired state but the audit is of type File.
+                            $properties.ContainsKey('LogType') -and $auditObject.DestinationType -eq 'File'
+                        )
+                    )
 
-                    # TODO: Should evaluate if LogType is assigned and DestinationType is File it should recreate if Force is $true
+                    if ($auditIsWrongType)
+                    {
+                        if ($this.Force -eq $true)
+                        {
+                            $auditObject | Remove-SqlDscAudit -Force
 
+                            $auditObject = $this.CreateAudit()
+                        }
+                        else
+                        {
+                            New-InvalidOperationException -Message $this.localizedData.AuditIsWrongType
+                        }
+                    }
+                }
+
+                # Is it an audit object from either Get-SqlDscAudit or from re-creation?
+                if ($auditObject)
+                {
                     <#
                         Should evaluate DestinationType so that is does not try to set a
                         File audit property when audit type is of a Log-type.
@@ -550,5 +559,43 @@ class SqlAudit : SqlResourceBase
 
             New-InvalidArgumentException -ArgumentName 'Path' -Message $errorMessage
         }
+    }
+
+    <#
+        Create and returns the desired audit object.
+
+        This should return an object of type [Microsoft.SqlServer.Management.Smo.Audit]
+        but using that type fails the build process currently.
+        See issue https://github.com/dsccommunity/DscResource.DocGenerator/issues/121.
+    #>
+    hidden [System.Object] CreateAudit()
+    {
+        # Get all properties that has an assigned value.
+        $assignedDscProperties = $this | Get-DscProperty -HasValue -Type @(
+            'Key'
+            'Optional'
+        ) -ExcludeName @(
+            # Remove properties that is not an audit property.
+            'InstanceName'
+            'ServerName'
+            'Ensure'
+            'Force'
+            'Credential'
+
+            # Remove this audit property since it must be handled later.
+            'Enabled'
+        )
+
+        if ($assignedDscProperties.Keys -notcontains 'LogType' -and $assignedDscProperties.Keys -notcontains 'Path')
+        {
+            New-InvalidOperationException -Message $this.localizedData.CannotCreateNewAudit
+        }
+
+        $serverObject = $this.GetServerObject()
+
+        # Create the audit since it was missing. Always created disabled.
+        $auditObject = $serverObject | New-SqlDscAudit @assignedDscProperties -Force -PassThru
+
+        return $auditObject
     }
 }

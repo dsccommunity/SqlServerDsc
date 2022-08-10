@@ -17,4 +17,5 @@ ConvertFrom-StringData @'
     QueueDelayValueInvalid = The queue delay must be set to a value of 0 or a value between 1000 and 2147483647.
     CannotCreateNewAudit = Cannot create a new audit because neither of the properties LogType or Path is specified. One of those properties must be specified to create a new audit.
     AuditOfWrongTypeForUseWithProperty = A property that is not in desired state is not compatible with the audit type '{0}'.
+    AuditIsWrongType = The existing audit is of wrong type to be able to update the property that is not in desired state. If the audit should be re-created set Force to $true.
 '@
