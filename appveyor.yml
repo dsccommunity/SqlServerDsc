@@ -35,7 +35,7 @@ init:
 install:
 - ps: |
     # Only run for pull requests
-    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { return }
+    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { Write-Host -ForegroundColor 'Yellow' -Object 'Not a pull request, skipping.'; return }
 
     winrm quickconfig -quiet
 
@@ -43,7 +43,7 @@ install:
 build_script:
 - pwsh: |
     # Only run for pull requests
-    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { return }
+    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { Write-Host -ForegroundColor 'Yellow' -Object 'Not a pull request, skipping.'; return }
 
     # Build the module
     ./build.ps1 -ResolveDependency -tasks build
@@ -55,7 +55,7 @@ build_script:
 test_script:
 - ps: |
     # Only run for pull requests
-    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { return }
+    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { Write-Host -ForegroundColor 'Yellow' -Object 'Not a pull request, skipping.'; return }
 
     ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $env:TEST_CONFIGURATION -PesterPath @(
         ### Run the integration tests in a specific group order.
@@ -99,7 +99,7 @@ deploy: off
 # DEBUG: If running on own AppVeyor project, comment the line below that skips if it is not a pull request
 on_finish:
 - ps: |
-    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { return }
+    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { Write-Host -ForegroundColor 'Yellow' -Object 'Not a pull request, skipping.'; return }
 
     #$blockRdp = $true
     iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
