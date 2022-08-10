@@ -24,6 +24,7 @@ BuildWorkflow:
 
   test:
     - Pester_Tests_Stop_On_Fail
+    - Convert_Pester_Coverage
     - Pester_If_Code_Coverage_Under_Threshold
 
   publish:
