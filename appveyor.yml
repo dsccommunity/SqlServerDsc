@@ -27,7 +27,7 @@ environment:
 init:
 - ps: |
     # Only run for pull requests
-    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { return } else { Write-Host -ForegroundColor 'Yellow' -Object 'Not a pull request, skipping.'}
+    if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { Write-Host -ForegroundColor 'Yellow' -Object 'Not a pull request, skipping.'; return }
 
     iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
