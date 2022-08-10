@@ -325,6 +325,7 @@ class SqlAudit : SqlResourceBase
             {
                 'Present'
                 {
+                    # Create the audit since it was missing. Always created disabled.
                     $auditObject = $this.CreateAudit()
                 }
 
@@ -351,14 +352,8 @@ class SqlAudit : SqlResourceBase
                 $auditObject = $serverObject |
                     Get-SqlDscAudit -Name $this.Name -ErrorAction 'Stop'
 
-                <#
-                    This logic need to be here in a separate block since we might
-                    get an audit object back from the re-creation that then will
-                    be used in the next if-block.
-                #>
                 if ($auditObject)
                 {
-                    # Does the audit need to be re-created?
                     $auditIsWrongType = (
                         # If $auditObject.DestinationType is not null.
                         $null -ne $auditObject.DestinationType -and (
@@ -370,6 +365,7 @@ class SqlAudit : SqlResourceBase
                         )
                     )
 
+                    # Does the audit need to be re-created?
                     if ($auditIsWrongType)
                     {
                         if ($this.Force -eq $true)
@@ -383,62 +379,60 @@ class SqlAudit : SqlResourceBase
                             New-InvalidOperationException -Message $this.localizedData.AuditIsWrongType
                         }
                     }
-                }
-
-                # Is it an audit object from either Get-SqlDscAudit or from re-creation?
-                if ($auditObject)
-                {
-                    <#
-                        Should evaluate DestinationType so that is does not try to set a
-                        File audit property when audit type is of a Log-type.
-                    #>
-                    if ($null -ne $auditObject.DestinationType -and $auditObject.DestinationType -ne 'File')
-                    {
-                        # Look for file audit properties not in desired state
-                        $fileAuditProperty = $properties.Keys.Where({
-                            $_ -in @(
-                                'Path'
-                                'MaximumFiles'
-                                'MaximumFileSize'
-                                'MaximumFileSizeUnit'
-                                'MaximumRolloverFiles'
-                                'ReserveDiskSpace'
-                            )
-                        })
-
-                        # If a property was found, throw an exception.
-                        if ($fileAuditProperty.Count -gt 0)
-                        {
-                            New-InvalidOperationException -Message ($this.localizedData.AuditOfWrongTypeForUseWithProperty -f $auditObject.DestinationType)
-                        }
-                    }
-
-                    # Get all optional properties that has an assigned value.
-                    $assignedOptionalDscProperties = $this | Get-DscProperty -HasValue -Type 'Optional' -ExcludeName @(
-                        # Remove optional properties that is not an audit property.
-                        'ServerName'
-                        'Ensure'
-                        'Force'
-                        'Credential'
-
-                        # Remove this audit property since it must be handled later.
-                        'Enabled'
-                    )
-
-                    <#
-                        Only call Set when there is a property to Set. The property
-                        Enabled was ignored, so it could be the only one that was
-                        not in desired state (Enabled is handled later).
-                    #>
-                    if ($assignedOptionalDscProperties.Count -gt 0)
+                    else
                     {
                         <#
-                            This calls Set-SqlDscAudit to set all the desired value
-                            even if they were in desired state. Then the no logic is
-                            needed to make sure we call using the correct parameter
-                            set that Set-SqlDscAudit requires.
+                            Should evaluate DestinationType so that is does not try to set a
+                            File audit property when audit type is of a Log-type.
                         #>
-                        $auditObject | Set-SqlDscAudit @assignedOptionalDscProperties -Force
+                        if ($null -ne $auditObject.DestinationType -and $auditObject.DestinationType -ne 'File')
+                        {
+                            # Look for file audit properties not in desired state
+                            $fileAuditProperty = $properties.Keys.Where({
+                                $_ -in @(
+                                    'Path'
+                                    'MaximumFiles'
+                                    'MaximumFileSize'
+                                    'MaximumFileSizeUnit'
+                                    'MaximumRolloverFiles'
+                                    'ReserveDiskSpace'
+                                )
+                            })
+
+                            # If a property was found, throw an exception.
+                            if ($fileAuditProperty.Count -gt 0)
+                            {
+                                New-InvalidOperationException -Message ($this.localizedData.AuditOfWrongTypeForUseWithProperty -f $auditObject.DestinationType)
+                            }
+                        }
+
+                        # Get all optional properties that has an assigned value.
+                        $assignedOptionalDscProperties = $this | Get-DscProperty -HasValue -Type 'Optional' -ExcludeName @(
+                            # Remove optional properties that is not an audit property.
+                            'ServerName'
+                            'Ensure'
+                            'Force'
+                            'Credential'
+
+                            # Remove this audit property since it must be handled later.
+                            'Enabled'
+                        )
+
+                        <#
+                            Only call Set when there is a property to Set. The property
+                            Enabled was ignored, so it could be the only one that was
+                            not in desired state (Enabled is handled later).
+                        #>
+                        if ($assignedOptionalDscProperties.Count -gt 0)
+                        {
+                            <#
+                                This calls Set-SqlDscAudit to set all the desired value
+                                even if they were in desired state. Then the no logic is
+                                needed to make sure we call using the correct parameter
+                                set that Set-SqlDscAudit requires.
+                            #>
+                            $auditObject | Set-SqlDscAudit @assignedOptionalDscProperties -Force
+                        }
                     }
                 }
             }
@@ -562,7 +556,7 @@ class SqlAudit : SqlResourceBase
     }
 
     <#
-        Create and returns the desired audit object.
+        Create and returns the desired audit object. Always created disabled.
 
         This should return an object of type [Microsoft.SqlServer.Management.Smo.Audit]
         but using that type fails the build process currently.
@@ -593,7 +587,6 @@ class SqlAudit : SqlResourceBase
 
         $serverObject = $this.GetServerObject()
 
-        # Create the audit since it was missing. Always created disabled.
         $auditObject = $serverObject | New-SqlDscAudit @assignedDscProperties -Force -PassThru
 
         return $auditObject
