@@ -43,8 +43,6 @@ else
         )
     }
 
-    # TODO: This leaves the SecLogAudit, if so it should be documented.
-
     # TODO: This folder should be created with DSC.
     New-Item -Path 'C:\Temp\audit' -ItemType 'Directory' -Force | Out-Null
 }
