@@ -159,12 +159,6 @@ namespace Microsoft.SqlServer.Management.Smo
 
     #region Public Classes
 
-    public class Globals
-    {
-        // Static property that is switched on or off by tests if data should be mocked (true) or not (false).
-        public static bool GenerateMockData = false;
-    }
-
     // Typename: Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionSetBase
     // Used by:
