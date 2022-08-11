@@ -1139,9 +1139,10 @@ function Set-TargetResource
         {
             Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
             Write-Verbose -Message (
-                $script:localizedData.ReportingServicesInitialized -f @(
+                $script:localizedData.ReportingServicesIsInitialized -f @(
                     $DatabaseServerName
                     $DatabaseInstanceName
+                    $currentConfig.IsInitialized
                 )
             )
         }
