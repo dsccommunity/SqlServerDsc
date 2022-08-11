@@ -42,6 +42,41 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
     }
 
     Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_Prerequisites_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterAll {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                $configurationParameters = @{
+                    OutputPath           = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData    = $ConfigurationData
+                }
+
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                Start-DscConfiguration @startDscConfigurationParameters
+            } | Should -Not -Throw
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_AddFileAudit_Config"
     ) {
         BeforeAll {

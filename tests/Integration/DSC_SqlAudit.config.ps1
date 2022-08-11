@@ -42,9 +42,26 @@ else
             }
         )
     }
+}
 
-    # TODO: This folder should be created with DSC.
-    New-Item -Path 'C:\Temp\audit' -ItemType 'Directory' -Force | Out-Null
+<#
+    .SYNOPSIS
+        Creates a folder that is needed for creating a File audit.
+#>
+Configuration DSC_SqlAudit_Prerequisites_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        File 'Integration_Test'
+        {
+            Ensure          = 'Present'
+            DestinationPath = $Node.Path1
+            Type            = 'Directory'
+            Force           = $true
+        }
+    }
 }
 
 <#
