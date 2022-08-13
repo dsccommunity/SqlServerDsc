@@ -218,6 +218,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     The type `DatabasePermission` contains two properties; `State` and
     `Permission`. This fixes issue [issue #1555](https://github.com/dsccommunity/SqlServerDsc/issues/1555).
   - The resource was refactored into a class-based resource.
+  - Made the resource derive from `SqlResourceBase` to clean up the code
+    a bit.
 - SqlPermission
   - BREAKING CHANGE: The resource has been refactored. The parameters
     `Permissions` has been replaced by parameters `Permission`,
@@ -229,6 +231,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     [issue #1704](https://github.com/dsccommunity/SqlServerDsc/issues/1704),
     and [issue #752](https://github.com/dsccommunity/SqlServerDsc/issues/752).
   - The resource was refactored into a class-based resource.
+  - Made the resource derive from `SqlResourceBase` to clean up the code
+    a bit.
+- Class `ResourceBase`
+  - Renamed the hidden property that derived classes can specify which properties
+    to not enforce when comparing desired state against current state. New name
+    of the hidden property is `ExcludeDscProperties`.
 
 ### Fixed
 

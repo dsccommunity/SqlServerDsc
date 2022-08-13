@@ -17,7 +17,7 @@ class ResourceBase
     hidden [System.Collections.Hashtable] $localizedData = @{}
 
     # Property for derived class to set properties that should not be enforced.
-    hidden [System.String[]] $notEnforcedProperties = @()
+    hidden [System.String[]] $ExcludeDscProperties = @()
 
     # Default constructor
     ResourceBase()
@@ -207,7 +207,7 @@ class ResourceBase
             CurrentValues     = $currentState
             DesiredValues     = $desiredState
             Properties        = $desiredState.Keys
-            ExcludeProperties = ($excludeProperties + $this.notEnforcedProperties) | Select-Object -Unique
+            ExcludeProperties = ($excludeProperties + $this.ExcludeDscProperties) | Select-Object -Unique
             IncludeValue      = $true
             # This is needed to sort complex types.
             SortArrayValues   = $true
