@@ -190,9 +190,8 @@ class SqlAudit : SqlResourceBase
 
     SqlAudit () : base ()
     {
-        # TODO:_Rename this to ExcludeDscProperties or ExcludeProperties
         # These properties will not be enforced.
-        $this.notEnforcedProperties = @(
+        $this.ExcludeDscProperties = @(
             'ServerName'
             'InstanceName'
             'Name'

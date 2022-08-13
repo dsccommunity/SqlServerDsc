@@ -141,7 +141,7 @@ class MyMockResource : ResourceBase
     MyMockResource() : base ()
     {
         # These properties will not be enforced.
-        $this.notEnforcedProperties = @(
+        $this.ExcludeDscProperties = @(
             'MyResourceKeyProperty1'
         )
     }
@@ -227,7 +227,7 @@ class MyMockResource : ResourceBase
     MyMockResource() : base ()
     {
         # Test not to add the key property to the list of properties that are not enforced.
-        $this.notEnforcedProperties = @('MyResourceKeyProperty1')
+        $this.ExcludeDscProperties = @('MyResourceKeyProperty1')
     }
 
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
@@ -451,7 +451,7 @@ class MyMockResource : ResourceBase
     MyMockResource() : base ()
     {
         # Test not to add the key property to the list of properties that are not enforced.
-        $this.notEnforcedProperties = @('MyResourceKeyProperty1')
+        $this.ExcludeDscProperties = @('MyResourceKeyProperty1')
     }
 
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
@@ -525,7 +525,7 @@ class MyMockResource : ResourceBase
     MyMockResource() : base ()
     {
         # Test not to add the key property to the list of properties that are not enforced.
-        $this.notEnforcedProperties = @('MyResourceKeyProperty1')
+        $this.ExcludeDscProperties = @('MyResourceKeyProperty1')
     }
 
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
@@ -601,7 +601,7 @@ class MyMockResource : ResourceBase
     MyMockResource() : base ()
     {
         # Test not to add the key property to the list of properties that are not enforced.
-        $this.notEnforcedProperties = @('MyResourceKeyProperty1')
+        $this.ExcludeDscProperties = @('MyResourceKeyProperty1')
     }
 
     [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)

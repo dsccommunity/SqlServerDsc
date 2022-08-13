@@ -57,19 +57,11 @@
             + PSComputerName        : localhost
         ```
 
-    .PARAMETER InstanceName
-        The name of the _SQL Server_ instance to be configured. Default value is
-        `'MSSQLSERVER'`.
-
     .PARAMETER DatabaseName
         The name of the database.
 
     .PARAMETER Name
         The name of the user that should be granted or denied the permission.
-
-    .PARAMETER ServerName
-        The host name of the _SQL Server_ to be configured. Default value is the
-        current computer name.
 
     .PARAMETER Permission
         An array of database permissions to enforce. Any permission that is not
@@ -103,15 +95,6 @@
 
         This is an array of CIM instances of advanced type `DatabasePermission` from
         the namespace `root/Microsoft/Windows/DesiredStateConfiguration`.
-
-    .PARAMETER Credential
-        Specifies the credential to use to connect to the _SQL Server_ instance.
-
-        If parameter **Credential'* is not provided then the resource instance is
-        run using the credential that runs the configuration.
-
-    .PARAMETER Reasons
-        Returns the reason a property is not in desired state.
 
     .EXAMPLE
         Invoke-DscResource -ModuleName SqlServerDsc -Name SqlDatabasePermission -Method Get -Property @{
@@ -155,20 +138,8 @@
 #>
 
 [DscResource(RunAsCredential = 'NotSupported')]
-class SqlDatabasePermission : ResourceBase
+class SqlDatabasePermission : SqlResourceBase
 {
-    <#
-        Property for holding the server connection object.
-        This should be an object of type [Microsoft.SqlServer.Management.Smo.Server]
-        but using that type fails the build process currently.
-        See issue https://github.com/dsccommunity/DscResource.DocGenerator/issues/121.
-    #>
-    hidden [System.Object] $sqlServerObject = $null
-
-    [DscProperty(Key)]
-    [System.String]
-    $InstanceName
-
     [DscProperty(Key)]
     [System.String]
     $DatabaseName
@@ -176,10 +147,6 @@ class SqlDatabasePermission : ResourceBase
     [DscProperty(Key)]
     [System.String]
     $Name
-
-    [DscProperty()]
-    [System.String]
-    $ServerName = (Get-ComputerName)
 
     [DscProperty()]
     [DatabasePermission[]]
@@ -193,18 +160,10 @@ class SqlDatabasePermission : ResourceBase
     [DatabasePermission[]]
     $PermissionToExclude
 
-    [DscProperty()]
-    [PSCredential]
-    $Credential
-
-    [DscProperty(NotConfigurable)]
-    [Reason[]]
-    $Reasons
-
     SqlDatabasePermission() : base ()
     {
         # These properties will not be enforced.
-        $this.notEnforcedProperties = @(
+        $this.ExcludeDscProperties = @(
             'ServerName'
             'InstanceName'
             'DatabaseName'
@@ -229,34 +188,6 @@ class SqlDatabasePermission : ResourceBase
     {
         # Call the base method to enforce the properties.
         ([ResourceBase] $this).Set()
-    }
-
-    <#
-        Returns and reuses the server connection object. If the server connection
-        object does not exist a connection to the SQL Server instance will occur.
-
-        This should return an object of type [Microsoft.SqlServer.Management.Smo.Server]
-        but using that type fails the build process currently.
-        See issue https://github.com/dsccommunity/DscResource.DocGenerator/issues/121.
-    #>
-    hidden [System.Object] GetServerObject()
-    {
-        if (-not $this.sqlServerObject)
-        {
-            $connectSqlDscDatabaseEngineParameters = @{
-                ServerName   = $this.ServerName
-                InstanceName = $this.InstanceName
-            }
-
-            if ($this.Credential)
-            {
-                $connectSqlDscDatabaseEngineParameters.Credential = $this.Credential
-            }
-
-            $this.sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
-        }
-
-        return $this.sqlServerObject
     }
 
     <#
