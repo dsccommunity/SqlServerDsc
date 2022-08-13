@@ -67,7 +67,9 @@
         "xSQLAOGroupEnsure",
         "Test-SPDSCObjectHasProperty",
         "DynamicAlloc",
-        "GetxPDTVariable"
+        "GetxPDTVariable",
+        "Dbcc",
+        "creplace"
     ],
     "cSpell.ignorePaths": [
         ".git"

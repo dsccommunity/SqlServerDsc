@@ -329,11 +329,11 @@ if (-not $databaseExist)
 A terminating error is an error that the user are not able to ignore by
 passing a parameter to the command (like for non-terminating errors).
 
-If a command shall throw an terminating error the statement `throw` shall
-not be used, neither shall the command `Write-Error` be used with the parameter
-`-ErrorAction `Stop``. Instead the method `$PSCmdlet.ThrowTerminatingError()`
-shall be used to throw a terminating error.
-
+If a command shall throw an terminating error then the statement `throw` shall
+not be used, neither shall the command `Write-Error` with the parameter
+`-ErrorAction Stop`. Always use the method `$PSCmdlet.ThrowTerminatingError()`
+to throw a terminating error. The exception is when a `[ValidateScript()]`
+has to throw an error, then `throw` must be used.
 
 >**NOTE:** Below output assumes `$ErrorView` is set to `'NormalView'` in the
 >PowerShell session.

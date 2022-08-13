@@ -15,6 +15,7 @@ These are the links to the examples for each individual resource.
 - [SqlAGReplica](Resources/SqlAGReplica)
 - [SqlAlias](Resources/SqlAlias)
 - [SqlAlwaysOnService](Resources/SqlAlwaysOnService)
+- [SqlAudit](Resources/SqlAudit)
 - [SqlDatabase](Resources/SqlDatabase)
 - [SqlDatabaseDefaultLocation](Resources/SqlDatabaseDefaultLocation)
 - [SqlDatabasePermission](Resources/SqlDatabasePermission)

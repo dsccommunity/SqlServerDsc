@@ -52,6 +52,8 @@ class ResourceBase
             }
         }
 
+        $keyPropertyAddedToCurrentState = $false
+
         # Set key property values unless it was returned from the derived class' GetCurrentState().
         foreach ($propertyName in $keyProperty.Keys)
         {
@@ -59,78 +61,35 @@ class ResourceBase
             {
                 # Add the key value to the instance to be returned.
                 $dscResourceObject.$propertyName = $this.$propertyName
+
+                $keyPropertyAddedToCurrentState = $true
             }
         }
 
-        $ignoreProperty = @()
-
-        <#
-            TODO: This need to be re-evaluated for a resource that is using Ensure
-                  property. How Ensure is handled might need to be refactored, or
-                  removed altogether from this base class.
-
-            If the derived DSC resource has a Ensure property and it was not returned
-            by GetCurrentState(), then the property Ensure is removed from the
-            comparison (when calling Compare()). The property Ensure is ignored
-            since the method GetCurrentState() did not return it, and the current
-            state for property Ensure cannot be determined until the method Compare()
-            has run to determined if other properties are not in desired state.
-        #>
         if (($this | Test-ResourceHasDscProperty -Name 'Ensure') -and -not $getCurrentStateResult.ContainsKey('Ensure'))
         {
-            $ignoreProperty += 'Ensure'
+            # Evaluate if we should set Ensure property.
+            if ($keyPropertyAddedToCurrentState)
+            {
+                <#
+                    A key property was added to the current state, assume its because
+                    the object did not exist in the current state. Set Ensure to Absent.
+                #>
+                $dscResourceObject.Ensure = [Ensure]::Absent
+                $getCurrentStateResult.Ensure = [Ensure]::Absent
+            }
+            else
+            {
+                $dscResourceObject.Ensure = [Ensure]::Present
+                $getCurrentStateResult.Ensure = [Ensure]::Present
+            }
         }
 
         <#
             Returns all enforced properties not in desires state, or $null if
             all enforced properties are in desired state.
         #>
-        $propertiesNotInDesiredState = $this.Compare($getCurrentStateResult, $ignoreProperty)
-
-        <#
-            Return the correct values for Ensure property if the derived DSC resource
-            has such property and it hasn't been already set by GetCurrentState().
-        #>
-        if (($this | Test-ResourceHasDscProperty -Name 'Ensure') -and -not $getCurrentStateResult.ContainsKey('Ensure'))
-        {
-            if ($propertiesNotInDesiredState)
-            {
-                <#
-                    Get all the key properties that might not be in desired state.
-                    This will return $null if all key properties are in desired state.
-                #>
-                $keyPropertiesNotInDesiredState = $this | Get-DscProperty -Name $propertiesNotInDesiredState.Property -Type 'Key'
-
-                if ($keyPropertiesNotInDesiredState)
-                {
-                    <#
-                        The compare come back with at least one key property that was
-                        not in desired state. That only happens if the object does not
-                        exist on the node, so the Ensure value is set to Absent since
-                        the object does not exist.
-                    #>
-                    $dscResourceObject.Ensure = [Ensure]::Absent
-                }
-                else
-                {
-                    <#
-                        The compare come back with all key properties in desired state.
-                        That only happens if the object exist on the node, so the Ensure
-                        value is set to Present since the object exist.
-                    #>
-                    $dscResourceObject.Ensure = [Ensure]::Present
-                }
-            }
-            else
-            {
-                <#
-                    The compare come back with $null, meaning that all key properties
-                    match. That only happens if the object exist on the node, so the
-                    Ensure value is set to Present since the object exist.
-                #>
-                $dscResourceObject.Ensure = [Ensure]::Present
-            }
-        }
+        $propertiesNotInDesiredState = $this.Compare($getCurrentStateResult, @())
 
         <#
             Return the correct values for Reasons property if the derived DSC resource
@@ -140,7 +99,7 @@ class ResourceBase
         {
             # Always return an empty array if all properties are in desired state.
             $dscResourceObject.Reasons = $propertiesNotInDesiredState |
-                ConvertTo-Reason -ResourceName $this.GetType()
+                ConvertTo-Reason -ResourceName $this.GetType().Name
         }
 
         # Return properties.

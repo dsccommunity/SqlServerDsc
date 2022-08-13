@@ -49,6 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       in desired state.
     - `ResourceBase` - class that can be inherited by class-based resource and
       provides functionality meant simplify the creating of class-based resource.
+    - `SqlResourceBase` - class that can be inherited by class-based resource and
+      provides default DSC properties and method for get a `[Server]`-object.
     - `ServerPermission` - complex type for the DSC resource SqlPermission.
   - The following private functions were added to the module (see comment-based
     help for more information):
@@ -72,8 +74,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `ConvertTo-SqlDscServerPermission`
     - `Get-SqlDscServerPermission`
     - `Set-SqlDscServerPermission`
+    - `Invoke-SqlDscQuery`
+    - `Get-SqlDscAudit`
+    - `New-SqlDscAudit`
+    - `Set-SqlDscAudit`
+    - `Remove-SqlDscAudit`
+    - `Enable-SqlDscAudit`
+    - `Disable-SqlDscAudit`
   - Support for debugging of integration tests in AppVeyor.
     - Only run for pull requests
+  - Add new resource SqlAudit.
 - CommonTestHelper
   - `Import-SqlModuleStub`
     - Added the optional parameter **PasThru** that, if used, will return the
@@ -86,6 +96,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       the PowerShell SqlServer stub module when a test has run.
 - SqlWindowsFirewall
   - Added integration tests for SqlWindowsFirewall ([issue #747](https://github.com/dsccommunity/SqlServerDsc/issues/747)).
+- `Get-DscProperty`
+  - Added parameter `ExcludeName` to exclude property names from being returned.
 
 ### Changed
 
@@ -296,8 +308,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed comment-based help and cleaned up comments.
   - Fix localized string that referenced 'user' instead of 'principal',
     and correct localized string ID for each string.
+  - Fix comment-based help.
+- SqlPermission
+  - Fix comment-based help.
 - `Set-SqlDscDatabasePermission`
   - Minor code cleanup.
+- `ConvertTo-Reason`
+  - Fix to handle `$null` values on Windows PowerShell.
+  - If the property name contain the word 'Path' the value will be parsed to
+    replace backslash or slashes at the end of the string, e.g. `'/mypath/'`
+    will become `'/mypath'`.
+- `ResourceBase`
+  - Now handles `Ensure` correctly from derived `GetCurrentState()`. But
+    requires that the `GetCurrentState()` only return key property if object
+    is present, and does not return key property if object is absent.
+    Optionally the resource's derived `GetCurrentState()` can handle `Ensure`
+    itself.
 
 ## [15.2.0] - 2021-09-01
 

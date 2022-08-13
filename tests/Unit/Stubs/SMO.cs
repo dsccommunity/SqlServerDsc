@@ -123,15 +123,41 @@ namespace Microsoft.SqlServer.Management.Smo
         RC4Aes
     }
 
+    public enum AuditDestinationType : int
+    {
+        File = 0,
+        SecurityLog = 1,
+        ApplicationLog = 2,
+        Url = 3,
+        Unknown = 100,
+    }
+
+    public enum AuditFileSizeUnit : int
+    {
+        Mb = 0,
+        Gb = 1,
+        Tb = 2,
+    }
+
+    public enum OnFailureAction : int
+    {
+        Continue = 0,
+        Shutdown = 1,
+        FailOperation = 2,
+    }
+
+    public enum SqlSmoState : int
+    {
+        Pending = 0,
+        Creating = 1,
+        Existing = 2,
+        ToBeDropped = 3,
+        Dropped = 4,
+    }
+
     #endregion Public Enums
 
     #region Public Classes
-
-    public class Globals
-    {
-        // Static property that is switched on or off by tests if data should be mocked (true) or not (false).
-        public static bool GenerateMockData = false;
-    }
 
     // Typename: Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionSetBase
@@ -854,6 +880,46 @@ namespace Microsoft.SqlServer.Management.Smo
                 return null;
             }
         }
+    }
+
+    public class Audit
+    {
+        // Constructor
+        public Audit() { }
+        public Audit(Microsoft.SqlServer.Management.Smo.Server server, System.String name) {
+            this.Parent = server;
+            this.Name = name;
+        }
+
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Server Parent { get; set; }
+        public System.DateTime? CreateDate { get; set; }
+        public System.DateTime? DateLastModified { get; set; }
+        public Microsoft.SqlServer.Management.Smo.AuditDestinationType? DestinationType { get; set; }
+        public System.Boolean? Enabled { get; set; }
+        public System.String FileName { get; set; }
+        public System.String FilePath { get; set; }
+        public System.String Filter { get; set; }
+        public System.Guid? Guid { get; set; }
+        public System.Int32? ID { get; set; }
+        public System.Int32? MaximumFiles { get; set; }
+        public System.Int32? MaximumFileSize { get; set; }
+        public Microsoft.SqlServer.Management.Smo.AuditFileSizeUnit? MaximumFileSizeUnit { get; set; }
+        public System.Int64? MaximumRolloverFiles { get; set; }
+        public Microsoft.SqlServer.Management.Smo.OnFailureAction? OnFailure { get; set; }
+        public System.Int32? QueueDelay { get; set; }
+        public System.Boolean? ReserveDiskSpace { get; set; }
+        public System.Int32? RetentionDays { get; set; }
+        public System.String Name { get; set; }
+        // public Microsoft.SqlServer.Management.Smo.AbstractCollectionBase ParentCollection { get; set; }
+        // public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        // public Microsoft.SqlServer.Management.Smo.SqlPropertyCollection Properties { get; set; }
+        // public Microsoft.SqlServer.Management.Common.ServerVersion ServerVersion { get; set; }
+        // public Microsoft.SqlServer.Management.Common.DatabaseEngineType DatabaseEngineType { get; set; }
+        // public Microsoft.SqlServer.Management.Common.DatabaseEngineEdition DatabaseEngineEdition { get; set; }
+        // public Microsoft.SqlServer.Management.Smo.ExecutionManager ExecutionManager { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState? State { get; set; }
     }
 
     #endregion Public Classes

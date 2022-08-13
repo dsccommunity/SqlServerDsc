@@ -26,8 +26,8 @@
         ### `PSDscRunAsCredential` not supported
 
         The built-in property `PSDscRunAsCredential` does not work with class-based
-        resources that using advanced type like the parameter `Permission` does.
-        Use the parameter `Credential` instead of `PSDscRunAsCredential`.
+        resources that using advanced type like the parameters `Permission` and
+        `Reasons` has. Use the parameter `Credential` instead of `PSDscRunAsCredential`.
 
         ### Using `Credential` property.
 

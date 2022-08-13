@@ -444,6 +444,22 @@ and the named instance `DSCSQLTEST` have the feature `REPLICATION` installed.
 
 The integration test will not leave anything on any instance.
 
+### SqlAudit
+
+**Run order:** 3
+
+**Depends on:** SqlSetup
+
+This integration tests depends on the named instance `DSCSQLTEST`.
+
+The integration test will not leave anything on any instance.
+
+The integration tests will leave a created path on the filesystem:
+
+Path |
+--- |
+C\Temp\audit |
+
 ### SqlScript
 
 **Run order:** 4

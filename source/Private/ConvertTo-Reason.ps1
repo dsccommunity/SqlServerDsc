@@ -71,10 +71,43 @@ function ConvertTo-Reason
                 $propertyActualValue = $currentProperty.ActualValue
             }
 
+            <#
+                In PowerShell 7 the command ConvertTo-Json returns 'null' on null
+                value, but not in Windows PowerShell. Switch to output empty string
+                if value is null.
+            #>
+            if ($PSVersionTable.PSEdition -eq 'Desktop')
+            {
+                if ($null -eq $propertyExpectedValue)
+                {
+                    $propertyExpectedValue = ''
+                }
+
+                if ($null -eq $propertyActualValue)
+                {
+                    $propertyActualValue = ''
+                }
+            }
+
+            # Convert the value to Json to be able to easily visualize complex types
+            $propertyActualValueJson = $propertyActualValue | ConvertTo-Json -Compress
+            $propertyExpectedValueJson = $propertyExpectedValue | ConvertTo-Json -Compress
+
+            # If the property name contain the word Path, remove '\\' from path.
+            if ($currentProperty.Property -match 'Path')
+            {
+                $propertyActualValueJson = $propertyActualValueJson -replace '\\\\', '\'
+                $propertyExpectedValueJson = $propertyExpectedValueJson -replace '\\\\', '\'
+            }
+
             $reasons += [Reason] @{
                 Code   = '{0}:{0}:{1}' -f $ResourceName, $currentProperty.Property
                 # Convert the object to JSON to handle complex types.
-                Phrase = 'The property {0} should be {1}, but was {2}' -f $currentProperty.Property, ($propertyExpectedValue | ConvertTo-Json -Compress), ($propertyActualValue | ConvertTo-Json -Compress)
+                Phrase = 'The property {0} should be {1}, but was {2}' -f @(
+                    $currentProperty.Property,
+                    $propertyExpectedValueJson,
+                    $propertyActualValueJson
+                )
             }
         }
     }

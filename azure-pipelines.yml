@@ -87,6 +87,7 @@ stages:
           - task: PowerShell@2
             name: test
             displayName: 'Run HQRM Test'
+            condition: succeededOrFailed()
             inputs:
               filePath: './build.ps1'
               arguments: '-Tasks hqrmtest'
@@ -197,6 +198,7 @@ stages:
                   'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlAudit.Integration.Tests.ps1'
                   # Group 4
                   'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
