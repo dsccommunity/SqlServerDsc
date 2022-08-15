@@ -1756,7 +1756,7 @@ function Backup-EncryptionKey
                 New-Item -Path $EncryptionKeyBackupPath -ItemType Directory
             }
 
-            $encryptionKeyBackupFileName = "$($env:ComputerName)-$($currentConfig.InstanceName).snk"
+            $encryptionKeyBackupFileName = "$($env:ComputerName)-$($CimInstance.InstanceName).snk"
             $encryptionKeyBackupFile = Join-Path -Path $EncryptionKeyBackupPath -ChildPath $encryptionKeyBackupFileName
             Write-Verbose -Message ($script:localizedData.BackupEncryptionKey -f $encryptionKeyBackupFile) -Verbose
 
