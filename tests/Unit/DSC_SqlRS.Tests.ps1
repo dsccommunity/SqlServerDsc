@@ -461,14 +461,17 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             @{
                 TestCaseVersionName = "SQL Server Reporting Services 2016"
                 TestCaseVersion = 13
+                IsInitialized = $false
             }
             @{
                 TestCaseVersionName = "SQL Server Reporting Services 2017"
                 TestCaseVersion = 14
+                IsInitialized = $true
             }
             @{
                 TestCaseVersionName = "SQL Server Reporting Services 2019"
                 TestCaseVersion = 15
+                IsInitialized = $true
             }
         )
     }
@@ -723,6 +726,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             $MethodName -eq 'RemoveSSLCertificateBindings'
         }
 
+        Mock -CommandName Backup-EncryptionKey
         Mock -CommandName Connect-UncPath
         Mock -CommandName Disconnect-UncPath
         Mock -CommandName Import-SQLPSModule
@@ -845,7 +849,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
                     $ClassName -eq 'Win32_OperatingSystem'
-                } -Exactly -Times 5 -Scope It
+                } -Exactly -Times 6 -Scope It
 
                 Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
@@ -1012,13 +1016,13 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Connect-UncPath -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Disconnect-UncPath -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Connect-UncPath -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Disconnect-UncPath -Exactly -Times 0 -Scope It
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
-                Should -Invoke -CommandName New-Item -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Set-Content -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName New-Item -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Set-Content -Exactly -Times 0 -Scope It
             }
 
             It 'Should throw when the version is 14 or greater and the service account type is System' {
@@ -1075,6 +1079,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
                         DatabaseName            = $mockReportingServicesDatabaseName
+                        IsInitialized           = $IsInitialized
                         ReportServerReservedUrl = $mockReportServerApplicationUrl
                         ReportsReservedUrl      = $mockReportsApplicationUrl
                         ServiceName             = "ReportServer`$$mockNamedInstanceName"
@@ -1226,7 +1231,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationNameLegacy
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 5 -Scope It
+                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 6 -Scope It
                 Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
             }
@@ -1305,7 +1310,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 5 -Scope It
+                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 6 -Scope It
                 Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
             }
@@ -1326,6 +1331,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
                         DatabaseName            = $mockReportingServicesDatabaseName
+                        IsInitialized           = $true
                         ReportServerReservedUrl = $mockReportServerApplicationUrl
                         ReportsReservedUrl      = $mockReportsApplicationUrl
                         ServiceName             = 'SQLServerReportingServices'
@@ -1506,7 +1512,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
             } -Exactly -Times 1 -Scope It
 
-            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 5 -Scope It
+            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 6 -Scope It
             Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
             Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
         }
@@ -2479,6 +2485,68 @@ Describe 'SqlRS\Get-LocalServiceAccountName' -Tag 'Helper' {
 
         It 'Should throw the correct error when when "LocalServiceAccountType" is "VirtualAccount" and the service name is not supplied' {
             { Get-LocalServiceAccountName -LocalServiceAccountType VirtualAccount } | Should -Throw "The 'ServiceName' parameter is required with the 'LocalServiceAccountType' is 'VirtualAccount'.*"
+        }
+    }
+}
+
+Describe 'SqlRS\Backup-EncryptionKey' -Tag 'Helper' {
+    BeforeDiscovery {
+        $mockCimInstance = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
+            'MSReportServer_ConfigurationSetting'
+            'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v13/Admin'
+        )
+        $mockEncryptionKeyBackupCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('mockBackupUser', ( ConvertTo-SecureString 'P@$$w0rd1' -AsPlainText -Force ) )
+        $mockEncryptionKeyBackupPathCredential  = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('mockBackupPathUser', ( ConvertTo-SecureString 'P@$$w0rd1' -AsPlainText -Force ) )
+        $mockBackupPath = '\\Remote\Backup\Path'
+
+        $testCases = @(
+            @{
+                Parameters = @{
+                    IsInitialized = $false
+                    CimInstance = $mockCimInstance
+                }
+                ReturnValue = $false
+                ShouldInvokeConnectUncPath = 0
+                ShouldInvokeDisconnectUncPath = 0
+                ShouldInvokeInvokeRsCimMethod = 0
+                ShouldInvokeNewItem = 0
+                ShouldInvokeSetContent = 0
+            }
+            @{
+                Parameters = @{
+                    IsInitialized = $true
+                    EncryptionKeyBackupCredential = $mockEncryptionKeyBackupCredential
+                    EncryptionKeyBackupPath = $mockBackupPath
+                    EncryptionKeyBackupPathCredential = $mockEncryptionKeyBackupPathCredential
+                    CimInstance = $mockCimInstance
+                }
+                ReturnValue = $true
+                ShouldInvokeConnectUncPath = 1
+                ShouldInvokeDisconnectUncPath = 1
+                ShouldInvokeInvokeRsCimMethod = 1
+                ShouldInvokeNewItem = 1
+                ShouldInvokeSetContent = 1
+            }
+        )
+    }
+
+    BeforeAll {
+        Mock -CommandName Connect-UncPath
+        Mock -CommandName Disconnect-UncPath
+        Mock -CommandName Invoke-RsCimMethod
+        Mock -CommandName New-Item
+        Mock -CommandName Set-Content
+    }
+
+    Context 'When IsInitialized is "<Parameters.IsInitialized>"' -ForEach $testCases {
+        It 'Should return "<ReturnValue>"' {
+            Backup-EncryptionKey @Parameters | Should -Be $ReturnValue
+
+            Should -Invoke -CommandName Connect-UncPath -Exactly -Times $ShouldInvokeConnectUncPath -Scope It
+            Should -Invoke -CommandName Disconnect-UncPath -Exactly -Times $ShouldInvokeDisconnectUncPath -Scope It
+            Should -Invoke -CommandName Invoke-RsCimMethod -Exactly -Times $ShouldInvokeInvokeRsCimMethod -Scope It
+            Should -Invoke -CommandName New-Item -Exactly -Times $ShouldInvokeNewItem -Scope It
+            Should -Invoke -CommandName Set-Content -Exactly -Times $ShouldInvokeSetContent -Scope It
         }
     }
 }
