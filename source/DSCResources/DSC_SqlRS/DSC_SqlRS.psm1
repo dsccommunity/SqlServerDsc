@@ -468,79 +468,14 @@ function Set-TargetResource
 
         #region Backup Encryption Key
         Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
-        if ( $currentConfig.IsInitialized )
-        {
-            if ( -not $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
-            {
-                Write-Verbose -Message $script:localizedData.EncryptionKeyBackupCredentialNotSpecified -Verbose
-
-                $characterSet = ( @(33..126) | Foreach-Object -Process { [System.Char][System.Byte]$_ } )
-                $encryptionKeyBackupPassword = [System.Security.SecureString]::new()
-                for ( $loop=1; $loop -le 16; $loop++ )
-                {
-                    $encryptionKeyBackupPassword.InsertAt(($loop - 1), ($CharacterSet | Get-Random))
-                }
-
-                $EncryptionKeyBackupCredential = [System.Management.Automation.PSCredential]::new('BackupUser', $encryptionKeyBackupPassword)
-            }
-            Write-Verbose -Message ( $script:localizedData.EncryptionKeyBackupCredentialUserName -f $EncryptionKeyBackupCredential.UserName ) -Verbose
-
-            $invokeRsCimMethodParameters = @{
-                CimInstance = $reportingServicesData.Configuration
-                MethodName  = 'BackupEncryptionKey'
-                Arguments   = @{
-                    Password = $EncryptionKeyBackupCredential.GetNetworkCredential().Password
-                }
-            }
-            $backupEncryptionKeyResult = Invoke-RsCimMethod @invokeRsCimMethodParameters
-
-
-            if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') )
-            {
-                $EncryptionKeyBackupPath = [Environment]::ExpandEnvironmentVariables($EncryptionKeyBackupPath)
-
-                $encryptionKeyBackupPathIsUnc = $false
-                if ( $EncryptionKeyBackupPath -match '^\\\\')
-                {
-                    $encryptionKeyBackupPathIsUnc = $true
-                }
-
-                if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupPathCredential') )
-                {
-                    Connect-UncPath -RemotePath $EncryptionKeyBackupPath -SourceCredential $EncryptionKeyBackupPathCredential
-                }
-
-                if ( -not ( Test-Path -Path $EncryptionKeyBackupPath ) )
-                {
-                    New-Item -Path $EncryptionKeyBackupPath -ItemType Directory
-                }
-
-                $encryptionKeyBackupFileName = "$($env:ComputerName)-$($currentConfig.InstanceName).snk"
-                $encryptionKeyBackupFile = Join-Path -Path $EncryptionKeyBackupPath -ChildPath $encryptionKeyBackupFileName
-                Write-Verbose -Message ($script:localizedData.BackupEncryptionKey -f $encryptionKeyBackupFile) -Verbose
-
-                $setContentParameters = @{
-                    Path = $encryptionKeyBackupFile
-                    Value = $backupEncryptionKeyResult.KeyFile
-                }
-
-                if ( $PSVersionTable.PSVersion.Major -gt 5 )
-                {
-                    $setContentParameters.AsByteStream = $true
-                }
-                else
-                {
-                    $setContentParameters.Encoding = 'Byte'
-                }
-
-                Set-Content @setContentParameters
-
-                if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
-                {
-                    Disconnect-UncPath -RemotePath $EncryptionKeyBackupPath
-                }
-            }
+        $backupEncryptionKeyParameters = @{
+            IsInitialized = $currentConfig.IsInitialized
+            EncryptionKeyBackupCredential = $EncryptionKeyBackupCredential
+            EncryptionKeyBackupPath = $EncryptionKeyBackupPath
+            EncryptionKeyBackupPathCredential = $EncryptionKeyBackupPathCredential
+            CimInstance = $reportingServicesData.Configuration
         }
+        $encryptionKeyBackedUp = Backup-EncryptionKey
         #endregion Backup Encryption Key
 
         #region Set the service account
@@ -763,6 +698,22 @@ function Set-TargetResource
         }
 
         #endregion Database
+
+        <#
+            Determine if the encryption key was backed up. If not, then back it up now
+            This is required for anything older than SQL 2017
+        #>
+        if ( -not $encryptionKeyBackedUp )
+        {
+            $backupEncryptionKeyParameters = @{
+                IsInitialized = $currentConfig.IsInitialized
+                EncryptionKeyBackupCredential = $EncryptionKeyBackupCredential
+                EncryptionKeyBackupPath = $EncryptionKeyBackupPath
+                EncryptionKeyBackupPathCredential = $EncryptionKeyBackupPathCredential
+                CimInstance = $reportingServicesData.Configuration
+            }
+            $encryptionKeyBackedUp = Backup-EncryptionKey
+        }
 
         #region Virtual Directories
         <#
@@ -1813,4 +1764,132 @@ function Get-LocalServiceAccountName
     $localServiceAccountName = $serviceAccountLookupTable.$LocalServiceAccountType
     Write-Verbose -Message ( $script:localizedData.GetLocalServiceAccountName -f $localServiceAccountName, $LocalServiceAccountType ) -Verbose
     return $localServiceAccountName
+}
+
+<#
+    .SYNOPSIS
+        Back up the report server encryption key.
+
+    .PARAMETER IsInitialized
+        Is the report server initialized?
+
+    .PARAMETER EncryptionKeyBackupCredential
+        The credential which should be used to backup the encryption key. If no
+        credential is supplied, a randomized value will be generated for
+        internal use during runtime.
+
+    .PARAMETER EncryptionKeyBackupPath
+        The path where the encryption key will be backed up to.
+
+    .PARAMETER EncryptionKeyBackupPathCredential
+        The credential which is used to access the path specified in
+        "EncryptionKeyBackupPath".
+
+    .PARAMETER CimInstance
+        The CIM instance object that contains the method to call.
+#>
+function Backup-EncryptionKey
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Boolean]
+        $IsInitialized,
+
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $EncryptionKeyBackupCredential,
+
+        [Parameter()]
+        [System.String]
+        $EncryptionKeyBackupPath,
+
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $EncryptionKeyBackupPathCredential,
+
+        [Parameter(Mandatory = $true)]
+        [Microsoft.Management.Infrastructure.CimInstance]
+        $CimInstance
+    )
+
+    $encryptionKeyBackedUp = $false
+
+    if ( $IsInitialized )
+    {
+        if ( -not $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+        {
+            Write-Verbose -Message $script:localizedData.EncryptionKeyBackupCredentialNotSpecified -Verbose
+
+            $characterSet = ( @(33..126) | Foreach-Object -Process { [System.Char][System.Byte]$_ } )
+            $encryptionKeyBackupPassword = [System.Security.SecureString]::new()
+            for ( $loop=1; $loop -le 16; $loop++ )
+            {
+                $encryptionKeyBackupPassword.InsertAt(($loop - 1), ($CharacterSet | Get-Random))
+            }
+
+            $EncryptionKeyBackupCredential = [System.Management.Automation.PSCredential]::new('BackupUser', $encryptionKeyBackupPassword)
+        }
+        Write-Verbose -Message ( $script:localizedData.EncryptionKeyBackupCredentialUserName -f $EncryptionKeyBackupCredential.UserName ) -Verbose
+
+        $invokeRsCimMethodParameters = @{
+            CimInstance = $CimInstance
+            MethodName  = 'BackupEncryptionKey'
+            Arguments   = @{
+                Password = $EncryptionKeyBackupCredential.GetNetworkCredential().Password
+            }
+        }
+        $backupEncryptionKeyResult = Invoke-RsCimMethod @invokeRsCimMethodParameters
+
+        if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') )
+        {
+            $EncryptionKeyBackupPath = [Environment]::ExpandEnvironmentVariables($EncryptionKeyBackupPath)
+
+            $encryptionKeyBackupPathIsUnc = $false
+            if ( $EncryptionKeyBackupPath -match '^\\\\')
+            {
+                $encryptionKeyBackupPathIsUnc = $true
+            }
+
+            if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupPathCredential') )
+            {
+                Connect-UncPath -RemotePath $EncryptionKeyBackupPath -SourceCredential $EncryptionKeyBackupPathCredential
+            }
+
+            if ( -not ( Test-Path -Path $EncryptionKeyBackupPath ) )
+            {
+                New-Item -Path $EncryptionKeyBackupPath -ItemType Directory
+            }
+
+            $encryptionKeyBackupFileName = "$($env:ComputerName)-$($currentConfig.InstanceName).snk"
+            $encryptionKeyBackupFile = Join-Path -Path $EncryptionKeyBackupPath -ChildPath $encryptionKeyBackupFileName
+            Write-Verbose -Message ($script:localizedData.BackupEncryptionKey -f $encryptionKeyBackupFile) -Verbose
+
+            $setContentParameters = @{
+                Path = $encryptionKeyBackupFile
+                Value = $backupEncryptionKeyResult.KeyFile
+            }
+
+            if ( $PSVersionTable.PSVersion.Major -gt 5 )
+            {
+                $setContentParameters.AsByteStream = $true
+            }
+            else
+            {
+                $setContentParameters.Encoding = 'Byte'
+            }
+
+            Set-Content @setContentParameters
+
+            if ( $encryptionKeyBackupPathIsUnc -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+            {
+                Disconnect-UncPath -RemotePath $EncryptionKeyBackupPath
+            }
+        }
+
+        $encryptionKeyBackedUp = $true
+    }
+
+    return $encryptionKeyBackedUp
 }
