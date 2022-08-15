@@ -445,7 +445,7 @@ function Set-TargetResource
             EncryptionKeyBackupPathCredential = $EncryptionKeyBackupPathCredential
             CimInstance = $reportingServicesData.Configuration
         }
-        $encryptionKeyBackedUp = Backup-EncryptionKey
+        $encryptionKeyBackedUp = Backup-EncryptionKey @backupEncryptionKeyParameters
         #endregion Backup Encryption Key
 
         #region Set the service account
@@ -660,7 +660,7 @@ function Set-TargetResource
                 EncryptionKeyBackupPathCredential = $EncryptionKeyBackupPathCredential
                 CimInstance = $reportingServicesData.Configuration
             }
-            $encryptionKeyBackedUp = Backup-EncryptionKey
+            $encryptionKeyBackedUp = Backup-EncryptionKey @backupEncryptionKeyParameters
         }
 
         #region Virtual Directories
