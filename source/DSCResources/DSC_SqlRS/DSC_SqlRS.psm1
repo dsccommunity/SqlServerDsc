@@ -1048,8 +1048,7 @@ function Set-TargetResource
                             Password = $EncryptionKeyBackupCredential.GetNetworkCredential().Password
                         }
                     }
-
-                    $restoreEncryptionKeyResult = Invoke-RsCimMethod @invokeRsCimMethodRestoreEncryptionKeyParameters
+                    Invoke-RsCimMethod @invokeRsCimMethodRestoreEncryptionKeyParameters > $null
                 }
 
                 try
