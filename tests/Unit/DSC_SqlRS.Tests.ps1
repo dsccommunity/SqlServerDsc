@@ -2534,7 +2534,7 @@ Describe 'SqlRS\Backup-EncryptionKey' -Tag 'Helper' {
     BeforeAll {
         $mockInvokeRsCimMethod_BackupEncryptionKey = {
             return New-Object -TypeName PSObject |
-                Add-Member -MemberType NoteProperty -Name KeyFile -Value $mockEncryptionKeyValue -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name KeyFile -Value $ReturnValue -PassThru -Force
         }
 
         Mock -CommandName Connect-UncPath
