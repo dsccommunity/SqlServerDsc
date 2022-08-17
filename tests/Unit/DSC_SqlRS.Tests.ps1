@@ -2491,11 +2491,11 @@ Describe 'SqlRS\Get-LocalServiceAccountName' -Tag 'Helper' {
 
 Describe 'SqlRS\Backup-EncryptionKey' -Tag 'Helper' {
     BeforeDiscovery {
+        $mockEncryptionKeyValue = 'encryption key value'
         $mockCimInstance = New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
             'MSReportServer_ConfigurationSetting'
             'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v13/Admin'
         )
-
         $mockEncryptionKeyBackupCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('mockBackupUser', ( ConvertTo-SecureString 'P@$$w0rd1' -AsPlainText -Force ) )
         $mockEncryptionKeyBackupPathCredential  = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('mockBackupPathUser', ( ConvertTo-SecureString 'P@$$w0rd1' -AsPlainText -Force ) )
         $mockBackupPath = '\\Remote\Backup\Path'
@@ -2532,7 +2532,6 @@ Describe 'SqlRS\Backup-EncryptionKey' -Tag 'Helper' {
     }
 
     BeforeAll {
-        $mockEncryptionKeyValue = 'encryption key value'
         $mockInvokeRsCimMethod_BackupEncryptionKey = {
             return New-Object -TypeName PSObject |
                 Add-Member -MemberType NoteProperty -Name KeyFile -Value $mockEncryptionKeyValue -PassThru -Force
