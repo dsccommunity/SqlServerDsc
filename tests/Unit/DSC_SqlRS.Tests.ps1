@@ -2495,6 +2495,7 @@ Describe 'SqlRS\Backup-EncryptionKey' -Tag 'Helper' {
             'MSReportServer_ConfigurationSetting'
             'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v13/Admin'
         )
+
         $mockEncryptionKeyBackupCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('mockBackupUser', ( ConvertTo-SecureString 'P@$$w0rd1' -AsPlainText -Force ) )
         $mockEncryptionKeyBackupPathCredential  = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('mockBackupPathUser', ( ConvertTo-SecureString 'P@$$w0rd1' -AsPlainText -Force ) )
         $mockBackupPath = '\\Remote\Backup\Path'
@@ -2505,7 +2506,7 @@ Describe 'SqlRS\Backup-EncryptionKey' -Tag 'Helper' {
                     IsInitialized = $false
                     CimInstance = $mockCimInstance
                 }
-                ReturnValue = $false
+                ReturnValue = $null
                 ShouldInvokeConnectUncPath = 0
                 ShouldInvokeDisconnectUncPath = 0
                 ShouldInvokeInvokeRsCimMethod = 0
@@ -2520,7 +2521,7 @@ Describe 'SqlRS\Backup-EncryptionKey' -Tag 'Helper' {
                     EncryptionKeyBackupPathCredential = $mockEncryptionKeyBackupPathCredential
                     CimInstance = $mockCimInstance
                 }
-                ReturnValue = $true
+                ReturnValue = $mockEncryptionKeyValue
                 ShouldInvokeConnectUncPath = 1
                 ShouldInvokeDisconnectUncPath = 1
                 ShouldInvokeInvokeRsCimMethod = 1
@@ -2531,16 +2532,23 @@ Describe 'SqlRS\Backup-EncryptionKey' -Tag 'Helper' {
     }
 
     BeforeAll {
+        $mockEncryptionKeyValue = 'encryption key value'
+        $mockInvokeRsCimMethod_BackupEncryptionKey = {
+            return New-Object -TypeName PSObject |
+                Add-Member -MemberType NoteProperty -Name KeyFile -Value $mockEncryptionKeyValue -PassThru -Force
+        }
+
         Mock -CommandName Connect-UncPath
         Mock -CommandName Disconnect-UncPath
-        Mock -CommandName Invoke-RsCimMethod
+        Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_BackupEncryptionKey
         Mock -CommandName New-Item
         Mock -CommandName Set-Content
     }
 
     Context 'When IsInitialized is "<Parameters.IsInitialized>"' -ForEach $testCases {
         It 'Should return "<ReturnValue>"' {
-            Backup-EncryptionKey @Parameters | Should -Be $ReturnValue
+            $backupEncryptionKeyResult = Backup-EncryptionKey @Parameters
+            $backupEncryptionKeyResult.KeyFile | Should -Be $ReturnValue
 
             Should -Invoke -CommandName Connect-UncPath -Exactly -Times $ShouldInvokeConnectUncPath -Scope It
             Should -Invoke -CommandName Disconnect-UncPath -Exactly -Times $ShouldInvokeDisconnectUncPath -Scope It
