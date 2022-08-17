@@ -445,7 +445,7 @@ function Set-TargetResource
             EncryptionKeyBackupPathCredential = $EncryptionKeyBackupPathCredential
             CimInstance = $reportingServicesData.Configuration
         }
-        $encryptionKeyBackedUp = Backup-EncryptionKey @backupEncryptionKeyParameters
+        $backupEncryptionKeyResult = Backup-EncryptionKey @backupEncryptionKeyParameters
         #endregion Backup Encryption Key
 
         #region Set the service account
@@ -651,7 +651,7 @@ function Set-TargetResource
             Determine if the encryption key was backed up. If not, then back it up now
             This is required for anything older than SQL 2017
         #>
-        if ( -not $encryptionKeyBackedUp )
+        if ( -not $backupEncryptionKeyResult )
         {
             $backupEncryptionKeyParameters = @{
                 IsInitialized = $currentConfig.IsInitialized
@@ -660,7 +660,7 @@ function Set-TargetResource
                 EncryptionKeyBackupPathCredential = $EncryptionKeyBackupPathCredential
                 CimInstance = $reportingServicesData.Configuration
             }
-            $encryptionKeyBackedUp = Backup-EncryptionKey @backupEncryptionKeyParameters
+            $backupEncryptionKeyResult = Backup-EncryptionKey @backupEncryptionKeyParameters
         }
 
         #region Virtual Directories
@@ -1044,7 +1044,7 @@ function Set-TargetResource
                         MethodName  = 'RestoreEncryptionKey'
                         Arguments   = @{
                             KeyFile = $backupEncryptionKeyResult.KeyFile
-                            Length = $restoreEncryptionKeyResult.Length
+                            Length = $backupEncryptionKeyResult.Length
                             Password = $EncryptionKeyBackupCredential.GetNetworkCredential().Password
                         }
                     }
@@ -1685,6 +1685,7 @@ function Get-LocalServiceAccountName
 function Backup-EncryptionKey
 {
     [CmdletBinding()]
+    [OutputType([Microsoft.Management.Infrastructure.CimMethodResult])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -1707,8 +1708,6 @@ function Backup-EncryptionKey
         [Microsoft.Management.Infrastructure.CimInstance]
         $CimInstance
     )
-
-    $encryptionKeyBackedUp = $false
 
     if ( $IsInitialized )
     {
@@ -1782,8 +1781,6 @@ function Backup-EncryptionKey
             }
         }
 
-        $encryptionKeyBackedUp = $true
+        return $backupEncryptionKeyResult
     }
-
-    return $encryptionKeyBackedUp
 }
