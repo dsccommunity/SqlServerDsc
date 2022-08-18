@@ -882,6 +882,10 @@ function Set-TargetResource
 
                 Invoke-RsCimMethod @invokeRsCimMethodParameters
             }
+
+            # Get the current configuration
+            $currentConfig = Get-TargetResource @getTargetResourceParameters
+            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
         }
 
         $compareParameters = @{
@@ -928,6 +932,10 @@ function Set-TargetResource
 
                 Invoke-RsCimMethod @invokeRsCimMethodParameters
             }
+
+            # Get the current configuration
+            $currentConfig = Get-TargetResource @getTargetResourceParameters
+            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
         }
         #endregion Reserved URLs
 
@@ -1033,6 +1041,10 @@ function Set-TargetResource
                     Invoke-RsCimMethod @invokeRsCimMethodCreateSSLCertificateBindingParameters > $null
                 }
             }
+
+            # Get the current configuration
+            $currentConfig = Get-TargetResource @getTargetResourceParameters
+            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
         }
         #endregion SSL Certificate Bindings
 
@@ -1058,7 +1070,10 @@ function Set-TargetResource
 
         $restartReportingService = $false
 
+        # Get the current configuration
         $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
+        $currentConfig = Get-TargetResource @getTargetResourceParameters
+        Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
 
         <#
             Only execute InitializeReportServer if SetDatabaseConnection hasn't
@@ -1066,7 +1081,7 @@ function Set-TargetResource
             InitializeReportServer will fail on SQL Server Standard and
             lower editions.
         #>
-        if ( -not $reportingServicesData.Configuration.IsInitialized )
+        if ( -not $currentConfig.IsInitialized )
         {
             Write-Verbose -Message (
                 $script:localizedData.RestartDidNotHelp -f @(
@@ -1078,7 +1093,7 @@ function Set-TargetResource
 
             $restartReportingService = $true
             $restoreKey = $false
-            $reportingServicesInitialized = $reportingServicesData.Configuration.IsInitialized
+            $reportingServicesInitialized = $currentConfig.IsInitialized
 
             do
             {
@@ -1140,6 +1155,10 @@ function Set-TargetResource
 
             # Refresh the reportingServicesData
             $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
+
+            # Get the current configuration
+            $currentConfig = Get-TargetResource @getTargetResourceParameters
+            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
         }
         else
         {
