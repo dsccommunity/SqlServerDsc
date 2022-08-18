@@ -849,7 +849,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
                     $ClassName -eq 'Win32_OperatingSystem'
-                } -Exactly -Times 6 -Scope It
+                } -Exactly -Times 10 -Scope It
 
                 Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
@@ -1124,9 +1124,18 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $MethodName -eq 'RemoveURL' -and $Arguments.Application -eq $mockReportsApplicationName
                 } -Exactly -Times 2 -Scope It
 
+                if ( $TestCaseVersion -lt 14 )
+                {
+                    $shouldInvokeInitializeReportServerTime = 1
+                }
+                else
+                {
+                    $shouldInvokeInitializeReportServerTime = 0
+                }
+
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'InitializeReportServer'
-                } -Exactly -Times 0 -Scope It
+                } -Exactly -Times $shouldInvokeInitializeReportServerTime -Scope It
 
                 Should -Invoke -CommandName Invoke-RsCimMethod -ParameterFilter {
                     $MethodName -eq 'SetDatabaseConnection'
@@ -1231,7 +1240,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationNameLegacy
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 6 -Scope It
+                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 10 -Scope It
                 Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
             }
@@ -1310,7 +1319,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
                 } -Exactly -Times 1 -Scope It
 
-                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 6 -Scope It
+                Should -Invoke -CommandName Get-CimInstance -Exactly -Times 10 -Scope It
                 Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
             }
@@ -1512,7 +1521,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 $MethodName -eq 'ReserveUrl' -and $Arguments.Application -eq $mockReportsApplicationName
             } -Exactly -Times 1 -Scope It
 
-            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 6 -Scope It
+            Should -Invoke -CommandName Get-CimInstance -Exactly -Times 9 -Scope It
             Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
             Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
         }
