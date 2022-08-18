@@ -2665,3 +2665,13 @@ Describe 'SqlRS\Backup-EncryptionKey' -Tag 'Helper' {
         }
     }
 }
+
+Describe 'SqlRS\New-EncryptionKeyBackupCredential' -Tag 'Helper' {
+    Context 'When the function is called' {
+        It 'Should create a new credential' {
+            $credential = New-EncryptionKeyBackupCredential
+            $credential | Should -BeOfType System.Management.Automation.PSCredential
+            $credential.GetNetworkCredential().Password.Length | Should -Be 16
+        }
+    }
+}

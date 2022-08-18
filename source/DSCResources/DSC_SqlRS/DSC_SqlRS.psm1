@@ -467,6 +467,12 @@ function Set-TargetResource
         #endregion Get Operating System Information
 
         #region Backup Encryption Key
+        if ( -not $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
+        {
+            Write-Verbose -Message $script:localizedData.EncryptionKeyBackupCredentialNotSpecified -Verbose
+            $EncryptionKeyBackupCredential = New-EncryptionKeyBackupCredential
+        }
+
         Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
         $backupEncryptionKeyParameters = @{
             IsInitialized = $currentConfig.IsInitialized
@@ -1767,6 +1773,45 @@ function Get-LocalServiceAccountName
 
 <#
     .SYNOPSIS
+        Create a new credential with a randomly generated password.
+
+    .PARAMETER CharacterSet
+        The characters from which the password will be generated from.
+
+    .PARAMETER PasswordLength
+        The length of the generated password. Default is 16.
+#>
+function New-EncryptionKeyBackupCredential
+{
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCredential])]
+    param
+    (
+        [Parameter()]
+        [System.String[]]
+        $CharacterSet = ( @(33..126) | Foreach-Object -Process { [System.Char][System.Byte]$_ } ),
+
+        [Parameter()]
+        [System.Int32]
+        $PasswordLength = 16
+    )
+
+    Write-Verbose -Message (
+        $script:localizedData.CreateNewEncryptionKeyBackupCredential -f ( $CharacterSet -join ', ' )
+     ) -Verbose
+
+    $encryptionKeyBackupPassword = [System.Security.SecureString]::new()
+    for ( $loop=1; $loop -le $PasswordLength; $loop++ )
+    {
+        $encryptionKeyBackupPassword.InsertAt(($loop - 1), ($CharacterSet | Get-Random))
+    }
+
+    $encryptionKeyBackupCredential = [System.Management.Automation.PSCredential]::new('BackupUser', $encryptionKeyBackupPassword)
+    return $encryptionKeyBackupCredential
+}
+
+<#
+    .SYNOPSIS
         Back up the report server encryption key.
 
     .PARAMETER IsInitialized
@@ -1816,19 +1861,6 @@ function Backup-EncryptionKey
 
     if ( $IsInitialized )
     {
-        if ( -not $PSBoundParameters.ContainsKey('EncryptionKeyBackupCredential') )
-        {
-            Write-Verbose -Message $script:localizedData.EncryptionKeyBackupCredentialNotSpecified -Verbose
-
-            $characterSet = ( @(33..126) | Foreach-Object -Process { [System.Char][System.Byte]$_ } )
-            $encryptionKeyBackupPassword = [System.Security.SecureString]::new()
-            for ( $loop=1; $loop -le 16; $loop++ )
-            {
-                $encryptionKeyBackupPassword.InsertAt(($loop - 1), ($CharacterSet | Get-Random))
-            }
-
-            $EncryptionKeyBackupCredential = [System.Management.Automation.PSCredential]::new('BackupUser', $encryptionKeyBackupPassword)
-        }
         Write-Verbose -Message ( $script:localizedData.EncryptionKeyBackupCredentialUserName -f $EncryptionKeyBackupCredential.UserName ) -Verbose
 
         $invokeRsCimMethodParameters = @{

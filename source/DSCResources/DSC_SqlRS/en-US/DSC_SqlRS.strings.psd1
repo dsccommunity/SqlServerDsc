@@ -37,4 +37,5 @@ ConvertFrom-StringData @'
     ReportingServicesIsInitialized = Reporting Services on '{0}\{1}' is initialized: {2}.
     EncryptionKeyBackupCredentialNotSpecified = An encryption key backup credential was not specified. Generating a random credential.
     EncryptionKeyBackupCredentialUserName = The encryption key backup credential user name is '{0}'.
+    CreateNewEncryptionKeyBackupCredential = Creating a new encryption key backup credential from the character set: {0}.
 '@
