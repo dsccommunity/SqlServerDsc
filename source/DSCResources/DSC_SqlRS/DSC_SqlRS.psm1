@@ -447,10 +447,15 @@ function Set-TargetResource
         $backupEncryptionKeyParameters = @{
             IsInitialized = $currentConfig.IsInitialized
             EncryptionKeyBackupCredential = $EncryptionKeyBackupCredential
-            EncryptionKeyBackupPath = $EncryptionKeyBackupPath
-            EncryptionKeyBackupPathCredential = $EncryptionKeyBackupPathCredential
             CimInstance = $reportingServicesData.Configuration
         }
+
+        if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') -and $PSBoundParameters.ContainsKey('EncryptionKeyBackupPathCredential') )
+        {
+            $backupEncryptionKeyParameters.Add('EncryptionKeyBackupPath', $EncryptionKeyBackupPath)
+            $backupEncryptionKeyParameters.Add('EncryptionKeyBackupPathCredential', $EncryptionKeyBackupPathCredential)
+        }
+
         $backupEncryptionKeyResult = Backup-EncryptionKey @backupEncryptionKeyParameters
         #endregion Backup Encryption Key
 
@@ -659,13 +664,6 @@ function Set-TargetResource
         #>
         if ( -not $backupEncryptionKeyResult )
         {
-            $backupEncryptionKeyParameters = @{
-                IsInitialized = $currentConfig.IsInitialized
-                EncryptionKeyBackupCredential = $EncryptionKeyBackupCredential
-                EncryptionKeyBackupPath = $EncryptionKeyBackupPath
-                EncryptionKeyBackupPathCredential = $EncryptionKeyBackupPathCredential
-                CimInstance = $reportingServicesData.Configuration
-            }
             $backupEncryptionKeyResult = Backup-EncryptionKey @backupEncryptionKeyParameters
         }
 
