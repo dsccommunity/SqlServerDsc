@@ -25,22 +25,23 @@
 
         ### Property **Reasons** does not work with **PSDscRunAsCredential**
 
-        When using the built-in parameter `**PSDscRunAsCredential** the read-only
-        property `Reasons` will return empty values for Code and Phrase. The
-        built-in property **PSDscRunAsCredential** does not work with class-based
-        resources that using advanced type like the parameter `Reasons` have.
+        When using the built-in parameter **PSDscRunAsCredential** the read-only
+        property **Reasons** will return empty values for the properties **Code**
+        and **Phrase. The built-in property **PSDscRunAsCredential** does not work
+        together with class-based resources that using advanced type like the parameter
+        **Reasons** have.
 
-        ### Using **Credential** property.
+        ### Using **Credential** property
 
         SQL Authentication and Group Managed Service Accounts is not supported as
         impersonation credentials. Currently only Windows Integrated Security is
         supported to use as credentials.
 
         For Windows Authentication the username must either be provided with the User
-        Principal Name (UPN), e.g. 'username@domain.local' or if using non-domain
+        Principal Name (UPN), e.g. `username@domain.local` or if using non-domain
         (for example a local Windows Server account) account the username must be
-        provided without the NetBIOS name, e.g. 'username'. The format 'DOMAIN\username'
-        will not work.
+        provided without the NetBIOS name, e.g. `username`. Using the NetBIOS name, e.g
+        using the format `DOMAIN\username` will not work.
 
         See more information in [Credential Overview](https://github.com/dsccommunity/SqlServerDsc/wiki/CredentialOverview).
 
