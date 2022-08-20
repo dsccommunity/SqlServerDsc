@@ -95,6 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Remove-SqlDscAudit`
     - `Enable-SqlDscAudit`
     - `Disable-SqlDscAudit`
+    - `Install-SqlDscServer`
   - Support for debugging of integration tests in AppVeyor.
     - Only run for pull requests
   - Add new resource SqlAudit.
