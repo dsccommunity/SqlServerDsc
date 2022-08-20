@@ -237,6 +237,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Renamed the hidden property that derived classes can specify which properties
     to not enforce when comparing desired state against current state. New name
     of the hidden property is `ExcludeDscProperties`.
+- SqlAudit
+  - Fix documentation that contain minor style errors.
 
 ### Fixed
 
