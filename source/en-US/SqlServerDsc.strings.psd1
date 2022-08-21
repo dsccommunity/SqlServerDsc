@@ -77,4 +77,10 @@ ConvertFrom-StringData @'
     Audit_Disable_ShouldProcessVerboseWarning = Are you sure you want to disable the audit '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Audit_Disable_ShouldProcessCaption = Disable audit on instance
+
+    ## Install-SqlDscServer
+    Server_Install_ShouldProcessVerboseDescription = Invoking the Microsoft SQL Server setup action '{0}'.
+    Server_Install_ShouldProcessVerboseWarning = Are you sure you want to invoke the setup action '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Server_Install_ShouldProcessCaption = Invoke a Microsoft SQL Server setup action
 '@
