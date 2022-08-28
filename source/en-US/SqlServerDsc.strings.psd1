@@ -83,4 +83,13 @@ ConvertFrom-StringData @'
     Server_Install_ShouldProcessVerboseWarning = Are you sure you want to invoke the setup action '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Server_Install_ShouldProcessCaption = Invoke a Microsoft SQL Server setup action
+    SetupExitMessage = Setup exited with code '{0}'.
+    SetupSuccessful = Setup finished successfully.
+    SetupSuccessfulRebootRequired = Setup finished successfully, but a reboot is required.
+    SetupFailed = Please see the 'Summary.txt' log file in the 'Setup Bootstrap\\Log' folder.
+    SetupArguments = Specified setup executable arguments: {0}
+
+    ## Assert-RequiredCommandParameter
+    SpecificParametersMustAllBeSet = The parameters '{0}' must all be specified.
+    SpecificParametersMustAllBeSetWhenParameterExist = The parameters '{0}' must all be specified if either parameter '{1}' is specified.
 '@

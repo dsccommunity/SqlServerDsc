@@ -41,13 +41,13 @@
     .PARAMETER RemoveNode
         Specifies the setup action RemoveNode.
 
-    .PARAMETER AcceptTermAndNotices
+    .PARAMETER AcceptLicensingTerms
         Required parameter to be able to run unattended install. By specifying this
         parameter you acknowledge the acceptance all license terms and notices for
         the specified features, the terms and notices that the Microsoft SQL Server
         setup executable normally ask for.
 
-        This will be the same as passing `/SUPPRESSPRIVACYSTATEMENTNOTICE`,
+        This will be the same as passing
         `/IACCEPTSQLSERVERLICENSETERMS`, `/IACCEPTPYTHONLICENSETERMS`, and
         `/IACCEPTROPENLICENSETERMS` to the setup executable.
 
@@ -55,7 +55,7 @@
         None.
 
     .EXAMPLE
-        Install-SqlDscServer -Install -AcceptTermAndNotices -InstanceName 'MyInstance' -Features 'SQLENGINE' -MediaPath 'E:\' -SqlSysAdminAccounts @('MyAdminAccount')
+        Install-SqlDscServer -Install -AcceptLicensingTerms -InstanceName 'MyInstance' -Features 'SQLENGINE' -MediaPath 'E:\' -SqlSysAdminAccounts @('MyAdminAccount')
 
         Installs a named instance MyInstance.
 
@@ -132,12 +132,14 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'EditionUpgrade', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'CompleteFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'AddNode', Mandatory = $true)]
         [Parameter(ParameterSetName = 'CompleteImage', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'UsingConfigurationFile')]
         [System.Management.Automation.SwitchParameter]
-        $AcceptTermAndNotices,
+        $AcceptLicensingTerms,
+
+        [Parameter(ParameterSetName = 'Install')]
+        [System.Management.Automation.SwitchParameter]
+        $SuppressPrivacyStatementNotice,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -195,7 +197,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Uninstall', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster', Mandatory = $true)]
-        [System.String]
+        [System.String[]]
         $Features,
 
         # Skipped ERRORREPORTING because it is obsolete.
@@ -257,7 +259,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $PBEngSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -276,7 +278,7 @@ function Install-SqlDscServer
         $PBDMSSvcAccount, # cspell: disable-line
 
         [Parameter(ParameterSetName = 'Install')]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $PBDMSSvcPassword, # cspell: disable-line
 
         [Parameter(ParameterSetName = 'Install')]
@@ -284,7 +286,6 @@ function Install-SqlDscServer
         [System.String]
         $PBDMSSvcStartupType, # cspell: disable-line
 
-        # TODO: Should be two Integer-parameters *StartRange och *EndRange
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'CompleteImage')]
@@ -292,8 +293,18 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
-        [System.String]
-        $PBPortRange,
+        [System.UInt16]
+        $PBStartPortRange,
+
+        [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'PrepareImage')]
+        [Parameter(ParameterSetName = 'CompleteImage')]
+        [Parameter(ParameterSetName = 'Repair')]
+        [Parameter(ParameterSetName = 'InstallFailoverCluster')]
+        [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
+        [Parameter(ParameterSetName = 'AddNode')]
+        [System.UInt16]
+        $PBEndPortRange,
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'PrepareImage')]
@@ -334,7 +345,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $AgtSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -404,7 +415,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $ASSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -422,7 +433,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
-        [System.String]
+        [System.Management.Automation.SwitchParameter]
         $ASProviderMSOLAP,
 
         # TODO: This is mandatory when using /ROLE = SPI_AS_NEWFARM
@@ -432,17 +443,17 @@ function Install-SqlDscServer
 
         # TODO: This is mandatory when using /ROLE = SPI_AS_NEWFARM
         # [Parameter(ParameterSetName = 'InstallRole', Mandatory = $true)]
-        # [PSCredential]
+        # [System.Management.Automation.PSCredential]
         # $FarmPassword,
 
         # TODO: This is mandatory when using /ROLE = SPI_AS_NEWFARM
         # [Parameter(ParameterSetName = 'InstallRole', Mandatory = $true)]
-        # [PSCredential]
+        # [System.Management.Automation.PSCredential]
         # $Passphrase,
 
         # TODO: This is mandatory when using /ROLE = SPI_AS_NEWFARM
         # [Parameter(ParameterSetName = 'InstallRole', Mandatory = $true)]
-        # [PSCredential]
+        # [System.Management.Automation.PSCredential]
         # $FarmAdminiPort, # cspell: disable-line
 
         [Parameter(ParameterSetName = 'Install')]
@@ -493,7 +504,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $SAPwd,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -527,7 +538,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $SqlSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -566,7 +577,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
-        [System.String]
+        [System.UInt16]
         $SqlTempDbFileCount,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -574,7 +585,8 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
-        [System.String]
+        [ValidateRange(4, 262144)]
+        [System.UInt16]
         $SqlTempDbFileSize,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -582,7 +594,8 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
-        [System.String]
+        [ValidateRange(0, 1024)]
+        [System.UInt16]
         $SqlTempDbFileGrowth,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -590,7 +603,8 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
-        [System.String]
+        [ValidateRange(4, 262144)]
+        [System.UInt16]
         $SqlTempDbLogFileSize,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -598,7 +612,8 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
-        [System.String]
+        [ValidateRange(0, 1024)]
+        [System.UInt16]
         $SqlTempDbLogFileGrowth,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -620,7 +635,8 @@ function Install-SqlDscServer
         $SqlUserDbLogDir,
 
         [Parameter(ParameterSetName = 'Install')]
-        [System.Int16]
+        [ValidateRange(0, 32767)]
+        [System.UInt16]
         $SqlMaxDop,
 
         # TODO: This parameter cannot be used with /SQLMINMEMORY and /SQLMAXMEMORY.
@@ -630,12 +646,14 @@ function Install-SqlDscServer
 
         # TODO: This parameter cannot be used with /USESQLRECOMMENDEDMEMORYLIMITS.
         [Parameter(ParameterSetName = 'Install')]
-        [System.Int32]
+        [ValidateRange(0, 2147483647)]
+        [System.UInt32]
         $SqlMinMemory,
 
         # TODO: This parameter cannot be used with /USESQLRECOMMENDEDMEMORYLIMITS.
         [Parameter(ParameterSetName = 'Install')]
-        [System.Int32]
+        [ValidateRange(0, 2147483647)]
+        [System.UInt32]
         $SqlMaxMemory,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -643,7 +661,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [ValidateRange(0, 3)]
-        [System.Int16]
+        [System.UInt16]
         $FileStreamLevel,
 
         # TODO: Required when FIleStreamLevel is greater than 1
@@ -662,7 +680,7 @@ function Install-SqlDscServer
 
         # [Parameter(ParameterSetName = 'Install')]
         # [Parameter(ParameterSetName = 'CompleteImage')]
-        # [PSCredential]
+        # [System.Management.Automation.PSCredential]
         # $FTSvcPassword,
 
         # TODO: Might need to be required?
@@ -683,7 +701,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $ISSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -716,7 +734,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
         [ValidateSet('SharePointFilesOnlyMode', 'DefaultNativeMode', 'FilesOnlyMode')]
-        [System.Management.Automation.SwitchParameter]
+        [System.String]
         $RsInstallMode,
 
         # TODO: Might need to be required?
@@ -734,7 +752,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $RSSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -769,7 +787,7 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
-        [System.String]
+        [System.String[]]
         $FailoverClusterDisks,
 
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
@@ -780,7 +798,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'AddNode', Mandatory = $true)]
-        [System.String]
+        [System.String[]]
         $FailoverClusterIPAddresses,
 
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
@@ -792,7 +810,7 @@ function Install-SqlDscServer
         # TODO: Only when upgrading a failover cluster
         [Parameter(ParameterSetName = 'Upgrade')]
         [ValidateRange(0, 2)]
-        [SYstem.Int16]
+        [System.UInt16]
         $FailoverClusterRollOwnership,
 
         # TODO: Azure* parameters only allowed when /FEATURES contain 'ARC', and all must be set except AzureArcProxy
@@ -823,7 +841,7 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallAzureArcAgent', Mandatory = $true)]
-        [PSCredential]
+        [System.Management.Automation.PSCredential]
         $AzureServicePrincipalSecret,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -831,16 +849,15 @@ function Install-SqlDscServer
         [System.String]
         $AzureArcProxy,
 
-        # TODO: This parameter could be added automatically when using parameters set Install and one Azure* parameter is set.
-        # [Parameter(ParameterSetName = 'Install')]
-        # [System.Management.Automation.SwitchParameter]
-        # $OnboardSqlToArc,
-
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'EditionUpgrade')]
         [System.String[]]
         $SkipRules,
+
+        [Parameter()]
+        [System.UInt32]
+        $Timeout = 7200,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -852,7 +869,231 @@ function Install-SqlDscServer
         $ConfirmPreference = 'None'
     }
 
-    # TODO: Build command line.
+    Assert-InstallSqlServerProperties -BoundParameter $PSBoundParameters
+
+    switch ($PSCmdlet.ParameterSetName)
+    {
+        'InstallAzureArcAgent'
+        {
+            $setupAction = 'Install'
+
+            <#
+                For this setup action the parameter Features is not part of the
+                parameter set, so this can be safely set.
+            #>
+            $PSBoundParameters.Features = @('ARC')
+        }
+
+        default
+        {
+            $setupAction = $PSCmdlet.ParameterSetName
+        }
+    }
+
+    $setupArgument = '/ACTION={0}' -f $setupAction
+
+    if ($AcceptLicensingTerms.IsPresent)
+    {
+        $setupArgument += ' /IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
+
+        if ($PSBoundParameters.ContainsKey('Features'))
+        {
+            if ($PSBoundParameters.Features -contains 'SQL_SHARED_MR' )
+            {
+                $setupArgument += ' /IACCEPTROPENLICENSETERMS' # cspell: disable-line
+            }
+
+            if ($PSBoundParameters.Features -contains 'SQL_SHARED_MPY' )
+            {
+                $setupArgument += ' /IACCEPTPYTHONLICENSETERMS' # cspell: disable-line
+            }
+        }
+    }
+
+    $ignoreParameters = @(
+        $PSCmdlet.ParameterSetName
+        'Install' # Must add this exclusively because of parameter set InstallAzureArcAgent
+        'AcceptLicensingTerms'
+        'MediaPath'
+        'Timeout'
+        'Force'
+    )
+
+    $ignoreParameters += [System.Management.Automation.PSCmdlet]::CommonParameters
+    $ignoreParameters += [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
+
+    $boundParameterName = $PSBoundParameters.Keys.Where({ $_ -notin $ignoreParameters })
+
+    $sensitiveValue = @()
+
+    # Loop through all bound parameters and build arguments for the setup executable.
+    foreach ($parameterName in $boundParameterName)
+    {
+        # Make sure parameter is upper-case.
+        $parameterName = $parameterName.ToUpper()
+
+        $setupArgument += ' /{0}' -f $parameterName
+
+        switch ($parameterName)
+        {
+            <#
+                Must be handled differently because it is an array and have a comma
+                separating the values, and the value shall be upper-case.
+            #>
+            'FEATURES'
+            {
+                $setupArgument += '={0}' -f ($PSBoundParameters.$parameterName.ToUpper() -join ',')
+
+                if ($PSBoundParameters.Features -contains 'ARC' -and $PSBoundParameters.Features -contains 'SQLENGINE')
+                {
+                    $setupArgument += ' /ONBOARDSQLTOARC' # cspell: disable-line
+                }
+
+                break
+            }
+
+            # Must be handled differently because the value MUST be upper-case.
+            'ASSERVERMODE' # cspell: disable-line
+            {
+                $setupArgument += '={0}' -f $PSBoundParameters.$parameterName.ToUpper()
+
+                break
+            }
+
+            # Must be handled differently because the parameter name could not be $PID.
+            'PRODUCTKEY' # cspell: disable-line
+            {
+                # Remove the argument that was added above.
+                $setupArgument = $setupArgument -replace ' \/{0}' -f $parameterName
+
+                $sensitiveValue += $PSBoundParameters.$parameterName
+
+                $setupArgument += ' /PID="{0}"' -f $PSBoundParameters.$parameterName
+
+                break
+            }
+
+            # Must be handled differently because the argument name shall have an underscore in the argument.
+            'SQLINSTJAVA' # cspell: disable-line
+            {
+                # Remove the argument that was added above.
+                $setupArgument = $setupArgument -replace ' \/{0}' -f $parameterName
+
+                $setupArgument += ' /SQL_INST_JAVA'
+
+                break
+            }
+
+            # Must be handled differently because each value shall be separated by a semi-colon.
+            'FAILOVERCLUSTERDISKS' # cspell: disable-line
+            {
+                $setupArgument += '="{0}"' -f ($PSBoundParameters.$parameterName -join ';')
+
+                break
+            }
+
+            # Must be handled differently because two parameters shall become one argument.
+            { $_ -in ('PBSTARTPORTRANGE', 'PBENDPORTRANGE') } # cspell: disable-line
+            {
+                # Remove the argument that was added above.
+                $setupArgument = $setupArgument -replace ' \/{0}' -f $parameterName
+
+                # Only set argument if it is not present already.
+                if ($setupArgument -notmatch '\/PBPORTRANGE') # cspell: disable-line
+                {
+                    # cspell: disable-next
+                    $setupArgument += ' /PBPORTRANGE={0}-{1}' -f $PSBoundParameters.PBStartPortRange, $PSBoundParameters.PBEndPortRange
+                }
+
+                break
+            }
+
+            { $PSBoundParameters.$parameterName -is [System.Management.Automation.SwitchParameter] }
+            {
+                <#
+                    If a switch parameter is not included below then those arguments
+                    shall not have any value after argument name, e.g. '/ENU'.
+                #>
+                switch ($parameterName)
+                {
+                    # Arguments that shall have the value set to the boolean numeric representation.
+                    { $parameterName -in ('ASPROVIDERMSOLAP', 'NPENABLED', 'TCPENABLED', 'CONFIRMIPDEPENDENCYCHANGE') } # cspell: disable-line
+                    {
+                        $setupArgument += '={0}' -f [System.Byte] $PSBoundParameters.$parameterName.ToBool()
+
+                        break
+                    }
+
+                    <#
+                        Arguments that shall have the value set to the boolean string representation.
+                        Excluding parameter names that shall be handled differently, those arguments
+                        shall not have any value after argument name, e.g. '/ENU'.
+                    #>
+                    { $parameterName -in @('UPDATEENABLED', 'PBSCALEOUT', 'SQLSVCINSTANTFILEINIT', 'ALLOWUPGRADEFORSSRSSHAREPOINTMODE') } # cspell: disable-line
+                    {
+                        $setupArgument += '={0}' -f $PSBoundParameters.$parameterName.ToString()
+
+                        break
+                    }
+                }
+
+                break
+            }
+
+            <#
+                Must be handled differently because it is an numeric value and does not need to
+                be surrounded by double-quote.
+            #>
+            { $PSBoundParameters.$parameterName | Test-IsNumericType }
+            {
+                $setupArgument += '={0}' -f ($PSBoundParameters.$parameterName -join '" "')
+
+                break
+            }
+
+            <#
+                Must be handled differently because it is an array and have a space
+                separating the values, and each value is surrounded by double-quote.
+            #>
+            { $PSBoundParameters.$parameterName -is [System.Array] }
+            {
+                $setupArgument += '="{0}"' -f ($PSBoundParameters.$parameterName -join '" "')
+
+                break
+            }
+
+            { $PSBoundParameters.$parameterName -is [System.Management.Automation.PSCredential] }
+            {
+                $sensitiveValue += $PSBoundParameters.$parameterName.GetNetworkCredential().Password
+
+                $setupArgument += '="{0}"' -f $PSBoundParameters.$parameterName.GetNetworkCredential().Password
+
+                break
+            }
+
+            default
+            {
+                $setupArgument += '="{0}"' -f $PSBoundParameters.$parameterName
+
+                break
+            }
+        }
+    }
+
+    $verboseSetupArgument = $setupArgument
+
+    # Obfuscate sensitive values.
+    foreach ($currentSensitiveValue in $sensitiveValue)
+    {
+        $escapedRegExString = [System.Text.RegularExpressions.Regex]::Escape($currentSensitiveValue)
+
+        $verboseSetupArgument = $verboseSetupArgument -replace $escapedRegExString, '********'
+    }
+
+    # Clear sensitive values.
+    $sensitiveValue = $null
+
+    Write-Verbose -Message ($script:localizedData.SetupArguments -f $verboseSetupArgument)
 
     $verboseDescriptionMessage = $script:localizedData.Server_Install_ShouldProcessVerboseDescription -f $PSCmdlet.ParameterSetName
     $verboseWarningMessage = $script:localizedData.Server_Install_ShouldProcessVerboseWarning -f $PSCmdlet.ParameterSetName
@@ -860,7 +1101,43 @@ function Install-SqlDscServer
 
     if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
     {
-        # TODO: Run setup executable
+        $startProcessParameters = @{
+            FilePath     = Join-Path -Path $MediaPath -ChildPath 'setup.exe'
+            ArgumentList = $setupArgument
+            Timeout      = $Timeout
+        }
+
+        # Clear setupArgument to remove any sensitive values.
+        $setupArgument = $null
+
+        # Run setup executable.
+        $processExitCode = Start-SqlSetupProcess @startProcessParameters
+
+        $setupExitMessage = ($script:localizedData.SetupExitMessage -f $processExitCode)
+
+        if ($processExitCode -eq 3010)
+        {
+            Write-Warning -Message (
+                '{0} {1}' -f $setupExitMessage, $script:localizedData.SetupSuccessfulRebootRequired
+            )
+        }
+        elseif ($processExitCode -ne 0)
+        {
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    ('{0} {1}' -f $setupExitMessage, $script:localizedData.SetupFailed),
+                    'ISDS0001', # cspell: disable-line
+                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                    $InstanceName
+                )
+            )
+        }
+        else
+        {
+            Write-Verbose -Message (
+                '{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupSuccessful)
+            )
+        }
     }
 
     # if verbose (or debug) is used, add argument /INDICATEPROGRESS (if it works to output to console)
@@ -910,4 +1187,12 @@ function Install-SqlDscServer
 
     ## EditionUpgrade
     #setup.exe /q /ACTION=editionupgrade /InstanceName=MSSQLSERVER /PID=<appropriatePid> /SkipRules=Engine_SqlEngineHealthCheck
+
+    # PolyBase
+    #Setup.exe /Q /ACTION=INSTALL /IACCEPTSQLSERVERLICENSETERMS /FEATURES=SQLEngine,PolyBase
+    # /INSTANCENAME=MSSQLSERVER /SQLSYSADMINACCOUNTS="\<fabric-domain>\Administrator"
+    # /INSTANCEDIR="C:\Program Files\Microsoft SQL Server" /PBSCALEOUT=TRUE
+    # /PBPORTRANGE=16450-16460 /SECURITYMODE=SQL /SAPWD="<StrongPassword>"
+    # /PBENGSVCACCOUNT="<DomainName>\<UserName>" /PBENGSVCPASSWORD="<StrongPassword>"
+    # /PBDMSSVCACCOUNT="<DomainName>\<UserName>" /PBDMSSVCPASSWORD="<StrongPassword>"
 }
