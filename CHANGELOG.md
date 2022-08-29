@@ -66,6 +66,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       no SQL module is found. The script-terminating error is caught and made into
       a statement-terminating error.
   - Bump GitHub Action Checkout to v4.
+- SqlAGListener
+  - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
+    the resource will only determine if a change is needed if the target node
+    is the active host of the SQL Server instance ([issue #871](https://github.com/dsccommunity/SqlServerDsc/issues/871)).
 
 ### Remove
 
