@@ -410,6 +410,11 @@ function Set-TargetResource
 
     $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
 
+    if ( $reportingServicesData.SqlVersion -lt 14 )
+    {
+        throw $script:localizedData.VersionNotSupported
+    }
+
     if ( $null -ne $reportingServicesData.Configuration )
     {
         $restartReportingService = $false
