@@ -65,6 +65,7 @@ function Install-SqlDscServer
     param
     (
         [Parameter(ParameterSetName = 'Install', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'InstallRole', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallAzureArcAgent', Mandatory = $true)]
         [System.Management.Automation.SwitchParameter]
         $Install,
@@ -122,6 +123,7 @@ function Install-SqlDscServer
         $ConfigurationFile,
 
         [Parameter(ParameterSetName = 'Install', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'InstallRole', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallAzureArcAgent', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareImage', Mandatory = $true)]
         [Parameter(ParameterSetName = 'Upgrade', Mandatory = $true)]
@@ -134,6 +136,7 @@ function Install-SqlDscServer
         $AcceptLicensingTerms,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [System.Management.Automation.SwitchParameter]
         $SuppressPrivacyStatementNotice,
 
@@ -154,10 +157,12 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'AddNode', Mandatory = $true)]
         [Parameter(ParameterSetName = 'RemoveNode', Mandatory = $true)]
         [Parameter(ParameterSetName = 'CompleteImage')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [System.String]
         $InstanceName,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Upgrade')]
@@ -170,6 +175,7 @@ function Install-SqlDscServer
         $Enu,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
@@ -179,6 +185,7 @@ function Install-SqlDscServer
         $UpdateEnabled,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
@@ -193,6 +200,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Uninstall', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [ValidateSet(
             'SQL',
             'SQLEngine', # Part of parent feature SQL
@@ -230,12 +238,17 @@ function Install-SqlDscServer
         [System.String[]]
         $Features,
 
-        # # This is mutually exclusive from parameter Features
-        # [Parameter(ParameterSetName = 'Install', Mandatory = $true)]
-        # [System.String]
-        # $Role,
+        [Parameter(ParameterSetName = 'InstallRole', Mandatory = $true)]
+        [ValidateSet(
+            'ALLFeatures_WithDefaults',
+            'SPI_AS_NewFarm',
+            'SPI_AS_ExistingFarm'
+        )]
+        [System.String]
+        $Role,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -243,12 +256,14 @@ function Install-SqlDscServer
         $InstallSharedDir,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [System.String]
         $InstallSharedWowDir,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
@@ -257,6 +272,7 @@ function Install-SqlDscServer
         $InstanceDir,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage', Mandatory = $true)]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Upgrade')]
@@ -266,6 +282,7 @@ function Install-SqlDscServer
         $InstanceId,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Repair')]
@@ -276,6 +293,7 @@ function Install-SqlDscServer
         $PBEngSvcAccount,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Repair')]
@@ -286,6 +304,7 @@ function Install-SqlDscServer
         $PBEngSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Repair')]
@@ -297,19 +316,23 @@ function Install-SqlDscServer
         $PBEngSvcStartupType,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [System.String]
         $PBDMSSvcAccount, # cspell: disable-line
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [System.Management.Automation.PSCredential]
         $PBDMSSvcPassword, # cspell: disable-line
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
         [System.String]
         $PBDMSSvcStartupType, # cspell: disable-line
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Repair')]
@@ -320,6 +343,7 @@ function Install-SqlDscServer
         $PBStartPortRange,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Repair')]
@@ -330,6 +354,7 @@ function Install-SqlDscServer
         $PBEndPortRange,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Repair')]
@@ -340,6 +365,7 @@ function Install-SqlDscServer
         $PBScaleOut,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
@@ -355,6 +381,7 @@ function Install-SqlDscServer
         # When parameter set PrepareFailOverCLuster AgtSvcAccount is mandatory if feature 'SQLENGINE' is installed.
         # When parameter set AddNode AgtSvcAccount is mandatory if feature 'SQLENGINE' is a feature of the cluster.
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -364,6 +391,7 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'UsingConfigurationFile')]
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -372,42 +400,49 @@ function Install-SqlDscServer
         $AgtSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
         [System.String]
         $AgtSvcStartupType,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
         [System.String]
         $ASBackupDir,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
         [System.String]
         $ASCollation,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
         [System.String]
         $ASConfigDir,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
         [System.String]
         $ASDataDir,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
         [System.String]
         $ASLogDir,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
         [System.String]
@@ -416,6 +451,7 @@ function Install-SqlDscServer
         # TODO: These values must converted to upper-case before passing as argument
         # TODO: The value PowerPivot is not allowed when parameter set is InstallFailoverCluster or CompleteFailoverCluster
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
         [ValidateSet('Multidimensional', 'PowerPivot', 'Tabular')]
@@ -427,6 +463,7 @@ function Install-SqlDscServer
         # When parameter set PrepareFailOverCLuster ASSvcAccount is mandatory if feature 'AS' is installed.
         # When parameter set AddNode ASSvcAccount is mandatory if feature 'AS' is a feature of the cluster.
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
@@ -435,6 +472,7 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'UsingConfigurationFile')]
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
@@ -442,44 +480,49 @@ function Install-SqlDscServer
         $ASSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
         [System.String]
         $ASSvcStartupType,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
         [System.String[]]
         $ASSysAdminAccounts,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
         [System.Management.Automation.SwitchParameter]
         $ASProviderMSOLAP,
 
         # TODO: This is mandatory when using /ROLE = SPI_AS_NEWFARM
-        # [Parameter(ParameterSetName = 'InstallRole', Mandatory = $true)]
-        # [System.String]
-        # $FarmAccount,
+        [Parameter(ParameterSetName = 'InstallRole')]
+        [System.String]
+        $FarmAccount,
 
         # TODO: This is mandatory when using /ROLE = SPI_AS_NEWFARM
-        # [Parameter(ParameterSetName = 'InstallRole', Mandatory = $true)]
-        # [System.Management.Automation.PSCredential]
-        # $FarmPassword,
+        [Parameter(ParameterSetName = 'InstallRole')]
+        [System.Management.Automation.PSCredential]
+        $FarmPassword,
 
         # TODO: This is mandatory when using /ROLE = SPI_AS_NEWFARM
-        # [Parameter(ParameterSetName = 'InstallRole', Mandatory = $true)]
-        # [System.Management.Automation.PSCredential]
-        # $Passphrase,
+        [Parameter(ParameterSetName = 'InstallRole')]
+        [System.Management.Automation.PSCredential]
+        $Passphrase,
 
         # TODO: This is mandatory when using /ROLE = SPI_AS_NEWFARM
-        # [Parameter(ParameterSetName = 'InstallRole', Mandatory = $true)]
-        # [System.Management.Automation.PSCredential]
-        # $FarmAdminiPort, # cspell: disable-line
+        [Parameter(ParameterSetName = 'InstallRole')]
+        [ValidateRange(0, 65536)]
+        [System.UInt16]
+        $FarmAdminiPort, # cspell: disable-line
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Upgrade')]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
@@ -492,11 +535,13 @@ function Install-SqlDscServer
         $FTUpgradeOption,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [System.Management.Automation.SwitchParameter]
         $EnableRanU,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster', Mandatory = $true)]
@@ -504,6 +549,7 @@ function Install-SqlDscServer
         $InstallSqlDataDir,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
@@ -511,6 +557,7 @@ function Install-SqlDscServer
         $SqlBackupDir,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
@@ -523,6 +570,7 @@ function Install-SqlDscServer
             it must be set if the instance was installed with SecurityMode = 'SQL'.
         #>
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
@@ -531,6 +579,7 @@ function Install-SqlDscServer
         $SAPwd,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
@@ -539,15 +588,16 @@ function Install-SqlDscServer
         $SqlCollation,
 
         # TODO: /ADDCURRENTUSERASSQLADMIN or /SQLSYSADMINACCOUNTS is required for SQL Express. Another parameter set InstallSqlExpress?
-        # [Parameter(ParameterSetName = 'Install')]
-        # [System.Management.Automation.SwitchParameter]
-        # $AddCurrentUserAsSqlAdmin,
+        [Parameter(ParameterSetName = 'InstallRole')]
+        [System.Management.Automation.SwitchParameter]
+        $AddCurrentUserAsSqlAdmin,
 
         # TODO: Might need to be required?
         # When parameter set InstallFailOverCLuster SqlSvcAccount is mandatory if feature 'SQLENGINE' is installed.
         # When parameter set PrepareFailOverCLuster SqlSvcAccount is mandatory if feature 'SQLENGINE' is installed.
         # When parameter set AddNode SqlSvcAccount is mandatory if feature 'SQLENGINE' is a feature of the cluster.
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -557,6 +607,7 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'UsingConfigurationFile')]
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -565,6 +616,7 @@ function Install-SqlDscServer
         $SqlSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
@@ -576,10 +628,12 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'RebuildDatabase', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [System.String[]]
         $SqlSysAdminAccounts,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
@@ -588,6 +642,7 @@ function Install-SqlDscServer
         $SqlTempDbDir,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
@@ -596,6 +651,7 @@ function Install-SqlDscServer
         $SqlTempDbLogDir,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
@@ -604,6 +660,7 @@ function Install-SqlDscServer
         $SqlTempDbFileCount,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
@@ -613,6 +670,7 @@ function Install-SqlDscServer
         $SqlTempDbFileSize,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
@@ -622,6 +680,7 @@ function Install-SqlDscServer
         $SqlTempDbFileGrowth,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
@@ -631,6 +690,7 @@ function Install-SqlDscServer
         $SqlTempDbLogFileSize,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
@@ -640,6 +700,7 @@ function Install-SqlDscServer
         $SqlTempDbLogFileGrowth,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
@@ -647,10 +708,12 @@ function Install-SqlDscServer
         $SqlUserDbDir,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [System.Management.Automation.SwitchParameter]
         $SqlSvcInstantFileInit,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
@@ -658,28 +721,33 @@ function Install-SqlDscServer
         $SqlUserDbLogDir,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [ValidateRange(0, 32767)]
         [System.UInt16]
         $SqlMaxDop,
 
         # TODO: This parameter cannot be used with /SQLMINMEMORY and /SQLMAXMEMORY.
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [System.Management.Automation.SwitchParameter]
         $UseSqlRecommendedMemoryLimits,
 
         # TODO: This parameter cannot be used with /USESQLRECOMMENDEDMEMORYLIMITS.
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [ValidateRange(0, 2147483647)]
         [System.UInt32]
         $SqlMinMemory,
 
         # TODO: This parameter cannot be used with /USESQLRECOMMENDEDMEMORYLIMITS.
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [ValidateRange(0, 2147483647)]
         [System.UInt32]
         $SqlMaxMemory,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -689,6 +757,7 @@ function Install-SqlDscServer
 
         # TODO: Required when FIleStreamLevel is greater than 1
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -697,11 +766,13 @@ function Install-SqlDscServer
 
         # TODO: Ignored in Windows Server 2008 and higher
         # [Parameter(ParameterSetName = 'Install')]
+        # [Parameter(ParameterSetName = 'InstallRole')]
         # [Parameter(ParameterSetName = 'CompleteImage')]
         # [System.String]
         # $FTSvcAccount,
 
         # [Parameter(ParameterSetName = 'Install')]
+        # [Parameter(ParameterSetName = 'InstallRole')]
         # [Parameter(ParameterSetName = 'CompleteImage')]
         # [System.Management.Automation.PSCredential]
         # $FTSvcPassword,
@@ -711,6 +782,7 @@ function Install-SqlDscServer
         # When parameter set PrepareFailoverCluster ISSvcAccount is mandatory if feature 'IS' is installed.
         # When parameter set AddNode ISSvcAccount is mandatory if feature 'IS' is installed.
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -720,6 +792,7 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'UsingConfigurationFile')]
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -728,6 +801,7 @@ function Install-SqlDscServer
         $ISSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -740,17 +814,20 @@ function Install-SqlDscServer
         $AllowUpgradeForSSRSSharePointMode,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [System.Management.Automation.SwitchParameter]
         $NpEnabled,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [System.Management.Automation.SwitchParameter]
         $TcpEnabled,
 
         # TODO: When parameter set AddNode only the value FilesOnlyMode is allowed.
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -764,6 +841,7 @@ function Install-SqlDscServer
         # When parameter set InstallFailOverCLuster RSSvcAccount is mandatory if feature 'RS' is installed.
         # When parameter set PrepareFailoverCluster RSSvcAccount is mandatory if feature 'RS' is installed.
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -772,6 +850,7 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'UsingConfigurationFile')]
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -779,6 +858,7 @@ function Install-SqlDscServer
         $RSSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -787,18 +867,22 @@ function Install-SqlDscServer
         $RSSvcStartupType,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [System.String]
         $MPYCacheDirectory,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [System.String]
         $MRCacheDirectory,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [System.Management.Automation.SwitchParameter]
         $SqlInstJava,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [System.String]
         $SqlJavaDir,
 
@@ -836,41 +920,49 @@ function Install-SqlDscServer
 
         # TODO: Azure* parameters only allowed when /FEATURES contain 'ARC', and all must be set except AzureArcProxy
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallAzureArcAgent', Mandatory = $true)]
         [System.String]
         $AzureSubscriptionId,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallAzureArcAgent', Mandatory = $true)]
         [System.String]
         $AzureResourceGroup,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallAzureArcAgent', Mandatory = $true)]
         [System.String]
         $AzureRegion,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallAzureArcAgent', Mandatory = $true)]
         [System.String]
         $AzureTenantId,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallAzureArcAgent', Mandatory = $true)]
         [System.String]
         $AzureServicePrincipal,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallAzureArcAgent', Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         $AzureServicePrincipalSecret,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallAzureArcAgent')]
         [System.String]
         $AzureArcProxy,
 
         [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'EditionUpgrade')]
         [System.String[]]
@@ -896,6 +988,13 @@ function Install-SqlDscServer
 
     switch ($PSCmdlet.ParameterSetName)
     {
+        'InstallRole'
+        {
+            $setupAction = 'Install'
+
+            break
+        }
+
         'InstallAzureArcAgent'
         {
             $setupAction = 'Install'
@@ -905,11 +1004,15 @@ function Install-SqlDscServer
                 parameter set, so this can be safely set.
             #>
             $PSBoundParameters.Features = @('ARC')
+
+            break
         }
 
         default
         {
             $setupAction = $PSCmdlet.ParameterSetName
+
+            break
         }
     }
 
@@ -968,7 +1071,7 @@ function Install-SqlDscServer
                 Must be handled differently because it is an array and have a comma
                 separating the values, and the value shall be upper-case.
             #>
-            'FEATURES'
+            { $_ -in @('FEATURES', 'ROLE') }
             {
                 $setupArgument += '={0}' -f ($PSBoundParameters.$parameterName.ToUpper() -join ',')
 
@@ -1057,7 +1160,7 @@ function Install-SqlDscServer
                         Excluding parameter names that shall be handled differently, those arguments
                         shall not have any value after argument name, e.g. '/ENU'.
                     #>
-                    { $parameterName -in @('UPDATEENABLED', 'PBSCALEOUT', 'SQLSVCINSTANTFILEINIT', 'ALLOWUPGRADEFORSSRSSHAREPOINTMODE') } # cspell: disable-line
+                    { $parameterName -in @('UPDATEENABLED', 'PBSCALEOUT', 'SQLSVCINSTANTFILEINIT', 'ALLOWUPGRADEFORSSRSSHAREPOINTMODE', 'ADDCURRENTUSERASSQLADMIN') } # cspell: disable-line
                     {
                         $setupArgument += '={0}' -f $PSBoundParameters.$parameterName.ToString()
 

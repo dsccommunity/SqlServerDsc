@@ -47,63 +47,83 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName = 'Install'
+            # cSpell: disable-next
             MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> -SqlSysAdminAccounts <string[]> [-SuppressPrivacyStatementNotice] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBDMSSvcAccount <string>] [-PBDMSSvcPassword <pscredential>] [-PBDMSSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <pscredential>] [-AgtSvcStartupType <string>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSvcAccount <string>] [-ASSvcPassword <pscredential>] [-ASSvcStartupType <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-BrowserSvcStartupType <string>] [-EnableRanU] [-InstallSqlDataDir <string>] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <pscredential>] [-SqlCollation <string>] [-SqlSvcAccount <string>] [-SqlSvcPassword <pscredential>] [-SqlSvcStartupType <string>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlSvcInstantFileInit] [-SqlUserDbLogDir <string>] [-SqlMaxDop <ushort>] [-UseSqlRecommendedMemoryLimits] [-SqlMinMemory <uint>] [-SqlMaxMemory <uint>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <pscredential>] [-ISSvcStartupType <string>] [-NpEnabled] [-TcpEnabled] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <pscredential>] [-RSSvcStartupType <string>] [-MPYCacheDirectory <string>] [-MRCacheDirectory <string>] [-SqlInstJava] [-SqlJavaDir <string>] [-AzureSubscriptionId <string>] [-AzureResourceGroup <string>] [-AzureRegion <string>] [-AzureTenantId <string>] [-AzureServicePrincipal <string>] [-AzureServicePrincipalSecret <pscredential>] [-AzureArcProxy <string>] [-SkipRules <string[]>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
+            MockParameterSetName = 'InstallRole'
+            # cSpell: disable-next
+            MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> -Role <string> [-SuppressPrivacyStatementNotice] [-InstanceName <string>] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-Features <string[]>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBDMSSvcAccount <string>] [-PBDMSSvcPassword <pscredential>] [-PBDMSSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <pscredential>] [-AgtSvcStartupType <string>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSvcAccount <string>] [-ASSvcPassword <pscredential>] [-ASSvcStartupType <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-FarmAccount <string>] [-FarmPassword <pscredential>] [-Passphrase <pscredential>] [-FarmAdminiPort <ushort>] [-BrowserSvcStartupType <string>] [-EnableRanU] [-InstallSqlDataDir <string>] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <pscredential>] [-SqlCollation <string>] [-AddCurrentUserAsSqlAdmin] [-SqlSvcAccount <string>] [-SqlSvcPassword <pscredential>] [-SqlSvcStartupType <string>] [-SqlSysAdminAccounts <string[]>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlSvcInstantFileInit] [-SqlUserDbLogDir <string>] [-SqlMaxDop <ushort>] [-UseSqlRecommendedMemoryLimits] [-SqlMinMemory <uint>] [-SqlMaxMemory <uint>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <pscredential>] [-ISSvcStartupType <string>] [-NpEnabled] [-TcpEnabled] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <pscredential>] [-RSSvcStartupType <string>] [-MPYCacheDirectory <string>] [-MRCacheDirectory <string>] [-SqlInstJava] [-SqlJavaDir <string>] [-AzureSubscriptionId <string>] [-AzureResourceGroup <string>] [-AzureRegion <string>] [-AzureTenantId <string>] [-AzureServicePrincipal <string>] [-AzureServicePrincipalSecret <pscredential>] [-AzureArcProxy <string>] [-SkipRules <string[]>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+        }
+        @{
             MockParameterSetName = 'InstallAzureArcAgent'
+            # cSpell: disable-next
             MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> -AzureSubscriptionId <string> -AzureResourceGroup <string> -AzureRegion <string> -AzureTenantId <string> -AzureServicePrincipal <string> -AzureServicePrincipalSecret <pscredential> [-AzureArcProxy <string>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'UsingConfigurationFile'
+            # cSpell: disable-next
             MockExpectedParameters = '-ConfigurationFile <string> -MediaPath <string> [-AgtSvcPassword <pscredential>] [-ASSvcPassword <pscredential>] [-SqlSvcPassword <pscredential>] [-ISSvcPassword <pscredential>] [-RSSvcPassword <pscredential>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
 
         @{
             MockParameterSetName = 'Uninstall'
+            # cSpell: disable-next
             MockExpectedParameters = '-Uninstall -MediaPath <string> -InstanceName <string> -Features <string[]> [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'PrepareImage'
+            # cSpell: disable-next
             MockExpectedParameters = '-PrepareImage -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> -InstanceId <string> [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstanceDir <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'CompleteImage'
+            # cSpell: disable-next
             MockExpectedParameters = '-CompleteImage -AcceptLicensingTerms -MediaPath <string> [-InstanceName <string>] [-Enu] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <pscredential>] [-AgtSvcStartupType <string>] [-BrowserSvcStartupType <string>] [-EnableRanU] [-InstallSqlDataDir <string>] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <pscredential>] [-SqlCollation <string>] [-SqlSvcAccount <string>] [-SqlSvcPassword <pscredential>] [-SqlSvcStartupType <string>] [-SqlSysAdminAccounts <string[]>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlUserDbLogDir <string>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-NpEnabled] [-TcpEnabled] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <pscredential>] [-RSSvcStartupType <string>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'Upgrade'
+            # cSpell: disable-next
             MockExpectedParameters = '-Upgrade -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstanceDir <string>] [-InstanceId <string>] [-ProductKey <string>] [-BrowserSvcStartupType <string>] [-FTUpgradeOption <string>] [-ISSvcAccount <string>] [-ISSvcPassword <pscredential>] [-ISSvcStartupType <string>] [-AllowUpgradeForSSRSSharePointMode] [-FailoverClusterRollOwnership <ushort>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'EditionUpgrade'
+            # cSpell: disable-next
             MockExpectedParameters = '-EditionUpgrade -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -ProductKey <string> [-SkipRules <string[]>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'Repair'
+            # cSpell: disable-next
             MockExpectedParameters = '-Repair -MediaPath <string> -InstanceName <string> -Features <string[]> [-Enu] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'RebuildDatabase'
+            # cSpell: disable-next
             MockExpectedParameters = '-RebuildDatabase -MediaPath <string> -InstanceName <string> -SqlSysAdminAccounts <string[]> [-SAPwd <pscredential>] [-SqlCollation <string>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'InstallFailoverCluster'
+            # cSpell: disable-next
             MockExpectedParameters = '-InstallFailoverCluster -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> -InstallSqlDataDir <string> -SqlSysAdminAccounts <string[]> -FailoverClusterNetworkName <string> -FailoverClusterIPAddresses <string[]> [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <pscredential>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSvcAccount <string>] [-ASSvcPassword <pscredential>] [-ASSvcStartupType <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <pscredential>] [-SqlCollation <string>] [-SqlSvcAccount <string>] [-SqlSvcPassword <pscredential>] [-SqlSvcStartupType <string>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlUserDbLogDir <string>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <pscredential>] [-ISSvcStartupType <string>] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <pscredential>] [-RSSvcStartupType <string>] [-FailoverClusterGroup <string>] [-FailoverClusterDisks <string[]>] [-SkipRules <string[]>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'PrepareFailoverCluster'
+            # cSpell: disable-next
             MockExpectedParameters = '-PrepareFailoverCluster -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <pscredential>] [-ASSvcAccount <string>] [-ASSvcPassword <pscredential>] [-SqlSvcAccount <string>] [-SqlSvcPassword <pscredential>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <pscredential>] [-ISSvcStartupType <string>] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <pscredential>] [-RSSvcStartupType <string>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'CompleteFailoverCluster'
+            # cSpell: disable-next
             MockExpectedParameters = '-CompleteFailoverCluster -MediaPath <string> -InstanceName <string> -InstallSqlDataDir <string> -SqlSysAdminAccounts <string[]> -FailoverClusterNetworkName <string> -FailoverClusterIPAddresses <string[]> [-Enu] [-ProductKey <string>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <pscredential>] [-SqlCollation <string>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlUserDbLogDir <string>] [-RsInstallMode <string>] [-FailoverClusterGroup <string>] [-FailoverClusterDisks <string[]>] [-ConfirmIPDependencyChange] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'AddNode'
+            # cSpell: disable-next
             MockExpectedParameters = '-AddNode -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -FailoverClusterIPAddresses <string[]> [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <pscredential>] [-ASSvcAccount <string>] [-ASSvcPassword <pscredential>] [-SqlSvcAccount <string>] [-SqlSvcPassword <pscredential>] [-ISSvcAccount <string>] [-ISSvcPassword <pscredential>] [-RsInstallMode <string>] [-ConfirmIPDependencyChange] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'RemoveNode'
+            # cSpell: disable-next
             MockExpectedParameters = '-RemoveNode -MediaPath <string> -InstanceName <string> [-ConfirmIPDependencyChange] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
@@ -3678,6 +3698,290 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     # Return $true if none of the above throw.
                     $true
                 } -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+
+    Context 'When parameter set is ''InstallRole''' {
+        BeforeAll {
+            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-ElevatedUser
+        }
+
+        Context 'When role is ''SPI_AS_NewFarm''' {
+            Context 'When specifying only mandatory parameters' {
+                BeforeAll {
+                    Mock -CommandName Start-SqlSetupProcess -MockWith {
+                        return 0
+                    }
+
+                    $mockDefaultParameters = @{
+                        Install = $true
+                        AcceptLicensingTerms = $true
+                        MediaPath = 'E:\'
+                        Role = 'SPI_AS_NewFarm'
+                    }
+                }
+
+                Context 'When using parameter Confirm with value $false' {
+                    It 'Should call the mock with the correct argument string' {
+                        Install-SqlDscServer -Confirm:$false @mockDefaultParameters
+
+                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            $ArgumentList | Should -MatchExactly '\/ACTION=Install'
+                            $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
+                            $ArgumentList | Should -MatchExactly '\/ROLE=SPI_AS_NEWFARM'
+
+                            # Return $true if none of the above throw.
+                            $true
+                        } -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context 'When using parameter Force' {
+                    It 'Should call the mock with the correct argument string' {
+                        Install-SqlDscServer -Force @mockDefaultParameters
+
+                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            $ArgumentList | Should -MatchExactly '\/ACTION=Install'
+                            $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
+                            $ArgumentList | Should -MatchExactly '\/ROLE=SPI_AS_NEWFARM' # cspell: disable-line
+
+                            # Return $true if none of the above throw.
+                            $true
+                        } -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context 'When using parameter WhatIf' {
+                    It 'Should call the mock with the correct argument string' {
+                        Install-SqlDscServer -WhatIf @mockDefaultParameters
+
+                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    }
+                }
+            }
+
+            Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
+                @{
+                    MockParameterName = 'FarmAccount'
+                    MockParameterValue = 'DOMAIN\User'
+                    MockExpectedRegEx = '\/FARMACCOUNT="DOMAIN\\User"' # cspell: disable-line
+                }
+                @{
+                    MockParameterName = 'FarmPassword'
+                    MockParameterValue = [System.Management.Automation.PSCredential]::new(
+                        'Any',
+                        ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
+                    )
+                    MockExpectedRegEx = '\/FARMPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                }
+                @{
+                    MockParameterName = 'Passphrase'
+                    MockParameterValue = [System.Management.Automation.PSCredential]::new(
+                        'Any',
+                        ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
+                    )
+                    MockExpectedRegEx = '\/PASSPHRASE="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                }
+                @{
+                    MockParameterName = 'FarmAdminiPort' # cspell: disable-line
+                    MockParameterValue = '18000'
+                    MockExpectedRegEx = '\/FARMADMINIPORT=18000' # cspell: disable-line
+                }
+            ) {
+                BeforeAll {
+                    Mock -CommandName Start-SqlSetupProcess -MockWith {
+                        return 0
+                    }
+
+                    $mockDefaultParameters = @{
+                        Install = $true
+                        AcceptLicensingTerms = $true
+                        MediaPath = 'E:\'
+                        Role = 'SPI_AS_NewFarm'
+                        Force = $true
+                    }
+                }
+
+                BeforeEach {
+                    $installSqlDscServerParameters = $mockDefaultParameters.Clone()
+                }
+
+                It 'Should call the mock with the correct argument string' {
+                    $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
+
+                    Install-SqlDscServer @installSqlDscServerParameters
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        $ArgumentList | Should -MatchExactly $MockExpectedRegEx
+
+                        # Return $true if none of the above throw.
+                        $true
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When specifying sensitive parameter <MockParameterName>' -ForEach @(
+                @{
+                    MockParameterName = 'FarmPassword'
+                    MockParameterValue = [System.Management.Automation.PSCredential]::new(
+                        'Any',
+                        ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
+                    )
+                    MockExpectedRegEx = '\/FARMPASSWORD="\*{8}"' # cspell: disable-line
+                }
+                @{
+                    MockParameterName = 'Passphrase'
+                    MockParameterValue = [System.Management.Automation.PSCredential]::new(
+                        'Any',
+                        ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
+                    )
+                    MockExpectedRegEx = '\/PASSPHRASE="\*{8}"' # cspell: disable-line
+                }
+            ) {
+                BeforeAll {
+                    Mock -CommandName Write-Verbose
+                    Mock -CommandName Start-SqlSetupProcess -MockWith {
+                        return 0
+                    }
+
+                    $mockDefaultParameters = @{
+                        Install = $true
+                        AcceptLicensingTerms = $true
+                        MediaPath = 'E:\'
+                        Role = 'SPI_AS_NewFarm'
+                        Force = $true
+                    }
+                }
+
+                BeforeEach {
+                    $installSqlDscServerParameters = $mockDefaultParameters.Clone()
+                }
+
+                It 'Should obfuscate the value in the verbose string' {
+                    $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
+
+                    # Redirect all verbose stream to $null to ge no output from ShouldProcess.
+                    Install-SqlDscServer @installSqlDscServerParameters -Verbose 4> $null
+
+                    $mockVerboseMessage = InModuleScope -ScriptBlock {
+                        $script:localizedData.SetupArguments
+                    }
+
+                    Should -Invoke -CommandName Write-Verbose -ParameterFilter {
+                        # Only test the command that output the string that should be tested.
+                        $correctMessage = $Message -match $mockVerboseMessage
+
+                        # Only test string if it is the correct verbose command
+                        if ($correctMessage)
+                        {
+                            $Message | Should -MatchExactly $MockExpectedRegEx
+                        }
+
+                        # Return wether the correct command was called or not.
+                        $correctMessage
+                    } -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When role is ''AllFeatures_WithDefaults''' {
+            Context 'When specifying only mandatory parameters' {
+                BeforeAll {
+                    Mock -CommandName Start-SqlSetupProcess -MockWith {
+                        return 0
+                    }
+
+                    $mockDefaultParameters = @{
+                        Install = $true
+                        AcceptLicensingTerms = $true
+                        MediaPath = 'E:\'
+                        Role = 'AllFeatures_WithDefaults'
+                    }
+                }
+
+                Context 'When using parameter Confirm with value $false' {
+                    It 'Should call the mock with the correct argument string' {
+                        Install-SqlDscServer -Confirm:$false @mockDefaultParameters
+
+                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            $ArgumentList | Should -MatchExactly '\/ACTION=Install'
+                            $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
+                            $ArgumentList | Should -MatchExactly '\/ROLE=ALLFEATURES_WITHDEFAULTS' # cspell: disable-line
+
+                            # Return $true if none of the above throw.
+                            $true
+                        } -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context 'When using parameter Force' {
+                    It 'Should call the mock with the correct argument string' {
+                        Install-SqlDscServer -Force @mockDefaultParameters
+
+                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            $ArgumentList | Should -MatchExactly '\/ACTION=Install'
+                            $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
+                            $ArgumentList | Should -MatchExactly '\/ROLE=ALLFEATURES_WITHDEFAULTS' # cspell: disable-line
+
+                            # Return $true if none of the above throw.
+                            $true
+                        } -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context 'When using parameter WhatIf' {
+                    It 'Should call the mock with the correct argument string' {
+                        Install-SqlDscServer -WhatIf @mockDefaultParameters
+
+                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    }
+                }
+            }
+
+            Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
+                @{
+                    MockParameterName = 'Features' # cspell: disable-line
+                    MockParameterValue = 'SqlEngine', 'RS'
+                    MockExpectedRegEx = '\/FEATURES=SQLENGINE,RS' # cspell: disable-line
+                }
+                @{
+                    MockParameterName = 'AddCurrentUserAsSqlAdmin' # cspell: disable-line
+                    MockParameterValue = $true
+                    MockExpectedRegEx = '\/ADDCURRENTUSERASSQLADMIN=True' # cspell: disable-line
+                }
+            ) {
+                BeforeAll {
+                    Mock -CommandName Start-SqlSetupProcess -MockWith {
+                        return 0
+                    }
+
+                    $mockDefaultParameters = @{
+                        Install = $true
+                        AcceptLicensingTerms = $true
+                        MediaPath = 'E:\'
+                        Role = 'AllFeatures_WithDefaults'
+                        Force = $true
+                    }
+                }
+
+                BeforeEach {
+                    $installSqlDscServerParameters = $mockDefaultParameters.Clone()
+                }
+
+                It 'Should call the mock with the correct argument string' {
+                    $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
+
+                    Install-SqlDscServer @installSqlDscServerParameters
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        $ArgumentList | Should -MatchExactly $MockExpectedRegEx
+
+                        # Return $true if none of the above throw.
+                        $true
+                    } -Exactly -Times 1 -Scope It
+                }
             }
         }
     }
