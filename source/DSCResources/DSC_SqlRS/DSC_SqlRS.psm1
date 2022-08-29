@@ -200,7 +200,7 @@ function Get-TargetResource
                 Connect-UncPath -RemotePath $EncryptionKeyBackupPath -SourceCredential $EncryptionKeyBackupPathCredential
             }
 
-            $encryptionKeyBackupFileName = "$($env:ComputerName)-$InstanceName.snk"
+            $encryptionKeyBackupFileName = "$(Get-ComputerName)-$InstanceName.snk"
             $encryptionKeyBackupFile = Join-Path -Path $EncryptionKeyBackupPath -ChildPath $encryptionKeyBackupFileName
 
             $getTargetResourceResult.EncryptionKeyBackupFile = ( Get-Item -Path $encryptionKeyBackupFile -ErrorAction SilentlyContinue ).Name
@@ -1914,7 +1914,7 @@ function Backup-EncryptionKey
                 New-Item -Path $EncryptionKeyBackupPath -ItemType Directory
             }
 
-            $encryptionKeyBackupFileName = "$($env:ComputerName)-$($CimInstance.InstanceName).snk"
+            $encryptionKeyBackupFileName = "$(Get-ComputerName)-$($CimInstance.InstanceName).snk"
             $encryptionKeyBackupFile = Join-Path -Path $EncryptionKeyBackupPath -ChildPath $encryptionKeyBackupFileName
             Write-Verbose -Message ($script:localizedData.BackupEncryptionKey -f $encryptionKeyBackupFile) -Verbose
 
