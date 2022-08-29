@@ -47,10 +47,6 @@
         the specified features, the terms and notices that the Microsoft SQL Server
         setup executable normally ask for.
 
-        This will be the same as passing
-        `/IACCEPTSQLSERVERLICENSETERMS`, `/IACCEPTPYTHONLICENSETERMS`, and
-        `/IACCEPTROPENLICENSETERMS` to the setup executable.
-
     .OUTPUTS
         None.
 
@@ -197,20 +193,47 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Uninstall', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster', Mandatory = $true)]
+        [ValidateSet(
+            'SQL',
+            'SQLEngine', # Part of parent feature SQL
+            'Replication', # Part of parent feature SQL
+            'FullText', # Part of parent feature SQL
+            'DQ', # Part of parent feature SQL
+            'PolyBase', # Part of parent feature SQL
+            'PolyBaseCore', # Part of parent feature SQL
+            'PolyBaseJava', # Part of parent feature SQL
+            'AdvancedAnalytics', # Part of parent feature SQL
+            'SQL_INST_MR', # Part of parent feature SQL
+            'SQL_INST_MPY', # Part of parent feature SQL
+            'SQL_INST_JAVA', # Part of parent feature SQL
+            'AS',
+            'RS',
+            'RS_SHP',
+            'RS_SHPWFE', # cspell: disable-line
+            'DQC',
+            'IS',
+            'IS_Master', # Part of parent feature IS
+            'IS_Worker', # Part of parent feature IS
+            'MDS',
+            'SQL_SHARED_MPY',
+            'SQL_SHARED_MR',
+            'Tools',
+            'BC', # Part of parent feature Tools
+            'Conn', # Part of parent feature Tools
+            'DREPLAY_CTLR', # Part of parent feature Tools (cspell: disable-line)
+            'DREPLAY_CLT', # Part of parent feature Tools (cspell: disable-line)
+            'SNAC_SDK', # Part of parent feature Tools (cspell: disable-line)
+            'SDK', # Part of parent feature Tools
+            'LocalDB', # Part of parent feature Tools
+            'ARC'
+        )]
         [System.String[]]
         $Features,
-
-        # Skipped ERRORREPORTING because it is obsolete.
 
         # # This is mutually exclusive from parameter Features
         # [Parameter(ParameterSetName = 'Install', Mandatory = $true)]
         # [System.String]
         # $Role,
-
-        # TODO: This could be used by Verbose or Debug?
-        # [Parameter(ParameterSetName = 'Install')]
-        # [System.Management.Automation.SwitchParameter]
-        # $IndicateProgress,
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'PrepareImage')]
@@ -771,7 +794,6 @@ function Install-SqlDscServer
         [System.String]
         $MRCacheDirectory,
 
-        # TODO: This must be converted to SQL_INST_JAVA
         [Parameter(ParameterSetName = 'Install')]
         [System.Management.Automation.SwitchParameter]
         $SqlInstJava,
@@ -807,7 +829,6 @@ function Install-SqlDscServer
         [System.Management.Automation.SwitchParameter]
         $ConfirmIPDependencyChange,
 
-        # TODO: Only when upgrading a failover cluster
         [Parameter(ParameterSetName = 'Upgrade')]
         [ValidateRange(0, 2)]
         [System.UInt16]
@@ -869,6 +890,8 @@ function Install-SqlDscServer
         $ConfirmPreference = 'None'
     }
 
+    Assert-ElevatedUser
+
     Assert-InstallSqlServerProperties -BoundParameter $PSBoundParameters
 
     switch ($PSCmdlet.ParameterSetName)
@@ -890,7 +913,12 @@ function Install-SqlDscServer
         }
     }
 
-    $setupArgument = '/ACTION={0}' -f $setupAction
+    $setupArgument = '/QUIET /ACTION={0}' -f $setupAction
+
+    if ($DebugPreference -in @('Continue', 'Inquire'))
+    {
+        $setupArgument += ' /INDICATEPROGRESS' # cspell: disable-line
+    }
 
     if ($AcceptLicensingTerms.IsPresent)
     {
