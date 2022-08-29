@@ -6,9 +6,9 @@ server and Power BI Report Server.
 ## Requirements
 
 * Target machine must be running Windows Server 2012 or later.
-* Target machine must be running SQL Server Reporting Services 20012 or later.
+* Target machine must be running SQL Server Reporting Services 2017 or later.
 * To use parameter `UseSSL` target machine must be running SQL Server Reporting
-  Services 2012 or later.
+  Services 2017 or later.
 * If `PsDscRunAsCredential` common parameter is used to run the resource, the
   specified credential must have permissions to connect to the SQL Server instance
   specified in `DatabaseServerName` and `DatabaseInstanceName`, and have permission

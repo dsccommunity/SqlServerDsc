@@ -38,4 +38,5 @@ ConvertFrom-StringData @'
     EncryptionKeyBackupCredentialNotSpecified = An encryption key backup credential was not specified. Generating a random credential.
     EncryptionKeyBackupCredentialUserName = The encryption key backup credential user name is '{0}'.
     CreateNewEncryptionKeyBackupCredential = Creating a new encryption key backup credential from the character set: {0}.
+    VersionNotSupported = This resource does not support configuring versions of Reporting Services older than SQL 2017.
 '@
