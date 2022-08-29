@@ -254,12 +254,10 @@ function Get-TargetResource
         Report Manager/Report Web App virtual directory name. Optional.
 
     .PARAMETER ReportServerReservedUrl
-        Report Server URL reservations. Optional. If not specified,
-        'http://+:80' URL reservation will be used.
+        Report Server URL reservations. Optional.
 
     .PARAMETER ReportsReservedUrl
-        Report Manager/Report Web App URL reservations. Optional.
-        If not specified, 'http://+:80' URL reservation will be used.
+        Report Manager/Report Web App URL reservations.
 
     .PARAMETER HttpsCertificateThumbprint
         The thumbprint of the certificate used to secure SSL communication.
@@ -386,11 +384,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String[]]
-        $ReportServerReservedUrl = @('http://+:80'),
+        $ReportServerReservedUrl,
 
         [Parameter()]
         [System.String[]]
-        $ReportsReservedUrl = @('http://+:80'),
+        $ReportsReservedUrl,
 
         [Parameter()]
         [System.String]
@@ -850,97 +848,103 @@ function Set-TargetResource
         #endregion Virtual Directories
 
         #region Reserved URLs
-        $compareParameters = @{
-            ReferenceObject  = $currentConfig.ReportServerReservedUrl
-            DifferenceObject = $ReportServerReservedUrl
-        }
-
-        if ( ($null -ne $ReportServerReservedUrl) -and ($null -ne (Compare-Object @compareParameters)) )
+        if ( $PSBoundParameters.ContainsKey('EncryptionKeyBackupPath') )
         {
-            $restartReportingService = $true
-
-            $currentConfig.ReportServerReservedUrl | ForEach-Object -Process {
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $reportingServicesData.Configuration
-                    MethodName  = 'RemoveURL'
-                    Arguments   = @{
-                        Application = 'ReportServerWebService'
-                        UrlString   = $_
-                        Lcid        = $language
-                    }
-                }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
+            $compareParameters = @{
+                ReferenceObject  = $currentConfig.ReportServerReservedUrl
+                DifferenceObject = $ReportServerReservedUrl
             }
 
-            $ReportServerReservedUrl | ForEach-Object -Process {
-                Write-Verbose -Message "Adding report server URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $reportingServicesData.Configuration
-                    MethodName  = 'ReserveUrl'
-                    Arguments   = @{
-                        Application = 'ReportServerWebService'
-                        UrlString   = $_
-                        Lcid        = $language
+            if ( ($null -ne $ReportServerReservedUrl) -and ($null -ne (Compare-Object @compareParameters)) )
+            {
+                $restartReportingService = $true
+
+                $currentConfig.ReportServerReservedUrl | ForEach-Object -Process {
+                    $invokeRsCimMethodParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName  = 'RemoveURL'
+                        Arguments   = @{
+                            Application = 'ReportServerWebService'
+                            UrlString   = $_
+                            Lcid        = $language
+                        }
                     }
+
+                    Invoke-RsCimMethod @invokeRsCimMethodParameters
                 }
 
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
+                $ReportServerReservedUrl | ForEach-Object -Process {
+                    Write-Verbose -Message "Adding report server URL reservation on $DatabaseServerName\$DatabaseInstanceName`: $_."
+                    $invokeRsCimMethodParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName  = 'ReserveUrl'
+                        Arguments   = @{
+                            Application = 'ReportServerWebService'
+                            UrlString   = $_
+                            Lcid        = $language
+                        }
+                    }
+
+                    Invoke-RsCimMethod @invokeRsCimMethodParameters
+                }
+
+                # Get the current configuration
+                $currentConfig = Get-TargetResource @getTargetResourceParameters
+                Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
             }
-
-            # Get the current configuration
-            $currentConfig = Get-TargetResource @getTargetResourceParameters
-            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
         }
 
-        $compareParameters = @{
-            ReferenceObject  = $currentConfig.ReportsReservedUrl
-            DifferenceObject = $ReportsReservedUrl
-        }
-
-        if ( ($null -ne $ReportsReservedUrl) -and ($null -ne (Compare-Object @compareParameters)) )
+        if ( $PSBoundParameters.ContainsKey('ReportsReservedUrl') )
         {
-            $restartReportingService = $true
-
-            $currentConfig.ReportsReservedUrl | ForEach-Object -Process {
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $reportingServicesData.Configuration
-                    MethodName  = 'RemoveURL'
-                    Arguments   = @{
-                        Application = $reportingServicesData.ReportsApplicationName
-                        UrlString   = $_
-                        Lcid        = $language
-                    }
-                }
-
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
+            $compareParameters = @{
+                ReferenceObject  = $currentConfig.ReportsReservedUrl
+                DifferenceObject = $ReportsReservedUrl
             }
 
-            $ReportsReservedUrl | ForEach-Object -Process {
-                Write-Verbose -Message (
-                    $script:localizedData.AddReportsUrlReservation -f @(
-                        $DatabaseServerName
-                        $DatabaseInstanceName
-                        $_
+            if ( ($null -ne $ReportsReservedUrl) -and ($null -ne (Compare-Object @compareParameters)) )
+            {
+                $restartReportingService = $true
+
+                $currentConfig.ReportsReservedUrl | ForEach-Object -Process {
+                    $invokeRsCimMethodParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName  = 'RemoveURL'
+                        Arguments   = @{
+                            Application = $reportingServicesData.ReportsApplicationName
+                            UrlString   = $_
+                            Lcid        = $language
+                        }
+                    }
+
+                    Invoke-RsCimMethod @invokeRsCimMethodParameters
+                }
+
+                $ReportsReservedUrl | ForEach-Object -Process {
+                    Write-Verbose -Message (
+                        $script:localizedData.AddReportsUrlReservation -f @(
+                            $DatabaseServerName
+                            $DatabaseInstanceName
+                            $_
+                        )
                     )
-                )
 
-                $invokeRsCimMethodParameters = @{
-                    CimInstance = $reportingServicesData.Configuration
-                    MethodName  = 'ReserveUrl'
-                    Arguments   = @{
-                        Application = $reportingServicesData.ReportsApplicationName
-                        UrlString   = $_
-                        Lcid        = $language
+                    $invokeRsCimMethodParameters = @{
+                        CimInstance = $reportingServicesData.Configuration
+                        MethodName  = 'ReserveUrl'
+                        Arguments   = @{
+                            Application = $reportingServicesData.ReportsApplicationName
+                            UrlString   = $_
+                            Lcid        = $language
+                        }
                     }
+
+                    Invoke-RsCimMethod @invokeRsCimMethodParameters
                 }
 
-                Invoke-RsCimMethod @invokeRsCimMethodParameters
+                # Get the current configuration
+                $currentConfig = Get-TargetResource @getTargetResourceParameters
+                Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
             }
-
-            # Get the current configuration
-            $currentConfig = Get-TargetResource @getTargetResourceParameters
-            Write-Verbose -Message ( $script:localizedData.ReportingServicesIsInitialized -f $DatabaseServerName, $DatabaseInstanceName, $currentConfig.IsInitialized ) -Verbose
         }
         #endregion Reserved URLs
 
@@ -1250,12 +1254,10 @@ function Set-TargetResource
         Report Manager/Report Web App virtual directory name. Optional.
 
     .PARAMETER ReportServerReservedUrl
-        Report Server URL reservations. Optional. If not specified,
-        'http://+:80' URL reservation will be used.
+        Report Server URL reservations. Optional.
 
     .PARAMETER ReportsReservedUrl
         Report Manager/Report Web App URL reservations. Optional.
-        If not specified, 'http://+:80' URL reservation will be used.
 
     .PARAMETER HttpsCertificateThumbprint
         The thumbprint of the certificate used to secure SSL communication.
@@ -1346,11 +1348,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String[]]
-        $ReportServerReservedUrl = @('http://+:80'),
+        $ReportServerReservedUrl,
 
         [Parameter()]
         [System.String[]]
-        $ReportsReservedUrl = @('http://+:80'),
+        $ReportsReservedUrl,
 
         [Parameter()]
         [System.String]
@@ -1524,13 +1526,31 @@ function Test-TargetResource
             ReferenceObject  = $currentConfig.ReportsReservedUrl
             DifferenceObject = $ReportsReservedUrl
         }
+    }
 
-        if ( $null -ne ( Compare-Object @compareParameters ) )
+    if ( $PSBoundParameters.ContainsKey('ReportsReservedUrl') )
+    {
+        if ( $null -eq $currentConfig.ReportsReservedUrl )
         {
             Write-Verbose -Message (
-                $script:localizedData.ReportsReservedUrlNotInDesiredState -f $DatabaseServerName, $DatabaseInstanceName, ( $currentConfig.ReportsReservedUrl -join ', ' ), ( $ReportsReservedUrl -join ', ' )
+                $script:localizedData.ReportsReservedUrlNotInDesiredState -f $DatabaseServerName, $DatabaseInstanceName, '', ( $ReportsReservedUrl -join ', ' )
             ) -Verbose
             $result = $false
+        }
+        else
+        {
+            $compareParameters = @{
+                ReferenceObject  = $currentConfig.ReportsReservedUrl
+                DifferenceObject = $ReportsReservedUrl
+            }
+
+            if ( $null -ne ( Compare-Object @compareParameters ) )
+            {
+                Write-Verbose -Message (
+                    $script:localizedData.ReportsReservedUrlNotInDesiredState -f $DatabaseServerName, $DatabaseInstanceName, ( $currentConfig.ReportsReservedUrl -join ', ' ), ( $ReportsReservedUrl -join ', ' )
+                ) -Verbose
+                $result = $false
+            }
         }
     }
 
