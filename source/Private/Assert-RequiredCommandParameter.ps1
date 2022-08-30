@@ -67,11 +67,11 @@ function Assert-RequiredCommandParameter
              {
                 $errorMessage = if ($PSBoundParameters.ContainsKey('IfParameterPresent'))
                 {
-                    $script:localizedData.SpecificParametersMustAllBeSetWhenParameterExist -f ($RequiredParameter -join ''', '''), ($IfParameterPresent -join ''', ''')
+                    $script:localizedData.RequiredCommandParameter_SpecificParametersMustAllBeSetWhenParameterExist -f ($RequiredParameter -join ''', '''), ($IfParameterPresent -join ''', ''')
                 }
                 else
                 {
-                    $script:localizedData.SpecificParametersMustAllBeSet -f ($RequiredParameter -join ''', ''')
+                    $script:localizedData.RequiredCommandParameter_SpecificParametersMustAllBeSet -f ($RequiredParameter -join ''', ''')
                 }
 
                 $PSCmdlet.ThrowTerminatingError(

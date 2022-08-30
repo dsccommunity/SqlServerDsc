@@ -83,15 +83,17 @@ ConvertFrom-StringData @'
     Server_Install_ShouldProcessVerboseWarning = Are you sure you want to invoke the setup action '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Server_Install_ShouldProcessCaption = Invoke a Microsoft SQL Server setup action
-    SetupExitMessage = Setup exited with code '{0}'.
-    SetupSuccessful = Setup finished successfully.
-    SetupSuccessfulRebootRequired = Setup finished successfully, but a reboot is required.
-    SetupFailed = Please see the 'Summary.txt' log file in the 'Setup Bootstrap\\Log' folder.
-    SetupArguments = Specified setup executable arguments: {0}
+    Server_SetupExitMessage = Setup exited with code '{0}'.
+    Server_SetupSuccessful = Setup finished successfully.
+    Server_SetupSuccessfulRebootRequired = Setup finished successfully, but a reboot is required.
+    Server_SetupFailed = Please see the 'Summary.txt' log file in the 'Setup Bootstrap\\Log' folder.
+    Server_SetupArguments = Specified setup executable arguments: {0}
+    Server_MediaPathNotFound = The specified media path does not exist or does not contain 'setup.exe'.
+    Server_ConfigurationFileNotFound = The specified configuration file was not found.
 
     ## Assert-RequiredCommandParameter
-    SpecificParametersMustAllBeSet = The parameters '{0}' must all be specified.
-    SpecificParametersMustAllBeSetWhenParameterExist = The parameters '{0}' must all be specified if either parameter '{1}' is specified.
+    RequiredCommandParameter_SpecificParametersMustAllBeSet = The parameters '{0}' must all be specified.
+    RequiredCommandParameter_SpecificParametersMustAllBeSetWhenParameterExist = The parameters '{0}' must all be specified if either parameter '{1}' is specified.
 
     ## Test-IsElevated
     UserNotElevated = This command must run in an elevated PowerShell session.

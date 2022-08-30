@@ -156,12 +156,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     Install = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case.
                     Features = 'SqlEngine', 'Arc'
@@ -218,12 +218,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $installSqlDscServerParameters = @{
                     Install = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
                     Features = 'SqlEngine'
@@ -264,8 +264,8 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'UpdateSource'
-                MockParameterValue = 'E:\Updates'
-                MockExpectedRegEx = '\/UPDATESOURCE="E:\\Updates"' # cspell: disable-line
+                MockParameterValue = '\SqlMedia\Updates'
+                MockExpectedRegEx = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'InstallSharedDir'
@@ -669,12 +669,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     Install = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
                     Features = 'SqlEngine'
@@ -778,12 +778,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 Mock -CommandName Write-Verbose
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     Install = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
                     Features = 'SqlEngine'
@@ -833,12 +833,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     Upgrade = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                 }
             }
@@ -895,8 +895,8 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'UpdateSource'
-                MockParameterValue = 'E:\Updates'
-                MockExpectedRegEx = '\/UPDATESOURCE="E:\\Updates"' # cspell: disable-line
+                MockParameterValue = '\SqlMedia\Updates'
+                MockExpectedRegEx = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'InstanceDir'
@@ -955,12 +955,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     Upgrade = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
                     Force = $true
@@ -996,12 +996,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     InstallFailoverCluster = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case.
                     Features = 'SqlEngine'
@@ -1070,12 +1070,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $installSqlDscServerParameters = @{
                     InstallFailoverCluster = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
                     Features = 'SqlEngine'
@@ -1114,8 +1114,8 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'UpdateSource'
-                MockParameterValue = 'E:\Updates'
-                MockExpectedRegEx = '\/UPDATESOURCE="E:\\Updates"' # cspell: disable-line
+                MockParameterValue = '\SqlMedia\Updates'
+                MockExpectedRegEx = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'InstallSharedDir'
@@ -1418,12 +1418,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     InstallFailoverCluster = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
                     Features = 'SqlEngine'
@@ -1464,12 +1464,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     PrepareFailoverCluster = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case.
                     Features = 'SqlEngine'
@@ -1519,12 +1519,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $installSqlDscServerParameters = @{
                     PrepareFailoverCluster = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
                     Features = 'SqlEngine'
@@ -1559,8 +1559,8 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'UpdateSource'
-                MockParameterValue = 'E:\Updates'
-                MockExpectedRegEx = '\/UPDATESOURCE="E:\\Updates"' # cspell: disable-line
+                MockParameterValue = '\SqlMedia\Updates'
+                MockExpectedRegEx = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'InstallSharedDir'
@@ -1704,12 +1704,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     PrepareFailoverCluster = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
                     Features = 'SqlEngine'
@@ -1746,11 +1746,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     CompleteFailoverCluster = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     SqlSysAdminAccounts = 'DOMAIN\User', 'COMPANY\SQL Administrators'
                     InstallSqlDataDir = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
@@ -1983,11 +1983,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     CompleteFailoverCluster = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     SqlSysAdminAccounts = 'DOMAIN\User', 'COMPANY\SQL Administrators'
                     InstallSqlDataDir = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
@@ -2031,12 +2031,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     AddNode = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     FailoverClusterIPAddresses = @(
                         'IPv4;172.16.0.0;ClusterNetwork1;172.31.255.255',
@@ -2090,12 +2090,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $installSqlDscServerParameters = @{
                     AddNode = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     FailoverClusterIPAddresses = @(
                         'IPv4;172.16.0.0;ClusterNetwork1;172.31.255.255',
@@ -2134,8 +2134,8 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'UpdateSource'
-                MockParameterValue = 'E:\Updates'
-                MockExpectedRegEx = '\/UPDATESOURCE="E:\\Updates"' # cspell: disable-line
+                MockParameterValue = '\SqlMedia\Updates'
+                MockExpectedRegEx = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'PBEngSvcAccount'
@@ -2231,12 +2231,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     AddNode = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     FailoverClusterIPAddresses = @(
                         'IPv4;172.16.0.0;ClusterNetwork1;172.31.255.255',
@@ -2277,11 +2277,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     RemoveNode = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                 }
             }
@@ -2333,11 +2333,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     RemoveNode = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     Force = $true
                 }
@@ -2372,11 +2372,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     ConfigurationFile = 'C:\MyConfig.ini'
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                 }
             }
 
@@ -2462,11 +2462,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     ConfigurationFile = 'C:\MyConfig.ini'
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     Force = $true
                 }
             }
@@ -2500,11 +2500,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     RebuildDatabase = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     SqlSysAdminAccounts = 'DOMAIN\User', 'COMPANY\SQL Administrators'
                 }
@@ -2602,11 +2602,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     RebuildDatabase = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     SqlSysAdminAccounts = 'DOMAIN\User'
                     Force = $true
@@ -2642,12 +2642,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     EditionUpgrade = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     ProductKey = '22222-00000-00000-00000-00000'
                 }
@@ -2704,12 +2704,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     EditionUpgrade = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     ProductKey = 22222-00000-00000-00000-00000
                     Force = $true
@@ -2745,11 +2745,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     Repair = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
                     Features = 'SqlEngine'
@@ -2799,11 +2799,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $installSqlDscServerParameters = @{
                     Repair = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
                     Features = 'SqlEngine'
@@ -2858,11 +2858,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     Repair = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
                     Features = 'SqlEngine'
@@ -2899,12 +2899,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     Upgrade = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                 }
             }
@@ -2961,8 +2961,8 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'UpdateSource'
-                MockParameterValue = 'E:\Updates'
-                MockExpectedRegEx = '\/UPDATESOURCE="E:\\Updates"' # cspell: disable-line
+                MockParameterValue = '\SqlMedia\Updates'
+                MockExpectedRegEx = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'InstanceDir'
@@ -3006,12 +3006,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     Upgrade = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     Force = $true
                 }
@@ -3046,12 +3046,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     PrepareImage = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case.
                     Features = 'SqlEngine'
@@ -3115,8 +3115,8 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'UpdateSource'
-                MockParameterValue = 'E:\Updates'
-                MockExpectedRegEx = '\/UPDATESOURCE="E:\\Updates"' # cspell: disable-line
+                MockParameterValue = '\SqlMedia\Updates'
+                MockExpectedRegEx = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'InstallSharedDir'
@@ -3160,12 +3160,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     PrepareImage = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case.
                     Features = 'SqlEngine'
@@ -3203,12 +3203,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     CompleteImage = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                 }
             }
 
@@ -3251,12 +3251,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $installSqlDscServerParameters = @{
                     CompleteImage = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     Force = $true
                     PBStartPortRange = 16450
                     PBEndPortRange = 16460
@@ -3485,12 +3485,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     CompleteImage = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     Force = $true
                 }
             }
@@ -3524,11 +3524,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     Uninstall = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case.
                     Features = 'SqlEngine'
@@ -3585,12 +3585,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     Install = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     AzureSubscriptionId = '5d19794a-89a4-4f0b-8d4e-58f213ea3546'
                     AzureResourceGroup = 'MyResourceGroup'
                     AzureRegion = 'West-US'
@@ -3664,12 +3664,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
-                }
+                } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
                     Install = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = 'E:\'
+                    MediaPath = '\SqlMedia'
                     AzureSubscriptionId = '5d19794a-89a4-4f0b-8d4e-58f213ea3546'
                     AzureResourceGroup = 'MyResourceGroup'
                     AzureRegion = 'West-US'

@@ -119,6 +119,14 @@ function Install-SqlDscServer
         $RemoveNode,
 
         [Parameter(ParameterSetName = 'UsingConfigurationFile', Mandatory = $true)]
+        [ValidateScript({
+            if (-not (Test-Path -Path $_))
+            {
+                throw $script:localizedData.Server_ConfigurationFileNotFound
+            }
+
+            return $true
+        })]
         [System.String]
         $ConfigurationFile,
 
@@ -141,6 +149,14 @@ function Install-SqlDscServer
         $SuppressPrivacyStatementNotice,
 
         [Parameter(Mandatory = $true)]
+        [ValidateScript({
+            if (-not (Test-Path -Path (Join-Path -Path $_ -ChildPath 'setup.exe')))
+            {
+                throw $script:localizedData.Server_MediaPathNotFound
+            }
+
+            return $true
+        })]
         [System.String]
         $MediaPath,
 
@@ -1224,7 +1240,7 @@ function Install-SqlDscServer
     # Clear sensitive values.
     $sensitiveValue = $null
 
-    Write-Verbose -Message ($script:localizedData.SetupArguments -f $verboseSetupArgument)
+    Write-Verbose -Message ($script:localizedData.Server_SetupArguments -f $verboseSetupArgument)
 
     $verboseDescriptionMessage = $script:localizedData.Server_Install_ShouldProcessVerboseDescription -f $PSCmdlet.ParameterSetName
     $verboseWarningMessage = $script:localizedData.Server_Install_ShouldProcessVerboseWarning -f $PSCmdlet.ParameterSetName
@@ -1244,19 +1260,19 @@ function Install-SqlDscServer
         # Run setup executable.
         $processExitCode = Start-SqlSetupProcess @startProcessParameters
 
-        $setupExitMessage = ($script:localizedData.SetupExitMessage -f $processExitCode)
+        $setupExitMessage = ($script:localizedData.Server_SetupExitMessage -f $processExitCode)
 
         if ($processExitCode -eq 3010)
         {
             Write-Warning -Message (
-                '{0} {1}' -f $setupExitMessage, $script:localizedData.SetupSuccessfulRebootRequired
+                '{0} {1}' -f $setupExitMessage, $script:localizedData.Server_SetupSuccessfulRebootRequired
             )
         }
         elseif ($processExitCode -ne 0)
         {
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
-                    ('{0} {1}' -f $setupExitMessage, $script:localizedData.SetupFailed),
+                    ('{0} {1}' -f $setupExitMessage, $script:localizedData.Server_SetupFailed),
                     'ISDS0001', # cspell: disable-line
                     [System.Management.Automation.ErrorCategory]::InvalidOperation,
                     $InstanceName
@@ -1266,7 +1282,7 @@ function Install-SqlDscServer
         else
         {
             Write-Verbose -Message (
-                '{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupSuccessful)
+                '{0} {1}' -f $setupExitMessage, ($script:localizedData.Server_SetupSuccessful)
             )
         }
     }
