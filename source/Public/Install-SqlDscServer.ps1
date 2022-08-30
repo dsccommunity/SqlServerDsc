@@ -1,6 +1,12 @@
 <#
     .SYNOPSIS
-        Executes an install action using Microsoft SQL Server setup executable.
+        Executes an setup action using Microsoft SQL Server setup executable.
+
+    .DESCRIPTION
+        Executes an setup action using Microsoft SQL Server setup executable.
+
+        See the link in the commands help for information on each parameter. The
+        link points to SQL Server command line setup documentation.
 
     .PARAMETER Install
         Specifies the setup action Install.
@@ -41,22 +47,88 @@
     .PARAMETER RemoveNode
         Specifies the setup action RemoveNode.
 
+    .PARAMETER ConfigurationFile
+        Specifies an configuration file to use during SQL Server setup. This
+        parameter cannot be used together with any of the setup actions, but instead
+        it is expected that the configuration file specifies what setup action to
+        run.
+
     .PARAMETER AcceptLicensingTerms
         Required parameter to be able to run unattended install. By specifying this
         parameter you acknowledge the acceptance all license terms and notices for
         the specified features, the terms and notices that the Microsoft SQL Server
         setup executable normally ask for.
 
+    .PARAMETER MediaPath
+        Specifies the path where to find the SQL Server installation media. On this
+        path the SQL Server setup executable must be found.
+
+    .LINK
+        https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt
+
     .OUTPUTS
         None.
 
     .EXAMPLE
-        Install-SqlDscServer -Install -AcceptLicensingTerms -InstanceName 'MyInstance' -Features 'SQLENGINE' -MediaPath 'E:\' -SqlSysAdminAccounts @('MyAdminAccount')
+        Install-SqlDscServer -Install -AcceptLicensingTerms -InstanceName 'MyInstance' -Features 'SQLENGINE' -SqlSysAdminAccounts @('MyAdminAccount') -MediaPath 'E:\'
 
-        Installs a named instance MyInstance.
+        Installs the database engine for the named instance MyInstance.
+
+    .EXAMPLE
+        Install-SqlDscServer -Install -AcceptLicensingTerms -InstanceName 'MyInstance' -Features 'SQLENGINE','ARC' -SqlSysAdminAccounts @('MyAdminAccount') -MediaPath 'E:\' -AzureSubscriptionId 'MySubscriptionId' -AzureResourceGroup 'MyRG' -AzureRegion 'West-US' -AzureTenantId 'MyTenantId' -AzureServicePrincipal 'MyPrincipalName' -AzureServicePrincipalSecret ([PSCredential]::new('Any',('MySecret' | ConvertTo-SecureString -AsPlainText -Force)))
+
+        Installs the database engine for the named instance MyInstance and onboard the server to Azure Arc.
+
+    .EXAMPLE
+        Install-SqlDscServer -Install -AcceptLicensingTerms -MediaPath 'E:\' -AzureSubscriptionId 'MySubscriptionId' -AzureResourceGroup 'MyRG' -AzureRegion 'West-US' -AzureTenantId 'MyTenantId' -AzureServicePrincipal 'MyPrincipalName' -AzureServicePrincipalSecret ([PSCredential]::new('Any',('MySecret' | ConvertTo-SecureString -AsPlainText -Force)))
+
+        Installs the Azure Arc Agent on the server.
+
+    .EXAMPLE
+        Install-SqlDscServer -ConfigurationFile 'MySqlConfig.ini' -MediaPath 'E:\'
+
+        Installs SQL Server using the configuration file 'MySqlConfig.ini'.
+
+    .EXAMPLE
+        Install-SqlDscServer -Uninstall -InstanceName 'MyInstance' -Features 'SQLENGINE' -MediaPath 'E:\'
+
+        Uninstalls the database engine from the named instance MyInstance.
+
+    .EXAMPLE
+        Install-SqlDscServer -PrepareImage -AcceptLicensingTerms -InstanceName 'MyInstance' -Features 'SQLENGINE' -InstanceId 'MyInstance' -MediaPath 'E:\'
+
+        Prepares the server for using the database engine for an instance named 'MyInstance'.
+
+    .EXAMPLE
+        Install-SqlDscServer -CompleteImage -MediaPath 'E:\'
+
+        Completes install on a server that was previously prepared (by using prepare image).
+
+    .EXAMPLE
+        Install-SqlDscServer -Upgrade -AcceptLicensingTerms -InstanceName 'MyInstance' -MediaPath 'E:\'
+
+        Upgrades the instance 'MyInstance' with the SQL Server version that is provided by the media path.
+
+    .EXAMPLE
+        Install-SqlDscServer -EditionUpgrade -AcceptLicensingTerms -ProductKey 'NewEditionProductKey' -InstanceName 'MyInstance' -MediaPath 'E:\'
+
+        Upgrades the instance 'MyInstance' with the SQL Server edition that is provided by the media path.
+
+    .EXAMPLE
+        Install-SqlDscServer -Repair -InstanceName 'MyInstance' -Features 'SQLENGINE' -MediaPath 'E:\'
+
+        Repairs the database engine of the instance 'MyInstance'.
+
+    .EXAMPLE
+        Install-SqlDscServer -RebuildDatabase -InstanceName 'MyInstance' -SqlSysAdminAccounts @('MyAdminAccount') -MediaPath 'E:\'
+
+        Rebuilds the database of the instance 'MyInstance'.
 
     .NOTES
-        None.
+        All parameters has intentionally not been added to this comment-based help
+        since it would take a lot of effort to keep it up to date. Instead there is
+        a link in the comment-based help that points to the SQL Server command line
+        setup documentation which will stay relevant.
 #>
 function Install-SqlDscServer
 {
