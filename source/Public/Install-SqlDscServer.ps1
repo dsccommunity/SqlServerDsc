@@ -100,7 +100,7 @@
         Prepares the server for using the database engine for an instance named 'MyInstance'.
 
     .EXAMPLE
-        Install-SqlDscServer -CompleteImage -MediaPath 'E:\'
+        Install-SqlDscServer -CompleteImage -AcceptLicensingTerms -MediaPath 'E:\'
 
         Completes install on a server that was previously prepared (by using prepare image).
 
@@ -123,6 +123,31 @@
         Install-SqlDscServer -RebuildDatabase -InstanceName 'MyInstance' -SqlSysAdminAccounts @('MyAdminAccount') -MediaPath 'E:\'
 
         Rebuilds the database of the instance 'MyInstance'.
+
+    .EXAMPLE
+        Install-SqlDscServer -InstallFailoverCluster -AcceptLicensingTerms -InstanceName 'MyInstance' -Features 'SQLENGINE' -InstallSqlDataDir 'D:\MSSQL\Data' -SqlSysAdminAccounts @('MyAdminAccount') -FailoverClusterNetworkName 'TestCluster01A' -FailoverClusterIPAddresses 'IPv4;192.168.0.46;ClusterNetwork1;255.255.255.0' -MediaPath 'E:\'
+
+        Installs the database engine in a failover cluster with the instance name 'MyInstance'.
+
+    .EXAMPLE
+        Install-SqlDscServer -PrepareFailoverCluster -AcceptLicensingTerms -InstanceName 'MyInstance' -Features 'SQLENGINE' -MediaPath 'E:\'
+
+        Prepares to installs the database engine in a failover cluster with the instance name 'MyInstance'.
+
+    .EXAMPLE
+        Install-SqlDscServer -CompleteFailoverCluster -InstanceName 'MyInstance' -InstallSqlDataDir 'D:\MSSQL\Data' -SqlSysAdminAccounts @('MyAdminAccount') -FailoverClusterNetworkName 'TestCluster01A' -FailoverClusterIPAddresses 'IPv4;192.168.0.46;ClusterNetwork1;255.255.255.0' -MediaPath 'E:\'
+
+        Completes the install of the database engine in the failover cluster with the instance name 'MyInstance'.
+
+    .EXAMPLE
+        Install-SqlDscServer -AddNode -AcceptLicensingTerms -InstanceName 'MyInstance' -FailoverClusterIPAddresses 'IPv4;192.168.0.46;ClusterNetwork1;255.255.255.0' -MediaPath 'E:\'
+
+        Adds the node to the failover cluster for the instance 'MyInstance'.
+
+    .EXAMPLE
+        Install-SqlDscServer -RemoveNode -InstanceName 'MyInstance' -MediaPath 'E:\'
+
+        Removes the node from the failover cluster of the instance 'MyInstance'.
 
     .NOTES
         All parameters has intentionally not been added to this comment-based help
