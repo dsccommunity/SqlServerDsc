@@ -32,6 +32,7 @@
 #>
 function Assert-RequiredCommandParameter
 {
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory = $true)]

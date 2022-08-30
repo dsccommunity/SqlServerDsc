@@ -15,6 +15,9 @@
 #>
 function Assert-ElevatedUser
 {
+    [CmdletBinding()]
+    param ()
+
     [Security.Principal.WindowsPrincipal] $user = [Security.Principal.WindowsIdentity]::GetCurrent()
 
     $isElevated = $user.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)

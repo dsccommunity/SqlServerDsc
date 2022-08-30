@@ -46,7 +46,7 @@ Describe 'Assert-RequiredCommandParameter' -Tag 'Private' {
     Context 'When required parameter is missing' {
         It 'Should throw the correct error' {
             InModuleScope -ScriptBlock {
-                $mockErrorMessage = $script:localizedData.SpecificParametersMustAllBeSet -f 'Parameter1'
+                $mockErrorMessage = $script:localizedData.RequiredCommandParameter_SpecificParametersMustAllBeSet -f 'Parameter1'
 
                 { Assert-RequiredCommandParameter -BoundParameter @{} -RequiredParameter 'Parameter1' } |
                     Should -Throw -ExpectedMessage $mockErrorMessage
@@ -66,7 +66,7 @@ Describe 'Assert-RequiredCommandParameter' -Tag 'Private' {
     Context 'When the parameter in IfParameterPresent is not present' {
         It 'Should throw the correct error' {
             InModuleScope -ScriptBlock {
-                $mockErrorMessage = $script:localizedData.SpecificParametersMustAllBeSetWhenParameterExist -f 'Parameter1', 'Parameter2'
+                $mockErrorMessage = $script:localizedData.RequiredCommandParameter_SpecificParametersMustAllBeSetWhenParameterExist -f 'Parameter1', 'Parameter2'
 
                 {
                     Assert-RequiredCommandParameter -BoundParameter @{
@@ -80,7 +80,7 @@ Describe 'Assert-RequiredCommandParameter' -Tag 'Private' {
     Context 'When the parameters in IfParameterPresent is present and the required parameters are not present' {
         It 'Should throw the correct error' {
             InModuleScope -ScriptBlock {
-                $mockErrorMessage = $script:localizedData.SpecificParametersMustAllBeSetWhenParameterExist -f "Parameter3', 'Parameter4", "Parameter1', 'Parameter2"
+                $mockErrorMessage = $script:localizedData.RequiredCommandParameter_SpecificParametersMustAllBeSetWhenParameterExist -f "Parameter3', 'Parameter4", "Parameter1', 'Parameter2"
 
                 {
                     Assert-RequiredCommandParameter -BoundParameter @{

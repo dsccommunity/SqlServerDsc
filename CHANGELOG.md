@@ -75,6 +75,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Get-LocalizedDataRecursive`
     - `Test-ResourceHasDscProperty`
     - `Test-ResourceDscPropertyIsAssigned`
+    - `Assert-ElevatedUser`
+    - `Assert-RequiredCommandParameter`
+    - `Test-IsNumericType`
+    - `Assert-InstallSqlServerProperties`
   - The following public functions were added to the module (see comment-based
     help for more information):
     - `Connect-SqlDscDatabaseEngine`

@@ -23,6 +23,7 @@
 #>
 function Assert-InstallSqlServerProperties
 {
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory = $true)]
