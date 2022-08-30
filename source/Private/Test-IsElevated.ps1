@@ -23,7 +23,7 @@ function Assert-ElevatedUser
     {
         $PSCmdlet.ThrowTerminatingError(
             [System.Management.Automation.ErrorRecord]::new(
-                $script:localizedData.UserNotElevated,
+                $script:localizedData.IsElevated_UserNotElevated,
                 'TIE0001',
                 [System.Management.Automation.ErrorCategory]::InvalidOperation,
                 'Command parameters'
