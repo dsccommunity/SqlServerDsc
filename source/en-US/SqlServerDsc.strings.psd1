@@ -95,6 +95,6 @@ ConvertFrom-StringData @'
     RequiredCommandParameter_SpecificParametersMustAllBeSet = The parameters '{0}' must all be specified.
     RequiredCommandParameter_SpecificParametersMustAllBeSetWhenParameterExist = The parameters '{0}' must all be specified if either parameter '{1}' is specified.
 
-    ## Test-IsElevated
+    ## Assert-IsElevated
     IsElevated_UserNotElevated = This command must run in an elevated PowerShell session.
 '@
