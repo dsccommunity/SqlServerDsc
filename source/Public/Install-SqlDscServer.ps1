@@ -1170,6 +1170,44 @@ function Install-SqlDscServer
 
     $sensitiveValue = @()
 
+    $pathParameter = @(
+        'InstallSharedDir'
+        'InstallSharedWowDir'
+        'InstanceDir'
+        'ASBackupDir'
+        'ASConfigDir'
+        'ASDataDir'
+        'ASLogDir'
+        'ASTempDir'
+        'InstallSqlDataDir'
+        'SqlBackupDir'
+        'SqlTempDbDir'
+        'SqlTempDbLogDir'
+        'SqlUserDbDir'
+        'SqlUserDbLogDir'
+        'MPYCacheDirectory'
+        'MRCacheDirectory'
+        'SqlJavaDir'
+    )
+
+    <#
+        Remove trialing backslash from paths so they are not interpreted as
+        escape-characters for a double-quote.
+        See issue https://github.com/dsccommunity/SqlServerDsc/issues/1254.
+    #>
+    $boundParameterName.Where( { $_ -in $pathParameter } ).ForEach({
+        # Must not change paths that reference a root directory (they are handle differently later)
+        if ($PSBoundParameters.$_ -notmatch '^[a-zA-Z]:\\$')
+        {
+            $PSBoundParameters.$_ = $PSBoundParameters.$_.TrimEnd('\')
+        }
+    })
+
+    <#
+        TODO: Verify if necessary. From code: "If SQL shared components already installed, clear InstallShared*Dir variables"
+        https://github.com/dsccommunity/SqlServerDsc/blob/f61dd005e2df15430f6fcfd87752dc9dd083f38e/source/DSCResources/DSC_SqlSetup/DSC_SqlSetup.psm1#L1009
+    #>
+
     # Loop through all bound parameters and build arguments for the setup executable.
     foreach ($parameterName in $boundParameterName)
     {
@@ -1317,8 +1355,22 @@ function Install-SqlDscServer
 
             default
             {
-                $setupArgument += '="{0}"' -f $PSBoundParameters.$parameterName
-
+                <#
+                    When there is backslash followed by a double-quote then the backslash
+                    is treated as an escape character for the double-quote. For arguments
+                    that holds a path and the value references a root directory, e.g. 'E:\',
+                    then the value must not be surrounded by double-quotes. Other paths
+                    should be surrounded by double-quotes as they can contain spaces.
+                    See issue https://github.com/dsccommunity/SqlServerDsc/issues/1254.
+                #>
+                if ($PSBoundParameters.$parameterName -match '^[a-zA-Z]:\\$')
+                {
+                    $setupArgument += '={0}' -f $PSBoundParameters.$parameterName
+                }
+                else
+                {
+                    $setupArgument += '="{0}"' -f $PSBoundParameters.$parameterName
+                }
                 break
             }
         }

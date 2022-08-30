@@ -274,7 +274,8 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'InstallSharedDir'
-                MockParameterValue = 'C:\Program Files\Microsoft SQL Server'
+                # This value intentionally ends with a backslash to test so that it is removed.
+                MockParameterValue = 'C:\Program Files\Microsoft SQL Server\'
                 MockExpectedRegEx = '\/INSTALLSHAREDDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
             }
             @{
@@ -284,8 +285,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'InstanceDir'
-                MockParameterValue = 'C:\Program Files\Microsoft SQL Server'
-                MockExpectedRegEx = '\/INSTANCEDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
+                <#
+                    This value intentionally has 'D:\' to validate that the backslash
+                    is not removed and that the argument is passed without double-quotes.
+                #>
+                MockParameterValue = 'D:\'
+                MockExpectedRegEx = '\/INSTANCEDIR=D:\\' # cspell: disable-line
             }
             @{
                 MockParameterName = 'InstanceId'
