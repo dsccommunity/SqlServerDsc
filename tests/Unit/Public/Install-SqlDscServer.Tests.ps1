@@ -150,6 +150,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When specifying only mandatory parameters' {
@@ -803,7 +808,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 Install-SqlDscServer @installSqlDscServerParameters -Verbose 4> $null
 
                 $mockVerboseMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.SetupArguments
+                    $script:localizedData.Server_SetupArguments
                 }
 
                 Should -Invoke -CommandName Write-Verbose -ParameterFilter {
@@ -827,6 +832,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When specifying only mandatory parameters' {
@@ -990,6 +1000,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When specifying only mandatory parameters' {
@@ -1458,6 +1473,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When specifying only mandatory parameters' {
@@ -1740,6 +1760,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When specifying only mandatory parameters' {
@@ -2025,6 +2050,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When specifying only mandatory parameters' {
@@ -2271,6 +2301,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When specifying only mandatory parameters' {
@@ -2366,6 +2401,18 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'MyConfig\.ini'
+            } -MockWith {
+                return $true
+            }
+
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When specifying only mandatory parameters' {
@@ -2494,6 +2541,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When specifying only mandatory parameters' {
@@ -2636,6 +2688,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When specifying only mandatory parameters' {
@@ -2739,6 +2796,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When specifying only mandatory parameters' {
@@ -2893,6 +2955,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When specifying only mandatory parameters' {
@@ -3040,6 +3107,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When specifying only mandatory parameters' {
@@ -3197,6 +3269,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When specifying only mandatory parameters' {
@@ -3518,6 +3595,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
        Context 'When specifying only mandatory parameters' {
@@ -3579,6 +3661,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When specifying only mandatory parameters' {
@@ -3706,6 +3793,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Assert-InstallSqlServerProperties
             Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Test-Path -ParameterFilter {
+                $Path -match 'setup\.exe'
+            } -MockWith {
+                return $true
+            }
         }
 
         Context 'When role is ''SPI_AS_NewFarm''' {
@@ -3718,7 +3810,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     $mockDefaultParameters = @{
                         Install = $true
                         AcceptLicensingTerms = $true
-                        MediaPath = 'E:\'
+                        MediaPath = '\SqlMedia'
                         Role = 'SPI_AS_NewFarm'
                     }
                 }
@@ -3730,7 +3822,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                         Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                             $ArgumentList | Should -MatchExactly '\/ACTION=Install'
                             $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                            $ArgumentList | Should -MatchExactly '\/ROLE=SPI_AS_NEWFARM'
+                            $ArgumentList | Should -MatchExactly '\/ROLE=SPI_AS_NEWFARM' # cspell: disable-line
 
                             # Return $true if none of the above throw.
                             $true
@@ -3798,7 +3890,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     $mockDefaultParameters = @{
                         Install = $true
                         AcceptLicensingTerms = $true
-                        MediaPath = 'E:\'
+                        MediaPath = '\SqlMedia'
                         Role = 'SPI_AS_NewFarm'
                         Force = $true
                     }
@@ -3849,7 +3941,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     $mockDefaultParameters = @{
                         Install = $true
                         AcceptLicensingTerms = $true
-                        MediaPath = 'E:\'
+                        MediaPath = '\SqlMedia'
                         Role = 'SPI_AS_NewFarm'
                         Force = $true
                     }
@@ -3866,7 +3958,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     Install-SqlDscServer @installSqlDscServerParameters -Verbose 4> $null
 
                     $mockVerboseMessage = InModuleScope -ScriptBlock {
-                        $script:localizedData.SetupArguments
+                        $script:localizedData.Server_SetupArguments
                     }
 
                     Should -Invoke -CommandName Write-Verbose -ParameterFilter {
@@ -3896,7 +3988,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     $mockDefaultParameters = @{
                         Install = $true
                         AcceptLicensingTerms = $true
-                        MediaPath = 'E:\'
+                        MediaPath = '\SqlMedia'
                         Role = 'AllFeatures_WithDefaults'
                     }
                 }
@@ -3960,7 +4052,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     $mockDefaultParameters = @{
                         Install = $true
                         AcceptLicensingTerms = $true
-                        MediaPath = 'E:\'
+                        MediaPath = '\SqlMedia'
                         Role = 'AllFeatures_WithDefaults'
                         Force = $true
                     }
