@@ -20,7 +20,8 @@ function Assert-ElevatedUser
 
     $isElevated = $false
 
-    if ($IsMacOS -or $IsLinux) {
+    if ($IsMacOS -or $IsLinux)
+    {
         $isElevated = (id -u) -eq 0
     }
     else
