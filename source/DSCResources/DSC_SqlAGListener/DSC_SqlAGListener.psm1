@@ -496,7 +496,7 @@ function Test-TargetResource
         If this is supposed to process only the active node, and this is not the
         active node, don't bother evaluating the test.
     #>
-    if ( $ProcessOnlyOnActiveNode -and -not $getTargetResourceResult.IsActiveNode )
+    if ( $ProcessOnlyOnActiveNode -and -not $IsActiveNode )
     {
         # Use localization if the resource has been converted
         New-VerboseMessage -Message ( 'The node "{0}" is not actively hosting the instance "{1}". Exiting the test.' -f $env:COMPUTERNAME, $SQLInstanceName )
