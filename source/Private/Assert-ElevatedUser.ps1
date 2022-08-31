@@ -18,9 +18,17 @@ function Assert-ElevatedUser
     [CmdletBinding()]
     param ()
 
-    [Security.Principal.WindowsPrincipal] $user = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $isElevated = $false
 
-    $isElevated = $user.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+    if ($IsMacOS -or $IsLinux) {
+        $isElevated = (id -u) -eq 0
+    }
+    else
+    {
+        [Security.Principal.WindowsPrincipal] $user = [Security.Principal.WindowsIdentity]::GetCurrent()
+
+        $isElevated = $user.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+    }
 
     if (-not $isElevated)
     {

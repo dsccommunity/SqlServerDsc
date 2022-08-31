@@ -48,8 +48,15 @@ Describe 'Assert-ElevatedUser' -Tag 'Private' {
             Since it is not possible to elevated (or un-elevate) a user during testing
             the test that cannot run need to be skipped.
         #>
-        [Security.Principal.WindowsPrincipal] $mockCurrentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
-        $mockIsElevated = $mockCurrentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+        if ($IsMacOS -or $IsLinux) {
+            $mockIsElevated = (id -u) -eq 0
+        }
+        else
+        {
+            [Security.Principal.WindowsPrincipal] $mockCurrentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
+
+            $mockIsElevated = $mockCurrentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+        }
     }
 
     It 'Should throw the correct error' -Skip:$mockIsElevated {
