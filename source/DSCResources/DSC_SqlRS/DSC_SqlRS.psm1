@@ -1352,7 +1352,7 @@ function Test-TargetResource
         $result = $false
     }
 
-    if ( $PSBoundParameters.ContainsKey('DatabaseName') -and $DatabaseName -ne $currentConfig.DatabaseName )
+    if ( $DatabaseName -ne $currentConfig.DatabaseName )
     {
         Write-Verbose -Message ( $script:localizedData.TestDatabaseName -f $currentConfig.DatabaseName, $DatabaseName ) -Verbose
         $result = $false
