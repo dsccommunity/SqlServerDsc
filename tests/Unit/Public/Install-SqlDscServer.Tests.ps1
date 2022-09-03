@@ -119,7 +119,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         @{
             MockParameterSetName = 'AddNode'
             # cSpell: disable-next
-            MockExpectedParameters = '-AddNode -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -FailoverClusterIPAddresses <string[]> [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <pscredential>] [-ASSvcAccount <string>] [-ASSvcPassword <pscredential>] [-SqlSvcAccount <string>] [-SqlSvcPassword <pscredential>] [-ISSvcAccount <string>] [-ISSvcPassword <pscredential>] [-RsInstallMode <string>] [-ConfirmIPDependencyChange] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-AddNode -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -FailoverClusterIPAddresses <string[]> [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <pscredential>] [-ASSvcAccount <string>] [-ASSvcPassword <pscredential>] [-SqlSvcAccount <string>] [-SqlSvcPassword <pscredential>] [-ISSvcAccount <string>] [-ISSvcPassword <pscredential>] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <pscredential>] [-ConfirmIPDependencyChange] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'RemoveNode'
