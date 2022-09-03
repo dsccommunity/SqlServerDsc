@@ -1051,7 +1051,7 @@ function Install-SqlDscServer
         $ConfirmPreference = 'None'
     }
 
-    Assert-ElevatedUser
+    Assert-ElevatedUser -ErrorAction 'Stop'
 
     switch ($PSCmdlet.ParameterSetName)
     {
@@ -1083,7 +1083,7 @@ function Install-SqlDscServer
         }
     }
 
-    Assert-InstallSqlServerProperties -Property $PSBoundParameters -SetupAction $setupAction
+    Assert-InstallSqlServerProperties -Property $PSBoundParameters -SetupAction $setupAction -ErrorAction 'Stop'
 
     $setupArgument = '/QUIET /ACTION={0}' -f $setupAction
 

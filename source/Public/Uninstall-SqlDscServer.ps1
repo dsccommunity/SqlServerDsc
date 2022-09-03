@@ -99,5 +99,5 @@ function Uninstall-SqlDscServer
         $Force
     )
 
-    Install-SqlDscServer -Uninstall -InstanceName $InstanceName -Features $Features -MediaPath $MediaPath
+    Install-SqlDscServer -Uninstall -InstanceName $InstanceName -Features $Features -MediaPath $MediaPath -ErrorAction 'Stop'
 }
