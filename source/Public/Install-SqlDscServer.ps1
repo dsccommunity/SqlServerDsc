@@ -160,8 +160,8 @@
 #>
 function Install-SqlDscServer
 {
-    [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    [OutputType()]
     param
     (
         [Parameter(ParameterSetName = 'Install', Mandatory = $true)]
