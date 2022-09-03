@@ -29,6 +29,10 @@
 
     .OUTPUTS
         None.
+
+    .NOTES
+        This command should probably be a parmeter set of the command Assert-BoundParameter
+        in the module DscResource.Common, instead of being a separate command.
 #>
 function Assert-RequiredCommandParameter
 {

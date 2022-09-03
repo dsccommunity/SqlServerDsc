@@ -48,7 +48,8 @@ Describe 'Assert-ElevatedUser' -Tag 'Private' {
             Since it is not possible to elevated (or un-elevate) a user during testing
             the test that cannot run need to be skipped.
         #>
-        if ($IsMacOS -or $IsLinux) {
+        if ($IsMacOS -or $IsLinux)
+        {
             $mockIsElevated = (id -u) -eq 0
         }
         else
@@ -70,6 +71,44 @@ Describe 'Assert-ElevatedUser' -Tag 'Private' {
     It 'Should not throw an exception' -Skip:(-not $mockIsElevated) {
         InModuleScope -ScriptBlock {
             { Assert-ElevatedUser } | Should -Not -Throw
+        }
+    }
+
+    Context 'When on Linux or macOS' {
+        BeforeAll {
+            $previousIsMacOS = InModuleScope -ScriptBlock {
+                $IsMacOS
+            }
+
+            InModuleScope -ScriptBlock {
+                $script:IsMacOS = $true
+
+                # Stub for command 'id'.
+                function id
+                {
+                    throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
+                }
+
+                Mock -CommandName id -MockWith {
+                    return 0
+                }
+            }
+        }
+
+        AfterAll {
+            $inModuleScopeParameters = @{
+                PreviousIsMacOS = $previousIsMacOS
+            }
+
+            InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
+                $script:IsMacOS = $PreviousIsMacOS
+            }
+        }
+
+        It 'Should not throw an exception' {
+            InModuleScope -ScriptBlock {
+                { Assert-ElevatedUser } | Should -Not -Throw
+            }
         }
     }
 }
