@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [16.0.0] - 2022-09-09
+
 ### Removed
 
 - The deprecated DSC resource SqlDatabaseOwner have been removed _(and replaced_
