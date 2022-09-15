@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the resource will only determine if a change is needed if the target node
     is the active host of the SQL Server instance ([issue #871](https://github.com/dsccommunity/SqlServerDsc/issues/871)).
 
+## [16.0.0] - 2022-09-09
+
 ### Removed
 
 - The deprecated DSC resource SqlDatabaseOwner have been removed _(and replaced_
