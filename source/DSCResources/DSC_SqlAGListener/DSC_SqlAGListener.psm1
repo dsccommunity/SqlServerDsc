@@ -24,7 +24,6 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 #>
 function Get-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-SQLAlwaysOnAvailabilityGroupListener is called')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -51,13 +50,13 @@ function Get-TargetResource
         $script:localizedData.GetAvailabilityGroupListener -f $Name, $AvailabilityGroup, $InstanceName
     )
 
-    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
-
-    # Is this node actively hosting the SQL instance?
-    $isActiveNode = Test-ActiveNode -ServerObject $serverObject
-
     try
     {
+        $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
+        # Is this node actively hosting the SQL instance?
+        $isActiveNode = Test-ActiveNode -ServerObject $serverObject
+
         $availabilityGroupListener = Get-SQLAlwaysOnAvailabilityGroupListener -Name $Name -AvailabilityGroup $AvailabilityGroup -ServerName $ServerName -InstanceName $InstanceName
 
         if ($null -ne $availabilityGroupListener)
