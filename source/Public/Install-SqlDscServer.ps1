@@ -248,6 +248,15 @@ function Install-SqlDscServer
         [System.Management.Automation.SwitchParameter]
         $SuppressPrivacyStatementNotice,
 
+        [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
+        [Parameter(ParameterSetName = 'PrepareImage')]
+        [Parameter(ParameterSetName = 'InstallFailoverCluster')]
+        [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
+        [Parameter(ParameterSetName = 'AddNode')]
+        [System.Management.Automation.SwitchParameter]
+        $IAcknowledgeEntCalLimits,
+
         [Parameter(Mandatory = $true)]
         [ValidateScript({
             if (-not (Test-Path -Path (Join-Path -Path $_ -ChildPath 'setup.exe')))
@@ -1262,7 +1271,7 @@ function Install-SqlDscServer
                         Excluding parameter names that shall be handled differently, those arguments
                         shall not have any value after argument name, e.g. '/ENU'.
                     #>
-                    { $parameterName -in @('UPDATEENABLED', 'PBSCALEOUT', 'SQLSVCINSTANTFILEINIT', 'ALLOWUPGRADEFORSSRSSHAREPOINTMODE', 'ADDCURRENTUSERASSQLADMIN') } # cspell: disable-line
+                    { $parameterName -in @('UPDATEENABLED', 'PBSCALEOUT', 'SQLSVCINSTANTFILEINIT', 'ALLOWUPGRADEFORSSRSSHAREPOINTMODE', 'ADDCURRENTUSERASSQLADMIN', 'IACKNOWLEDGEENTCALLIMITS') } # cspell: disable-line
                     {
                         $setupArgument += '={0}' -f $PSBoundParameters.$parameterName.ToString()
 
