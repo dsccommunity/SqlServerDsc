@@ -5,6 +5,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- SqlServerDsc
+  - Update Stale GitHub Action to v6.
+
 ## [16.0.0] - 2022-09-09
 
 ### Removed
