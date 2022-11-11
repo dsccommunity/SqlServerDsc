@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update Stale GitHub Action to v6.
   - Update to build module in separate folder under `output`.
 
+### Fixed
+
+- SqlServerDsc
+  - Localized strings file `en-US/SqlServerDsc.strings.psd1` no longer
+    referencing the wrong module in a comment.
+
 ## [16.0.0] - 2022-09-09
 
 ### Removed
