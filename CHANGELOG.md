@@ -79,6 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Assert-RequiredCommandParameter`
     - `Test-IsNumericType`
     - `Assert-InstallSqlServerProperties`
+    - `Invoke-SetupAction`
   - The following public functions were added to the module (see comment-based
     help for more information):
     - `Connect-SqlDscDatabaseEngine`
