@@ -90,11 +90,6 @@
         Installs SQL Server using the configuration file 'MySqlConfig.ini'.
 
     .EXAMPLE
-        Install-SqlDscServer -Uninstall -InstanceName 'MyInstance' -Features 'SQLENGINE' -MediaPath 'E:\'
-
-        Uninstalls the database engine from the named instance MyInstance.
-
-    .EXAMPLE
         Install-SqlDscServer -PrepareImage -AcceptLicensingTerms -InstanceName 'MyInstance' -Features 'SQLENGINE' -InstanceId 'MyInstance' -MediaPath 'E:\'
 
         Prepares the server for using the database engine for an instance named 'MyInstance'.
@@ -160,6 +155,7 @@
 #>
 function Install-SqlDscServer
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType()]
     param
@@ -169,10 +165,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallAzureArcAgent', Mandatory = $true)]
         [System.Management.Automation.SwitchParameter]
         $Install,
-
-        [Parameter(ParameterSetName = 'Uninstall', Mandatory = $true)]
-        [System.Management.Automation.SwitchParameter]
-        $Uninstall,
 
         [Parameter(ParameterSetName = 'PrepareImage', Mandatory = $true)]
         [System.Management.Automation.SwitchParameter]
@@ -219,14 +211,6 @@ function Install-SqlDscServer
         $RemoveNode,
 
         [Parameter(ParameterSetName = 'UsingConfigurationFile', Mandatory = $true)]
-        [ValidateScript({
-            if (-not (Test-Path -Path $_))
-            {
-                throw $script:localizedData.Server_ConfigurationFileNotFound
-            }
-
-            return $true
-        })]
         [System.String]
         $ConfigurationFile,
 
@@ -258,19 +242,10 @@ function Install-SqlDscServer
         $IAcknowledgeEntCalLimits,
 
         [Parameter(Mandatory = $true)]
-        [ValidateScript({
-            if (-not (Test-Path -Path (Join-Path -Path $_ -ChildPath 'setup.exe')))
-            {
-                throw $script:localizedData.Server_MediaPathNotFound
-            }
-
-            return $true
-        })]
         [System.String]
         $MediaPath,
 
         [Parameter(ParameterSetName = 'Install', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'Uninstall', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareImage', Mandatory = $true)]
         [Parameter(ParameterSetName = 'Upgrade', Mandatory = $true)]
         [Parameter(ParameterSetName = 'EditionUpgrade', Mandatory = $true)]
@@ -322,7 +297,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Install', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareImage', Mandatory = $true)]
         [Parameter(ParameterSetName = 'Repair', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'Uninstall', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallRole')]
@@ -1055,344 +1029,5 @@ function Install-SqlDscServer
         $Force
     )
 
-    if ($Force.IsPresent)
-    {
-        $ConfirmPreference = 'None'
-    }
-
-    Assert-ElevatedUser -ErrorAction 'Stop'
-
-    switch ($PSCmdlet.ParameterSetName)
-    {
-        'InstallRole'
-        {
-            $setupAction = 'Install'
-
-            break
-        }
-
-        'InstallAzureArcAgent'
-        {
-            $setupAction = 'Install'
-
-            <#
-                For this setup action the parameter Features is not part of the
-                parameter set, so this can be safely set.
-            #>
-            $PSBoundParameters.Features = @('ARC')
-
-            break
-        }
-
-        default
-        {
-            $setupAction = $PSCmdlet.ParameterSetName
-
-            break
-        }
-    }
-
-    Assert-InstallSqlServerProperties -Property $PSBoundParameters -SetupAction $setupAction -ErrorAction 'Stop'
-
-    $setupArgument = '/QUIET /ACTION={0}' -f $setupAction
-
-    if ($DebugPreference -in @('Continue', 'Inquire'))
-    {
-        $setupArgument += ' /INDICATEPROGRESS' # cspell: disable-line
-    }
-
-    if ($AcceptLicensingTerms.IsPresent)
-    {
-        $setupArgument += ' /IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-
-        if ($PSBoundParameters.ContainsKey('Features'))
-        {
-            if ($PSBoundParameters.Features -contains 'SQL_SHARED_MR' )
-            {
-                $setupArgument += ' /IACCEPTROPENLICENSETERMS' # cspell: disable-line
-            }
-
-            if ($PSBoundParameters.Features -contains 'SQL_SHARED_MPY' )
-            {
-                $setupArgument += ' /IACCEPTPYTHONLICENSETERMS' # cspell: disable-line
-            }
-        }
-    }
-
-    $ignoreParameters = @(
-        $PSCmdlet.ParameterSetName
-        'Install' # Must add this exclusively because of parameter set InstallAzureArcAgent
-        'AcceptLicensingTerms'
-        'MediaPath'
-        'Timeout'
-        'Force'
-    )
-
-    $ignoreParameters += [System.Management.Automation.PSCmdlet]::CommonParameters
-    $ignoreParameters += [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
-
-    $boundParameterName = $PSBoundParameters.Keys.Where({ $_ -notin $ignoreParameters })
-
-    $sensitiveValue = @()
-
-    $pathParameter = @(
-        'InstallSharedDir'
-        'InstallSharedWowDir'
-        'InstanceDir'
-        'ASBackupDir'
-        'ASConfigDir'
-        'ASDataDir'
-        'ASLogDir'
-        'ASTempDir'
-        'InstallSqlDataDir'
-        'SqlBackupDir'
-        'SqlTempDbDir'
-        'SqlTempDbLogDir'
-        'SqlUserDbDir'
-        'SqlUserDbLogDir'
-        'MPYCacheDirectory'
-        'MRCacheDirectory'
-        'SqlJavaDir'
-    )
-
-    <#
-        Remove trialing backslash from paths so they are not interpreted as
-        escape-characters for a double-quote.
-        See issue https://github.com/dsccommunity/SqlServerDsc/issues/1254.
-    #>
-    $boundParameterName.Where( { $_ -in $pathParameter } ).ForEach({
-        # Must not change paths that reference a root directory (they are handle differently later)
-        if ($PSBoundParameters.$_ -notmatch '^[a-zA-Z]:\\$')
-        {
-            $PSBoundParameters.$_ = $PSBoundParameters.$_.TrimEnd('\')
-        }
-    })
-
-    # Loop through all bound parameters and build arguments for the setup executable.
-    foreach ($parameterName in $boundParameterName)
-    {
-        # Make sure parameter is upper-case.
-        $parameterName = $parameterName.ToUpper()
-
-        $setupArgument += ' /{0}' -f $parameterName
-
-        switch ($parameterName)
-        {
-            <#
-                Must be handled differently because it is an array and have a comma
-                separating the values, and the value shall be upper-case.
-            #>
-            { $_ -in @('FEATURES', 'ROLE') }
-            {
-                $setupArgument += '={0}' -f ($PSBoundParameters.$parameterName.ToUpper() -join ',')
-
-                if ($PSBoundParameters.Features -contains 'ARC' -and $PSBoundParameters.Features -contains 'SQLENGINE')
-                {
-                    $setupArgument += ' /ONBOARDSQLTOARC' # cspell: disable-line
-                }
-
-                break
-            }
-
-            # Must be handled differently because the value MUST be upper-case.
-            'ASSERVERMODE' # cspell: disable-line
-            {
-                $setupArgument += '={0}' -f $PSBoundParameters.$parameterName.ToUpper()
-
-                break
-            }
-
-            # Must be handled differently because the parameter name could not be $PID.
-            'PRODUCTKEY' # cspell: disable-line
-            {
-                # Remove the argument that was added above.
-                $setupArgument = $setupArgument -replace ' \/{0}' -f $parameterName
-
-                $sensitiveValue += $PSBoundParameters.$parameterName
-
-                $setupArgument += ' /PID="{0}"' -f $PSBoundParameters.$parameterName
-
-                break
-            }
-
-            # Must be handled differently because the argument name shall have an underscore in the argument.
-            'SQLINSTJAVA' # cspell: disable-line
-            {
-                # Remove the argument that was added above.
-                $setupArgument = $setupArgument -replace ' \/{0}' -f $parameterName
-
-                $setupArgument += ' /SQL_INST_JAVA'
-
-                break
-            }
-
-            # Must be handled differently because each value shall be separated by a semi-colon.
-            'FAILOVERCLUSTERDISKS' # cspell: disable-line
-            {
-                $setupArgument += '="{0}"' -f ($PSBoundParameters.$parameterName -join ';')
-
-                break
-            }
-
-            # Must be handled differently because two parameters shall become one argument.
-            { $_ -in ('PBSTARTPORTRANGE', 'PBENDPORTRANGE') } # cspell: disable-line
-            {
-                # Remove the argument that was added above.
-                $setupArgument = $setupArgument -replace ' \/{0}' -f $parameterName
-
-                # Only set argument if it is not present already.
-                if ($setupArgument -notmatch '\/PBPORTRANGE') # cspell: disable-line
-                {
-                    # cspell: disable-next
-                    $setupArgument += ' /PBPORTRANGE={0}-{1}' -f $PSBoundParameters.PBStartPortRange, $PSBoundParameters.PBEndPortRange
-                }
-
-                break
-            }
-
-            { $PSBoundParameters.$parameterName -is [System.Management.Automation.SwitchParameter] }
-            {
-                <#
-                    If a switch parameter is not included below then those arguments
-                    shall not have any value after argument name, e.g. '/ENU'.
-                #>
-                switch ($parameterName)
-                {
-                    # Arguments that shall have the value set to the boolean numeric representation.
-                    { $parameterName -in ('ASPROVIDERMSOLAP', 'NPENABLED', 'TCPENABLED', 'CONFIRMIPDEPENDENCYCHANGE') } # cspell: disable-line
-                    {
-                        $setupArgument += '={0}' -f [System.Byte] $PSBoundParameters.$parameterName.ToBool()
-
-                        break
-                    }
-
-                    <#
-                        Arguments that shall have the value set to the boolean string representation.
-                        Excluding parameter names that shall be handled differently, those arguments
-                        shall not have any value after argument name, e.g. '/ENU'.
-                    #>
-                    { $parameterName -in @('UPDATEENABLED', 'PBSCALEOUT', 'SQLSVCINSTANTFILEINIT', 'ALLOWUPGRADEFORSSRSSHAREPOINTMODE', 'ADDCURRENTUSERASSQLADMIN', 'IACKNOWLEDGEENTCALLIMITS') } # cspell: disable-line
-                    {
-                        $setupArgument += '={0}' -f $PSBoundParameters.$parameterName.ToString()
-
-                        break
-                    }
-                }
-
-                break
-            }
-
-            <#
-                Must be handled differently because it is an numeric value and does not need to
-                be surrounded by double-quote.
-            #>
-            { $PSBoundParameters.$parameterName | Test-IsNumericType }
-            {
-                $setupArgument += '={0}' -f ($PSBoundParameters.$parameterName -join '" "')
-
-                break
-            }
-
-            <#
-                Must be handled differently because it is an array and have a space
-                separating the values, and each value is surrounded by double-quote.
-            #>
-            { $PSBoundParameters.$parameterName -is [System.Array] }
-            {
-                $setupArgument += '="{0}"' -f ($PSBoundParameters.$parameterName -join '" "')
-
-                break
-            }
-
-            { $PSBoundParameters.$parameterName -is [System.Management.Automation.PSCredential] }
-            {
-                $sensitiveValue += $PSBoundParameters.$parameterName.GetNetworkCredential().Password
-
-                $setupArgument += '="{0}"' -f $PSBoundParameters.$parameterName.GetNetworkCredential().Password
-
-                break
-            }
-
-            default
-            {
-                <#
-                    When there is backslash followed by a double-quote then the backslash
-                    is treated as an escape character for the double-quote. For arguments
-                    that holds a path and the value references a root directory, e.g. 'E:\',
-                    then the value must not be surrounded by double-quotes. Other paths
-                    should be surrounded by double-quotes as they can contain spaces.
-                    See issue https://github.com/dsccommunity/SqlServerDsc/issues/1254.
-                #>
-                if ($PSBoundParameters.$parameterName -match '^[a-zA-Z]:\\$')
-                {
-                    $setupArgument += '={0}' -f $PSBoundParameters.$parameterName
-                }
-                else
-                {
-                    $setupArgument += '="{0}"' -f $PSBoundParameters.$parameterName
-                }
-                break
-            }
-        }
-    }
-
-    $verboseSetupArgument = $setupArgument
-
-    # Obfuscate sensitive values.
-    foreach ($currentSensitiveValue in $sensitiveValue)
-    {
-        $escapedRegExString = [System.Text.RegularExpressions.Regex]::Escape($currentSensitiveValue)
-
-        $verboseSetupArgument = $verboseSetupArgument -replace $escapedRegExString, '********'
-    }
-
-    # Clear sensitive values.
-    $sensitiveValue = $null
-
-    Write-Verbose -Message ($script:localizedData.Server_SetupArguments -f $verboseSetupArgument)
-
-    $verboseDescriptionMessage = $script:localizedData.Server_Install_ShouldProcessVerboseDescription -f $PSCmdlet.ParameterSetName
-    $verboseWarningMessage = $script:localizedData.Server_Install_ShouldProcessVerboseWarning -f $PSCmdlet.ParameterSetName
-    $captionMessage = $script:localizedData.Server_Install_ShouldProcessCaption
-
-    if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
-    {
-        $startProcessParameters = @{
-            FilePath     = Join-Path -Path $MediaPath -ChildPath 'setup.exe'
-            ArgumentList = $setupArgument
-            Timeout      = $Timeout
-        }
-
-        # Clear setupArgument to remove any sensitive values.
-        $setupArgument = $null
-
-        # Run setup executable.
-        $processExitCode = Start-SqlSetupProcess @startProcessParameters
-
-        $setupExitMessage = ($script:localizedData.Server_SetupExitMessage -f $processExitCode)
-
-        if ($processExitCode -eq 3010)
-        {
-            Write-Warning -Message (
-                '{0} {1}' -f $setupExitMessage, $script:localizedData.Server_SetupSuccessfulRebootRequired
-            )
-        }
-        elseif ($processExitCode -ne 0)
-        {
-            $PSCmdlet.ThrowTerminatingError(
-                [System.Management.Automation.ErrorRecord]::new(
-                    ('{0} {1}' -f $setupExitMessage, $script:localizedData.Server_SetupFailed),
-                    'ISDS0001', # cspell: disable-line
-                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                    $InstanceName
-                )
-            )
-        }
-        else
-        {
-            Write-Verbose -Message (
-                '{0} {1}' -f $setupExitMessage, ($script:localizedData.Server_SetupSuccessful)
-            )
-        }
-    }
+    Invoke-SetupAction @PSBoundParameters -ErrorAction 'Stop'
 }
