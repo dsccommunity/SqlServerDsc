@@ -65,12 +65,6 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             # cSpell: disable-next
             MockExpectedParameters = '-ConfigurationFile <string> -MediaPath <string> [-AgtSvcPassword <pscredential>] [-ASSvcPassword <pscredential>] [-SqlSvcPassword <pscredential>] [-ISSvcPassword <pscredential>] [-RSSvcPassword <pscredential>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
-
-        @{
-            MockParameterSetName = 'Uninstall'
-            # cSpell: disable-next
-            MockExpectedParameters = '-Uninstall -MediaPath <string> -InstanceName <string> -Features <string[]> [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
-        }
         @{
             MockParameterSetName = 'PrepareImage'
             # cSpell: disable-next

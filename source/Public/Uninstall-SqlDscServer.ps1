@@ -32,19 +32,12 @@
 #>
 function Uninstall-SqlDscServer
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType()]
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateScript({
-            if (-not (Test-Path -Path (Join-Path -Path $_ -ChildPath 'setup.exe')))
-            {
-                throw $script:localizedData.Server_MediaPathNotFound
-            }
-
-            return $true
-        })]
         [System.String]
         $MediaPath,
 
@@ -99,5 +92,5 @@ function Uninstall-SqlDscServer
         $Force
     )
 
-    Install-SqlDscServer -Uninstall -InstanceName $InstanceName -Features $Features -MediaPath $MediaPath -ErrorAction 'Stop'
+    Invoke-SetupAction -Uninstall @PSBoundParameters -ErrorAction 'Stop'
 }
