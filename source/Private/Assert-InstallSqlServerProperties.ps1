@@ -13,7 +13,7 @@
        A string value representing the setup action that is gonna be executed.
 
     .EXAMPLE
-        Assert-InstallSqlServerProperties -Property $PSBoundParameters -SetupAction 'Install'
+        Assert-SetupActionProperties -Property $PSBoundParameters -SetupAction 'Install'
 
         Throws an exception if the bound parameters are not in the correct state.
 
@@ -24,7 +24,7 @@
         This function is used by the command Install-SqlDscServer to verify that
         the bound parameters are in the required state.
 #>
-function Assert-InstallSqlServerProperties
+function Assert-SetupActionProperties
 {
     [CmdletBinding()]
     param

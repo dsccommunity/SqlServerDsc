@@ -142,7 +142,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When setup action is ''Install''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'
@@ -829,7 +829,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When setup action is ''Upgrade''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'
@@ -997,7 +997,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When setup action is ''InstallFailoverCluster''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'
@@ -1470,7 +1470,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When setup action is ''PrepareFailoverCluster''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'
@@ -1757,7 +1757,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When setup action is ''CompleteFailoverCluster''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'
@@ -2047,7 +2047,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When setup action is ''AddNode''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'
@@ -2298,7 +2298,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When setup action is ''RemoveNode''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'
@@ -2398,7 +2398,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When using a ''ConfigurationFile''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
 
             Mock -CommandName Test-Path -ParameterFilter {
@@ -2538,7 +2538,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When setup action is ''RebuildDatabase''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'
@@ -2685,7 +2685,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When setup action is ''EditionUpgrade''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'
@@ -2793,7 +2793,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When setup action is ''Repair''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'
@@ -2952,7 +2952,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When setup action is ''Upgrade''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'
@@ -3104,7 +3104,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When setup action is ''PrepareImage''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'
@@ -3266,7 +3266,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When setup action is ''CompleteImage''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'
@@ -3592,7 +3592,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When setup action is ''Install'' for installing Azure Arc Agent (parameter set InstallAzureArcAgent)' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'
@@ -3724,7 +3724,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
     Context 'When parameter set is ''InstallRole''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'

@@ -78,7 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Assert-ElevatedUser`
     - `Assert-RequiredCommandParameter`
     - `Test-IsNumericType`
-    - `Assert-InstallSqlServerProperties`
+    - `Assert-SetupActionProperties`
     - `Invoke-SetupAction`
   - The following public functions were added to the module (see comment-based
     help for more information):

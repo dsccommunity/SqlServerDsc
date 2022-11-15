@@ -1092,7 +1092,7 @@ function Invoke-SetupAction
         }
     }
 
-    Assert-InstallSqlServerProperties -Property $PSBoundParameters -SetupAction $setupAction -ErrorAction 'Stop'
+    Assert-SetupActionProperties -Property $PSBoundParameters -SetupAction $setupAction -ErrorAction 'Stop'
 
     $setupArgument = '/QUIET /ACTION={0}' -f $setupAction
 

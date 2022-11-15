@@ -72,7 +72,7 @@ Describe 'Uninstall-SqlDscServer' -Tag 'Public' {
 
     Context 'When setup action is ''Uninstall''' {
         BeforeAll {
-            Mock -CommandName Assert-InstallSqlServerProperties
+            Mock -CommandName Assert-SetupActionProperties
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Test-Path -ParameterFilter {
                 $Path -match 'setup\.exe'

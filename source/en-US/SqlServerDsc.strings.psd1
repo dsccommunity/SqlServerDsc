@@ -98,7 +98,7 @@ ConvertFrom-StringData @'
     ## Assert-IsElevated
     IsElevated_UserNotElevated = This command must run in an elevated PowerShell session.
 
-    ## Assert-InstallSqlServerProperties
+    ## Assert-SetupActionProperties
     InstallSqlServerProperties_ASServerModeInvalidValue = The value for ASServerMode is not valid for the setup action {0}.
     InstallSqlServerProperties_RsInstallModeInvalidValue = The only valid value for RsInstallMode is 'FilesOnlyMode' when using setup action {0}.
 '@
