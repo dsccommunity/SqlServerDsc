@@ -69,12 +69,12 @@ function Assert-SetupActionProperties
     }
 
     # If the parameter SecurityMode is set to 'SQL' then the parameter SAPwd is required.
-    if ($Property.ContainsKey('SecurityMode') -and $Property.Role -eq 'SQL')
+    if ($Property.ContainsKey('SecurityMode') -and $Property.SecurityMode -eq 'SQL')
     {
         Assert-RequiredCommandParameter -BoundParameter $Property -RequiredParameter @('SAPwd')
     }
 
-    # If the parameter SecurityMode is set to 'SQL' then the parameter SAPwd is required.
+    # If the parameter FileStreamLevel is set and is greater or equal to 2 then the parameter FileStreamShareName is required.
     if ($Property.ContainsKey('FileStreamLevel') -and $Property.FileStreamLevel -ge 2)
     {
         Assert-RequiredCommandParameter -BoundParameter $Property -RequiredParameter @('FileStreamShareName')
