@@ -75,12 +75,12 @@
         Installs the database engine for the named instance MyInstance.
 
     .EXAMPLE
-        Install-SqlDscServer -Install -AcceptLicensingTerms -InstanceName 'MyInstance' -Features 'SQLENGINE','ARC' -SqlSysAdminAccounts @('MyAdminAccount') -MediaPath 'E:\' -AzureSubscriptionId 'MySubscriptionId' -AzureResourceGroup 'MyRG' -AzureRegion 'West-US' -AzureTenantId 'MyTenantId' -AzureServicePrincipal 'MyPrincipalName' -AzureServicePrincipalSecret ([PSCredential]::new('Any',('MySecret' | ConvertTo-SecureString -AsPlainText -Force)))
+        Install-SqlDscServer -Install -AcceptLicensingTerms -InstanceName 'MyInstance' -Features 'SQLENGINE','ARC' -SqlSysAdminAccounts @('MyAdminAccount') -MediaPath 'E:\' -AzureSubscriptionId 'MySubscriptionId' -AzureResourceGroup 'MyRG' -AzureRegion 'West-US' -AzureTenantId 'MyTenantId' -AzureServicePrincipal 'MyPrincipalName' -AzureServicePrincipalSecret ('MySecret' | ConvertTo-SecureString -AsPlainText -Force)
 
         Installs the database engine for the named instance MyInstance and onboard the server to Azure Arc.
 
     .EXAMPLE
-        Install-SqlDscServer -Install -AcceptLicensingTerms -MediaPath 'E:\' -AzureSubscriptionId 'MySubscriptionId' -AzureResourceGroup 'MyRG' -AzureRegion 'West-US' -AzureTenantId 'MyTenantId' -AzureServicePrincipal 'MyPrincipalName' -AzureServicePrincipalSecret ([PSCredential]::new('Any',('MySecret' | ConvertTo-SecureString -AsPlainText -Force)))
+        Install-SqlDscServer -Install -AcceptLicensingTerms -MediaPath 'E:\' -AzureSubscriptionId 'MySubscriptionId' -AzureResourceGroup 'MyRG' -AzureRegion 'West-US' -AzureTenantId 'MyTenantId' -AzureServicePrincipal 'MyPrincipalName' -AzureServicePrincipalSecret ('MySecret' | ConvertTo-SecureString -AsPlainText -Force)
 
         Installs the Azure Arc Agent on the server.
 
@@ -399,7 +399,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
-        [System.Management.Automation.PSCredential]
+        [System.Security.SecureString]
         $PBEngSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -421,7 +421,7 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [System.Management.Automation.PSCredential]
+        [System.Security.SecureString]
         $PBDMSSvcPassword, # cspell: disable-line
 
         [Parameter(ParameterSetName = 'Install')]
@@ -491,7 +491,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
-        [System.Management.Automation.PSCredential]
+        [System.Security.SecureString]
         $AgtSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -565,7 +565,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
-        [System.Management.Automation.PSCredential]
+        [System.Security.SecureString]
         $ASSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -594,11 +594,11 @@ function Install-SqlDscServer
         $FarmAccount,
 
         [Parameter(ParameterSetName = 'InstallRole')]
-        [System.Management.Automation.PSCredential]
+        [System.Security.SecureString]
         $FarmPassword,
 
         [Parameter(ParameterSetName = 'InstallRole')]
-        [System.Management.Automation.PSCredential]
+        [System.Security.SecureString]
         $Passphrase,
 
         [Parameter(ParameterSetName = 'InstallRole')]
@@ -656,7 +656,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
-        [System.Management.Automation.PSCredential]
+        [System.Security.SecureString]
         $SAPwd,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -688,7 +688,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
-        [System.Management.Automation.PSCredential]
+        [System.Security.SecureString]
         $SqlSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -852,7 +852,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
-        [System.Management.Automation.PSCredential]
+        [System.Security.SecureString]
         $ISSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -907,7 +907,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'AddNode')]
-        [System.Management.Automation.PSCredential]
+        [System.Security.SecureString]
         $RSSvcPassword,
 
         [Parameter(ParameterSetName = 'Install')]
@@ -1004,7 +1004,7 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallAzureArcAgent', Mandatory = $true)]
-        [System.Management.Automation.PSCredential]
+        [System.Security.SecureString]
         $AzureServicePrincipalSecret,
 
         [Parameter(ParameterSetName = 'Install')]

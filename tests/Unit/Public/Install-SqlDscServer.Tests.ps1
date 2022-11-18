@@ -48,37 +48,37 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         @{
             MockParameterSetName = 'Install'
             # cSpell: disable-next
-            MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> -SqlSysAdminAccounts <string[]> [-SuppressPrivacyStatementNotice] [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBDMSSvcAccount <string>] [-PBDMSSvcPassword <pscredential>] [-PBDMSSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <pscredential>] [-AgtSvcStartupType <string>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSvcAccount <string>] [-ASSvcPassword <pscredential>] [-ASSvcStartupType <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-BrowserSvcStartupType <string>] [-EnableRanU] [-InstallSqlDataDir <string>] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <pscredential>] [-SqlCollation <string>] [-SqlSvcAccount <string>] [-SqlSvcPassword <pscredential>] [-SqlSvcStartupType <string>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlSvcInstantFileInit] [-SqlUserDbLogDir <string>] [-SqlMaxDop <ushort>] [-UseSqlRecommendedMemoryLimits] [-SqlMinMemory <uint>] [-SqlMaxMemory <uint>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <pscredential>] [-ISSvcStartupType <string>] [-NpEnabled] [-TcpEnabled] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <pscredential>] [-RSSvcStartupType <string>] [-MPYCacheDirectory <string>] [-MRCacheDirectory <string>] [-SqlInstJava] [-SqlJavaDir <string>] [-AzureSubscriptionId <string>] [-AzureResourceGroup <string>] [-AzureRegion <string>] [-AzureTenantId <string>] [-AzureServicePrincipal <string>] [-AzureServicePrincipalSecret <pscredential>] [-AzureArcProxy <string>] [-SkipRules <string[]>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> -SqlSysAdminAccounts <string[]> [-SuppressPrivacyStatementNotice] [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBDMSSvcAccount <string>] [-PBDMSSvcPassword <securestring>] [-PBDMSSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <securestring>] [-AgtSvcStartupType <string>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSvcAccount <string>] [-ASSvcPassword <securestring>] [-ASSvcStartupType <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-BrowserSvcStartupType <string>] [-EnableRanU] [-InstallSqlDataDir <string>] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <securestring>] [-SqlCollation <string>] [-SqlSvcAccount <string>] [-SqlSvcPassword <securestring>] [-SqlSvcStartupType <string>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlSvcInstantFileInit] [-SqlUserDbLogDir <string>] [-SqlMaxDop <ushort>] [-UseSqlRecommendedMemoryLimits] [-SqlMinMemory <uint>] [-SqlMaxMemory <uint>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <securestring>] [-ISSvcStartupType <string>] [-NpEnabled] [-TcpEnabled] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <securestring>] [-RSSvcStartupType <string>] [-MPYCacheDirectory <string>] [-MRCacheDirectory <string>] [-SqlInstJava] [-SqlJavaDir <string>] [-AzureSubscriptionId <string>] [-AzureResourceGroup <string>] [-AzureRegion <string>] [-AzureTenantId <string>] [-AzureServicePrincipal <string>] [-AzureServicePrincipalSecret <securestring>] [-AzureArcProxy <string>] [-SkipRules <string[]>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'InstallRole'
             # cSpell: disable-next
-            MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> -Role <string> [-SuppressPrivacyStatementNotice] [-IAcknowledgeEntCalLimits] [-InstanceName <string>] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-Features <string[]>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBDMSSvcAccount <string>] [-PBDMSSvcPassword <pscredential>] [-PBDMSSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <pscredential>] [-AgtSvcStartupType <string>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSvcAccount <string>] [-ASSvcPassword <pscredential>] [-ASSvcStartupType <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-FarmAccount <string>] [-FarmPassword <pscredential>] [-Passphrase <pscredential>] [-FarmAdminiPort <ushort>] [-BrowserSvcStartupType <string>] [-EnableRanU] [-InstallSqlDataDir <string>] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <pscredential>] [-SqlCollation <string>] [-AddCurrentUserAsSqlAdmin] [-SqlSvcAccount <string>] [-SqlSvcPassword <pscredential>] [-SqlSvcStartupType <string>] [-SqlSysAdminAccounts <string[]>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlSvcInstantFileInit] [-SqlUserDbLogDir <string>] [-SqlMaxDop <ushort>] [-UseSqlRecommendedMemoryLimits] [-SqlMinMemory <uint>] [-SqlMaxMemory <uint>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <pscredential>] [-ISSvcStartupType <string>] [-NpEnabled] [-TcpEnabled] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <pscredential>] [-RSSvcStartupType <string>] [-MPYCacheDirectory <string>] [-MRCacheDirectory <string>] [-SqlInstJava] [-SqlJavaDir <string>] [-AzureSubscriptionId <string>] [-AzureResourceGroup <string>] [-AzureRegion <string>] [-AzureTenantId <string>] [-AzureServicePrincipal <string>] [-AzureServicePrincipalSecret <pscredential>] [-AzureArcProxy <string>] [-SkipRules <string[]>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> -Role <string> [-SuppressPrivacyStatementNotice] [-IAcknowledgeEntCalLimits] [-InstanceName <string>] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-Features <string[]>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBDMSSvcAccount <string>] [-PBDMSSvcPassword <securestring>] [-PBDMSSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <securestring>] [-AgtSvcStartupType <string>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSvcAccount <string>] [-ASSvcPassword <securestring>] [-ASSvcStartupType <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-FarmAccount <string>] [-FarmPassword <securestring>] [-Passphrase <securestring>] [-FarmAdminiPort <ushort>] [-BrowserSvcStartupType <string>] [-EnableRanU] [-InstallSqlDataDir <string>] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <securestring>] [-SqlCollation <string>] [-AddCurrentUserAsSqlAdmin] [-SqlSvcAccount <string>] [-SqlSvcPassword <securestring>] [-SqlSvcStartupType <string>] [-SqlSysAdminAccounts <string[]>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlSvcInstantFileInit] [-SqlUserDbLogDir <string>] [-SqlMaxDop <ushort>] [-UseSqlRecommendedMemoryLimits] [-SqlMinMemory <uint>] [-SqlMaxMemory <uint>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <securestring>] [-ISSvcStartupType <string>] [-NpEnabled] [-TcpEnabled] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <securestring>] [-RSSvcStartupType <string>] [-MPYCacheDirectory <string>] [-MRCacheDirectory <string>] [-SqlInstJava] [-SqlJavaDir <string>] [-AzureSubscriptionId <string>] [-AzureResourceGroup <string>] [-AzureRegion <string>] [-AzureTenantId <string>] [-AzureServicePrincipal <string>] [-AzureServicePrincipalSecret <securestring>] [-AzureArcProxy <string>] [-SkipRules <string[]>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'InstallAzureArcAgent'
             # cSpell: disable-next
-            MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> -AzureSubscriptionId <string> -AzureResourceGroup <string> -AzureRegion <string> -AzureTenantId <string> -AzureServicePrincipal <string> -AzureServicePrincipalSecret <pscredential> [-AzureArcProxy <string>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> -AzureSubscriptionId <string> -AzureResourceGroup <string> -AzureRegion <string> -AzureTenantId <string> -AzureServicePrincipal <string> -AzureServicePrincipalSecret <securestring> [-AzureArcProxy <string>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'UsingConfigurationFile'
             # cSpell: disable-next
-            MockExpectedParameters = '-ConfigurationFile <string> -MediaPath <string> [-AgtSvcPassword <pscredential>] [-ASSvcPassword <pscredential>] [-SqlSvcPassword <pscredential>] [-ISSvcPassword <pscredential>] [-RSSvcPassword <pscredential>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ConfigurationFile <string> -MediaPath <string> [-AgtSvcPassword <securestring>] [-ASSvcPassword <securestring>] [-SqlSvcPassword <securestring>] [-ISSvcPassword <securestring>] [-RSSvcPassword <securestring>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'PrepareImage'
             # cSpell: disable-next
-            MockExpectedParameters = '-PrepareImage -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> -InstanceId <string> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstanceDir <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-PrepareImage -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> -InstanceId <string> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstanceDir <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'CompleteImage'
             # cSpell: disable-next
-            MockExpectedParameters = '-CompleteImage -AcceptLicensingTerms -MediaPath <string> [-InstanceName <string>] [-Enu] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <pscredential>] [-AgtSvcStartupType <string>] [-BrowserSvcStartupType <string>] [-EnableRanU] [-InstallSqlDataDir <string>] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <pscredential>] [-SqlCollation <string>] [-SqlSvcAccount <string>] [-SqlSvcPassword <pscredential>] [-SqlSvcStartupType <string>] [-SqlSysAdminAccounts <string[]>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlUserDbLogDir <string>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-NpEnabled] [-TcpEnabled] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <pscredential>] [-RSSvcStartupType <string>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-CompleteImage -AcceptLicensingTerms -MediaPath <string> [-InstanceName <string>] [-Enu] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <securestring>] [-AgtSvcStartupType <string>] [-BrowserSvcStartupType <string>] [-EnableRanU] [-InstallSqlDataDir <string>] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <securestring>] [-SqlCollation <string>] [-SqlSvcAccount <string>] [-SqlSvcPassword <securestring>] [-SqlSvcStartupType <string>] [-SqlSysAdminAccounts <string[]>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlUserDbLogDir <string>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-NpEnabled] [-TcpEnabled] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <securestring>] [-RSSvcStartupType <string>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'Upgrade'
             # cSpell: disable-next
-            MockExpectedParameters = '-Upgrade -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstanceDir <string>] [-InstanceId <string>] [-ProductKey <string>] [-BrowserSvcStartupType <string>] [-FTUpgradeOption <string>] [-ISSvcAccount <string>] [-ISSvcPassword <pscredential>] [-ISSvcStartupType <string>] [-AllowUpgradeForSSRSSharePointMode] [-FailoverClusterRollOwnership <ushort>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-Upgrade -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstanceDir <string>] [-InstanceId <string>] [-ProductKey <string>] [-BrowserSvcStartupType <string>] [-FTUpgradeOption <string>] [-ISSvcAccount <string>] [-ISSvcPassword <securestring>] [-ISSvcStartupType <string>] [-AllowUpgradeForSSRSSharePointMode] [-FailoverClusterRollOwnership <ushort>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'EditionUpgrade'
@@ -88,32 +88,32 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         @{
             MockParameterSetName = 'Repair'
             # cSpell: disable-next
-            MockExpectedParameters = '-Repair -MediaPath <string> -InstanceName <string> -Features <string[]> [-Enu] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-Repair -MediaPath <string> -InstanceName <string> -Features <string[]> [-Enu] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'RebuildDatabase'
             # cSpell: disable-next
-            MockExpectedParameters = '-RebuildDatabase -MediaPath <string> -InstanceName <string> -SqlSysAdminAccounts <string[]> [-SAPwd <pscredential>] [-SqlCollation <string>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-RebuildDatabase -MediaPath <string> -InstanceName <string> -SqlSysAdminAccounts <string[]> [-SAPwd <securestring>] [-SqlCollation <string>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'InstallFailoverCluster'
             # cSpell: disable-next
-            MockExpectedParameters = '-InstallFailoverCluster -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> -InstallSqlDataDir <string> -SqlSysAdminAccounts <string[]> -FailoverClusterNetworkName <string> -FailoverClusterIPAddresses <string[]> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <pscredential>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSvcAccount <string>] [-ASSvcPassword <pscredential>] [-ASSvcStartupType <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <pscredential>] [-SqlCollation <string>] [-SqlSvcAccount <string>] [-SqlSvcPassword <pscredential>] [-SqlSvcStartupType <string>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlUserDbLogDir <string>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <pscredential>] [-ISSvcStartupType <string>] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <pscredential>] [-RSSvcStartupType <string>] [-FailoverClusterGroup <string>] [-FailoverClusterDisks <string[]>] [-SkipRules <string[]>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-InstallFailoverCluster -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> -InstallSqlDataDir <string> -SqlSysAdminAccounts <string[]> -FailoverClusterNetworkName <string> -FailoverClusterIPAddresses <string[]> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <securestring>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSvcAccount <string>] [-ASSvcPassword <securestring>] [-ASSvcStartupType <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <securestring>] [-SqlCollation <string>] [-SqlSvcAccount <string>] [-SqlSvcPassword <securestring>] [-SqlSvcStartupType <string>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlUserDbLogDir <string>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <securestring>] [-ISSvcStartupType <string>] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <securestring>] [-RSSvcStartupType <string>] [-FailoverClusterGroup <string>] [-FailoverClusterDisks <string[]>] [-SkipRules <string[]>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'PrepareFailoverCluster'
             # cSpell: disable-next
-            MockExpectedParameters = '-PrepareFailoverCluster -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <pscredential>] [-ASSvcAccount <string>] [-ASSvcPassword <pscredential>] [-SqlSvcAccount <string>] [-SqlSvcPassword <pscredential>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <pscredential>] [-ISSvcStartupType <string>] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <pscredential>] [-RSSvcStartupType <string>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-PrepareFailoverCluster -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <securestring>] [-ASSvcAccount <string>] [-ASSvcPassword <securestring>] [-SqlSvcAccount <string>] [-SqlSvcPassword <securestring>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <securestring>] [-ISSvcStartupType <string>] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <securestring>] [-RSSvcStartupType <string>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'CompleteFailoverCluster'
             # cSpell: disable-next
-            MockExpectedParameters = '-CompleteFailoverCluster -MediaPath <string> -InstanceName <string> -InstallSqlDataDir <string> -SqlSysAdminAccounts <string[]> -FailoverClusterNetworkName <string> -FailoverClusterIPAddresses <string[]> [-Enu] [-ProductKey <string>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <pscredential>] [-SqlCollation <string>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlUserDbLogDir <string>] [-RsInstallMode <string>] [-FailoverClusterGroup <string>] [-FailoverClusterDisks <string[]>] [-ConfirmIPDependencyChange] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-CompleteFailoverCluster -MediaPath <string> -InstanceName <string> -InstallSqlDataDir <string> -SqlSysAdminAccounts <string[]> -FailoverClusterNetworkName <string> -FailoverClusterIPAddresses <string[]> [-Enu] [-ProductKey <string>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <securestring>] [-SqlCollation <string>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlUserDbLogDir <string>] [-RsInstallMode <string>] [-FailoverClusterGroup <string>] [-FailoverClusterDisks <string[]>] [-ConfirmIPDependencyChange] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'AddNode'
             # cSpell: disable-next
-            MockExpectedParameters = '-AddNode -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -FailoverClusterIPAddresses <string[]> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <pscredential>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <pscredential>] [-ASSvcAccount <string>] [-ASSvcPassword <pscredential>] [-SqlSvcAccount <string>] [-SqlSvcPassword <pscredential>] [-ISSvcAccount <string>] [-ISSvcPassword <pscredential>] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <pscredential>] [-ConfirmIPDependencyChange] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-AddNode -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -FailoverClusterIPAddresses <string[]> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <securestring>] [-ASSvcAccount <string>] [-ASSvcPassword <securestring>] [-SqlSvcAccount <string>] [-SqlSvcPassword <securestring>] [-ISSvcAccount <string>] [-ISSvcPassword <securestring>] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <securestring>] [-ConfirmIPDependencyChange] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'RemoveNode'
@@ -298,10 +298,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'PBEngSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -316,10 +313,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'PBDMSSvcPassword' # cspell: disable-line
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/PBDMSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -344,10 +338,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'AgtSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/AGTSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -397,10 +388,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'AsSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/ASSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -465,10 +453,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'SAPwd'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/SAPWD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -483,10 +468,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'SqlSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/SQLSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -561,10 +543,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'ISSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -594,10 +573,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'RSSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/RSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -653,10 +629,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'AzureServicePrincipalSecret'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/AZURESERVICEPRINCIPALSECRET="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -708,20 +681,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         Context 'When specifying sensitive parameter <MockParameterName>' -ForEach @(
             @{
                 MockParameterName = 'PBEngSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                     # cspell: disable-next
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force)
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/PBENGSVCPASSWORD="\*{8}"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'PBDMSSvcPassword' # cspell: disable-line
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                     # cspell: disable-next
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force)
-                )
+                MockParameterValue = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
                 MockExpectedRegEx = '\/PBDMSSVCPASSWORD="\*{8}"' # cspell: disable-line
             }
             @{
@@ -731,50 +696,32 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'AgtSvcPassword' # cspell: disable-line
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/AGTSVCPASSWORD="\*{8}"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'SAPwd'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/SAPWD="\*{8}"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'SqlSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/SQLSVCPASSWORD="\*{8}"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'ISSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/ISSVCPASSWORD="\*{8}"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'RSSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/RSSVCPASSWORD="\*{8}"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'AzureServicePrincipalSecret'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/AZURESERVICEPRINCIPALSECRET="\*{8}"' # cspell: disable-line
             }
         ) {
@@ -939,10 +886,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'ISSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -1158,10 +1102,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'PBEngSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -1186,10 +1127,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'AgtSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/AGTSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -1234,10 +1172,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'AsSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/ASSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -1287,10 +1222,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'SAPwd'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/SAPWD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -1305,10 +1237,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'SqlSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/SQLSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -1358,10 +1287,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'ISSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -1381,10 +1307,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'RSSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/RSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -1608,10 +1531,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'PBEngSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -1636,10 +1556,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'AgtSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/AGTSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -1649,10 +1566,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'AsSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/ASSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -1662,10 +1576,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'SqlSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/SQLSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -1685,10 +1596,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'ISSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -1708,10 +1616,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'RSSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/RSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -1926,10 +1831,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'SAPwd'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/SAPWD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -2173,10 +2075,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'PBEngSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -2201,10 +2100,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'AgtSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/AGTSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -2214,10 +2110,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'AsSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/ASSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -2227,10 +2120,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'SqlSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/SQLSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -2240,10 +2130,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'ISSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -2466,42 +2353,27 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
             @{
                 MockParameterName = 'AgtSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/AGTSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'AsSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/ASSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'SqlSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/SQLSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'ISSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
                 MockParameterName = 'RSSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/RSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
         ) {
@@ -2613,10 +2485,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'SAPwd'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/SAPWD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -2899,10 +2768,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'PBEngSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -3057,10 +2923,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'ISSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -3211,10 +3074,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'PBEngSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -3374,10 +3234,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'PBEngSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -3402,10 +3259,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'AgtSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/AGTSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -3460,10 +3314,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'SAPwd'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/SAPWD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -3478,10 +3329,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'SqlSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/SQLSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -3546,10 +3394,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             }
             @{
                 MockParameterName = 'RSSvcPassword'
-                MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                    'Any',
-                    ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                )
+                MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
                 MockExpectedRegEx = '\/RSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
@@ -3616,10 +3461,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     AzureRegion = 'West-US'
                     AzureTenantId = '7e52fb9e-6aad-426c-98c4-7d2f11f7e94b'
                     AzureServicePrincipal = 'MyServicePrincipal'
-                    AzureServicePrincipalSecret = [System.Management.Automation.PSCredential]::new(
-                        'Any',
-                        ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                    )
+                    AzureServicePrincipalSecret = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
                 }
             }
 
@@ -3695,10 +3537,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     AzureRegion = 'West-US'
                     AzureTenantId = '7e52fb9e-6aad-426c-98c4-7d2f11f7e94b'
                     AzureServicePrincipal = 'MyServicePrincipal'
-                    AzureServicePrincipalSecret = [System.Management.Automation.PSCredential]::new(
-                        'Any',
-                        ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                    )
+                    AzureServicePrincipalSecret = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
                     Force = $true
                 }
             }
@@ -3795,18 +3634,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 }
                 @{
                     MockParameterName = 'FarmPassword'
-                    MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                        'Any',
-                        ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                    )
+                    MockParameterValue = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
                     MockExpectedRegEx = '\/FARMPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
                 }
                 @{
                     MockParameterName = 'Passphrase'
-                    MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                        'Any',
-                        ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                    )
+                    MockParameterValue = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
                     MockExpectedRegEx = '\/PASSPHRASE="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
                 }
                 @{
@@ -3850,18 +3683,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             Context 'When specifying sensitive parameter <MockParameterName>' -ForEach @(
                 @{
                     MockParameterName = 'FarmPassword'
-                    MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                        'Any',
-                        ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                    )
+                    MockParameterValue = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
                     MockExpectedRegEx = '\/FARMPASSWORD="\*{8}"' # cspell: disable-line
                 }
                 @{
                     MockParameterName = 'Passphrase'
-                    MockParameterValue = [System.Management.Automation.PSCredential]::new(
-                        'Any',
-                        ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                    )
+                    MockParameterValue = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
                     MockExpectedRegEx = '\/PASSPHRASE="\*{8}"' # cspell: disable-line
                 }
             ) {
