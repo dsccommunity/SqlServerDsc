@@ -41,9 +41,6 @@
     .PARAMETER CompleteFailoverCluster
         Specifies the setup action CompleteFailoverCluster.
 
-    .PARAMETER RemoveNode
-        Specifies the setup action RemoveNode.
-
     .PARAMETER ConfigurationFile
         Specifies an configuration file to use during SQL Server setup. This
         parameter cannot be used together with any of the setup actions, but instead
@@ -131,11 +128,6 @@
 
         Completes the install of the database engine in the failover cluster with the instance name 'MyInstance'.
 
-    .EXAMPLE
-        Install-SqlDscServer -RemoveNode -InstanceName 'MyInstance' -MediaPath 'E:\'
-
-        Removes the node from the failover cluster of the instance 'MyInstance'.
-
     .NOTES
         All parameters has intentionally not been added to this comment-based help
         since it would take a lot of effort to keep it up to date. Instead there is
@@ -194,10 +186,6 @@ function Install-SqlDscServer
         [System.Management.Automation.SwitchParameter]
         $CompleteFailoverCluster,
 
-        [Parameter(ParameterSetName = 'RemoveNode', Mandatory = $true)]
-        [System.Management.Automation.SwitchParameter]
-        $RemoveNode,
-
         [Parameter(ParameterSetName = 'UsingConfigurationFile', Mandatory = $true)]
         [System.String]
         $ConfigurationFile,
@@ -240,7 +228,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'RemoveNode', Mandatory = $true)]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallRole')]
         [System.String]
@@ -924,7 +911,6 @@ function Install-SqlDscServer
         $FailoverClusterIPAddresses,
 
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
-        [Parameter(ParameterSetName = 'RemoveNode')]
         [System.Management.Automation.SwitchParameter]
         $ConfirmIPDependencyChange,
 

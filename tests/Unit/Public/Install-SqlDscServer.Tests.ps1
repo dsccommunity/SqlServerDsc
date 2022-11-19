@@ -110,11 +110,6 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             # cSpell: disable-next
             MockExpectedParameters = '-CompleteFailoverCluster -MediaPath <string> -InstanceName <string> -InstallSqlDataDir <string> -SqlSysAdminAccounts <string[]> -FailoverClusterNetworkName <string> -FailoverClusterIPAddresses <string[]> [-Enu] [-ProductKey <string>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <securestring>] [-SqlCollation <string>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlUserDbLogDir <string>] [-RsInstallMode <string>] [-FailoverClusterGroup <string>] [-FailoverClusterDisks <string[]>] [-ConfirmIPDependencyChange] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
-        @{
-            MockParameterSetName = 'RemoveNode'
-            # cSpell: disable-next
-            MockExpectedParameters = '-RemoveNode -MediaPath <string> -InstanceName <string> [-ConfirmIPDependencyChange] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
-        }
     ) {
         $result = (Get-Command -Name 'Install-SqlDscServer').ParameterSets |
             Where-Object -FilterScript {
@@ -1919,106 +1914,6 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                         'IPv6;DHCP;ClusterNetwork3'
                         'IPv4;DHCP;ClusterNetwork4'
                     )
-                    Force = $true
-                }
-            }
-
-            BeforeEach {
-                $installSqlDscServerParameters = $mockDefaultParameters.Clone()
-            }
-
-            It 'Should call the mock with the correct argument string' {
-                $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
-
-                Install-SqlDscServer @installSqlDscServerParameters
-
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
-
-                    # Return $true if none of the above throw.
-                    $true
-                } -Exactly -Times 1 -Scope It
-            }
-        }
-    }
-
-    Context 'When setup action is ''RemoveNode''' {
-        BeforeAll {
-            Mock -CommandName Assert-SetupActionProperties
-            Mock -CommandName Assert-ElevatedUser
-            Mock -CommandName Test-Path -ParameterFilter {
-                $Path -match 'setup\.exe'
-            } -MockWith {
-                return $true
-            }
-        }
-
-        Context 'When specifying only mandatory parameters' {
-            BeforeAll {
-                Mock -CommandName Start-SqlSetupProcess -MockWith {
-                    return 0
-                } -RemoveParameterValidation 'FilePath'
-
-                $mockDefaultParameters = @{
-                    RemoveNode = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
-                }
-            }
-
-            Context 'When using parameter Confirm with value $false' {
-                It 'Should call the mock with the correct argument string' {
-                    Install-SqlDscServer -Confirm:$false @mockDefaultParameters
-
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=RemoveNode'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When using parameter Force' {
-                It 'Should call the mock with the correct argument string' {
-                    Install-SqlDscServer -Force @mockDefaultParameters
-
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=RemoveNode'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
-                }
-            }
-
-            Context 'When using parameter WhatIf' {
-                It 'Should call the mock with the correct argument string' {
-                    Install-SqlDscServer -WhatIf @mockDefaultParameters
-
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
-                }
-            }
-        }
-
-        Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
-            @{
-                MockParameterName = 'ConfirmIPDependencyChange'
-                MockParameterValue = $true
-                MockExpectedRegEx = '\/CONFIRMIPDEPENDENCYCHANGE=1' # cspell: disable-line
-            }
-        ) {
-            BeforeAll {
-                Mock -CommandName Start-SqlSetupProcess -MockWith {
-                    return 0
-                } -RemoveParameterValidation 'FilePath'
-
-                $mockDefaultParameters = @{
-                    RemoveNode = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
                     Force = $true
                 }
             }
