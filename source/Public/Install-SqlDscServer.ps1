@@ -41,9 +41,6 @@
     .PARAMETER CompleteFailoverCluster
         Specifies the setup action CompleteFailoverCluster.
 
-    .PARAMETER AddNode
-        Specifies the setup action AddNode.
-
     .PARAMETER RemoveNode
         Specifies the setup action RemoveNode.
 
@@ -135,11 +132,6 @@
         Completes the install of the database engine in the failover cluster with the instance name 'MyInstance'.
 
     .EXAMPLE
-        Install-SqlDscServer -AddNode -AcceptLicensingTerms -InstanceName 'MyInstance' -FailoverClusterIPAddresses 'IPv4;192.168.0.46;ClusterNetwork1;255.255.255.0' -MediaPath 'E:\'
-
-        Adds the node to the failover cluster for the instance 'MyInstance'.
-
-    .EXAMPLE
         Install-SqlDscServer -RemoveNode -InstanceName 'MyInstance' -MediaPath 'E:\'
 
         Removes the node from the failover cluster of the instance 'MyInstance'.
@@ -202,10 +194,6 @@ function Install-SqlDscServer
         [System.Management.Automation.SwitchParameter]
         $CompleteFailoverCluster,
 
-        [Parameter(ParameterSetName = 'AddNode', Mandatory = $true)]
-        [System.Management.Automation.SwitchParameter]
-        $AddNode,
-
         [Parameter(ParameterSetName = 'RemoveNode', Mandatory = $true)]
         [System.Management.Automation.SwitchParameter]
         $RemoveNode,
@@ -222,7 +210,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'EditionUpgrade', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'AddNode', Mandatory = $true)]
         [Parameter(ParameterSetName = 'CompleteImage', Mandatory = $true)]
         [System.Management.Automation.SwitchParameter]
         $AcceptLicensingTerms,
@@ -237,7 +224,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'PrepareImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.Management.Automation.SwitchParameter]
         $IAcknowledgeEntCalLimits,
 
@@ -254,7 +240,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'AddNode', Mandatory = $true)]
         [Parameter(ParameterSetName = 'RemoveNode', Mandatory = $true)]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallRole')]
@@ -270,7 +255,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.Management.Automation.SwitchParameter]
         $Enu,
 
@@ -280,7 +264,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.Management.Automation.SwitchParameter]
         $UpdateEnabled,
 
@@ -290,7 +273,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.String]
         $UpdateSource,
 
@@ -387,7 +369,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Repair')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.String]
         $PBEngSvcAccount,
 
@@ -398,7 +379,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Repair')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.Security.SecureString]
         $PBEngSvcPassword,
 
@@ -409,7 +389,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Repair')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
         [System.String]
         $PBEngSvcStartupType,
@@ -437,7 +416,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Repair')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.UInt16]
         $PBStartPortRange,
 
@@ -448,7 +426,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Repair')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.UInt16]
         $PBEndPortRange,
 
@@ -459,7 +436,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Repair')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.Management.Automation.SwitchParameter]
         $PBScaleOut,
 
@@ -470,7 +446,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [Parameter(ParameterSetName = 'EditionUpgrade', Mandatory = $true)]
         [System.String]
         $ProductKey, # This is argument PID but $PID is reserved variable.
@@ -480,7 +455,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.String]
         $AgtSvcAccount,
 
@@ -490,7 +464,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.Security.SecureString]
         $AgtSvcPassword,
 
@@ -555,7 +528,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.String]
         $ASSvcAccount,
 
@@ -564,7 +536,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.Security.SecureString]
         $ASSvcPassword,
 
@@ -677,7 +648,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.String]
         $SqlSvcAccount,
 
@@ -687,7 +657,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.Security.SecureString]
         $SqlSvcPassword,
 
@@ -841,7 +810,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.String]
         $ISSvcAccount,
 
@@ -851,7 +819,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.Security.SecureString]
         $ISSvcPassword,
 
@@ -886,7 +853,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [ValidateSet('SharePointFilesOnlyMode', 'DefaultNativeMode', 'FilesOnlyMode')]
         [System.String]
         $RsInstallMode,
@@ -896,7 +862,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.String]
         $RSSvcAccount,
 
@@ -906,7 +871,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [System.Security.SecureString]
         $RSSvcPassword,
 
@@ -956,12 +920,10 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'AddNode', Mandatory = $true)]
         [System.String[]]
         $FailoverClusterIPAddresses,
 
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
-        [Parameter(ParameterSetName = 'AddNode')]
         [Parameter(ParameterSetName = 'RemoveNode')]
         [System.Management.Automation.SwitchParameter]
         $ConfirmIPDependencyChange,
