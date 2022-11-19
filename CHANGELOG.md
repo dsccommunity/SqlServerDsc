@@ -92,11 +92,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Get-LocalizedDataRecursive`
     - `Test-ResourceHasDscProperty`
     - `Test-ResourceDscPropertyIsAssigned`
-    - `Assert-ElevatedUser`
-    - `Assert-RequiredCommandParameter`
-    - `Test-IsNumericType`
-    - `Assert-SetupActionProperties`
-    - `Invoke-SetupAction`
   - The following public functions were added to the module (see comment-based
     help for more information):
     - `Connect-SqlDscDatabaseEngine`
@@ -117,10 +112,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Remove-SqlDscAudit`
     - `Enable-SqlDscAudit`
     - `Disable-SqlDscAudit`
-    - `Install-SqlDscServer`
-    - `Uninstall-SqlDscServer`
-    - `Add-SqlDscNode`
-    - `Remove-SqlDscNode`
   - Support for debugging of integration tests in AppVeyor.
     - Only run for pull requests
   - Add new resource SqlAudit.
