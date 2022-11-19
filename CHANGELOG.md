@@ -5,6 +5,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SqlServerDsc
+  - The following private functions were added to the module (see comment-based
+    help for more information):
+    - `Assert-ElevatedUser`
+    - `Assert-RequiredCommandParameter`
+    - `Test-IsNumericType`
+    - `Assert-SetupActionProperties`
+    - `Invoke-SetupAction`
+  - The following public functions were added to the module (see comment-based
+    help for more information):
+    - `Install-SqlDscServer`
+    - `Uninstall-SqlDscServer`
+    - `Add-SqlDscNode`
+    - `Remove-SqlDscNode`
+
 ### Changed
 
 - SqlServerDsc
@@ -102,6 +119,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Disable-SqlDscAudit`
     - `Install-SqlDscServer`
     - `Uninstall-SqlDscServer`
+    - `Add-SqlDscNode`
+    - `Remove-SqlDscNode`
   - Support for debugging of integration tests in AppVeyor.
     - Only run for pull requests
   - Add new resource SqlAudit.
