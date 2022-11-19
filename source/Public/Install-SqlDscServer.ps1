@@ -17,9 +17,6 @@
     .PARAMETER PrepareImage
         Specifies the setup action PrepareImage.
 
-    .PARAMETER CompleteImage
-        Specifies the setup action CompleteImage.
-
     .PARAMETER Upgrade
         Specifies the setup action Upgrade.
 
@@ -86,11 +83,6 @@
         Prepares the server for using the database engine for an instance named 'MyInstance'.
 
     .EXAMPLE
-        Install-SqlDscServer -CompleteImage -AcceptLicensingTerms -MediaPath 'E:\'
-
-        Completes install on a server that was previously prepared (by using prepare image).
-
-    .EXAMPLE
         Install-SqlDscServer -Upgrade -AcceptLicensingTerms -InstanceName 'MyInstance' -MediaPath 'E:\'
 
         Upgrades the instance 'MyInstance' with the SQL Server version that is provided by the media path.
@@ -146,10 +138,6 @@ function Install-SqlDscServer
         [System.Management.Automation.SwitchParameter]
         $PrepareImage,
 
-        [Parameter(ParameterSetName = 'CompleteImage', Mandatory = $true)]
-        [System.Management.Automation.SwitchParameter]
-        $CompleteImage,
-
         [Parameter(ParameterSetName = 'Upgrade', Mandatory = $true)]
         [System.Management.Automation.SwitchParameter]
         $Upgrade,
@@ -186,7 +174,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'EditionUpgrade', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'CompleteImage', Mandatory = $true)]
         [System.Management.Automation.SwitchParameter]
         $AcceptLicensingTerms,
 
@@ -215,7 +202,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallRole')]
         [System.String]
         $InstanceName,
@@ -223,7 +209,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -327,7 +312,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -337,7 +321,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [System.String]
@@ -346,7 +329,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [System.Security.SecureString]
@@ -355,7 +337,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
@@ -381,7 +362,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [System.UInt16]
@@ -390,7 +370,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [System.UInt16]
@@ -399,7 +378,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
         [Parameter(ParameterSetName = 'PrepareImage')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [System.Management.Automation.SwitchParameter]
@@ -407,7 +385,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Upgrade')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
@@ -418,7 +395,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [System.String]
@@ -427,7 +403,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'UsingConfigurationFile')]
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [System.Security.SecureString]
@@ -435,7 +410,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
         [System.String]
         $AgtSvcStartupType,
@@ -545,7 +519,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'Upgrade')]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
         [System.String]
@@ -558,13 +531,11 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [System.Management.Automation.SwitchParameter]
         $EnableRanU,
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster', Mandatory = $true)]
         [System.String]
@@ -572,7 +543,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
         [System.String]
@@ -580,7 +550,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
         [ValidateSet('SQL')]
@@ -589,7 +558,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
@@ -598,7 +566,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
@@ -611,7 +578,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [System.String]
@@ -620,7 +586,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'UsingConfigurationFile')]
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [System.Security.SecureString]
@@ -628,14 +593,12 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
         [System.String]
         $SqlSvcStartupType,
 
         [Parameter(ParameterSetName = 'Install', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster', Mandatory = $true)]
@@ -645,7 +608,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
@@ -654,7 +616,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
@@ -663,7 +624,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
@@ -672,7 +632,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
@@ -682,7 +641,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
@@ -692,7 +650,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
@@ -702,7 +659,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
@@ -712,7 +668,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
         [System.String]
@@ -725,7 +680,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
         [System.String]
@@ -756,7 +710,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [ValidateRange(0, 3)]
@@ -765,7 +718,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [System.String]
@@ -803,19 +755,16 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [System.Management.Automation.SwitchParameter]
         $NpEnabled,
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [System.Management.Automation.SwitchParameter]
         $TcpEnabled,
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
@@ -825,7 +774,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [System.String]
@@ -834,7 +782,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'UsingConfigurationFile')]
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [System.Security.SecureString]
@@ -842,7 +789,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
         [ValidateSet('Automatic', 'Disabled', 'Manual')]
