@@ -134,7 +134,7 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
                     return 0
                 } -RemoveParameterValidation 'FilePath'
 
-                $installSqlDscServerParameters = @{
+                $completeSqlDscImageParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath = '\SqlMedia'
                     Force = $true
@@ -144,7 +144,7 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
             }
 
             It 'Should call the mock with the correct argument string' {
-                Complete-SqlDscImage @installSqlDscServerParameters
+                Complete-SqlDscImage @completeSqlDscImageParameters
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                     $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
@@ -360,13 +360,13 @@ Describe 'Complete-SqlDscImage' -Tag 'Public' {
             }
 
             BeforeEach {
-                $installSqlDscServerParameters = $mockDefaultParameters.Clone()
+                $completeSqlDscImageParameters = $mockDefaultParameters.Clone()
             }
 
             It 'Should call the mock with the correct argument string' {
-                $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
+                $completeSqlDscImageParameters.$MockParameterName = $MockParameterValue
 
-                Complete-SqlDscImage @installSqlDscServerParameters
+                Complete-SqlDscImage @completeSqlDscImageParameters
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                     $ArgumentList | Should -MatchExactly $MockExpectedRegEx

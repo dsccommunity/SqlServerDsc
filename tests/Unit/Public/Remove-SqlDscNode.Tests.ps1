@@ -150,13 +150,13 @@ Describe 'Remove-SqlDscNode' -Tag 'Public' {
             }
 
             BeforeEach {
-                $installSqlDscServerParameters = $mockDefaultParameters.Clone()
+                $removeSqlDscNodeParameters = $mockDefaultParameters.Clone()
             }
 
             It 'Should call the mock with the correct argument string' {
-                $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
+                $removeSqlDscNodeParameters.$MockParameterName = $MockParameterValue
 
-                Remove-SqlDscNode @installSqlDscServerParameters
+                Remove-SqlDscNode @removeSqlDscNodeParameters
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                     $ArgumentList | Should -MatchExactly $MockExpectedRegEx

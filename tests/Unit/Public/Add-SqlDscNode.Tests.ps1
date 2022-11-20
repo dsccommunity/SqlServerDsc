@@ -145,7 +145,7 @@ Describe 'Add-SqlDscNode' -Tag 'Public' {
                     return 0
                 } -RemoveParameterValidation 'FilePath'
 
-                $installSqlDscServerParameters = @{
+                $addSqlDscNodeParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
@@ -162,7 +162,7 @@ Describe 'Add-SqlDscNode' -Tag 'Public' {
             }
 
             It 'Should call the mock with the correct argument string' {
-                Add-SqlDscNode @installSqlDscServerParameters
+                Add-SqlDscNode @addSqlDscNodeParameters
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                     $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
@@ -285,13 +285,13 @@ Describe 'Add-SqlDscNode' -Tag 'Public' {
             }
 
             BeforeEach {
-                $installSqlDscServerParameters = $mockDefaultParameters.Clone()
+                $addSqlDscNodeParameters = $mockDefaultParameters.Clone()
             }
 
             It 'Should call the mock with the correct argument string' {
-                $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
+                $addSqlDscNodeParameters.$MockParameterName = $MockParameterValue
 
-                Add-SqlDscNode @installSqlDscServerParameters
+                Add-SqlDscNode @addSqlDscNodeParameters
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                     $ArgumentList | Should -MatchExactly $MockExpectedRegEx

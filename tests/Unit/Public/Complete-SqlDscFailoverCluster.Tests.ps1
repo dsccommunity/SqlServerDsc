@@ -337,13 +337,13 @@ Describe 'Complete-SqlDscFailoverCluster' -Tag 'Public' {
             }
 
             BeforeEach {
-                $installSqlDscServerParameters = $mockDefaultParameters.Clone()
+                $completeSqlDscFailoverClusterParameters = $mockDefaultParameters.Clone()
             }
 
             It 'Should call the mock with the correct argument string' {
-                $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
+                $completeSqlDscFailoverClusterParameters.$MockParameterName = $MockParameterValue
 
-                Complete-SqlDscFailoverCluster @installSqlDscServerParameters
+                Complete-SqlDscFailoverCluster @completeSqlDscFailoverClusterParameters
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                     $ArgumentList | Should -MatchExactly $MockExpectedRegEx

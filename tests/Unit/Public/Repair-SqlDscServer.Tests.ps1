@@ -140,7 +140,7 @@ Describe 'Repair-SqlDscServer' -Tag 'Public' {
                     return 0
                 } -RemoveParameterValidation 'FilePath'
 
-                $installSqlDscServerParameters = @{
+                $repairSqlDscServerParameters = @{
                     MediaPath = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
@@ -152,7 +152,7 @@ Describe 'Repair-SqlDscServer' -Tag 'Public' {
             }
 
             It 'Should call the mock with the correct argument string' {
-                Repair-SqlDscServer @installSqlDscServerParameters
+                Repair-SqlDscServer @repairSqlDscServerParameters
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                     $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
@@ -205,13 +205,13 @@ Describe 'Repair-SqlDscServer' -Tag 'Public' {
             }
 
             BeforeEach {
-                $installSqlDscServerParameters = $mockDefaultParameters.Clone()
+                $repairSqlDscServerParameters = $mockDefaultParameters.Clone()
             }
 
             It 'Should call the mock with the correct argument string' {
-                $installSqlDscServerParameters.$MockParameterName = $MockParameterValue
+                $repairSqlDscServerParameters.$MockParameterName = $MockParameterValue
 
-                Repair-SqlDscServer @installSqlDscServerParameters
+                Repair-SqlDscServer @repairSqlDscServerParameters
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
                     $ArgumentList | Should -MatchExactly $MockExpectedRegEx
