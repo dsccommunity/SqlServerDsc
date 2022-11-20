@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Remove-SqlDscNode`
     - `Repair-SqlDscServer`
     - `Complete-SqlDscImage`
+    - `Complete-SqlDscFailoverCluster`
 
 ### Changed
 
