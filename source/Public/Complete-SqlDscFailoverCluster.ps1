@@ -1,9 +1,12 @@
 <#
     .SYNOPSIS
-        Executes an setup action using Microsoft SQL Server setup executable.
+        Completes the SQL Server instance installation in the Failover Cluster
+        instance.
 
     .DESCRIPTION
-        Executes an setup action using Microsoft SQL Server setup executable.
+        Completes the SQL Server instance installation in the Failover Cluster
+        instance that was prepared using `Install-SqlDscServer` with the parameter
+        `-PrepareFailoverCluster`.
 
         See the link in the commands help for information on each parameter. The
         link points to SQL Server command line setup documentation.
@@ -21,7 +24,8 @@
     .EXAMPLE
         Complete-SqlDscFailoverCluster -InstanceName 'MyInstance' -InstallSqlDataDir 'D:\MSSQL\Data' -SqlSysAdminAccounts @('MyAdminAccount') -FailoverClusterNetworkName 'TestCluster01A' -FailoverClusterIPAddresses 'IPv4;192.168.0.46;ClusterNetwork1;255.255.255.0' -MediaPath 'E:\'
 
-        Completes the install of the database engine in the failover cluster with the instance name 'MyInstance'.
+        Completes the installation of the SQL Server instance 'MyInstance' in the
+        Failover Cluster instance.
 
     .NOTES
         All parameters has intentionally not been added to this comment-based help
