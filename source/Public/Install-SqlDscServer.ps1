@@ -23,9 +23,6 @@
     .PARAMETER EditionUpgrade
         Specifies the setup action EditionUpgrade.
 
-    .PARAMETER RebuildDatabase
-        Specifies the setup action RebuildDatabase.
-
     .PARAMETER InstallFailoverCluster
         Specifies the setup action InstallFailoverCluster.
 
@@ -90,11 +87,6 @@
         Upgrades the instance 'MyInstance' with the SQL Server edition that is provided by the media path.
 
     .EXAMPLE
-        Install-SqlDscServer -RebuildDatabase -InstanceName 'MyInstance' -SqlSysAdminAccounts @('MyAdminAccount') -MediaPath 'E:\'
-
-        Rebuilds the database of the instance 'MyInstance'.
-
-    .EXAMPLE
         Install-SqlDscServer -InstallFailoverCluster -AcceptLicensingTerms -InstanceName 'MyInstance' -Features 'SQLENGINE' -InstallSqlDataDir 'D:\MSSQL\Data' -SqlSysAdminAccounts @('MyAdminAccount') -FailoverClusterNetworkName 'TestCluster01A' -FailoverClusterIPAddresses 'IPv4;192.168.0.46;ClusterNetwork1;255.255.255.0' -MediaPath 'E:\'
 
         Installs the database engine in a failover cluster with the instance name 'MyInstance'.
@@ -109,9 +101,6 @@
         since it would take a lot of effort to keep it up to date. Instead there is
         a link in the comment-based help that points to the SQL Server command line
         setup documentation which will stay relevant.
-
-        For RebuildDatabase the parameter SAPwd must be set if the instance was
-        installed with SecurityMode = 'SQL'.
 #>
 function Install-SqlDscServer
 {
@@ -137,10 +126,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'EditionUpgrade', Mandatory = $true)]
         [System.Management.Automation.SwitchParameter]
         $EditionUpgrade,
-
-        [Parameter(ParameterSetName = 'RebuildDatabase', Mandatory = $true)]
-        [System.Management.Automation.SwitchParameter]
-        $RebuildDatabase,
 
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [System.Management.Automation.SwitchParameter]
@@ -186,7 +171,6 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'PrepareImage', Mandatory = $true)]
         [Parameter(ParameterSetName = 'Upgrade', Mandatory = $true)]
         [Parameter(ParameterSetName = 'EditionUpgrade', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'RebuildDatabase', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'PrepareFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallRole')]
@@ -531,14 +515,12 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [System.Security.SecureString]
         $SAPwd,
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [System.String]
         $SqlCollation,
@@ -570,7 +552,6 @@ function Install-SqlDscServer
         $SqlSvcStartupType,
 
         [Parameter(ParameterSetName = 'Install', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'RebuildDatabase', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallRole')]
         [System.String[]]
@@ -578,28 +559,24 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [System.String]
         $SqlTempDbDir,
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [System.String]
         $SqlTempDbLogDir,
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [System.UInt16]
         $SqlTempDbFileCount,
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [ValidateRange(4, 262144)]
         [System.UInt16]
@@ -607,7 +584,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [ValidateRange(0, 1024)]
         [System.UInt16]
@@ -615,7 +591,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [ValidateRange(4, 262144)]
         [System.UInt16]
@@ -623,7 +598,6 @@ function Install-SqlDscServer
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallRole')]
-        [Parameter(ParameterSetName = 'RebuildDatabase')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster')]
         [ValidateRange(0, 1024)]
         [System.UInt16]
