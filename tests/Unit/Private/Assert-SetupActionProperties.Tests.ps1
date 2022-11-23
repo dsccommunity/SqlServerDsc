@@ -515,7 +515,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                     Assert-SetupActionProperties -Property @{
                         ASServerMode = 'PowerPivot'
                     } -SetupAction $MockSetupAction
-                } | Should -Throw -ErrorId 'AISSP0001,Assert-SetupActionProperties' # cSpell: disable-line
+                } | Should -Throw -ErrorId 'ASAP0001,Assert-SetupActionProperties' # cSpell: disable-line
             }
         }
     }
@@ -531,7 +531,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                     Assert-SetupActionProperties -Property @{
                         RsInstallMode = 'DefaultNativeMode'
                     } -SetupAction $MockSetupAction
-                } | Should -Throw -ErrorId 'AISSP0002,Assert-SetupActionProperties' # cSpell: disable-line
+                } | Should -Throw -ErrorId 'ASAP0002,Assert-SetupActionProperties' # cSpell: disable-line
             }
         }
     }
