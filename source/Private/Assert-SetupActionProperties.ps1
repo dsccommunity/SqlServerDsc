@@ -21,7 +21,7 @@
         None.
 
     .NOTES
-        This function is used by the command Install-SqlDscServer to verify that
+        This function is used by the command Invoke-SetupAction to verify that
         the bound parameters are in the required state.
 #>
 function Assert-SetupActionProperties
@@ -162,7 +162,7 @@ function Assert-SetupActionProperties
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
                     ($script:localizedData.InstallSqlServerProperties_ASServerModeInvalidValue -f $SetupAction),
-                    'AISSP0001', # cSpell: disable-line
+                    'ASAP0001', # cSpell: disable-line
                     [System.Management.Automation.ErrorCategory]::InvalidOperation,
                     'Command parameters'
                 )
@@ -178,7 +178,7 @@ function Assert-SetupActionProperties
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
                     ($script:localizedData.InstallSqlServerProperties_RsInstallModeInvalidValue -f $SetupAction),
-                    'AISSP0002', # cSpell: disable-line
+                    'ASAP0002', # cSpell: disable-line
                     [System.Management.Automation.ErrorCategory]::InvalidOperation,
                     'Command parameters'
                 )

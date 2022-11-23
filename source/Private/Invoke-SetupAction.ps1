@@ -1384,7 +1384,7 @@ function Invoke-SetupAction
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
                     ('{0} {1}' -f $setupExitMessage, $script:localizedData.Server_SetupFailed),
-                    'ISDS0001', # cspell: disable-line
+                    'ISA0001', # cspell: disable-line
                     [System.Management.Automation.ErrorCategory]::InvalidOperation,
                     $InstanceName
                 )
