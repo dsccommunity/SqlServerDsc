@@ -1,5 +1,5 @@
 name: New command proposal
-description: If you have a new public command proposal proposal that you think should be added to this module. The proposed public command shall be able to be used by a new or existing resource. If the public command already exist in another module, look if we can use that public command.
+description: If you have a proposal for a new public command that you think should be added to this module. The new command that is proposed shall be able to be used by a new or existing resource. If command already exist in another module, look if we can use the other module to avoid re-inventing.
 title: "NewCommandName: New command proposal"
 labels: []
 assignees: []
