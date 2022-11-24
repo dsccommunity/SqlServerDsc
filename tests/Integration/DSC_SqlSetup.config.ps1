@@ -95,35 +95,23 @@ else
 
                 <#
                     Analysis Services Multi-dimensional properties.
-                    The features CONN,BC,SDK is installed with the DSCSQLTEST so those
-                    features will found for DSCTABULAR instance as well.
-                    The features is added here so the same property can be used to
-                    evaluate the result in the test.
                 #>
                 AnalysisServicesMultiInstanceName     = 'DSCMULTI'
-                AnalysisServicesMultiFeatures         = 'AS,CONN,BC,SDK'
+                AnalysisServicesMultiFeatures         = 'AS'
                 AnalysisServicesMultiServerMode       = 'MULTIDIMENSIONAL'
 
                 <#
                     Analysis Services Tabular properties.
-                    The features CONN,BC,SDK is installed with the DSCSQLTEST so those
-                    features will found for DSCTABULAR instance as well.
-                    The features is added here so the same property can be used to
-                    evaluate the result in the test.
                 #>
                 AnalysisServicesTabularInstanceName     = 'DSCTABULAR'
-                AnalysisServicesTabularFeatures         = 'AS,CONN,BC,SDK'
+                AnalysisServicesTabularFeatures         = 'AS'
                 AnalysisServicesTabularServerMode       = 'TABULAR'
 
                 <#
                     Database Engine default instance properties.
-                    The features CONN,BC,SDK is installed with the DSCSQLTEST so those
-                    features will found for DSCTABULAR instance as well.
-                    The features is added here so the same property can be used to
-                    evaluate the result in the test.
                 #>
                 DatabaseEngineDefaultInstanceName       = 'MSSQLSERVER'
-                DatabaseEngineDefaultInstanceFeatures   = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+                DatabaseEngineDefaultInstanceFeatures   = $versionSpecificData.SupportedFeatures
 
                 # General SqlSetup properties
                 Collation                               = 'Finnish_Swedish_CI_AS'
