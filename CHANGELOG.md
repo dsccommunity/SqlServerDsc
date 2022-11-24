@@ -5,6 +5,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SqlServerDsc
+  - The following private functions were added to the module (see comment-based
+    help for more information):
+    - `Assert-ElevatedUser`
+    - `Assert-RequiredCommandParameter`
+    - `Test-IsNumericType`
+    - `Assert-SetupActionProperties`
+    - `Invoke-SetupAction`
+  - The following public functions were added to the module (see comment-based
+    help for more information):
+    - `Install-SqlDscServer`
+    - `Uninstall-SqlDscServer`
+    - `Add-SqlDscNode`
+    - `Remove-SqlDscNode`
+    - `Repair-SqlDscServer`
+    - `Complete-SqlDscImage`
+    - `Complete-SqlDscFailoverCluster`
+    - `Initialize-SqlDscRebuildDatabase`
+
 ### Changed
 
 - SqlServerDsc
