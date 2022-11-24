@@ -23,6 +23,19 @@ else
     #>
     switch ($script:sqlVersion)
     {
+        '160'
+        {
+            $versionSpecificData = @{
+                SqlServerInstanceIdPrefix = 'MSSQL16'
+                AnalysisServiceInstanceIdPrefix = 'MSAS16'
+                IsoImageName = 'SQL2022.iso'
+
+                # Additional variables required as ISO is downloaded via additional EXE
+                DownloadExeName = 'SQL2022_Download.exe'
+                DownloadIsoName = 'SQLServer2022-x64-ENU-Dev.iso'
+            }
+        }
+
         '150'
         {
             $versionSpecificData = @{
