@@ -1,5 +1,5 @@
 name: New command proposal
-description: If you have a proposal for a new public command that you think should be added to this module. The new command that is proposed shall be able to be used by a new or existing resource. If command already exist in another module, look if we can use the other module to avoid re-inventing.
+description: If you have a proposal for a new public command that you think should be added to this module. The new command that is proposed shall be able to be used by a new or existing resource. If command already exist in another module, consider if we can use the other module to avoid re-inventing.
 title: "NewCommandName: New command proposal"
 labels: []
 assignees: []
@@ -22,7 +22,7 @@ body:
     attributes:
       label: Proposed parameters
       description: |
-        List all the proposed parameters and any parameter sets that the resource should have. For each parameter provide a detailed description, the data type, if a default value should be used, and if the property is limited to a set of values.
+        List all the proposed parameters and any parameter sets that the command should have. For each parameter provide a detailed description, the data type, if a default value should be used, and if the property is limited to a set of values.
       value: |
         Parameter | Mandatory | Data type | Description | Default value | Allowed values
         --- | --- | --- | --- | --- | ---
