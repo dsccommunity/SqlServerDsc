@@ -28,33 +28,12 @@ BeforeAll {
         -ResourceType 'Mof' `
         -TestType 'Integration'
 
-    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
-
-    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022')
-    {
-        $script:sqlVersion = '160'
-    }
-    elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
-    {
-        $script:sqlVersion = '150'
-    }
-    elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
-    {
-        $script:sqlVersion = '140'
-    }
-    else
-    {
-        $script:sqlVersion = '130'
-    }
-
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configFile
 }
 
 AfterAll {
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
-
-    Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
 Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
