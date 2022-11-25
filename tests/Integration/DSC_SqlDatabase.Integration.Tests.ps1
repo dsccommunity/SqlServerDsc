@@ -28,6 +28,23 @@ BeforeAll {
         -ResourceType 'Mof' `
         -TestType 'Integration'
 
+    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022')
+    {
+        $script:sqlVersion = '160'
+    }
+    elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
+    {
+        $script:sqlVersion = '150'
+    }
+    elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
+    {
+        $script:sqlVersion = '140'
+    }
+    else
+    {
+        $script:sqlVersion = '130'
+    }
+
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configFile
 }
