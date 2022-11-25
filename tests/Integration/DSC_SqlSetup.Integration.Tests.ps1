@@ -642,7 +642,21 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.FailoverClusterGroupName   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterIPAddress   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
-            $resourceCurrentState.Features                   | Should -Be $ConfigurationData.AllNodes.AnalysisServicesMultiFeatures
+
+            if ($script:sqlVersion -in (160))
+            {
+                <#
+                    The features CONN, BC, SDK is no longer supported after SQL Server 2019.
+                    Thus they are not installed with the Database Engine instance DSCSQLTEST
+                    in prior test, so this test do not find them already installed.
+                #>
+                $resourceCurrentState.Features | Should -Be 'AS'
+            }
+            else
+            {
+                $resourceCurrentState.Features | Should -Be 'AS,CONN,BC,SDK'
+            }
+
             $resourceCurrentState.ForceReboot                | Should -BeNullOrEmpty
             $resourceCurrentState.FTSvcAccount               | Should -BeNullOrEmpty
             $resourceCurrentState.FTSvcAccountUsername       | Should -BeNullOrEmpty
@@ -794,7 +808,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.FailoverClusterGroupName   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterIPAddress   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
-            $resourceCurrentState.Features                   | Should -Be $ConfigurationData.AllNodes.AnalysisServicesTabularFeatures
+            $resourceCurrentState.Features                   | Should -Be 'AS,CONN,BC,SDK'
             $resourceCurrentState.ForceReboot                | Should -BeNullOrEmpty
             $resourceCurrentState.FTSvcAccount               | Should -BeNullOrEmpty
             $resourceCurrentState.FTSvcAccountUsername       | Should -BeNullOrEmpty
