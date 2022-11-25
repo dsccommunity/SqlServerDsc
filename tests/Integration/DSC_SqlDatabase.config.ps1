@@ -13,41 +13,6 @@ if (Test-Path -Path $configFile)
 }
 else
 {
-    <#
-        The variable $script:sqlVersion is set in the integration script file,
-        which is available once this script is dot-sourced.
-    #>
-    switch ($script:sqlVersion)
-    {
-        '160'
-        {
-            $versionSpecificData = @{
-                CompatibilityLevel = 'Version150'
-            }
-        }
-
-        '150'
-        {
-            $versionSpecificData = @{
-                CompatibilityLevel = 'Version120'
-            }
-        }
-
-        '140'
-        {
-            $versionSpecificData = @{
-                CompatibilityLevel = 'Version120'
-            }
-        }
-
-        '130'
-        {
-            $versionSpecificData = @{
-                CompatibilityLevel = 'Version120'
-            }
-        }
-    }
-
     $ConfigurationData = @{
         AllNodes = @(
             @{
@@ -67,7 +32,7 @@ else
                 DatabaseName5      = 'Database5'
 
                 Collation          = 'SQL_Latin1_General_Pref_CP850_CI_AS'
-                CompatibilityLevel = $versionSpecificData.CompatibilityLevel
+                CompatibilityLevel = 'Version120'
                 RecoveryModel      = 'Simple'
                 OwnerName          = 'sa'
             }
