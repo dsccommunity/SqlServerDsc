@@ -15,6 +15,7 @@ $script:supportedCompatibilityLevels = @{
     13 = @('Version100', 'Version110', 'Version120', 'Version130')
     14 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140')
     15 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150')
+    16 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160')
 }
 
 <#

@@ -23,6 +23,22 @@ else
     #>
     switch ($script:sqlVersion)
     {
+        '160'
+        {
+            $versionSpecificData = @{
+                SqlServerInstanceIdPrefix = 'MSSQL16'
+                AnalysisServiceInstanceIdPrefix = 'MSAS16'
+                IsoImageName = 'SQL2022.iso'
+
+                # Additional variables required as ISO is downloaded via additional EXE
+                DownloadExeName = 'SQL2022_Download.exe'
+                DownloadIsoName = 'SQLServer2022-x64-ENU-Dev.iso'
+
+                # Features CONN, BC, SDK, SNAC_SDK, DREPLAY_CLT, DREPLAY_CTLR are no longer supported in 2022.
+                SupportedFeatures = 'SQLENGINE,REPLICATION'
+            }
+        }
+
         '150'
         {
             $versionSpecificData = @{
@@ -33,6 +49,8 @@ else
                 # Additional variables required as ISO is downloaded via additional EXE
                 DownloadExeName = 'SQL2019_Download.exe'
                 DownloadIsoName = 'SQLServer2019-x64-ENU-Dev.iso'
+
+                SupportedFeatures = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
             }
         }
 
@@ -42,6 +60,8 @@ else
                 SqlServerInstanceIdPrefix = 'MSSQL14'
                 AnalysisServiceInstanceIdPrefix = 'MSAS14'
                 IsoImageName = 'SQL2017.iso'
+
+                SupportedFeatures = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
             }
         }
 
@@ -51,6 +71,8 @@ else
                 SqlServerInstanceIdPrefix = 'MSSQL13'
                 AnalysisServiceInstanceIdPrefix = 'MSAS13'
                 IsoImageName = 'SQL2016.iso'
+
+                SupportedFeatures = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
             }
         }
     }
@@ -69,39 +91,27 @@ else
 
                 # Database Engine properties.
                 DatabaseEngineNamedInstanceName         = 'DSCSQLTEST'
-                DatabaseEngineNamedInstanceFeatures     = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+                DatabaseEngineNamedInstanceFeatures     = $versionSpecificData.SupportedFeatures
 
                 <#
                     Analysis Services Multi-dimensional properties.
-                    The features CONN,BC,SDK is installed with the DSCSQLTEST so those
-                    features will found for DSCTABULAR instance as well.
-                    The features is added here so the same property can be used to
-                    evaluate the result in the test.
                 #>
                 AnalysisServicesMultiInstanceName     = 'DSCMULTI'
-                AnalysisServicesMultiFeatures         = 'AS,CONN,BC,SDK'
+                AnalysisServicesMultiFeatures         = 'AS'
                 AnalysisServicesMultiServerMode       = 'MULTIDIMENSIONAL'
 
                 <#
                     Analysis Services Tabular properties.
-                    The features CONN,BC,SDK is installed with the DSCSQLTEST so those
-                    features will found for DSCTABULAR instance as well.
-                    The features is added here so the same property can be used to
-                    evaluate the result in the test.
                 #>
                 AnalysisServicesTabularInstanceName     = 'DSCTABULAR'
-                AnalysisServicesTabularFeatures         = 'AS,CONN,BC,SDK'
+                AnalysisServicesTabularFeatures         = 'AS'
                 AnalysisServicesTabularServerMode       = 'TABULAR'
 
                 <#
                     Database Engine default instance properties.
-                    The features CONN,BC,SDK is installed with the DSCSQLTEST so those
-                    features will found for DSCTABULAR instance as well.
-                    The features is added here so the same property can be used to
-                    evaluate the result in the test.
                 #>
                 DatabaseEngineDefaultInstanceName       = 'MSSQLSERVER'
-                DatabaseEngineDefaultInstanceFeatures   = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+                DatabaseEngineDefaultInstanceFeatures   = $versionSpecificData.SupportedFeatures
 
                 # General SqlSetup properties
                 Collation                               = 'Finnish_Swedish_CI_AS'

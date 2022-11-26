@@ -71,8 +71,15 @@ BeforeAll {
         This is used in both the configuration file and in this script file
         to run the correct tests depending of what version of SQL Server is
         being tested in the current job.
+
+        The actual download URL can easiest be found in the browser download history.
     #>
-    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
+    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022')
+    {
+        $script:sqlVersion = '160'
+        $script:mockSourceDownloadExeUrl = 'https://download.microsoft.com/download/c/c/9/cc9c6797-383c-4b24-8920-dc057c1de9d3/SQL2022-SSEI-Dev.exe'
+    }
+    elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
     {
         $script:sqlVersion = '150'
         $script:mockSourceDownloadExeUrl = 'https://download.microsoft.com/download/d/a/2/da259851-b941-459d-989c-54a18a5d44dd/SQL2019-SSEI-Dev.exe'
@@ -119,7 +126,6 @@ BeforeAll {
             # Rename the ISO to maintain consistency of names within integration tests
             Rename-Item -Path $ConfigurationData.AllNodes.DownloadIsoPath `
                 -NewName $(Split-Path -Path $ConfigurationData.AllNodes.ImagePath -Leaf) | Out-Null
-
         }
         else
         {
@@ -154,7 +160,7 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019') {
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
@@ -636,7 +642,21 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.FailoverClusterGroupName   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterIPAddress   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
-            $resourceCurrentState.Features                   | Should -Be $ConfigurationData.AllNodes.AnalysisServicesMultiFeatures
+
+            if ($script:sqlVersion -in (160))
+            {
+                <#
+                    The features CONN, BC, SDK is no longer supported after SQL Server 2019.
+                    Thus they are not installed with the Database Engine instance DSCSQLTEST
+                    in prior test, so this test do not find them already installed.
+                #>
+                $resourceCurrentState.Features | Should -Be 'AS'
+            }
+            else
+            {
+                $resourceCurrentState.Features | Should -Be 'AS,CONN,BC,SDK'
+            }
+
             $resourceCurrentState.ForceReboot                | Should -BeNullOrEmpty
             $resourceCurrentState.FTSvcAccount               | Should -BeNullOrEmpty
             $resourceCurrentState.FTSvcAccountUsername       | Should -BeNullOrEmpty
@@ -788,7 +808,21 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.FailoverClusterGroupName   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterIPAddress   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
-            $resourceCurrentState.Features                   | Should -Be $ConfigurationData.AllNodes.AnalysisServicesTabularFeatures
+
+            if ($script:sqlVersion -in (160))
+            {
+                <#
+                    The features CONN, BC, SDK is no longer supported after SQL Server 2019.
+                    Thus they are not installed with the Database Engine instance DSCSQLTEST
+                    in prior test, so this test do not find them already installed.
+                #>
+                $resourceCurrentState.Features | Should -Be 'AS'
+            }
+            else
+            {
+                $resourceCurrentState.Features | Should -Be 'AS,CONN,BC,SDK'
+            }
+
             $resourceCurrentState.ForceReboot                | Should -BeNullOrEmpty
             $resourceCurrentState.FTSvcAccount               | Should -BeNullOrEmpty
             $resourceCurrentState.FTSvcAccountUsername       | Should -BeNullOrEmpty
