@@ -9,7 +9,18 @@
 
     InvokeBuild                    = 'latest'
     PSScriptAnalyzer               = 'latest'
-    Pester                         = 'latest'
+
+    <#
+        If preview release of Pester prevents release we should temporary shift
+        back to stable.
+    #>
+    Pester                         = @{
+        Version    = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
+
     Plaster                        = 'latest'
     ModuleBuilder                  = 'latest'
     ChangelogManagement            = 'latest'

@@ -32,6 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Integration tests now wait for LCM after each It-block, not just at the
     end of a Context-block. Hopefully this will mitigate some of the intermittent
     errors we have seen when running the integration tests in the pipeline.
+  - Use preview version of Pester to support the development of Pester as
+    this is a code base with a diverse set of tests thar can help catch
+    issues in Pester. If preview release of Pester prevents release we
+    should temporary shift back to stable.
 - SqlDatabase
   - Added compatibility levels for SQL Server 2022 (major version 16).
 - SqlSetup
