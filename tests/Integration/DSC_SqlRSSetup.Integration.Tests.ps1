@@ -104,7 +104,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
@@ -171,7 +171,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 

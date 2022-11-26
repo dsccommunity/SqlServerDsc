@@ -68,7 +68,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag 'Skip'  {
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
@@ -103,7 +103,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag 'Skip'  {
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
@@ -157,7 +157,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag 'Skip'  {
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
@@ -211,7 +211,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag 'Skip'  {
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
