@@ -35,7 +35,11 @@ BeforeAll {
         to run the correct tests depending of what version of SQL Server is
         being tested in the current job.
     #>
-    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
+    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022')
+    {
+        $script:sqlVersion = '160'
+    }
+    elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
     {
         $script:sqlVersion = '150'
     }
@@ -60,7 +64,7 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019') {
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
@@ -161,7 +165,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             # Wait for 1 minute for the ReportServer to be ready.
             Start-Sleep -Seconds 30
 
-            if ($script:sqlVersion -in @('140', '150'))
+            if ($script:sqlVersion -in @('140', '150', '160'))
             {
                 # SSRS 2017 and 2019 do not support multiple instances
                 $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
@@ -191,7 +195,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should be able to access the Reports site without any error' {
-            if ($script:sqlVersion -in @('140', '150'))
+            if ($script:sqlVersion -in @('140', '150', '160'))
             {
                 # SSRS 2017 and 2019 do not support multiple instances
                 $reportsUri = 'http://{0}/Reports' -f $env:COMPUTERNAME
@@ -281,7 +285,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             as this without testing for the correct error message on purpose.
         #>
         It 'Should not be able to access the ReportServer site and throw an error message' {
-            if ($script:sqlVersion -in @('140', '150'))
+            if ($script:sqlVersion -in @('140', '150', '160'))
             {
                 # SSRS 2017 and 2019 do not support multiple instances
                 $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
@@ -349,7 +353,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should be able to access the ReportServer site without any error' {
-            if ($script:sqlVersion -in @('140', '150'))
+            if ($script:sqlVersion -in @('140', '150', '160'))
             {
                 # SSRS 2017 and 2019 do not support multiple instances
                 $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
@@ -379,7 +383,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should be able to access the Reports site without any error' {
-            if ($script:sqlVersion -in @('140', '150'))
+            if ($script:sqlVersion -in @('140', '150', '160'))
             {
                 # SSRS 2017 and 2019 do not support multiple instances
                 $reportsUri = 'http://{0}/Reports' -f $env:COMPUTERNAME
