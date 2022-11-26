@@ -48,7 +48,7 @@ Describe "<dscResourceFriendlyName>_Integration" -Tag @('Integration_SQL2016', '
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
@@ -104,7 +104,7 @@ Describe "<dscResourceFriendlyName>_Integration" -Tag @('Integration_SQL2016', '
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
