@@ -86,6 +86,9 @@ else
             @{
                 NodeName                                = 'localhost'
 
+                SqlServerModuleVersion                  = '22.0.30-preview'
+                SqlServerModuleVersionIsPrerelease      = $true
+
                 SqlServerInstanceIdPrefix               = $versionSpecificData.SqlServerInstanceIdPrefix
                 AnalysisServiceInstanceIdPrefix         = $versionSpecificData.AnalysisServiceInstanceIdPrefix
 
@@ -279,22 +282,66 @@ Configuration DSC_SqlSetup_CreateDependencies_Config
 
 <#
     .SYNOPSIS
-        Installing the latest SqlServer module from PowerShell Gallery.
+        Installing the specific SqlServer module from PowerShell Gallery.
 
     .NOTES
         This module might already be installed on the build worker. This is needed
         to install SQL Server Analysis Services instances.
-
-        The SqlServer module is purposely not added to 'RequiredModule.psd1' so
-        that it does not conflict with the SqlServerStubs module that is used by
-        unit tests.
 #>
 Configuration DSC_SqlSetup_InstallSqlServerModule_Config
 {
-    Import-DscResource -ModuleName 'PowerShellGet' -ModuleVersion '2.1.2'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
     node $AllNodes.NodeName
     {
+        Script 'InstallSqlServerModule'
+        {
+            SetScript  = {
+                $installModuleParameters = @{
+                    Name = 'SqlServer'
+                    RequiredVersion = $Using:Node.SqlServerModuleVersion
+                    Scope = 'AllUsers'
+                    Force = $true
+                    AllowPrerelease = $Using:Node.SqlServerModuleVersionIsPrerelease
+                    PassThru = $true
+                }
+
+                $installedModule = Install-Module @installModuleParameters
+
+                Write-Verbose -Message ('Installed SqlServer module version {0}' -f $installedModule.Version)
+            }
+
+            TestScript = {
+                <#
+                    This takes the string of the $GetScript parameter and creates
+                    a new script block (during runtime in the resource) and then
+                    runs that script block.
+                #>
+                $getScriptResult = & ([ScriptBlock]::Create($GetScript))
+
+                if ($null -ne $getScriptResult.Result)
+                {
+                    Write-Warning -Message ('The node already contain the module SqlServer with version {0}.' -f $getScriptResult.Result)
+                }
+
+                # For now always return $true if there is a module installed, regardless of version.
+                return ($null -ne $getScriptResult.Result)
+            }
+
+            GetScript  = {
+                $moduleVersion = (Get-Module -Name 'SqlServer' -ListAvailable).Version
+
+                if ($null -ne $modulVersion)
+                {
+                    $moduleVersion = $moduleVersion.ToString()
+                }
+
+                return @{
+                    Result = $moduleVersion
+                }
+            }
+        }
+
         PSModule 'InstallSqlServerModule'
         {
             Name               = 'SqlServer'
