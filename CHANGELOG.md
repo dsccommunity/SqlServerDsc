@@ -28,7 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New GitHub issue templates for proposing new public commands, proposing
     an enhancement to an existing command, or having a problem with an existing
     command.
-  - Integration tests are now also run on SQL Server 2022.
+  - Integration tests are now also run on SQL Server 2022 and SQL Server
+    Reporting Services 2022.
   - Integration tests now wait for LCM after each It-block, not just at the
     end of a Context-block. Hopefully this will mitigate some of the intermittent
     errors we have seen when running the integration tests in the pipeline.
