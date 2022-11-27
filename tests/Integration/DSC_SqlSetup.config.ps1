@@ -313,10 +313,16 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 # Remove any loaded module to hopefully get those that was installed above.
                 Get-Module -Name @('PackageManagement', 'PowerShellGet') -All | Remove-Module -Force
 
+                # Forcibly import the newly installed modules.
                 Import-Module -Name 'PackageManagement' -MinimumVersion '1.4.8.1' -Force
                 Import-Module -Name 'PowerShellGet' -MinimumVersion '2.2.5' -Force
 
-                Write-Verbose -Message (Get-Module -Name @('PackageManagement', 'PowerShellGet') | Out-String)
+                # Forcibly import the newly installed modules.
+                Write-Verbose -Message (
+                    Get-Module -Name @('PackageManagement', 'PowerShellGet') |
+                    Select-Object -Property @('Name', 'Version') |
+                    Out-String
+                )
 
                 # Uninstall any existing SqlServer module.
                 Uninstall-Module -Name 'SqlServer' -ErrorAction SilentlyContinue
