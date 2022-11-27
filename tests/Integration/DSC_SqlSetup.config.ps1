@@ -341,14 +341,6 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 }
             }
         }
-
-        PSModule 'InstallSqlServerModule'
-        {
-            Name               = 'SqlServer'
-            MinimumVersion     = '21.1.18235' # Analysis Services works at least with this version.
-            InstallationPolicy = 'Trusted'
-            AllowClobber       = $true
-        }
     }
 }
 
