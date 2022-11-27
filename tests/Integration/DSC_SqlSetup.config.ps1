@@ -329,11 +329,14 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
             }
 
             GetScript  = {
-                $moduleVersion = (Get-Module -Name 'SqlServer' -ListAvailable).Version
+                $moduleVersion = $null
+                $sqlServerModule = $null
 
-                if ($null -ne $modulVersion)
+                $sqlServerModule = Get-Module -Name 'SqlServer' -ListAvailable
+
+                if ($sqlServerModule)
                 {
-                    $moduleVersion = $moduleVersion.ToString()
+                    $moduleVersion = $sqlServerModule.Version.ToString()
                 }
 
                 return @{
