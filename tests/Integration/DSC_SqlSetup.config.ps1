@@ -297,6 +297,8 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
         Script 'InstallSqlServerModule'
         {
             SetScript  = {
+                Uninstall-Module -Name 'SqlServer' -ErrorAction SilentlyContinue
+
                 $installModuleParameters = @{
                     Name = 'SqlServer'
                     RequiredVersion = $Using:Node.SqlServerModuleVersion
@@ -324,8 +326,8 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                     Write-Warning -Message ('The node already contain the module SqlServer with version {0}.' -f $getScriptResult.Result)
                 }
 
-                # For now always return $true if there is a module installed, regardless of version.
-                return ($null -ne $getScriptResult.Result)
+                # For now always return $false even if there is a module installed, regardless of version.
+                return $false
             }
 
             GetScript  = {
