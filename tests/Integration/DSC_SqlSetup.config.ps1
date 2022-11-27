@@ -297,6 +297,23 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
         Script 'InstallSqlServerModule'
         {
             SetScript  = {
+                # Make sure PSGallery is trusted.
+                Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+
+                # Remove any loaded module.
+                Get-Module -Name @('PackageManagement', 'PowerShellGet') -All | Remove-Module -Force
+
+                # Make sure we use TLS 1.2.
+                [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+
+                # Install NuGet package provider and latest version of PowerShellGet.
+                Install-PackageProvider -Name NuGet -Force
+                Install-Module PowerShellGet -AllowClobber -Force
+
+                # Remove any loaded module to hopefully get those that was installed above.
+                Get-Module -Name @('PackageManagement', 'PowerShellGet') -All | Remove-Module -Force
+
+                # Uninstall any existing SqlServer module.
                 Uninstall-Module -Name 'SqlServer' -ErrorAction SilentlyContinue
 
                 $installModuleParameters = @{
@@ -308,6 +325,7 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                     PassThru = $true
                 }
 
+                # Install the required SqlServer module version.
                 $installedModule = Install-Module @installModuleParameters
 
                 Write-Verbose -Message ('Installed SqlServer module version {0}' -f $installedModule.Version)
