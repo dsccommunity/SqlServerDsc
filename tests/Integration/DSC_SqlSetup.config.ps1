@@ -327,6 +327,7 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                     Scope = 'AllUsers'
                     Force = $true
                     AllowPrerelease = $Using:Node.SqlServerModuleVersionIsPrerelease
+                    AllowClobber = $true # Needed to handle existens of module SQLPS.
                     PassThru = $true
                 }
 
