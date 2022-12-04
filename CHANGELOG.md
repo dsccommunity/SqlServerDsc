@@ -47,7 +47,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Update Stale GitHub Action to v6.
   - Update to build module in separate folder under `output`.
+<<<<<<< HEAD
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
+=======
+
+>>>>>>> parent of e99fd0a (Update CHANGELOG)
 ### Fixed
 
 - SqlServerDsc
