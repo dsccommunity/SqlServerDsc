@@ -405,11 +405,6 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
 
     Context 'When setup action is ''<MockSetupAction>'' and feature is ''<MockFeature>'' but parameter ''<MockMissingParameterName>'' is missing' -ForEach @(
         @{
-            MockSetupAction = 'Install'
-            MockMissingParameterName = 'AgtSvcAccount'
-            MockFeature = 'SQLENGINE'
-        }
-        @{
             MockSetupAction = 'CompleteImage'
             MockMissingParameterName = 'AgtSvcAccount'
             MockFeature = 'SQLENGINE'

@@ -47,6 +47,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Update Stale GitHub Action to v6.
   - Update to build module in separate folder under `output`.
+  - `Install-SqlServerDsc`
+    - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
+
 
 ### Fixed
 
