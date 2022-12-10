@@ -120,7 +120,7 @@ function Assert-SetupActionProperties
     }
 
     # If feature is SQLENGINE, then for specified setup actions the parameter AgtSvcAccount is mandatory.
-    if ($SetupAction -in ('Install', 'CompleteImage', 'InstallFailoverCluster', 'PrepareFailoverCluster', 'AddNode'))
+    if ($SetupAction -in ('CompleteImage', 'InstallFailoverCluster', 'PrepareFailoverCluster', 'AddNode'))
     {
         if ($Property.ContainsKey('Features') -and $Property.Features -contains 'SQLENGINE')
         {
