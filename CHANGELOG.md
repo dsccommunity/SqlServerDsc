@@ -47,6 +47,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Update Stale GitHub Action to v6.
   - Update to build module in separate folder under `output`.
+  - Moved the build step of the pipeline to a Windows build worker when
+    running in Azure DevOps.
 
 ### Fixed
 
