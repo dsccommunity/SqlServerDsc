@@ -95,9 +95,6 @@ ConvertFrom-StringData @'
     RequiredCommandParameter_SpecificParametersMustAllBeSet = The parameters '{0}' must all be specified.
     RequiredCommandParameter_SpecificParametersMustAllBeSetWhenParameterExist = The parameters '{0}' must all be specified if either parameter '{1}' is specified.
 
-    ## Assert-IsElevated
-    IsElevated_UserNotElevated = This command must run in an elevated PowerShell session.
-
     ## Assert-SetupActionProperties
     InstallSqlServerProperties_ASServerModeInvalidValue = The value for ASServerMode is not valid for the setup action {0}.
     InstallSqlServerProperties_RsInstallModeInvalidValue = The only valid value for RsInstallMode is 'FilesOnlyMode' when using setup action {0}.

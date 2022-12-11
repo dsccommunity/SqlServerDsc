@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- SqlServerDsc
+  - Removed `Assert-ElevatedUser` from private functions - [Issue #1797](https://github.com/dsccommunity/SqlServerDsc/issues/1797)
+    - `Assert-ElevatedUser` added to _DscResource.Common_ public functions - [Issue #82](https://github.com/dsccommunity/DscResource.Common/issues/82)
+
 ### Added
 
 - SqlServerDsc
