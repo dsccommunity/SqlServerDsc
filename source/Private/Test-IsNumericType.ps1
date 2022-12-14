@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-        Returns wether the specified object is of a numeric type.
+        Returns whether the specified object is of a numeric type.
 
     .DESCRIPTION
-        Returns wether the specified object is of a numeric type.
+        Returns whether the specified object is of a numeric type.
 
     .PARAMETER Object
        The object to test if it is a numeric type.
