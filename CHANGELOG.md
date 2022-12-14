@@ -57,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     running in Azure DevOps.
 - `Install-SqlServerDsc`
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
+- SqlAgReplica
+  - Converted unit test to Pester 5.
 
 ### Fixed
 
