@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Unit test for DSC_SqlLogin DSC resource.
+        Unit test for DSC_SqlAGReplica DSC resource.
 #>
 
 # Suppressing this rule because Script Analyzer does not understand Pester's syntax.
@@ -442,9 +442,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
         }
 
         Mock -CommandName Import-SQLPSModule
-    }
 
-    BeforeEach {
         Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer1 -ParameterFilter {
             $ServerName -eq 'Server1'
         }
@@ -471,9 +469,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
 
         Mock -CommandName Join-SqlAvailabilityGroup
         Mock -CommandName New-SqlAvailabilityReplica
-        Mock -CommandName Test-ClusterPermissions -MockWith {
-            return $null
-        }
+        Mock -CommandName Test-ClusterPermissions
     }
 
     Context 'When the desired state is absent' {
@@ -668,7 +664,6 @@ Describe 'SqlAGReplica\Set-TargetResource' {
         BeforeAll {
             Mock -CommandName Remove-SqlAvailabilityReplica
             Mock -CommandName Update-AvailabilityGroupReplica
-            Mock -CommandName Test-ClusterPermissions
         }
 
         It "Should create the availability group replica" {
@@ -841,7 +836,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
         }
 
         Context 'When the availability group replica fails to create' {
-            BeforeEach {
+            BeforeAll {
                 Mock -CommandName New-SqlAvailabilityReplica {
                     throw 'Mocked error'
                 }
@@ -909,7 +904,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
         }
 
         Context 'When the availability group replica fails to join the availability group' {
-            BeforeEach {
+            BeforeAll {
                 Mock -CommandName Join-SqlAvailabilityGroup {
                     throw 'Mocked error'
                 }
