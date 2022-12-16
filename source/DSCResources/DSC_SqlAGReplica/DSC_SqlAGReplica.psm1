@@ -65,8 +65,8 @@ function Get-TargetResource
     # Create the return object
     $alwaysOnAvailabilityGroupReplicaResource = @{
         Ensure                        = 'Absent'
-        Name                          = ''
-        AvailabilityGroupName         = ''
+        Name                          = $Name
+        AvailabilityGroupName         = $AvailabilityGroupName
         AvailabilityMode              = ''
         BackupPriority                = ''
         ConnectionModeInPrimaryRole   = ''
@@ -87,9 +87,6 @@ function Get-TargetResource
 
     if ( $availabilityGroup )
     {
-        # Add the Availability Group name to the results
-        $alwaysOnAvailabilityGroupReplicaResource.AvailabilityGroupName = $availabilityGroup.Name
-
         # Try to find the replica
         $availabilityGroupReplica = $availabilityGroup.AvailabilityReplicas[$Name]
 
@@ -97,7 +94,6 @@ function Get-TargetResource
         {
             # Add the Availability Group Replica properties to the results
             $alwaysOnAvailabilityGroupReplicaResource.Ensure = 'Present'
-            $alwaysOnAvailabilityGroupReplicaResource.Name = $availabilityGroupReplica.Name
             $alwaysOnAvailabilityGroupReplicaResource.AvailabilityMode = $availabilityGroupReplica.AvailabilityMode
             $alwaysOnAvailabilityGroupReplicaResource.BackupPriority = $availabilityGroupReplica.BackupPriority
             $alwaysOnAvailabilityGroupReplicaResource.ConnectionModeInPrimaryRole = $availabilityGroupReplica.ConnectionModeInPrimaryRole
@@ -672,11 +668,6 @@ function Test-TargetResource
         'Present'
         {
             $parametersToCheck = @(
-                'Name',
-                'AvailabilityGroupName',
-                'ServerName',
-                'InstanceName',
-                'Ensure',
                 'AvailabilityMode',
                 'BackupPriority',
                 'ConnectionModeInPrimaryRole',
@@ -721,13 +712,8 @@ function Test-TargetResource
                 # Get the Endpoint URL properties
                 $currentEndpointProtocol, $currentEndpointHostName, $currentEndpointPort = $getTargetResourceResult.EndpointUrl.Replace('//', '').Split(':')
 
-                if ( -not $EndpointHostName )
-                {
-                    $EndpointHostName = $getTargetResourceResult.EndpointHostName
-                }
-
                 # Verify the hostname in the endpoint URL is correct
-                if ( $EndpointHostName -ne $currentEndpointHostName )
+                if ( $PSBoundParameters.ContainsKey('EndpointHostName') -and $EndpointHostName -ne $currentEndpointHostName )
                 {
                     Write-Verbose -Message (
                         $script:localizedData.ParameterNotInDesiredState -f 'EndpointHostName', $EndpointHostName, $currentEndpointHostName
