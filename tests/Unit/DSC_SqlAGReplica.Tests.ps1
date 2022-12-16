@@ -108,7 +108,7 @@ Describe 'SqlAGReplica\Get-TargetResource' {
             $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
             $mockAvailabilityGroupReplica3.BackupPriority = 50
             $mockAvailabilityGroupReplica3.ConnectionModeInPrimaryRole = 'AllowAllConnections'
-            $mockAvailabilityGroupReplica3.ConnectionModeInSecondaryRole ='AllowNoConnections'
+            $mockAvailabilityGroupReplica3.ConnectionModeInSecondaryRole = 'AllowNoConnections'
             $mockAvailabilityGroupReplica3.EndpointUrl = 'TCP://Server3:5022'
             $mockAvailabilityGroupReplica3.FailoverMode = 'Manual'
             $mockAvailabilityGroupReplica3.Name = 'Server3'
@@ -154,7 +154,7 @@ Describe 'SqlAGReplica\Get-TargetResource' {
 
                 $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                $getTargetResourceResult.AvailabilityGroupName | Should -BeNullOrEmpty
+                $getTargetResourceResult.AvailabilityGroupName | Should -Be 'AbsentAG'
                 $getTargetResourceResult.AvailabilityMode | Should -BeNullOrEmpty
                 $getTargetResourceResult.BackupPriority | Should -BeNullOrEmpty
                 $getTargetResourceResult.ConnectionModeInPrimaryRole | Should -BeNullOrEmpty
@@ -163,7 +163,7 @@ Describe 'SqlAGReplica\Get-TargetResource' {
                 $getTargetResourceResult.EndpointPort | Should -Be 5022
                 $getTargetResourceResult.Ensure | Should -Be 'Absent'
                 $getTargetResourceResult.FailoverMode | Should -BeNullOrEmpty
-                $getTargetResourceResult.Name | Should -BeNullOrEmpty
+                $getTargetResourceResult.Name | Should -Be 'Server1'
                 $getTargetResourceResult.ReadOnlyRoutingConnectionUrl | Should -BeNullOrEmpty
                 $getTargetResourceResult.ReadOnlyRoutingList | Should -BeNullOrEmpty
                 $getTargetResourceResult.ServerName | Should -Be 'Server1'
@@ -171,7 +171,7 @@ Describe 'SqlAGReplica\Get-TargetResource' {
                 $getTargetResourceResult.EndpointHostName | Should -Be 'Server1'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
         }
     }
 
@@ -204,7 +204,7 @@ Describe 'SqlAGReplica\Get-TargetResource' {
                 $getTargetResourceResult.EndpointHostName | Should -Be 'Server1'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
         }
     }
 }
@@ -246,7 +246,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
             $mockAvailabilityGroupReplica3.BackupPriority = 50
             $mockAvailabilityGroupReplica3.ConnectionModeInPrimaryRole = 'AllowAllConnections'
-            $mockAvailabilityGroupReplica3.ConnectionModeInSecondaryRole ='AllowNoConnections'
+            $mockAvailabilityGroupReplica3.ConnectionModeInSecondaryRole = 'AllowNoConnections'
             $mockAvailabilityGroupReplica3.EndpointUrl = 'TCP://Server3:5022'
             $mockAvailabilityGroupReplica3.FailoverMode = 'Manual'
             $mockAvailabilityGroupReplica3.Name = 'Server3'
@@ -311,7 +311,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
             $mockAvailabilityGroupReplica3.BackupPriority = 50
             $mockAvailabilityGroupReplica3.ConnectionModeInPrimaryRole = 'AllowAllConnections'
-            $mockAvailabilityGroupReplica3.ConnectionModeInSecondaryRole ='AllowNoConnections'
+            $mockAvailabilityGroupReplica3.ConnectionModeInSecondaryRole = 'AllowNoConnections'
             $mockAvailabilityGroupReplica3.EndpointUrl = 'TCP://Server3:5022'
             $mockAvailabilityGroupReplica3.FailoverMode = 'Manual'
             $mockAvailabilityGroupReplica3.Name = 'Server3'
@@ -393,7 +393,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
             $mockAvailabilityGroupReplica3.BackupPriority = 50
             $mockAvailabilityGroupReplica3.ConnectionModeInPrimaryRole = 'AllowAllConnections'
-            $mockAvailabilityGroupReplica3.ConnectionModeInSecondaryRole ='AllowNoConnections'
+            $mockAvailabilityGroupReplica3.ConnectionModeInSecondaryRole = 'AllowNoConnections'
             $mockAvailabilityGroupReplica3.EndpointUrl = 'TCP://Server3:5022'
             $mockAvailabilityGroupReplica3.FailoverMode = 'Manual'
             $mockAvailabilityGroupReplica3.Name = 'Server3'
@@ -516,10 +516,10 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Test-ClusterPermissions -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
             }
@@ -572,10 +572,10 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Test-ClusterPermissions -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
             }
@@ -592,7 +592,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
 
             Mock -CommandName Connect-SQL -MockWith {
                 return $mockServerObject
-             } -ParameterFilter {
+            } -ParameterFilter {
                 $ServerName -eq 'ServerNotEnabled'
             }
         }
@@ -600,10 +600,10 @@ Describe 'SqlAGReplica\Set-TargetResource' {
         It 'Should throw the correct error' { # cSpell: disable-line
             InModuleScope -ScriptBlock {
                 $setTargetResourceParameters = @{
-                    Name                          = 'ServerNotEnabled'
-                    AvailabilityGroupName         = 'AG_PrimaryOnServer2'
-                    ServerName                    = 'ServerNotEnabled'
-                    InstanceName                  = 'MSSQLSERVER'
+                    Name                  = 'ServerNotEnabled'
+                    AvailabilityGroupName = 'AG_PrimaryOnServer2'
+                    ServerName            = 'ServerNotEnabled'
+                    InstanceName          = 'MSSQLSERVER'
                 }
 
                 $mockErrorRecord = Get-InvalidOperationRecord -Message (
@@ -617,7 +617,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                 $ServerName -eq 'ServerNotEnabled'
             } -Times 1 -Exactly
 
-            Should -Invoke -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+            Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
         }
     }
 
@@ -631,7 +631,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
 
             Mock -CommandName Connect-SQL -MockWith {
                 return $mockServerObject
-             } -ParameterFilter {
+            } -ParameterFilter {
                 $ServerName -eq 'ServerWithoutEndpoint'
             }
         }
@@ -639,10 +639,10 @@ Describe 'SqlAGReplica\Set-TargetResource' {
         It 'Should throw the correct error' { # cSpell: disable-line
             InModuleScope -ScriptBlock {
                 $setTargetResourceParameters = @{
-                    Name                          = 'ServerWithoutEndpoint'
-                    AvailabilityGroupName         = 'AG_PrimaryOnServer2'
-                    ServerName                    = 'ServerWithoutEndpoint'
-                    InstanceName                  = 'MSSQLSERVER'
+                    Name                  = 'ServerWithoutEndpoint'
+                    AvailabilityGroupName = 'AG_PrimaryOnServer2'
+                    ServerName            = 'ServerWithoutEndpoint'
+                    InstanceName          = 'MSSQLSERVER'
                 }
 
                 $mockErrorRecord = Get-ObjectNotFoundRecord -Message (
@@ -656,7 +656,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                 $ServerName -eq 'ServerWithoutEndpoint'
             } -Times 1 -Exactly
 
-            Should -Invoke -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+            Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
         }
     }
 
@@ -666,7 +666,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             Mock -CommandName Update-AvailabilityGroupReplica
         }
 
-        It "Should create the availability group replica" {
+        It 'Should create the availability group replica' {
             InModuleScope -ScriptBlock {
                 $setTargetResourceParameters = @{
                     Name                          = 'Server1'
@@ -713,16 +713,16 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                 $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
             }
 
-            Should -Invoke -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
-            Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
-            Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 1 -Exactly
+            Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-            Should -Invoke -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
+            Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
         }
 
         Context 'When the endpoint hostname is not defined' {
-            It "Should create the availability group replica" {
+            It 'Should create the availability group replica' {
                 InModuleScope -ScriptBlock {
                     $setTargetResourceParameters = @{
                         Name                          = 'Server1'
@@ -769,17 +769,17 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
-                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
             }
         }
 
         Context 'When primary replica server is incorrectly supplied and the availability group exists' {
-            It "Should create the availability group replica" {
+            It 'Should create the availability group replica' {
                 InModuleScope -ScriptBlock {
                     $setTargetResourceParameters = @{
                         Name                          = 'Server1'
@@ -826,11 +826,11 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
-                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
             }
         }
@@ -842,7 +842,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                 }
             }
 
-            It "Should throw the correct error" {
+            It 'Should throw the correct error' {
                 InModuleScope -ScriptBlock {
                     $setTargetResourceParameters = @{
                         Name                          = 'Server1'
@@ -894,11 +894,11 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
             }
         }
@@ -910,7 +910,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                 }
             }
 
-            It "Should throw the correct error" {
+            It 'Should throw the correct error' {
                 InModuleScope -ScriptBlock {
                     $setTargetResourceParameters = @{
                         Name                          = 'Server1'
@@ -962,17 +962,17 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
-                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 1 -Exactly
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
             }
         }
 
         Context 'When the availability group does not exist on the primary replica' {
-            It "Should throw the correct error" {
+            It 'Should throw the correct error' {
                 InModuleScope -ScriptBlock {
                     $setTargetResourceParameters = @{
                         Name                          = 'Server1'
@@ -1024,11 +1024,11 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
             }
         }
@@ -1088,44 +1088,44 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
             }
         }
 
         Context 'When property <MockPropertyName> is not in desired state' -ForEach @(
             @{
-                MockPropertyName = 'AvailabilityMode'
+                MockPropertyName  = 'AvailabilityMode'
                 MockPropertyValue = 'SynchronousCommit'
             }
             @{
-                MockPropertyName = 'BackupPriority'
+                MockPropertyName  = 'BackupPriority'
                 MockPropertyValue = 60
             }
             @{
-                MockPropertyName = 'ConnectionModeInPrimaryRole'
+                MockPropertyName  = 'ConnectionModeInPrimaryRole'
                 MockPropertyValue = 'AllowReadWriteConnections'
             }
             @{
-                MockPropertyName = 'ConnectionModeInSecondaryRole'
+                MockPropertyName  = 'ConnectionModeInSecondaryRole'
                 MockPropertyValue = 'AllowReadIntentConnectionsOnly'
             }
             @{
-                MockPropertyName = 'FailoverMode'
+                MockPropertyName  = 'FailoverMode'
                 MockPropertyValue = 'Automatic'
             }
             @{
-                MockPropertyName = 'ReadOnlyRoutingConnectionUrl'
+                MockPropertyName  = 'ReadOnlyRoutingConnectionUrl'
                 MockPropertyValue = 'TCP://TestHost.domain.com:1433'
             }
             @{
-                MockPropertyName = 'ReadOnlyRoutingList'
+                MockPropertyName  = 'ReadOnlyRoutingList'
                 MockPropertyValue = @('Server2', 'Server1')
             }
             @{
-                MockPropertyName = 'EndpointHostName'
+                MockPropertyName  = 'EndpointHostName'
                 MockPropertyValue = 'AnotherEndpointHostName'
             }
         ) {
@@ -1134,7 +1134,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                 Mock -CommandName Update-AvailabilityGroupReplica
             }
 
-            It "Should set the property to the desired state" {
+            It 'Should set the property to the desired state' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $setTargetResourceParameters = @{
                         Name                          = 'Server1'
@@ -1183,11 +1183,11 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Update-AvailabilityGroupReplica -ParameterFilter {
                     switch ($MockPropertyName)
                     {
@@ -1216,7 +1216,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                             $AvailabilityGroupReplica.$MockPropertyName -eq $MockPropertyValue
                         }
                     }
-                } -Scope It -Times 1 -Exactly
+                } -Exactly -Times 1 -Scope It
             }
         }
 
@@ -1264,18 +1264,18 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             It 'Should set the replica''s endpoint URL to use the same port as the endpoint' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $setTargetResourceParameters = @{
-                        Name                          = 'Server10'
-                        AvailabilityGroupName         = 'AG_AllServers'
-                        ServerName                    = 'Server10'
-                        InstanceName                  = 'MSSQLSERVER'
-                        Ensure                        = 'Present'
-                        EndpointHostName              = 'Server10'
+                        Name                  = 'Server10'
+                        AvailabilityGroupName = 'AG_AllServers'
+                        ServerName            = 'Server10'
+                        InstanceName          = 'MSSQLSERVER'
+                        Ensure                = 'Present'
+                        EndpointHostName      = 'Server10'
                     }
 
                     { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
                 }
 
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
             }
         }
 
@@ -1323,190 +1323,331 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             It 'Should set the replica''s endpoint URL to use the same port as the endpoint' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $setTargetResourceParameters = @{
-                        Name                          = 'Server10'
-                        AvailabilityGroupName         = 'AG_AllServers'
-                        ServerName                    = 'Server10'
-                        InstanceName                  = 'MSSQLSERVER'
-                        Ensure                        = 'Present'
-                        EndpointHostName              = 'Server10'
+                        Name                  = 'Server10'
+                        AvailabilityGroupName = 'AG_AllServers'
+                        ServerName            = 'Server10'
+                        InstanceName          = 'MSSQLSERVER'
+                        Ensure                = 'Present'
+                        EndpointHostName      = 'Server10'
                     }
 
                     { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
                 }
 
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
+                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
             }
         }
     }
 }
 
-# Describe 'SqlAGReplica\Test-TargetResource' {
+Describe 'SqlAGReplica\Test-TargetResource' {
+    Context 'When the system is in the desired state' {
+        Context 'When the Availability Replica should be absent' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    @{
+                        Name                  = 'Server1'
+                        AvailabilityGroupName = 'AG_AllServers'
+                        ServerName            = 'Server1'
+                        InstanceName          = 'MSSQLSERVER'
+                        Ensure                = 'Absent'
+                    }
+                }
+            }
 
-#     BeforeEach {
-#         $mockAlternateEndpointPort = $false
-#         $mockAlternateEndpointProtocol = $false
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters = @{
+                        Ensure                = 'Absent'
+                        Name                  = 'Server1'
+                        AvailabilityGroupName = 'AG_AllServers'
+                        ServerName            = 'Server1'
+                        InstanceName          = 'MSSQLSERVER'
+                    }
 
-#         $testTargetResourceParameters = @{
-#             Name                          = 'Server1'
-#             AvailabilityGroupName         = 'AG_AllServers'
-#             ServerName                    = 'Server1'
-#             InstanceName                  = 'MSSQLSERVER'
-#             PrimaryReplicaServerName      = 'Server2'
-#             PrimaryReplicaInstanceName    = 'MSSQLSERVER'
-#             Ensure                        = 'Present'
-#             AvailabilityMode              = 'AsynchronousCommit'
-#             BackupPriority                = 50
-#             ConnectionModeInPrimaryRole   = 'AllowAllConnections'
-#             ConnectionModeInSecondaryRole = 'AllowNoConnections'
-#             EndpointHostName              = 'Server1'
-#             FailoverMode                  = 'Manual'
-#             ReadOnlyRoutingConnectionUrl  = 'TCP://Server1.domain.com:1433'
-#             ReadOnlyRoutingList           = @('Server1', 'Server2')
-#             ProcessOnlyOnActiveNode       = $false
-#         }
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
+                }
 
-#         Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer1
-#         Mock -CommandName Test-ActiveNode -MockWith {
-#             return -not $false
-#         }
-#     }
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
 
-#     Context 'When the desired state is absent' {
+        Context 'When the Availability Replica should be present' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    @{
+                        Name                  = 'Server1'
+                        AvailabilityGroupName = 'AG_AllServers'
+                        ServerName            = 'Server1'
+                        InstanceName          = 'MSSQLSERVER'
+                        Ensure                = 'Present'
+                        EndpointPort          = '5022'
+                        EndpointUrl           = 'TCP://Server1:5022'
+                    }
+                }
+            }
 
-#         It 'Should return $true when the Availability Replica is absent' {
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters = @{
+                        Name                  = 'Server1'
+                        AvailabilityGroupName = 'AG_AllServers'
+                        ServerName            = 'Server1'
+                        InstanceName          = 'MSSQLSERVER'
+                    }
 
-#             $testTargetResourceParameters.Name = 'Server2'
-#             $testTargetResourceParameters.AvailabilityGroupName = 'AG_PrimaryOnServer2'
-#             $testTargetResourceParameters.Ensure = 'Absent'
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
+                }
 
-#             Test-TargetResource @testTargetResourceParameters | Should -Be $true
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+    }
 
-#             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#         }
+    Context 'When the system is not in the desired state' {
+        Context 'When the Availability Replica should be absent' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    @{
+                        Name                  = 'Server1'
+                        AvailabilityGroupName = 'AG_AllServers'
+                        ServerName            = 'Server1'
+                        InstanceName          = 'MSSQLSERVER'
+                        Ensure                = 'Present'
+                        EndpointPort          = '5022'
+                        EndpointUrl           = 'TCP://Server1:5022'
+                    }
+                }
+            }
 
-#         It 'Should return $false when the Availability Replica is present' {
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters = @{
+                        Ensure                = 'Absent'
+                        Name                  = 'Server1'
+                        AvailabilityGroupName = 'AG_AllServers'
+                        ServerName            = 'Server1'
+                        InstanceName          = 'MSSQLSERVER'
+                    }
 
-#             $testTargetResourceParameters.Ensure = 'Absent'
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
+                }
 
-#             Test-TargetResource @testTargetResourceParameters | Should -Be $false
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
 
-#             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#         }
-#     }
+        Context 'When the Availability Replica should be present' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    @{
+                        Name                  = 'Server1'
+                        AvailabilityGroupName = 'AG_AllServers'
+                        ServerName            = 'Server1'
+                        InstanceName          = 'MSSQLSERVER'
+                        Ensure                = 'Absent'
+                    }
+                }
+            }
 
-#     Context 'When the desired state is present' {
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters = @{
+                        Name                  = 'Server1'
+                        AvailabilityGroupName = 'AG_AllServers'
+                        ServerName            = 'Server1'
+                        InstanceName          = 'MSSQLSERVER'
+                    }
 
-#         BeforeAll {
-#             $propertiesToCheck = @{
-#                 AvailabilityMode              = 'SynchronousCommit'
-#                 BackupPriority                = 42
-#                 ConnectionModeInPrimaryRole   = 'AllowReadWriteConnections'
-#                 ConnectionModeInSecondaryRole = 'AllowReadIntentConnectionsOnly'
-#                 FailoverMode                  = 'Automatic'
-#                 ReadOnlyRoutingConnectionUrl  = 'WrongUrl'
-#                 ReadOnlyRoutingList           = @('WrongServer')
-#             }
-#         }
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
+                }
 
-#         It "Should return $true when the Availability Replica is present all properties are in the desired state" {
-#             Test-TargetResource @testTargetResourceParameters | Should -Be $true
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
 
-#             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#             Should -Invoke -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-#         }
+        Context 'When enforcing the state shall happen only when the node is the active node' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    @{
+                        Name                  = 'Server1'
+                        AvailabilityGroupName = 'AG_AllServers'
+                        ServerName            = 'Server1'
+                        InstanceName          = 'MSSQLSERVER'
+                        Ensure                = 'Present'
+                        EndpointPort          = '5022'
+                        EndpointUrl           = 'TCP://Server1:5022'
+                        IsActiveNode          = $false
+                    }
+                }
+            }
 
-#         It 'Should return $false when the Availability Replica is absent' {
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters = @{
+                        Ensure                  = 'Absent'
+                        Name                    = 'Server1'
+                        AvailabilityGroupName   = 'AG_AllServers'
+                        ServerName              = 'Server1'
+                        InstanceName            = 'MSSQLSERVER'
+                        ProcessOnlyOnActiveNode = $true
+                    }
 
-#             $testTargetResourceParameters.Name = 'Server2'
-#             $testTargetResourceParameters.AvailabilityGroupName = 'AG_PrimaryOnServer2'
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
+                }
 
-#             Test-TargetResource @testTargetResourceParameters | Should -Be $false
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
 
-#             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#             Should -Invoke -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-#         }
+        Context 'When property <MockPropertyName> is not in desired state' -ForEach @(
+            @{
+                MockPropertyName  = 'EndpointHostName'
+                MockPropertyValue = 'Server2'
+            }
+            @{
+                MockPropertyName  = 'AvailabilityMode'
+                MockPropertyValue = 'SynchronousCommit'
+            }
+            @{
+                MockPropertyName  = 'BackupPriority'
+                MockPropertyValue = 60
+            }
+            @{
+                MockPropertyName  = 'ConnectionModeInPrimaryRole'
+                MockPropertyValue = 'AllowReadWriteConnections'
+            }
+            @{
+                MockPropertyName  = 'ConnectionModeInSecondaryRole'
+                MockPropertyValue = 'AllowReadIntentConnectionsOnly'
+            }
+            @{
+                MockPropertyName  = 'FailoverMode'
+                MockPropertyValue = 'Automatic'
+            }
+            @{
+                MockPropertyName  = 'ReadOnlyRoutingConnectionUrl'
+                MockPropertyValue = 'TCP://WrongHostname.domain.com:1433'
+            }
+            @{
+                MockPropertyName  = 'ReadOnlyRoutingList'
+                MockPropertyValue = @('Server2', 'Server1')
+            }
+        ) {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    @{
+                        Name                          = 'Server1'
+                        AvailabilityGroupName         = 'AG_AllServers'
+                        ServerName                    = 'Server1'
+                        InstanceName                  = 'MSSQLSERVER'
+                        Ensure                        = 'Present'
+                        PrimaryReplicaServerName      = 'Server2'
+                        PrimaryReplicaInstanceName    = 'MSSQLSERVER'
+                        AvailabilityMode              = 'AsynchronousCommit'
+                        BackupPriority                = 50
+                        ConnectionModeInPrimaryRole   = 'AllowAllConnections'
+                        ConnectionModeInSecondaryRole = 'AllowNoConnections'
+                        EndpointHostName              = 'Server1'
+                        FailoverMode                  = 'Manual'
+                        ReadOnlyRoutingConnectionUrl  = 'TCP://Server1.domain.com:1433'
+                        ReadOnlyRoutingList           = @('Server1', 'Server2')
 
-#         It 'Should return $true when the Availability Replica is present' {
+                        # Read properties
+                        EndpointPort                  = '5022'
+                        EndpointUrl                   = 'TCP://Server1:5022'
+                        IsActiveNode                  = $true
+                    }
+                }
+            }
 
-#             Test-TargetResource @testTargetResourceParameters | Should -Be $true
+            It 'Should return $false' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $mockTestTargetResourceParameters = @{
+                        Name                    = 'Server1'
+                        AvailabilityGroupName   = 'AG_AllServers'
+                        ServerName              = 'Server1'
+                        InstanceName            = 'MSSQLSERVER'
+                        ProcessOnlyOnActiveNode = $true
+                    }
 
-#             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#             Should -Invoke -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-#         }
+                    $mockTestTargetResourceParameters.$MockPropertyName = $MockPropertyValue
 
-#         foreach ( $propertyToCheck in $propertiesToCheck.GetEnumerator() )
-#         {
-#             It "Should return $false when the Availability Replica is present and the property '$($propertyToCheck.Key)' is not in the desired state" {
-#                 $testTargetResourceParameters.($propertyToCheck.Key) = $propertyToCheck.Value
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
+                }
 
-#                 Test-TargetResource @testTargetResourceParameters | Should -Be $false
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
 
-#                 Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#                 Should -Invoke -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-#             }
-#         }
+        Context 'When endpoint port differ from the endpoint URL port' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    @{
+                        Name                          = 'Server1'
+                        AvailabilityGroupName         = 'AG_AllServers'
+                        ServerName                    = 'Server1'
+                        InstanceName                  = 'MSSQLSERVER'
+                        Ensure                        = 'Present'
 
-#         It 'Should return $false when the Availability Replica is present and the Availability Mode is not in the desired state' {
+                        # Read properties
+                        EndpointPort                  = '5022'
+                        EndpointUrl                   = 'TCP://Server1:1433'
+                        IsActiveNode                  = $true
+                    }
+                }
+            }
 
-#             $testTargetResourceParameters.AvailabilityMode = 'SynchronousCommit'
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters = @{
+                        Name                    = 'Server1'
+                        AvailabilityGroupName   = 'AG_AllServers'
+                        ServerName              = 'Server1'
+                        InstanceName            = 'MSSQLSERVER'
+                        ProcessOnlyOnActiveNode = $true
+                    }
 
-#             Test-TargetResource @testTargetResourceParameters | Should -Be $false
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
+                }
 
-#             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#             Should -Invoke -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-#         }
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
 
-#         It 'Should return $true when the Availability Replica is present and the Endpoint Hostname is not specified' {
+        Context 'When endpoint protocol differ from the endpoint URL protocol' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    @{
+                        Name                          = 'Server1'
+                        AvailabilityGroupName         = 'AG_AllServers'
+                        ServerName                    = 'Server1'
+                        InstanceName                  = 'MSSQLSERVER'
+                        Ensure                        = 'Present'
 
-#             $testTargetResourceParameters.EndpointHostName = ''
+                        # Read properties
+                        EndpointPort                  = '5022'
+                        EndpointUrl                   = 'UDP://Server1:5022'
+                        IsActiveNode                  = $true
+                    }
+                }
+            }
 
-#             Test-TargetResource @testTargetResourceParameters | Should -Be $true
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters = @{
+                        Name                    = 'Server1'
+                        AvailabilityGroupName   = 'AG_AllServers'
+                        ServerName              = 'Server1'
+                        InstanceName            = 'MSSQLSERVER'
+                        ProcessOnlyOnActiveNode = $true
+                    }
 
-#             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#             Should -Invoke -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-#         }
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
+                }
 
-#         It 'Should return $false when the Availability Replica is present and the Endpoint Hostname is not in the desired state' {
-
-#             $testTargetResourceParameters.EndpointHostName = 'OtherHostName'
-
-#             Test-TargetResource @testTargetResourceParameters | Should -Be $false
-
-#             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#             Should -Invoke -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-#         }
-
-#         It 'Should return $false when the Availability Replica is present and the Endpoint Protocol is not in the desired state' {
-
-#             $mockAlternateEndpointProtocol = $true
-
-#             Test-TargetResource @testTargetResourceParameters | Should -Be $false
-
-#             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#             Should -Invoke -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-#         }
-
-#         It 'Should return $false when the Availability Replica is present and the Endpoint Port is not in the desired state' {
-
-#             $mockAlternateEndpointPort = $true
-
-#             Test-TargetResource @testTargetResourceParameters | Should -Be $false
-
-#             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#             Should -Invoke -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-
-#             $mockAlternateEndpointPort = $false
-#         }
-
-#         It 'Should return $true when ProcessOnlyOnActiveNode is "$true" and the current node is not actively hosting the instance' {
-#             $false = $true
-
-#             $testTargetResourceParameters.ProcessOnlyOnActiveNode = $false
-
-#             Test-TargetResource @testTargetResourceParameters | Should -Be $true
-
-#             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-#             Should -Invoke -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-#         }
-#     }
-# }
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+}
