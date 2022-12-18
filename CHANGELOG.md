@@ -10,15 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Removed `Assert-ElevatedUser` from private functions - [Issue #1797](https://github.com/dsccommunity/SqlServerDsc/issues/1797)
     - `Assert-ElevatedUser` added to _DscResource.Common_ public functions - [Issue #82](https://github.com/dsccommunity/DscResource.Common/issues/82)
+  - Removed `Test-IsNumericType` from private functions - [Issue #1795](https://github.com/dsccommunity/SqlServerDsc/issues/1795)
+    - `Test-IsNumericType` added to _DscResource.Common_ public functions - [Issue #87](https://github.com/dsccommunity/DscResource.Common/issues/87)
 
 ### Added
 
 - SqlServerDsc
   - The following private functions were added to the module (see comment-based
     help for more information):
-    - `Assert-ElevatedUser`
     - `Assert-RequiredCommandParameter`
-    - `Test-IsNumericType`
     - `Assert-SetupActionProperties`
     - `Invoke-SetupAction`
   - The following public functions were added to the module (see comment-based
