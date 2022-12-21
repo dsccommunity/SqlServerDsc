@@ -5,14 +5,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- SqlServerDsc
+  - Removed `Assert-ElevatedUser` from private functions - [Issue #1797](https://github.com/dsccommunity/SqlServerDsc/issues/1797)
+    - `Assert-ElevatedUser` added to _DscResource.Common_ public functions - [Issue #82](https://github.com/dsccommunity/DscResource.Common/issues/82)
+  - Removed `Test-IsNumericType` from private functions - [Issue #1795](https://github.com/dsccommunity/SqlServerDsc/issues/1795)
+    - `Test-IsNumericType` added to _DscResource.Common_ public functions - [Issue #87](https://github.com/dsccommunity/DscResource.Common/issues/87)
+
 ### Added
 
 - SqlServerDsc
   - The following private functions were added to the module (see comment-based
     help for more information):
-    - `Assert-ElevatedUser`
     - `Assert-RequiredCommandParameter`
-    - `Test-IsNumericType`
     - `Assert-SetupActionProperties`
     - `Invoke-SetupAction`
   - The following public functions were added to the module (see comment-based
@@ -47,12 +53,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Update Stale GitHub Action to v7.
   - Update to build module in separate folder under `output`.
+  - Moved the build step of the pipeline to a Windows build worker when
+    running in Azure DevOps.
+- `Install-SqlServerDsc`
+  - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
+- SqlAgReplica
+  - Converted unit test to Pester 5.
 
 ### Fixed
 
 - SqlServerDsc
   - Localized strings file `en-US/SqlServerDsc.strings.psd1` no longer
     referencing the wrong module in a comment.
+- SqlAGReplica
+  - No longer tries to enforce EndpointHostName when it is not part of the
+    configuration ([issue #1821](https://github.com/dsccommunity/SqlServerDsc/issues/1821)).
+  - Now `Get-TargetResource` always returns values for the properties `Name`
+    and `AvailabilityGroupName` ([issue #1822](https://github.com/dsccommunity/SqlServerDsc/issues/1822)).
+  - Now `Test-TargetResource` no longer test properties that cannot
+    be enforced ([issue #1822](https://github.com/dsccommunity/SqlServerDsc/issues/1822)).
 
 ## [16.0.0] - 2022-09-09
 
