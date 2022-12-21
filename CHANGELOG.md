@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - SqlServerDsc
-  - Update Stale GitHub Action to v6.
+  - Update Stale GitHub Action to v7.
   - Update to build module in separate folder under `output`.
 
 ### Fixed
