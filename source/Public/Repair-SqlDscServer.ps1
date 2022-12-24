@@ -81,7 +81,7 @@ function Repair-SqlDscServer
             'SNAC_SDK', # Part of parent feature Tools (cspell: disable-line)
             'SDK', # Part of parent feature Tools
             'LocalDB', # Part of parent feature Tools
-            'ARC'
+            'AZUREEXTENSION'
         )]
         [System.String[]]
         $Features,

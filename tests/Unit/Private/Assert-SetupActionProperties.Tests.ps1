@@ -326,7 +326,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
         }
     }
 
-    Context 'When specifying feature ''ARC'' and required parameter ''<MockMissingParameterName>'' is missing' -ForEach @(
+    Context 'When specifying feature ''AZUREEXTENSION'' and required parameter ''<MockMissingParameterName>'' is missing' -ForEach @(
         @{
             MockParameters = @{
                 AzureResourceGroup = 'Value'
@@ -393,7 +393,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                 {
                     $MockParameters.Features = @(
                         'SQLENGINE'
-                        'ARC'
+                        'AZUREEXTENSION'
                         'AS'
                     )
 
