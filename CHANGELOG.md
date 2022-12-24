@@ -47,6 +47,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added compatibility levels for SQL Server 2022 (major version 16).
 - SqlSetup
   - Paths for SQL Server 2022 are correctly returned by Get.
+- The public commands `Add-SqlDscNode`, `Complete-SqlDscFailoverCluster`,
+  `Complete-SqlDscImage`, `Install-SqlDscServer`, and `Repair-SqlDscServer`
+  now support the setup argument `ProductCoveredBySA`.
 
 ### Changed
 
@@ -59,6 +62,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
 - SqlAgReplica
   - Converted unit test to Pester 5.
+- Private function `Invoke-SetupAction`
+  - Was changed to support the SQL Server 2022 GA feature `AzureExtension`
+    (that replaced the feature name `ARC`).
+  - Support the setup argument `ProductCoveredBySA`.
+  - No longer supports the argument `OnBoardSQLToARC` as it was removed in
+    SQL Server 2022 GA.
+- `Install-SqlDscServer`
+  - Was changed to support the SQL Server 2022 GA feature `AzureExtension`
+    (that replaced the feature name `ARC`).
+- `Uninstall-SqlDscServer`
+  - Was changed to support the SQL Server 2022 GA feature `AzureExtension`
+    (that replaced the feature name `ARC`).
 
 ### Fixed
 
