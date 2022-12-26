@@ -358,7 +358,7 @@ function Invoke-SetupAction
             'SNAC_SDK', # Part of parent feature Tools (cspell: disable-line)
             'SDK', # Part of parent feature Tools
             'LocalDB', # Part of parent feature Tools
-            'ARC'
+            'AZUREEXTENSION'
         )]
         [System.String[]]
         $Features,
@@ -1046,6 +1046,18 @@ function Invoke-SetupAction
         [System.String[]]
         $SkipRules,
 
+        [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
+        [Parameter(ParameterSetName = 'CompleteImage')]
+        [Parameter(ParameterSetName = 'Upgrade')]
+        [Parameter(ParameterSetName = 'InstallFailoverCluster')]
+        [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
+        [Parameter(ParameterSetName = 'CompleteFailoverCluster')]
+        [Parameter(ParameterSetName = 'AddNode')]
+        [Parameter(ParameterSetName = 'EditionUpgrade')]
+        [System.Management.Automation.SwitchParameter]
+        $ProductCoveredBySA,
+
         [Parameter()]
         [System.UInt32]
         $Timeout = 7200,
@@ -1079,7 +1091,7 @@ function Invoke-SetupAction
                 For this setup action the parameter Features is not part of the
                 parameter set, so this can be safely set.
             #>
-            $PSBoundParameters.Features = @('ARC')
+            $PSBoundParameters.Features = @('AZUREEXTENSION')
 
             break
         }
@@ -1185,11 +1197,6 @@ function Invoke-SetupAction
             { $_ -in @('FEATURES', 'ROLE') }
             {
                 $setupArgument += '={0}' -f ($PSBoundParameters.$parameterName.ToUpper() -join ',')
-
-                if ($PSBoundParameters.Features -contains 'ARC' -and $PSBoundParameters.Features -contains 'SQLENGINE')
-                {
-                    $setupArgument += ' /ONBOARDSQLTOARC' # cspell: disable-line
-                }
 
                 break
             }

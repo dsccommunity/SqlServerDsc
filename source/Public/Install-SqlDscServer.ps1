@@ -241,7 +241,7 @@ function Install-SqlDscServer
             'SNAC_SDK', # Part of parent feature Tools (cspell: disable-line)
             'SDK', # Part of parent feature Tools
             'LocalDB', # Part of parent feature Tools
-            'ARC'
+            'AZUREEXTENSION'
         )]
         [System.String[]]
         $Features,
@@ -818,6 +818,15 @@ function Install-SqlDscServer
         [Parameter(ParameterSetName = 'EditionUpgrade')]
         [System.String[]]
         $SkipRules,
+
+        [Parameter(ParameterSetName = 'Install')]
+        [Parameter(ParameterSetName = 'InstallRole')]
+        [Parameter(ParameterSetName = 'Upgrade')]
+        [Parameter(ParameterSetName = 'InstallFailoverCluster')]
+        [Parameter(ParameterSetName = 'PrepareFailoverCluster')]
+        [Parameter(ParameterSetName = 'EditionUpgrade')]
+        [System.Management.Automation.SwitchParameter]
+        $ProductCoveredBySA,
 
         [Parameter()]
         [System.UInt32]

@@ -106,8 +106,8 @@ function Assert-SetupActionProperties
         }
     }
 
-    # If feature ARC is specified then the all the Azure* parameters must be set (except AzureArcProxy).
-    if ($Property.ContainsKey('Features') -and $Property.Features -contains 'ARC')
+    # If feature AzureExtension is specified then the all the Azure* parameters must be set (except AzureArcProxy).
+    if ($Property.ContainsKey('Features') -and $Property.Features -contains 'AZUREEXTENSION') # cSpell: disable-line
     {
         Assert-RequiredCommandParameter -BoundParameter $Property -RequiredParameter @(
             'AzureSubscriptionId'
@@ -116,6 +116,7 @@ function Assert-SetupActionProperties
             'AzureTenantId'
             'AzureServicePrincipal'
             'AzureServicePrincipalSecret'
+            'ProductCoveredBySA'
         )
     }
 

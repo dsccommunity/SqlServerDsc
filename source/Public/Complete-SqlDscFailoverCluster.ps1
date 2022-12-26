@@ -184,6 +184,10 @@ function Complete-SqlDscFailoverCluster
         $ConfirmIPDependencyChange,
 
         [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $ProductCoveredBySA,
+
+        [Parameter()]
         [System.UInt32]
         $Timeout = 7200,
 
