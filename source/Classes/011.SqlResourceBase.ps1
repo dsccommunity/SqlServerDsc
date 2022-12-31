@@ -46,7 +46,8 @@ class SqlResourceBase : ResourceBase
     [Reason[]]
     $Reasons
 
-    SqlResourceBase () : base ()
+    # Passing the module's base directory to the base constructor.
+    SqlResourceBase () : base ($PSScriptRoot)
     {
         $this.SqlServerObject = $null
     }

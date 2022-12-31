@@ -407,7 +407,7 @@ class SqlAudit : SqlResourceBase
                         }
 
                         # Get all optional properties that has an assigned value.
-                        $assignedOptionalDscProperties = $this | Get-DscProperty -HasValue -Type 'Optional' -ExcludeName @(
+                        $assignedOptionalDscProperties = $this | Get-DscProperty -HasValue -Attribute 'Optional' -ExcludeName @(
                             # Remove optional properties that is not an audit property.
                             'ServerName'
                             'Ensure'
@@ -565,7 +565,7 @@ class SqlAudit : SqlResourceBase
     hidden [System.Object] CreateAudit()
     {
         # Get all properties that has an assigned value.
-        $assignedDscProperties = $this | Get-DscProperty -HasValue -Type @(
+        $assignedDscProperties = $this | Get-DscProperty -HasValue -Attribute @(
             'Key'
             'Optional'
         ) -ExcludeName @(

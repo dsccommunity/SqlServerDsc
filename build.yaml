@@ -75,6 +75,12 @@ NestedModule:
     AddToManifest: false
     Exclude: PSGetModuleInfo.xml
 
+  DscResource.Base:
+    CopyOnly: true
+    Path: ./output/RequiredModules/DscResource.Base
+    AddToManifest: false
+    Exclude: PSGetModuleInfo.xml
+
 ####################################################
 #          Pester Configuration (Sampler)          #
 ####################################################

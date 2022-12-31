@@ -12,6 +12,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Assert-ElevatedUser` added to _DscResource.Common_ public functions - [Issue #82](https://github.com/dsccommunity/DscResource.Common/issues/82)
   - Removed `Test-IsNumericType` from private functions - [Issue #1795](https://github.com/dsccommunity/SqlServerDsc/issues/1795)
     - `Test-IsNumericType` added to _DscResource.Common_ public functions - [Issue #87](https://github.com/dsccommunity/DscResource.Common/issues/87)
+  - Removed private function `Test-ResourceDscPropertyIsAssigned` and
+    `Test-ResourceHasDscProperty`. Both are replaced by `Test-DscProperty`
+    which is now part of the module _DscResource.Common_.
+  - Removed private function `Get-DscProperty`. It is replaced by `Get-DscProperty`
+    which is now part of the module _DscResource.Common_.
+  - The class `ResourceBase` and `Reason` has been removed, they are now
+    part of the module _DscResource.Base_.
+  - The enum `Ensure` has been removed, is is now part of the module
+    _DscResource.Base_.
+  - The private functions that the class `ResourceBase` depended on has been
+    moved to the module _DscResource.Base_.
+    - `ConvertFrom-CompareResult`
+    - `ConvertTo-Reason`
+    - `Get-ClassName`
+    - `Get-LocalizedDataRecursive`
 
 ### Added
 
@@ -58,6 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update to build module in separate folder under `output`.
   - Moved the build step of the pipeline to a Windows build worker when
     running in Azure DevOps.
+  - Class-based resources now uses the parent class `ResourceBase` from the
+    module _DscResource.Base_.
 - `Install-SqlServerDsc`
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
 - SqlAgReplica

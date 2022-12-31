@@ -27,14 +27,18 @@
     Sampler                        = 'latest'
     'Sampler.GitHubTasks'          = 'latest'
     MarkdownLinkCheck              = 'latest'
-    'DscResource.Common'           = 'latest'
     'DscResource.Test'             = 'latest'
     xDscResourceDesigner           = 'latest'
     'DscResource.DocGenerator'     = 'latest'
 
+    # Build dependencies needed for using the module
+    'DscResource.Base'             = 'latest'
+    'DscResource.Common'           = 'latest'
+
     # Analyzer rules
     'DscResource.AnalyzerRules'    = 'latest'
     'Indented.ScriptAnalyzerRules' = 'latest'
+
 
     # Dependency for integration tests
     LoopbackAdapter                = 'latest'
