@@ -74,7 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Moved the build step of the pipeline to a Windows build worker when
     running in Azure DevOps.
   - Class-based resources now uses the parent class `ResourceBase` from the
-    module _DscResource.Base_.
+    module _DscResource.Base_ ([issue #1790](https://github.com/dsccommunity/SqlServerDsc/issues/1790)).
 - `Install-SqlServerDsc`
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
 - SqlAgReplica
