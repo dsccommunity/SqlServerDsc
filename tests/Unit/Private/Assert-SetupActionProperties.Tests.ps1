@@ -310,7 +310,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
         }
      ) {
         BeforeAll {
-            Mock -CommandName Test-ServiceAccountRequirePassword -MockWith {
+            Mock -CommandName Test-AccountRequirePassword -MockWith {
                 return $false
             }
         }

@@ -42,12 +42,12 @@ function Assert-SetupActionProperties
     $assertParameters = @('PBStartPortRange', 'PBEndPortRange')
 
     $assertRequiredCommandParameterParameters = @{
-        BoundParameter = $Property
+        BoundParameterList = $Property
         RequiredParameter = $assertParameters
         IfParameterPresent = $assertParameters
     }
 
-    Assert-RequiredCommandParameter @assertRequiredCommandParameterParameters
+    Assert-BoundParameter @assertRequiredCommandParameterParameters
 
     # The parameter UseSqlRecommendedMemoryLimits is mutually exclusive to SqlMinMemory and SqlMaxMemory.
     Assert-BoundParameter -BoundParameterList $Property -MutuallyExclusiveList1 @(
@@ -60,7 +60,7 @@ function Assert-SetupActionProperties
     # If Role is set to SPI_AS_NewFarm then the specific parameters are required.
     if ($Property.ContainsKey('Role') -and $Property.Role -eq 'SPI_AS_NewFarm')
     {
-        Assert-RequiredCommandParameter -BoundParameter $Property -RequiredParameter @(
+        Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @(
             'FarmAccount'
             'FarmPassword'
             'Passphrase'
@@ -71,13 +71,13 @@ function Assert-SetupActionProperties
     # If the parameter SecurityMode is set to 'SQL' then the parameter SAPwd is required.
     if ($Property.ContainsKey('SecurityMode') -and $Property.SecurityMode -eq 'SQL')
     {
-        Assert-RequiredCommandParameter -BoundParameter $Property -RequiredParameter @('SAPwd')
+        Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @('SAPwd')
     }
 
     # If the parameter FileStreamLevel is set and is greater or equal to 2 then the parameter FileStreamShareName is required.
     if ($Property.ContainsKey('FileStreamLevel') -and $Property.FileStreamLevel -ge 2)
     {
-        Assert-RequiredCommandParameter -BoundParameter $Property -RequiredParameter @('FileStreamShareName')
+        Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @('FileStreamShareName')
     }
 
     # If a *SvcAccount is specified then the accompanying *SvcPassword must be set unless it is a (global) managed service account, virtual account, or a built-in account.
@@ -97,11 +97,11 @@ function Assert-SetupActionProperties
         if ($currentAccountProperty -in $Property.Keys)
         {
             # If not (global) managed service account, virtual account, or a built-in account.
-            if ((Test-ServiceAccountRequirePassword -Name $Property.$currentAccountProperty))
+            if ((Test-AccountRequirePassword -Name $Property.$currentAccountProperty))
             {
                 $assertPropertyName = $currentAccountProperty -replace 'Account', 'Password'
 
-                Assert-RequiredCommandParameter -BoundParameter $Property -RequiredParameter $assertPropertyName
+                Assert-BoundParameter -BoundParameterList $Property -RequiredParameter $assertPropertyName
             }
         }
     }
@@ -109,7 +109,7 @@ function Assert-SetupActionProperties
     # If feature AzureExtension is specified then the all the Azure* parameters must be set (except AzureArcProxy).
     if ($Property.ContainsKey('Features') -and $Property.Features -contains 'AZUREEXTENSION') # cSpell: disable-line
     {
-        Assert-RequiredCommandParameter -BoundParameter $Property -RequiredParameter @(
+        Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @(
             'AzureSubscriptionId'
             'AzureResourceGroup'
             'AzureRegion'
@@ -125,7 +125,7 @@ function Assert-SetupActionProperties
     {
         if ($Property.ContainsKey('Features') -and $Property.Features -contains 'SQLENGINE')
         {
-            Assert-RequiredCommandParameter -BoundParameter $Property -RequiredParameter @('AgtSvcAccount')
+            Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @('AgtSvcAccount')
         }
     }
 
@@ -134,24 +134,24 @@ function Assert-SetupActionProperties
         # The parameter ASSvcAccount is mandatory if feature AS is installed and setup action is InstallFailoverCluster, PrepareFailoverCluster, or AddNode.
         if ($Property.ContainsKey('Features') -and $Property.Features -contains 'AS')
         {
-            Assert-RequiredCommandParameter -BoundParameter $Property -RequiredParameter @('ASSvcAccount')
+            Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @('ASSvcAccount')
         }
 
         # The parameter SqlSvcAccount is mandatory if feature SQLENGINE is installed and setup action is InstallFailoverCluster, PrepareFailoverCluster, or AddNode.
         if ($Property.ContainsKey('Features') -and $Property.Features -contains 'SQLENGINE')
         {
-            Assert-RequiredCommandParameter -BoundParameter $Property -RequiredParameter @('SqlSvcAccount')
+            Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @('SqlSvcAccount')
         }
 
         # The parameter ISSvcAccount is mandatory if feature IS is installed and setup action is InstallFailoverCluster, PrepareFailoverCluster, or AddNode.
         if ($Property.ContainsKey('Features') -and $Property.Features -contains 'IS')
         {
-            Assert-RequiredCommandParameter -BoundParameter $Property -RequiredParameter @('ISSvcAccount')
+            Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @('ISSvcAccount')
         }
 
         if ($Property.ContainsKey('Features') -and $Property.Features -contains 'RS')
         {
-            Assert-RequiredCommandParameter -BoundParameter $Property -RequiredParameter @('RSSvcAccount')
+            Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @('RSSvcAccount')
         }
     }
 
