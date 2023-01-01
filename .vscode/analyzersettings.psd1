@@ -74,6 +74,7 @@
     # TODO: This is not excluded correctly, see test QA/ScriptAnalyzer.Tests.ps1 for more information.
     ExcludeRules        = @(
         'TypeNotFound'
+        'RequiresModuleInvalid' # Becuase 'using module' in prefix.ps1 cannot be resolved as source file.
     )
 
     Rules               = @{

@@ -105,6 +105,7 @@ Pester:
       OutputEncoding: ascii
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
+    - Modules/DscResource.Base
 
 ####################################################
 #      Pester Configuration (DscResource.Test)     #
@@ -127,6 +128,7 @@ DscTest:
       - output
     ExcludeModuleFile:
       - Modules/DscResource.Common
+      - Modules/DscResource.Base
       # Must exclude built module file because it should not be tested like MOF-based resources
       - SqlServerDsc.psm1
     MainGitBranch: main

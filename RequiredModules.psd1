@@ -39,7 +39,6 @@
     'DscResource.AnalyzerRules'    = 'latest'
     'Indented.ScriptAnalyzerRules' = 'latest'
 
-
     # Dependency for integration tests
     LoopbackAdapter                = 'latest'
     PSPKI                          = 'latest'
