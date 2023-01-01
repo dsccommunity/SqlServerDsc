@@ -1,0 +1,3 @@
+# https://github.com/microsoft/PullRequestQuantifier/blob/main/docs/prquantifier-yaml.md
+Excluded:
+- '*.md'
