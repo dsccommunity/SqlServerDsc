@@ -91,10 +91,6 @@ ConvertFrom-StringData @'
     Server_MediaPathNotFound = The specified media path does not exist or does not contain 'setup.exe'.
     Server_ConfigurationFileNotFound = The specified configuration file was not found.
 
-    ## Assert-RequiredCommandParameter
-    RequiredCommandParameter_SpecificParametersMustAllBeSet = The parameters '{0}' must all be specified.
-    RequiredCommandParameter_SpecificParametersMustAllBeSetWhenParameterExist = The parameters '{0}' must all be specified if either parameter '{1}' is specified.
-
     ## Assert-SetupActionProperties
     InstallSqlServerProperties_ASServerModeInvalidValue = The value for ASServerMode is not valid for the setup action {0}.
     InstallSqlServerProperties_RsInstallModeInvalidValue = The only valid value for RsInstallMode is 'FilesOnlyMode' when using setup action {0}.
