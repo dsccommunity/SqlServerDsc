@@ -19,6 +19,141 @@
         Specifies the path where to find the SQL Server installation media. On this
         path the SQL Server setup executable must be found.
 
+    .PARAMETER Timeout
+        Specifies how long to wait for the setup process to finish. Default value
+        is `7200` seconds (2 hours). If the setup process does not finish before
+        this time, an exception will be thrown.
+
+    .PARAMETER Force
+        If specified the command will not ask for confirmation. Same as if Confirm:$false
+        is used.
+
+    .PARAMETER InstanceName
+        See notes section.
+
+    .PARAMETER Enu
+        See notes section.
+
+    .PARAMETER InstanceId
+        See notes section.
+
+    .PARAMETER PBEngSvcAccount
+        See notes section.
+
+    .PARAMETER PBEngSvcPassword
+        See notes section.
+
+    .PARAMETER PBEngSvcStartupType
+        See notes section.
+
+    .PARAMETER PBStartPortRange
+        See notes section.
+
+    .PARAMETER PBEndPortRange
+        See notes section.
+
+    .PARAMETER PBScaleOut
+        See notes section.
+
+    .PARAMETER ProductKey
+        See notes section.
+
+    .PARAMETER AgtSvcAccount
+        See notes section.
+
+    .PARAMETER AgtSvcPassword
+        See notes section.
+
+    .PARAMETER AgtSvcStartupType
+        See notes section.
+
+    .PARAMETER BrowserSvcStartupType
+        See notes section.
+
+    .PARAMETER EnableRanU
+        See notes section.
+
+    .PARAMETER InstallSqlDataDir
+        See notes section.
+
+    .PARAMETER SqlBackupDir
+        See notes section.
+
+    .PARAMETER SecurityMode
+        See notes section.
+
+    .PARAMETER SAPwd
+        See notes section.
+
+    .PARAMETER SqlCollation
+        See notes section.
+
+    .PARAMETER SqlSvcAccount
+        See notes section.
+
+    .PARAMETER SqlSvcPassword
+        See notes section.
+
+    .PARAMETER SqlSvcStartupType
+        See notes section.
+
+    .PARAMETER SqlSysAdminAccounts
+        See notes section.
+
+    .PARAMETER SqlTempDbDir
+        See notes section.
+
+    .PARAMETER SqlTempDbLogDir
+        See notes section.
+
+    .PARAMETER SqlTempDbFileCount
+        See notes section.
+
+    .PARAMETER SqlTempDbFileSize
+        See notes section.
+
+    .PARAMETER SqlTempDbFileGrowth
+        See notes section.
+
+    .PARAMETER SqlTempDbLogFileSize
+        See notes section.
+
+    .PARAMETER SqlTempDbLogFileGrowth
+        See notes section.
+
+    .PARAMETER SqlUserDbDir
+        See notes section.
+
+    .PARAMETER SqlUserDbLogDir
+        See notes section.
+
+    .PARAMETER FileStreamLevel
+        See notes section.
+
+    .PARAMETER FileStreamShareName
+        See notes section.
+
+    .PARAMETER NpEnabled
+        See notes section.
+
+    .PARAMETER TcpEnabled
+        See notes section.
+
+    .PARAMETER RsInstallMode
+        See notes section.
+
+    .PARAMETER RSSvcAccount
+        See notes section.
+
+    .PARAMETER RSSvcPassword
+        See notes section.
+
+    .PARAMETER RSSvcStartupType
+        See notes section.
+
+    .PARAMETER ProductCoveredBySA
+        See notes section.
+
     .LINK
         https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt
 
@@ -32,10 +167,9 @@
         was prepared using `Install-SqlDscServer` with the parameter `-PrepareImage`.
 
     .NOTES
-        All parameters has intentionally not been added to this comment-based help
-        since it would take a lot of effort to keep it up to date. Instead there is
-        a link in the comment-based help that points to the SQL Server command line
-        setup documentation which will stay relevant.
+        The parameters are intentionally not described since it would take a lot
+        of effort to keep them up to date. Instead there is a link that points to
+        the SQL Server command line setup documentation which will stay relevant.
 #>
 function Complete-SqlDscImage
 {

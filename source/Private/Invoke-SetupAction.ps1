@@ -63,6 +63,312 @@
         Specifies the path where to find the SQL Server installation media. On this
         path the SQL Server setup executable must be found.
 
+    .PARAMETER Timeout
+        Specifies how long to wait for the setup process to finish. Default value
+        is `7200` seconds (2 hours). If the setup process does not finish before
+        this time, an exception will be thrown.
+
+    .PARAMETER Force
+        If specified the command will not ask for confirmation. Same as if Confirm:$false
+        is used.
+
+    .PARAMETER SuppressPrivacyStatementNotice
+        See notes section.
+
+    .PARAMETER IAcknowledgeEntCalLimits
+        See notes section.
+
+    .PARAMETER InstanceName
+        See notes section.
+
+    .PARAMETER Enu
+        See notes section.
+
+    .PARAMETER UpdateEnabled
+        See notes section.
+
+    .PARAMETER UpdateSource
+        See notes section.
+
+    .PARAMETER Features
+        See notes section.
+
+    .PARAMETER Role
+        See notes section.
+
+    .PARAMETER InstallSharedDir
+        See notes section.
+
+    .PARAMETER InstallSharedWowDir
+        See notes section.
+
+    .PARAMETER InstanceDir
+        See notes section.
+
+    .PARAMETER InstanceId
+        See notes section.
+
+    .PARAMETER PBEngSvcAccount
+        See notes section.
+
+    .PARAMETER PBEngSvcPassword
+        See notes section.
+
+    .PARAMETER PBEngSvcStartupType
+        See notes section.
+
+    .PARAMETER PBDMSSvcAccount
+        See notes section.
+
+    .PARAMETER PBDMSSvcPassword
+        See notes section.
+
+    .PARAMETER PBDMSSvcStartupType
+        See notes section.
+
+    .PARAMETER PBStartPortRange
+        See notes section.
+
+    .PARAMETER PBEndPortRange
+        See notes section.
+
+    .PARAMETER PBScaleOut
+        See notes section.
+
+    .PARAMETER ProductKey
+        See notes section.
+
+    .PARAMETER AgtSvcAccount
+        See notes section.
+
+    .PARAMETER AgtSvcPassword
+        See notes section.
+
+    .PARAMETER AgtSvcStartupType
+        See notes section.
+
+    .PARAMETER ASBackupDir
+        See notes section.
+
+    .PARAMETER ASCollation
+        See notes section.
+
+    .PARAMETER ASConfigDir
+        See notes section.
+
+    .PARAMETER ASDataDir
+        See notes section.
+
+    .PARAMETER ASLogDir
+        See notes section.
+
+    .PARAMETER ASTempDir
+        See notes section.
+
+    .PARAMETER ASServerMode
+        See notes section.
+
+    .PARAMETER ASSvcAccount
+        See notes section.
+
+    .PARAMETER ASSvcPassword
+        See notes section.
+
+    .PARAMETER ASSvcStartupType
+        See notes section.
+
+    .PARAMETER ASSysAdminAccounts
+        See notes section.
+
+    .PARAMETER ASProviderMSOLAP
+        See notes section.
+
+    .PARAMETER FarmAccount
+        See notes section.
+
+    .PARAMETER FarmPassword
+        See notes section.
+
+    .PARAMETER Passphrase
+        See notes section.
+
+    .PARAMETER FarmAdminiPort
+        See notes section.
+
+    .PARAMETER BrowserSvcStartupType
+        See notes section.
+
+    .PARAMETER FTUpgradeOption
+        See notes section.
+
+    .PARAMETER EnableRanU
+        See notes section.
+
+    .PARAMETER InstallSqlDataDir
+        See notes section.
+
+    .PARAMETER SqlBackupDir
+        See notes section.
+
+    .PARAMETER SecurityMode
+        See notes section.
+
+    .PARAMETER SAPwd
+        See notes section.
+
+    .PARAMETER SqlCollation
+        See notes section.
+
+    .PARAMETER AddCurrentUserAsSqlAdmin
+        See notes section.
+
+    .PARAMETER SqlSvcAccount
+        See notes section.
+
+    .PARAMETER SqlSvcPassword
+        See notes section.
+
+    .PARAMETER SqlSvcStartupType
+        See notes section.
+
+    .PARAMETER SqlSysAdminAccounts
+        See notes section.
+
+    .PARAMETER SqlTempDbDir
+        See notes section.
+
+    .PARAMETER SqlTempDbLogDir
+        See notes section.
+
+    .PARAMETER SqlTempDbFileCount
+        See notes section.
+
+    .PARAMETER SqlTempDbFileSize
+        See notes section.
+
+    .PARAMETER SqlTempDbFileGrowth
+        See notes section.
+
+    .PARAMETER SqlTempDbLogFileSize
+        See notes section.
+
+    .PARAMETER SqlTempDbLogFileGrowth
+        See notes section.
+
+    .PARAMETER SqlUserDbDir
+        See notes section.
+
+    .PARAMETER SqlSvcInstantFileInit
+        See notes section.
+
+    .PARAMETER SqlUserDbLogDir
+        See notes section.
+
+    .PARAMETER SqlMaxDop
+        See notes section.
+
+    .PARAMETER UseSqlRecommendedMemoryLimits
+        See notes section.
+
+    .PARAMETER SqlMinMemory
+        See notes section.
+
+    .PARAMETER SqlMaxMemory
+        See notes section.
+
+    .PARAMETER FileStreamLevel
+        See notes section.
+
+    .PARAMETER FileStreamShareName
+        See notes section.
+
+    .PARAMETER ISSvcAccount
+        See notes section.
+
+    .PARAMETER ISSvcPassword
+        See notes section.
+
+    .PARAMETER ISSvcStartupType
+        See notes section.
+
+    .PARAMETER AllowUpgradeForSSRSSharePointMode
+        See notes section.
+
+    .PARAMETER NpEnabled
+        See notes section.
+
+    .PARAMETER TcpEnabled
+        See notes section.
+
+    .PARAMETER RsInstallMode
+        See notes section.
+
+    .PARAMETER RSSvcAccount
+        See notes section.
+
+    .PARAMETER RSSvcPassword
+        See notes section.
+
+    .PARAMETER RSSvcStartupType
+        See notes section.
+
+    .PARAMETER MPYCacheDirectory
+        See notes section.
+
+    .PARAMETER MRCacheDirectory
+        See notes section.
+
+    .PARAMETER SqlInstJava
+        See notes section.
+
+    .PARAMETER SqlJavaDir
+        See notes section.
+
+    .PARAMETER FailoverClusterGroup
+        See notes section.
+
+    .PARAMETER FailoverClusterDisks
+        See notes section.
+
+    .PARAMETER FailoverClusterNetworkName
+        See notes section.
+
+    .PARAMETER FailoverClusterIPAddresses
+        See notes section.
+
+    .PARAMETER ConfirmIPDependencyChange
+        See notes section.
+
+    .PARAMETER FailoverClusterRollOwnership
+        See notes section.
+
+    .PARAMETER AzureSubscriptionId
+        See notes section.
+
+    .PARAMETER AzureResourceGroup
+        See notes section.
+
+    .PARAMETER AzureRegion
+        See notes section.
+
+    .PARAMETER AzureTenantId
+        See notes section.
+
+    .PARAMETER AzureServicePrincipal
+        See notes section.
+
+    .PARAMETER AzureServicePrincipalSecret
+        See notes section.
+
+    .PARAMETER AzureArcProxy
+        See notes section.
+
+    .PARAMETER SkipRules
+        See notes section.
+
+    .PARAMETER ProductCoveredBySA
+        See notes section.
+
     .LINK
         https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt
 
@@ -150,16 +456,16 @@
         Removes the node from the failover cluster of the instance 'MyInstance'.
 
     .NOTES
-        All parameters has intentionally not been added to this comment-based help
-        since it would take a lot of effort to keep it up to date. Instead there is
-        a link in the comment-based help that points to the SQL Server command line
-        setup documentation which will stay relevant.
+        The parameters are intentionally not described since it would take a lot
+        of effort to keep them up to date. Instead there is a link that points to
+        the SQL Server command line setup documentation which will stay relevant.
 
         For RebuildDatabase the parameter SAPwd must be set if the instance was
         installed with SecurityMode = 'SQL'.
 #>
 function Invoke-SetupAction
 {
+    # cSpell: ignore PBDMS Admini AZUREEXTENSION
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType()]
     param

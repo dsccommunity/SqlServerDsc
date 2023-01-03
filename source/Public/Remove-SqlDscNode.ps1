@@ -12,6 +12,21 @@
         Specifies the path where to find the SQL Server installation media. On this
         path the SQL Server setup executable must be found.
 
+    .PARAMETER Timeout
+        Specifies how long to wait for the setup process to finish. Default value
+        is `7200` seconds (2 hours). If the setup process does not finish before
+        this time, an exception will be thrown.
+
+    .PARAMETER Force
+        If specified the command will not ask for confirmation. Same as if Confirm:$false
+        is used.
+
+    .PARAMETER InstanceName
+        See notes section.
+
+    .PARAMETER ConfirmIPDependencyChange
+        See notes section.
+
     .LINK
         https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt
 
@@ -26,7 +41,7 @@
 
     .NOTES
         All parameters has intentionally not been added to this comment-based help
-        since it would take a lot of effort to keep it up to date. Instead there is
+        since it would take a lot of effort to keep them up to date. Instead there is
         a link in the comment-based help that points to the SQL Server command line
         setup documentation which will stay relevant.
 #>

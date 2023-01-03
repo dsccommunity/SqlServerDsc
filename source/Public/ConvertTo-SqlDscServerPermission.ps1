@@ -3,6 +3,10 @@
         Converts a collection of Microsoft.SqlServer.Management.Smo.ServerPermissionInfo
         objects into an array of ServerPermission objects.
 
+    .DESCRIPTION
+        Converts a collection of Microsoft.SqlServer.Management.Smo.ServerPermissionInfo
+        objects into an array of ServerPermission objects.
+
     .PARAMETER ServerPermissionInfo
         Specifies a collection of Microsoft.SqlServer.Management.Smo.ServerPermissionInfo
         objects.

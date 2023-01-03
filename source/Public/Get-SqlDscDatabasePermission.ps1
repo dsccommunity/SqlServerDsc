@@ -2,6 +2,9 @@
     .SYNOPSIS
         Returns the current permissions for the database principal.
 
+    .DESCRIPTION
+        Returns the current permissions for the database principal.
+
     .PARAMETER ServerObject
         Specifies current server connection object.
 
@@ -53,43 +56,47 @@ function Get-SqlDscDatabasePermission
         $Name
     )
 
-    $getSqlDscDatabasePermissionResult = $null
-
-    $sqlDatabaseObject = $null
-
-    if ($ServerObject.Databases)
+    # cSpell: ignore GSDDP
+    process
     {
-        $sqlDatabaseObject = $ServerObject.Databases[$DatabaseName]
-    }
+        $getSqlDscDatabasePermissionResult = $null
 
-    if ($sqlDatabaseObject)
-    {
-        $testSqlDscIsDatabasePrincipalParameters = @{
-            ServerObject      = $ServerObject
-            DatabaseName      = $DatabaseName
-            Name              = $Name
-            ExcludeFixedRoles = $true
+        $sqlDatabaseObject = $null
+
+        if ($ServerObject.Databases)
+        {
+            $sqlDatabaseObject = $ServerObject.Databases[$DatabaseName]
         }
 
-        $isDatabasePrincipal = Test-SqlDscIsDatabasePrincipal @testSqlDscIsDatabasePrincipalParameters
-
-        if ($isDatabasePrincipal)
+        if ($sqlDatabaseObject)
         {
-            $getSqlDscDatabasePermissionResult = $sqlDatabaseObject.EnumDatabasePermissions($Name)
+            $testSqlDscIsDatabasePrincipalParameters = @{
+                ServerObject      = $ServerObject
+                DatabaseName      = $DatabaseName
+                Name              = $Name
+                ExcludeFixedRoles = $true
+            }
+
+            $isDatabasePrincipal = Test-SqlDscIsDatabasePrincipal @testSqlDscIsDatabasePrincipalParameters
+
+            if ($isDatabasePrincipal)
+            {
+                $getSqlDscDatabasePermissionResult = $sqlDatabaseObject.EnumDatabasePermissions($Name)
+            }
+            else
+            {
+                $missingPrincipalMessage = $script:localizedData.DatabasePermission_MissingPrincipal -f $Name, $DatabaseName
+
+                Write-Error -Message $missingPrincipalMessage -Category 'InvalidOperation' -ErrorId 'GSDDP0001' -TargetObject $Name
+            }
         }
         else
         {
-            $missingPrincipalMessage = $script:localizedData.DatabasePermission_MissingPrincipal -f $Name, $DatabaseName
+            $missingDatabaseMessage = $script:localizedData.DatabasePermission_MissingDatabase -f $DatabaseName
 
-            Write-Error -Message $missingPrincipalMessage -Category 'InvalidOperation' -ErrorId 'GSDDP0001' -TargetObject $Name
+            Write-Error -Message $missingDatabaseMessage -Category 'InvalidOperation' -ErrorId 'GSDDP0002' -TargetObject $DatabaseName
         }
-    }
-    else
-    {
-        $missingDatabaseMessage = $script:localizedData.DatabasePermission_MissingDatabase -f $DatabaseName
 
-        Write-Error -Message $missingDatabaseMessage -Category 'InvalidOperation' -ErrorId 'GSDDP0002' -TargetObject $DatabaseName
+        return , [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]] $getSqlDscDatabasePermissionResult
     }
-
-    return , [Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo[]] $getSqlDscDatabasePermissionResult
 }

@@ -2,6 +2,9 @@
     .SYNOPSIS
         Set permission for a database principal.
 
+    .DESCRIPTION
+        Set permission for a database principal.
+
     .PARAMETER ServerObject
         Specifies current server connection object.
 
@@ -90,123 +93,126 @@ function Set-SqlDscDatabasePermission
         $Force
     )
 
-    if ($State -eq 'Deny' -and $WithGrant.IsPresent)
+    process
     {
-        Write-Warning -Message $script:localizedData.DatabasePermission_IgnoreWithGrantForStateDeny
-    }
-
-    if ($Force.IsPresent)
-    {
-        $ConfirmPreference = 'None'
-    }
-
-    $sqlDatabaseObject = $null
-
-    if ($ServerObject.Databases)
-    {
-        $sqlDatabaseObject = $ServerObject.Databases[$DatabaseName]
-    }
-
-    if ($sqlDatabaseObject)
-    {
-        $testSqlDscIsDatabasePrincipalParameters = @{
-            ServerObject      = $ServerObject
-            DatabaseName      = $DatabaseName
-            Name              = $Name
-            ExcludeFixedRoles = $true
+        if ($State -eq 'Deny' -and $WithGrant.IsPresent)
+        {
+            Write-Warning -Message $script:localizedData.DatabasePermission_IgnoreWithGrantForStateDeny
         }
 
-        $isDatabasePrincipal = Test-SqlDscIsDatabasePrincipal @testSqlDscIsDatabasePrincipalParameters
-
-        if ($isDatabasePrincipal)
+        if ($Force.IsPresent)
         {
-            # Get the permissions names that are set to $true in the DatabasePermissionSet.
-            $permissionName = $Permission |
-                Get-Member -MemberType 'Property' |
-                Select-Object -ExpandProperty 'Name' |
-                Where-Object -FilterScript {
-                    $Permission.$_
-                }
+            $ConfirmPreference = 'None'
+        }
 
-            $verboseDescriptionMessage = $script:localizedData.DatabasePermission_ChangePermissionShouldProcessVerboseDescription -f $Name, $DatabaseName, $ServerObject.InstanceName
-            $verboseWarningMessage = $script:localizedData.DatabasePermission_ChangePermissionShouldProcessVerboseWarning -f $Name
-            $captionMessage = $script:localizedData.DatabasePermission_ChangePermissionShouldProcessCaption
+        $sqlDatabaseObject = $null
 
-            if (-not $PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
-            {
-                # Return without doing anything if the user did not want to continue processing.
-                return
+        if ($ServerObject.Databases)
+        {
+            $sqlDatabaseObject = $ServerObject.Databases[$DatabaseName]
+        }
+
+        if ($sqlDatabaseObject)
+        {
+            $testSqlDscIsDatabasePrincipalParameters = @{
+                ServerObject      = $ServerObject
+                DatabaseName      = $DatabaseName
+                Name              = $Name
+                ExcludeFixedRoles = $true
             }
 
-            switch ($State)
+            $isDatabasePrincipal = Test-SqlDscIsDatabasePrincipal @testSqlDscIsDatabasePrincipalParameters
+
+            if ($isDatabasePrincipal)
             {
-                'Grant'
-                {
-                    Write-Verbose -Message (
-                        $script:localizedData.DatabasePermission_GrantPermission -f ($permissionName -join ','), $Name
-                    )
+                # Get the permissions names that are set to $true in the DatabasePermissionSet.
+                $permissionName = $Permission |
+                    Get-Member -MemberType 'Property' |
+                    Select-Object -ExpandProperty 'Name' |
+                    Where-Object -FilterScript {
+                        $Permission.$_
+                    }
 
-                    if ($WithGrant.IsPresent)
-                    {
-                        $sqlDatabaseObject.Grant($Permission, $Name, $true)
-                    }
-                    else
-                    {
-                        $sqlDatabaseObject.Grant($Permission, $Name)
-                    }
+                $verboseDescriptionMessage = $script:localizedData.DatabasePermission_ChangePermissionShouldProcessVerboseDescription -f $Name, $DatabaseName, $ServerObject.InstanceName
+                $verboseWarningMessage = $script:localizedData.DatabasePermission_ChangePermissionShouldProcessVerboseWarning -f $Name
+                $captionMessage = $script:localizedData.DatabasePermission_ChangePermissionShouldProcessCaption
+
+                if (-not $PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+                {
+                    # Return without doing anything if the user did not want to continue processing.
+                    return
                 }
 
-                'Deny'
+                switch ($State)
                 {
-                    Write-Verbose -Message (
-                        $script:localizedData.DatabasePermission_DenyPermission -f ($permissionName -join ','), $Name
-                    )
-
-                    $sqlDatabaseObject.Deny($Permission, $Name)
-                }
-
-                'Revoke'
-                {
-                    Write-Verbose -Message (
-                        $script:localizedData.DatabasePermission_RevokePermission -f ($permissionName -join ','), $Name
-                    )
-
-                    if ($WithGrant.IsPresent)
+                    'Grant'
                     {
-                        $sqlDatabaseObject.Revoke($Permission, $Name, $false, $true)
+                        Write-Verbose -Message (
+                            $script:localizedData.DatabasePermission_GrantPermission -f ($permissionName -join ','), $Name
+                        )
+
+                        if ($WithGrant.IsPresent)
+                        {
+                            $sqlDatabaseObject.Grant($Permission, $Name, $true)
+                        }
+                        else
+                        {
+                            $sqlDatabaseObject.Grant($Permission, $Name)
+                        }
                     }
-                    else
+
+                    'Deny'
                     {
-                        $sqlDatabaseObject.Revoke($Permission, $Name)
+                        Write-Verbose -Message (
+                            $script:localizedData.DatabasePermission_DenyPermission -f ($permissionName -join ','), $Name
+                        )
+
+                        $sqlDatabaseObject.Deny($Permission, $Name)
+                    }
+
+                    'Revoke'
+                    {
+                        Write-Verbose -Message (
+                            $script:localizedData.DatabasePermission_RevokePermission -f ($permissionName -join ','), $Name
+                        )
+
+                        if ($WithGrant.IsPresent)
+                        {
+                            $sqlDatabaseObject.Revoke($Permission, $Name, $false, $true)
+                        }
+                        else
+                        {
+                            $sqlDatabaseObject.Revoke($Permission, $Name)
+                        }
                     }
                 }
+            }
+            else
+            {
+                $missingPrincipalMessage = $script:localizedData.DatabasePermission_MissingPrincipal -f $Name, $DatabaseName
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        $missingPrincipalMessage,
+                        'GSDDP0001',
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $Name
+                    )
+                )
             }
         }
         else
         {
-            $missingPrincipalMessage = $script:localizedData.DatabasePermission_MissingPrincipal -f $Name, $DatabaseName
+            $missingDatabaseMessage = $script:localizedData.DatabasePermission_MissingDatabase -f $DatabaseName
 
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
-                    $missingPrincipalMessage,
-                    'GSDDP0001',
+                    $missingDatabaseMessage,
+                    'GSDDP0002',
                     [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                    $Name
+                    $DatabaseName
                 )
             )
         }
-    }
-    else
-    {
-        $missingDatabaseMessage = $script:localizedData.DatabasePermission_MissingDatabase -f $DatabaseName
-
-        $PSCmdlet.ThrowTerminatingError(
-            [System.Management.Automation.ErrorRecord]::new(
-                $missingDatabaseMessage,
-                'GSDDP0002',
-                [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                $DatabaseName
-            )
-        )
     }
 }

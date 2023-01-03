@@ -2,6 +2,10 @@
     .SYNOPSIS
         Updates a server audit.
 
+    .DESCRIPTION
+        This command updates and existing server audit on a SQL Server Database Engine
+        instance.
+
     .PARAMETER ServerObject
         Specifies current server connection object.
 
@@ -236,111 +240,114 @@ function Set-SqlDscAudit
         $MaximumRolloverFiles
     )
 
-    if ($Force.IsPresent)
+    process
     {
-        $ConfirmPreference = 'None'
-    }
-
-    if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
-    {
-        $getSqlDscAuditParameters = @{
-            ServerObject = $ServerObject
-            Name = $Name
-            Refresh = $Refresh
-            ErrorAction = 'Stop'
+        if ($Force.IsPresent)
+        {
+            $ConfirmPreference = 'None'
         }
 
-        $AuditObject = Get-SqlDscAudit @getSqlDscAuditParameters
-    }
-
-    if ($Refresh.IsPresent)
-    {
-        $AuditObject.Refresh()
-    }
-
-    $verboseDescriptionMessage = $script:localizedData.Audit_Update_ShouldProcessVerboseDescription -f $AuditObject.Name, $AuditObject.Parent.InstanceName
-    $verboseWarningMessage = $script:localizedData.Audit_Update_ShouldProcessVerboseWarning -f $AuditObject.Name
-    $captionMessage = $script:localizedData.Audit_Update_ShouldProcessCaption
-
-    if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
-    {
-        if ($PSBoundParameters.ContainsKey('Path'))
+        if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
         {
-            $AuditObject.FilePath = $Path
+            $getSqlDscAuditParameters = @{
+                ServerObject = $ServerObject
+                Name = $Name
+                Refresh = $Refresh
+                ErrorAction = 'Stop'
+            }
+
+            $AuditObject = Get-SqlDscAudit @getSqlDscAuditParameters
         }
 
-        if ($PSCmdlet.ParameterSetName -match 'WithSize')
+        if ($Refresh.IsPresent)
         {
-            $queryMaximumFileSizeUnit = (
-                @{
-                    Megabyte = 'MB'
-                    Gigabyte = 'GB'
-                    Terabyte = 'TB'
+            $AuditObject.Refresh()
+        }
+
+        $verboseDescriptionMessage = $script:localizedData.Audit_Update_ShouldProcessVerboseDescription -f $AuditObject.Name, $AuditObject.Parent.InstanceName
+        $verboseWarningMessage = $script:localizedData.Audit_Update_ShouldProcessVerboseWarning -f $AuditObject.Name
+        $captionMessage = $script:localizedData.Audit_Update_ShouldProcessCaption
+
+        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        {
+            if ($PSBoundParameters.ContainsKey('Path'))
+            {
+                $AuditObject.FilePath = $Path
+            }
+
+            if ($PSCmdlet.ParameterSetName -match 'WithSize')
+            {
+                $queryMaximumFileSizeUnit = (
+                    @{
+                        Megabyte = 'MB'
+                        Gigabyte = 'GB'
+                        Terabyte = 'TB'
+                    }
+                ).$MaximumFileSizeUnit
+
+                $AuditObject.MaximumFileSize = $MaximumFileSize
+                $AuditObject.MaximumFileSizeUnit = $queryMaximumFileSizeUnit
+            }
+
+            if ($PSCmdlet.ParameterSetName -match 'MaxFiles')
+            {
+                if ($AuditObject.MaximumRolloverFiles)
+                {
+                    # Switching to MaximumFiles instead of MaximumRolloverFiles.
+                    $AuditObject.MaximumRolloverFiles = 0
+
+                    # Must run method Alter() before setting MaximumFiles.
+                    $AuditObject.Alter()
                 }
-            ).$MaximumFileSizeUnit
 
-            $AuditObject.MaximumFileSize = $MaximumFileSize
-            $AuditObject.MaximumFileSizeUnit = $queryMaximumFileSizeUnit
-        }
+                $AuditObject.MaximumFiles = $MaximumFiles
 
-        if ($PSCmdlet.ParameterSetName -match 'MaxFiles')
-        {
-            if ($AuditObject.MaximumRolloverFiles)
-            {
-                # Switching to MaximumFiles instead of MaximumRolloverFiles.
-                $AuditObject.MaximumRolloverFiles = 0
-
-                # Must run method Alter() before setting MaximumFiles.
-                $AuditObject.Alter()
+                if ($PSBoundParameters.ContainsKey('ReserveDiskSpace'))
+                {
+                    $AuditObject.ReserveDiskSpace = $ReserveDiskSpace.IsPresent
+                }
             }
 
-            $AuditObject.MaximumFiles = $MaximumFiles
-
-            if ($PSBoundParameters.ContainsKey('ReserveDiskSpace'))
+            if ($PSCmdlet.ParameterSetName -match 'MaxRolloverFiles')
             {
-                $AuditObject.ReserveDiskSpace = $ReserveDiskSpace.IsPresent
-            }
-        }
+                if ($AuditObject.MaximumFiles)
+                {
+                    # Switching to MaximumRolloverFiles instead of MaximumFiles.
+                    $AuditObject.MaximumFiles = 0
 
-        if ($PSCmdlet.ParameterSetName -match 'MaxRolloverFiles')
-        {
-            if ($AuditObject.MaximumFiles)
-            {
-                # Switching to MaximumRolloverFiles instead of MaximumFiles.
-                $AuditObject.MaximumFiles = 0
+                    # Must run method Alter() before setting MaximumRolloverFiles.
+                    $AuditObject.Alter()
+                }
 
-                # Must run method Alter() before setting MaximumRolloverFiles.
-                $AuditObject.Alter()
+                $AuditObject.MaximumRolloverFiles = $MaximumRolloverFiles
             }
 
-            $AuditObject.MaximumRolloverFiles = $MaximumRolloverFiles
-        }
+            if ($PSBoundParameters.ContainsKey('OnFailure'))
+            {
+                $AuditObject.OnFailure = $OnFailure
+            }
 
-        if ($PSBoundParameters.ContainsKey('OnFailure'))
-        {
-            $AuditObject.OnFailure = $OnFailure
-        }
+            if ($PSBoundParameters.ContainsKey('QueueDelay'))
+            {
+                $AuditObject.QueueDelay = $QueueDelay
+            }
 
-        if ($PSBoundParameters.ContainsKey('QueueDelay'))
-        {
-            $AuditObject.QueueDelay = $QueueDelay
-        }
+            if ($PSBoundParameters.ContainsKey('AuditGuid'))
+            {
+                $AuditObject.Guid = $AuditGuid
+            }
 
-        if ($PSBoundParameters.ContainsKey('AuditGuid'))
-        {
-            $AuditObject.Guid = $AuditGuid
-        }
+            if ($PSBoundParameters.ContainsKey('AuditFilter'))
+            {
+                $AuditObject.Filter = $AuditFilter
+            }
 
-        if ($PSBoundParameters.ContainsKey('AuditFilter'))
-        {
-            $AuditObject.Filter = $AuditFilter
-        }
+            $AuditObject.Alter()
 
-        $AuditObject.Alter()
-
-        if ($PassThru.IsPresent)
-        {
-            return $AuditObject
+            if ($PassThru.IsPresent)
+            {
+                return $AuditObject
+            }
         }
     }
 }

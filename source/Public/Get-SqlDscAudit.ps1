@@ -2,6 +2,9 @@
     .SYNOPSIS
         Get server audit.
 
+    .DESCRIPTION
+        This command gets a server audit from a SQL Server Database Engine instance.
+
     .PARAMETER ServerObject
         Specifies current server connection object.
 
@@ -22,7 +25,7 @@
         Get the audit named **MyFileAudit**.
 
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Audit]`.
+        `[Microsoft.SqlServer.Management.Smo.Audit]`
 #>
 function Get-SqlDscAudit
 {
@@ -44,27 +47,30 @@ function Get-SqlDscAudit
         $Refresh
     )
 
-    if ($Refresh.IsPresent)
+    process
     {
-        # Make sure the audits are up-to-date to get any newly created audits.
-        $ServerObject.Audits.Refresh()
-    }
-
-    $auditObject = $ServerObject.Audits[$Name]
-
-    if (-not $AuditObject)
-    {
-        $missingAuditMessage = $script:localizedData.Audit_Missing -f $Name
-
-        $writeErrorParameters = @{
-            Message = $missingAuditMessage
-            Category = 'InvalidOperation'
-            ErrorId = 'GSDA0001' # cspell: disable-line
-            TargetObject = $Name
+        if ($Refresh.IsPresent)
+        {
+            # Make sure the audits are up-to-date to get any newly created audits.
+            $ServerObject.Audits.Refresh()
         }
 
-        Write-Error @writeErrorParameters
-    }
+        $auditObject = $ServerObject.Audits[$Name]
 
-    return $auditObject
+        if (-not $AuditObject)
+        {
+            $missingAuditMessage = $script:localizedData.Audit_Missing -f $Name
+
+            $writeErrorParameters = @{
+                Message = $missingAuditMessage
+                Category = 'InvalidOperation'
+                ErrorId = 'GSDA0001' # cspell: disable-line
+                TargetObject = $Name
+            }
+
+            Write-Error @writeErrorParameters
+        }
+
+        return $auditObject
+    }
 }

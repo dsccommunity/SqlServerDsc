@@ -2,6 +2,9 @@
     .SYNOPSIS
         Creates a server audit.
 
+    .DESCRIPTION
+        This command creates a server audit on a SQL Server Database Engine instance.
+
     .PARAMETER ServerObject
         Specifies current server connection object.
 
@@ -194,116 +197,119 @@ function New-SqlDscAudit
         $MaximumRolloverFiles
     )
 
-    if ($Force.IsPresent)
+    process
     {
-        $ConfirmPreference = 'None'
-    }
+        if ($Force.IsPresent)
+        {
+            $ConfirmPreference = 'None'
+        }
 
-    $getSqlDscAuditParameters = @{
-        ServerObject = $ServerObject
-        Name = $Name
-        Refresh = $Refresh
-        ErrorAction = 'SilentlyContinue'
-    }
+        $getSqlDscAuditParameters = @{
+            ServerObject = $ServerObject
+            Name = $Name
+            Refresh = $Refresh
+            ErrorAction = 'SilentlyContinue'
+        }
 
-    $auditObject = Get-SqlDscAudit @getSqlDscAuditParameters
+        $auditObject = Get-SqlDscAudit @getSqlDscAuditParameters
 
-    if ($auditObject)
-    {
-        $auditAlreadyPresentMessage = $script:localizedData.Audit_AlreadyPresent -f $Name
+        if ($auditObject)
+        {
+            $auditAlreadyPresentMessage = $script:localizedData.Audit_AlreadyPresent -f $Name
 
-        $PSCmdlet.ThrowTerminatingError(
-            [System.Management.Automation.ErrorRecord]::new(
-                $auditAlreadyPresentMessage,
-                'NSDA0001', # cspell: disable-line
-                [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                $DatabaseName
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    $auditAlreadyPresentMessage,
+                    'NSDA0001', # cspell: disable-line
+                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                    $DatabaseName
+                )
             )
-        )
-    }
-
-    $auditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @($ServerObject, $Name)
-
-    $queryType = switch ($PSCmdlet.ParameterSetName)
-    {
-        'Log'
-        {
-            $LogType
         }
 
-        default
+        $auditObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @($ServerObject, $Name)
+
+        $queryType = switch ($PSCmdlet.ParameterSetName)
         {
-            'File'
-        }
-    }
-
-    $auditObject.DestinationType = $queryType
-
-    if ($PSCmdlet.ParameterSetName -match 'File')
-    {
-        $auditObject.FilePath = $Path
-
-        if ($PSCmdlet.ParameterSetName -match 'FileWithSize')
-        {
-            $convertedMaximumFileSizeUnit = (
-                @{
-                    Megabyte = 'MB'
-                    Gigabyte = 'GB'
-                    Terabyte = 'TB'
-                }
-            ).$MaximumFileSizeUnit
-
-            $auditObject.MaximumFileSize = $MaximumFileSize
-            $auditObject.MaximumFileSizeUnit = $convertedMaximumFileSizeUnit
-        }
-
-        if ($PSCmdlet.ParameterSetName -in @('FileWithMaxFiles', 'FileWithSizeAndMaxFiles'))
-        {
-            $auditObject.MaximumFiles = $MaximumFiles
-
-            if ($PSBoundParameters.ContainsKey('ReserveDiskSpace'))
+            'Log'
             {
-                $auditObject.ReserveDiskSpace = $ReserveDiskSpace.IsPresent
+                $LogType
+            }
+
+            default
+            {
+                'File'
             }
         }
 
-        if ($PSCmdlet.ParameterSetName -in @('FileWithMaxRolloverFiles', 'FileWithSizeAndMaxRolloverFiles'))
+        $auditObject.DestinationType = $queryType
+
+        if ($PSCmdlet.ParameterSetName -match 'File')
         {
-            $auditObject.MaximumRolloverFiles = $MaximumRolloverFiles
+            $auditObject.FilePath = $Path
+
+            if ($PSCmdlet.ParameterSetName -match 'FileWithSize')
+            {
+                $convertedMaximumFileSizeUnit = (
+                    @{
+                        Megabyte = 'MB'
+                        Gigabyte = 'GB'
+                        Terabyte = 'TB'
+                    }
+                ).$MaximumFileSizeUnit
+
+                $auditObject.MaximumFileSize = $MaximumFileSize
+                $auditObject.MaximumFileSizeUnit = $convertedMaximumFileSizeUnit
+            }
+
+            if ($PSCmdlet.ParameterSetName -in @('FileWithMaxFiles', 'FileWithSizeAndMaxFiles'))
+            {
+                $auditObject.MaximumFiles = $MaximumFiles
+
+                if ($PSBoundParameters.ContainsKey('ReserveDiskSpace'))
+                {
+                    $auditObject.ReserveDiskSpace = $ReserveDiskSpace.IsPresent
+                }
+            }
+
+            if ($PSCmdlet.ParameterSetName -in @('FileWithMaxRolloverFiles', 'FileWithSizeAndMaxRolloverFiles'))
+            {
+                $auditObject.MaximumRolloverFiles = $MaximumRolloverFiles
+            }
         }
-    }
 
-    if ($PSBoundParameters.ContainsKey('OnFailure'))
-    {
-        $auditObject.OnFailure = $OnFailure
-    }
-
-    if ($PSBoundParameters.ContainsKey('QueueDelay'))
-    {
-        $auditObject.QueueDelay = $QueueDelay
-    }
-
-    if ($PSBoundParameters.ContainsKey('AuditGuid'))
-    {
-        $auditObject.Guid = $AuditGuid
-    }
-
-    if ($PSBoundParameters.ContainsKey('AuditFilter'))
-    {
-        $auditObject.Filter = $AuditFilter
-    }
-
-    $verboseDescriptionMessage = $script:localizedData.Audit_Add_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
-    $verboseWarningMessage = $script:localizedData.Audit_Add_ShouldProcessVerboseWarning -f $Name
-    $captionMessage = $script:localizedData.Audit_Add_ShouldProcessCaption
-
-    if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
-    {
-        $auditObject.Create()
-
-        if ($PassThru.IsPresent)
+        if ($PSBoundParameters.ContainsKey('OnFailure'))
         {
-            return $auditObject
+            $auditObject.OnFailure = $OnFailure
+        }
+
+        if ($PSBoundParameters.ContainsKey('QueueDelay'))
+        {
+            $auditObject.QueueDelay = $QueueDelay
+        }
+
+        if ($PSBoundParameters.ContainsKey('AuditGuid'))
+        {
+            $auditObject.Guid = $AuditGuid
+        }
+
+        if ($PSBoundParameters.ContainsKey('AuditFilter'))
+        {
+            $auditObject.Filter = $AuditFilter
+        }
+
+        $verboseDescriptionMessage = $script:localizedData.Audit_Add_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
+        $verboseWarningMessage = $script:localizedData.Audit_Add_ShouldProcessVerboseWarning -f $Name
+        $captionMessage = $script:localizedData.Audit_Add_ShouldProcessCaption
+
+        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        {
+            $auditObject.Create()
+
+            if ($PassThru.IsPresent)
+            {
+                return $auditObject
+            }
         }
     }
 }

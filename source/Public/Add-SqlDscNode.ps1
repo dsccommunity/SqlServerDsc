@@ -18,6 +18,93 @@
         Specifies the path where to find the SQL Server installation media. On this
         path the SQL Server setup executable must be found.
 
+    .PARAMETER Timeout
+        Specifies how long to wait for the setup process to finish. Default value
+        is `7200` seconds (2 hours). If the setup process does not finish before
+        this time, an exception will be thrown.
+
+    .PARAMETER Force
+        If specified the command will not ask for confirmation. Same as if Confirm:$false
+        is used.
+
+    .PARAMETER IAcknowledgeEntCalLimits
+        See notes section.
+
+    .PARAMETER InstanceName
+        See notes section.
+
+    .PARAMETER Enu
+        See notes section.
+
+    .PARAMETER UpdateEnabled
+        See notes section.
+
+    .PARAMETER UpdateSource
+        See notes section.
+
+    .PARAMETER PBEngSvcAccount
+        See notes section.
+
+    .PARAMETER PBEngSvcPassword
+        See notes section.
+
+    .PARAMETER PBEngSvcStartupType
+        See notes section.
+
+    .PARAMETER PBStartPortRange
+        See notes section.
+
+    .PARAMETER PBEndPortRange
+        See notes section.
+
+    .PARAMETER PBScaleOut
+        See notes section.
+
+    .PARAMETER ProductKey
+        See notes section.
+
+    .PARAMETER AgtSvcAccount
+        See notes section.
+
+    .PARAMETER AgtSvcPassword
+        See notes section.
+
+    .PARAMETER ASSvcAccount
+        See notes section.
+
+    .PARAMETER ASSvcPassword
+        See notes section.
+
+    .PARAMETER SqlSvcAccount
+        See notes section.
+
+    .PARAMETER SqlSvcPassword
+        See notes section.
+
+    .PARAMETER ISSvcAccount
+        See notes section.
+
+    .PARAMETER ISSvcPassword
+        See notes section.
+
+    .PARAMETER RsInstallMode
+        See notes section.
+
+    .PARAMETER RSSvcAccount
+        See notes section.
+
+    .PARAMETER RSSvcPassword
+        See notes section.
+
+    .PARAMETER FailoverClusterIPAddresses
+        See notes section.
+
+    .PARAMETER ConfirmIPDependencyChange
+        See notes section.
+
+    .PARAMETER ProductCoveredBySA
+        See notes section.
+
     .LINK
         https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt
 
@@ -30,13 +117,13 @@
         Adds the current node's SQL Server instance 'MyInstance' to the Failover Cluster instance.
 
     .NOTES
-        All parameters has intentionally not been added to this comment-based help
-        since it would take a lot of effort to keep it up to date. Instead there is
-        a link in the comment-based help that points to the SQL Server command line
-        setup documentation which will stay relevant.
+        The parameters are intentionally not described since it would take a lot
+        of effort to keep them up to date. Instead there is a link that points to
+        the SQL Server command line setup documentation which will stay relevant.
 #>
 function Add-SqlDscNode
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType()]
