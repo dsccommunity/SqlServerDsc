@@ -11,7 +11,7 @@
     .PARAMETER Name
         Specifies the name of the server audit to be added.
 
-    .PARAMETER Filter
+    .PARAMETER AuditFilter
         Specifies the filter that should be used on the audit. See [predicate expression](https://docs.microsoft.com/en-us/sql/t-sql/statements/create-server-audit-transact-sql)
         how to write the syntax for the filter.
 
@@ -42,7 +42,7 @@
         Specifies the log location where the audit should write to.
         This can be SecurityLog or ApplicationLog.
 
-    .PARAMETER FilePath
+    .PARAMETER Path
         Specifies the location where te log files wil be placed.
 
     .PARAMETER ReserveDiskSpace
@@ -62,6 +62,9 @@
     .PARAMETER MaximumRolloverFiles
         Specifies the amount of files on disk before SQL Server starts reusing
         the files. If not specified then it is set to unlimited.
+
+    .PARAMETER PassThru
+        If specified the created audit object will be returned.
 
     .OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.Audit]` is passing parameter **PassThru**,
