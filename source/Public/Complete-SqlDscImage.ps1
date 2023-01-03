@@ -29,130 +29,130 @@
         is used.
 
     .PARAMETER InstanceName
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER Enu
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER InstanceId
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBEngSvcAccount
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBEngSvcPassword
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBEngSvcStartupType
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBStartPortRange
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBEndPortRange
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBScaleOut
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ProductKey
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER AgtSvcAccount
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER AgtSvcPassword
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER AgtSvcStartupType
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER BrowserSvcStartupType
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER EnableRanU
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER InstallSqlDataDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlBackupDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SecurityMode
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SAPwd
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlCollation
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlSvcAccount
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlSvcPassword
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlSvcStartupType
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlSysAdminAccounts
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbLogDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbFileCount
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbFileSize
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbFileGrowth
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbLogFileSize
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbLogFileGrowth
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlUserDbDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlUserDbLogDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER FileStreamLevel
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER FileStreamShareName
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER NpEnabled
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER TcpEnabled
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER RsInstallMode
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER RSSvcAccount
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER RSSvcPassword
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER RSSvcStartupType
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ProductCoveredBySA
-        See notes section.
+        See the notes section for more information.
 
     .LINK
         https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt

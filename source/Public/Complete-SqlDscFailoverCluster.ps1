@@ -25,106 +25,106 @@
         is used.
 
     .PARAMETER InstanceName
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER Enu
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ProductKey
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ASBackupDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ASCollation
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ASConfigDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ASDataDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ASLogDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ASTempDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ASServerMode
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ASSysAdminAccounts
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ASProviderMSOLAP
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER InstallSqlDataDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlBackupDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SecurityMode
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SAPwd
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlCollation
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlSysAdminAccounts
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbLogDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbFileCount
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbFileSize
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbFileGrowth
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbLogFileSize
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbLogFileGrowth
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlUserDbDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlUserDbLogDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER RsInstallMode
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER FailoverClusterGroup
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER FailoverClusterDisks
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER FailoverClusterNetworkName
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER FailoverClusterIPAddresses
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ConfirmIPDependencyChange
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ProductCoveredBySA
-        See notes section.
+        See the notes section for more information.
 
     .LINK
         https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt

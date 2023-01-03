@@ -22,31 +22,31 @@
         is used.
 
     .PARAMETER InstanceName
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER Enu
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER Features
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBEngSvcAccount
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBEngSvcPassword
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBEngSvcStartupType
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBStartPortRange
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBEndPortRange
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBScaleOut
-        See notes section.
+        See the notes section for more information.
 
     .LINK
         https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt

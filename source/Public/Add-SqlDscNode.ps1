@@ -28,82 +28,82 @@
         is used.
 
     .PARAMETER IAcknowledgeEntCalLimits
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER InstanceName
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER Enu
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER UpdateEnabled
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER UpdateSource
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBEngSvcAccount
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBEngSvcPassword
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBEngSvcStartupType
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBStartPortRange
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBEndPortRange
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER PBScaleOut
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ProductKey
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER AgtSvcAccount
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER AgtSvcPassword
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ASSvcAccount
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ASSvcPassword
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlSvcAccount
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlSvcPassword
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ISSvcAccount
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ISSvcPassword
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER RsInstallMode
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER RSSvcAccount
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER RSSvcPassword
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER FailoverClusterIPAddresses
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ConfirmIPDependencyChange
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER ProductCoveredBySA
-        See notes section.
+        See the notes section for more information.
 
     .LINK
         https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt

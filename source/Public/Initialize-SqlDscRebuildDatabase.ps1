@@ -22,37 +22,37 @@
         is used.
 
     .PARAMETER InstanceName
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SAPwd
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlCollation
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlSysAdminAccounts
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbLogDir
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbFileCount
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbFileSize
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbFileGrowth
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbLogFileSize
-        See notes section.
+        See the notes section for more information.
 
     .PARAMETER SqlTempDbLogFileGrowth
-        See notes section.
+        See the notes section for more information.
 
     .LINK
         https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt
