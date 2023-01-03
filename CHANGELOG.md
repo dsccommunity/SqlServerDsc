@@ -8,10 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - SqlServerDsc
-  - Removed `Assert-ElevatedUser` from private functions - [Issue #1797](https://github.com/dsccommunity/SqlServerDsc/issues/1797)
-    - `Assert-ElevatedUser` added to _DscResource.Common_ public functions - [Issue #82](https://github.com/dsccommunity/DscResource.Common/issues/82)
-  - Removed `Test-IsNumericType` from private functions - [Issue #1795](https://github.com/dsccommunity/SqlServerDsc/issues/1795)
-    - `Test-IsNumericType` added to _DscResource.Common_ public functions - [Issue #87](https://github.com/dsccommunity/DscResource.Common/issues/87)
+  - Removed `Assert-ElevatedUser` from private functions ([issue #1797](https://github.com/dsccommunity/SqlServerDsc/issues/1797)).
+    - `Assert-ElevatedUser` added to _DscResource.Common_ public functions
+      ([issue #82](https://github.com/dsccommunity/DscResource.Common/issues/82)).
+  - Removed `Test-IsNumericType` from private functions ([issue #1795](https://github.com/dsccommunity/SqlServerDsc/issues/1795)).
+    - `Test-IsNumericType` added to _DscResource.Common_ public functions
+    ([issue #87](https://github.com/dsccommunity/DscResource.Common/issues/87)).
+  - Removed `Test-ServiceAccountRequirePassword` from private functions ([issue #1794](https://github.com/dsccommunity/SqlServerDsc/issues/1794)
+    - Replaced by `Test-AccountRequirePassword` that was added to _DscResource.Common_
+      public functions ([issue #93](https://github.com/dsccommunity/DscResource.Common/issues/93)).
+  - Removed `Assert-RequiredCommandParameter` from private functions ([issue #1796](https://github.com/dsccommunity/SqlServerDsc/issues/1796)).
+    - Replaced by `Assert-BoundParameter` (part of _DscResource.Common_)
+      that had a new parameter set added ([issue #92](https://github.com/dsccommunity/DscResource.Common/issues/92)).
   - Removed private function `Test-ResourceDscPropertyIsAssigned` and
     `Test-ResourceHasDscProperty`. Both are replaced by `Test-DscProperty`
     which is now part of the module _DscResource.Common_.
@@ -33,7 +41,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - The following private functions were added to the module (see comment-based
     help for more information):
-    - `Assert-RequiredCommandParameter`
     - `Assert-SetupActionProperties`
     - `Invoke-SetupAction`
   - The following public functions were added to the module (see comment-based
@@ -58,6 +65,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     this is a code base with a diverse set of tests thar can help catch
     issues in Pester. If preview release of Pester prevents release we
     should temporary shift back to stable.
+  - Add the GitHub App _Pull Request Quantifier_ as an experiment to see if it
+    brings any value ([issue #1811](https://github.com/dsccommunity/SqlServerDsc/issues/1811)).
+    - Updated thresholds, and label names and colors.
 - SqlDatabase
   - Added compatibility levels for SQL Server 2022 (major version 16).
 - SqlSetup
@@ -75,6 +85,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     running in Azure DevOps.
   - Class-based resources now uses the parent class `ResourceBase` from the
     module _DscResource.Base_ ([issue #1790](https://github.com/dsccommunity/SqlServerDsc/issues/1790)).
+  - Settings for the _Visual Studio Code_ extension _Pester Tests_ was changed
+    to be able to run all unit tests, and all tests run by the extension
+    are now run in a separate process to be able to handle changes in
+    class-based resources.
 - `Install-SqlServerDsc`
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
 - SqlAgReplica
