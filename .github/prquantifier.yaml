@@ -17,3 +17,4 @@ Thresholds:
 - Value: 1000
   Label: PR extra large
   Color: Red
+IgnoreRenamed: true

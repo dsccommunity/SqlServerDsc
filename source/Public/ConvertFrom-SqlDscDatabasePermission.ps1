@@ -3,6 +3,10 @@
         Converts a DatabasePermission object into an object of the type
         Microsoft.SqlServer.Management.Smo.DatabasePermissionSet.
 
+    .DESCRIPTION
+        Converts a DatabasePermission object into an object of the type
+        Microsoft.SqlServer.Management.Smo.DatabasePermissionSet.
+
     .PARAMETER Permission
         Specifies a DatabasePermission object.
 

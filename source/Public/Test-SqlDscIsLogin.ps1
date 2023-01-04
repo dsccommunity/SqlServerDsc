@@ -2,6 +2,9 @@
     .SYNOPSIS
         Returns whether the database principal exist.
 
+    .DESCRIPTION
+        Returns whether the database principal exist.
+
     .PARAMETER ServerObject
         Specifies current server connection object.
 
@@ -33,12 +36,15 @@ function Test-SqlDscIsLogin
         $Name
     )
 
-    $loginExist = $false
-
-    if ($ServerObject.Logins[$Name])
+    process
     {
-        $loginExist = $true
-    }
+        $loginExist = $false
 
-    return $loginExist
+        if ($ServerObject.Logins[$Name])
+        {
+            $loginExist = $true
+        }
+
+        return $loginExist
+    }
 }
