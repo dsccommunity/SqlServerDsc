@@ -235,9 +235,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         # Make sure the module was installed.
-        # It 'Should return $true when Test-DscConfiguration is run' {
-        #     Test-DscConfiguration -Verbose | Should -Be 'True'
-        # }
+        It 'Should return $true when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose | Should -Be 'True'
+        }
     }
 
     Context ('When using configuration <_>') -ForEach @(

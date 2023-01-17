@@ -86,7 +86,13 @@ else
             @{
                 NodeName                                = 'localhost'
 
-                SqlServerModuleVersion                  = '22.0.30-preview'
+                # To use a specific version, set to e.g. 22.0.49-preview
+                SqlServerModuleVersion                  = 'latest'
+
+                <#
+                    Set to $true if prereleases should be installed, or if
+                    SqlServerModuleVersion is set to preview version
+                #>
                 SqlServerModuleVersionIsPrerelease      = $true
 
                 SqlServerInstanceIdPrefix               = $versionSpecificData.SqlServerInstanceIdPrefix
@@ -329,12 +335,16 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
 
                 $installModuleParameters = @{
                     Name = 'SqlServer'
-                    RequiredVersion = $Using:Node.SqlServerModuleVersion
                     Scope = 'AllUsers'
                     Force = $true
                     AllowPrerelease = $Using:Node.SqlServerModuleVersionIsPrerelease
                     AllowClobber = $true # Needed to handle existens of module SQLPS.
                     PassThru = $true
+                }
+
+                if ($Using:Node.SqlServerModuleVersion -ne 'latest')
+                {
+                    $installModuleParameters.RequiredVersion = $Using:Node.SqlServerModuleVersion
                 }
 
                 # Install the required SqlServer module version.
