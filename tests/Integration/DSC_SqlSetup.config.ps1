@@ -437,9 +437,12 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 {
                     $moduleVersion = $sqlServerModule.Version.ToString()
 
-                    if (-not [System.String]::IsNullOrEmpty($sqlServerModule.PrivateData.PSData.Prerelease))
+                    if ($sqlServerModule.PrivateData.PSData.Keys -contains 'Prerelease')
                     {
-                        $moduleVersion = '{0}-{1}' -f $moduleVersion, $sqlServerModule.PrivateData.PSData.Prerelease
+                        if (-not [System.String]::IsNullOrEmpty($sqlServerModule.PrivateData.PSData.Prerelease))
+                        {
+                            $moduleVersion = '{0}-{1}' -f $moduleVersion, $sqlServerModule.PrivateData.PSData.Prerelease
+                        }
                     }
                 }
 
