@@ -294,11 +294,11 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
 
     node $AllNodes.NodeName
     {
-        Script 'InstallSqlServerModule'
+        Script 'InstallPowerShellGet'
         {
             SetScript  = {
                 # Make sure PSGallery is trusted.
-                Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+                Set-PSRepository -Name 'PSGallery' -InstallationPolicy 'Trusted'
 
                 # Remove any loaded module.
                 Get-Module -Name @('PackageManagement', 'PowerShellGet') -All | Remove-Module -Force
@@ -310,22 +310,75 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 Install-PackageProvider -Name NuGet -Force
                 Install-Module PowerShellGet -AllowClobber -Force
 
-                # Remove any loaded module to hopefully get those that was installed above.
+                # Remove any loaded module to hopefully be able to import those that was installed above.
                 Get-Module -Name @('PackageManagement', 'PowerShellGet') -All | Remove-Module -Force
 
                 # Forcibly import the newly installed modules.
                 Import-Module -Name 'PackageManagement' -MinimumVersion '1.4.8.1' -Force
                 Import-Module -Name 'PowerShellGet' -MinimumVersion '2.2.5' -Force
 
-                # Forcibly import the newly installed modules.
-                Write-Verbose -Message (
-                    Get-Module -Name @('PackageManagement', 'PowerShellGet') |
-                    Select-Object -Property @('Name', 'Version') |
-                    Out-String
+                # Output version information for the loaded modules
+                Write-Verbose -Message 'Version information of loaded modules: {0}' -f @(
+                    (
+                        Get-Module -Name @('PackageManagement', 'PowerShellGet') |
+                        Select-Object -Property @('Name', 'Version') |
+                        Out-String
+                    )
                 )
+            }
 
-                # Uninstall any existing SqlServer module.
-                Uninstall-Module -Name 'SqlServer' -ErrorAction SilentlyContinue
+            TestScript = {
+                <#
+                    This takes the string of the $GetScript parameter and creates
+                    a new script block (during runtime in the resource) and then
+                    runs that script block.
+                #>
+                $getScriptResult = & ([ScriptBlock]::Create($GetScript))
+
+                if ($getScriptResult.Result -eq '2.2.5')
+                {
+                    Write-Verbose -Message 'The node already contain the correct PowerShellGet version'
+
+                    return $true
+                }
+
+                Write-Verbose -Message 'The module PowerShellGet has version {0}, but expected version 2.2.5 to be installed.'
+
+                return $false
+            }
+
+            GetScript  = {
+                $moduleVersion = $null
+                $sqlServerModule = $null
+
+                $powerShellGetModule = Get-Module -Name 'PowerShellGet' -ListAvailable
+
+                if ($powerShellGetModule)
+                {
+                    $moduleVersion = $powerShellGetModule.Version.ToString()
+                }
+
+                return @{
+                    Result = $moduleVersion
+                }
+            }
+        }
+
+        Script 'InstallSqlServerModule'
+        {
+            DependsOn             = @(
+                '[Script]InstallPowerShellGet'
+            )
+
+            SetScript  = {
+                # Make sure PSGallery is trusted.
+                Set-PSRepository -Name 'PSGallery' -InstallationPolicy 'Trusted'
+
+                # Uninstall any existing SqlServer module, to make we only have the one we need.
+                Get-Module -Name 'SqlServer' -ListAvailable | Uninstall-Module -ErrorAction 'Stop'
+
+                # Make sure we use TLS 1.2.
+                [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
                 $installModuleParameters = @{
                     Name = 'SqlServer'
