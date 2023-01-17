@@ -86,13 +86,7 @@ else
             @{
                 NodeName                                = 'localhost'
 
-                # To use a specific version, set to e.g. 22.0.49-preview
-                SqlServerModuleVersion                  = 'latest'
-
-                <#
-                    Set to $true if prereleases should be installed, or if
-                    SqlServerModuleVersion is set to preview version
-                #>
+                SqlServerModuleVersion                  = '22.0.49-preview'
                 SqlServerModuleVersionIsPrerelease      = $true
 
                 SqlServerInstanceIdPrefix               = $versionSpecificData.SqlServerInstanceIdPrefix
@@ -337,14 +331,10 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                     Name = 'SqlServer'
                     Scope = 'AllUsers'
                     Force = $true
+                    RequiredVersion = $Using:Node.SqlServerModuleVersion
                     AllowPrerelease = $Using:Node.SqlServerModuleVersionIsPrerelease
                     AllowClobber = $true # Needed to handle existens of module SQLPS.
                     PassThru = $true
-                }
-
-                if ($Using:Node.SqlServerModuleVersion -ne 'latest')
-                {
-                    $installModuleParameters.RequiredVersion = $Using:Node.SqlServerModuleVersion
                 }
 
                 # Install the required SqlServer module version.
@@ -361,12 +351,15 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 #>
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                if ($null -ne $getScriptResult.Result)
+                if ($getScriptResult.Result -eq $Using:Node.SqlServerModuleVersion)
                 {
-                    Write-Warning -Message ('The node already contain the module SqlServer with version {0}.' -f $getScriptResult.Result)
+                    Write-Verbose -Message ('The node already contain the module SqlServer with version {0}.' -f $Using:Node.SqlServerModuleVersion)
+
+                    return $true
                 }
 
-                # For now always return $false even if there is a module installed, regardless of version.
+                Write-Verbose -Message ('The module SqlServer with version {0} is not installed.' -f $Using:Node.SqlServerModuleVersion)
+
                 return $false
             }
 
@@ -379,6 +372,11 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 if ($sqlServerModule)
                 {
                     $moduleVersion = $sqlServerModule.Version.ToString()
+
+                    if (-not [System.String]::IsNullOrEmpty($sqlServerModule.PrivateData.PSData.Prerelease))
+                    {
+                        $moduleVersion = '{0}-{1}' -f $moduleVersion, $sqlServerModule.PrivateData.PSData.Prerelease
+                    }
                 }
 
                 return @{
