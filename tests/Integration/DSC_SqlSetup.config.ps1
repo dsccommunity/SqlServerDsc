@@ -353,7 +353,10 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 $moduleVersion = $null
                 $sqlServerModule = $null
 
-                $powerShellGetModule = Get-Module -Name 'PowerShellGet' -ListAvailable
+                # Fetch the newest PowerShellGet version.
+                $powerShellGetModule = Get-Module -Name 'PowerShellGet' -ListAvailable |
+                    Sort-Object -Property Version -Descending |
+                    Select-Object -First 1
 
                 if ($powerShellGetModule)
                 {
