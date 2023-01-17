@@ -339,7 +339,7 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
 
                 if ($getScriptResult.Result -eq '2.2.5')
                 {
-                    Write-Verbose -Message 'The node already contain the correct PowerShellGet version'
+                    Write-Verbose -Message 'The node already contain the required PowerShellGet version'
 
                     return $true
                 }
@@ -376,6 +376,10 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
             )
 
             SetScript  = {
+                # Forcibly import the newly installed modules.
+                Import-Module -Name 'PackageManagement' -MinimumVersion '1.4.8.1' -Force
+                Import-Module -Name 'PowerShellGet' -MinimumVersion '2.2.5' -Force
+
                 # Make sure PSGallery is trusted.
                 Set-PSRepository -Name 'PSGallery' -InstallationPolicy 'Trusted'
 
