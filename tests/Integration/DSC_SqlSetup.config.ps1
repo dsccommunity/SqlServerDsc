@@ -318,11 +318,13 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 Import-Module -Name 'PowerShellGet' -MinimumVersion '2.2.5' -Force
 
                 # Output version information for the loaded modules
-                Write-Verbose -Message 'Version information of loaded modules: {0}' -f @(
-                    (
-                        Get-Module -Name @('PackageManagement', 'PowerShellGet') |
-                        Select-Object -Property @('Name', 'Version') |
-                        Out-String
+                Write-Verbose -Message (
+                    'Version information of loaded modules: {0}' -f @(
+                        (
+                            Get-Module -Name @('PackageManagement', 'PowerShellGet') |
+                            Select-Object -Property @('Name', 'Version') |
+                            Out-String
+                        )
                     )
                 )
             }
@@ -342,7 +344,7 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                     return $true
                 }
 
-                Write-Verbose -Message 'The module PowerShellGet has version {0}, but expected version 2.2.5 to be installed.'
+                Write-Verbose -Message ('The module PowerShellGet has version {0}, but expected version 2.2.5 to be installed.' -f $getScriptResult.Result)
 
                 return $false
             }
