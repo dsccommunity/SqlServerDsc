@@ -862,7 +862,8 @@ function Import-SQLPSModule
     if ($availableModule)
     {
         $availableModuleName = $availableModule.Name
-        Write-Verbose -Message ($script:localizedData.PreferredModuleFound) -Verbose
+
+        Write-Verbose -Message ($script:localizedData.PreferredModuleFound -f $availableModuleName) -Verbose
     }
     else
     {
