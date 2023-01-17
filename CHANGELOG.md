@@ -90,7 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     to be able to run all unit tests, and all tests run by the extension
     are now run in a separate process to be able to handle changes in
     class-based resources.
-  - Integration tests now used SqlServer module version '22.0.30-preview'.
+  - Integration tests now used SqlServer module version '22.0.49-preview'.
 - `Install-SqlServerDsc`
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
 - SqlAgReplica
