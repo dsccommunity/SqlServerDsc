@@ -425,7 +425,9 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 $moduleVersion = $null
                 $sqlServerModule = $null
 
-                $sqlServerModule = Get-Module -Name 'SqlServer' -ListAvailable
+                $sqlServerModule = Get-Module -Name 'SqlServer' -ListAvailable |
+                    Sort-Object -Property Version -Descending |
+                    Select-Object -First 1
 
                 if ($sqlServerModule)
                 {
