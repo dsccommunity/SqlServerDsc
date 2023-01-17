@@ -376,10 +376,6 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
             )
 
             SetScript  = {
-                # Forcibly import the newly installed modules.
-                Import-Module -Name 'PackageManagement' -MinimumVersion '1.4.8.1' -Force
-                Import-Module -Name 'PowerShellGet' -MinimumVersion '2.2.5' -Force
-
                 # Make sure PSGallery is trusted.
                 Set-PSRepository -Name 'PSGallery' -InstallationPolicy 'Trusted'
 
@@ -428,6 +424,10 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
             GetScript  = {
                 $moduleVersion = $null
                 $sqlServerModule = $null
+
+                # Forcibly import the required modules that is required for using prerelease modules.
+                Import-Module -Name 'PackageManagement' -MinimumVersion '1.4.8.1' -Force
+                Import-Module -Name 'PowerShellGet' -MinimumVersion '2.2.5' -Force
 
                 $sqlServerModule = Get-Module -Name 'SqlServer' -ListAvailable |
                     Sort-Object -Property Version -Descending |
