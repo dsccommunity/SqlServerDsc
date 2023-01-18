@@ -2154,6 +2154,33 @@ function Invoke-SqlScript
 
     $null = $PSBoundParameters.Remove('Credential')
 
+    <#
+        TODO: This should be made an optional parameter.
+
+        This changes the kind of encryption to use when connecting to SQL Server.
+        Default is that encryption is turned on, which generates the following
+        exception when the correct certificates are not enabled:
+
+        "A connection was successfully established with the server, but then
+        an error occurred during the login process. (provider: SSL Provider,
+        error: 0 - The certificate chain was issued by an authority that is
+        not trusted.)"
+
+        This value maps to the Encrypt property SqlConnectionEncryptOption
+        on the SqlConnection object of the Microsoft.Data.SqlClient driver.
+
+        When not specified, the default value is `Mandatory`.
+
+        This parameter is new in the module SqlServer v22.x.
+
+        For more details, see the article [Connect to SQL Server with strict encryption](https://learn.microsoft.com/en-us/sql/relational-databases/security/networking/connect-with-strict-encryption?view=sql-server-ver16)
+        and [Configure SQL Server Database Engine for encrypting connections](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/configure-sql-server-encryption?view=sql-server-ver16).
+    #>
+    if ((Get-Command -Name Invoke-SqlCmd).Parameters.Keys -contains 'Encrypt')
+    {
+        $null = $PSBoundParameters.Add('Encrypt', 'Optional')
+    }
+
     Invoke-SqlCmd @PSBoundParameters
 }
 
