@@ -435,7 +435,7 @@ function New-ServerConnection
         $SqlServerName
     )
 
-    $serverConnection = New-Object Type 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList $SqlServerName
+    $serverConnection = New-Object -Type 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList $SqlServerName
 
     return $serverConnection
 }
@@ -802,7 +802,10 @@ function Register-DistributorPublisher
         Import-Module SqlServer
         $connectionInfo = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList @('testclu01a\SQL2014')
         # Missing assembly 'Microsoft.SqlServer.Rmo' in module SqlServer prevents this call from working.
+        # Tracked in issue https://github.com/microsoft/sqlmanagementobjects/issues/59.
         $replication = New-Object -TypeName 'Microsoft.SqlServer.Replication.ReplicationServer' -ArgumentList @($connectionInfo)
+
+
 #>
 function Get-RmoAssembly
 {
