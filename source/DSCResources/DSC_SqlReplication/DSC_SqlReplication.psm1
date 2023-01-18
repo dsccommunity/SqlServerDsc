@@ -46,7 +46,6 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 #>
 function Get-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='This resource explicitly loads assemblies from the GAC. This is being tracked in issue https://github.com/dsccommunity/SqlServerDsc/issues/1352')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -93,6 +92,8 @@ function Get-TargetResource
     Write-Verbose -Message (
         $script:localizedData.GetCurrentState -f $InstanceName
     )
+
+    Import-SQLPSModule
 
     $sqlMajorVersion = Get-SqlInstanceMajorVersion -InstanceName $InstanceName
     $localSqlName = Get-SqlLocalServerName -InstanceName $InstanceName
@@ -184,7 +185,6 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='This resource explicitly loads assemblies from the GAC. This is being tracked in issue https://github.com/dsccommunity/SqlServerDsc/issues/1352')]
     [CmdletBinding()]
     param
     (
@@ -226,6 +226,8 @@ function Set-TargetResource
         [System.Boolean]
         $UninstallWithForce = $true
     )
+
+    Import-SQLPSModule
 
     if (($DistributorMode -eq 'Remote') -and (-not $RemoteDistributor))
     {
@@ -347,7 +349,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='This resource explicitly loads assemblies from the GAC. This is being tracked in issue https://github.com/dsccommunity/SqlServerDsc/issues/1352')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='It is imported in Get-TargetResource, also this resource explicitly loads assemblies from the GAC. This is being tracked in issue https://github.com/dsccommunity/SqlServerDsc/issues/1352')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
