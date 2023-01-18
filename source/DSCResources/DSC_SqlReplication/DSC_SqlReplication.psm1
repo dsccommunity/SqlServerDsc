@@ -435,8 +435,7 @@ function New-ServerConnection
         $SqlServerName
     )
 
-    $connInfo = Get-ConnectionInfoAssembly -SqlMajorVersion $SqlMajorVersion
-    $serverConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $SqlServerName
+    $serverConnection = New-Object Type 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList $SqlServerName
 
     return $serverConnection
 }
@@ -774,51 +773,6 @@ function Register-DistributorPublisher
 
         New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
     }
-}
-
-<#
-    .SYNOPSIS
-        Returns a reference to the ConnectionInfo assembly.
-
-    .DESCRIPTION
-        Returns a reference to the ConnectionInfo assembly.
-
-    .PARAMETER SqlMajorVersion
-        Specifies the major version of the SQL Server instance, e.g. '14'.
-
-    .OUTPUTS
-        [System.Reflection.Assembly]
-
-        Returns a reference to the ConnectionInfo assembly.
-
-    .EXAMPLE
-        Get-ConnectionInfoAssembly -SqlMajorVersion '14'
-
-    .NOTES
-        This should normally work using Import-Module and New-Object instead of
-        using the method [System.Reflection.Assembly]::Load(). But due to a
-        missing assembly in the module SqlServer ('Microsoft.SqlServer.Rmo') we
-        cannot use this:
-
-        Import-Module SqlServer
-        $connectionInfo = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList @('testclu01a\SQL2014')
-        # Missing assembly 'Microsoft.SqlServer.Rmo' in module SqlServer prevents this call from working.
-        $replication = New-Object -TypeName 'Microsoft.SqlServer.Replication.ReplicationServer' -ArgumentList @($connectionInfo)
-#>
-function Get-ConnectionInfoAssembly
-{
-    [CmdletBinding()]
-    [OutputType([System.Reflection.Assembly])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $SqlMajorVersion
-    )
-
-    $connectionInfo = Import-Assembly -Name "Microsoft.SqlServer.ConnectionInfo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
-
-    return $connectionInfo
 }
 
 <#
