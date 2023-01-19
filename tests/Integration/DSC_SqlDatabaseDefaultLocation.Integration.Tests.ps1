@@ -45,6 +45,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         "$($script:dscResourceName)_Data_Config"
     ) {
         BeforeAll {
+            # Added to see if the integration tests do not fail intermittently (due to build worker slowness)
+            Start-Sleep -Seconds 10
+
             $configurationName = $_
         }
 
