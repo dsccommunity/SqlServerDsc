@@ -90,10 +90,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     to be able to run all unit tests, and all tests run by the extension
     are now run in a separate process to be able to handle changes in
     class-based resources.
-  - Integration tests now used _SqlServer_ module version 22.0.49-preview
-    when running against _SQL Server 2022_, when testing _SQL Server 2016_,
-    _SQL Server 2017_, and _SQL Server 2019_ the module version 21.1.18256
-    is used.
   - The AppVeyor configuration file was updated to include the possibility
     to run integration tests for SQL Server 2022.
 - `Install-SqlServerDsc`
@@ -112,6 +108,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Uninstall-SqlDscServer`
   - Was changed to support the SQL Server 2022 GA feature `AzureExtension`
     (that replaced the feature name `ARC`) ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
+- SqlReplication
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1801](https://github.com/dsccommunity/SqlServerDsc/issues/1801)).
+- SqlProtocol
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1802](https://github.com/dsccommunity/SqlServerDsc/issues/1802)).
+- SqlProtocolTcpIp
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1805](https://github.com/dsccommunity/SqlServerDsc/issues/1805)).
+- SqlServiceAccount
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1800](https://github.com/dsccommunity/SqlServerDsc/issues/1800)).
+- SqlDatabaseDefaultLocation
+  - When running the integration tests for the resource they failed intermittently
+    with an exception that it could not connect to the SQL instance, probably
+    because of lack of resources on the build worker. The first integration
+    test now wait for 10 seconds before the integration tests are run so that
+    the build worker can catch up.
+- SqlSetup
+  - Integration tests now used _SqlServer_ module version 22.0.49-preview
+    when running against _SQL Server 2022_, when testing _SQL Server 2016_,
+    _SQL Server 2017_, and _SQL Server 2019_ the module version 21.1.18256
+    is used.
+  - Integration tests now supports installing preview versions of the module
+    _SqlServer_.
+- SqlServerDsc.Common
+  - `Import-SQLPSModule`
+    - Small changed to the localized string verbose message when the preferred
+      module (_SqlServer_) is not found.
 
 ### Fixed
 
