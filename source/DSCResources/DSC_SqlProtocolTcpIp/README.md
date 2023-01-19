@@ -23,4 +23,7 @@ For more information about static and dynamic ports read the article
 
 ## Known issues
 
+* When using the resource against an SQL Server 2022 instance, the module
+  _SqlServer_ v22.0.49-preview or newer must be installed.
+
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlProtocolTcpIp).
