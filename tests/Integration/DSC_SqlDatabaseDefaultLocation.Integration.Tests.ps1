@@ -50,6 +50,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
         AfterEach {
             Wait-ForIdleLcm
+
+            # Added to see if the integration tests do not fail intermittently (due to build worker slowness)
+            Start-Sleep -Seconds 10
         }
 
         It 'Should compile and apply the MOF without throwing' {
