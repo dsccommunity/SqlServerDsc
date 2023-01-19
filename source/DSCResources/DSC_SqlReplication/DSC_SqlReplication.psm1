@@ -437,7 +437,28 @@ function New-ServerConnection
         $SqlServerName
     )
 
-    $serverConnection = New-Object -Type 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList $SqlServerName
+    if ($SqlMajorVersion -eq 16)
+    {
+        <#
+            For SQL Server 2022 the object must be created with New-Object and
+            also requires the module SqlServer v22 (minimum v22.0.49-preview).
+        #>
+        $serverConnection = New-Object -Type 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList $SqlServerName
+    }
+    else
+    {
+        <#
+            SQL Server 2016, 2017, and 2019 must use the assembly in the GAC. If the
+            method for SQL Server 2022 is used it throws the error:
+
+            Cannot find an overload for "ReplicationServer" and the argument count: "1".
+                + CategoryInfo          : InvalidOperation: (:) [], CimException
+                + FullyQualifiedErrorId : ConstructorInvokedThrowException,Microsoft.PowerShell.Commands.NewObjectCommand
+                + PSComputerName        : localhost
+        #>
+        $connInfo = Get-ConnectionInfoAssembly -SqlMajorVersion $SqlMajorVersion
+        $serverConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $SqlServerName
+    }
 
     return $serverConnection
 }
@@ -779,6 +800,51 @@ function Register-DistributorPublisher
 
 <#
     .SYNOPSIS
+        Returns a reference to the ConnectionInfo assembly.
+
+    .DESCRIPTION
+        Returns a reference to the ConnectionInfo assembly.
+
+    .PARAMETER SqlMajorVersion
+        Specifies the major version of the SQL Server instance, e.g. '14'.
+
+    .OUTPUTS
+        [System.Reflection.Assembly]
+
+        Returns a reference to the ConnectionInfo assembly.
+
+    .EXAMPLE
+        Get-ConnectionInfoAssembly -SqlMajorVersion '14'
+
+    .NOTES
+        This should normally work using Import-Module and New-Object instead of
+        using the method [System.Reflection.Assembly]::Load(). But due to a
+        missing assembly in the module SqlServer ('Microsoft.SqlServer.Rmo') we
+        cannot use this:
+
+        Import-Module SqlServer
+        $connectionInfo = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList @('testclu01a\SQL2014')
+        # Missing assembly 'Microsoft.SqlServer.Rmo' in module SqlServer prevents this call from working.
+        $replication = New-Object -TypeName 'Microsoft.SqlServer.Replication.ReplicationServer' -ArgumentList @($connectionInfo)
+#>
+function Get-ConnectionInfoAssembly
+{
+    [CmdletBinding()]
+    [OutputType([System.Reflection.Assembly])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $SqlMajorVersion
+    )
+
+    $connectionInfo = Import-Assembly -Name "Microsoft.SqlServer.ConnectionInfo, Version=$SqlMajorVersion.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
+
+    return $connectionInfo
+}
+
+<#
+    .SYNOPSIS
         Returns a reference to the RMO assembly.
 
     .DESCRIPTION
@@ -806,8 +872,6 @@ function Register-DistributorPublisher
         # Missing assembly 'Microsoft.SqlServer.Rmo' in module SqlServer prevents this call from working.
         # Tracked in issue https://github.com/microsoft/sqlmanagementobjects/issues/59.
         $replication = New-Object -TypeName 'Microsoft.SqlServer.Replication.ReplicationServer' -ArgumentList @($connectionInfo)
-
-
 #>
 function Get-RmoAssembly
 {
