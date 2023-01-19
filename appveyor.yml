@@ -20,7 +20,8 @@ environment:
   # DEBUG: Comment and un-comment the different SQL Server version that should be tested.
   - TEST_CONFIGURATION: Integration_SQL2016
   - TEST_CONFIGURATION: Integration_SQL2017
-  #- TEST_CONFIGURATION: Integration_SQL2019
+  - TEST_CONFIGURATION: Integration_SQL2019
+  - TEST_CONFIGURATION: Integration_SQL2022
 
 # DEBUG: See section on_finish last in this file on how to block build to keep RDP open.
 # DEBUG: If running on own AppVeyor project, comment the line below that skips if it is not a pull request
@@ -75,9 +76,9 @@ test_script:
         #'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
         ## Group 3
         #'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
-        'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
-        #'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
+        'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlAudit.Integration.Tests.ps1'
         ## Group 4
         #'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'

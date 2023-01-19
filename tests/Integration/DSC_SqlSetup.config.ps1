@@ -26,53 +26,61 @@ else
         '160'
         {
             $versionSpecificData = @{
-                SqlServerInstanceIdPrefix = 'MSSQL16'
+                SqlServerInstanceIdPrefix       = 'MSSQL16'
                 AnalysisServiceInstanceIdPrefix = 'MSAS16'
-                IsoImageName = 'SQL2022.iso'
+                IsoImageName                    = 'SQL2022.iso'
 
                 # Additional variables required as ISO is downloaded via additional EXE
-                DownloadExeName = 'SQL2022_Download.exe'
-                DownloadIsoName = 'SQLServer2022-x64-ENU-Dev.iso'
+                DownloadExeName                 = 'SQL2022_Download.exe'
+                DownloadIsoName                 = 'SQLServer2022-x64-ENU-Dev.iso'
 
                 # Features CONN, BC, SDK, SNAC_SDK, DREPLAY_CLT, DREPLAY_CTLR are no longer supported in 2022.
-                SupportedFeatures = 'SQLENGINE,REPLICATION'
+                SupportedFeatures               = 'SQLENGINE,REPLICATION'
+
+                SqlServerModuleVersion          = '22.0.49-preview' #21.1.18256
             }
         }
 
         '150'
         {
             $versionSpecificData = @{
-                SqlServerInstanceIdPrefix = 'MSSQL15'
+                SqlServerInstanceIdPrefix       = 'MSSQL15'
                 AnalysisServiceInstanceIdPrefix = 'MSAS15'
-                IsoImageName = 'SQL2019.iso'
+                IsoImageName                    = 'SQL2019.iso'
 
                 # Additional variables required as ISO is downloaded via additional EXE
-                DownloadExeName = 'SQL2019_Download.exe'
-                DownloadIsoName = 'SQLServer2019-x64-ENU-Dev.iso'
+                DownloadExeName                 = 'SQL2019_Download.exe'
+                DownloadIsoName                 = 'SQLServer2019-x64-ENU-Dev.iso'
 
-                SupportedFeatures = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+                SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+
+                SqlServerModuleVersion          = '21.1.18256'
             }
         }
 
         '140'
         {
             $versionSpecificData = @{
-                SqlServerInstanceIdPrefix = 'MSSQL14'
+                SqlServerInstanceIdPrefix       = 'MSSQL14'
                 AnalysisServiceInstanceIdPrefix = 'MSAS14'
-                IsoImageName = 'SQL2017.iso'
+                IsoImageName                    = 'SQL2017.iso'
 
-                SupportedFeatures = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+                SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+
+                SqlServerModuleVersion          = '21.1.18256'
             }
         }
 
         '130'
         {
             $versionSpecificData = @{
-                SqlServerInstanceIdPrefix = 'MSSQL13'
+                SqlServerInstanceIdPrefix       = 'MSSQL13'
                 AnalysisServiceInstanceIdPrefix = 'MSAS13'
-                IsoImageName = 'SQL2016.iso'
+                IsoImageName                    = 'SQL2016.iso'
 
-                SupportedFeatures = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+                SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+
+                SqlServerModuleVersion          = '21.1.18256'
             }
         }
     }
@@ -86,7 +94,7 @@ else
             @{
                 NodeName                                = 'localhost'
 
-                SqlServerModuleVersion                  = '22.0.49-preview'
+                SqlServerModuleVersion                  = $versionSpecificData.SqlServerModuleVersion
                 SqlServerModuleVersionIsPrerelease      = $true
 
                 SqlServerInstanceIdPrefix               = $versionSpecificData.SqlServerInstanceIdPrefix
@@ -99,9 +107,9 @@ else
                 <#
                     Analysis Services Multi-dimensional properties.
                 #>
-                AnalysisServicesMultiInstanceName     = 'DSCMULTI'
-                AnalysisServicesMultiFeatures         = 'AS'
-                AnalysisServicesMultiServerMode       = 'MULTIDIMENSIONAL'
+                AnalysisServicesMultiInstanceName       = 'DSCMULTI'
+                AnalysisServicesMultiFeatures           = 'AS'
+                AnalysisServicesMultiServerMode         = 'MULTIDIMENSIONAL'
 
                 <#
                     Analysis Services Tabular properties.
@@ -130,8 +138,14 @@ else
                 ForceReboot                             = $false
 
                 # Properties for downloading media
-                DownloadExePath                         = $(if($versionSpecificData.DownloadExeName){Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.DownloadExeName})
-                DownloadIsoPath                         = $(if($versionSpecificData.DownloadIsoName){Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.DownloadIsoName})
+                DownloadExePath                         = $(if ($versionSpecificData.DownloadExeName)
+                    {
+                        Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.DownloadExeName
+                    })
+                DownloadIsoPath                         = $(if ($versionSpecificData.DownloadIsoName)
+                    {
+                        Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.DownloadIsoName
+                    })
 
                 # Properties for mounting media
                 ImagePath                               = $env:IsoImagePath
@@ -322,8 +336,8 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                     'Version information of loaded modules: {0}' -f @(
                         (
                             Get-Module -Name @('PackageManagement', 'PowerShellGet') |
-                            Select-Object -Property @('Name', 'Version') |
-                            Out-String
+                                Select-Object -Property @('Name', 'Version') |
+                                Out-String
                         )
                     )
                 )
@@ -371,7 +385,7 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
 
         Script 'InstallSqlServerModule'
         {
-            DependsOn             = @(
+            DependsOn  = @(
                 '[Script]InstallPowerShellGet'
             )
 
@@ -386,13 +400,13 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
                 $installModuleParameters = @{
-                    Name = 'SqlServer'
-                    Scope = 'AllUsers'
-                    Force = $true
+                    Name            = 'SqlServer'
+                    Scope           = 'AllUsers'
+                    Force           = $true
                     RequiredVersion = $Using:Node.SqlServerModuleVersion
                     AllowPrerelease = $Using:Node.SqlServerModuleVersionIsPrerelease
-                    AllowClobber = $true # Needed to handle existens of module SQLPS.
-                    PassThru = $true
+                    AllowClobber    = $true # Needed to handle existens of module SQLPS.
+                    PassThru        = $true
                 }
 
                 # Install the required SqlServer module version.
@@ -503,7 +517,7 @@ Configuration DSC_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             SkipRule               = 'ServerCoreBlockUnsupportedSxSCheck'
 
             # This must be set if using SYSTEM account to install.
-            SQLSysAdminAccounts   = @(
+            SQLSysAdminAccounts    = @(
                 Split-Path -Path $SqlAdministratorCredential.UserName -Leaf
                 <#
                     Must have permission to properties IsClustered and
@@ -544,8 +558,8 @@ Configuration DSC_SqlSetup_StopServicesInstance_Config
         #>
         Service ('StopSqlServerInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
         {
-            Name   = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
-            State  = 'Stopped'
+            Name  = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
+            State = 'Stopped'
         }
     }
 }
@@ -733,8 +747,8 @@ Configuration DSC_SqlSetup_StartServicesInstance_Config
         # Start the Database Engine named instance.
         Service ('StartSqlServerInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
         {
-            Name   = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
-            State  = 'Running'
+            Name  = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
+            State = 'Running'
         }
 
         # Starting the SQL Server Agent service for the named instance.
