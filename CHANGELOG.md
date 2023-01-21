@@ -75,6 +75,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added compatibility levels for SQL Server 2022 (major version 16).
 - SqlSetup
   - Paths for SQL Server 2022 are correctly returned by Get.
+- SqlRS
+  - Added optional parameter `Encrypt`. Parameter `Encrypt` controls whether
+    the connection used by `Invoke-SqlCmd should enforce encryption. This
+    parameter can only be used together with the module _SqlServer_ v22.x
+    (minimum v22.0.49-preview). The parameter will be ignored if an older
+    major versions of the module _SqlServer_ is used.
+  Encryption is mandatory by default, which generates the following exception
+  when the correct certificates are not present:
 - The public commands `Add-SqlDscNode`, `Complete-SqlDscFailoverCluster`,
   `Complete-SqlDscImage`, `Install-SqlDscServer`, and `Repair-SqlDscServer`
   now support the setup argument `ProductCoveredBySA` ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).

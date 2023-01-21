@@ -176,6 +176,7 @@ Configuration DSC_SqlRS_InstallReportingServices_Config
             #>
             DatabaseServerName   = $Node.DatabaseServerName
             DatabaseInstanceName = $Node.DatabaseInstanceName
+            Encrypt              = 'Optional'
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -200,6 +201,7 @@ Configuration DSC_SqlRS_InstallReportingServices_ConfigureSsl_Config
             # Instance name for the Reporting Services.
             InstanceName         = $Node.InstanceName
             UseSsl               = $true
+            Encrypt              = 'Optional'
 
             <#
                 Instance for Reporting Services databases.
@@ -231,6 +233,7 @@ Configuration DSC_SqlRS_InstallReportingServices_RestoreToNoSsl_Config
             # Instance name for the Reporting Services.
             InstanceName         = $Node.InstanceName
             UseSsl               = $false
+            Encrypt              = 'Optional'
 
             <#
                 Instance for Reporting Services databases.
