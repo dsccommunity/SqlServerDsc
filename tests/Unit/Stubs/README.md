@@ -111,10 +111,12 @@ that ends just before the first command. Remove all that code.
 >All the removed types are are generated into a separate stub C# file (`SMO.cs`).
 >See [Generate SMO stubs](#generate-smo-stubs) for more information.
 
-In Visual Studio Code, open the generated file. Format the documen by pressing
+<!-- markdownlint-disable MD033 - Line length -->
+In Visual Studio Code, open the generated file. Format the document by pressing
 (on Windows) <kbd>Shift</kbd> + <kbd>Alt</kbd> + <kbd>F</kbd>. It also possible
 from the Command Palette <kbd>F1</kbd> or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>,
 then search for `Format Document`.
+<!-- markdownlint-enable MD033 - Line length -->
 
 ### Generate SMO stubs
 
