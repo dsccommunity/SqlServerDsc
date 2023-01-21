@@ -2098,6 +2098,31 @@ function Test-ActiveNode
         scripting variables that share a format such as $(variable_name). For more
         information how to use this, please go to the help documentation for
         [Invoke-Sqlcmd](https://docs.microsoft.com/en-us/powershell/module/sqlserver/Invoke-Sqlcmd).
+
+    .PARAMETER Encrypt
+        Specifies how encryption should be enforced. When not specified, the default
+        value is `Mandatory`.
+
+        This value maps to the Encrypt property SqlConnectionEncryptOption
+        on the SqlConnection object of the Microsoft.Data.SqlClient driver.
+
+        This parameter can only be used when the module SqlServer v22.x.x is installed.
+
+    .NOTES
+        Parameter `Encrypt` controls whether the connection used by `Invoke-SqlCmd`
+        should enforce encryption. This parameter can only be used together with the
+        module _SqlServer_ v22.x (minimum v22.0.49-preview). The parameter will be
+        ignored if an older major versions of the module _SqlServer_ is used.
+        Encryption is mandatory by default, which generates the following exception
+        when the correct certificates are not present:
+
+        "A connection was successfully established with the server, but then
+        an error occurred during the login process. (provider: SSL Provider,
+        error: 0 - The certificate chain was issued by an authority that is
+        not trusted.)"
+
+        For more details, see the article [Connect to SQL Server with strict encryption](https://learn.microsoft.com/en-us/sql/relational-databases/security/networking/connect-with-strict-encryption?view=sql-server-ver16)
+        and [Configure SQL Server Database Engine for encrypting connections](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/configure-sql-server-encryption?view=sql-server-ver16).
 #>
 function Invoke-SqlScript
 {
@@ -2131,7 +2156,12 @@ function Invoke-SqlScript
 
         [Parameter()]
         [System.Boolean]
-        $DisableVariables
+        $DisableVariables,
+
+        [Parameter()]
+        [ValidateSet('Mandatory', 'Optional', 'Strict')]
+        [System.String]
+        $Encrypt
     )
 
     Import-SQLPSModule
@@ -2154,31 +2184,14 @@ function Invoke-SqlScript
 
     $null = $PSBoundParameters.Remove('Credential')
 
-    <#
-        TODO: This should be made an optional parameter.
-
-        This changes the kind of encryption to use when connecting to SQL Server.
-        Default is that encryption is turned on, which generates the following
-        exception when the correct certificates are not enabled:
-
-        "A connection was successfully established with the server, but then
-        an error occurred during the login process. (provider: SSL Provider,
-        error: 0 - The certificate chain was issued by an authority that is
-        not trusted.)"
-
-        This value maps to the Encrypt property SqlConnectionEncryptOption
-        on the SqlConnection object of the Microsoft.Data.SqlClient driver.
-
-        When not specified, the default value is `Mandatory`.
-
-        This parameter is new in the module SqlServer v22.x.
-
-        For more details, see the article [Connect to SQL Server with strict encryption](https://learn.microsoft.com/en-us/sql/relational-databases/security/networking/connect-with-strict-encryption?view=sql-server-ver16)
-        and [Configure SQL Server Database Engine for encrypting connections](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/configure-sql-server-encryption?view=sql-server-ver16).
-    #>
-    if ((Get-Command -Name Invoke-SqlCmd).Parameters.Keys -contains 'Encrypt')
+    if ($PSBoundParameters.ContainsKey('Encrypt'))
     {
-        $null = $PSBoundParameters.Add('Encrypt', 'Optional')
+        $commandInvokeSqlCmd = Get-Command -Name 'Invoke-SqlCmd'
+
+        if ($null -ne $commandInvokeSqlCmd -and $commandInvokeSqlCmd.Parameters.Keys -notcontains 'Encrypt')
+        {
+            $null = $PSBoundParameters.Remove('Encrypt')
+        }
     }
 
     Invoke-SqlCmd @PSBoundParameters
