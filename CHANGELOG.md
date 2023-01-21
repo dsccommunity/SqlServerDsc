@@ -128,12 +128,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The resource now supports SQL Server 2022. The resource will require
     the module _SqlServer_ v22.0.49-preview or newer when used against an
     SQL Server 2022 instance ([issue #1800](https://github.com/dsccommunity/SqlServerDsc/issues/1800)).
-- SqlDatabaseDefaultLocation
-  - When running the integration tests for the resource they failed intermittently
-    with an exception that it could not connect to the SQL instance, probably
-    because of lack of resources on the build worker. The first integration
-    test now wait for 10 seconds before the integration tests are run so that
-    the build worker can catch up.
 - SqlSetup
   - Integration tests now used _SqlServer_ module version 22.0.49-preview
     when running against _SQL Server 2022_, when testing _SQL Server 2016_,
