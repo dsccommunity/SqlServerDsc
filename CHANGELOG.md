@@ -35,6 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `ConvertTo-Reason`
     - `Get-ClassName`
     - `Get-LocalizedDataRecursive`
+  - Added documentation how to generate stub modules for the unit tests.
+    The documentation can be found in ['tests/Unit/Stubs`](https://github.com/dsccommunity/SqlServerDsc/tree/main/tests/Unit/Stubs).
 
 ### Added
 
@@ -92,6 +94,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     class-based resources.
   - The AppVeyor configuration file was updated to include the possibility
     to run integration tests for SQL Server 2022.
+  - The stubs in `SqlServerStub.psm1` ar enow based on the commands from the
+    module SqlServer v22.0.49-preview.
 - `Install-SqlServerDsc`
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
 - SqlAgReplica
