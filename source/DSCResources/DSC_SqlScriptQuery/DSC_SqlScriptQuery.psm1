@@ -148,6 +148,7 @@ function Get-TargetResource
         Variable         = [System.String[]] $Variable
         DisableVariables = [System.Boolean] $DisableVariables
         GetResult        = [System.String[]] $getResult
+        Encrypt          = [System.String] $Encrypt
     }
 
     return $returnValue

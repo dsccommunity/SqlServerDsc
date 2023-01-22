@@ -79,6 +79,7 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
                 SetFilePath  = 'set.sql'
                 GetFilePath  = 'get.sql'
                 TestFilePath = 'test.sql'
+                Encrypt      = 'Optional'
             }
         }
     }
@@ -171,6 +172,7 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
                 SetFilePath  = 'set.sql'
                 GetFilePath  = 'get.sql'
                 TestFilePath = 'test.sql'
+                Encrypt      = 'Optional'
             }
         }
     }
@@ -243,6 +245,7 @@ Describe 'SqlScript\Test-TargetResource' {
                 SetFilePath  = 'set.sql'
                 GetFilePath  = 'get.sql'
                 TestFilePath = 'test.sql'
+                Encrypt      = 'Optional'
             }
         }
     }
