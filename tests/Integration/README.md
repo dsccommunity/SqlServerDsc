@@ -24,6 +24,19 @@ the build worker online after the build finishes uncomment the line in
 `appveyor.yml`. The build worker will always be terminated after 60 minutes
 which is the run time open source projects gets.
 
+## SqlServer module
+
+There is a difference what module version of [_SqlServer_](https://www.powershellgallery.com/packages/SqlServer)
+is used for what SQL Server release. The integration tests for SqlSetup_
+installs the required module version.
+
+SQL Server release | SqlServer module version
+--- | ---
+SQL Server 2016 | 21.1.18256
+SQL Server 2017 | 21.1.18256
+SQL Server 2019 | 21.1.18256
+SQL Server 2022 | 22.0.49-preview
+
 ## Depends On
 
 For it to be easier to write integration tests for a resource that depends on

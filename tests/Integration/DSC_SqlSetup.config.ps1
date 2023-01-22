@@ -37,7 +37,7 @@ else
                 # Features CONN, BC, SDK, SNAC_SDK, DREPLAY_CLT, DREPLAY_CTLR are no longer supported in 2022.
                 SupportedFeatures               = 'SQLENGINE,REPLICATION'
 
-                SqlServerModuleVersion          = '22.0.49-preview' #21.1.18256
+                SqlServerModuleVersion          = '22.0.49-preview'
             }
         }
 
@@ -301,6 +301,10 @@ Configuration DSC_SqlSetup_CreateDependencies_Config
     .NOTES
         This module might already be installed on the build worker. This is needed
         to install SQL Server Analysis Services instances.
+
+        The SqlServer module is purposely not added to 'RequiredModule.psd1' so
+        that it does not conflict with the SqlServerStubs module that is used by
+        unit tests.
 #>
 Configuration DSC_SqlSetup_InstallSqlServerModule_Config
 {

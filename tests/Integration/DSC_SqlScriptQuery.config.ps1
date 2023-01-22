@@ -87,7 +87,7 @@ Configuration DSC_SqlScriptQuery_RunSqlScriptQueryAsWindowsUser_Config
 
 <#
     .SYNOPSIS
-        Runs the SQL query as a SQL login.F
+        Runs the SQL query as a SQL login.
 #>
 Configuration DSC_SqlScriptQuery_RunSqlScriptQueryAsSqlUser_Config
 {
