@@ -443,7 +443,7 @@ function New-ServerConnection
             For SQL Server 2022 the object must be created with New-Object and
             also requires the module SqlServer v22 (minimum v22.0.49-preview).
         #>
-        $serverConnection = New-Object -Type 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList $SqlServerName
+        $serverConnection = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList $SqlServerName
     }
     else
     {
@@ -457,7 +457,7 @@ function New-ServerConnection
                 + PSComputerName        : localhost
         #>
         $connInfo = Get-ConnectionInfoAssembly -SqlMajorVersion $SqlMajorVersion
-        $serverConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $SqlServerName
+        $serverConnection = New-Object -TypeName $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') -ArgumentList $SqlServerName
     }
 
     return $serverConnection
