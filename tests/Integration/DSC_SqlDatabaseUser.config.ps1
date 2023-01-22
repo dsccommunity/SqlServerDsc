@@ -258,6 +258,7 @@ CREATE CERTIFICATE [$(CertificateName)]
                 ('DatabaseName={0}' -f $Node.DatabaseName)
                 ('CertificateName={0}' -f $Node.CertificateName)
             )
+            Encrypt      = 'Optional'
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -323,6 +324,7 @@ CREATE ASYMMETRIC KEY [$(AsymmetricKeyName)]
                 ('DatabaseName={0}' -f $Node.DatabaseName)
                 ('AsymmetricKeyName={0}' -f $Node.AsymmetricKeyName)
             )
+            Encrypt      = 'Optional'
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `

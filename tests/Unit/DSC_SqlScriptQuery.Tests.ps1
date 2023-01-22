@@ -79,6 +79,7 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
                 GetQuery     = "GetQuery;"
                 TestQuery    = "TestQuery;"
                 SetQuery     = "SetQuery;"
+                Encrypt      = 'Optional'
             }
         }
     }
@@ -171,6 +172,7 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
                 GetQuery     = "GetQuery;"
                 TestQuery    = "TestQuery;"
                 SetQuery     = "SetQuery;"
+                Encrypt      = 'Optional'
             }
         }
     }
@@ -243,6 +245,7 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
                 GetQuery     = "GetQuery;"
                 TestQuery    = "TestQuery;"
                 SetQuery     = "SetQuery;"
+                Encrypt      = 'Optional'
             }
         }
     }

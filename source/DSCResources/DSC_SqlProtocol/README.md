@@ -25,6 +25,8 @@ For more information about protocol properties look at the following articles:
   not have access then the correct credential must be provided in
   the built-in parameter `PSDscRunAsCredential`. If not the following error
   can appear; `An internal error occurred`.
+* When using the resource against an SQL Server 2022 instance, the module
+  _SqlServer_ v22.0.49-preview or newer must be installed.
 
 ## Known issues
 

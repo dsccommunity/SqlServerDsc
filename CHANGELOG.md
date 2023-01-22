@@ -35,6 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `ConvertTo-Reason`
     - `Get-ClassName`
     - `Get-LocalizedDataRecursive`
+  - Added documentation how to generate stub modules for the unit tests.
+    The documentation can be found in ['tests/Unit/Stubs`](https://github.com/dsccommunity/SqlServerDsc/tree/main/tests/Unit/Stubs).
 
 ### Added
 
@@ -73,6 +75,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added compatibility levels for SQL Server 2022 (major version 16).
 - SqlSetup
   - Paths for SQL Server 2022 are correctly returned by Get.
+- SqlRS
+  - Added optional parameter `Encrypt`. Parameter `Encrypt` controls whether
+    the connection used by `Invoke-SqlCmd should enforce encryption. This
+    parameter can only be used together with the module _SqlServer_ v22.x
+    (minimum v22.0.49-preview). The parameter will be ignored if an older
+    major versions of the module _SqlServer_ is used.
+- SqlScript
+  - Added optional parameter `Encrypt`. Parameter `Encrypt` controls whether
+    the connection used by `Invoke-SqlCmd should enforce encryption. This
+    parameter can only be used together with the module _SqlServer_ v22.x
+    (minimum v22.0.49-preview). The parameter will be ignored if an older
+    major versions of the module _SqlServer_ is used.
+- SqlScriptQuery
+  - Added optional parameter `Encrypt`. Parameter `Encrypt` controls whether
+    the connection used by `Invoke-SqlCmd should enforce encryption. This
+    parameter can only be used together with the module _SqlServer_ v22.x
+    (minimum v22.0.49-preview). The parameter will be ignored if an older
+    major versions of the module _SqlServer_ is used.
 - The public commands `Add-SqlDscNode`, `Complete-SqlDscFailoverCluster`,
   `Complete-SqlDscImage`, `Install-SqlDscServer`, and `Repair-SqlDscServer`
   now support the setup argument `ProductCoveredBySA` ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
@@ -90,6 +110,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     to be able to run all unit tests, and all tests run by the extension
     are now run in a separate process to be able to handle changes in
     class-based resources.
+  - The AppVeyor configuration file was updated to include the possibility
+    to run integration tests for SQL Server 2022.
+  - The stubs in `SqlServerStub.psm1` are now based on the commands from the
+    module SqlServer v22.0.49-preview.
 - `Install-SqlServerDsc`
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
 - SqlAgReplica
@@ -106,6 +130,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Uninstall-SqlDscServer`
   - Was changed to support the SQL Server 2022 GA feature `AzureExtension`
     (that replaced the feature name `ARC`) ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
+- SqlReplication
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1801](https://github.com/dsccommunity/SqlServerDsc/issues/1801)).
+- SqlProtocol
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1802](https://github.com/dsccommunity/SqlServerDsc/issues/1802)).
+- SqlProtocolTcpIp
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1805](https://github.com/dsccommunity/SqlServerDsc/issues/1805)).
+- SqlServiceAccount
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1800](https://github.com/dsccommunity/SqlServerDsc/issues/1800)).
+- SqlSetup
+  - Integration tests now used _SqlServer_ module version 22.0.49-preview
+    when running against _SQL Server 2022_, when testing _SQL Server 2016_,
+    _SQL Server 2017_, and _SQL Server 2019_ the module version 21.1.18256
+    is used.
+  - Integration tests now supports installing preview versions of the module
+    _SqlServer_.
+- SqlServerDsc.Common
+  - `Import-SQLPSModule`
+    - Small changed to the localized string verbose message when the preferred
+      module (_SqlServer_) is not found.
+  - `Invoke-SqlScript`
+    - Added the optional parameter `Encrypt` which controls whether the connection
+      used by `Invoke-SqlCmd` should enforce encryption. This parameter can
+      only be used together with the module _SqlServer_ v22.x (minimum
+      v22.0.49-preview). The parameter will be ignored if an older major
+      versions of the module _SqlServer_ is used.
 
 ### Fixed
 
@@ -326,7 +383,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlAlwaysOnService
   - BREAKING CHANGE: The parameter `IsHadrEnabled` is no longer returned by
     `Get-TargetResource`. The `Ensure` parameter now returns `Present` if
-    Always On HADR is enabled and `Absent` if it is disabled.
+    Always On High Availability Diaster Recovery is enabled and `Absent`
+    if it is disabled.
 - SqlDatabasePermission
   - BREAKING CHANGE: The resource has been refactored. The parameters
     `ParameterState` and `Permissions` has been replaced by parameters
@@ -443,8 +501,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ConvertTo-Reason`
   - Fix to handle `$null` values on Windows PowerShell.
   - If the property name contain the word 'Path' the value will be parsed to
-    replace backslash or slashes at the end of the string, e.g. `'/mypath/'`
-    will become `'/mypath'`.
+    replace backslash or slashes at the end of the string, e.g. `'/myPath/'`
+    will become `'/myPath'`.
 - `ResourceBase`
   - Now handles `Ensure` correctly from derived `GetCurrentState()`. But
     requires that the `GetCurrentState()` only return key property if object
