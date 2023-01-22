@@ -112,7 +112,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     class-based resources.
   - The AppVeyor configuration file was updated to include the possibility
     to run integration tests for SQL Server 2022.
-  - The stubs in `SqlServerStub.psm1` ar enow based on the commands from the
+  - The stubs in `SqlServerStub.psm1` are now based on the commands from the
     module SqlServer v22.0.49-preview.
 - `Install-SqlServerDsc`
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
@@ -383,7 +383,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlAlwaysOnService
   - BREAKING CHANGE: The parameter `IsHadrEnabled` is no longer returned by
     `Get-TargetResource`. The `Ensure` parameter now returns `Present` if
-    Always On HADR is enabled and `Absent` if it is disabled.
+    Always On High Availability Diaster Recovery is enabled and `Absent`
+    if it is disabled.
 - SqlDatabasePermission
   - BREAKING CHANGE: The resource has been refactored. The parameters
     `ParameterState` and `Permissions` has been replaced by parameters
@@ -500,8 +501,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ConvertTo-Reason`
   - Fix to handle `$null` values on Windows PowerShell.
   - If the property name contain the word 'Path' the value will be parsed to
-    replace backslash or slashes at the end of the string, e.g. `'/mypath/'`
-    will become `'/mypath'`.
+    replace backslash or slashes at the end of the string, e.g. `'/myPath/'`
+    will become `'/myPath'`.
 - `ResourceBase`
   - Now handles `Ensure` correctly from derived `GetCurrentState()`. But
     requires that the `GetCurrentState()` only return key property if object
