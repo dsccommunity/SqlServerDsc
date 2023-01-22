@@ -122,6 +122,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Table1_Config
                 ('SchemaName={0}' -f $Node.SchemaName)
                 ('TableName={0}' -f $Node.TableName)
             )
+            Encrypt              = 'Optional'
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -157,6 +158,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Procedure1_Config
                 ('SchemaName={0}' -f $Node.SchemaName)
                 ('ProcedureName={0}' -f $Node.ProcedureName1)
             )
+            Encrypt              = 'Optional'
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -192,6 +194,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Procedure2_Config
                 ('SchemaName={0}' -f $Node.SchemaName)
                 ('ProcedureName={0}' -f $Node.ProcedureName2)
             )
+            Encrypt              = 'Optional'
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
