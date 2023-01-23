@@ -2406,7 +2406,7 @@ in a future release.
       MSFT\_xSQLServerEndpointPermission.psm1, MSFT\_xSQLServerEndpointState.psm1,
       MSFT\_xSQLServerNetwork.psm1, MSFT\_xSQLServerPermission.psm1,
       MSFT\_xSQLServerReplication.psm1, MSFT\_xSQLServerScript.psm1,
-      SQLPSStub.psm1, SQLServerStub.psm1.
+      SQLPSStub.psm1, SqlServerStub.psm1.
   - Opt-in for script files common tests ([issue #707](https://github.com/dsccommunity/SqlServerDsc/issues/707)).
     - Removed Byte Order Mark (BOM) from the files; DSCClusterSqlBuild.ps1,
       DSCFCISqlBuild.ps1, DSCSqlBuild.ps1, DSCSQLBuildEncrypted.ps1,
