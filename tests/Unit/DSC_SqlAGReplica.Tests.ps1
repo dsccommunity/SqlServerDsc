@@ -1242,7 +1242,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         ConnectionModeInSecondaryRole = 'AllowReadIntentConnectionsOnly'
                         EndpointHostName              = 'AnotherEndpointHostName'
                         FailoverMode                  = 'Automatic'
-                        ReadOnlyRoutingConnectionUrl  = 'TCP://TestHost.domain.com:1433'
+                        ReadOnlyRoutingConnectionUrl  = 'TCP://Server1.domain.com:1433'
                         ReadOnlyRoutingList           = @('Server2', 'Server1')
                     }
 
@@ -1278,7 +1278,18 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                 Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Update-AvailabilityGroupReplica -ParameterFilter {
+                    $AvailabilityGroupReplica.AvailabilityMode              -eq 'SynchronousCommit' -and
+                    $AvailabilityGroupReplica.BackupPriority                -eq 60 -and
+                    $AvailabilityGroupReplica.ConnectionModeInPrimaryRole   -eq 'AllowReadWriteConnections' -and
+                    $AvailabilityGroupReplica.ConnectionModeInSecondaryRole -eq 'AllowReadIntentConnectionsOnly' -and
+                    $AvailabilityGroupReplica.EndpointHostName              -eq 'AnotherEndpointHostName' -and
+                    $AvailabilityGroupReplica.FailoverMode                  -eq 'Automatic' -and
+                    $AvailabilityGroupReplica.ReadOnlyRoutingConnectionUrl  -eq 'TCP://AnotherEndpointHostName:1433' -and
+                    $AvailabilityGroupReplica.ReadOnlyRoutingList.Count     -eq 2 -and
+                    $AvailabilityGroupReplica.ReadOnlyRoutingList[0]        -eq 'Server2' -and
+                    $AvailabilityGroupReplica.ReadOnlyRoutingList[1]        -eq 'Server1'
+                } -Exactly -Times 1 -Scope It
             }
         }
 
