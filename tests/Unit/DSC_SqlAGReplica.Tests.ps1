@@ -1161,7 +1161,7 @@ try
                         Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
                         Assert-MockCalled -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
                         Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 #-Exactly
+                        Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
                     }
                 }
 
@@ -1236,6 +1236,39 @@ try
                     $mockAvailabilityGroupReplicaPropertyName = 'EndpointUrl'
                     $mockAvailabilityGroupReplicaPropertyValue = $mockAvailabilityGroupReplica1EndpointUrl
                     $mockAlternateEndpointProtocol = $true
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter {
+                        $ServerName -eq $mockServer1Name
+                    } -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter {
+                        $ServerName -eq $mockServer2Name
+                    } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Connect-SQL -Scope It -ParameterFilter {
+                        $ServerName -eq $mockServer3Name
+                    } -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer1Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer2Name
+                    }
+                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                        $AvailabilityGroup.PrimaryReplicaServerName -eq $mockServer3Name
+                    }
+                    Assert-MockCalled -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
+                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
+                    Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
+                }
+
+                It "Should set the FailoverMode and AvailabilityMode to the desired state at the same time" {
+
+                    $setTargetResourceParameters.AvailabilityMode = 'SynchronousCommit'
+                    $setTargetResourceParameters.FailoverMode = 'Automatic'
 
                     { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
 
