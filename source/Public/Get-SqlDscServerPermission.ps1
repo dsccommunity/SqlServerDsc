@@ -2,6 +2,9 @@
     .SYNOPSIS
         Returns the current permissions for the principal.
 
+    .DESCRIPTION
+        Returns the current permissions for the principal.
+
     .PARAMETER ServerObject
         Specifies current server connection object.
 
@@ -42,25 +45,29 @@ function Get-SqlDscServerPermission
         $Name
     )
 
-    $getSqlDscServerPermissionResult = $null
-
-    $testSqlDscIsLoginParameters = @{
-        ServerObject      = $ServerObject
-        Name              = $Name
-    }
-
-    $isLogin = Test-SqlDscIsLogin @testSqlDscIsLoginParameters
-
-    if ($isLogin)
+    # cSpell: ignore GSDSP
+    process
     {
-        $getSqlDscServerPermissionResult = $ServerObject.EnumServerPermissions($Name)
-    }
-    else
-    {
-        $missingPrincipalMessage = $script:localizedData.ServerPermission_MissingPrincipal -f $Name, $ServerObject.InstanceName
+        $getSqlDscServerPermissionResult = $null
 
-        Write-Error -Message $missingPrincipalMessage -Category 'InvalidOperation' -ErrorId 'GSDSP0001' -TargetObject $Name
-    }
+        $testSqlDscIsLoginParameters = @{
+            ServerObject      = $ServerObject
+            Name              = $Name
+        }
 
-    return , [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]] $getSqlDscServerPermissionResult
+        $isLogin = Test-SqlDscIsLogin @testSqlDscIsLoginParameters
+
+        if ($isLogin)
+        {
+            $getSqlDscServerPermissionResult = $ServerObject.EnumServerPermissions($Name)
+        }
+        else
+        {
+            $missingPrincipalMessage = $script:localizedData.ServerPermission_MissingPrincipal -f $Name, $ServerObject.InstanceName
+
+            Write-Error -Message $missingPrincipalMessage -Category 'InvalidOperation' -ErrorId 'GSDSP0001' -TargetObject $Name
+        }
+
+        return , [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]] $getSqlDscServerPermissionResult
+    }
 }

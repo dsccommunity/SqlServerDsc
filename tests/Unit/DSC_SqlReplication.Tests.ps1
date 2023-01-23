@@ -134,6 +134,7 @@ Describe 'The system is not in the desired state given Local distribution mode' 
         Mock -CommandName Install-RemoteDistributor
         Mock -CommandName Register-DistributorPublisher
         Mock -CommandName Uninstall-Distributor
+        Mock -CommandName Import-SQLPSModule
     }
 
     Context 'The system is not in the desired state' {
@@ -319,6 +320,7 @@ Describe 'The system is not in the desired state given Remote distribution mode'
         Mock -CommandName Install-RemoteDistributor
         Mock -CommandName Register-DistributorPublisher
         Mock -CommandName Uninstall-Distributor
+        Mock -CommandName Import-SQLPSModule
     }
 
     Context 'The system is not in the desired state' {
@@ -522,6 +524,7 @@ Describe 'The system is in sync given Local distribution mode' {
         Mock -CommandName Install-RemoteDistributor
         Mock -CommandName Register-DistributorPublisher
         Mock -CommandName Uninstall-Distributor
+        Mock -CommandName Import-SQLPSModule
     }
 
     Context 'Get method' {
@@ -702,6 +705,7 @@ Describe 'The system is in sync given Remote distribution mode' {
         Mock -CommandName Install-RemoteDistributor
         Mock -CommandName Register-DistributorPublisher
         Mock -CommandName Uninstall-Distributor
+        Mock -CommandName Import-SQLPSModule
     }
 
     Context 'Get method' {
@@ -881,6 +885,7 @@ Describe 'The system is not in desired state given Local distribution, but shoul
         Mock -CommandName Install-RemoteDistributor
         Mock -CommandName Register-DistributorPublisher
         Mock -CommandName Uninstall-Distributor
+        Mock -CommandName Import-SQLPSModule
     }
 
     Context 'Get method' {
@@ -1061,6 +1066,7 @@ Describe 'The system is not in desired state given Remote distribution, but shou
         Mock -CommandName Install-RemoteDistributor
         Mock -CommandName Register-DistributorPublisher
         Mock -CommandName Uninstall-Distributor
+        Mock -CommandName Import-SQLPSModule
     }
 
     Context 'Get method' {
@@ -1241,6 +1247,7 @@ Describe 'The system is in sync when Absent' {
         Mock -CommandName Install-RemoteDistributor
         Mock -CommandName Register-DistributorPublisher
         Mock -CommandName Uninstall-Distributor
+        Mock -CommandName Import-SQLPSModule
     }
 
     Context 'Get method' {
@@ -1380,6 +1387,60 @@ Describe 'The system is in sync when Absent' {
 
         It 'Set method does not call Uninstall-Distributor' {
             Should -Invoke -CommandName Uninstall-Distributor -Times 0
+        }
+    }
+}
+
+Describe 'New-ServerConnection' {
+    Context 'When SQL major version is 16 (SQL Server 2022)' {
+        BeforeAll {
+            Mock -CommandName New-Object -ParameterFilter {
+                $TypeName -eq 'Microsoft.SqlServer.Management.Common.ServerConnection'
+            } -MockWith {
+                return 'Mocked server connection object for {0}' -f $ArgumentList
+            }
+        }
+
+        It 'Should return the server connection without throwing' {
+            InModuleScope -ScriptBlock {
+                $result = New-ServerConnection -SqlMajorVersion 16 -SqlServerName 'localhost\SqlInstance'
+
+                $result | Should -Be 'Mocked server connection object for localhost\SqlInstance'
+            }
+        }
+    }
+
+    Context 'When SQL major version is 15 or less (SQL Server 2019 or older)' {
+        BeforeAll {
+            Mock -CommandName Get-ConnectionInfoAssembly -MockWith {
+                return New-Object -TypeName System.Object |
+                    Add-Member -Name 'GetType' -MemberType 'ScriptMethod' -Value {
+                        param
+                        (
+                            [Parameter()]
+                            $TypeName,
+
+                            [Parameter()]
+                            $ArgumentList
+                        )
+
+                        # Return type String instead of Microsoft.SqlServer.Management.Common.ServerConnection
+                        return 'System.String'
+                    } -PassThru -Force
+            }
+        }
+
+        It 'Should return the server connection without throwing' {
+            InModuleScope -ScriptBlock {
+                $result = New-ServerConnection -SqlMajorVersion 15 -SqlServerName 'localhost\SqlInstance'
+
+                <#
+                    The mock of GetType() returns the type [System.String]. In the
+                    New-Object call the string will be filled with the value passed
+                    as ArgumentList.
+                #>
+                $result | Should -Be 'localhost\SqlInstance'
+            }
         }
     }
 }

@@ -98,9 +98,11 @@
     },
     "powershell.pester.useLegacyCodeLens": false,
     "pester.testFilePath": [
+        "[tT]ests/[qQ][aA]/*.[tT]ests.[pP][sS]1",
+        "[tT]ests/[uU]nit/**/*.[tT]ests.[pP][sS]1",
         "[tT]ests/[uU]nit/*.[tT]ests.[pP][sS]1"
     ],
-    "pester.runTestsInNewProcess": false,
+    "pester.runTestsInNewProcess": true,
     "pester.pesterModulePath": "./output/RequiredModules/Pester",
     "powershell.pester.codeLens": true,
     "pester.suppressCodeLensNotice": true

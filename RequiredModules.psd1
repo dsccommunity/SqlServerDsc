@@ -27,10 +27,13 @@
     Sampler                        = 'latest'
     'Sampler.GitHubTasks'          = 'latest'
     MarkdownLinkCheck              = 'latest'
-    'DscResource.Common'           = 'latest'
     'DscResource.Test'             = 'latest'
     xDscResourceDesigner           = 'latest'
     'DscResource.DocGenerator'     = 'latest'
+
+    # Build dependencies needed for using the module
+    'DscResource.Base'             = 'latest'
+    'DscResource.Common'           = 'latest'
 
     # Analyzer rules
     'DscResource.AnalyzerRules'    = 'latest'
@@ -44,5 +47,4 @@
     PSDscResources                 = '2.12.0.0'
     StorageDsc                     = '4.9.0.0'
     NetworkingDsc                  = '7.4.0.0'
-    PowerShellGet                  = '2.1.2'
 }

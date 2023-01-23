@@ -26,53 +26,61 @@ else
         '160'
         {
             $versionSpecificData = @{
-                SqlServerInstanceIdPrefix = 'MSSQL16'
+                SqlServerInstanceIdPrefix       = 'MSSQL16'
                 AnalysisServiceInstanceIdPrefix = 'MSAS16'
-                IsoImageName = 'SQL2022.iso'
+                IsoImageName                    = 'SQL2022.iso'
 
                 # Additional variables required as ISO is downloaded via additional EXE
-                DownloadExeName = 'SQL2022_Download.exe'
-                DownloadIsoName = 'SQLServer2022-x64-ENU-Dev.iso'
+                DownloadExeName                 = 'SQL2022_Download.exe'
+                DownloadIsoName                 = 'SQLServer2022-x64-ENU-Dev.iso'
 
                 # Features CONN, BC, SDK, SNAC_SDK, DREPLAY_CLT, DREPLAY_CTLR are no longer supported in 2022.
-                SupportedFeatures = 'SQLENGINE,REPLICATION'
+                SupportedFeatures               = 'SQLENGINE,REPLICATION'
+
+                SqlServerModuleVersion          = '22.0.49-preview'
             }
         }
 
         '150'
         {
             $versionSpecificData = @{
-                SqlServerInstanceIdPrefix = 'MSSQL15'
+                SqlServerInstanceIdPrefix       = 'MSSQL15'
                 AnalysisServiceInstanceIdPrefix = 'MSAS15'
-                IsoImageName = 'SQL2019.iso'
+                IsoImageName                    = 'SQL2019.iso'
 
                 # Additional variables required as ISO is downloaded via additional EXE
-                DownloadExeName = 'SQL2019_Download.exe'
-                DownloadIsoName = 'SQLServer2019-x64-ENU-Dev.iso'
+                DownloadExeName                 = 'SQL2019_Download.exe'
+                DownloadIsoName                 = 'SQLServer2019-x64-ENU-Dev.iso'
 
-                SupportedFeatures = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+                SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+
+                SqlServerModuleVersion          = '21.1.18256'
             }
         }
 
         '140'
         {
             $versionSpecificData = @{
-                SqlServerInstanceIdPrefix = 'MSSQL14'
+                SqlServerInstanceIdPrefix       = 'MSSQL14'
                 AnalysisServiceInstanceIdPrefix = 'MSAS14'
-                IsoImageName = 'SQL2017.iso'
+                IsoImageName                    = 'SQL2017.iso'
 
-                SupportedFeatures = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+                SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+
+                SqlServerModuleVersion          = '21.1.18256'
             }
         }
 
         '130'
         {
             $versionSpecificData = @{
-                SqlServerInstanceIdPrefix = 'MSSQL13'
+                SqlServerInstanceIdPrefix       = 'MSSQL13'
                 AnalysisServiceInstanceIdPrefix = 'MSAS13'
-                IsoImageName = 'SQL2016.iso'
+                IsoImageName                    = 'SQL2016.iso'
 
-                SupportedFeatures = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+                SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
+
+                SqlServerModuleVersion          = '21.1.18256'
             }
         }
     }
@@ -86,6 +94,9 @@ else
             @{
                 NodeName                                = 'localhost'
 
+                SqlServerModuleVersion                  = $versionSpecificData.SqlServerModuleVersion
+                SqlServerModuleVersionIsPrerelease      = $true
+
                 SqlServerInstanceIdPrefix               = $versionSpecificData.SqlServerInstanceIdPrefix
                 AnalysisServiceInstanceIdPrefix         = $versionSpecificData.AnalysisServiceInstanceIdPrefix
 
@@ -96,9 +107,9 @@ else
                 <#
                     Analysis Services Multi-dimensional properties.
                 #>
-                AnalysisServicesMultiInstanceName     = 'DSCMULTI'
-                AnalysisServicesMultiFeatures         = 'AS'
-                AnalysisServicesMultiServerMode       = 'MULTIDIMENSIONAL'
+                AnalysisServicesMultiInstanceName       = 'DSCMULTI'
+                AnalysisServicesMultiFeatures           = 'AS'
+                AnalysisServicesMultiServerMode         = 'MULTIDIMENSIONAL'
 
                 <#
                     Analysis Services Tabular properties.
@@ -127,8 +138,14 @@ else
                 ForceReboot                             = $false
 
                 # Properties for downloading media
-                DownloadExePath                         = $(if($versionSpecificData.DownloadExeName){Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.DownloadExeName})
-                DownloadIsoPath                         = $(if($versionSpecificData.DownloadIsoName){Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.DownloadIsoName})
+                DownloadExePath                         = $(if ($versionSpecificData.DownloadExeName)
+                    {
+                        Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.DownloadExeName
+                    })
+                DownloadIsoPath                         = $(if ($versionSpecificData.DownloadIsoName)
+                    {
+                        Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.DownloadIsoName
+                    })
 
                 # Properties for mounting media
                 ImagePath                               = $env:IsoImagePath
@@ -279,7 +296,7 @@ Configuration DSC_SqlSetup_CreateDependencies_Config
 
 <#
     .SYNOPSIS
-        Installing the latest SqlServer module from PowerShell Gallery.
+        Installing the specific SqlServer module from PowerShell Gallery.
 
     .NOTES
         This module might already be installed on the build worker. This is needed
@@ -291,16 +308,166 @@ Configuration DSC_SqlSetup_CreateDependencies_Config
 #>
 Configuration DSC_SqlSetup_InstallSqlServerModule_Config
 {
-    Import-DscResource -ModuleName 'PowerShellGet' -ModuleVersion '2.1.2'
+    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
     node $AllNodes.NodeName
     {
-        PSModule 'InstallSqlServerModule'
+        Script 'InstallPowerShellGet'
         {
-            Name               = 'SqlServer'
-            MinimumVersion     = '21.1.18235' # Analysis Services works at least with this version.
-            InstallationPolicy = 'Trusted'
-            AllowClobber       = $true
+            SetScript  = {
+                # Make sure PSGallery is trusted.
+                Set-PSRepository -Name 'PSGallery' -InstallationPolicy 'Trusted'
+
+                # Remove any loaded module.
+                Get-Module -Name @('PackageManagement', 'PowerShellGet') -All | Remove-Module -Force
+
+                # Make sure we use TLS 1.2.
+                [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+
+                # Install NuGet package provider and latest version of PowerShellGet.
+                Install-PackageProvider -Name NuGet -Force
+                Install-Module PowerShellGet -AllowClobber -Force
+
+                # Remove any loaded module to hopefully be able to import those that was installed above.
+                Get-Module -Name @('PackageManagement', 'PowerShellGet') -All | Remove-Module -Force
+
+                # Forcibly import the newly installed modules.
+                Import-Module -Name 'PackageManagement' -MinimumVersion '1.4.8.1' -Force
+                Import-Module -Name 'PowerShellGet' -MinimumVersion '2.2.5' -Force
+
+                # Output version information for the loaded modules
+                Write-Verbose -Message (
+                    'Version information of loaded modules: {0}' -f @(
+                        (
+                            Get-Module -Name @('PackageManagement', 'PowerShellGet') |
+                                Select-Object -Property @('Name', 'Version') |
+                                Out-String
+                        )
+                    )
+                )
+            }
+
+            TestScript = {
+                <#
+                    This takes the string of the $GetScript parameter and creates
+                    a new script block (during runtime in the resource) and then
+                    runs that script block.
+                #>
+                $getScriptResult = & ([ScriptBlock]::Create($GetScript))
+
+                if ($getScriptResult.Result -eq '2.2.5')
+                {
+                    Write-Verbose -Message 'The node already contain the required PowerShellGet version'
+
+                    return $true
+                }
+
+                Write-Verbose -Message ('The module PowerShellGet has version {0}, but expected version 2.2.5 to be installed.' -f $getScriptResult.Result)
+
+                return $false
+            }
+
+            GetScript  = {
+                $moduleVersion = $null
+                $sqlServerModule = $null
+
+                # Fetch the newest PowerShellGet version.
+                $powerShellGetModule = Get-Module -Name 'PowerShellGet' -ListAvailable |
+                    Sort-Object -Property Version -Descending |
+                    Select-Object -First 1
+
+                if ($powerShellGetModule)
+                {
+                    $moduleVersion = $powerShellGetModule.Version.ToString()
+                }
+
+                return @{
+                    Result = $moduleVersion
+                }
+            }
+        }
+
+        Script 'InstallSqlServerModule'
+        {
+            DependsOn  = @(
+                '[Script]InstallPowerShellGet'
+            )
+
+            SetScript  = {
+                # Make sure PSGallery is trusted.
+                Set-PSRepository -Name 'PSGallery' -InstallationPolicy 'Trusted'
+
+                # Uninstall any existing SqlServer module, to make we only have the one we need.
+                Get-Module -Name 'SqlServer' -ListAvailable | Uninstall-Module -ErrorAction 'Stop'
+
+                # Make sure we use TLS 1.2.
+                [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+
+                $installModuleParameters = @{
+                    Name            = 'SqlServer'
+                    Scope           = 'AllUsers'
+                    Force           = $true
+                    RequiredVersion = $Using:Node.SqlServerModuleVersion
+                    AllowPrerelease = $Using:Node.SqlServerModuleVersionIsPrerelease
+                    AllowClobber    = $true # Needed to handle existens of module SQLPS.
+                    PassThru        = $true
+                }
+
+                # Install the required SqlServer module version.
+                $installedModule = Install-Module @installModuleParameters
+
+                Write-Verbose -Message ('Installed SqlServer module version {0}' -f $installedModule.Version)
+            }
+
+            TestScript = {
+                <#
+                    This takes the string of the $GetScript parameter and creates
+                    a new script block (during runtime in the resource) and then
+                    runs that script block.
+                #>
+                $getScriptResult = & ([ScriptBlock]::Create($GetScript))
+
+                if ($getScriptResult.Result -eq $Using:Node.SqlServerModuleVersion)
+                {
+                    Write-Verbose -Message ('The node already contain the module SqlServer with version {0}.' -f $Using:Node.SqlServerModuleVersion)
+
+                    return $true
+                }
+
+                Write-Verbose -Message ('The module SqlServer with version {0} is not installed.' -f $Using:Node.SqlServerModuleVersion)
+
+                return $false
+            }
+
+            GetScript  = {
+                $moduleVersion = $null
+                $sqlServerModule = $null
+
+                # Forcibly import the required modules that is required for using prerelease modules.
+                Import-Module -Name 'PackageManagement' -MinimumVersion '1.4.8.1' -Force
+                Import-Module -Name 'PowerShellGet' -MinimumVersion '2.2.5' -Force
+
+                $sqlServerModule = Get-Module -Name 'SqlServer' -ListAvailable |
+                    Sort-Object -Property Version -Descending |
+                    Select-Object -First 1
+
+                if ($sqlServerModule)
+                {
+                    $moduleVersion = $sqlServerModule.Version.ToString()
+
+                    if ($sqlServerModule.PrivateData.PSData.Keys -contains 'Prerelease')
+                    {
+                        if (-not [System.String]::IsNullOrEmpty($sqlServerModule.PrivateData.PSData.Prerelease))
+                        {
+                            $moduleVersion = '{0}-{1}' -f $moduleVersion, $sqlServerModule.PrivateData.PSData.Prerelease
+                        }
+                    }
+                }
+
+                return @{
+                    Result = $moduleVersion
+                }
+            }
         }
     }
 }
@@ -354,7 +521,7 @@ Configuration DSC_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
             SkipRule               = 'ServerCoreBlockUnsupportedSxSCheck'
 
             # This must be set if using SYSTEM account to install.
-            SQLSysAdminAccounts   = @(
+            SQLSysAdminAccounts    = @(
                 Split-Path -Path $SqlAdministratorCredential.UserName -Leaf
                 <#
                     Must have permission to properties IsClustered and
@@ -395,8 +562,8 @@ Configuration DSC_SqlSetup_StopServicesInstance_Config
         #>
         Service ('StopSqlServerInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
         {
-            Name   = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
-            State  = 'Stopped'
+            Name  = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
+            State = 'Stopped'
         }
     }
 }
@@ -584,8 +751,8 @@ Configuration DSC_SqlSetup_StartServicesInstance_Config
         # Start the Database Engine named instance.
         Service ('StartSqlServerInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
         {
-            Name   = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
-            State  = 'Running'
+            Name  = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
+            State = 'Running'
         }
 
         # Starting the SQL Server Agent service for the named instance.
