@@ -239,7 +239,7 @@ class SqlPermission : SqlResourceBase
             }
         }
 
-        $isPropertyPermissionToIncludeAssigned = $this | Test-ResourceDscPropertyIsAssigned -Name 'PermissionToInclude'
+        $isPropertyPermissionToIncludeAssigned = $this | Test-DscProperty -Name 'PermissionToInclude' -HasValue
 
         if ($isPropertyPermissionToIncludeAssigned)
         {
@@ -289,7 +289,7 @@ class SqlPermission : SqlResourceBase
             }
         }
 
-        $isPropertyPermissionToExcludeAssigned = $this | Test-ResourceDscPropertyIsAssigned -Name 'PermissionToExclude'
+        $isPropertyPermissionToExcludeAssigned = $this | Test-DscProperty -Name 'PermissionToExclude' -HasValue
 
         if ($isPropertyPermissionToExcludeAssigned)
         {
@@ -376,7 +376,7 @@ class SqlPermission : SqlResourceBase
 
         if ($properties.ContainsKey('Permission'))
         {
-            $keyProperty = $this | Get-DscProperty -Type 'Key'
+            $keyProperty = $this | Get-DscProperty -Attribute 'Key'
 
             $currentState = $this.GetCurrentState($keyProperty)
 

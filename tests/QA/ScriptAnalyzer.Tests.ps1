@@ -10,8 +10,30 @@
         repository DscResource.Test is resolved this should not be needed. See issue
         https://github.com/dsccommunity/DscResource.Test/issues/100.
 #>
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
 
 BeforeDiscovery {
+    try
+    {
+        if (-not (Get-Module -Name 'DscResource.Test'))
+        {
+            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
+            {
+                # Redirect all streams to $null, except the error stream (stream 2)
+                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+            }
+
+            # If the dependencies has not been resolved, this will throw an error.
+            Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        }
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+    }
+
     <#
         Need to add the SMO stub classes so that the analyzer rule 'UseSyntacticallyCorrectExamples'
         (from Indented.ScriptAnalyzerRules) can properly parse parameters that uses SMO types,
@@ -53,12 +75,12 @@ Describe 'Script Analyzer Rules' {
             <#
                 Filter out rule TypeNotFound.
 
-                TODO: The rule "TypeNotFound" is not excluded correctly even if it is
-                      excluded in the file 'analyzersettings.psd1'. This is a workaround
-                      until it is properly excluded for source files, and instead only
-                      ran for the built module script module file (SqlServerDsc.psm1).
+                TODO: The rules (e.g. "TypeNotFound") are not excluded correctly even if it
+                      is excluded in the file 'analyzersettings.psd1'. This is a workaround
+                      until it is properly excluded for source files, and instead only is
+                      run for the built module script module file (SqlServerDsc.psm1).
             #>
-            $pssaError = $pssaError | Where-Object -FilterScript { $_.RuleName -ne 'TypeNotFound' }
+            $pssaError = $pssaError | Where-Object -FilterScript { $_.RuleName -notin @('TypeNotFound', 'RequiresModuleInvalid') }
 
             $report = $pssaError | Format-Table -AutoSize | Out-String -Width 200
             $pssaError | Should -HaveCount 0 -Because "all script analyzer rules should pass.`r`n`r`n $report`r`n"

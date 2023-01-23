@@ -2,6 +2,9 @@
     .SYNOPSIS
         Executes a query on the specified database.
 
+    .DESCRIPTION
+        Executes a query on the specified database.
+
     .PARAMETER ServerObject
         Specifies current server connection object.
 
@@ -87,26 +90,29 @@ function Invoke-SqlDscQuery
         $RedactText
     )
 
-    $invokeQueryParameters = @{
-        SqlServerObject  = $ServerObject
-        Database         = $DatabaseName
-        Query            = $Query
-    }
-
-    if ($PSBoundParameters.ContainsKey('PassThru'))
+    process
     {
-        $invokeQueryParameters.WithResults = $PassThru
-    }
+        $invokeQueryParameters = @{
+            SqlServerObject  = $ServerObject
+            Database         = $DatabaseName
+            Query            = $Query
+        }
 
-    if ($PSBoundParameters.ContainsKey('StatementTimeout'))
-    {
-        $invokeQueryParameters.StatementTimeout = $StatementTimeout
-    }
+        if ($PSBoundParameters.ContainsKey('PassThru'))
+        {
+            $invokeQueryParameters.WithResults = $PassThru
+        }
 
-    if ($PSBoundParameters.ContainsKey('RedactText'))
-    {
-        $invokeQueryParameters.RedactText = $RedactText
-    }
+        if ($PSBoundParameters.ContainsKey('StatementTimeout'))
+        {
+            $invokeQueryParameters.StatementTimeout = $StatementTimeout
+        }
 
-    return (Invoke-Query @invokeQueryParameters)
+        if ($PSBoundParameters.ContainsKey('RedactText'))
+        {
+            $invokeQueryParameters.RedactText = $RedactText
+        }
+
+        return (Invoke-Query @invokeQueryParameters)
+    }
 }

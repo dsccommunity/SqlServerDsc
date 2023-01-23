@@ -2,6 +2,10 @@
     .SYNOPSIS
         Connect to a SQL Server Database Engine and return the server object.
 
+    .DESCRIPTION
+        This command connects to a  SQL Server Database Engine instance and returns
+        the Server object.
+
     .PARAMETER ServerName
         String containing the host name of the SQL Server to connect to.
         Default value is the current computer name.
@@ -43,7 +47,7 @@
         Connects to the instance 'MyInstance' on the server 'sql.company.local'.
 
     .OUTPUTS
-        None.
+        `[Microsoft.SqlServer.Management.Smo.Server]`
 #>
 function Connect-SqlDscDatabaseEngine
 {

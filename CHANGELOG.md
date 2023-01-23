@@ -8,17 +8,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - SqlServerDsc
-  - Removed `Assert-ElevatedUser` from private functions - [Issue #1797](https://github.com/dsccommunity/SqlServerDsc/issues/1797)
-    - `Assert-ElevatedUser` added to _DscResource.Common_ public functions - [Issue #82](https://github.com/dsccommunity/DscResource.Common/issues/82)
+  - Removed `Assert-ElevatedUser` from private functions ([issue #1797](https://github.com/dsccommunity/SqlServerDsc/issues/1797)).
+    - `Assert-ElevatedUser` added to _DscResource.Common_ public functions
+      ([issue #82](https://github.com/dsccommunity/DscResource.Common/issues/82)).
+  - Removed `Test-IsNumericType` from private functions ([issue #1795](https://github.com/dsccommunity/SqlServerDsc/issues/1795)).
+    - `Test-IsNumericType` added to _DscResource.Common_ public functions
+    ([issue #87](https://github.com/dsccommunity/DscResource.Common/issues/87)).
+  - Removed `Test-ServiceAccountRequirePassword` from private functions ([issue #1794](https://github.com/dsccommunity/SqlServerDsc/issues/1794)
+    - Replaced by `Test-AccountRequirePassword` that was added to _DscResource.Common_
+      public functions ([issue #93](https://github.com/dsccommunity/DscResource.Common/issues/93)).
+  - Removed `Assert-RequiredCommandParameter` from private functions ([issue #1796](https://github.com/dsccommunity/SqlServerDsc/issues/1796)).
+    - Replaced by `Assert-BoundParameter` (part of _DscResource.Common_)
+      that had a new parameter set added ([issue #92](https://github.com/dsccommunity/DscResource.Common/issues/92)).
+  - Removed private function `Test-ResourceDscPropertyIsAssigned` and
+    `Test-ResourceHasDscProperty`. Both are replaced by `Test-DscProperty`
+    which is now part of the module _DscResource.Common_.
+  - Removed private function `Get-DscProperty`. It is replaced by `Get-DscProperty`
+    which is now part of the module _DscResource.Common_.
+  - The class `ResourceBase` and `Reason` has been removed, they are now
+    part of the module _DscResource.Base_.
+  - The enum `Ensure` has been removed, is is now part of the module
+    _DscResource.Base_.
+  - The private functions that the class `ResourceBase` depended on has been
+    moved to the module _DscResource.Base_.
+    - `ConvertFrom-CompareResult`
+    - `ConvertTo-Reason`
+    - `Get-ClassName`
+    - `Get-LocalizedDataRecursive`
+  - Added documentation how to generate stub modules for the unit tests.
+    The documentation can be found in ['tests/Unit/Stubs`](https://github.com/dsccommunity/SqlServerDsc/tree/main/tests/Unit/Stubs).
 
 ### Added
 
 - SqlServerDsc
   - The following private functions were added to the module (see comment-based
     help for more information):
-    - `Assert-ElevatedUser`
-    - `Assert-RequiredCommandParameter`
-    - `Test-IsNumericType`
     - `Assert-SetupActionProperties`
     - `Invoke-SetupAction`
   - The following public functions were added to the module (see comment-based
@@ -43,26 +67,115 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     this is a code base with a diverse set of tests thar can help catch
     issues in Pester. If preview release of Pester prevents release we
     should temporary shift back to stable.
+  - Add the GitHub App _Pull Request Quantifier_ as an experiment to see if it
+    brings any value ([issue #1811](https://github.com/dsccommunity/SqlServerDsc/issues/1811)).
+    - Updated thresholds, and label names and colors.
+  - New QA tests for public commands and private functions.
 - SqlDatabase
   - Added compatibility levels for SQL Server 2022 (major version 16).
 - SqlSetup
   - Paths for SQL Server 2022 are correctly returned by Get.
+- SqlRS
+  - Added optional parameter `Encrypt`. Parameter `Encrypt` controls whether
+    the connection used by `Invoke-SqlCmd should enforce encryption. This
+    parameter can only be used together with the module _SqlServer_ v22.x
+    (minimum v22.0.49-preview). The parameter will be ignored if an older
+    major versions of the module _SqlServer_ is used.
+- SqlScript
+  - Added optional parameter `Encrypt`. Parameter `Encrypt` controls whether
+    the connection used by `Invoke-SqlCmd should enforce encryption. This
+    parameter can only be used together with the module _SqlServer_ v22.x
+    (minimum v22.0.49-preview). The parameter will be ignored if an older
+    major versions of the module _SqlServer_ is used.
+- SqlScriptQuery
+  - Added optional parameter `Encrypt`. Parameter `Encrypt` controls whether
+    the connection used by `Invoke-SqlCmd should enforce encryption. This
+    parameter can only be used together with the module _SqlServer_ v22.x
+    (minimum v22.0.49-preview). The parameter will be ignored if an older
+    major versions of the module _SqlServer_ is used.
+- The public commands `Add-SqlDscNode`, `Complete-SqlDscFailoverCluster`,
+  `Complete-SqlDscImage`, `Install-SqlDscServer`, and `Repair-SqlDscServer`
+  now support the setup argument `ProductCoveredBySA` ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
 
 ### Changed
 
 - SqlServerDsc
-  - Update Stale GitHub Action to v6.
+  - Update Stale GitHub Action to v7.
   - Update to build module in separate folder under `output`.
   - Moved the build step of the pipeline to a Windows build worker when
     running in Azure DevOps.
+  - Class-based resources now uses the parent class `ResourceBase` from the
+    module _DscResource.Base_ ([issue #1790](https://github.com/dsccommunity/SqlServerDsc/issues/1790)).
+  - Settings for the _Visual Studio Code_ extension _Pester Tests_ was changed
+    to be able to run all unit tests, and all tests run by the extension
+    are now run in a separate process to be able to handle changes in
+    class-based resources.
+  - The AppVeyor configuration file was updated to include the possibility
+    to run integration tests for SQL Server 2022.
+  - The stubs in `SqlServerStub.psm1` are now based on the commands from the
+    module SqlServer v22.0.49-preview.
 - `Install-SqlServerDsc`
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
+- SqlAgReplica
+  - Converted unit test to Pester 5.
+- Private function `Invoke-SetupAction` ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
+  - Was changed to support the SQL Server 2022 GA feature `AzureExtension`
+    (that replaced the feature name `ARC`).
+  - Support the setup argument `ProductCoveredBySA`.
+  - No longer supports the argument `OnBoardSQLToARC` as it was removed in
+    SQL Server 2022 GA.
+- `Install-SqlDscServer`
+  - Was changed to support the SQL Server 2022 GA feature `AzureExtension`
+    (that replaced the feature name `ARC`) ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
+- `Uninstall-SqlDscServer`
+  - Was changed to support the SQL Server 2022 GA feature `AzureExtension`
+    (that replaced the feature name `ARC`) ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
+- SqlReplication
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1801](https://github.com/dsccommunity/SqlServerDsc/issues/1801)).
+- SqlProtocol
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1802](https://github.com/dsccommunity/SqlServerDsc/issues/1802)).
+- SqlProtocolTcpIp
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1805](https://github.com/dsccommunity/SqlServerDsc/issues/1805)).
+- SqlServiceAccount
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1800](https://github.com/dsccommunity/SqlServerDsc/issues/1800)).
+- SqlSetup
+  - Integration tests now used _SqlServer_ module version 22.0.49-preview
+    when running against _SQL Server 2022_, when testing _SQL Server 2016_,
+    _SQL Server 2017_, and _SQL Server 2019_ the module version 21.1.18256
+    is used.
+  - Integration tests now supports installing preview versions of the module
+    _SqlServer_.
+- SqlServerDsc.Common
+  - `Import-SQLPSModule`
+    - Small changed to the localized string verbose message when the preferred
+      module (_SqlServer_) is not found.
+  - `Invoke-SqlScript`
+    - Added the optional parameter `Encrypt` which controls whether the connection
+      used by `Invoke-SqlCmd` should enforce encryption. This parameter can
+      only be used together with the module _SqlServer_ v22.x (minimum
+      v22.0.49-preview). The parameter will be ignored if an older major
+      versions of the module _SqlServer_ is used.
 
 ### Fixed
 
 - SqlServerDsc
   - Localized strings file `en-US/SqlServerDsc.strings.psd1` no longer
     referencing the wrong module in a comment.
+- SqlAGReplica
+  - No longer tries to enforce EndpointHostName when it is not part of the
+    configuration ([issue #1821](https://github.com/dsccommunity/SqlServerDsc/issues/1821)).
+  - Now `Get-TargetResource` always returns values for the properties `Name`
+    and `AvailabilityGroupName` ([issue #1822](https://github.com/dsccommunity/SqlServerDsc/issues/1822)).
+  - Now `Test-TargetResource` no longer test properties that cannot
+    be enforced ([issue #1822](https://github.com/dsccommunity/SqlServerDsc/issues/1822)).
 
 ## [16.0.0] - 2022-09-09
 
@@ -270,7 +383,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlAlwaysOnService
   - BREAKING CHANGE: The parameter `IsHadrEnabled` is no longer returned by
     `Get-TargetResource`. The `Ensure` parameter now returns `Present` if
-    Always On HADR is enabled and `Absent` if it is disabled.
+    Always On High Availability Diaster Recovery is enabled and `Absent`
+    if it is disabled.
 - SqlDatabasePermission
   - BREAKING CHANGE: The resource has been refactored. The parameters
     `ParameterState` and `Permissions` has been replaced by parameters
@@ -387,8 +501,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ConvertTo-Reason`
   - Fix to handle `$null` values on Windows PowerShell.
   - If the property name contain the word 'Path' the value will be parsed to
-    replace backslash or slashes at the end of the string, e.g. `'/mypath/'`
-    will become `'/mypath'`.
+    replace backslash or slashes at the end of the string, e.g. `'/myPath/'`
+    will become `'/myPath'`.
 - `ResourceBase`
   - Now handles `Ensure` correctly from derived `GetCurrentState()`. But
     requires that the `GetCurrentState()` only return key property if object

@@ -2,6 +2,9 @@
     .SYNOPSIS
         Returns whether the database principal exist.
 
+    .DESCRIPTION
+        Returns whether the database principal exist.
+
     .PARAMETER ServerObject
         Specifies current server connection object.
 
@@ -94,51 +97,54 @@ function Test-SqlDscIsDatabasePrincipal
         $ExcludeApplicationRoles
     )
 
-    $principalExist = $false
-
-    $sqlDatabaseObject = $ServerObject.Databases[$DatabaseName]
-
-    if (-not $sqlDatabaseObject)
+    process
     {
-        $PSCmdlet.ThrowTerminatingError(
-            [System.Management.Automation.ErrorRecord]::new(
-                ($script:localizedData.IsDatabasePrincipal_DatabaseMissing -f $DatabaseName),
-                'TSDISO0001',
-                [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                $DatabaseName
+        $principalExist = $false
+
+        $sqlDatabaseObject = $ServerObject.Databases[$DatabaseName]
+
+        if (-not $sqlDatabaseObject)
+        {
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    ($script:localizedData.IsDatabasePrincipal_DatabaseMissing -f $DatabaseName),
+                    'TSDISO0001',
+                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                    $DatabaseName
+                )
             )
-        )
-    }
-
-    if (-not $ExcludeUsers.IsPresent -and $sqlDatabaseObject.Users[$Name])
-    {
-        $principalExist = $true
-    }
-
-    if (-not $ExcludeRoles.IsPresent)
-    {
-        $userDefinedRole = if ($ExcludeFixedRoles.IsPresent)
-        {
-            # Skip fixed roles like db_datareader.
-            $sqlDatabaseObject.Roles | Where-Object -FilterScript {
-                -not $_.IsFixedRole -and $_.Name -eq $Name
-            }
-        }
-        else
-        {
-            $sqlDatabaseObject.Roles[$Name]
         }
 
-        if ($userDefinedRole)
+        if (-not $ExcludeUsers.IsPresent -and $sqlDatabaseObject.Users[$Name])
         {
             $principalExist = $true
         }
-    }
 
-    if (-not $ExcludeApplicationRoles.IsPresent -and $sqlDatabaseObject.ApplicationRoles[$Name])
-    {
-        $principalExist = $true
-    }
+        if (-not $ExcludeRoles.IsPresent)
+        {
+            $userDefinedRole = if ($ExcludeFixedRoles.IsPresent)
+            {
+                # Skip fixed roles like db_datareader.
+                $sqlDatabaseObject.Roles | Where-Object -FilterScript {
+                    -not $_.IsFixedRole -and $_.Name -eq $Name
+                }
+            }
+            else
+            {
+                $sqlDatabaseObject.Roles[$Name]
+            }
 
-    return $principalExist
+            if ($userDefinedRole)
+            {
+                $principalExist = $true
+            }
+        }
+
+        if (-not $ExcludeApplicationRoles.IsPresent -and $sqlDatabaseObject.ApplicationRoles[$Name])
+        {
+            $principalExist = $true
+        }
+
+        return $principalExist
+    }
 }

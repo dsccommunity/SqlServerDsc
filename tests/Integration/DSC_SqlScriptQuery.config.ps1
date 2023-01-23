@@ -16,24 +16,24 @@ else
     $ConfigurationData = @{
         AllNodes = @(
             @{
-                NodeName        = 'localhost'
+                NodeName          = 'localhost'
 
                 Admin_UserName    = "$env:COMPUTERNAME\SqlAdmin"
                 Admin_Password    = 'P@ssw0rd1'
-                SqlLogin_UserName = "DscAdmin1"
+                SqlLogin_UserName = 'DscAdmin1'
                 SqlLogin_Password = 'P@ssw0rd1'
 
-                ServerName      = $env:COMPUTERNAME
-                InstanceName    = 'DSCSQLTEST'
-                Database1Name   = 'ScriptDatabase3'
-                Database2Name   = 'ScriptDatabase4'
-                Database3Name   = '$(DatabaseName)'
+                ServerName        = $env:COMPUTERNAME
+                InstanceName      = 'DSCSQLTEST'
+                Database1Name     = 'ScriptDatabase3'
+                Database2Name     = 'ScriptDatabase4'
+                Database3Name     = '$(DatabaseName)'
 
-                GetQuery        = @'
+                GetQuery          = @'
 SELECT Name FROM sys.databases WHERE Name = '$(DatabaseName)' FOR JSON AUTO
 '@
 
-                TestQuery       = @'
+                TestQuery         = @'
 if (select count(name) from sys.databases where name = '$(DatabaseName)') = 0
 BEGIN
     RAISERROR ('Did not find database [$(DatabaseName)]', 16, 1)
@@ -44,11 +44,11 @@ BEGIN
 END
 '@
 
-                SetQuery        = @'
+                SetQuery          = @'
 CREATE DATABASE [$(DatabaseName)]
 '@
 
-                CertificateFile = $env:DscPublicCertificatePath
+                CertificateFile   = $env:DscPublicCertificatePath
             }
         )
     }
@@ -76,6 +76,7 @@ Configuration DSC_SqlScriptQuery_RunSqlScriptQueryAsWindowsUser_Config
             Variable             = @(
                 ('DatabaseName={0}' -f $Node.Database1Name)
             )
+            Encrypt              = 'Optional'
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -96,18 +97,18 @@ Configuration DSC_SqlScriptQuery_RunSqlScriptQueryAsSqlUser_Config
     {
         SqlScriptQuery 'Integration_Test'
         {
-            ServerName     = $Node.ServerName
-            InstanceName   = $Node.InstanceName
+            ServerName   = $Node.ServerName
+            InstanceName = $Node.InstanceName
 
-            GetQuery       = $Node.GetQuery
-            TestQuery      = $Node.TestQuery
-            SetQuery       = $Node.SetQuery
-            QueryTimeout   = 30
-            Variable       = @(
+            GetQuery     = $Node.GetQuery
+            TestQuery    = $Node.TestQuery
+            SetQuery     = $Node.SetQuery
+            QueryTimeout = 30
+            Variable     = @(
                 ('DatabaseName={0}' -f $Node.Database2Name)
             )
-
-            Credential     = New-Object `
+            Encrypt      = 'Optional'
+            Credential   = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.SqlLogin_Username, (ConvertTo-SecureString -String $Node.SqlLogin_Password -AsPlainText -Force))
         }
@@ -144,6 +145,7 @@ Configuration DSC_SqlScriptQuery_RunSqlScriptQueryWithVariablesDisabled_Config
             SetQuery         = $Node.SetQuery
             DisableVariables = $true
             QueryTimeout     = 30
+            Encrypt          = 'Optional'
             Credential       = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.SqlLogin_Username, (ConvertTo-SecureString -String $Node.SqlLogin_Password -AsPlainText -Force))
