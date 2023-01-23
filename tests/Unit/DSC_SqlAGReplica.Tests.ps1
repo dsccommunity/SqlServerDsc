@@ -1220,6 +1220,68 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             }
         }
 
+        Context 'When multiple properties are not in desired state' {
+            BeforeAll {
+                Mock -CommandName Remove-SqlAvailabilityReplica
+                Mock -CommandName Update-AvailabilityGroupReplica
+            }
+
+            It 'Should set all properties with one update' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $setTargetResourceParameters = @{
+                        Name                          = 'Server1'
+                        AvailabilityGroupName         = 'AG_AllServers'
+                        ServerName                    = 'Server1'
+                        InstanceName                  = 'MSSQLSERVER'
+                        PrimaryReplicaServerName      = 'Server2'
+                        PrimaryReplicaInstanceName    = 'MSSQLSERVER'
+                        Ensure                        = 'Present'
+                        AvailabilityMode              = 'SynchronousCommit'
+                        BackupPriority                = 60
+                        ConnectionModeInPrimaryRole   = 'AllowReadWriteConnections'
+                        ConnectionModeInSecondaryRole = 'AllowReadIntentConnectionsOnly'
+                        EndpointHostName              = 'AnotherEndpointHostName'
+                        FailoverMode                  = 'Automatic'
+                        ReadOnlyRoutingConnectionUrl  = 'TCP://TestHost.domain.com:1433'
+                        ReadOnlyRoutingList           = @('Server2', 'Server1')
+                    }
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server1'
+                } -Times 1 -Exactly
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server2'
+                } -Times 0 -Exactly
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server3'
+                } -Times 0 -Exactly
+
+                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
+                }
+
+                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
+                }
+
+                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
+                }
+
+                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
+                Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
+                Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
+                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
+            }
+        }
+
         Context 'When the endpoint port differ from the port in the replica''s endpoint URL' {
             BeforeAll {
                 Mock -CommandName Update-AvailabilityGroupReplica
