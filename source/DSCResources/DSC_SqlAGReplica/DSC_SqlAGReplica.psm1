@@ -328,21 +328,18 @@ function Set-TargetResource
                     {
                         $availabilityGroupReplica.FailoverMode = $FailoverMode
                         $availabilityGroupReplicaUpdatesRequired = $true
-                        # Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
                     if ( ( $submittedParameters -contains 'AvailabilityMode' ) -and (  $AvailabilityMode -ne $availabilityGroupReplica.AvailabilityMode ) )
                     {
                         $availabilityGroupReplica.AvailabilityMode = $AvailabilityMode
                         $availabilityGroupReplicaUpdatesRequired = $true
-                        # Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
                     if ( ( $submittedParameters -contains 'BackupPriority' ) -and ( $BackupPriority -ne $availabilityGroupReplica.BackupPriority ) )
                     {
                         $availabilityGroupReplica.BackupPriority = $BackupPriority
                         $availabilityGroupReplicaUpdatesRequired = $true
-                        # Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
                     # Make sure ConnectionModeInPrimaryRole has a value in order to avoid false positive matches when the parameter is not defined
@@ -350,7 +347,6 @@ function Set-TargetResource
                     {
                         $availabilityGroupReplica.ConnectionModeInPrimaryRole = $ConnectionModeInPrimaryRole
                         $availabilityGroupReplicaUpdatesRequired = $true
-                        # Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
                     # Make sure ConnectionModeInSecondaryRole has a value in order to avoid false positive matches when the parameter is not defined
@@ -358,7 +354,6 @@ function Set-TargetResource
                     {
                         $availabilityGroupReplica.ConnectionModeInSecondaryRole = $ConnectionModeInSecondaryRole
                         $availabilityGroupReplicaUpdatesRequired = $true
-                        # Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
                     # Break out the EndpointUrl properties
@@ -369,7 +364,6 @@ function Set-TargetResource
                         $newEndpointUrl = $availabilityGroupReplica.EndpointUrl.Replace($currentEndpointPort, $endpoint.Protocol.Tcp.ListenerPort)
                         $availabilityGroupReplica.EndpointUrl = $newEndpointUrl
                         $availabilityGroupReplicaUpdatesRequired = $true
-                        # Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
                     if ( ( $submittedParameters -contains 'EndpointHostName' ) -and ( $EndpointHostName -ne $currentEndpointHostName ) )
@@ -377,7 +371,6 @@ function Set-TargetResource
                         $newEndpointUrl = $availabilityGroupReplica.EndpointUrl.Replace($currentEndpointHostName, $EndpointHostName)
                         $availabilityGroupReplica.EndpointUrl = $newEndpointUrl
                         $availabilityGroupReplicaUpdatesRequired = $true
-                        # Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
                     if ( $currentEndpointProtocol -ne 'TCP' )
@@ -385,14 +378,12 @@ function Set-TargetResource
                         $newEndpointUrl = $availabilityGroupReplica.EndpointUrl.Replace($currentEndpointProtocol, 'TCP')
                         $availabilityGroupReplica.EndpointUrl = $newEndpointUrl
                         $availabilityGroupReplicaUpdatesRequired = $true
-                        # Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
                     if ( ( $submittedParameters -contains 'ReadOnlyRoutingConnectionUrl' ) -and ( $ReadOnlyRoutingConnectionUrl -ne $availabilityGroupReplica.ReadOnlyRoutingConnectionUrl ) )
                     {
                         $availabilityGroupReplica.ReadOnlyRoutingConnectionUrl = $ReadOnlyRoutingConnectionUrl
                         $availabilityGroupReplicaUpdatesRequired = $true
-                        # Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
                     if ( ( $submittedParameters -contains 'ReadOnlyRoutingList' ) -and ( ( $ReadOnlyRoutingList -join ',' ) -ne ( $availabilityGroupReplica.ReadOnlyRoutingList -join ',' ) ) )
@@ -403,7 +394,6 @@ function Set-TargetResource
                             $availabilityGroupReplica.ReadOnlyRoutingList.Add($readOnlyRoutingListEntry) | Out-Null
                         }
                         $availabilityGroupReplicaUpdatesRequired = $true
-                        # Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
 
                     if ( $availabilityGroupReplicaUpdatesRequired )

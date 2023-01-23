@@ -118,6 +118,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
 - SqlAgReplica
   - Converted unit test to Pester 5.
+  - `Update-AvailabilityGroupReplica` to trigger once within `Set-TargetResource`
+    for all AvailabilityReplica changes.
 - Private function `Invoke-SetupAction` ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
   - Was changed to support the SQL Server 2022 GA feature `AzureExtension`
     (that replaced the feature name `ARC`).
