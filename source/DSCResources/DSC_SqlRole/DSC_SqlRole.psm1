@@ -50,7 +50,7 @@ function Get-TargetResource
         $ServerRoleName
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
     $ensure = 'Absent'
     $membersInRole = $null
 
@@ -166,7 +166,7 @@ function Set-TargetResource
 
     Assert-BoundParameter @assertBoundParameterParameters
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     if ($sqlServerObject)
     {

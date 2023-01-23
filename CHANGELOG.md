@@ -163,6 +163,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       only be used together with the module _SqlServer_ v22.x (minimum
       v22.0.49-preview). The parameter will be ignored if an older major
       versions of the module _SqlServer_ is used.
+  - `Connect-SQL`
+    - Was updated to handle both `-ErrorAction 'Stop'` and `-ErrorAction 'SilentlyContinue'`
+      when passed to the command ([issue #1837](https://github.com/dsccommunity/SqlServerDsc/issues/1837)).
 
 ### Fixed
 

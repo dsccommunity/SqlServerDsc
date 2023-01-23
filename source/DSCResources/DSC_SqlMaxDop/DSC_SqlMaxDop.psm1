@@ -40,7 +40,7 @@ function Get-TargetResource
     $currentMaxDop = $null
     $isActiveNode = $null
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
     if ($sqlServerObject)
     {
         # Is this node actively hosting the SQL instance?
@@ -128,7 +128,7 @@ function Set-TargetResource
         $ProcessOnlyOnActiveNode
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
     if ($sqlServerObject)
     {
         Write-Verbose -Message (

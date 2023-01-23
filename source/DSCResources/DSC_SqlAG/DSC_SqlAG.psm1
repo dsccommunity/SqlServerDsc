@@ -43,7 +43,7 @@ function Get-TargetResource
     )
 
     # Connect to the instance
-    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     # Define current version for check compatibility
     $sqlMajorVersion = $serverObject.Version.Major
@@ -244,7 +244,7 @@ function Set-TargetResource
     )
 
     # Connect to the instance
-    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     # Determine if HADR is enabled on the instance. If not, throw an error
     if ( -not $serverObject.IsHadrEnabled )

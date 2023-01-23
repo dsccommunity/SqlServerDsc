@@ -792,7 +792,7 @@ function Get-DatabaseObject
 
     $sqlObject = $null
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     if ($sqlServerObject)
     {

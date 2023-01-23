@@ -67,6 +67,7 @@ class SqlResourceBase : ResourceBase
             $connectSqlDscDatabaseEngineParameters = @{
                 ServerName   = $this.ServerName
                 InstanceName = $this.InstanceName
+                ErrorAction  = 'Stop'
             }
 
             if ($this.Credential)
