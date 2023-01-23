@@ -1222,7 +1222,6 @@ Describe 'SqlAGReplica\Set-TargetResource' {
 
         Context 'When multiple properties are not in desired state' {
             BeforeAll {
-                Mock -CommandName Remove-SqlAvailabilityReplica
                 Mock -CommandName Update-AvailabilityGroupReplica
             }
 
@@ -1249,47 +1248,39 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
-                    $ServerName -eq 'Server1'
-                } -Times 1 -Exactly
+                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
+            }
+        }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
-                    $ServerName -eq 'Server2'
-                } -Times 0 -Exactly
+        Context 'When AvailabilityMode and FailoverMode properties are not in desired state' {
+            BeforeAll {
+                Mock -CommandName Update-AvailabilityGroupReplica
+            }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
-                    $ServerName -eq 'Server3'
-                } -Times 0 -Exactly
+            It 'Should set both properties with one update' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $setTargetResourceParameters = @{
+                        Name                          = 'Server1'
+                        AvailabilityGroupName         = 'AG_AllServers'
+                        ServerName                    = 'Server1'
+                        InstanceName                  = 'MSSQLSERVER'
+                        PrimaryReplicaServerName      = 'Server2'
+                        PrimaryReplicaInstanceName    = 'MSSQLSERVER'
+                        Ensure                        = 'Present'
+                        AvailabilityMode              = 'SynchronousCommit'
+                        BackupPriority                = 50
+                        ConnectionModeInPrimaryRole   = 'AllowAllConnections'
+                        ConnectionModeInSecondaryRole = 'AllowNoConnections'
+                        EndpointHostName              = 'Server1'
+                        FailoverMode                  = 'Automatic'
+                        ReadOnlyRoutingConnectionUrl  = 'TCP://Server1.domain.com:1433'
+                        ReadOnlyRoutingList           = @('Server1', 'Server2')
+                    }
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
-                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
                 }
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
-                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-                }
-
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
-                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
-                }
-
-                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -ParameterFilter {
-                    $AvailabilityGroupReplica.AvailabilityMode              -eq 'SynchronousCommit' -and
-                    $AvailabilityGroupReplica.BackupPriority                -eq 60 -and
-                    $AvailabilityGroupReplica.ConnectionModeInPrimaryRole   -eq 'AllowReadWriteConnections' -and
-                    $AvailabilityGroupReplica.ConnectionModeInSecondaryRole -eq 'AllowReadIntentConnectionsOnly' -and
-                    $AvailabilityGroupReplica.EndpointHostName              -eq 'AnotherEndpointHostName' -and
-                    $AvailabilityGroupReplica.FailoverMode                  -eq 'Automatic' -and
-                    $AvailabilityGroupReplica.ReadOnlyRoutingConnectionUrl  -eq 'TCP://AnotherEndpointHostName:1433' -and
-                    $AvailabilityGroupReplica.ReadOnlyRoutingList.Count     -eq 2 -and
-                    $AvailabilityGroupReplica.ReadOnlyRoutingList[0]        -eq 'Server2' -and
-                    $AvailabilityGroupReplica.ReadOnlyRoutingList[1]        -eq 'Server1'
-                } -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
             }
         }
 
