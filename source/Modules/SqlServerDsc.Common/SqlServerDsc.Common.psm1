@@ -570,14 +570,21 @@ function Connect-SQL
     {
         $errorMessage = $script:localizedData.FailedToConnectToDatabaseEngineInstance -f $databaseEngineInstance
 
-        $writeErrorParameters = @{
-            Message = $errorMessage
-            Category = 'InvalidOperation'
-            ErrorId = 'CS0001' # cspell: disable-line
-            TargetObject = $databaseEngineInstance
+        $invalidOperationException = New-Object -TypeName 'InvalidOperationException' -ArgumentList @($errorMessage, $_.Exception)
+
+        $newObjectParameters = @{
+            TypeName     = 'System.Management.Automation.ErrorRecord'
+            ArgumentList = @(
+                $invalidOperationException.ToString(),
+                'CS0001',
+                'InvalidOperation',
+                $databaseEngineInstance
+            )
         }
 
-        Write-Error @writeErrorParameters
+        $errorRecordToThrow = New-Object @newObjectParameters
+
+        Write-Error -ErrorRecord $errorRecordToThrow
     }
     finally
     {
