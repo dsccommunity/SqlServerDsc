@@ -39,7 +39,7 @@ function Import-SqlModuleStub
     #>
     $modulesAndStubs = @{
         SQLPS     = 'SQLPSStub'
-        SqlServer = 'SQLServerStub'
+        SqlServer = 'SqlServerStub'
     }
 
     # Determine which module to ensure is loaded based on the parameters passed

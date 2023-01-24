@@ -118,6 +118,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
 - SqlAgReplica
   - Converted unit test to Pester 5.
+  - `Update-AvailabilityGroupReplica` to trigger once within `Set-TargetResource`
+    for all AvailabilityReplica changes.
 - Private function `Invoke-SetupAction` ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
   - Was changed to support the SQL Server 2022 GA feature `AzureExtension`
     (that replaced the feature name `ARC`).
@@ -2409,7 +2411,7 @@ in a future release.
       MSFT\_xSQLServerEndpointPermission.psm1, MSFT\_xSQLServerEndpointState.psm1,
       MSFT\_xSQLServerNetwork.psm1, MSFT\_xSQLServerPermission.psm1,
       MSFT\_xSQLServerReplication.psm1, MSFT\_xSQLServerScript.psm1,
-      SQLPSStub.psm1, SQLServerStub.psm1.
+      SQLPSStub.psm1, SqlServerStub.psm1.
   - Opt-in for script files common tests ([issue #707](https://github.com/dsccommunity/SqlServerDsc/issues/707)).
     - Removed Byte Order Mark (BOM) from the files; DSCClusterSqlBuild.ps1,
       DSCFCISqlBuild.ps1, DSCSqlBuild.ps1, DSCSQLBuildEncrypted.ps1,
