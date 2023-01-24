@@ -50,7 +50,7 @@ function Get-TargetResource
     )
 
     # Connect to the instance
-    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     # Is this node actively hosting the SQL instance?
     $isActiveNode = Test-ActiveNode -ServerObject $serverObject
@@ -241,7 +241,7 @@ function Set-TargetResource
     Import-SQLPSModule
 
     # Connect to the instance
-    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     # Determine if HADR is enabled on the instance. If not, throw an error
     if ( -not $serverObject.IsHadrEnabled )
@@ -410,7 +410,7 @@ function Set-TargetResource
             else
             {
                 # Connect to the instance that is supposed to house the primary replica
-                $primaryReplicaServerObject = Connect-SQL -ServerName $PrimaryReplicaServerName -InstanceName $PrimaryReplicaInstanceName
+                $primaryReplicaServerObject = Connect-SQL -ServerName $PrimaryReplicaServerName -InstanceName $PrimaryReplicaInstanceName -ErrorAction 'Stop'
 
                 # Verify the Availability Group exists on the supplied primary replica
                 $primaryReplicaAvailabilityGroup = $primaryReplicaServerObject.AvailabilityGroups[$AvailabilityGroupName]

@@ -50,7 +50,7 @@ function Get-TargetResource
         NotificationMethod = $null
     }
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     if ($sqlServerObject)
     {
@@ -140,7 +140,7 @@ function Set-TargetResource
         $NotificationMethod
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     if ($sqlServerObject)
     {

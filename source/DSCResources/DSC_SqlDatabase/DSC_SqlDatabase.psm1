@@ -78,7 +78,7 @@ function Get-TargetResource
         OwnerName          = $null
     }
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     if ($sqlServerObject)
     {
@@ -187,7 +187,7 @@ function Set-TargetResource
         $OwnerName
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     if ($sqlServerObject)
     {

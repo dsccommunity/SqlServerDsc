@@ -47,7 +47,7 @@ function Get-TargetResource
         $DatabaseName
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     Write-Verbose -Message (
         $script:localizedData.RetrievingDatabaseUser -f $Name, $DatabaseName
@@ -756,7 +756,7 @@ function Assert-SqlLogin
         $LoginName
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     if (-not $sqlServerObject.Logins[$LoginName])
     {
@@ -812,7 +812,7 @@ function Assert-DatabaseCertificate
         $RemainingArguments
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     if (-not $sqlServerObject.Databases[$DatabaseName].Certificates[$CertificateName])
     {
@@ -868,7 +868,7 @@ function Assert-DatabaseAsymmetricKey
         $RemainingArguments
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     if (-not $sqlServerObject.Databases[$DatabaseName].AsymmetricKeys[$AsymmetricKeyName])
     {

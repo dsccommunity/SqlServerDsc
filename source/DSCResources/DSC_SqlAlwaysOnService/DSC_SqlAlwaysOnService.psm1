@@ -56,7 +56,7 @@ function Get-TargetResource
         $RestartTimeout = 120
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     $isAlwaysOnEnabled = [System.Boolean] $sqlServerObject.IsHadrEnabled
     if ($isAlwaysOnEnabled -eq $true)

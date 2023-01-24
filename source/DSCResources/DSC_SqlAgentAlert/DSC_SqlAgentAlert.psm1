@@ -53,7 +53,7 @@ function Get-TargetResource
         MessageId    = $null
     }
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     if ($sqlServerObject)
     {
@@ -148,7 +148,7 @@ function Set-TargetResource
         $MessageId
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     if ($sqlServerObject)
     {

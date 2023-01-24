@@ -75,7 +75,7 @@ function Get-TargetResource
         MessageForwardingSize      = $null
     }
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     if ($sqlServerObject)
     {
@@ -224,7 +224,7 @@ function Set-TargetResource
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     if ($sqlServerObject)
     {
