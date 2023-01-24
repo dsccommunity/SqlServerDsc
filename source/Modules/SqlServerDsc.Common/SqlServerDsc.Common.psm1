@@ -458,7 +458,7 @@ function Start-SqlSetupProcess
         Connects to the instance 'MyInstance' on the local server.
 
     .EXAMPLE
-        Connect-SQL ServerName 'sql.company.local' -InstanceName 'MyInstance'
+        Connect-SQL ServerName 'sql.company.local' -InstanceName 'MyInstance' -ErrorAction 'Stop'
 
         Connects to the instance 'MyInstance' on the server 'sql.company.local'.
 #>
@@ -569,7 +569,22 @@ function Connect-SQL
     catch
     {
         $errorMessage = $script:localizedData.FailedToConnectToDatabaseEngineInstance -f $databaseEngineInstance
-        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+
+        $invalidOperationException = New-Object -TypeName 'InvalidOperationException' -ArgumentList @($errorMessage, $_.Exception)
+
+        $newObjectParameters = @{
+            TypeName     = 'System.Management.Automation.ErrorRecord'
+            ArgumentList = @(
+                $invalidOperationException.ToString(),
+                'CS0001',
+                'InvalidOperation',
+                $databaseEngineInstance
+            )
+        }
+
+        $errorRecordToThrow = New-Object @newObjectParameters
+
+        Write-Error -ErrorRecord $errorRecordToThrow
     }
     finally
     {
@@ -1029,7 +1044,7 @@ function Restart-SqlService
     if (-not $SkipClusterCheck.IsPresent)
     {
         ## Connect to the instance
-        $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+        $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
         if ($serverObject.IsClustered)
         {
@@ -1470,7 +1485,7 @@ function Invoke-Query
             $connectSQLParameters.SetupCredential = $DatabaseCredential
         }
 
-        $serverObject = Connect-SQL @connectSQLParameters
+        $serverObject = Connect-SQL @connectSQLParameters -ErrorAction 'Stop'
     }
 
     $redactedQuery = $Query
@@ -1718,7 +1733,7 @@ function Test-AvailabilityReplicaSeedingModeAutomatic
     # Assume automatic seeding is disabled by default
     $availabilityReplicaSeedingModeAutomatic = $false
 
-    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     # Only check the seeding mode if this is SQL 2016 or newer
     if ( $serverObject.Version -ge 13 )
@@ -1777,7 +1792,7 @@ function Get-PrimaryReplicaServerObject
     # Determine if we're connected to the primary replica
     if ( ( $AvailabilityGroup.PrimaryReplicaServerName -ne $serverObject.DomainInstanceName ) -and ( -not [System.String]::IsNullOrEmpty($AvailabilityGroup.PrimaryReplicaServerName) ) )
     {
-        $primaryReplicaServerObject = Connect-SQL -ServerName $AvailabilityGroup.PrimaryReplicaServerName
+        $primaryReplicaServerObject = Connect-SQL -ServerName $AvailabilityGroup.PrimaryReplicaServerName -ErrorAction 'Stop'
     }
 
     return $primaryReplicaServerObject

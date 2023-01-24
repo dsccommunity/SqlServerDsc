@@ -44,7 +44,7 @@ function Get-TargetResource
         $script:localizedData.GetLogin -f $Name, $ServerName, $InstanceName
     )
 
-    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
     if ($serverObject)
     {
         $login = $serverObject.Logins[$Name]
@@ -182,7 +182,7 @@ function Set-TargetResource
         $DefaultDatabase
     )
 
-    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     switch ( $Ensure )
     {
@@ -567,7 +567,7 @@ function Test-TargetResource
 
                 try
                 {
-                    Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -SetupCredential $userCredential -LoginType 'SqlLogin' | Out-Null
+                    Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -SetupCredential $userCredential -LoginType 'SqlLogin' -ErrorAction 'Stop' | Out-Null
                 }
                 catch
                 {

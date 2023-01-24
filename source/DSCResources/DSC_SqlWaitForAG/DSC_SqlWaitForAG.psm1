@@ -76,7 +76,7 @@ function Get-TargetResource
         )
 
         # Connect to the instance
-        $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+        $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
         if ($serverObject)
         {

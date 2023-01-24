@@ -2539,7 +2539,7 @@ function Get-SqlEngineProperties
     #$agentServiceCimInstance = Get-CimInstance -ClassName 'Win32_Service' -Filter ("Name = '{0}'" -f $serviceNames.AgentService)
     $sqlAgentService = Get-ServiceProperties -ServiceName $serviceNames.AgentService
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     $sqlCollation = $sqlServerObject.Collation
     $isClustered = $sqlServerObject.IsClustered
@@ -2742,7 +2742,7 @@ function Get-TempDbProperties
         $InstanceName
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     $databaseTempDb = $sqlServerObject.Databases['tempdb']
 
@@ -2934,7 +2934,7 @@ function Get-SqlRoleMembers
         $RoleName
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     $membersOfSysAdminRole = @($sqlServerObject.Roles[$RoleName].EnumMemberNames())
 

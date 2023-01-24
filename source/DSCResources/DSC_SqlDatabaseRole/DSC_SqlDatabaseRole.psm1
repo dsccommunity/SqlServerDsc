@@ -80,7 +80,7 @@ function Get-TargetResource
     $roleStatus = 'Absent'
     $membersInDesiredState = $false
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
     if ($sqlServerObject)
     {
         $membersInDesiredState = $true
@@ -252,7 +252,7 @@ function Set-TargetResource
         $script:localizedData.SetDatabaseRoleProperties -f $Name
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
     if ($sqlServerObject)
     {
         $sqlDatabaseObject = $sqlServerObject.Databases[$DatabaseName]

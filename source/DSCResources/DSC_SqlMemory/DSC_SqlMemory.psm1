@@ -38,7 +38,7 @@ function Get-TargetResource
         $script:localizedData.GetMemoryValues -f $InstanceName
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
     if ($sqlServerObject)
     {
         $minMemory = $sqlServerObject.Configuration.MinServerMemory.ConfigValue
@@ -154,7 +154,7 @@ function Set-TargetResource
         $script:localizedData.SetNewValues -f $InstanceName
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
     if ($sqlServerObject)
     {
         switch ($Ensure)
