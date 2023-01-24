@@ -567,7 +567,7 @@ function Test-TargetResource
 
                 try
                 {
-                    Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -SetupCredential $userCredential -LoginType 'SqlLogin' | Out-Null -ErrorAction 'Stop'
+                    Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -SetupCredential $userCredential -LoginType 'SqlLogin' -ErrorAction 'Stop' | Out-Null
                 }
                 catch
                 {
