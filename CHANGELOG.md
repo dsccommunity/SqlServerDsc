@@ -93,6 +93,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     parameter can only be used together with the module _SqlServer_ v22.x
     (minimum v22.0.49-preview). The parameter will be ignored if an older
     major versions of the module _SqlServer_ is used.
+- SqlTraceFlag
+  - The resource is now tested with an integration tests ([issue #1835](https://github.com/dsccommunity/SqlServerDsc/issues/1835)).
 - The public commands `Add-SqlDscNode`, `Complete-SqlDscFailoverCluster`,
   `Complete-SqlDscImage`, `Install-SqlDscServer`, and `Repair-SqlDscServer`
   now support the setup argument `ProductCoveredBySA` ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
