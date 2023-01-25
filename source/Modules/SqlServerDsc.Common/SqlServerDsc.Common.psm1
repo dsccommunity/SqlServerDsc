@@ -553,7 +553,15 @@ function Connect-SQL
     {
         $sqlConnectionContext.Connect()
 
-        if ($sqlServerObject.Status -match '^Online$')
+        $instanceStatus = $sqlServerObject.Status
+
+        if ($instanceStatus)
+        {
+            # Property Status is of type Enum ServerStatus, we return the string equivalent.
+            $instanceStatus = $instanceStatus.ToString()
+        }
+
+        if ($instanceStatus -match '^Online$')
         {
             Write-Verbose -Message (
                 $script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance
@@ -563,7 +571,31 @@ function Connect-SQL
         }
         else
         {
-            throw
+            if ([System.String]::IsNullOrEmpty($instanceStatus))
+            {
+                $instanceStatus = 'Unknown'
+            }
+
+            $errorMessage = $script:localizedData.DatabaseEngineInstanceNotOnline -f @(
+                $databaseEngineInstance,
+                $instanceStatus
+            )
+
+            $invalidOperationException = New-Object -TypeName 'InvalidOperationException' -ArgumentList @($errorMessage)
+
+            $newObjectParameters = @{
+                TypeName     = 'System.Management.Automation.ErrorRecord'
+                ArgumentList = @(
+                    $invalidOperationException.ToString(),
+                    'CS0001',
+                    'InvalidOperation',
+                    $databaseEngineInstance
+                )
+            }
+
+            $errorRecordToThrow = New-Object @newObjectParameters
+
+            Write-Error -ErrorRecord $errorRecordToThrow
         }
     }
     catch
@@ -576,7 +608,7 @@ function Connect-SQL
             TypeName     = 'System.Management.Automation.ErrorRecord'
             ArgumentList = @(
                 $invalidOperationException.ToString(),
-                'CS0001',
+                'CS0002',
                 'InvalidOperation',
                 $databaseEngineInstance
             )
