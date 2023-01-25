@@ -168,6 +168,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Connect-SQL`
     - Was updated to handle both `-ErrorAction 'Stop'` and `-ErrorAction 'SilentlyContinue'`
       when passed to the command ([issue #1837](https://github.com/dsccommunity/SqlServerDsc/issues/1837)).
+    - Now returns a more clear error message when the status of a database
+      instance is not `Online`.
 
 ### Fixed
 
