@@ -89,7 +89,8 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.TraceFlags | Should -Be '2371'
+            $resourceCurrentState.TraceFlags | Should -HaveCount 1
+            $resourceCurrentState.TraceFlags | Should -Contain '2371'
             $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
             $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
             $resourceCurrentState.RestartService | Should -BeNullOrEmpty

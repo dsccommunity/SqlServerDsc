@@ -203,13 +203,13 @@ function Set-TargetResource
         InstanceName = $InstanceName
     }
 
-    $wishTraceFlags = [System.Collections.ArrayList]::new()
+    $desiredTraceFlags = [System.Collections.ArrayList]::new()
 
     if ($PSBoundParameters.ContainsKey('TraceFlags'))
     {
         if ($null -ne $TraceFlags)
         {
-            $wishTraceFlags.AddRange($TraceFlags)
+            $desiredTraceFlags.AddRange(@($TraceFlags))
         }
     }
     else
@@ -218,41 +218,41 @@ function Set-TargetResource
 
         if ($null -ne $getTargetResourceResult.TraceFlags)
         {
-            $wishTraceFlags.AddRange($getTargetResourceResult.TraceFlags)
+            $desiredTraceFlags.AddRange(@($getTargetResourceResult.TraceFlags))
         }
 
         if ($PSBoundParameters.ContainsKey('TraceFlagsToInclude'))
         {
-            foreach ($traceFlagToInclude in $TraceFlagsToInclude)
+            foreach ($currentTraceFlagToInclude in $TraceFlagsToInclude)
             {
-                if ($getTargetResourceResult.TraceFlags -notcontains $traceFlagToInclude)
+                if ($desiredTraceFlags -notcontains $currentTraceFlagToInclude)
                 {
-                    $wishTraceFlags.Add($traceFlagToInclude)
+                    $desiredTraceFlags.Add($currentTraceFlagToInclude)
                 }
             }
         }
 
         if ($PSBoundParameters.ContainsKey('TraceFlagsToExclude'))
         {
-            foreach ($traceFlagToExclude in $TraceFlagsToExclude)
+            foreach ($currentTraceFlagToExclude in $TraceFlagsToExclude)
             {
-                if ($getTargetResourceResult.TraceFlags -contains $traceFlagToExclude)
+                if ($desiredTraceFlags -contains $currentTraceFlagToExclude)
                 {
-                    $wishTraceFlags.Remove([string]$traceFlagToExclude)
+                    $desiredTraceFlags.Remove($currentTraceFlagToExclude)
                 }
             }
         }
     }
 
     # Add '-T' dash to flag.
-    $traceFlagList = $wishTraceFlags |
+    $startupParameterTraceFlagValues = $desiredTraceFlags |
         ForEach-Object {
-            "-T$PSItem"
+            '-T{0}' -f $_
         }
 
-    if ($traceFlagList -eq '')
+    if ($startupParameterTraceFlagValues -eq '')
     {
-        $traceFlagList = $null
+        $startupParameterTraceFlagValues = $null
     }
 
     $serviceNames = Get-SqlServiceName -InstanceName $InstanceName
@@ -262,7 +262,9 @@ function Set-TargetResource
     if ($sqlManagement)
     {
         $databaseEngineService = $sqlManagement.Services |
-            Where-Object -FilterScript { $PSItem.Name -eq $serviceNames.SQLEngineName }
+            Where-Object -FilterScript {
+                $_.Name -eq $serviceNames.SQLEngineName
+            }
 
         if ($databaseEngineService)
         {
@@ -272,14 +274,14 @@ function Set-TargetResource
             # Removing flags that are not wanted
             foreach ($parameter in $databaseEngineService.StartupParameters.Split(';'))
             {
-                if ($parameter -like '-T*' -and $parameter -notin $traceFlagList)
+                if ($parameter -like '-T*' -and $parameter -notin $startupParameterTraceFlagValues)
                 {
                     $parameterList.Remove($parameter) | Out-Null
                 }
             }
 
             # Add missing flags.
-            foreach ($flag in $traceFlagList)
+            foreach ($flag in $startupParameterTraceFlagValues)
             {
                 if ($flag -notin $parameterList)
                 {
