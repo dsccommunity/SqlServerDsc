@@ -47,15 +47,46 @@ function Get-TargetResource
     if ($sqlManagement)
     {
         $databaseEngineService = $sqlManagement.Services |
-            Where-Object -FilterScript { $PSItem.Name -eq $serviceNames.SQLEngineName }
+            Where-Object -FilterScript {
+                $_.Name -eq $serviceNames.SQLEngineName
+            }
 
         if ($databaseEngineService)
         {
-            $traceFlags = $databaseEngineService.StartupParameters.Split(';') |
-                Where-Object -FilterScript { $PSItem -like '-T*' } |
-                ForEach-Object {
-                    $PSItem.TrimStart('-T')
+            Write-Debug -Message (
+                $script:localizedData.DebugParsingStartupParameters  -f $databaseEngineService.StartupParameters
+            )
+
+            $startupParameterValues = $databaseEngineService.StartupParameters.Split(';')
+
+            $startupParameterTraceFlagValues = $startupParameterValues |
+                Where-Object -FilterScript {
+                    $_ -like '-T*'
                 }
+
+            $traceFlags = @()
+
+            if ($startupParameterTraceFlagValues)
+            {
+                Write-Debug -Message (
+                    $script:localizedData.DebugFoundTraceFlags -f ($startupParameterTraceFlagValues -join ',')
+                )
+
+                $traceFlags = @(
+                    $startupParameterTraceFlagValues |
+                        ForEach-Object {
+                            $_.TrimStart('-T')
+                        }
+                )
+
+                Write-Debug -Message (
+                    $script:localizedData.DebugReturningTraceFlags -f ($traceFlags -join ',')
+                )
+           }
+           else
+           {
+               Write-Debug -Message $script:localizedData.DebugNoTraceFlags
+           }
         }
         else
         {
@@ -72,9 +103,9 @@ function Get-TargetResource
     return @{
         ServerName          = $ServerName
         InstanceName        = $InstanceName
-        TraceFlags          = $traceFlags
-        TraceFlagsToInclude = $null
-        TraceFlagsToExclude = $null
+        TraceFlags          = [System.UInt32[]] $traceFlags
+        TraceFlagsToInclude = [System.UInt32[]] @()
+        TraceFlagsToExclude = [System.UInt32[]] @()
         RestartService      = $null
         RestartTimeout      = $null
     }

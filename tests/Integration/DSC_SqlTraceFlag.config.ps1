@@ -44,7 +44,7 @@ Configuration DSC_SqlTraceFlag_SetSingleTraceFlag_Config
         {
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
-            TraceFlags           = 2371
+            TraceFlags           = @(2371)
             RestartService       = $true
 
             PsDscRunAsCredential = New-Object `

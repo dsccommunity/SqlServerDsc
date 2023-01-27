@@ -5,6 +5,10 @@ ConvertFrom-StringData @'
     NotConnectedToComputerManagement = Was unable to connect to ComputerManagement '{0}'.
     NotConnectedToWMI = Was unable to connect to WMI information '{0}' in '{1}'.
     DesiredTraceFlagNotPresent = TraceFlag does not match the actual TraceFlags on the instance. Expected '{0}', but was '{1}'.
-    TraceFlagPresent = traceflag {0} is present.
-    TraceFlagNotPresent = traceflag {0} is not present.
+    TraceFlagPresent = Trace flag {0} is present.
+    TraceFlagNotPresent = Trace flag {0} is not present.
+    DebugParsingStartupParameters = Parsing startup parameters: {0}
+    DebugFoundTraceFlags = Found trace flags: {0}
+    DebugReturningTraceFlags = Returning the trace flag values: {0}
+    DebugNoTraceFlags = No trace flags were found in the startup parameters.
 '@

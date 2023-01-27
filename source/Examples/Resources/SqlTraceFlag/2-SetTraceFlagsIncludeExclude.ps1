@@ -20,8 +20,8 @@ Configuration Example
         {
             ServerName           = 'sqltest.company.local'
             InstanceName         = 'DSC'
-            TraceFlagsToInclude  = 834, 1117, 1118, 2371, 3226
-            TraceFlagsToExclude  = 1112
+            TraceFlagsToInclude  = @(834, 1117, 1118, 2371, 3226)
+            TraceFlagsToExclude  = @(1112)
             RestartService      = $true
 
             PsDscRunAsCredential = $SqlAdministratorCredential
