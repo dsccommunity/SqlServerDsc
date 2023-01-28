@@ -242,7 +242,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_InstallDatabaseEngineNamedInstanceAsSystem_Config"
-    ) {
+    ) -Skip $env:SKIP_DATABASE_ENGINE_INSTANCE {
         BeforeAll {
             $configurationName = $_
             $script:itBlockError = @()
@@ -372,7 +372,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_StopServicesInstance_Config"
-    ) {
+    ) -Skip $env:SKIP_DATABASE_ENGINE_INSTANCE {
         BeforeAll {
             $configurationName = $_
         }
@@ -407,7 +407,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_InstallDatabaseEngineDefaultInstanceAsUser_Config"
-    ) {
+    ) -Skip $env:SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE {
         BeforeAll {
             $configurationName = $_
             $script:itBlockError = @()
@@ -532,7 +532,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_StopSqlServerDefaultInstance_Config"
-    ) {
+    ) -Skip $env:SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE {
         BeforeAll {
             $configurationName = $_
         }
@@ -567,7 +567,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_InstallMultiDimensionalAnalysisServicesAsSystem_Config"
-    ) {
+    ) -Skip $env:SKIP_ANALYSIS_MULTI_INSTANCE {
         BeforeAll {
             $configurationName = $_
             $script:itBlockError = @()
@@ -698,7 +698,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_StopMultiDimensionalAnalysisServices_Config"
-    ) {
+    ) -Skip $env:SKIP_ANALYSIS_MULTI_INSTANCE {
         BeforeAll {
             $configurationName = $_
         }
@@ -733,7 +733,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_InstallTabularAnalysisServicesAsSystem_Config"
-    ) {
+    ) -Skip $env:SKIP_ANALYSIS_TABULAR_INSTANCE {
         BeforeAll {
             $configurationName = $_
             $script:itBlockError = @()
@@ -864,7 +864,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_StopTabularAnalysisServices_Config"
-    ) {
+    ) -Skip $env:SKIP_ANALYSIS_TABULAR_INSTANCE {
         BeforeAll {
             $configurationName = $_
         }
@@ -899,7 +899,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_StartServicesInstance_Config"
-    ) {
+    ) -Skip $env:SKIP_DATABASE_ENGINE_INSTANCE {
         BeforeAll {
             $configurationName = $_
         }

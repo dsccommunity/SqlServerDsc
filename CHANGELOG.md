@@ -114,6 +114,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     class-based resources.
   - The AppVeyor configuration file was updated to include the possibility
     to run integration tests for SQL Server 2022.
+  - The AppVeyor configuration file was updated to include the possibility
+    to run skip installing one or more SQL Server instances when debugging
+    in AppVeyor to help maximize the time alloted be run.
   - The stubs in `SqlServerStub.psm1` are now based on the commands from the
     module SqlServer v22.0.49-preview.
 - `Install-SqlServerDsc`

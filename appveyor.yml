@@ -16,6 +16,11 @@ image:
 environment:
   # DEBUG: Un-comment this to get the same password for the RDP session for each build
   #APPVEYOR_RDP_PASSWORD: D5c1234!
+  # DEBUG: Un-comment these to skip installing the various instances (to speed up debug)
+  #SKIP_DATABASE_ENGINE_INSTANCE: true
+  SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
+  SKIP_ANALYSIS_MULTI_INSTANCE: true
+  SKIP_ANALYSIS_TABULAR_INSTANCE: true
   matrix:
   # DEBUG: Comment and un-comment the different SQL Server version that should be tested.
   - TEST_CONFIGURATION: Integration_SQL2016
