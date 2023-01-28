@@ -291,6 +291,11 @@ function Set-TargetResource
 
             # Merge flags back into startup parameters.
             $databaseEngineService.StartupParameters = $parameterList -join ';'
+
+            Write-Debug -Message (
+                $script:localizedData.DebugSetStartupParameters  -f $databaseEngineService.StartupParameters
+            )
+
             $databaseEngineService.Alter()
 
             if ($PSBoundParameters.ContainsKey('RestartService'))
@@ -338,7 +343,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SQLPSMOdule is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SQLPSModule is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -410,27 +415,30 @@ function Test-TargetResource
         }
         else
         {
-            $reference = [System.Collections.ArrayList]::new()
+            $currentStateTraceFlags = [System.Collections.ArrayList]::new()
 
             if ($null -ne $getTargetResourceResult.TraceFlags)
             {
-                $reference.AddRange($getTargetResourceResult.TraceFlags)
+                $currentStateTraceFlags.AddRange(@($getTargetResourceResult.TraceFlags))
             }
 
-            $difference = [System.Collections.ArrayList]::new()
+            $desiredStateTraceFlags = [System.Collections.ArrayList]::new()
 
             if ($null -ne $TraceFlags)
             {
-                $difference.AddRange($TraceFlags)
+                $desiredStateTraceFlags.AddRange($TraceFlags)
             }
 
-            # Compare $TraceFlags to the Actual TraceFlags ($getTargetResourceResult.TraceFlags) to see if they contain the same values.
-            $nullIfTheSame = Compare-Object -ReferenceObject $reference -DifferenceObject $difference
-            if ($null -ne $nullIfTheSame)
+            # Returns $null if desired state and current state is the same.
+            $compareObjectResult = Compare-Object -ReferenceObject $currentStateTraceFlags -DifferenceObject $desiredStateTraceFlags
+
+            if ($null -ne $compareObjectResult)
             {
                 Write-Verbose -Message (
-                    $script:localizedData.DesiredTraceFlagNotPresent `
-                        -f $($TraceFlags -join ','), $($getTargetResourceResult.TraceFlags -join ',')
+                    $script:localizedData.DesiredTraceFlagNotPresent -f @(
+                        ($desiredStateTraceFlags -join ','),
+                        ($currentStateTraceFlags -join ',')
+                    )
                 )
 
                 $isInDesiredState = $false
@@ -441,13 +449,13 @@ function Test-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('TraceFlagsToInclude'))
         {
-            foreach ($traceFlagToInclude in $TraceFlagsToInclude)
+            foreach ($currentTraceFlagToInclude in $TraceFlagsToInclude)
             {
-                if ($getTargetResourceResult.TraceFlags -notcontains $traceFlagToInclude)
+                if ($getTargetResourceResult.TraceFlags -notcontains $currentTraceFlagToInclude)
                 {
                     Write-Verbose -Message (
                         $script:localizedData.TraceFlagNotPresent `
-                            -f $traceFlagToInclude
+                            -f $currentTraceFlagToInclude
                     )
 
                     $isInDesiredState = $false
@@ -457,13 +465,13 @@ function Test-TargetResource
 
         if ($PSBoundParameters.ContainsKey('TraceFlagsToExclude'))
         {
-            foreach ($traceFlagToExclude in $TraceFlagsToExclude)
+            foreach ($currentTraceFlagToExclude in $TraceFlagsToExclude)
             {
-                if ($getTargetResourceResult.TraceFlags -contains $traceFlagToExclude)
+                if ($getTargetResourceResult.TraceFlags -contains $currentTraceFlagToExclude)
                 {
                     Write-Verbose -Message (
                         $script:localizedData.TraceFlagPresent `
-                            -f $traceFlagToExclude
+                            -f $currentTraceFlagToExclude
                     )
 
                     $isInDesiredState = $false
@@ -480,7 +488,7 @@ function Test-TargetResource
         This function returns the serviceNames of an sql instance.
 
     .PARAMETER InstanceName
-        The name of the SQL instance of whoose service names are beeing returned.
+        The name of the SQL instance of who's service names are being returned.
 #>
 function Get-SqlServiceName
 {
@@ -494,7 +502,7 @@ function Get-SqlServiceName
     if ($InstanceName -eq 'MSSQLSERVER')
     {
         $sqlEngineName = 'MSSQLSERVER'
-        $sqlAgentName = 'SQLSERVERAGENT'
+        $sqlAgentName = 'SQLSERVERAGENT' # cSpell: disable-line
     }
     else
     {

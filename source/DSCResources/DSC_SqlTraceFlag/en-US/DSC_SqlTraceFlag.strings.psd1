@@ -7,8 +7,9 @@ ConvertFrom-StringData @'
     DesiredTraceFlagNotPresent = TraceFlag does not match the actual TraceFlags on the instance. Expected '{0}', but was '{1}'.
     TraceFlagPresent = Trace flag {0} is present.
     TraceFlagNotPresent = Trace flag {0} is not present.
-    DebugParsingStartupParameters = Parsing startup parameters: {0}
-    DebugFoundTraceFlags = Found trace flags: {0}
+    DebugParsingStartupParameters = Parsing the startup parameters: {0}
+    DebugFoundTraceFlags = Found the trace flags: {0}
     DebugReturningTraceFlags = Returning the trace flag values: {0}
     DebugNoTraceFlags = No trace flags were found in the startup parameters.
+    DebugSetStartupParameters = Setting the startup parameters to: {0}
 '@

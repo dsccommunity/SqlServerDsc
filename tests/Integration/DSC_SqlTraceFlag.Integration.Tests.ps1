@@ -101,4 +101,433 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             Test-DscConfiguration -Verbose | Should -Be 'True'
         }
     }
+
+    Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_SetMultipleTraceFlags_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                $configurationParameters = @{
+                    OutputPath           = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData    = $ConfigurationData
+                }
+
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                Start-DscConfiguration @startDscConfigurationParameters
+            } | Should -Not -Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            {
+                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+            } | Should -Not -Throw
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.TraceFlags | Should -HaveCount 2
+            $resourceCurrentState.TraceFlags | Should -Contain '3226'
+            $resourceCurrentState.TraceFlags | Should -Contain '4199'
+            $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
+            $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
+            $resourceCurrentState.RestartService | Should -BeNullOrEmpty
+            $resourceCurrentState.RestartTimeout | Should -BeNullOrEmpty
+        }
+
+        It 'Should return ''True'' when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose | Should -Be 'True'
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_ExcludeOneExistingTraceFlag_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                $configurationParameters = @{
+                    OutputPath           = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData    = $ConfigurationData
+                }
+
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                Start-DscConfiguration @startDscConfigurationParameters
+            } | Should -Not -Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            {
+                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+            } | Should -Not -Throw
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.TraceFlags | Should -HaveCount 1
+            $resourceCurrentState.TraceFlags | Should -Contain '3226'
+            $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
+            $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
+            $resourceCurrentState.RestartService | Should -BeNullOrEmpty
+            $resourceCurrentState.RestartTimeout | Should -BeNullOrEmpty
+        }
+
+        It 'Should return ''True'' when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose | Should -Be 'True'
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_IncludeOneAdditionalTraceFlag_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                $configurationParameters = @{
+                    OutputPath           = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData    = $ConfigurationData
+                }
+
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                Start-DscConfiguration @startDscConfigurationParameters
+            } | Should -Not -Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            {
+                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+            } | Should -Not -Throw
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.TraceFlags | Should -HaveCount 2
+            $resourceCurrentState.TraceFlags | Should -Contain '3226'
+            $resourceCurrentState.TraceFlags | Should -Contain '4199'
+            $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
+            $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
+            $resourceCurrentState.RestartService | Should -BeNullOrEmpty
+            $resourceCurrentState.RestartTimeout | Should -BeNullOrEmpty
+        }
+
+        It 'Should return ''True'' when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose | Should -Be 'True'
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_RemoveAllTraceFlags_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                $configurationParameters = @{
+                    OutputPath           = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData    = $ConfigurationData
+                }
+
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                Start-DscConfiguration @startDscConfigurationParameters
+            } | Should -Not -Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            {
+                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+            } | Should -Not -Throw
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.TraceFlags | Should -HaveCount 0
+            $resourceCurrentState.TraceFlags | Should -BeNullOrEmpty
+            $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
+            $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
+            $resourceCurrentState.RestartService | Should -BeNullOrEmpty
+            $resourceCurrentState.RestartTimeout | Should -BeNullOrEmpty
+        }
+
+        It 'Should return ''True'' when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose | Should -Be 'True'
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_ExcludeOneExistingTraceFlag_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                $configurationParameters = @{
+                    OutputPath           = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData    = $ConfigurationData
+                }
+
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                Start-DscConfiguration @startDscConfigurationParameters
+            } | Should -Not -Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            {
+                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+            } | Should -Not -Throw
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.TraceFlags | Should -HaveCount 0
+            $resourceCurrentState.TraceFlags | Should -BeNullOrEmpty
+            $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
+            $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
+            $resourceCurrentState.RestartService | Should -BeNullOrEmpty
+            $resourceCurrentState.RestartTimeout | Should -BeNullOrEmpty
+        }
+
+        It 'Should return ''True'' when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose | Should -Be 'True'
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_IncludeOneAdditionalTraceFlag_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                $configurationParameters = @{
+                    OutputPath           = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData    = $ConfigurationData
+                }
+
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                Start-DscConfiguration @startDscConfigurationParameters
+            } | Should -Not -Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            {
+                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+            } | Should -Not -Throw
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.TraceFlags | Should -HaveCount 1
+            $resourceCurrentState.TraceFlags | Should -Contain '4199'
+            $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
+            $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
+            $resourceCurrentState.RestartService | Should -BeNullOrEmpty
+            $resourceCurrentState.RestartTimeout | Should -BeNullOrEmpty
+        }
+
+        It 'Should return ''True'' when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose | Should -Be 'True'
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_ExcludeOneExistingTraceFlag_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                $configurationParameters = @{
+                    OutputPath           = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData    = $ConfigurationData
+                }
+
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                Start-DscConfiguration @startDscConfigurationParameters
+            } | Should -Not -Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            {
+                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+            } | Should -Not -Throw
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.TraceFlags | Should -HaveCount 0
+            $resourceCurrentState.TraceFlags | Should -BeNullOrEmpty
+            $resourceCurrentState.TraceFlagsToInclude | Should -BeNullOrEmpty
+            $resourceCurrentState.TraceFlagsToExclude | Should -BeNullOrEmpty
+            $resourceCurrentState.RestartService | Should -BeNullOrEmpty
+            $resourceCurrentState.RestartTimeout | Should -BeNullOrEmpty
+        }
+
+        It 'Should return ''True'' when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose | Should -Be 'True'
+        }
+    }
 }
