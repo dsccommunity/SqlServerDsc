@@ -316,6 +316,15 @@ worker.*
 *The integration tests will clean up and not leave anything on the build
 worker.*
 
+### SqlTraceFlag
+
+**Run order:** 2
+
+**Depends on:** SqlSetup
+
+*The integration tests will clean up and not leave anything on the build
+worker.*
+
 ### SqlRS
 
 Configures _SQL Server Reporting Services 2016_,  _SQL Server Reporting_
