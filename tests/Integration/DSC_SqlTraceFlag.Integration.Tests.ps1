@@ -315,6 +315,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                     Verbose      = $true
                     Force        = $true
                     ErrorAction  = 'Stop'
+                    Debug        = $true
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters

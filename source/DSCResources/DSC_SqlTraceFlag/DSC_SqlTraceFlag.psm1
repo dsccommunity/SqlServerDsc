@@ -245,15 +245,12 @@ function Set-TargetResource
     }
 
     # Add '-T' dash to flag.
-    $startupParameterTraceFlagValues = $desiredTraceFlags |
-        ForEach-Object {
-            '-T{0}' -f $_
-        }
-
-    if ($startupParameterTraceFlagValues -eq '')
-    {
-        $startupParameterTraceFlagValues = $null
-    }
+    $startupParameterTraceFlagValues = @(
+        $desiredTraceFlags |
+            ForEach-Object {
+                '-T{0}' -f $_
+            }
+    )
 
     $serviceNames = Get-SqlServiceName -InstanceName $InstanceName
 
@@ -434,13 +431,6 @@ function Test-TargetResource
 
             if ($null -ne $compareObjectResult)
             {
-                Write-Verbose -Message (
-                    $script:localizedData.DesiredTraceFlagNotPresent -f @(
-                        ($desiredStateTraceFlags -join ','),
-                        ($currentStateTraceFlags -join ',')
-                    )
-                )
-
                 $isInDesiredState = $false
             }
         }
@@ -478,6 +468,20 @@ function Test-TargetResource
                 }
             }
         }
+    }
+
+    if (-not $isInDesiredState)
+    {
+        Write-Verbose -Message (
+            $script:localizedData.NotInDesiredState -f @(
+                (($TraceFlags + $TraceFlagsToInclude) -join ','),
+                ($getTargetResourceResult.TraceFlags -join ',')
+            )
+        )
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.InDesiredState
     }
 
     return $isInDesiredState
