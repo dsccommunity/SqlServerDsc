@@ -54,7 +54,7 @@ function Get-TargetResource
         if ($databaseEngineService)
         {
             Write-Debug -Message (
-                $script:localizedData.DebugParsingStartupParameters  -f $databaseEngineService.StartupParameters
+                $script:localizedData.DebugParsingStartupParameters -f $databaseEngineService.StartupParameters
             )
 
             $startupParameterValues = $databaseEngineService.StartupParameters.Split(';')
@@ -268,29 +268,26 @@ function Set-TargetResource
             # Extract startup parameters.
             [System.Collections.ArrayList] $parameterList = $databaseEngineService.StartupParameters.Split(';')
 
-            # Removing flags that are not wanted
-            foreach ($parameter in $databaseEngineService.StartupParameters.Split(';'))
+            # Remove all current trace flags
+            foreach ($parameter in $parameterList)
             {
-                if ($parameter -like '-T*' -and $parameter -notin $startupParameterTraceFlagValues)
+                if ($parameter -like '-T*')
                 {
                     $parameterList.Remove($parameter) | Out-Null
                 }
             }
 
-            # Add missing flags.
-            foreach ($flag in $startupParameterTraceFlagValues)
+            # Set all desired trace flags
+            foreach ($desiredTraceFlag in $startupParameterTraceFlagValues)
             {
-                if ($flag -notin $parameterList)
-                {
-                    $parameterList.Add($flag) | Out-Null
-                }
+                $parameterList.Add($flag) | Out-Null
             }
 
-            # Merge flags back into startup parameters.
+            # Merge parameter list back into startup parameters.
             $databaseEngineService.StartupParameters = $parameterList -join ';'
 
             Write-Debug -Message (
-                $script:localizedData.DebugSetStartupParameters  -f $databaseEngineService.StartupParameters
+                $script:localizedData.DebugSetStartupParameters -f $databaseEngineService.StartupParameters
             )
 
             $databaseEngineService.Alter()
@@ -403,7 +400,7 @@ function Test-TargetResource
 
     if ($PSBoundParameters.ContainsKey('TraceFlags'))
     {
-        if ($TraceFlags.Length -eq 0)
+        if ($TraceFlags.Count -eq 0)
         {
             if ($getTargetResourceResult.TraceFlags.Count -gt 0)
             {
