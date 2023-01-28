@@ -398,20 +398,20 @@ function Test-TargetResource
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
+    Write-Debug -Message (
+        '{0}: TraceFlags in current state ({2}): {1}' -f $MyInvocation.MyCommand, $getTargetResourceResult.TraceFlags, $getTargetResourceResult.TraceFlags.Count
+    )
+
+    Write-Debug -Message (
+        '{0}: TraceFlags in desired state ({2}): {1}' -f $MyInvocation.MyCommand, $TraceFlags, $TraceFlags.Count
+    )
+
     $isInDesiredState = $true
 
     if ($PSBoundParameters.ContainsKey('TraceFlags'))
     {
         if ($TraceFlags.Count -eq 0)
         {
-            Write-Debug -Message (
-                '{0}: TraceFlags in current state ({2}): {1}' -f $MyInvocation.MyCommand, $getTargetResourceResult.TraceFlags, $getTargetResourceResult.TraceFlags.Count
-            )
-
-            Write-Debug -Message (
-                '{0}: TraceFlags in desired state ({2}): {1}' -f $MyInvocation.MyCommand, $TraceFlags, $TraceFlags.Count
-            )
-
             if ($getTargetResourceResult.TraceFlags.Count -gt 0)
             {
                 $isInDesiredState = $false

@@ -242,7 +242,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_InstallDatabaseEngineNamedInstanceAsSystem_Config"
-    ) -Skip:$(if ($env:SKIP_DATABASE_ENGINE_INSTANCE) { $true } else { $false }) -Fixture {
+    ) -Skip:$(if ($env:SKIP_DATABASE_ENGINE_INSTANCE) { $true } else { $false }) {
         BeforeAll {
             $configurationName = $_
             $script:itBlockError = @()
