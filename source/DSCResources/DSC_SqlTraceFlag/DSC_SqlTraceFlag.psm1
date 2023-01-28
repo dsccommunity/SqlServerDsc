@@ -266,10 +266,12 @@ function Set-TargetResource
         if ($databaseEngineService)
         {
             # Extract startup parameters.
-            [System.Collections.ArrayList] $parameterList = $databaseEngineService.StartupParameters.Split(';')
+            $currentStartupParameters = $databaseEngineService.StartupParameters.Split(';')
+
+            [System.Collections.ArrayList] $parameterList = $currentStartupParameters
 
             # Remove all current trace flags
-            foreach ($parameter in $parameterList)
+            foreach ($parameter in $currentStartupParameters)
             {
                 if ($parameter -like '-T*')
                 {
@@ -280,7 +282,7 @@ function Set-TargetResource
             # Set all desired trace flags
             foreach ($desiredTraceFlag in $startupParameterTraceFlagValues)
             {
-                $parameterList.Add($flag) | Out-Null
+                $parameterList.Add($desiredTraceFlag) | Out-Null
             }
 
             # Merge parameter list back into startup parameters.
@@ -411,14 +413,14 @@ function Test-TargetResource
         {
             $currentStateTraceFlags = [System.Collections.ArrayList]::new()
 
-            if ($null -ne $getTargetResourceResult.TraceFlags)
+            if (-not [System.String]::IsNullOrEmpty($getTargetResourceResult.TraceFlags))
             {
                 $currentStateTraceFlags.AddRange(@($getTargetResourceResult.TraceFlags))
             }
 
             $desiredStateTraceFlags = [System.Collections.ArrayList]::new()
 
-            if ($null -ne $TraceFlags)
+            if (-not [System.String]::IsNullOrEmpty($TraceFlags))
             {
                 $desiredStateTraceFlags.AddRange($TraceFlags)
             }
@@ -446,6 +448,8 @@ function Test-TargetResource
                     )
 
                     $isInDesiredState = $false
+
+                    break
                 }
             }
         }
@@ -462,6 +466,8 @@ function Test-TargetResource
                     )
 
                     $isInDesiredState = $false
+
+                    break
                 }
             }
         }
@@ -495,9 +501,9 @@ function Get-SqlServiceName
 {
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
-        $InstanceName = 'MSSQLServer'
+        $InstanceName
     )
 
     if ($InstanceName -eq 'MSSQLSERVER')
