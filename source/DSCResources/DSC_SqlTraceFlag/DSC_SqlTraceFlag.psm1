@@ -54,14 +54,14 @@ function Get-TargetResource
         if ($databaseEngineService)
         {
             Write-Debug -Message (
-                $script:localizedData.DebugParsingStartupParameters -f $databaseEngineService.StartupParameters
+                $script:localizedData.DebugParsingStartupParameters -f $MyInvocation.MyCommand, $databaseEngineService.StartupParameters
             )
 
             $startupParameterValues = $databaseEngineService.StartupParameters.Split(';')
 
             $startupParameterTraceFlagValues = $startupParameterValues |
                 Where-Object -FilterScript {
-                    $_ -like '-T*'
+                    $_ -match '^-T\d+'
                 }
 
             $traceFlags = @()
@@ -69,7 +69,7 @@ function Get-TargetResource
             if ($startupParameterTraceFlagValues)
             {
                 Write-Debug -Message (
-                    $script:localizedData.DebugFoundTraceFlags -f ($startupParameterTraceFlagValues -join ',')
+                    $script:localizedData.DebugFoundTraceFlags -f $MyInvocation.MyCommand, ($startupParameterTraceFlagValues -join ',')
                 )
 
                 $traceFlags = @(
@@ -80,12 +80,12 @@ function Get-TargetResource
                 )
 
                 Write-Debug -Message (
-                    $script:localizedData.DebugReturningTraceFlags -f ($traceFlags -join ',')
+                    $script:localizedData.DebugReturningTraceFlags -f $MyInvocation.MyCommand, ($traceFlags -join ',')
                 )
            }
            else
            {
-               Write-Debug -Message $script:localizedData.DebugNoTraceFlags
+               Write-Debug -Message ($script:localizedData.DebugNoTraceFlags -f $MyInvocation.MyCommand)
            }
         }
         else
@@ -273,7 +273,7 @@ function Set-TargetResource
             # Remove all current trace flags
             foreach ($parameter in $currentStartupParameters)
             {
-                if ($parameter -like '-T*')
+                if ($parameter -match '^-T\d+')
                 {
                     $parameterList.Remove($parameter) | Out-Null
                 }
@@ -289,7 +289,7 @@ function Set-TargetResource
             $databaseEngineService.StartupParameters = $parameterList -join ';'
 
             Write-Debug -Message (
-                $script:localizedData.DebugSetStartupParameters -f $databaseEngineService.StartupParameters
+                $script:localizedData.DebugSetStartupParameters -f $MyInvocation.MyCommand, $databaseEngineService.StartupParameters
             )
 
             $databaseEngineService.Alter()
@@ -404,6 +404,14 @@ function Test-TargetResource
     {
         if ($TraceFlags.Count -eq 0)
         {
+            Write-Debug -Message (
+                '{0}: TraceFlags in current state ({2}): {1}' -f $MyInvocation.MyCommand, $getTargetResourceResult.TraceFlags, $getTargetResourceResult.TraceFlags.Count
+            )
+
+            Write-Debug -Message (
+                '{0}: TraceFlags in desired state ({2}): {1}' -f $MyInvocation.MyCommand, $TraceFlags, $TraceFlags.Count
+            )
+
             if ($getTargetResourceResult.TraceFlags.Count -gt 0)
             {
                 $isInDesiredState = $false
