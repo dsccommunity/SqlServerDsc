@@ -95,6 +95,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     major versions of the module _SqlServer_ is used.
 - SqlTraceFlag
   - The resource is now tested with an integration tests ([issue #1835](https://github.com/dsccommunity/SqlServerDsc/issues/1835)).
+  - A new parameter `ClearAllTraceFlags` was added so a configuration
+    can enforce that there should be no trace flags.
 - The public commands `Add-SqlDscNode`, `Complete-SqlDscFailoverCluster`,
   `Complete-SqlDscImage`, `Install-SqlDscServer`, and `Repair-SqlDscServer`
   now support the setup argument `ProductCoveredBySA` ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
@@ -182,9 +184,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `TraceFlags`, `TraceFlagsToInclude`, and `TraceFlagsToInclude`. _The last_
     _two properties will always return an empty array._
   - `Set-TargetResource` was updated to handle a single trace flag in the
-    current state.
+    current state ([issue #1834](https://github.com/dsccommunity/SqlServerDsc/issues/1834)).
   - `Set-TargetResource` was updated to correctly include or exclude a single
-    flag.
+    flag ([issue #1834](https://github.com/dsccommunity/SqlServerDsc/issues/1834)).
 
 ### Fixed
 
@@ -198,6 +200,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     and `AvailabilityGroupName` ([issue #1822](https://github.com/dsccommunity/SqlServerDsc/issues/1822)).
   - Now `Test-TargetResource` no longer test properties that cannot
     be enforced ([issue #1822](https://github.com/dsccommunity/SqlServerDsc/issues/1822)).
+- SqlTraceFlag
+  - `Set-TargetResource` was updated to handle a single trace flag in the
+    current state ([issue #1834](https://github.com/dsccommunity/SqlServerDsc/issues/1834)).
+  - `Set-TargetResource` was updated to correctly include or exclude a single
+    flag ([issue #1834](https://github.com/dsccommunity/SqlServerDsc/issues/1834)).
 
 ## [16.0.0] - 2022-09-09
 

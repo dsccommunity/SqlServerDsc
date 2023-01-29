@@ -469,7 +469,7 @@ function Test-TargetResource
 
         if (-not [System.String]::IsNullOrEmpty($TraceFlags))
         {
-            $desiredStateTraceFlags.AddRange($TraceFlags)
+            $desiredStateTraceFlags.AddRange(@($TraceFlags))
         }
 
         # Returns $null if desired state and current state is the same.
