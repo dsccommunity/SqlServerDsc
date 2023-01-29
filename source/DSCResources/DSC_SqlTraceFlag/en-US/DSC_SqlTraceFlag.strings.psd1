@@ -8,6 +8,8 @@ ConvertFrom-StringData @'
     TraceFlagPresent = Trace flag {0} is present, but should be absent.
     TraceFlagNotPresent = Trace flag {0} is absent, but should be present.
     InDesiredState = The trace flags are in the desired state.
+    NoTraceFlagParameter = There were no parameters passed, there is nothing to set.
+    ClearingAllTraceFlags = Removing all existing trace flags.
     DebugParsingStartupParameters = {0}: Parsing the startup parameters: {1}
     DebugFoundTraceFlags = {0}: Found the trace flags: {1}
     DebugReturningTraceFlags = {0}: Returning the trace flag values: {1}

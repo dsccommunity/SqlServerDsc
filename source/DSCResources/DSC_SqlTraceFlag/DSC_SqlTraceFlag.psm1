@@ -106,6 +106,7 @@ function Get-TargetResource
         TraceFlags          = [System.UInt32[]] $traceFlags
         TraceFlagsToInclude = [System.UInt32[]] @()
         TraceFlagsToExclude = [System.UInt32[]] @()
+        ClearAllTraceFlags  = $false
         RestartService      = $null
         RestartTimeout      = $null
     }
@@ -134,6 +135,9 @@ function Get-TargetResource
     .PARAMETER TraceFlagsToExclude
         The TraceFlags the SQL server engine startup parameters should exclude.
         This parameter can not be used together with TraceFlags.
+
+    .PARAMETER ClearAllTraceFlags
+        Specifies that there should be no trace flags set on the instance.
 
     .PARAMETER RestartService
         If set, the sql server instance gets a reset after setting parameters.
@@ -172,7 +176,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $RestartService = $false,
+        $ClearAllTraceFlags,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestartService,
 
         [Parameter()]
         [System.UInt32]
@@ -213,7 +221,7 @@ function Set-TargetResource
             $desiredTraceFlags.AddRange(@($TraceFlags))
         }
     }
-    else
+    elseif ($PSBoundParameters.ContainsKey('TraceFlagsToInclude') -or $PSBoundParameters.ContainsKey('TraceFlagsToExclude'))
     {
         $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
@@ -243,6 +251,18 @@ function Set-TargetResource
                 }
             }
         }
+    }
+    elseif ($PSBoundParameters.ContainsKey('ClearAllTraceFlags'))
+    {
+        Write-Verbose -Message $script:localizedData.ClearingAllTraceFlags
+
+        $desiredTraceFlags = @()
+    }
+    else
+    {
+        Write-Verbose -Message $script:localizedData.NoTraceFlagParameter
+
+        return
     }
 
     # Add '-T' dash to flag.
@@ -330,6 +350,9 @@ function Set-TargetResource
         The TraceFlags the SQL server engine startup parameters should exclude.
         This parameter can not be used together with TraceFlags.
 
+    .PARAMETER ClearAllTraceFlags
+        Specifies that there should be no trace flags set on the instance.
+
     .PARAMETER RestartService
         If set, the sql server instance gets a reset after setting parameters.
         after restart the sql server agent is in the original state as before restart.
@@ -356,20 +379,24 @@ function Test-TargetResource
         $InstanceName,
 
         [Parameter()]
-        [System.Uint32[]]
+        [System.UInt32[]]
         $TraceFlags,
 
         [Parameter()]
-        [System.Uint32[]]
+        [System.UInt32[]]
         $TraceFlagsToInclude,
 
         [Parameter()]
-        [System.Uint32[]]
+        [System.UInt32[]]
         $TraceFlagsToExclude,
 
         [Parameter()]
         [System.Boolean]
-        $RestartService = $false,
+        $ClearAllTraceFlags,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestartService,
 
         [Parameter()]
         [System.UInt32]
@@ -393,6 +420,20 @@ function Test-TargetResource
 
     Assert-BoundParameter @assertBoundParameterParameters
 
+    $assertBoundParameterParameters = @{
+        BoundParameterList     = $PSBoundParameters
+        MutuallyExclusiveList1 = @(
+            'ClearAllTraceFlags'
+        )
+        MutuallyExclusiveList2 = @(
+            'TraceFlags'
+            'TraceFlagsToInclude',
+            'TraceFlagsToExclude'
+        )
+    }
+
+    Assert-BoundParameter @assertBoundParameterParameters
+
     $getTargetResourceParameters = @{
         ServerName   = $ServerName
         InstanceName = $InstanceName
@@ -400,48 +441,51 @@ function Test-TargetResource
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-    Write-Debug -Message (
-        '{0}: TraceFlags to test in current state ({2}): {1}' -f $MyInvocation.MyCommand, ($getTargetResourceResult.TraceFlags -join ', '), $getTargetResourceResult.TraceFlags.Count
-    )
-
-    Write-Debug -Message (
-        '{0}: TraceFlags to test in desired state ({2}): {1}' -f $MyInvocation.MyCommand, ($TraceFlags -join ', '), $TraceFlags.Count
-    )
-
     $isInDesiredState = $true
 
-    if ($PSBoundParameters.ContainsKey('TraceFlags'))
+    if ($PSBoundParameters.ContainsKey('ClearAllTraceFlags') -and $ClearAllTraceFlags)
     {
-        if ($TraceFlags.Count -eq 0)
+        if ($getTargetResourceResult.TraceFlags.Count -gt 0)
         {
-            if ($getTargetResourceResult.TraceFlags.Count -gt 0)
-            {
-                $isInDesiredState = $false
-            }
+            Write-Verbose -Message (
+                $script:localizedData.NotInDesiredState -f @(
+                    'None',
+                    ($getTargetResourceResult.TraceFlags -join ', ')
+                )
+            )
+
+            $isInDesiredState = $false
         }
-        else
+    }
+    elseif ($PSBoundParameters.ContainsKey('TraceFlags'))
+    {
+        $currentStateTraceFlags = [System.Collections.ArrayList]::new()
+
+        if (-not [System.String]::IsNullOrEmpty($getTargetResourceResult.TraceFlags))
         {
-            $currentStateTraceFlags = [System.Collections.ArrayList]::new()
+            $currentStateTraceFlags.AddRange(@($getTargetResourceResult.TraceFlags))
+        }
 
-            if (-not [System.String]::IsNullOrEmpty($getTargetResourceResult.TraceFlags))
-            {
-                $currentStateTraceFlags.AddRange(@($getTargetResourceResult.TraceFlags))
-            }
+        $desiredStateTraceFlags = [System.Collections.ArrayList]::new()
 
-            $desiredStateTraceFlags = [System.Collections.ArrayList]::new()
+        if (-not [System.String]::IsNullOrEmpty($TraceFlags))
+        {
+            $desiredStateTraceFlags.AddRange($TraceFlags)
+        }
 
-            if (-not [System.String]::IsNullOrEmpty($TraceFlags))
-            {
-                $desiredStateTraceFlags.AddRange($TraceFlags)
-            }
+        # Returns $null if desired state and current state is the same.
+        $compareObjectResult = Compare-Object -ReferenceObject $currentStateTraceFlags -DifferenceObject $desiredStateTraceFlags
 
-            # Returns $null if desired state and current state is the same.
-            $compareObjectResult = Compare-Object -ReferenceObject $currentStateTraceFlags -DifferenceObject $desiredStateTraceFlags
+        if ($null -ne $compareObjectResult)
+        {
+            $isInDesiredState = $false
 
-            if ($null -ne $compareObjectResult)
-            {
-                $isInDesiredState = $false
-            }
+            Write-Verbose -Message (
+                $script:localizedData.NotInDesiredState -f @(
+                    ($desiredStateTraceFlags -join ', '),
+                    ($currentStateTraceFlags -join ', ')
+                )
+            )
         }
     }
     else
@@ -483,16 +527,7 @@ function Test-TargetResource
         }
     }
 
-    if (-not $isInDesiredState)
-    {
-        Write-Verbose -Message (
-            $script:localizedData.NotInDesiredState -f @(
-                (($TraceFlags + $TraceFlagsToInclude) -join ','),
-                ($getTargetResourceResult.TraceFlags -join ',')
-            )
-        )
-    }
-    else
+    if ($isInDesiredState)
     {
         Write-Verbose -Message $script:localizedData.InDesiredState
     }
