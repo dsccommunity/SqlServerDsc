@@ -287,7 +287,7 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $mockTestTargetResourceParameters.TraceFlags = @()
+                    $mockTestTargetResourceParameters.ClearAllTraceFlags = $true
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
@@ -462,7 +462,7 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $mockTestTargetResourceParameters.TraceFlags = @()
+                    $mockTestTargetResourceParameters.ClearAllTraceFlags = $true
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
@@ -831,17 +831,32 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
     BeforeEach {
         InModuleScope -ScriptBlock {
+            $script:mockMethodAlterRan = $false
             $script:mockSetTargetResourceParameters = $script:mockDefaultParameters.Clone()
         }
     }
 
     Context 'When the system is not in the desired state' {
+        Context 'When no trace flag parameter is assigned' {
+            It 'Should not throw and set no value' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockMethodAlterRan | Should -BeFalse -Because 'no TraceFlag parameter was set'
+                }
+
+                Should -Invoke -CommandName New-Object -Exactly -Times 0 -Scope It
+            }
+        }
+
         Context 'When there should be no trace flags' {
             It 'Should not throw and set the correct value' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $mockSetTargetResourceParameters.TraceFlags = @()
+                    $mockSetTargetResourceParameters.ClearAllTraceFlags = $true
 
                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
