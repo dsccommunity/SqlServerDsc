@@ -69,7 +69,7 @@ function Get-TargetResource
             if ($startupParameterTraceFlagValues)
             {
                 Write-Debug -Message (
-                    $script:localizedData.DebugFoundTraceFlags -f $MyInvocation.MyCommand, ($startupParameterTraceFlagValues -join ',')
+                    $script:localizedData.DebugFoundTraceFlags -f $MyInvocation.MyCommand, ($startupParameterTraceFlagValues -join ', ')
                 )
 
                 $traceFlags = @(
@@ -77,10 +77,6 @@ function Get-TargetResource
                         ForEach-Object {
                             $_.TrimStart('-T')
                         }
-                )
-
-                Write-Debug -Message (
-                    $script:localizedData.DebugReturningTraceFlags -f $MyInvocation.MyCommand, ($traceFlags -join ',')
                 )
            }
            else
@@ -99,6 +95,10 @@ function Get-TargetResource
         $errorMessage = $script:localizedData.NotConnectedToComputerManagement -f $ServerName
         New-InvalidOperationException -Message $errorMessage
     }
+
+    Write-Debug -Message (
+        $script:localizedData.DebugReturningTraceFlags -f $MyInvocation.MyCommand, ($traceFlags -join ', ')
+    )
 
     return @{
         ServerName          = $ServerName
@@ -192,7 +192,8 @@ function Set-TargetResource
             'TraceFlags'
         )
         MutuallyExclusiveList2 = @(
-            'TraceFlagsToInclude', 'TraceFlagsToExclude'
+            'TraceFlagsToInclude',
+            'TraceFlagsToExclude'
         )
     }
 
@@ -385,7 +386,8 @@ function Test-TargetResource
             'TraceFlags'
         )
         MutuallyExclusiveList2 = @(
-            'TraceFlagsToInclude', 'TraceFlagsToExclude'
+            'TraceFlagsToInclude',
+            'TraceFlagsToExclude'
         )
     }
 
@@ -399,11 +401,11 @@ function Test-TargetResource
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
     Write-Debug -Message (
-        '{0}: TraceFlags in current state ({2}): {1}' -f $MyInvocation.MyCommand, $getTargetResourceResult.TraceFlags, $getTargetResourceResult.TraceFlags.Count
+        '{0}: TraceFlags to test in current state ({2}): {1}' -f $MyInvocation.MyCommand, ($getTargetResourceResult.TraceFlags -join ', '), $getTargetResourceResult.TraceFlags.Count
     )
 
     Write-Debug -Message (
-        '{0}: TraceFlags in desired state ({2}): {1}' -f $MyInvocation.MyCommand, $TraceFlags, $TraceFlags.Count
+        '{0}: TraceFlags to test in desired state ({2}): {1}' -f $MyInvocation.MyCommand, ($TraceFlags -join ', '), $TraceFlags.Count
     )
 
     $isInDesiredState = $true
