@@ -159,7 +159,7 @@ Configuration DSC_SqlTraceFlag_RemoveAllTraceFlags_Config
         {
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
-            TraceFlags           = @()
+            ClearAllTraceFlags   = $true
             RestartService       = $true
 
             PsDscRunAsCredential = New-Object `
