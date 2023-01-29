@@ -4,7 +4,8 @@ ConvertFrom-StringData @'
     TestConfiguration = Determining the current state for the instance '{0}'.
     NotConnectedToComputerManagement = Was unable to connect to ComputerManagement '{0}'.
     NotConnectedToWMI = Was unable to connect to WMI information '{0}' in '{1}'.
-    NotInDesiredState = Desired state does not match the current state. Expected the trace flags '{0}', but has trace flags '{1}'.
+    NotInDesiredState = Desired state does not match the current state. Expected the trace flags '{0}', but current state has trace flags '{1}'.
+    ClearNotInDesiredState = Desired state does not match the current state. Expected no trace flags, but current state has trace flags '{0}'.
     TraceFlagPresent = Trace flag {0} is present, but should be absent.
     TraceFlagNotPresent = Trace flag {0} is absent, but should be present.
     InDesiredState = The trace flags are in the desired state.

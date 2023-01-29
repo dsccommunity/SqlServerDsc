@@ -448,8 +448,7 @@ function Test-TargetResource
         if ($getTargetResourceResult.TraceFlags.Count -gt 0)
         {
             Write-Verbose -Message (
-                $script:localizedData.NotInDesiredState -f @(
-                    'None',
+                $script:localizedData.ClearNotInDesiredState -f @(
                     ($getTargetResourceResult.TraceFlags -join ', ')
                 )
             )
