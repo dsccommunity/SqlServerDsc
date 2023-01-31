@@ -183,10 +183,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Get-TargetResource` was updated to always return an array for parameter
     `TraceFlags`, `TraceFlagsToInclude`, and `TraceFlagsToInclude`. _The last_
     _two properties will always return an empty array._
-  - `Set-TargetResource` was updated to handle a single trace flag in the
-    current state ([issue #1834](https://github.com/dsccommunity/SqlServerDsc/issues/1834)).
-  - `Set-TargetResource` was updated to correctly include or exclude a single
-    flag ([issue #1834](https://github.com/dsccommunity/SqlServerDsc/issues/1834)).
 
 ### Fixed
 
