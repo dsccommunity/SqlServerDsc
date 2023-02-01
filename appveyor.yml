@@ -16,6 +16,11 @@ image:
 environment:
   # DEBUG: Un-comment this to get the same password for the RDP session for each build
   #APPVEYOR_RDP_PASSWORD: D5c1234!
+  # DEBUG: Un-comment these to skip installing the various instances (to speed up debug)
+  #SKIP_DATABASE_ENGINE_INSTANCE: true
+  #SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
+  #SKIP_ANALYSIS_MULTI_INSTANCE: true
+  #SKIP_ANALYSIS_TABULAR_INSTANCE: true
   matrix:
   # DEBUG: Comment and un-comment the different SQL Server version that should be tested.
   - TEST_CONFIGURATION: Integration_SQL2016
@@ -30,7 +35,7 @@ init:
     # Only run for pull requests
     if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { Write-Host -ForegroundColor 'Yellow' -Object 'Not a pull request, skipping.'; return }
 
-    iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+    iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 # DEBUG: If running on own AppVeyor project, comment the line below that skips if it is not a pull request
 install:
@@ -74,6 +79,7 @@ test_script:
         #'tests/Integration/DSC_SqlAgentOperator.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlServiceAccount.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlTraceFlag.Integration.Tests.ps1'
         ## Group 3
         #'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
         'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'

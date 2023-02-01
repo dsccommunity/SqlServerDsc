@@ -93,6 +93,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     parameter can only be used together with the module _SqlServer_ v22.x
     (minimum v22.0.49-preview). The parameter will be ignored if an older
     major versions of the module _SqlServer_ is used.
+- SqlTraceFlag
+  - The resource is now tested with an integration tests ([issue #1835](https://github.com/dsccommunity/SqlServerDsc/issues/1835)).
+  - A new parameter `ClearAllTraceFlags` was added so a configuration
+    can enforce that there should be no trace flags.
 - The public commands `Add-SqlDscNode`, `Complete-SqlDscFailoverCluster`,
   `Complete-SqlDscImage`, `Install-SqlDscServer`, and `Repair-SqlDscServer`
   now support the setup argument `ProductCoveredBySA` ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
@@ -112,6 +116,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     class-based resources.
   - The AppVeyor configuration file was updated to include the possibility
     to run integration tests for SQL Server 2022.
+  - The AppVeyor configuration file was updated to include the possibility
+    to run skip installing one or more SQL Server instances when debugging
+    in AppVeyor to help maximize the time alloted be run.
   - The stubs in `SqlServerStub.psm1` are now based on the commands from the
     module SqlServer v22.0.49-preview.
 - `Install-SqlServerDsc`
@@ -170,6 +177,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       when passed to the command ([issue #1837](https://github.com/dsccommunity/SqlServerDsc/issues/1837)).
     - Now returns a more clear error message when the status of a database
       instance is not `Online`.
+- SqlTraceFlag
+  - The examples was updated to show that values should be passed as an array,
+    even when there is only one value.
+  - `Get-TargetResource` was updated to always return an array for parameter
+    `TraceFlags`, `TraceFlagsToInclude`, and `TraceFlagsToInclude`. _The last_
+    _two properties will always return an empty array._
 
 ### Fixed
 
@@ -183,6 +196,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     and `AvailabilityGroupName` ([issue #1822](https://github.com/dsccommunity/SqlServerDsc/issues/1822)).
   - Now `Test-TargetResource` no longer test properties that cannot
     be enforced ([issue #1822](https://github.com/dsccommunity/SqlServerDsc/issues/1822)).
+- SqlTraceFlag
+  - `Set-TargetResource` was updated to handle a single trace flag in the
+    current state ([issue #1834](https://github.com/dsccommunity/SqlServerDsc/issues/1834)).
+  - `Set-TargetResource` was updated to correctly include or exclude a single
+    flag ([issue #1834](https://github.com/dsccommunity/SqlServerDsc/issues/1834)).
 
 ## [16.0.0] - 2022-09-09
 
