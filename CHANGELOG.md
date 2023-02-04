@@ -125,8 +125,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The module will now call `Import-SqlDscPreferredModule` when the module
     is imported to make sure SqlServer (default preferred module) or SQLPS
     is loaded into the session. This will make it possible for classes and
-    classes and commands to use and return SQL types. If no module is found
-    it will output a warning to install any of the dependent modules.
+    commands to use and return SQL types. If no module is found it will
+    output a warning to install any of the dependent modules.
 - `Install-SqlServerDsc`
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
 - SqlAgReplica
