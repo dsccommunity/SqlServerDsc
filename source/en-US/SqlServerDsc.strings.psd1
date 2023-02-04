@@ -94,4 +94,14 @@ ConvertFrom-StringData @'
     ## Assert-SetupActionProperties
     InstallSqlServerProperties_ASServerModeInvalidValue = The value for ASServerMode is not valid for the setup action {0}.
     InstallSqlServerProperties_RsInstallModeInvalidValue = The only valid value for RsInstallMode is 'FilesOnlyMode' when using setup action {0}.
+
+    ## Import-SqlDscPreferredModule
+    PreferredModule_ModuleFound = Preferred module {0} found.
+    PreferredModule_ModuleNotFound = Information: No preferred PowerShell module was found, trying to use the SQLPS module.
+    PreferredModule_ImportedModule = Imported PowerShell module '{0}' with version '{1}' from path '{2}'.
+    PreferredModule_AlreadyImported = Found PowerShell module {0} already imported in the session.
+    PreferredModule_ForceRemoval = Forcibly removed the SQL PowerShell module from the session to import it fresh again.
+    PreferredModule_PushingLocation = SQLPS module changes CWD to SQLServer:\ when loading, pushing location to pop it when module is loaded.
+    PreferredModule_PoppingLocation = Popping location back to what it was before importing SQLPS module.
+    PreferredModule_FailedFinding = Failed to find a dependent module. Unable to run SQL Server commands or use SQL Server types. Please install the {0} or SQLPS then try to import SqlServerDsc again.
 '@
