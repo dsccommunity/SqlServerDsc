@@ -72,44 +72,6 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-# $mockDynamicAvailabilityGroup = 'AG01'
-# $mockDynamicListenerName = 'AGListener'
-# $mockDynamicPortNumber = 5031
-# $mockDynamicIsDhcp = $true
-# $script:mockMethodDropRan = $false
-
-# $mockConnectSql = {
-#     return New-Object -TypeName Object |
-#         Add-Member -MemberType ScriptProperty -Name AvailabilityGroups -Value {
-#         return @(
-#             @{
-#                 $mockDynamicAvailabilityGroup = New-Object -TypeName Object |
-#                     Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListeners -Value {
-#                     @(
-#                         @{
-#                             $mockDynamicListenerName = New-Object -TypeName Object |
-#                                 Add-Member -MemberType NoteProperty -Name PortNumber -Value $mockDynamicPortNumber -PassThru |
-#                                 Add-Member -MemberType ScriptProperty -Name AvailabilityGroupListenerIPAddresses -Value {
-#                                 return @(
-#                                     # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-#                                     (New-Object -TypeName Object |    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-#                                             Add-Member -MemberType NoteProperty -Name IsDHCP -Value $mockDynamicIsDhcp -PassThru |
-#                                             Add-Member -MemberType NoteProperty -Name IPAddress -Value '192.168.0.1' -PassThru |
-#                                             Add-Member -MemberType NoteProperty -Name SubnetMask -Value '255.255.255.0' -PassThru
-#                                     )
-#                                 )
-#                             } -PassThru |
-#                                 Add-Member -MemberType ScriptMethod -Name Drop -Value {
-#                                 $script:mockMethodDropRan = $true
-#                             } -PassThru -Force
-#                         }
-#                     )
-#                 } -PassThru -Force
-#             }
-#         )
-#     } -PassThru -Force
-# }
-
 Describe 'SqlAGListener\Get-TargetResource' {
     BeforeAll {
         InModuleScope -ScriptBlock {
