@@ -95,6 +95,20 @@ ConvertFrom-StringData @'
     InstallSqlServerProperties_ASServerModeInvalidValue = The value for ASServerMode is not valid for the setup action {0}.
     InstallSqlServerProperties_RsInstallModeInvalidValue = The only valid value for RsInstallMode is 'FilesOnlyMode' when using setup action {0}.
 
+    ## Get-SqlDscManagedComputer
+    ManagedComputer_GetState = Returning the managed computer object for server {0}.
+
+    ## Get-SqlDscManagedComputerService
+    ManagedComputerService_GetState = Returning the managed computer service object(s) for server {0}.
+
+    ## Get-SqlDscTraceFlag
+    TraceFlag_GetState = Returning the trace flags for instance {0} on server {1}.
+    TraceFlag_DebugParsingStartupParameters = {0}: Parsing the startup parameters: {1}
+    TraceFlag_DebugFoundTraceFlags = {0}: Found the trace flags: {1}
+    TraceFlag_DebugReturningTraceFlags = {0}: Returning the trace flag values: {1}
+    TraceFlag_DebugNoTraceFlags = {0}: No trace flags were found in the startup parameters.
+    TraceFlag_FailedToFindStartupParameters = {0}: Failed to find the instance's startup parameters.
+
     ## Import-SqlDscPreferredModule
     PreferredModule_ModuleFound = Preferred module {0} found.
     PreferredModule_ModuleNotFound = Information: No preferred PowerShell module was found, trying to use the SQLPS module.
