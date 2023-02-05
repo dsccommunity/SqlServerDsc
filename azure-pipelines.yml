@@ -174,6 +174,8 @@ stages:
         variables:
           # This sets environment variable $env:CI.
           CI: true
+          # This sets environment variable $env:SqlServerDscCI.
+          SqlServerDscCI: true
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
