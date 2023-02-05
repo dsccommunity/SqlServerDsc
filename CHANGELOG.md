@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     help for more information):
     - `Assert-SetupActionProperties`
     - `Invoke-SetupAction`
+    - `ConvertTo-ManagedServiceType`
   - The following public functions were added to the module (see comment-based
     help for more information):
     - `Install-SqlDscServer`
@@ -60,6 +61,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Complete-SqlDscFailoverCluster`
     - `Initialize-SqlDscRebuildDatabase`
     - `Import-SqlDscPreferredModule`
+    - `Get-SqlDscManagedComputer`
+    - `Get-SqlDscManagedComputerService`
+    - `Get-SqlDscTraceFlag`
   - New GitHub issue templates for proposing new public commands, proposing
     an enhancement to an existing command, or having a problem with an existing
     command.
