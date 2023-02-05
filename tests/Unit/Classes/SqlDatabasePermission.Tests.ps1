@@ -32,6 +32,8 @@ BeforeDiscovery {
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
 
+    $env:SqlServerDscCI = $true
+
     Import-Module -Name $script:dscModuleName
 
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '../../TestHelpers/CommonTestHelper.psm1')
@@ -60,6 +62,8 @@ AfterAll {
 
     # Remove module common test helper.
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
+
+    Remove-Item -Path 'env:SqlServerDscCI'
 }
 
 Describe 'SqlDatabasePermission' {

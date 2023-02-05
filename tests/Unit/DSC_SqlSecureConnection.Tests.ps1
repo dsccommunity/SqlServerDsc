@@ -33,6 +33,8 @@ BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlSecureConnection'
 
+    $env:SqlServerDscCI = $true
+
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
         -DSCResourceName $script:dscResourceName `
@@ -67,6 +69,8 @@ AfterAll {
 
     # Remove module common test helper.
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
+
+    Remove-Item -Path 'env:SqlServerDscCI'
 }
 
 Describe 'SqlSecureConnection\Get-TargetResource' -Tag 'Get' {

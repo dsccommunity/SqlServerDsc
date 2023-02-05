@@ -52,7 +52,6 @@
         'Get-ProtocolNameProperties'
         'Get-ServerProtocolObject'
         'Import-Assembly'
-        'Set-PSModulePath'
         'ConvertTo-ServerInstanceName'
         'Get-FilePathMajorVersion'
         'Test-FeatureFlag'
@@ -75,4 +74,3 @@
 
     } # End of PrivateData hashtable
 }
-

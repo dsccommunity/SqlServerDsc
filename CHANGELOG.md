@@ -37,6 +37,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Get-LocalizedDataRecursive`
   - Added documentation how to generate stub modules for the unit tests.
     The documentation can be found in ['tests/Unit/Stubs`](https://github.com/dsccommunity/SqlServerDsc/tree/main/tests/Unit/Stubs).
+  - SqlRSSetup and SqlRS
+    - Removed the integration test when running against SQL Server 2019,
+      due to the URL to download the Reporting Services 2019 executable
+      no longer works.
 
 ### Added
 
@@ -55,6 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Complete-SqlDscImage`
     - `Complete-SqlDscFailoverCluster`
     - `Initialize-SqlDscRebuildDatabase`
+    - `Import-SqlDscPreferredModule`
   - New GitHub issue templates for proposing new public commands, proposing
     an enhancement to an existing command, or having a problem with an existing
     command.
@@ -121,6 +126,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     in AppVeyor to help maximize the time alloted be run.
   - The stubs in `SqlServerStub.psm1` are now based on the commands from the
     module SqlServer v22.0.49-preview.
+  - The module will now call `Import-SqlDscPreferredModule` when the module
+    is imported to make sure SqlServer (default preferred module) or SQLPS
+    is loaded into the session. This will make it possible for classes and
+    commands to use and return SQL types. If no module is found it will
+    output a warning to install any of the dependent modules.
 - `Install-SqlServerDsc`
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
 - SqlAgReplica
@@ -177,6 +187,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       when passed to the command ([issue #1837](https://github.com/dsccommunity/SqlServerDsc/issues/1837)).
     - Now returns a more clear error message when the status of a database
       instance is not `Online`.
+  - `Import-SQLPSModule`
+    - The function was changed to call public command `Import-SqlDscPreferredModule`.
 - SqlTraceFlag
   - The examples was updated to show that values should be passed as an array,
     even when there is only one value.
