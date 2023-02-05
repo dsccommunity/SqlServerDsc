@@ -12,6 +12,25 @@
         Forces the removal of the previous SQL module, to load the same or newer
         version fresh. This is meant to make sure the newest version is used, with
         the latest assemblies.
+
+    .EXAMPLE
+        Import-SqlDscPreferredModule
+
+        Imports the default preferred module (SqlServer) if it exist, otherwise
+        it will try to import the module SQLPS.
+
+    .EXAMPLE
+        Import-SqlDscPreferredModule -Force
+
+        Removes any already loaded module of the default preferred module (SqlServer)
+        and the module SQLPS, then it will forcibly import the default preferred
+        module if it exist, otherwise it will try to import the module SQLPS.
+
+    .EXAMPLE
+        Import-SqlDscPreferredModule -PreferredModule 'OtherSqlModule'
+
+        Imports the specified preferred module OtherSqlModule if it exist, otherwise
+        it will try to import the module SQLPS.
 #>
 function Import-SqlDscPreferredModule
 {
