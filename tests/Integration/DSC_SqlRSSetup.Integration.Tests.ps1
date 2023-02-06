@@ -102,7 +102,7 @@ AfterAll {
     Older versions of Reporting Services (eg. 2016) are integration tested in
     separate tests (part of resource SqlSetup).
 #>
-Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', <# 'Integration_SQL2019', #> 'Integration_SQL2022') {
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }

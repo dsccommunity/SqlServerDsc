@@ -44,10 +44,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Get-LocalizedDataRecursive`
   - Added documentation how to generate stub modules for the unit tests.
     The documentation can be found in ['tests/Unit/Stubs`](https://github.com/dsccommunity/SqlServerDsc/tree/main/tests/Unit/Stubs).
-  - SqlRSSetup and SqlRS
-    - Removed the integration test when running against SQL Server 2019,
-      due to the URL to download the Reporting Services 2019 executable
-      no longer works.
 
 ### Added
 
