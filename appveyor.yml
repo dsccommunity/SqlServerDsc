@@ -23,9 +23,9 @@ environment:
   #SKIP_ANALYSIS_TABULAR_INSTANCE: true
   matrix:
   # DEBUG: Comment and un-comment the different SQL Server version that should be tested.
-  - TEST_CONFIGURATION: Integration_SQL2016
-  - TEST_CONFIGURATION: Integration_SQL2017
-  #- TEST_CONFIGURATION: Integration_SQL2019
+  #- TEST_CONFIGURATION: Integration_SQL2016
+  #- TEST_CONFIGURATION: Integration_SQL2017
+  - TEST_CONFIGURATION: Integration_SQL2019
   #- TEST_CONFIGURATION: Integration_SQL2022
 
 # DEBUG: See section on_finish last in this file on how to block build to keep RDP open.
