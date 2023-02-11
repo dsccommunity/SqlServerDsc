@@ -257,7 +257,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     _two properties will always return an empty array._
 - `Get-SqlDscAudit`
   - The parameter `Name` is no longer mandatory. When left out all the current
-    audits are returned.
+    audits are returned ([issue #1812](https://github.com/dsccommunity/SqlServerDsc/issues/1812)).
 
 ### Fixed
 
