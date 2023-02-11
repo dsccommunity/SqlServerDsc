@@ -261,7 +261,8 @@ class SqlAudit : SqlResourceBase
         $serverObject = $this.GetServerObject()
 
         $auditObject = $serverObject |
-            Get-SqlDscAudit -Name $properties.Name -ErrorAction 'SilentlyContinue'
+            Get-SqlDscAudit -Name $properties.Name -ErrorAction 'SilentlyContinue' |
+            Select-Object -First 1
 
         if ($auditObject)
         {
@@ -350,7 +351,8 @@ class SqlAudit : SqlResourceBase
             if ($this.Ensure -eq [Ensure]::Present)
             {
                 $auditObject = $serverObject |
-                    Get-SqlDscAudit -Name $this.Name -ErrorAction 'Stop'
+                    Get-SqlDscAudit -Name $this.Name -ErrorAction 'Stop' |
+                    Select-Object -First 1
 
                 if ($auditObject)
                 {
