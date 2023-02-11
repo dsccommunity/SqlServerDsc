@@ -149,6 +149,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Uninstall-SqlDscServer`
   - Was changed to support the SQL Server 2022 GA feature `AzureExtension`
     (that replaced the feature name `ARC`) ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
+- `Import-SqlDscPreferredModule`
+  - No longer tries to get the environment variables from the machine state
+    when run on Linux or macOS. This will allow the unit tests to run
+    cross-plattform.
 - SqlReplication
   - The resource now supports SQL Server 2022. The resource will require
     the module _SqlServer_ v22.0.49-preview or newer when used against an
