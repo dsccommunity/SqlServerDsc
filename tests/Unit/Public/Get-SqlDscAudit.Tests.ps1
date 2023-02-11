@@ -146,4 +146,42 @@ Describe 'Get-SqlDscAudit' -Tag 'Public' {
             }
         }
     }
+
+    Context 'When getting all current audits' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject.InstanceName = 'TestInstance'
+
+            $mockServerObject = $mockServerObject |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                    return @(
+                        (
+                            New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                                $mockServerObject,
+                                'Log1'
+                            )
+                        ),
+                        (
+                            New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                                $mockServerObject,
+                                'Log2'
+                            )
+                        )
+                    )
+                } -PassThru -Force
+
+            $mockDefaultParameters = @{
+                ServerObject = $mockServerObject
+            }
+        }
+
+        It 'Should return the correct values' {
+            $result = Get-SqlDscAudit @mockDefaultParameters
+
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Audit'
+            $result | Should -HaveCount 2
+            $result.Name | Should -Contain 'Log1'
+            $result.Name | Should -Contain 'Log2'
+        }
+    }
 }

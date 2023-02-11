@@ -29,8 +29,9 @@
 #>
 function Get-SqlDscAudit
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Justification = 'Because the rule does not understands that the command returns [System.String[]] when using , (comma) in the return statement')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
-    [OutputType([Microsoft.SqlServer.Management.Smo.Audit])]
+    [OutputType([Microsoft.SqlServer.Management.Smo.Audit[]])]
     [CmdletBinding()]
     param
     (
@@ -38,7 +39,7 @@ function Get-SqlDscAudit
         [Microsoft.SqlServer.Management.Smo.Server]
         $ServerObject,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [System.String]
         $Name,
 
@@ -55,22 +56,31 @@ function Get-SqlDscAudit
             $ServerObject.Audits.Refresh()
         }
 
-        $auditObject = $ServerObject.Audits[$Name]
+        $auditObject = @()
 
-        if (-not $AuditObject)
+        if ($PSBoundParameters.ContainsKey('Name'))
         {
-            $missingAuditMessage = $script:localizedData.Audit_Missing -f $Name
+            $auditObject = $ServerObject.Audits[$Name]
 
-            $writeErrorParameters = @{
-                Message = $missingAuditMessage
-                Category = 'InvalidOperation'
-                ErrorId = 'GSDA0001' # cspell: disable-line
-                TargetObject = $Name
+            if (-not $AuditObject)
+            {
+                $missingAuditMessage = $script:localizedData.Audit_Missing -f $Name
+
+                $writeErrorParameters = @{
+                    Message = $missingAuditMessage
+                    Category = 'InvalidOperation'
+                    ErrorId = 'GSDA0001' # cspell: disable-line
+                    TargetObject = $Name
+                }
+
+                Write-Error @writeErrorParameters
             }
-
-            Write-Error @writeErrorParameters
+        }
+        else
+        {
+            $auditObject = $ServerObject.Audits
         }
 
-        return $auditObject
+        return , [Microsoft.SqlServer.Management.Smo.Audit[]] $auditObject
     }
 }

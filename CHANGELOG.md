@@ -255,6 +255,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Get-TargetResource` was updated to always return an array for parameter
     `TraceFlags`, `TraceFlagsToInclude`, and `TraceFlagsToInclude`. _The last_
     _two properties will always return an empty array._
+- `Get-SqlDscAudit`
+  - The parameter `Name` is no longer mandatory. When left out all the current
+    audits are returned.
 
 ### Fixed
 
