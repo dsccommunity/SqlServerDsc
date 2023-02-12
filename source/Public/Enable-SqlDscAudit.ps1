@@ -85,7 +85,8 @@ function Enable-SqlDscAudit
             }
 
             # If this command does not find the audit it will throw an exception.
-            $AuditObject = Get-SqlDscAudit @getSqlDscAuditParameters
+            $AuditObject = Get-SqlDscAudit @getSqlDscAuditParameters |
+                Select-Object -First 1
         }
 
         $verboseDescriptionMessage = $script:localizedData.Audit_Enable_ShouldProcessVerboseDescription -f $AuditObject.Name, $AuditObject.Parent.InstanceName

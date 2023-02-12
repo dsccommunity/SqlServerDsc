@@ -259,7 +259,8 @@ function Set-SqlDscAudit
                 ErrorAction = 'Stop'
             }
 
-            $AuditObject = Get-SqlDscAudit @getSqlDscAuditParameters
+            $AuditObject = Get-SqlDscAudit @getSqlDscAuditParameters |
+                Select-Object -First 1
         }
 
         if ($Refresh.IsPresent)

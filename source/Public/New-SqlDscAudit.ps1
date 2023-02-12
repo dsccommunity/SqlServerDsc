@@ -214,7 +214,8 @@ function New-SqlDscAudit
             ErrorAction = 'SilentlyContinue'
         }
 
-        $auditObject = Get-SqlDscAudit @getSqlDscAuditParameters
+        $auditObject = Get-SqlDscAudit @getSqlDscAuditParameters |
+            Select-Object -First 1
 
         if ($auditObject)
         {
