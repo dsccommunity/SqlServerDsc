@@ -91,13 +91,17 @@ function Import-SqlDscPreferredModule
     {
         Write-Verbose -Message ($script:localizedData.PreferredModule_ModuleNotFound)
 
-        <#
-            After installing SQL Server the current PowerShell session doesn't know
-            about the new path that was added for the SQLPS module. This reloads
-            PowerShell session environment variable PSModulePath to make sure it
-            contains all paths.
-        #>
-        Set-PSModulePath -Path ([System.Environment]::GetEnvironmentVariable('PSModulePath', 'Machine'))
+        # Only run on Windows that has Machine state.
+        if (-not ($IsLinux -or $IsMacOS))
+        {
+            <#
+                After installing SQL Server the current PowerShell session doesn't know
+                about the new path that was added for the SQLPS module. This reloads
+                PowerShell session environment variable PSModulePath to make sure it
+                contains all paths.
+            #>
+            Set-PSModulePath -Path ([System.Environment]::GetEnvironmentVariable('PSModulePath', 'Machine'))
+        }
 
         # Get the newest SQLPS module if more than one exist.
         $availableModule = Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable |
