@@ -28,6 +28,9 @@
     .PARAMETER Features
         See the notes section for more information.
 
+    .PARAMETER SuppressPrivacyStatementNotice
+        See the notes section for more information.
+
     .LINK
         https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt
 
@@ -104,7 +107,11 @@ function Uninstall-SqlDscServer
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $Force
+        $Force,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $SuppressPrivacyStatementNotice
     )
 
     Invoke-SetupAction -Uninstall @PSBoundParameters -ErrorAction 'Stop'

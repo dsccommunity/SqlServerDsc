@@ -52,7 +52,7 @@ Describe 'Uninstall-SqlDscServer' -Tag 'Public' {
         @{
             MockParameterSetName = '__AllParameterSets'
             # cSpell: disable-next
-            MockExpectedParameters = '[-MediaPath] <string> [-InstanceName] <string> [[-Features] <string[]>] [[-Timeout] <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '[-MediaPath] <string> [-InstanceName] <string> [[-Features] <string[]>] [[-Timeout] <uint>] [-Force] [-SuppressPrivacyStatementNotice] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'Uninstall-SqlDscServer').ParameterSets |
