@@ -114,7 +114,7 @@ Describe 'Get-SqlDscAudit' -Tag 'Public' {
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should return the correct values' {
-                $result = Get-SqlDscAudit @mockDefaultParameters
+                $result = $mockServerObject | Get-SqlDscAudit -Name 'Log1'
 
                 $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Audit'
                 $result.Name | Should -Be 'Log1'

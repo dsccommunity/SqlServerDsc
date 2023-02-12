@@ -90,35 +90,41 @@ function Get-SqlDscManagedComputerService
 
     process
     {
-        if ($serviceObject)
+        if ($ManagedComputerObject)
         {
-            $serviceObject += $ManagedComputerObject.Services
-        }
-        else
-        {
-            $serviceObject = $ManagedComputerObject.Services
+            if ($serviceObject)
+            {
+                $serviceObject += $ManagedComputerObject.Services
+            }
+            else
+            {
+                $serviceObject = $ManagedComputerObject.Services
+            }
         }
     }
 
     end
     {
-        if ($PSBoundParameters.ContainsKey('ServiceType'))
+        if ($serviceObject)
         {
-            $managedServiceType = $ServiceType |
-                ConvertTo-ManagedServiceType
+            if ($PSBoundParameters.ContainsKey('ServiceType'))
+            {
+                $managedServiceType = $ServiceType |
+                    ConvertTo-ManagedServiceType
 
-            $serviceObject = $serviceObject |
-                Where-Object -FilterScript {
-                    $_.Type -in $managedServiceType
-                }
-        }
+                $serviceObject = $serviceObject |
+                    Where-Object -FilterScript {
+                        $_.Type -in $managedServiceType
+                    }
+            }
 
-        if ($PSBoundParameters.ContainsKey('InstanceName'))
-        {
-            $serviceObject = $serviceObject |
-                Where-Object -FilterScript {
-                    $_.Name -match ('\${0}$' -f $InstanceName)
-                }
+            if ($PSBoundParameters.ContainsKey('InstanceName'))
+            {
+                $serviceObject = $serviceObject |
+                    Where-Object -FilterScript {
+                        $_.Name -match ('\${0}$' -f $InstanceName)
+                    }
+            }
         }
 
         return $serviceObject
