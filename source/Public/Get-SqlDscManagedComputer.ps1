@@ -29,7 +29,6 @@ function Get-SqlDscManagedComputer
     param
     (
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
         [System.String]
         $ServerName = (Get-ComputerName)
     )

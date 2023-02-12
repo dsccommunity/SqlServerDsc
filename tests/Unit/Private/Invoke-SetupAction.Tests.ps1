@@ -47,7 +47,7 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Invoke-SetupAction' -Tag 'Public' {
+Describe 'Invoke-SetupAction' -Tag 'Private' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName = 'Install'
