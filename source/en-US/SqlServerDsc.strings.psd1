@@ -2,7 +2,8 @@
     .SYNOPSIS
         The localized resource strings in English (en-US) for the
         resource SqlServerDsc module. This file should only contain
-        localized strings for private and public functions.
+        localized strings for private functions, public command, and
+        classes (that are not a DSC resource).
 #>
 
 ConvertFrom-StringData @'
@@ -101,13 +102,23 @@ ConvertFrom-StringData @'
     ## Get-SqlDscManagedComputerService
     ManagedComputerService_GetState = Returning the managed computer service object(s) for server {0}.
 
+    ## StartupParameters
+    StartupParameters_DebugFoundTraceFlags = {0}: Found the trace flags: {1}
+    StartupParameters_DebugParsingStartupParameters = {0}: Parsing the startup parameters: {1}
+
     ## Get-SqlDscTraceFlag
-    TraceFlag_GetState = Returning the trace flags for instance {0} on server {1}.
-    TraceFlag_DebugParsingStartupParameters = {0}: Parsing the startup parameters: {1}
-    TraceFlag_DebugFoundTraceFlags = {0}: Found the trace flags: {1}
-    TraceFlag_DebugReturningTraceFlags = {0}: Returning the trace flag values: {1}
-    TraceFlag_DebugNoTraceFlags = {0}: No trace flags were found in the startup parameters.
-    TraceFlag_FailedToFindStartupParameters = {0}: Failed to find the instance's startup parameters.
+    TraceFlag_Get_ReturnTraceFlags = Returning the trace flags for instance {0} on server {1}.
+    TraceFlag_Get_DebugReturningTraceFlags = {0}: Returning the trace flag values: {1}
+    TraceFlag_Get_FailedToFindStartupParameters = {0}: Failed to find the instance's startup parameters.
+    TraceFlag_Get_WrongServiceType = The provided ServiceObject is of wrong type. Expected {0}, but was {1}.
+
+    ## Set-SqlDscTraceFlag
+    TraceFlag_Set_ShouldProcessVerboseDescription = Replacing the trace flags on the instance '{0}' with the trace flags '{1}'.
+    TraceFlag_Set_ShouldProcessVerboseWarning = Are you sure you want to replace the trace flags on instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    TraceFlag_Set_ShouldProcessCaption = Replace trace flag on instance
+    TraceFlag_Set_FailedToFindServiceObject = {0}: Failed to find the service object.
+    TraceFlag_Set_WrongServiceType = The provided ServiceObject is of wrong type. Expected {0}, but was {1}.
 
     ## Import-SqlDscPreferredModule
     PreferredModule_ModuleFound = Preferred module {0} found.

@@ -58,6 +58,41 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
         }
     }
 
+    Context 'When passing a ServiceObject with wrong service type' {
+        BeforeAll {
+            $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
+            $mockServiceObject.Type = 'SqlAgent'
+
+            Mock -CommandName Assert-ElevatedUser
+        }
+
+        Context 'When passing the value Stop for parameter ErrorAction' {
+            It 'Should throw the correct error' {
+                $mockErrorMessage = InModuleScope -ScriptBlock {
+                    $script:localizedData.TraceFlag_Get_WrongServiceType
+                }
+
+                $mockErrorMessage = $mockErrorMessage -f 'SqlServer', 'SqlAgent'
+
+                { Get-SqlDscTraceFlag -ServiceObject $mockServiceObject -ErrorAction 'Stop' } |
+                    Should -Throw -ExpectedMessage $mockErrorMessage
+            }
+        }
+
+        Context 'When passing the value SilentlyContinue for parameter ErrorAction' {
+            It 'Should still throw the correct terminating error' {
+                $mockErrorMessage = InModuleScope -ScriptBlock {
+                    $script:localizedData.TraceFlag_Get_WrongServiceType
+                }
+
+                $mockErrorMessage = $mockErrorMessage -f 'SqlServer', 'SqlAgent'
+
+                { Get-SqlDscTraceFlag -ServiceObject $mockServiceObject -ErrorAction 'SilentlyContinue' } |
+                    Should -Throw -ExpectedMessage $mockErrorMessage
+            }
+        }
+    }
+
     Context 'When passing server name but an Managed Computer Service object is not returned' {
         BeforeAll {
             Mock -CommandName Assert-ElevatedUser
@@ -85,6 +120,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
 
             $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
             $mockServiceObject.StartupParameters = $mockStartupParameters
+            $mockServiceObject.Type = 'SqlServer'
 
             Mock -CommandName Assert-ElevatedUser
 
@@ -133,7 +169,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
             }
         }
 
-        Context 'When passing parameter ServiceObject over the pipeline' {
+        Context 'When passing a service object' {
             It 'Should return an empty array' {
                 $result = Get-SqlDscTraceFlag -ServiceObject $mockServiceObject
 
@@ -148,11 +184,11 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
 
     Context 'When one trace flag exist' {
         BeforeAll {
-            # cSpelL: disable-next
-            $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\mastlog.ldf;-T4199'
+            $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf;-T4199'
 
             $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
             $mockServiceObject.StartupParameters = $mockStartupParameters
+            $mockServiceObject.Type = 'SqlServer'
 
             Mock -CommandName Assert-ElevatedUser
 
@@ -204,7 +240,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
             }
         }
 
-        Context 'When passing parameter ServiceObject over the pipeline' {
+        Context 'When passing a service object' {
             It 'Should return the correct values' {
                 $result = Get-SqlDscTraceFlag -ServiceObject $mockServiceObject
 
@@ -220,11 +256,11 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
 
     Context 'When multiple trace flag exist' {
         BeforeAll {
-            # cSpelL: disable-next
-            $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\mastlog.ldf;-T4199;-T3226'
+            $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf;-T4199;-T3226'
 
             $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
             $mockServiceObject.StartupParameters = $mockStartupParameters
+            $mockServiceObject.Type = 'SqlServer'
 
             Mock -CommandName Assert-ElevatedUser
 
@@ -279,7 +315,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
             }
         }
 
-        Context 'When passing parameter ServiceObject over the pipeline' {
+        Context 'When passing a service object' {
             It 'Should return the correct values' {
                 $result = Get-SqlDscTraceFlag -ServiceObject $mockServiceObject
 
