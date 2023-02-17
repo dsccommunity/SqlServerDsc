@@ -60,12 +60,28 @@ function Get-SqlDscTraceFlag
         [System.String]
         $ServerName = (Get-ComputerName),
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'ByServerName')]
+        [ValidateNotNullOrEmpty()]
         [System.String]
         $InstanceName = 'MSSQLSERVER'
     )
 
     Assert-ElevatedUser -ErrorAction 'Stop'
+
+    if ($PSCmdlet.ParameterSetName -eq 'ByServiceObject')
+    {
+        if ($ServiceObject.Type -ne 'SqlServer')
+        {
+            $PSCmdlet.ThrowTerminatingError(
+                [System.Management.Automation.ErrorRecord]::new(
+                    ($script:localizedData.TraceFlag_Get_WrongServiceType -f 'SqlServer', $ServiceObject.Type),
+                    'GSDTF0001', # cSpell: disable-line
+                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                    $ServiceObject
+                )
+            )
+        }
+    }
 
     if ($PSCmdlet.ParameterSetName -eq 'ByServerName')
     {
@@ -79,49 +95,22 @@ function Get-SqlDscTraceFlag
     }
 
     Write-Verbose -Message (
-        $script:localizedData.TraceFlag_GetState -f $InstanceName, $ServerName
+        $script:localizedData.TraceFlag_Get_ReturnTraceFlags -f $InstanceName, $ServerName
     )
 
     $traceFlags = [System.UInt32[]] @()
 
     if ($ServiceObject -and $ServiceObject.StartupParameters)
     {
-        Write-Debug -Message (
-            $script:localizedData.TraceFlag_DebugParsingStartupParameters -f $MyInvocation.MyCommand, $ServiceObject.StartupParameters
-        )
-
-        $startupParameterValues = $ServiceObject.StartupParameters.Split(';')
-
-        $startupParameterTraceFlagValues = $startupParameterValues |
-            Where-Object -FilterScript {
-                $_ -match '^-T\d+'
-            }
-
-        if ($startupParameterTraceFlagValues)
-        {
-            Write-Debug -Message (
-                $script:localizedData.TraceFlag_DebugFoundTraceFlags -f $MyInvocation.MyCommand, ($startupParameterTraceFlagValues -join ', ')
-            )
-
-            $traceFlags = @(
-                $startupParameterTraceFlagValues |
-                    ForEach-Object {
-                        [System.UInt32] $_.TrimStart('-T')
-                    }
-            )
-        }
-        else
-        {
-            Write-Debug -Message ($script:localizedData.TraceFlag_DebugNoTraceFlags -f $MyInvocation.MyCommand)
-        }
+        $traceFlags = [StartupParameters]::Parse($ServiceObject.StartupParameters).TraceFlag
     }
     else
     {
-        Write-Debug -Message ($script:localizedData.TraceFlag_FailedToFindStartupParameters -f $MyInvocation.MyCommand)
+        Write-Debug -Message ($script:localizedData.TraceFlag_Get_FailedToFindStartupParameters -f $MyInvocation.MyCommand)
     }
 
     Write-Debug -Message (
-        $script:localizedData.TraceFlag_DebugReturningTraceFlags -f $MyInvocation.MyCommand, ($traceFlags -join ', ')
+        $script:localizedData.TraceFlag_Get_DebugReturningTraceFlags -f $MyInvocation.MyCommand, ($traceFlags -join ', ')
     )
 
     return , [System.UInt32[]] $traceFlags
