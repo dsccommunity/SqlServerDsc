@@ -15,6 +15,12 @@
     .PARAMETER InstanceName
        Specifies the instance name on which to set the trace flags.
 
+    .PARAMETER TraceFlag
+        Specifies the trace flags to set.
+
+    .PARAMETER Force
+        Specifies that the trace flag should be set with out any confirmation.
+
     .EXAMPLE
         Set-SqlDscTraceFlag -TraceFlag 4199
 
@@ -84,15 +90,15 @@ function Set-SqlDscTraceFlag
     begin
     {
         Assert-ElevatedUser -ErrorAction 'Stop'
-    }
 
-    process
-    {
         if ($Force.IsPresent)
         {
             $ConfirmPreference = 'None'
         }
+    }
 
+    process
+    {
         if ($PSCmdlet.ParameterSetName -eq 'ByServiceObject')
         {
             $ServiceObject | Assert-ManagedServiceType -ServiceType 'DatabaseEngine'
