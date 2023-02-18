@@ -1,9 +1,10 @@
 <#
     .SYNOPSIS
-        Converts a normalized service type to a managed service type.
+        Converts a normalized service type name to a managed service type name.
 
     .DESCRIPTION
-        Converts a normalized service type to its managed service type equivalent.
+        Converts a normalized service type name to its managed service type name
+        equivalent.
 
     .PARAMETER ServiceType
         Specifies the normalized service type to convert to the correct manged
@@ -12,7 +13,7 @@
     .EXAMPLE
         ConvertTo-ManagedServiceType -ServiceType 'DatabaseEngine'
 
-        Returns the manged service type for the normalized service type 'DatabaseEngine'.
+        Returns the manged service type name for the normalized service type 'DatabaseEngine'.
 #>
 function ConvertTo-ManagedServiceType
 {
@@ -20,7 +21,7 @@ function ConvertTo-ManagedServiceType
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [ValidateSet('DatabaseEngine', 'SQLServerAgent', 'Search', 'IntegrationServices', 'AnalysisServices', 'ReportingServices', 'SQLServerBrowser', 'NotificationServices')]
+        [ValidateSet('DatabaseEngine', 'SqlServerAgent', 'Search', 'IntegrationServices', 'AnalysisServices', 'ReportingServices', 'SQLServerBrowser', 'NotificationServices')]
         [System.String]
         $ServiceType
     )
@@ -35,7 +36,7 @@ function ConvertTo-ManagedServiceType
                 $serviceTypeValue = 'SqlServer'
             }
 
-            'SQLServerAgent'
+            'SqlServerAgent'
             {
                 $serviceTypeValue = 'SqlAgent'
             }

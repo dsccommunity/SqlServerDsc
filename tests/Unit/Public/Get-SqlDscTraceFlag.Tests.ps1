@@ -50,6 +50,35 @@ AfterAll {
 }
 
 Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
+    It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
+        @{
+            MockParameterSetName = 'ByServiceObject'
+            MockExpectedParameters = '-ServiceObject <Service> [<CommonParameters>]'
+        }
+        @{
+            MockParameterSetName = 'ByServerName'
+            MockExpectedParameters = '[-ServerName <string>] [-InstanceName <string>] [<CommonParameters>]'
+        }
+    ) {
+        $result = (Get-Command -Name 'Get-SqlDscTraceFlag').ParameterSets |
+            Where-Object -FilterScript {
+                $_.Name -eq $mockParameterSetName
+            } |
+            Select-Object -Property @(
+                @{
+                    Name = 'ParameterSetName'
+                    Expression = { $_.Name }
+                },
+                @{
+                    Name = 'ParameterListAsString'
+                    Expression = { $_.ToString() }
+                }
+            )
+
+        $result.ParameterSetName | Should -Be $MockParameterSetName
+        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+    }
+
     Context 'When passing $null as ServiceObject' {
         It 'Should throw the correct error' {
             $mockErrorMessage = 'Cannot bind argument to parameter ''ServiceObject'' because it is null.'
@@ -102,21 +131,34 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
             }
         }
 
-        It 'Should return an empty array' {
-            $result = Get-SqlDscTraceFlag -ServerName 'localhost'
+        Context 'When passing SilentlyContinue to ErrorAction' {
+            It 'Should not throw and return an empty array' {
+                $result = Get-SqlDscTraceFlag -ServerName 'localhost' -ErrorAction 'SilentlyContinue'
 
-            Should -ActualValue $result -BeOfType 'System.UInt32[]'
+                Should -ActualValue $result -BeOfType 'System.UInt32[]'
 
-            $result | Should -BeNullOrEmpty
+                $result | Should -BeNullOrEmpty
 
-            Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When passing Stop to ErrorAction' {
+            It 'Should throw the correct error' {
+                $mockErrorMessage = InModuleScope -ScriptBlock {
+                    $script:localizedData.TraceFlag_Get_FailedToFindServiceObject
+                }
+
+                { Get-SqlDscTraceFlag -ServerName 'localhost' -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage $mockErrorMessage
+
+                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 1 -Scope It
+            }
         }
     }
 
     Context 'When no trace flag exist' {
         BeforeAll {
-            # cSpelL: disable-next
-            $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\mastlog.ldf'
+            $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
 
             $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
             $mockServiceObject.StartupParameters = $mockStartupParameters

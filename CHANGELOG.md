@@ -50,6 +50,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Assert-SetupActionProperties`
     - `Invoke-SetupAction`
     - `ConvertTo-ManagedServiceType`
+    - `ConvertFrom-ManagedServiceType`
+    - `Assert-ManagedServiceType`
   - The following public functions were added to the module (see comment-based
     help for more information):
     - `Install-SqlDscServer`
@@ -64,6 +66,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Get-SqlDscManagedComputer`
     - `Get-SqlDscManagedComputerService`
     - `Get-SqlDscTraceFlag`
+    - `Add-SqlDscTraceFlag`
+    - `Remove-SqlDscTraceFlag`
+    - `Set-SqlDscTraceFlag`
   - Added class `StartupParameters` which can parse the startup parameters
     of a manged computer service object.
   - New GitHub issue templates for proposing new public commands, proposing

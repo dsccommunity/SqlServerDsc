@@ -50,18 +50,18 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'ConvertTo-ManagedServiceType' -Tag 'Private' {
-    Context 'When translating to managed service types' {
+Describe 'ConvertFrom-ManagedServiceType' -Tag 'Private' {
+    Context 'When translating to a normalized service types' {
         BeforeDiscovery {
             $testCases = @(
                 @{
-                    MockServiceType  = 'DatabaseEngine'
-                    MockExpectedType = 'SqlServer'
+                    MockServiceType  = 'SqlServer'
+                    MockExpectedType = 'DatabaseEngine'
                 }
 
                 @{
-                    MockServiceType  = 'SqlServerAgent'
-                    MockExpectedType = 'SqlAgent'
+                    MockServiceType  = 'SqlAgent'
+                    MockExpectedType = 'SqlServerAgent'
                 }
 
                 @{
@@ -70,40 +70,40 @@ Describe 'ConvertTo-ManagedServiceType' -Tag 'Private' {
                 }
 
                 @{
-                    MockServiceType  = 'IntegrationServices'
-                    MockExpectedType = 'SqlServerIntegrationService'
+                    MockServiceType  = 'SqlServerIntegrationService'
+                    MockExpectedType = 'IntegrationServices'
                 }
 
                 @{
-                    MockServiceType  = 'AnalysisServices'
-                    MockExpectedType = 'AnalysisServer'
+                    MockServiceType  = 'AnalysisServer'
+                    MockExpectedType = 'AnalysisServices'
                 }
 
                 @{
-                    MockServiceType  = 'ReportingServices'
-                    MockExpectedType = 'ReportServer'
+                    MockServiceType  = 'ReportServer'
+                    MockExpectedType = 'ReportingServices'
                 }
 
                 @{
-                    MockServiceType  = 'SQLServerBrowser'
-                    MockExpectedType = 'SqlBrowser'
+                    MockServiceType  = 'SqlBrowser'
+                    MockExpectedType = 'SQLServerBrowser'
                 }
 
                 @{
-                    MockServiceType  = 'NotificationServices'
-                    MockExpectedType = 'NotificationServer'
+                    MockServiceType  = 'NotificationServer'
+                    MockExpectedType = 'NotificationServices'
                 }
             )
         }
 
-        It 'Should properly map ''<MockServiceType>'' to managed service type ''<MockExpectedType>''' -ForEach $testCases {
+        It 'Should properly map ''<MockServiceType>'' to normalized service type ''<MockExpectedType>''' -ForEach $testCases {
             InModuleScope -Parameters $_ -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
                 # Get the ManagedServiceType
-                $managedServiceType = ConvertTo-ManagedServiceType -ServiceType $MockServiceType
+                $managedServiceType = ConvertFrom-ManagedServiceType -ServiceType $MockServiceType
 
-                $managedServiceType | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType'
+                $managedServiceType | Should -BeOfType [System.String]
                 $managedServiceType | Should -Be $MockExpectedType
             }
         }
@@ -114,9 +114,9 @@ Describe 'ConvertTo-ManagedServiceType' -Tag 'Private' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockErrorMessage = 'Cannot validate argument on parameter ''ServiceType''. The argument "UnknownType" does not belong to the set "DatabaseEngine,SQLServerAgent,Search,IntegrationServices,AnalysisServices,ReportingServices,SQLServerBrowser,NotificationServices" specified by the ValidateSet attribute. Supply an argument that is in the set and then try the command again.'
+                $mockErrorMessage = '*Unable to match the identifier name UnknownType to a valid enumerator name*'
 
-                { ConvertTo-ManagedServiceType -ServiceType 'UnknownType' -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { ConvertFrom-ManagedServiceType -ServiceType 'UnknownType' -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage $mockErrorMessage
             }
         }
     }

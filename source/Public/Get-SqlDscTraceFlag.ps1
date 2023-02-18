@@ -48,7 +48,7 @@ function Get-SqlDscTraceFlag
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Justification = 'Because the rule does not understands that the command returns [System.UInt32[]] when using , (comma) in the return statement')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [OutputType([System.UInt32[]])]
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'ByServerName')]
     param
     (
         [Parameter(ParameterSetName = 'ByServiceObject', Mandatory = $true)]
@@ -70,28 +70,30 @@ function Get-SqlDscTraceFlag
 
     if ($PSCmdlet.ParameterSetName -eq 'ByServiceObject')
     {
-        if ($ServiceObject.Type -ne 'SqlServer')
-        {
-            $PSCmdlet.ThrowTerminatingError(
-                [System.Management.Automation.ErrorRecord]::new(
-                    ($script:localizedData.TraceFlag_Get_WrongServiceType -f 'SqlServer', $ServiceObject.Type),
-                    'GSDTF0001', # cSpell: disable-line
-                    [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                    $ServiceObject
-                )
-            )
-        }
+        $ServiceObject | Assert-ManagedServiceType -ServiceType 'DatabaseEngine'
     }
 
     if ($PSCmdlet.ParameterSetName -eq 'ByServerName')
     {
         $getSqlDscManagedComputerServiceParameters = @{
-            ServerName = $ServerName
+            ServerName   = $ServerName
             InstanceName = $InstanceName
-            ServiceType = 'DatabaseEngine'
+            ServiceType  = 'DatabaseEngine'
         }
 
         $ServiceObject = Get-SqlDscManagedComputerService @getSqlDscManagedComputerServiceParameters
+
+        if (-not $ServiceObject)
+        {
+            $writeErrorParameters = @{
+                Message      = $script:localizedData.TraceFlag_Get_FailedToFindServiceObject
+                Category     = 'InvalidOperation'
+                ErrorId      = 'GSDTF0002' # CSpell: disable-line
+                TargetObject = $ServiceObject
+            }
+
+            Write-Error @writeErrorParameters
+        }
     }
 
     Write-Verbose -Message (
@@ -100,7 +102,7 @@ function Get-SqlDscTraceFlag
 
     $traceFlags = [System.UInt32[]] @()
 
-    if ($ServiceObject -and $ServiceObject.StartupParameters)
+    if ($ServiceObject.StartupParameters)
     {
         $traceFlags = [StartupParameters]::Parse($ServiceObject.StartupParameters).TraceFlag
     }
