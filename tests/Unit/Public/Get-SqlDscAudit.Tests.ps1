@@ -50,6 +50,31 @@ AfterAll {
 }
 
 Describe 'Get-SqlDscAudit' -Tag 'Public' {
+    It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
+        @{
+            MockParameterSetName = '__AllParameterSets'
+            MockExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [-Refresh] [<CommonParameters>]'
+        }
+    ) {
+        $result = (Get-Command -Name 'Get-SqlDscAudit').ParameterSets |
+            Where-Object -FilterScript {
+                $_.Name -eq $mockParameterSetName
+            } |
+            Select-Object -Property @(
+                @{
+                    Name = 'ParameterSetName'
+                    Expression = { $_.Name }
+                },
+                @{
+                    Name = 'ParameterListAsString'
+                    Expression = { $_.ToString() }
+                }
+            )
+
+        $result.ParameterSetName | Should -Be $MockParameterSetName
+        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+    }
+
     Context 'When no audit exist' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
