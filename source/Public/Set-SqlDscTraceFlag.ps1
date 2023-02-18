@@ -54,7 +54,7 @@ function Set-SqlDscTraceFlag
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    [CmdletBinding(DefaultParameterSetName = 'ByServerName', SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param
     (
         [Parameter(ParameterSetName = 'ByServiceObject', Mandatory = $true, ValueFromPipeline = $true)]
@@ -66,7 +66,7 @@ function Set-SqlDscTraceFlag
         [System.String]
         $ServerName = (Get-ComputerName),
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'ByServerName')]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $InstanceName = 'MSSQLSERVER',
@@ -81,6 +81,11 @@ function Set-SqlDscTraceFlag
         $Force
     )
 
+    begin
+    {
+        Assert-ElevatedUser -ErrorAction 'Stop'
+    }
+
     process
     {
         if ($Force.IsPresent)
@@ -90,17 +95,7 @@ function Set-SqlDscTraceFlag
 
         if ($PSCmdlet.ParameterSetName -eq 'ByServiceObject')
         {
-            if ($ServiceObject.Type -ne 'SqlServer')
-            {
-                $PSCmdlet.ThrowTerminatingError(
-                    [System.Management.Automation.ErrorRecord]::new(
-                        ($script:localizedData.TraceFlag_Get_WrongServiceType -f 'SqlServer', $ServiceObject.Type),
-                        'SSDTF0001', # cSpell: disable-line
-                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $ServiceObject
-                    )
-                )
-            }
+            $ServiceObject | Assert-ManagedServiceType -ServiceType 'DatabaseEngine'
 
             $InstanceName = $ServiceObject.Name -replace '^MSSQL\$'
         }
@@ -108,13 +103,25 @@ function Set-SqlDscTraceFlag
         if ($PSCmdlet.ParameterSetName -eq 'ByServerName')
         {
             $getSqlDscManagedComputerServiceParameters = @{
-                ServerName = $ServerName
+                ServerName   = $ServerName
                 InstanceName = $InstanceName
-                ServiceType = 'DatabaseEngine'
-                ErrorAction = 'Stop'
+                ServiceType  = 'DatabaseEngine'
+                ErrorAction  = 'Stop'
             }
 
             $ServiceObject = Get-SqlDscManagedComputerService @getSqlDscManagedComputerServiceParameters
+
+            if (-not $ServiceObject)
+            {
+                $writeErrorParameters = @{
+                    Message      = $script:localizedData.TraceFlag_Set_FailedToFindServiceObject
+                    Category     = 'InvalidOperation'
+                    ErrorId      = 'SSDTF0002' # CSpell: disable-line
+                    TargetObject = $ServiceObject
+                }
+
+                Write-Error @writeErrorParameters
+            }
         }
 
         if ($ServiceObject)
@@ -132,10 +139,6 @@ function Set-SqlDscTraceFlag
                 $ServiceObject.StartupParameters = $startupParameters.ToString()
                 $ServiceObject.Alter()
             }
-        }
-        else
-        {
-            Write-Debug -Message ($script:localizedData.TraceFlag_Set_FailedToFindServiceObject -f $MyInvocation.MyCommand)
         }
     }
 }

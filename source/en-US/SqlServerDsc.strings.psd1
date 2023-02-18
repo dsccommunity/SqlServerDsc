@@ -106,19 +106,24 @@ ConvertFrom-StringData @'
     StartupParameters_DebugFoundTraceFlags = {0}: Found the trace flags: {1}
     StartupParameters_DebugParsingStartupParameters = {0}: Parsing the startup parameters: {1}
 
+    ## ConvertFrom-ManagedServiceType
+    ManagedServiceType_ConvertFrom_UnknownServiceType = The service type '{0}' is unknown and cannot me converted to its normalized service account equivalent
+
+    ## Assert-ManagedServiceType
+    ManagedServiceType_Assert_WrongServiceType = The provided ServiceObject is of the wrong type. Expected {0}, but was {1}.
+
     ## Get-SqlDscTraceFlag
     TraceFlag_Get_ReturnTraceFlags = Returning the trace flags for instance {0} on server {1}.
     TraceFlag_Get_DebugReturningTraceFlags = {0}: Returning the trace flag values: {1}
+    TraceFlag_Get_FailedToFindServiceObject = Failed to find the service object.
     TraceFlag_Get_FailedToFindStartupParameters = {0}: Failed to find the instance's startup parameters.
-    TraceFlag_Get_WrongServiceType = The provided ServiceObject is of wrong type. Expected {0}, but was {1}.
 
     ## Set-SqlDscTraceFlag
     TraceFlag_Set_ShouldProcessVerboseDescription = Replacing the trace flags on the instance '{0}' with the trace flags '{1}'.
     TraceFlag_Set_ShouldProcessVerboseWarning = Are you sure you want to replace the trace flags on instance '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     TraceFlag_Set_ShouldProcessCaption = Replace trace flag on instance
-    TraceFlag_Set_FailedToFindServiceObject = {0}: Failed to find the service object.
-    TraceFlag_Set_WrongServiceType = The provided ServiceObject is of wrong type. Expected {0}, but was {1}.
+    TraceFlag_Set_FailedToFindServiceObject = Failed to find the service object.
 
     ## Import-SqlDscPreferredModule
     PreferredModule_ModuleFound = Preferred module {0} found.
