@@ -125,6 +125,21 @@ ConvertFrom-StringData @'
     TraceFlag_Set_ShouldProcessCaption = Replace trace flag on instance
     TraceFlag_Set_FailedToFindServiceObject = Failed to find the service object.
 
+    ## Add-SqlDscTraceFlag
+    TraceFlag_Add_ShouldProcessVerboseDescription = Adding trace flags '{1}' to the instance '{0}'.
+    TraceFlag_Add_ShouldProcessVerboseWarning = Are you sure you want to add trace flags to the instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    TraceFlag_Add_ShouldProcessCaption = Add trace flag on instance
+    TraceFlag_Add_FailedToFindServiceObject = Failed to find the service object.
+
+    ## Remove-SqlDscTraceFlag
+    TraceFlag_Remove_ShouldProcessVerboseDescription = Removing trace flags '{1}' from the instance '{0}'.
+    TraceFlag_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the trace flags from the instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    TraceFlag_Remove_ShouldProcessCaption = Remove trace flag from instance
+    TraceFlag_Remove_FailedToFindServiceObject = Failed to find the service object.
+    TraceFlag_Remove_NoCurrentTraceFlags = There are no current trace flags on instance. Nothing to remove.
+
     ## Import-SqlDscPreferredModule
     PreferredModule_ModuleFound = Preferred module {0} found.
     PreferredModule_ModuleNotFound = Information: No preferred PowerShell module was found, trying to use the SQLPS module.
