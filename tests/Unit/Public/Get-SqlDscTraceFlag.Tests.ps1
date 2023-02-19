@@ -89,7 +89,6 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
 
     Context 'When no trace flag exist' {
         BeforeAll {
-            Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Get-SqlDscStartupParameter -MockWith {
                 return @{
                     TraceFlag = @()
@@ -158,7 +157,6 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
 
     Context 'When one trace flag exist' {
         BeforeAll {
-            Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Get-SqlDscStartupParameter -MockWith {
                 return @{
                     TraceFlag = @(4199)
@@ -231,7 +229,6 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
 
     Context 'When multiple trace flag exist' {
         BeforeAll {
-            Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Get-SqlDscStartupParameter -MockWith {
                 return @{
                     TraceFlag = @(4199, 3226)

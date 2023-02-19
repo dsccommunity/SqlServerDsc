@@ -82,8 +82,6 @@ function Remove-SqlDscTraceFlag
 
     begin
     {
-        Assert-ElevatedUser -ErrorAction 'Stop'
-
         if ($Force.IsPresent)
         {
             $ConfirmPreference = 'None'
@@ -94,66 +92,53 @@ function Remove-SqlDscTraceFlag
     {
         if ($PSCmdlet.ParameterSetName -eq 'ByServiceObject')
         {
-            $ServiceObject | Assert-ManagedServiceType -ServiceType 'DatabaseEngine'
-
             $InstanceName = $ServiceObject.Name -replace '^MSSQL\$'
         }
 
-        if ($PSCmdlet.ParameterSetName -eq 'ByServerName')
-        {
-            $getSqlDscManagedComputerServiceParameters = @{
-                ServerName   = $ServerName
-                InstanceName = $InstanceName
-                ServiceType  = 'DatabaseEngine'
-                ErrorAction  = 'Stop'
+        # Copy $PSBoundParameters to keep it intact.
+        $getSqlDscTraceFlagParameters = @{} + $PSBoundParameters
+
+        $commonParameters = [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
+
+        # Remove parameters that Get-SqlDscTraceFLag does not have/support.
+        $commonParameters + @('Force', 'TraceFlag') |
+            ForEach-Object -Process {
+                $getSqlDscTraceFlagParameters.Remove($_)
             }
 
-            $ServiceObject = Get-SqlDscManagedComputerService @getSqlDscManagedComputerServiceParameters
+        $currentTraceFlags = Get-SqlDscTraceFlag @getSqlDscTraceFlagParameters -ErrorAction 'Stop'
 
-            if (-not $ServiceObject)
+        if ($currentTraceFlags)
+        {
+            # Must always return an array. An empty array when removing the last value.
+            $desiredTraceFlags = [System.UInt32[]] @(
+                $currentTraceFlags |
+                    ForEach-Object -Process {
+                        # Keep values that should not be removed
+                        if ($_ -notin $TraceFlag)
+                        {
+                            $_
+                        }
+                    }
+            )
+
+            $verboseDescriptionMessage = $script:localizedData.TraceFlag_Remove_ShouldProcessVerboseDescription -f $InstanceName, ($TraceFlag -join ', ')
+            $verboseWarningMessage = $script:localizedData.TraceFlag_Remove_ShouldProcessVerboseWarning -f $InstanceName
+            $captionMessage = $script:localizedData.TraceFlag_Remove_ShouldProcessCaption
+
+            if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
             {
-                $writeErrorParameters = @{
-                    Message      = $script:localizedData.TraceFlag_Remove_FailedToFindServiceObject
-                    Category     = 'InvalidOperation'
-                    ErrorId      = 'RSDTF0002' # CSpell: disable-line
-                    TargetObject = $ServiceObject
-                }
+                # Copy $PSBoundParameters to keep it intact.
+                $setSqlDscTraceFlagParameters = @{} + $PSBoundParameters
 
-                Write-Error @writeErrorParameters
+                $setSqlDscTraceFlagParameters.TraceFLag = $desiredTraceFlags
+
+                Set-SqlDscTraceFlag @setSqlDscTraceFlagParameters -ErrorAction 'Stop'
             }
         }
-
-        if ($ServiceObject)
+        else
         {
-            $currentTraceFlags = Get-SqlDscTraceFlag -ServiceObject $ServiceObject -ErrorAction 'Stop'
-
-            if ($currentTraceFlags)
-            {
-                # Must always return an array. An empty array when removing the last value.
-                $desiredTraceFlags = [System.UInt32[]] @(
-                    $currentTraceFlags |
-                        ForEach-Object -Process {
-                            # Keep values that should not be removed
-                            if ($_ -notin $TraceFlag)
-                            {
-                                $_
-                            }
-                        }
-                )
-
-                $verboseDescriptionMessage = $script:localizedData.TraceFlag_Remove_ShouldProcessVerboseDescription -f $InstanceName, ($TraceFlag -join ', ')
-                $verboseWarningMessage = $script:localizedData.TraceFlag_Remove_ShouldProcessVerboseWarning -f $InstanceName
-                $captionMessage = $script:localizedData.TraceFlag_Remove_ShouldProcessCaption
-
-                if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
-                {
-                    $ServiceObject | Set-SqlDscTraceFlag -TraceFlag $desiredTraceFlags -ErrorAction 'Stop'
-                }
-            }
-            else
-            {
-                Write-Debug -Message $script:localizedData.TraceFlag_Remove_NoCurrentTraceFlags
-            }
+            Write-Debug -Message $script:localizedData.TraceFlag_Remove_NoCurrentTraceFlags
         }
     }
 }

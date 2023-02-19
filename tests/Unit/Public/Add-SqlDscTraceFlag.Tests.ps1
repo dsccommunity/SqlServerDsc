@@ -89,7 +89,6 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
 
     Context 'When there are no existing trace flags' {
         BeforeAll {
-            Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Set-SqlDscTraceFlag
             Mock -CommandName Get-SqlDscTraceFlag -MockWith {
                 return @()
@@ -97,7 +96,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
         }
 
         Context 'When adding a trace flag by a service object' {
-            BeforeEach {
+            BeforeAll {
                 $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
                 $mockServiceObject.Name = 'MSSQL$SQL2022'
             }
@@ -174,17 +173,13 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
 
     Context 'When there are an existing trace flag' {
         BeforeAll {
-            $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf;-T3226'
-
-            Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Set-SqlDscTraceFlag
-        }
+            Mock -CommandName Get-SqlDscTraceFlag -MockWith {
+                return @(3226)
+            }
 
-        BeforeEach {
             $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
             $mockServiceObject.Name = 'MSSQL$SQL2022'
-            $mockServiceObject.StartupParameters = $mockStartupParameters
-            $mockServiceObject.Type = 'SqlServer'
         }
 
         It 'Should call the mocked method and have correct value in the object' {

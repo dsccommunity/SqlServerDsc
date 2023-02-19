@@ -82,8 +82,6 @@ function Add-SqlDscTraceFlag
 
     begin
     {
-        Assert-ElevatedUser -ErrorAction 'Stop'
-
         if ($Force.IsPresent)
         {
             $ConfirmPreference = 'None'

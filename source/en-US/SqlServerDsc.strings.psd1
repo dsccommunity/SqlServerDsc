@@ -139,7 +139,6 @@ ConvertFrom-StringData @'
     TraceFlag_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the trace flags from the instance '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     TraceFlag_Remove_ShouldProcessCaption = Remove trace flag from instance
-    TraceFlag_Remove_FailedToFindServiceObject = Failed to find the service object.
     TraceFlag_Remove_NoCurrentTraceFlags = There are no current trace flags on instance. Nothing to remove.
 
     ## Import-SqlDscPreferredModule

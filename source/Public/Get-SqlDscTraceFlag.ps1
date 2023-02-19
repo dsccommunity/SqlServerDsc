@@ -66,8 +66,6 @@ function Get-SqlDscTraceFlag
         $InstanceName = 'MSSQLSERVER'
     )
 
-    Assert-ElevatedUser -ErrorAction 'Stop'
-
     Write-Verbose -Message (
         $script:localizedData.TraceFlag_Get_ReturnTraceFlags -f $InstanceName, $ServerName
     )
