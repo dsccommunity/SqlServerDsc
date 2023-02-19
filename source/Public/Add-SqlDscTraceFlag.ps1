@@ -94,49 +94,36 @@ function Add-SqlDscTraceFlag
     {
         if ($PSCmdlet.ParameterSetName -eq 'ByServiceObject')
         {
-            $ServiceObject | Assert-ManagedServiceType -ServiceType 'DatabaseEngine'
-
             $InstanceName = $ServiceObject.Name -replace '^MSSQL\$'
         }
 
-        if ($PSCmdlet.ParameterSetName -eq 'ByServerName')
+        # Copy $PSBoundParameters to keep it intact.
+        $getSqlDscTraceFlagParameters = @{} + $PSBoundParameters
+
+        $commonParameters = [System.Management.Automation.PSCmdlet]::OptionalCommonParameters
+
+        # Remove parameters that Get-SqlDscTraceFLag does not have/support.
+        $commonParameters + @('Force', 'TraceFlag') |
+            ForEach-Object -Process {
+                $getSqlDscTraceFlagParameters.Remove($_)
+            }
+
+        $currentTraceFlags = Get-SqlDscTraceFlag @getSqlDscTraceFlagParameters -ErrorAction 'Stop'
+
+        $desiredTraceFlags = [System.UInt32[]] $currentTraceFlags + $TraceFlag
+
+        $verboseDescriptionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseDescription -f $InstanceName, ($TraceFlag -join ', ')
+        $verboseWarningMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseWarning -f $InstanceName
+        $captionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessCaption
+
+        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
-            $getSqlDscManagedComputerServiceParameters = @{
-                ServerName   = $ServerName
-                InstanceName = $InstanceName
-                ServiceType  = 'DatabaseEngine'
-                ErrorAction  = 'Stop'
-            }
+            # Copy $PSBoundParameters to keep it intact.
+            $setSqlDscTraceFlagParameters = @{} + $PSBoundParameters
 
-            $ServiceObject = Get-SqlDscManagedComputerService @getSqlDscManagedComputerServiceParameters
+            $setSqlDscTraceFlagParameters.TraceFLag = $desiredTraceFlags
 
-            if (-not $ServiceObject)
-            {
-                $writeErrorParameters = @{
-                    Message      = $script:localizedData.TraceFlag_Add_FailedToFindServiceObject
-                    Category     = 'InvalidOperation'
-                    ErrorId      = 'ASDTF0002' # CSpell: disable-line
-                    TargetObject = $ServiceObject
-                }
-
-                Write-Error @writeErrorParameters
-            }
-        }
-
-        if ($ServiceObject)
-        {
-            $currentTraceFlags = Get-SqlDscTraceFlag -ServiceObject $ServiceObject -ErrorAction 'Stop'
-
-            $desiredTraceFlags = [System.UInt32[]] $currentTraceFlags + $TraceFlag
-
-            $verboseDescriptionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseDescription -f $InstanceName, ($TraceFlag -join ', ')
-            $verboseWarningMessage = $script:localizedData.TraceFlag_Add_ShouldProcessVerboseWarning -f $InstanceName
-            $captionMessage = $script:localizedData.TraceFlag_Add_ShouldProcessCaption
-
-            if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
-            {
-                $ServiceObject | Set-SqlDscTraceFlag -TraceFlag $desiredTraceFlags -ErrorAction 'Stop'
-            }
+            Set-SqlDscTraceFlag @setSqlDscTraceFlagParameters -ErrorAction 'Stop'
         }
     }
 }

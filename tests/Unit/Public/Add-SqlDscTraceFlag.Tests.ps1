@@ -87,90 +87,24 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
         }
     }
 
-    Context 'When passing a ServiceObject with wrong service type' {
-        BeforeAll {
-            $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
-            $mockServiceObject.Type = 'SqlAgent'
-
-            Mock -CommandName Assert-ElevatedUser
-        }
-
-        Context 'When passing the value Stop for parameter ErrorAction' {
-            It 'Should throw the correct error' {
-                $mockErrorMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.TraceFlag_Set_WrongServiceType
-                }
-
-                $mockErrorMessage = $mockErrorMessage -f 'SqlServer', 'SqlAgent'
-
-                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag @(4199) -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage $mockErrorMessage
-            }
-        }
-
-        Context 'When passing the value SilentlyContinue for parameter ErrorAction' {
-            It 'Should still throw the correct terminating error' {
-                $mockErrorMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.TraceFlag_Get_WrongServiceType
-                }
-
-                $mockErrorMessage = $mockErrorMessage -f 'SqlServer', 'SqlAgent'
-
-                { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag @(4199) -ErrorAction 'SilentlyContinue' } |
-                    Should -Throw -ExpectedMessage $mockErrorMessage
-            }
-        }
-    }
-
-    Context 'When passing server name but an Managed Computer Service object is not returned' {
-        BeforeAll {
-            Mock -CommandName Assert-ElevatedUser
-
-            Mock -CommandName Get-SqlDscManagedComputerService -MockWith {
-                return $null
-            }
-        }
-
-        Context 'When passing SilentlyContinue to ErrorAction' {
-            It 'Should not throw ' {
-                { Add-SqlDscTraceFlag -ServerName 'localhost' -TraceFlag @(4199) -ErrorAction 'SilentlyContinue' } | Should -Not -Throw
-
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 1 -Scope It
-            }
-        }
-
-        Context 'When passing Stop to ErrorAction' {
-            It 'Should return an empty array' {
-                $mockErrorMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.TraceFlag_Add_FailedToFindServiceObject
-                }
-
-                { Add-SqlDscTraceFlag -ServerName 'localhost' -TraceFlag @(4199) -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage $mockErrorMessage
-
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 1 -Scope It
-            }
-        }
-    }
-
     Context 'When there are no existing trace flags' {
         BeforeAll {
-            $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
-
             Mock -CommandName Assert-ElevatedUser
             Mock -CommandName Set-SqlDscTraceFlag
+            Mock -CommandName Get-SqlDscTraceFlag -MockWith {
+                return @()
+            }
         }
 
         Context 'When adding a trace flag by a service object' {
             BeforeEach {
                 $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
                 $mockServiceObject.Name = 'MSSQL$SQL2022'
-                $mockServiceObject.StartupParameters = $mockStartupParameters
-                $mockServiceObject.Type = 'SqlServer'
             }
 
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mocked method and have correct value in the object' {
-                    Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Confirm:$false
+                    { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Confirm:$false } | Should -Not -Throw
 
                     Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                         $TraceFlag -contains 4199
@@ -180,7 +114,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
 
             Context 'When using parameter Force' {
                 It 'Should call the mocked method and have correct value in the object' {
-                    Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Force
+                    { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Force } | Should -Not -Throw
 
                     Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                         $TraceFlag -contains 4199
@@ -190,7 +124,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
 
             Context 'When using parameter WhatIf' {
                 It 'Should not call the mocked method and should not have changed the value in the object' {
-                    Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -WhatIf
+                    { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -WhatIf } | Should -Not -Throw
 
                     Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
                 }
@@ -198,7 +132,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
 
             Context 'When passing parameter ServerObject over the pipeline' {
                 It 'Should call the mocked method and have correct value in the object' {
-                    $mockServiceObject | Add-SqlDscTraceFlag -TraceFlag 4199 -Force
+                    { $mockServiceObject | Add-SqlDscTraceFlag -TraceFlag 4199 -Force } | Should -Not -Throw
 
                     Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                         $TraceFlag -contains 4199
@@ -208,24 +142,9 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
         }
 
         Context 'When adding a trace flag by default parameter set and parameters default values' {
-            BeforeAll {
-                $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
-
-                Mock -CommandName Assert-ElevatedUser
-                Mock -CommandName Get-SqlDscManagedComputerService -MockWith {
-                    return $mockServiceObject
-                }
-            }
-
-            BeforeEach {
-                $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
-                $mockServiceObject.StartupParameters = $mockStartupParameters
-                $mockServiceObject.Type = 'SqlServer'
-            }
-
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mocked method and have correct value in the object' {
-                    Add-SqlDscTraceFlag -TraceFlag 4199 -Confirm:$false
+                    { Add-SqlDscTraceFlag -TraceFlag 4199 -Confirm:$false } | Should -Not -Throw
 
                     Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                         $TraceFlag -contains 4199
@@ -235,7 +154,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
 
             Context 'When using parameter Force' {
                 It 'Should call the mocked method and have correct value in the object' {
-                    Add-SqlDscTraceFlag -TraceFlag 4199 -Force
+                    { Add-SqlDscTraceFlag -TraceFlag 4199 -Force } | Should -Not -Throw
 
                     Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                         $TraceFlag -contains 4199
@@ -245,7 +164,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
 
             Context 'When using parameter WhatIf' {
                 It 'Should not call the mocked method and should not have changed the value in the object' {
-                    Add-SqlDscTraceFlag -TraceFlag 4199 -WhatIf
+                    { Add-SqlDscTraceFlag -TraceFlag 4199 -WhatIf } | Should -Not -Throw
 
                     Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
                 }
@@ -269,7 +188,7 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
         }
 
         It 'Should call the mocked method and have correct value in the object' {
-            Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Force
+            { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Force } | Should -Not -Throw
 
             Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
                 $TraceFlag -contains 4199 -and
