@@ -112,11 +112,14 @@ ConvertFrom-StringData @'
     ## Assert-ManagedServiceType
     ManagedServiceType_Assert_WrongServiceType = The provided ServiceObject is of the wrong type. Expected {0}, but was {1}.
 
+    ## Get-SqlDscStartupParameter
+    StartupParameter_Get_ReturnStartupParameters = Returning the startup parameters for instance {0} on server {1}.
+    StartupParameter_Get_FailedToFindServiceObject = Failed to find the service object.
+    StartupParameter_Get_FailedToFindStartupParameters = {0}: Failed to find the instance's startup parameters.
+
     ## Get-SqlDscTraceFlag
     TraceFlag_Get_ReturnTraceFlags = Returning the trace flags for instance {0} on server {1}.
     TraceFlag_Get_DebugReturningTraceFlags = {0}: Returning the trace flag values: {1}
-    TraceFlag_Get_FailedToFindServiceObject = Failed to find the service object.
-    TraceFlag_Get_FailedToFindStartupParameters = {0}: Failed to find the instance's startup parameters.
 
     ## Set-SqlDscTraceFlag
     TraceFlag_Set_ShouldProcessVerboseDescription = Replacing the trace flags on the instance '{0}' with the trace flags '{1}'.
@@ -130,7 +133,6 @@ ConvertFrom-StringData @'
     TraceFlag_Add_ShouldProcessVerboseWarning = Are you sure you want to add trace flags to the instance '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     TraceFlag_Add_ShouldProcessCaption = Add trace flag on instance
-    TraceFlag_Add_FailedToFindServiceObject = Failed to find the service object.
 
     ## Remove-SqlDscTraceFlag
     TraceFlag_Remove_ShouldProcessVerboseDescription = Removing trace flags '{1}' from the instance '{0}'.
