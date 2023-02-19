@@ -186,7 +186,17 @@ Describe 'Add-SqlDscTraceFlag' -Tag 'Public' {
             { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Force } | Should -Not -Throw
 
             Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                $TraceFlag.Count -eq 2 -and
                 $TraceFlag -contains 4199 -and
+                $TraceFlag -contains 3226
+            } -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should not add duplicate if it already exist' {
+            { Add-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226 -Force } | Should -Not -Throw
+
+            Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                $TraceFlag.Count -eq 1 -and
                 $TraceFlag -contains 3226
             } -Exactly -Times 1 -Scope It
         }

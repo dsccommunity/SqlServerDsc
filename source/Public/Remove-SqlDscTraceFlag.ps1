@@ -114,7 +114,7 @@ function Remove-SqlDscTraceFlag
             $desiredTraceFlags = [System.UInt32[]] @(
                 $currentTraceFlags |
                     ForEach-Object -Process {
-                        # Keep values that should not be removed
+                        # Keep values that should not be removed.
                         if ($_ -notin $TraceFlag)
                         {
                             $_
