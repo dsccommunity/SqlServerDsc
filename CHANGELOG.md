@@ -70,6 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Remove-SqlDscTraceFlag`
     - `Set-SqlDscTraceFlag`
     - `Get-SqlDscStartupParameter`
+    - `Set-SqlDscStartupParameter`
   - Added class `StartupParameters` which can parse the startup parameters
     of a manged computer service object.
   - New GitHub issue templates for proposing new public commands, proposing

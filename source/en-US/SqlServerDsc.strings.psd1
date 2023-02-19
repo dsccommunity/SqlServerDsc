@@ -117,16 +117,21 @@ ConvertFrom-StringData @'
     StartupParameter_Get_FailedToFindServiceObject = Failed to find the service object.
     StartupParameter_Get_FailedToFindStartupParameters = {0}: Failed to find the instance's startup parameters.
 
+    ## Set-SqlDscStartupParameter
+    StartupParameter_Set_ShouldProcessVerboseDescription = Setting startup parameters on the instance '{0}'.
+    StartupParameter_Set_ShouldProcessVerboseWarning = Are you sure you want to set the startup parameters on the instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    StartupParameter_Set_ShouldProcessCaption = Set startup parameter on instance
+
     ## Get-SqlDscTraceFlag
     TraceFlag_Get_ReturnTraceFlags = Returning the trace flags for instance {0} on server {1}.
     TraceFlag_Get_DebugReturningTraceFlags = {0}: Returning the trace flag values: {1}
 
     ## Set-SqlDscTraceFlag
     TraceFlag_Set_ShouldProcessVerboseDescription = Replacing the trace flags on the instance '{0}' with the trace flags '{1}'.
-    TraceFlag_Set_ShouldProcessVerboseWarning = Are you sure you want to replace the trace flags on instance '{0}'?
+    TraceFlag_Set_ShouldProcessVerboseWarning = Are you sure you want to replace the trace flags on the instance '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     TraceFlag_Set_ShouldProcessCaption = Replace trace flag on instance
-    TraceFlag_Set_FailedToFindServiceObject = Failed to find the service object.
 
     ## Add-SqlDscTraceFlag
     TraceFlag_Add_ShouldProcessVerboseDescription = Adding trace flags '{1}' to the instance '{0}'.
