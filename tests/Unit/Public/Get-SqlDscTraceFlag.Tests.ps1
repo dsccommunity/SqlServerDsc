@@ -87,87 +87,13 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
         }
     }
 
-    Context 'When passing a ServiceObject with wrong service type' {
-        BeforeAll {
-            $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
-            $mockServiceObject.Type = 'SqlAgent'
-
-            Mock -CommandName Assert-ElevatedUser
-        }
-
-        Context 'When passing the value Stop for parameter ErrorAction' {
-            It 'Should throw the correct error' {
-                $mockErrorMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.TraceFlag_Get_WrongServiceType
-                }
-
-                $mockErrorMessage = $mockErrorMessage -f 'SqlServer', 'SqlAgent'
-
-                { Get-SqlDscTraceFlag -ServiceObject $mockServiceObject -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage $mockErrorMessage
-            }
-        }
-
-        Context 'When passing the value SilentlyContinue for parameter ErrorAction' {
-            It 'Should still throw the correct terminating error' {
-                $mockErrorMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.TraceFlag_Get_WrongServiceType
-                }
-
-                $mockErrorMessage = $mockErrorMessage -f 'SqlServer', 'SqlAgent'
-
-                { Get-SqlDscTraceFlag -ServiceObject $mockServiceObject -ErrorAction 'SilentlyContinue' } |
-                    Should -Throw -ExpectedMessage $mockErrorMessage
-            }
-        }
-    }
-
-    Context 'When passing server name but an Managed Computer Service object is not returned' {
-        BeforeAll {
-            Mock -CommandName Assert-ElevatedUser
-
-            Mock -CommandName Get-SqlDscManagedComputerService -MockWith {
-                return $null
-            }
-        }
-
-        Context 'When passing SilentlyContinue to ErrorAction' {
-            It 'Should not throw and return an empty array' {
-                $result = Get-SqlDscTraceFlag -ServerName 'localhost' -ErrorAction 'SilentlyContinue'
-
-                Should -ActualValue $result -BeOfType 'System.UInt32[]'
-
-                $result | Should -BeNullOrEmpty
-
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 1 -Scope It
-            }
-        }
-
-        Context 'When passing Stop to ErrorAction' {
-            It 'Should throw the correct error' {
-                $mockErrorMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.TraceFlag_Get_FailedToFindServiceObject
-                }
-
-                { Get-SqlDscTraceFlag -ServerName 'localhost' -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage $mockErrorMessage
-
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 1 -Scope It
-            }
-        }
-    }
-
     Context 'When no trace flag exist' {
         BeforeAll {
-            $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
-
-            $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
-            $mockServiceObject.StartupParameters = $mockStartupParameters
-            $mockServiceObject.Type = 'SqlServer'
-
             Mock -CommandName Assert-ElevatedUser
-
-            Mock -CommandName Get-SqlDscManagedComputerService -MockWith {
-                return $mockServiceObject
+            Mock -CommandName Get-SqlDscStartupParameter -MockWith {
+                return @{
+                    TraceFlag = @()
+                }
             }
         }
 
@@ -179,7 +105,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
 
                 $result | Should -BeNullOrEmpty
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Times 1 -Scope It
             }
         }
 
@@ -191,7 +117,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
 
                 $result | Should -BeNullOrEmpty
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -ParameterFilter {
+                Should -Invoke -CommandName Get-SqlDscStartupParameter -ParameterFilter {
                     $ServerName -eq 'localhost'
                 } -Exactly -Times 1 -Scope It
             }
@@ -205,7 +131,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
 
                 $result | Should -BeNullOrEmpty
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -ParameterFilter {
+                Should -Invoke -CommandName Get-SqlDscStartupParameter -ParameterFilter {
                     $InstanceName -eq 'SQL2022'
                 } -Exactly -Times 1 -Scope It
             }
@@ -213,29 +139,30 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
 
         Context 'When passing a service object' {
             It 'Should return an empty array' {
+                $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
+
+                $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
+                $mockServiceObject.StartupParameters = $mockStartupParameters
+                $mockServiceObject.Type = 'SqlServer'
+
                 $result = Get-SqlDscTraceFlag -ServiceObject $mockServiceObject
 
                 Should -ActualValue $result -BeOfType 'System.UInt32[]'
 
                 $result | Should -BeNullOrEmpty
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Times 1 -Scope It
             }
         }
     }
 
     Context 'When one trace flag exist' {
         BeforeAll {
-            $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf;-T4199'
-
-            $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
-            $mockServiceObject.StartupParameters = $mockStartupParameters
-            $mockServiceObject.Type = 'SqlServer'
-
             Mock -CommandName Assert-ElevatedUser
-
-            Mock -CommandName Get-SqlDscManagedComputerService -MockWith {
-                return $mockServiceObject
+            Mock -CommandName Get-SqlDscStartupParameter -MockWith {
+                return @{
+                    TraceFlag = @(4199)
+                }
             }
         }
 
@@ -248,7 +175,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
                 $result | Should -HaveCount 1
                 $result | Should -Contain 4199
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Times 1 -Scope It
             }
         }
 
@@ -261,7 +188,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
                 $result | Should -HaveCount 1
                 $result | Should -Contain 4199
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -ParameterFilter {
+                Should -Invoke -CommandName Get-SqlDscStartupParameter -ParameterFilter {
                     $ServerName -eq 'localhost'
                 } -Exactly -Times 1 -Scope It
             }
@@ -276,7 +203,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
                 $result | Should -HaveCount 1
                 $result | Should -Contain 4199
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -ParameterFilter {
+                Should -Invoke -CommandName Get-SqlDscStartupParameter -ParameterFilter {
                     $InstanceName -eq 'SQL2022'
                 } -Exactly -Times 1 -Scope It
             }
@@ -284,6 +211,12 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
 
         Context 'When passing a service object' {
             It 'Should return the correct values' {
+                $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf;-T4199'
+
+                $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
+                $mockServiceObject.StartupParameters = $mockStartupParameters
+                $mockServiceObject.Type = 'SqlServer'
+
                 $result = Get-SqlDscTraceFlag -ServiceObject $mockServiceObject
 
                 Should -ActualValue $result -BeOfType 'System.UInt32[]'
@@ -291,23 +224,18 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
                 $result | Should -HaveCount 1
                 $result | Should -Contain 4199
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Times 1 -Scope It
             }
         }
     }
 
     Context 'When multiple trace flag exist' {
         BeforeAll {
-            $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf;-T4199;-T3226'
-
-            $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
-            $mockServiceObject.StartupParameters = $mockStartupParameters
-            $mockServiceObject.Type = 'SqlServer'
-
             Mock -CommandName Assert-ElevatedUser
-
-            Mock -CommandName Get-SqlDscManagedComputerService -MockWith {
-                return $mockServiceObject
+            Mock -CommandName Get-SqlDscStartupParameter -MockWith {
+                return @{
+                    TraceFlag = @(4199, 3226)
+                }
             }
         }
 
@@ -321,7 +249,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
                 $result | Should -Contain 4199
                 $result | Should -Contain 3226
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Times 1 -Scope It
             }
         }
 
@@ -335,7 +263,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
                 $result | Should -Contain 4199
                 $result | Should -Contain 3226
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -ParameterFilter {
+                Should -Invoke -CommandName Get-SqlDscStartupParameter -ParameterFilter {
                     $ServerName -eq 'localhost'
                 } -Exactly -Times 1 -Scope It
             }
@@ -351,7 +279,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
                 $result | Should -Contain 4199
                 $result | Should -Contain 3226
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -ParameterFilter {
+                Should -Invoke -CommandName Get-SqlDscStartupParameter -ParameterFilter {
                     $InstanceName -eq 'SQL2022'
                 } -Exactly -Times 1 -Scope It
             }
@@ -359,6 +287,12 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
 
         Context 'When passing a service object' {
             It 'Should return the correct values' {
+                $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf;-T4199;-T3226'
+
+                $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
+                $mockServiceObject.StartupParameters = $mockStartupParameters
+                $mockServiceObject.Type = 'SqlServer'
+
                 $result = Get-SqlDscTraceFlag -ServiceObject $mockServiceObject
 
                 Should -ActualValue $result -BeOfType 'System.UInt32[]'
@@ -367,7 +301,7 @@ Describe 'Get-SqlDscTraceFlag' -Tag 'Public' {
                 $result | Should -Contain 4199
                 $result | Should -Contain 3226
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Get-SqlDscStartupParameter -Exactly -Times 1 -Scope It
             }
         }
     }

@@ -68,47 +68,17 @@ function Get-SqlDscTraceFlag
 
     Assert-ElevatedUser -ErrorAction 'Stop'
 
-    if ($PSCmdlet.ParameterSetName -eq 'ByServiceObject')
-    {
-        $ServiceObject | Assert-ManagedServiceType -ServiceType 'DatabaseEngine'
-    }
-
-    if ($PSCmdlet.ParameterSetName -eq 'ByServerName')
-    {
-        $getSqlDscManagedComputerServiceParameters = @{
-            ServerName   = $ServerName
-            InstanceName = $InstanceName
-            ServiceType  = 'DatabaseEngine'
-        }
-
-        $ServiceObject = Get-SqlDscManagedComputerService @getSqlDscManagedComputerServiceParameters
-
-        if (-not $ServiceObject)
-        {
-            $writeErrorParameters = @{
-                Message      = $script:localizedData.TraceFlag_Get_FailedToFindServiceObject
-                Category     = 'InvalidOperation'
-                ErrorId      = 'GSDTF0002' # CSpell: disable-line
-                TargetObject = $ServiceObject
-            }
-
-            Write-Error @writeErrorParameters
-        }
-    }
-
     Write-Verbose -Message (
         $script:localizedData.TraceFlag_Get_ReturnTraceFlags -f $InstanceName, $ServerName
     )
 
+    $startupParameter = Get-SqlDscStartupParameter @PSBoundParameters
+
     $traceFlags = [System.UInt32[]] @()
 
-    if ($ServiceObject.StartupParameters)
+    if ($startupParameter)
     {
-        $traceFlags = [StartupParameters]::Parse($ServiceObject.StartupParameters).TraceFlag
-    }
-    else
-    {
-        Write-Debug -Message ($script:localizedData.TraceFlag_Get_FailedToFindStartupParameters -f $MyInvocation.MyCommand)
+        $traceFlags = $startupParameter.TraceFlag
     }
 
     Write-Debug -Message (
