@@ -89,8 +89,6 @@ function Set-SqlDscTraceFlag
 
     begin
     {
-        Assert-ElevatedUser -ErrorAction 'Stop'
-
         if ($Force.IsPresent)
         {
             $ConfirmPreference = 'None'
@@ -101,50 +99,16 @@ function Set-SqlDscTraceFlag
     {
         if ($PSCmdlet.ParameterSetName -eq 'ByServiceObject')
         {
-            $ServiceObject | Assert-ManagedServiceType -ServiceType 'DatabaseEngine'
-
             $InstanceName = $ServiceObject.Name -replace '^MSSQL\$'
         }
 
-        if ($PSCmdlet.ParameterSetName -eq 'ByServerName')
+        $verboseDescriptionMessage = $script:localizedData.TraceFlag_Set_ShouldProcessVerboseDescription -f $InstanceName, ($TraceFlag -join ', ')
+        $verboseWarningMessage = $script:localizedData.TraceFlag_Set_ShouldProcessVerboseWarning -f $InstanceName
+        $captionMessage = $script:localizedData.TraceFlag_Set_ShouldProcessCaption
+
+        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
-            $getSqlDscManagedComputerServiceParameters = @{
-                ServerName   = $ServerName
-                InstanceName = $InstanceName
-                ServiceType  = 'DatabaseEngine'
-                ErrorAction  = 'Stop'
-            }
-
-            $ServiceObject = Get-SqlDscManagedComputerService @getSqlDscManagedComputerServiceParameters
-
-            if (-not $ServiceObject)
-            {
-                $writeErrorParameters = @{
-                    Message      = $script:localizedData.TraceFlag_Set_FailedToFindServiceObject
-                    Category     = 'InvalidOperation'
-                    ErrorId      = 'SSDTF0002' # CSpell: disable-line
-                    TargetObject = $ServiceObject
-                }
-
-                Write-Error @writeErrorParameters
-            }
-        }
-
-        if ($ServiceObject)
-        {
-            $verboseDescriptionMessage = $script:localizedData.TraceFlag_Set_ShouldProcessVerboseDescription -f $InstanceName, ($TraceFlag -join ', ')
-            $verboseWarningMessage = $script:localizedData.TraceFlag_Set_ShouldProcessVerboseWarning -f $InstanceName
-            $captionMessage = $script:localizedData.TraceFlag_Set_ShouldProcessCaption
-
-            if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
-            {
-                $startupParameters = [StartupParameters]::Parse($ServiceObject.StartupParameters)
-
-                $startupParameters.TraceFlag = $TraceFlag
-
-                $ServiceObject.StartupParameters = $startupParameters.ToString()
-                $ServiceObject.Alter()
-            }
+            Set-SqlDscStartupParameter @PSBoundParameters
         }
     }
 }
