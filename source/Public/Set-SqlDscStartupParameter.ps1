@@ -110,7 +110,7 @@ function Set-SqlDscStartupParameter
             if (-not $ServiceObject)
             {
                 $writeErrorParameters = @{
-                    Message      = $script:localizedData.TraceFlag_Set_FailedToFindServiceObject
+                    Message      = $script:localizedData.StartupParameter_Set_FailedToFindServiceObject
                     Category     = 'InvalidOperation'
                     ErrorId      = 'SSDSP0002' # CSpell: disable-line
                     TargetObject = $ServiceObject

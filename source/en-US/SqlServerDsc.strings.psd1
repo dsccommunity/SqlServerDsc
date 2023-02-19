@@ -122,6 +122,7 @@ ConvertFrom-StringData @'
     StartupParameter_Set_ShouldProcessVerboseWarning = Are you sure you want to set the startup parameters on the instance '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     StartupParameter_Set_ShouldProcessCaption = Set startup parameter on instance
+    StartupParameter_Set_FailedToFindServiceObject = Failed to find the service object.
 
     ## Get-SqlDscTraceFlag
     TraceFlag_Get_ReturnTraceFlags = Returning the trace flags for instance {0} on server {1}.
