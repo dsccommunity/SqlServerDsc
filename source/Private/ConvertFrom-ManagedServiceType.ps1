@@ -34,41 +34,57 @@ function ConvertFrom-ManagedServiceType
             'SqlServer'
             {
                 $serviceTypeValue = 'DatabaseEngine'
+
+                break
             }
 
             'SqlAgent'
             {
                 $serviceTypeValue = 'SqlServerAgent'
+
+                break
             }
 
             'Search'
             {
                 $serviceTypeValue = 'Search'
+
+                break
             }
 
             'SqlServerIntegrationService'
             {
                 $serviceTypeValue = 'IntegrationServices'
+
+                break
             }
 
             'AnalysisServer'
             {
                 $serviceTypeValue = 'AnalysisServices'
+
+                break
             }
 
             'ReportServer'
             {
                 $serviceTypeValue = 'ReportingServices'
+
+                break
             }
 
             'SqlBrowser'
             {
                 $serviceTypeValue = 'SQLServerBrowser'
+
+                break
             }
 
             'NotificationServer'
             {
                 $serviceTypeValue = 'NotificationServices'
+
+                break
             }
 
             default
@@ -85,6 +101,8 @@ function ConvertFrom-ManagedServiceType
                 }
 
                 Write-Error @writeErrorParameters
+
+                break
             }
         }
 

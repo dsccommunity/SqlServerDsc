@@ -34,41 +34,57 @@ function ConvertTo-ManagedServiceType
             'DatabaseEngine'
             {
                 $serviceTypeValue = 'SqlServer'
+
+                break
             }
 
             'SqlServerAgent'
             {
                 $serviceTypeValue = 'SqlAgent'
+
+                break
             }
 
             'Search'
             {
                 $serviceTypeValue = 'Search'
+
+                break
             }
 
             'IntegrationServices'
             {
                 $serviceTypeValue = 'SqlServerIntegrationService'
+
+                break
             }
 
             'AnalysisServices'
             {
                 $serviceTypeValue = 'AnalysisServer'
+
+                break
             }
 
             'ReportingServices'
             {
                 $serviceTypeValue = 'ReportServer'
+
+                break
             }
 
             'SQLServerBrowser'
             {
                 $serviceTypeValue = 'SqlBrowser'
+
+                break
             }
 
             'NotificationServices'
             {
                 $serviceTypeValue = 'NotificationServer'
+
+                break
             }
         }
 

@@ -51,16 +51,20 @@ AfterAll {
 }
 
 Describe 'Assert-ManagedServiceType' -Tag 'Private' {
-    BeforeAll {
-        $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
-        $mockServiceObject.Type = 'SqlServer'
-    }
-
     Context 'When types match' {
+        BeforeAll {
+            $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
+            $mockServiceObject.Type = 'SqlServer'
+
+            Mock -CommandName ConvertFrom-ManagedServiceType -MockWith {
+                return 'DatabaseEngine'
+            }
+        }
+
         It 'Should not throw an exception' {
             $_.MockServiceObject = $mockServiceObject
 
-            InModuleScope -Parameter $_ -ScriptBlock {
+            InModuleScope -Parameters $_ -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
                 {
@@ -72,6 +76,15 @@ Describe 'Assert-ManagedServiceType' -Tag 'Private' {
     }
 
     Context 'When the types mismatch' {
+        BeforeAll {
+            $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
+            $mockServiceObject.Type = 'SqlServer'
+
+            Mock -CommandName ConvertFrom-ManagedServiceType -MockWith {
+                return 'DatabaseEngine'
+            }
+        }
+
         Context 'When passing Stop for parameter ErrorAction' {
             It 'Should throw the correct error' {
                 $_.MockServiceObject = $mockServiceObject
