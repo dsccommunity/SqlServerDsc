@@ -362,6 +362,11 @@ function Get-ServiceObject
 
     .EXAMPLE
         ConvertTo-ManagedServiceType -ServiceType 'DatabaseEngine'
+
+    .NOTES
+        This helper function also exist as a private function, when this resource
+        is refactored into a class-based resource, this helper function can be
+        removed.
 #>
 function ConvertTo-ManagedServiceType
 {

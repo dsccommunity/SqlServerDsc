@@ -2,7 +2,8 @@
     .SYNOPSIS
         The localized resource strings in English (en-US) for the
         resource SqlServerDsc module. This file should only contain
-        localized strings for private and public functions.
+        localized strings for private functions, public command, and
+        classes (that are not a DSC resource).
 #>
 
 ConvertFrom-StringData @'
@@ -94,6 +95,57 @@ ConvertFrom-StringData @'
     ## Assert-SetupActionProperties
     InstallSqlServerProperties_ASServerModeInvalidValue = The value for ASServerMode is not valid for the setup action {0}.
     InstallSqlServerProperties_RsInstallModeInvalidValue = The only valid value for RsInstallMode is 'FilesOnlyMode' when using setup action {0}.
+
+    ## Get-SqlDscManagedComputer
+    ManagedComputer_GetState = Returning the managed computer object for server {0}.
+
+    ## Get-SqlDscManagedComputerService
+    ManagedComputerService_GetState = Returning the managed computer service object(s) for server {0}.
+
+    ## StartupParameters
+    StartupParameters_DebugFoundTraceFlags = {0}: Found the trace flags: {1}
+    StartupParameters_DebugParsingStartupParameters = {0}: Parsing the startup parameters: {1}
+
+    ## ConvertFrom-ManagedServiceType
+    ManagedServiceType_ConvertFrom_UnknownServiceType = The service type '{0}' is unknown and cannot me converted to its normalized service account equivalent
+
+    ## Assert-ManagedServiceType
+    ManagedServiceType_Assert_WrongServiceType = The provided ServiceObject is of the wrong type. Expected {0}, but was {1}.
+
+    ## Get-SqlDscStartupParameter
+    StartupParameter_Get_ReturnStartupParameters = Returning the startup parameters for instance {0} on server {1}.
+    StartupParameter_Get_FailedToFindServiceObject = Failed to find the service object.
+    StartupParameter_Get_FailedToFindStartupParameters = {0}: Failed to find the instance's startup parameters.
+
+    ## Set-SqlDscStartupParameter
+    StartupParameter_Set_ShouldProcessVerboseDescription = Setting startup parameters on the instance '{0}'.
+    StartupParameter_Set_ShouldProcessVerboseWarning = Are you sure you want to set the startup parameters on the instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    StartupParameter_Set_ShouldProcessCaption = Set startup parameter on instance
+    StartupParameter_Set_FailedToFindServiceObject = Failed to find the service object.
+
+    ## Get-SqlDscTraceFlag
+    TraceFlag_Get_ReturnTraceFlags = Returning the trace flags for instance {0} on server {1}.
+    TraceFlag_Get_DebugReturningTraceFlags = {0}: Returning the trace flag values: {1}
+
+    ## Set-SqlDscTraceFlag
+    TraceFlag_Set_ShouldProcessVerboseDescription = Replacing the trace flags on the instance '{0}' with the trace flags '{1}'.
+    TraceFlag_Set_ShouldProcessVerboseWarning = Are you sure you want to replace the trace flags on the instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    TraceFlag_Set_ShouldProcessCaption = Replace trace flag on instance
+
+    ## Add-SqlDscTraceFlag
+    TraceFlag_Add_ShouldProcessVerboseDescription = Adding trace flags '{1}' to the instance '{0}'.
+    TraceFlag_Add_ShouldProcessVerboseWarning = Are you sure you want to add trace flags to the instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    TraceFlag_Add_ShouldProcessCaption = Add trace flag on instance
+
+    ## Remove-SqlDscTraceFlag
+    TraceFlag_Remove_ShouldProcessVerboseDescription = Removing trace flags '{1}' from the instance '{0}'.
+    TraceFlag_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the trace flags from the instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    TraceFlag_Remove_ShouldProcessCaption = Remove trace flag from instance
+    TraceFlag_Remove_NoCurrentTraceFlags = There are no current trace flags on instance. Nothing to remove.
 
     ## Import-SqlDscPreferredModule
     PreferredModule_ModuleFound = Preferred module {0} found.
