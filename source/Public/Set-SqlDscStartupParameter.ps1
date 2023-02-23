@@ -17,6 +17,13 @@
     .PARAMETER TraceFlag
         Specifies the trace flags to set.
 
+    .PARAMETER InternalTraceFlag
+        Specifies the internal trace flags to set.
+
+        From the [Database Engine Service Startup Options](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/database-engine-service-startup-options)
+        documentation: "...this sets other internal trace flags that are required
+        only by SQL Server support engineers."
+
     .PARAMETER Force
         Specifies that the startup parameters should be set with out any confirmation.
 
