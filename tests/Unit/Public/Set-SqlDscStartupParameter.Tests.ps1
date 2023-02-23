@@ -53,11 +53,11 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName = 'ByServiceObject'
-            MockExpectedParameters = '-ServiceObject <Service> [-TraceFlag <uint[]>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServiceObject <Service> [-TraceFlag <uint[]>] [-InternalTraceFlag <uint[]>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'ByServerName'
-            MockExpectedParameters = '[-ServerName <string>] [-InstanceName <string>] [-TraceFlag <uint[]>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '[-ServerName <string>] [-InstanceName <string>] [-TraceFlag <uint[]>] [-InternalTraceFlag <uint[]>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'Set-SqlDscStartupParameter').ParameterSets |
@@ -178,7 +178,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
                 { Set-SqlDscStartupParameter -ServiceObject $mockServiceObject -TraceFlag 4199 -Confirm:$false } | Should -Not -Throw
 
                 # This is the object created by the mock and modified by the command.
-                $mockServiceObject.StartupParameters | Should -Be ($mockStartupParameters + ';-T4199')
+                $mockServiceObject.StartupParameters | Should -BeExactly ($mockStartupParameters + ';-T4199')
 
                 $mockMethodAlterCallCount | Should -Be 1
             }
@@ -189,7 +189,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
                 { Set-SqlDscStartupParameter -ServiceObject $mockServiceObject -TraceFlag 4199 -Force } | Should -Not -Throw
 
                 # This is the object created by the mock and modified by the command.
-                $mockServiceObject.StartupParameters | Should -Be ($mockStartupParameters + ';-T4199')
+                $mockServiceObject.StartupParameters | Should -BeExactly ($mockStartupParameters + ';-T4199')
 
                 $mockMethodAlterCallCount | Should -Be 1
             }
@@ -200,7 +200,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
                 { Set-SqlDscStartupParameter -ServiceObject $mockServiceObject -TraceFlag 4199 -WhatIf } | Should -Not -Throw
 
                 # This is the object created by the mock and modified by the command.
-                $mockServiceObject.StartupParameters | Should -Be $mockStartupParameters
+                $mockServiceObject.StartupParameters | Should -BeExactly $mockStartupParameters
 
                 $mockMethodAlterCallCount | Should -Be 0
             }
@@ -211,7 +211,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
                 { $mockServiceObject | Set-SqlDscStartupParameter -TraceFlag 4199 -Force } | Should -Not -Throw
 
                 # This is the object created by the mock and modified by the command.
-                $mockServiceObject.StartupParameters | Should -Be ($mockStartupParameters + ';-T4199')
+                $mockServiceObject.StartupParameters | Should -BeExactly ($mockStartupParameters + ';-T4199')
 
                 $mockMethodAlterCallCount | Should -Be 1
             }
@@ -246,7 +246,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
                 { Set-SqlDscStartupParameter -TraceFlag 4199 -Confirm:$false } | Should -Not -Throw
 
                 # This is the object created by the mock and modified by the command.
-                $mockServiceObject.StartupParameters | Should -Be ($mockStartupParameters + ';-T4199')
+                $mockServiceObject.StartupParameters | Should -BeExactly ($mockStartupParameters + ';-T4199')
 
                 $mockMethodAlterCallCount | Should -Be 1
             }
@@ -257,7 +257,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
                 { Set-SqlDscStartupParameter -TraceFlag 4199 -Force } | Should -Not -Throw
 
                 # This is the object created by the mock and modified by the command.
-                $mockServiceObject.StartupParameters | Should -Be ($mockStartupParameters + ';-T4199')
+                $mockServiceObject.StartupParameters | Should -BeExactly ($mockStartupParameters + ';-T4199')
 
                 $mockMethodAlterCallCount | Should -Be 1
             }
@@ -268,7 +268,7 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
                 { Set-SqlDscStartupParameter -TraceFlag 4199 -WhatIf } | Should -Not -Throw
 
                 # This is the object created by the mock and modified by the command.
-                $mockServiceObject.StartupParameters | Should -Be $mockStartupParameters
+                $mockServiceObject.StartupParameters | Should -BeExactly $mockStartupParameters
 
                 $mockMethodAlterCallCount | Should -Be 0
             }
@@ -303,7 +303,74 @@ Describe 'Set-SqlDscStartupParameter' -Tag 'Public' {
             { Set-SqlDscStartupParameter -TraceFlag @() -Force } | Should -Not -Throw
 
             # This is the object created by the mock and modified by the command.
-            $mockServiceObject.StartupParameters | Should -Be $mockExpectedStartupParameters
+            $mockServiceObject.StartupParameters | Should -BeExactly $mockExpectedStartupParameters
+
+            $mockMethodAlterCallCount | Should -Be 1
+        }
+    }
+
+    Context 'When setting a internal trace flag by default parameter set and parameters default values' {
+        BeforeAll {
+            $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
+
+            Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Get-SqlDscManagedComputerService -MockWith {
+                return $mockServiceObject
+            }
+        }
+
+        BeforeEach {
+            $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
+            $mockServiceObject.StartupParameters = $mockStartupParameters
+            $mockServiceObject.Type = 'SqlServer'
+
+            $mockServiceObject |
+                Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                    $script:mockMethodAlterCallCount += 1
+                } -PassThru -Force
+
+            $script:mockMethodAlterCallCount = 0
+        }
+
+        It 'Should call the mocked method and have correct value in the object' {
+            { Set-SqlDscStartupParameter -InternalTraceFlag 8688 -Confirm:$false } | Should -Not -Throw
+
+            # This is the object created by the mock and modified by the command.
+            $mockServiceObject.StartupParameters | Should -BeExactly ($mockStartupParameters + ';-t8688')
+
+            $mockMethodAlterCallCount | Should -Be 1
+        }
+    }
+
+    Context 'When clearing all internal trace flags' {
+        BeforeAll {
+            $mockStartupParameters = '-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf;-t8688;-T3226'
+            $mockExpectedStartupParameters = $mockStartupParameters -replace ';-t8688'
+
+            Mock -CommandName Assert-ElevatedUser
+            Mock -CommandName Get-SqlDscManagedComputerService -MockWith {
+                return $mockServiceObject
+            }
+        }
+
+        BeforeEach {
+            $mockServiceObject = [Microsoft.SqlServer.Management.Smo.Wmi.Service]::CreateTypeInstance()
+            $mockServiceObject.StartupParameters = $mockStartupParameters
+            $mockServiceObject.Type = 'SqlServer'
+
+            $mockServiceObject |
+                Add-Member -MemberType 'ScriptMethod' -Name 'Alter' -Value {
+                    $script:mockMethodAlterCallCount += 1
+                } -PassThru -Force
+
+            $script:mockMethodAlterCallCount = 0
+        }
+
+        It 'Should call the mocked method and have correct value in the object, removed all internal trace flag ang kept normal trace flags' {
+            { Set-SqlDscStartupParameter -InternalTraceFlag @() -Force } | Should -Not -Throw
+
+            # This is the object created by the mock and modified by the command.
+            $mockServiceObject.StartupParameters | Should -BeExactly $mockExpectedStartupParameters
 
             $mockMethodAlterCallCount | Should -Be 1
         }

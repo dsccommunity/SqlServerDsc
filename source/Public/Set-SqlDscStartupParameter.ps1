@@ -73,6 +73,11 @@ function Set-SqlDscStartupParameter
         $TraceFlag,
 
         [Parameter()]
+        [AllowEmptyCollection()]
+        [System.UInt32[]]
+        $InternalTraceFlag,
+
+        [Parameter()]
         [System.Management.Automation.SwitchParameter]
         $Force
     )
@@ -133,6 +138,11 @@ function Set-SqlDscStartupParameter
                 if ($PSBoundParameters.ContainsKey('TraceFlag'))
                 {
                     $startupParameters.TraceFlag = $TraceFlag
+                }
+
+                if ($PSBoundParameters.ContainsKey('InternalTraceFlag'))
+                {
+                    $startupParameters.InternalTraceFlag = $InternalTraceFlag
                 }
 
                 $ServiceObject.StartupParameters = $startupParameters.ToString()

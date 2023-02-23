@@ -68,6 +68,7 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                 $startupParametersInstance.LogFilePath = $TestDrive
                 $startupParametersInstance.ErrorLogPath = $TestDrive
                 $startupParametersInstance.TraceFlag = 4199
+                $startupParametersInstance.InternalTraceFlag = 8688
 
                 return $startupParametersInstance
             }
@@ -80,6 +81,7 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
             $mockStartupParametersInstance.LogFilePath | Should -Be $TestDrive
             $mockStartupParametersInstance.ErrorLogPath | Should -Be $TestDrive
             $mockStartupParametersInstance.TraceFlag | Should -Be 4199
+            $mockStartupParametersInstance.InternalTraceFlag | Should -Be 8688
         }
     }
 
@@ -92,6 +94,7 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                 $startupParametersInstance.LogFilePath = @($TestDrive, 'C:\Temp')
                 $startupParametersInstance.ErrorLogPath = @($TestDrive, 'C:\Temp')
                 $startupParametersInstance.TraceFlag = @(4199, 3226)
+                $startupParametersInstance.InternalTraceFlag = @(8678, 8688)
 
                 return $startupParametersInstance
             }
@@ -115,11 +118,15 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
             $mockStartupParametersInstance.TraceFlag | Should -HaveCount 2
             $mockStartupParametersInstance.TraceFlag | Should -Contain 4199
             $mockStartupParametersInstance.TraceFlag | Should -Contain 3226
+
+            $mockStartupParametersInstance.InternalTraceFlag | Should -HaveCount 2
+            $mockStartupParametersInstance.InternalTraceFlag | Should -Contain 8678
+            $mockStartupParametersInstance.InternalTraceFlag | Should -Contain 8688
         }
     }
 
     Context 'When parsing startup parameters' {
-        Context 'When there are no trace flags' {
+        Context 'When there are only default startup parameters' {
             It 'Should parse the values correctly' {
                 $script:mockStartupParametersInstance = InModuleScope -ScriptBlock {
                     $startupParametersInstance = [StartupParameters]::Parse('-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf')
@@ -150,6 +157,11 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
             It 'Should have the correct value for TraceFlag' {
                 $mockStartupParametersInstance.TraceFlag | Should -BeNullOrEmpty
                 $mockStartupParametersInstance.TraceFlag | Should -HaveCount 0
+            }
+
+            It 'Should have the correct value for InternalTraceFlag' {
+                $mockStartupParametersInstance.InternalTraceFlag | Should -BeNullOrEmpty
+                $mockStartupParametersInstance.InternalTraceFlag | Should -HaveCount 0
             }
         }
 
@@ -187,7 +199,7 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
             }
         }
 
-        Context 'When there are a single trace flag' {
+        Context 'When there are multiple trace flags' {
             It 'Should parse the values correctly' {
                 $script:mockStartupParametersInstance = InModuleScope -ScriptBlock {
                     $startupParametersInstance = [StartupParameters]::Parse('-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf;-T4199;-T3226')
@@ -219,6 +231,46 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                 $mockStartupParametersInstance.TraceFlag | Should -HaveCount 2
                 $mockStartupParametersInstance.TraceFlag | Should -Contain 4199
                 $mockStartupParametersInstance.TraceFlag | Should -Contain 3226
+            }
+        }
+
+        Context 'When there are a single internal trace flag' {
+            It 'Should parse the values correctly' {
+                $script:mockStartupParametersInstance = InModuleScope -ScriptBlock {
+                    $startupParametersInstance = [StartupParameters]::Parse('-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf;-t8688')
+
+                    return $startupParametersInstance
+                }
+
+                $mockStartupParametersInstance | Should -Not -BeNullOrEmpty
+            }
+
+            # Evaluates that startup parameter '-t' is not also interpreted as '-T'.
+            It 'Should have the correct value for TraceFlag' {
+                $mockStartupParametersInstance.TraceFlag | Should -HaveCount 0
+            }
+
+            It 'Should have the correct value for InternalTraceFlag' {
+                $mockStartupParametersInstance.InternalTraceFlag | Should -HaveCount 1
+                $mockStartupParametersInstance.InternalTraceFlag | Should -Be 8688
+            }
+        }
+
+        Context 'When there are multiple internal trace flags' {
+            It 'Should parse the values correctly' {
+                $script:mockStartupParametersInstance = InModuleScope -ScriptBlock {
+                    $startupParametersInstance = [StartupParameters]::Parse('-dC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf;-t8688;-t8678')
+
+                    return $startupParametersInstance
+                }
+
+                $mockStartupParametersInstance | Should -Not -BeNullOrEmpty
+            }
+
+            It 'Should have the correct value for InternalTraceFlag' {
+                $mockStartupParametersInstance.InternalTraceFlag | Should -HaveCount 2
+                $mockStartupParametersInstance.InternalTraceFlag | Should -Contain 8688
+                $mockStartupParametersInstance.InternalTraceFlag | Should -Contain 8678
             }
         }
     }
@@ -277,6 +329,47 @@ Describe 'StartupParameters' -Tag 'StartupParameters' {
                 $mockStartupParametersInstance.ToString() | Should -BeLike ($mockDefaultExpectedValue + '*')
                 $mockStartupParametersInstance.ToString() | Should -MatchExactly ';-T4199'
                 $mockStartupParametersInstance.ToString() | Should -MatchExactly ';-T3226'
+            }
+        }
+
+        Context 'When there are a single internal trace flag' {
+            It 'Should output the values correctly' {
+                $script:mockStartupParametersInstance = InModuleScope -ScriptBlock {
+                    $startupParametersInstance = [StartupParameters]::new()
+
+                    $startupParametersInstance.DataFilePath = $TestDrive
+                    $startupParametersInstance.LogFilePath = $TestDrive
+                    $startupParametersInstance.ErrorLogPath = $TestDrive
+                    $startupParametersInstance.InternalTraceFlag = 8688
+
+                    return $startupParametersInstance
+                }
+
+                $mockStartupParametersInstance.ToString() | Should -Be ($mockDefaultExpectedValue + ';-t8688')
+            }
+        }
+
+        Context 'When there are multiple internal trace flags' {
+            It 'Should output the values correctly' {
+                $script:mockStartupParametersInstance = InModuleScope -ScriptBlock {
+                    $startupParametersInstance = [StartupParameters]::new()
+
+                    $startupParametersInstance.DataFilePath = $TestDrive
+                    $startupParametersInstance.LogFilePath = $TestDrive
+                    $startupParametersInstance.ErrorLogPath = $TestDrive
+                    $startupParametersInstance.InternalTraceFlag = @(8688, 8678)
+
+                    return $startupParametersInstance
+                }
+
+                $mockStartupParametersInstance.ToString() | Should -BeLike ($mockDefaultExpectedValue + '*')
+                $mockStartupParametersInstance.ToString() | Should -MatchExactly ';-t8688'
+                $mockStartupParametersInstance.ToString() | Should -MatchExactly ';-t8678'
+            }
+
+            It 'Should not have set any ''-T'' parameters' {
+                $mockStartupParametersInstance.ToString() | Should -Not -MatchExactly ';-T8688'
+                $mockStartupParametersInstance.ToString() | Should -Not -MatchExactly ';-T8678'
             }
         }
     }

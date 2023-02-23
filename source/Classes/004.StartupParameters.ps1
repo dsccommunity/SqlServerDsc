@@ -31,6 +31,9 @@ class StartupParameters
     [System.UInt32[]]
     $TraceFlag
 
+    [System.UInt32[]]
+    $InternalTraceFlag
+
     static [StartupParameters] Parse([System.String] $InstanceStartupParameters)
     {
         Write-Debug -Message (
@@ -44,7 +47,7 @@ class StartupParameters
         $startupParameters.TraceFlag = [System.UInt32[]] @(
             $startupParameterValues |
                 Where-Object -FilterScript {
-                    $_ -match '^-T\d+'
+                    $_ -cmatch '^-T\d+'
                 } |
                 ForEach-Object -Process {
                     [System.UInt32] $_.TrimStart('-T')
@@ -58,7 +61,7 @@ class StartupParameters
         $startupParameters.DataFilePath = [System.String[]] @(
             $startupParameterValues |
                 Where-Object -FilterScript {
-                    $_ -match '^-d'
+                    $_ -cmatch '^-d'
                 } |
                 ForEach-Object -Process {
                     $_.TrimStart('-d')
@@ -68,7 +71,7 @@ class StartupParameters
         $startupParameters.LogFilePath = [System.String[]] @(
             $startupParameterValues |
                 Where-Object -FilterScript {
-                    $_ -match '^-l'
+                    $_ -cmatch '^-l'
                 } |
                 ForEach-Object -Process {
                     $_.TrimStart('-l')
@@ -78,10 +81,20 @@ class StartupParameters
         $startupParameters.ErrorLogPath = [System.String[]] @(
             $startupParameterValues |
                 Where-Object -FilterScript {
-                    $_ -match '^-e'
+                    $_ -cmatch '^-e'
                 } |
                 ForEach-Object -Process {
                     $_.TrimStart('-e')
+                }
+        )
+
+        $startupParameters.InternalTraceFlag = [System.UInt32[]] @(
+            $startupParameterValues |
+                Where-Object -FilterScript {
+                    $_ -cmatch '^-t\d+'
+                } |
+                ForEach-Object -Process {
+                    [System.UInt32] $_.TrimStart('-t')
                 }
         )
 
@@ -121,6 +134,14 @@ class StartupParameters
             $startupParametersValues += $this.TraceFlag |
                 ForEach-Object -Process {
                     '-T{0}' -f $_
+                }
+        }
+
+        if ($this.InternalTraceFlag)
+        {
+            $startupParametersValues += $this.InternalTraceFlag |
+                ForEach-Object -Process {
+                    '-t{0}' -f $_
                 }
         }
 
