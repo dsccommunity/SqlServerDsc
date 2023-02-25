@@ -81,6 +81,11 @@ class ServerPermission : IComparable, System.IEquatable[Object]
     [System.String[]]
     $Permission
 
+
+    ServerPermission ()
+    {
+    }
+
     <#
         TODO: It was not possible to move this to a parent class. But since these are
               generic functions for DatabasePermission and ServerPermission we
