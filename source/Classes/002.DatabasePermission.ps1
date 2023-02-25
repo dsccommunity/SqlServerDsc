@@ -114,6 +114,10 @@ class DatabasePermission : IComparable, System.IEquatable[Object]
     [System.String[]]
     $Permission
 
+    DatabasePermission ()
+    {
+    }
+
     [System.Boolean] Equals([System.Object] $object)
     {
         $isEqual = $false

@@ -144,6 +144,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     is loaded into the session. This will make it possible for classes and
     commands to use and return SQL types. If no module is found it will
     output a warning to install any of the dependent modules.
+  - Add empty constructor to classes to be able to use Pester's new code
+    coverage method. See more information can be found in [pester/Pester#2306](https://github.com/pester/Pester/issues/2306).
 - `Install-SqlServerDsc`
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
 - SqlAgReplica

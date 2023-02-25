@@ -34,6 +34,10 @@ class StartupParameters
     [System.UInt32[]]
     $InternalTraceFlag
 
+    StartupParameters ()
+    {
+    }
+
     static [StartupParameters] Parse([System.String] $InstanceStartupParameters)
     {
         Write-Debug -Message (
