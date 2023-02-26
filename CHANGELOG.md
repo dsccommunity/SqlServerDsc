@@ -143,6 +143,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     output a warning to install any of the dependent modules.
   - Add empty constructor to classes to be able to use Pester's new code
     coverage method. See more information can be found in [pester/Pester#2306](https://github.com/pester/Pester/issues/2306).
+  - The type of the property `Reasons` was changed in the class-based resources.
+    This resolves a problem when using two DSC resource modules that was
+    using the same class-type for the property `Reasons`. Resolves the issues
+    [issue #1831](https://github.com/dsccommunity/SqlServerDsc/issues/1831),
+    [issue #1832](https://github.com/dsccommunity/SqlServerDsc/issues/1832),
+    and [issue #1833](https://github.com/dsccommunity/SqlServerDsc/issues/1833).
 - `Install-SqlServerDsc`
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
 - SqlAgReplica
