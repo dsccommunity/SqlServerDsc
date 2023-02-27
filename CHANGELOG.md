@@ -85,9 +85,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     this is a code base with a diverse set of tests thar can help catch
     issues in Pester. If preview release of Pester prevents release we
     should temporary shift back to stable.
-  - Add the GitHub App _Pull Request Quantifier_ as an experiment to see if it
-    brings any value ([issue #1811](https://github.com/dsccommunity/SqlServerDsc/issues/1811)).
-    - Updated thresholds, and label names and colors.
   - New QA tests for public commands and private functions.
 - SqlDatabase
   - Added compatibility levels for SQL Server 2022 (major version 16).
