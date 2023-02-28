@@ -269,7 +269,7 @@ class SqlAudit : SqlResourceBase
 
             if ($auditObject.DestinationType -in @('ApplicationLog', 'SecurityLog'))
             {
-                $currentState.LogType = $auditObject.DestinationType
+                $currentState.LogType = $auditObject.DestinationType.ToString()
             }
 
             if ($auditObject.FilePath)

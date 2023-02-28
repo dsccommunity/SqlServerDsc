@@ -73,6 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Set-SqlDscStartupParameter`
   - Added class `StartupParameters` which can parse the startup parameters
     of a manged computer service object.
+  - Added class `SqlReason` to be used as the type of the DSC property `Reasons`
+    for class-based resources.
   - New GitHub issue templates for proposing new public commands, proposing
     an enhancement to an existing command, or having a problem with an existing
     command.
@@ -143,6 +145,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     output a warning to install any of the dependent modules.
   - Add empty constructor to classes to be able to use Pester's new code
     coverage method. See more information can be found in [pester/Pester#2306](https://github.com/pester/Pester/issues/2306).
+  - The type of the property `Reasons` was changed in the class-based resources.
+    This resolves a problem when using two DSC resource modules that was
+    using the same class-type for the property `Reasons`. Resolves the issues
+    [issue #1831](https://github.com/dsccommunity/SqlServerDsc/issues/1831),
+    [issue #1832](https://github.com/dsccommunity/SqlServerDsc/issues/1832),
+    and [issue #1833](https://github.com/dsccommunity/SqlServerDsc/issues/1833).
 - `Install-SqlServerDsc`
   - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
 - SqlAgReplica
@@ -230,6 +238,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     current state ([issue #1834](https://github.com/dsccommunity/SqlServerDsc/issues/1834)).
   - `Set-TargetResource` was updated to correctly include or exclude a single
     flag ([issue #1834](https://github.com/dsccommunity/SqlServerDsc/issues/1834)).
+- SqlAudit
+  - Return the correct type for parameter `LogType` when calling method `Get()`.
 
 ## [16.0.0] - 2022-09-09
 
