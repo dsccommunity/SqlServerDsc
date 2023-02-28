@@ -73,6 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Set-SqlDscStartupParameter`
   - Added class `StartupParameters` which can parse the startup parameters
     of a manged computer service object.
+  - Added class `SqlReason` to be used as the type of the DSC property `Reasons`
+    for class-based resources.
   - New GitHub issue templates for proposing new public commands, proposing
     an enhancement to an existing command, or having a problem with an existing
     command.

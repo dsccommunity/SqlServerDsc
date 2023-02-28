@@ -43,7 +43,7 @@ class SqlResourceBase : ResourceBase
     $Credential
 
     [DscProperty(NotConfigurable)]
-    [System.Collections.Hashtable[]]
+    [SqlReason[]]
     $Reasons
 
     # Passing the module's base directory to the base constructor.
