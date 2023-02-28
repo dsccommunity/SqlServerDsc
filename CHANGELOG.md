@@ -238,6 +238,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     current state ([issue #1834](https://github.com/dsccommunity/SqlServerDsc/issues/1834)).
   - `Set-TargetResource` was updated to correctly include or exclude a single
     flag ([issue #1834](https://github.com/dsccommunity/SqlServerDsc/issues/1834)).
+- SqlAudit
+  - Return the correct type for parameter `LogType` when calling method `Get()`.
 
 ## [16.0.0] - 2022-09-09
 
