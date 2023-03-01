@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Update `appveyor.yml` to use `dotnet tool install` to install _GitVersion_.
+  - Re-enable integration tests for SqlRSSetup and SqlRS when running against
+    SQL Server 2019 ([issue #1847](https://github.com/dsccommunity/SqlServerDsc/issues/1847)).
 
 ## [16.1.0] - 2023-02-28
 
@@ -44,6 +46,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Get-LocalizedDataRecursive`
   - Added documentation how to generate stub modules for the unit tests.
     The documentation can be found in ['tests/Unit/Stubs`](https://github.com/dsccommunity/SqlServerDsc/tree/main/tests/Unit/Stubs).
+  - SqlRSSetup and SqlRS
+    - Removed the integration test when running against SQL Server 2019,
+      due to the URL to download the Reporting Services 2019 executable
+      no longer works.
 
 ### Added
 
