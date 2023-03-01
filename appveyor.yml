@@ -52,6 +52,8 @@ build_script:
     if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { Write-Host -ForegroundColor 'Yellow' -Object 'Not a pull request, skipping.'; return }
 
     dotnet tool install --global GitVersion.Tool
+    dotnet-gitversion
+    gitversion
     $gitVersionObject = dotnet-gitversion | ConvertFrom-Json
     $gitVersionObject
     $env:ModuleVersion = $gitVersionObject.NuGetVersionV2
