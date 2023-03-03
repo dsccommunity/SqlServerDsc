@@ -467,11 +467,11 @@ function Set-TargetResource
             $reportingServicesDatabaseRightsScript = Invoke-RsCimMethod @invokeRsCimMethodParameters
 
             <#
-                Import-SQLPSModule cmdlet will import SQLPS (SQL 2012/14) or SqlServer module (SQL 2016),
+                Import-SqlDscPreferredModule cmdlet will import SQLPS (SQL 2012/14) or SqlServer module (SQL 2016),
                 and if importing SQLPS, change directory back to the original one, since SQLPS changes the
                 current directory to SQLSERVER:\ on import.
             #>
-            Import-SQLPSModule
+            Import-SqlDscPreferredModule
 
             $invokeSqlCmdParameters = @{
                 ServerInstance = $reportingServicesConnection

@@ -1615,7 +1615,7 @@ function Set-TargetResource
                 matches the latest assemblies in GAC, mitigating for example
                 issue #1151.
             #>
-            Import-SQLPSModule -Force
+            Import-SqlDscPreferredModule -Force
         }
 
         if (-not (Test-TargetResource @PSBoundParameters))

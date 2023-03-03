@@ -496,7 +496,7 @@ function Connect-SQL
         $StatementTimeout = 600
     )
 
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     if ($InstanceName -eq 'MSSQLSERVER')
     {
@@ -697,7 +697,7 @@ function Connect-SQLAnalysis
     {
         if ((Test-FeatureFlag -FeatureFlag $FeatureFlag -TestFlag 'AnalysisServicesConnection'))
         {
-            Import-SQLPSModule
+            Import-SqlDscPreferredModule
 
             $analysisServicesObject = New-Object -TypeName 'Microsoft.AnalysisServices.Server'
 
@@ -2083,7 +2083,7 @@ function Invoke-SqlScript
         $Encrypt
     )
 
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     if ($PSCmdlet.ParameterSetName -eq 'File')
     {

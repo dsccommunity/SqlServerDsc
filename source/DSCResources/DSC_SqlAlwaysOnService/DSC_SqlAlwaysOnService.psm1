@@ -137,7 +137,7 @@ function Set-TargetResource
         $serverInstance = "$ServerName\$InstanceName"
     }
 
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     switch ($Ensure)
     {

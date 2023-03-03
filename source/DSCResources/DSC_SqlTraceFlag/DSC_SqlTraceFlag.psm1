@@ -34,7 +34,7 @@ function Get-TargetResource
     )
 
     # Import SqlServer module.
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     Write-Verbose -Message (
         $script:localizedData.GetConfiguration -f $InstanceName
@@ -188,7 +188,7 @@ function Set-TargetResource
     )
 
     # Import SqlServer module.
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     Write-Verbose -Message (
         $script:localizedData.SetConfiguration -f $InstanceName
@@ -363,7 +363,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SQLPSModule is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SqlDscPreferredModule is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param

@@ -154,7 +154,7 @@ Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
             $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer'
         }
 
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
 
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
@@ -821,7 +821,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
             $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer'
         }
 
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
         Mock -CommandName Restart-SqlService
 
         InModuleScope -ScriptBlock {

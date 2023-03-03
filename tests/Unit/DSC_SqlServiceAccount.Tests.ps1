@@ -1149,7 +1149,7 @@ Describe 'SqlServerServiceAccount\Get-SqlServiceName' -Tag 'Helper' {
 
 Describe 'SqlServerServiceAccount\Get-ServiceObject' -Tag 'Helper' {
     BeforeAll {
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
 
         InModuleScope -ScriptBlock {
             $script:mockDefaultGetServiceObjectParameters = @{
@@ -1195,7 +1195,7 @@ Describe 'SqlServerServiceAccount\Get-ServiceObject' -Tag 'Helper' {
             }
 
             # Ensure mocks are properly used
-            Should -Invoke -CommandName Import-SQLPSModule -Scope It -Exactly -Times 1
+            Should -Invoke -CommandName Import-SqlDscPreferredModule -Scope It -Exactly -Times 1
             Should -Invoke -CommandName New-Object -Scope It -Exactly -Times 1
         }
     }
@@ -1241,7 +1241,7 @@ Describe 'SqlServerServiceAccount\Get-ServiceObject' -Tag 'Helper' {
             }
 
             # Ensure mocks are properly used
-            Should -Invoke -CommandName Import-SQLPSModule -Scope It -Exactly -Times 1
+            Should -Invoke -CommandName Import-SqlDscPreferredModule -Scope It -Exactly -Times 1
             Should -Invoke -CommandName New-Object -Scope It -Exactly -Times 1
         }
     }
