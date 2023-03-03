@@ -862,29 +862,6 @@ function Get-SqlInstanceMajorVersion
 
 <#
     .SYNOPSIS
-        Imports the module SQLPS in a standardized way.
-
-    .PARAMETER Force
-        Forces the removal of the previous SQL module, to load the same or newer
-        version fresh. This is meant to make sure the newest version is used, with
-        the latest assemblies.
-
-#>
-function Import-SQLPSModule
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Force
-    )
-
-    Import-SqlDscPreferredModule @PSBoundParameters
-}
-
-<#
-    .SYNOPSIS
         Restarts a SQL Server instance and associated services
 
     .PARAMETER ServerName

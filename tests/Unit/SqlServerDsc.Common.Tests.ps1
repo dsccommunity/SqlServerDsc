@@ -2221,16 +2221,6 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
     }
 }
 
-Describe 'SqlServerDsc.Common\Import-SQLPSModule' -Tag 'ImportSQLPSModule' {
-    BeforeAll {
-        Mock -CommandName Import-SqlDscPreferredModule
-    }
-
-    It 'Should not throw an exception' {
-        { Import-SQLPSModule } | Should -Not -Throw
-    }
-}
-
 Describe 'SqlServerDsc.Common\Get-SqlInstanceMajorVersion' -Tag 'GetSqlInstanceMajorVersion' {
     BeforeAll {
         $mockSqlMajorVersion = 13
