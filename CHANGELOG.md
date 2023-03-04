@@ -12,6 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The private function `Import-SQLPSModule` was replaced throughout with
     the public command `Import-SqlDscPreferredModule` ([issue #1848](https://github.com/dsccommunity/SqlServerDsc/issues/1848)).
 
+### Fixed
+
+- `Assert-SetupActionProperties`
+  - Now throws an exception if the setup action is `Install` and the feature
+    analysis services is specified without the parameter `ASSysAdminAccounts`
+    ([issue #1845](https://github.com/dsccommunity/SqlServerDsc/issues/1845)).
+  - Now throws an exception if the setup action is `Install` and the feature
+    database engine is specified without the parameter `SqlSysAdminAccounts`.
+
 ## [16.1.0] - 2023-02-28
 
 ### Removed
