@@ -27,23 +27,9 @@ jobs:
         shell: pwsh
         run: |
           # Only get the analyzer rule modules.
-          @'
-          @{
-              PSDependOptions                = @{
-                  AddToPath  = $true
-                  Target     = 'output\RequiredModules'
-                  Parameters = @{
-                      Repository = 'PSGallery'
-                  }
-              }
-
-              InvokeBuild                    = 'latest'
-
-              # Analyzer rules
-              'DscResource.AnalyzerRules'    = 'latest'
-              'Indented.ScriptAnalyzerRules' = 'latest'
-          }
-          '@ | Set-Content -Path 'RequiredModules.psd1'
+          New-Item -Path './output/RequiredModules' -ItemType Directory -Force | Out-Null
+          Save-Module -Name 'DscResource.AnalyzerRules' -Path './output/RequiredM*odules' -Force
+          Save-Module -Name 'Indented.ScriptAnalyzerRules' -Path './output/RequiredModules' -Force
 
           ./build.ps1 -ResolveDependency -Tasks noop
 
