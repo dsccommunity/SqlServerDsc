@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SqlServerDsc
+  - New GitHub Actions workflow that run PSScriptAnalyzer for PRs so any
+    issues are shown directly in the PR's changed files ([issue #1860](https://github.com/dsccommunity/SqlServerDsc/issues/1860)).
+
 ### Changed
 
 - SqlServerDsc
