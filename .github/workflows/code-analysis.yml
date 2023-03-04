@@ -21,7 +21,7 @@ jobs:
       - name: PowerShell Module Cache
         uses: potatoqualitee/psmodulecache@v5.2
         with:
-          modules-to-cache: PSScriptAnalyzer::, ConvertToSARIF::
+          modules-to-cache: "PSScriptAnalyzer::,ConvertToSARIF::"
           allow-prerelease: false
           updatable: true
       - name: Run PSScriptAnalyzer
