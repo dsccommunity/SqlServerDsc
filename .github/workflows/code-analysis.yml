@@ -26,11 +26,13 @@ jobs:
       - name: Run PSScriptAnalyzer
         shell: pwsh
         run: |
+          Add-Type -Path './tests/Unit/Stubs/SMO.cs'
+
           Import-Module ConvertToSARIF -Force
 
-          Get-ChildItem -Path ./source/ -Recurse -Include @('*.psm1', '*.ps1') -File |
-            Invoke-ScriptAnalyzer -Settings ./.github/workflows/PSScriptAnalyzerSettings.psd1 |
-            ConvertTo-SARIF -FilePath results.sarif
+          Get-ChildItem -Path './source/' -Recurse -Include @('*.psm1', '*.ps1') -File |
+            Invoke-ScriptAnalyzer -Settings './.vscode/analyzersettings.psd1' |
+            ConvertTo-SARIF -FilePath 'results.sarif'
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v2
         with:
