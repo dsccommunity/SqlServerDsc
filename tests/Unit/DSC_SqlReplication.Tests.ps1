@@ -138,7 +138,7 @@ Describe 'The system is not in the desired state given Local distribution mode' 
         Mock -CommandName Install-RemoteDistributor
         Mock -CommandName Register-DistributorPublisher
         Mock -CommandName Uninstall-Distributor
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
     }
 
     Context 'The system is not in the desired state' {
@@ -324,7 +324,7 @@ Describe 'The system is not in the desired state given Remote distribution mode'
         Mock -CommandName Install-RemoteDistributor
         Mock -CommandName Register-DistributorPublisher
         Mock -CommandName Uninstall-Distributor
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
     }
 
     Context 'The system is not in the desired state' {
@@ -528,7 +528,7 @@ Describe 'The system is in sync given Local distribution mode' {
         Mock -CommandName Install-RemoteDistributor
         Mock -CommandName Register-DistributorPublisher
         Mock -CommandName Uninstall-Distributor
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
     }
 
     Context 'Get method' {
@@ -709,7 +709,7 @@ Describe 'The system is in sync given Remote distribution mode' {
         Mock -CommandName Install-RemoteDistributor
         Mock -CommandName Register-DistributorPublisher
         Mock -CommandName Uninstall-Distributor
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
     }
 
     Context 'Get method' {
@@ -889,7 +889,7 @@ Describe 'The system is not in desired state given Local distribution, but shoul
         Mock -CommandName Install-RemoteDistributor
         Mock -CommandName Register-DistributorPublisher
         Mock -CommandName Uninstall-Distributor
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
     }
 
     Context 'Get method' {
@@ -1070,7 +1070,7 @@ Describe 'The system is not in desired state given Remote distribution, but shou
         Mock -CommandName Install-RemoteDistributor
         Mock -CommandName Register-DistributorPublisher
         Mock -CommandName Uninstall-Distributor
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
     }
 
     Context 'Get method' {
@@ -1251,7 +1251,7 @@ Describe 'The system is in sync when Absent' {
         Mock -CommandName Install-RemoteDistributor
         Mock -CommandName Register-DistributorPublisher
         Mock -CommandName Uninstall-Distributor
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
     }
 
     Context 'Get method' {

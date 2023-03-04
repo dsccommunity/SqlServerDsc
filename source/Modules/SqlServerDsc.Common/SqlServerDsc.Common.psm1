@@ -496,7 +496,7 @@ function Connect-SQL
         $StatementTimeout = 600
     )
 
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     if ($InstanceName -eq 'MSSQLSERVER')
     {
@@ -697,7 +697,7 @@ function Connect-SQLAnalysis
     {
         if ((Test-FeatureFlag -FeatureFlag $FeatureFlag -TestFlag 'AnalysisServicesConnection'))
         {
-            Import-SQLPSModule
+            Import-SqlDscPreferredModule
 
             $analysisServicesObject = New-Object -TypeName 'Microsoft.AnalysisServices.Server'
 
@@ -858,29 +858,6 @@ function Get-SqlInstanceMajorVersion
     [System.UInt16] $sqlMajorVersionNumber = $sqlVersion.Split('.')[0]
 
     return $sqlMajorVersionNumber
-}
-
-<#
-    .SYNOPSIS
-        Imports the module SQLPS in a standardized way.
-
-    .PARAMETER Force
-        Forces the removal of the previous SQL module, to load the same or newer
-        version fresh. This is meant to make sure the newest version is used, with
-        the latest assemblies.
-
-#>
-function Import-SQLPSModule
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Force
-    )
-
-    Import-SqlDscPreferredModule @PSBoundParameters
 }
 
 <#
@@ -2106,7 +2083,7 @@ function Invoke-SqlScript
         $Encrypt
     )
 
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     if ($PSCmdlet.ParameterSetName -eq 'File')
     {

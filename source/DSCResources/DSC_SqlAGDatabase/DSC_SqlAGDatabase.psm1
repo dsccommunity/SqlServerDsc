@@ -210,7 +210,7 @@ function Set-TargetResource
         $StatementTimeout = 600
     )
 
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     # Connect to the defined instance
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -StatementTimeout $StatementTimeout -ErrorAction 'Stop'

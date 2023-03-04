@@ -71,7 +71,7 @@ Describe 'SqlProtocol\Get-TargetResource' -Tag 'Get' {
             scoping them to the module's scope since they are imported by
             the module that is being tested.
         #>
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
 
         <#
             This sets a variable inside the module scope. The name of the

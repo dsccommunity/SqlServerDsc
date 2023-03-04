@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Update `appveyor.yml` to use `dotnet tool install` to install _GitVersion_.
+  - The private function `Import-SQLPSModule` was replaced throughout with
+    the public command `Import-SqlDscPreferredModule` ([issue #1848](https://github.com/dsccommunity/SqlServerDsc/issues/1848)).
 
 ## [16.1.0] - 2023-02-28
 

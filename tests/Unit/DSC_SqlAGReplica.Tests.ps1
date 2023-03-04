@@ -445,7 +445,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             return $mockServerObject
         }
 
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
 
         Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer1 -ParameterFilter {
             $ServerName -eq 'Server1'
@@ -520,7 +520,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
@@ -576,7 +576,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
@@ -621,7 +621,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                 $ServerName -eq 'ServerNotEnabled'
             } -Times 1 -Exactly
 
-            Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
         }
     }
 
@@ -660,7 +660,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                 $ServerName -eq 'ServerWithoutEndpoint'
             } -Times 1 -Exactly
 
-            Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
         }
     }
 
@@ -717,7 +717,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                 $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
             }
 
-            Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -773,7 +773,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -830,7 +830,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -898,7 +898,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -966,7 +966,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -1028,7 +1028,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
@@ -1092,7 +1092,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
@@ -1187,7 +1187,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
                 }
 
-                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
                 Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly

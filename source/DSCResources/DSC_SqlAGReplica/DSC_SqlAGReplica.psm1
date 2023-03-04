@@ -238,7 +238,7 @@ function Set-TargetResource
         $ProcessOnlyOnActiveNode
     )
 
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     # Connect to the instance
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'

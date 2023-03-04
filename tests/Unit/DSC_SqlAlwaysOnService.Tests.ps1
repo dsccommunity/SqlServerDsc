@@ -417,7 +417,7 @@ Describe 'SqlAlwaysOnService\Set-TargetResource' {
 
     Context 'When the system is not in the desired state' {
         BeforeAll {
-            Mock -CommandName Import-SQLPSModule
+            Mock -CommandName Import-SqlDscPreferredModule
             Mock -CommandName Restart-SqlService
         }
 
@@ -449,7 +449,7 @@ Describe 'SqlAlwaysOnService\Set-TargetResource' {
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
                     }
 
-                    Should -Invoke -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Should -Invoke -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
                     Should -Invoke -CommandName Disable-SqlAlwaysOn -Scope It -Times 1 -Exactly
                     Should -Invoke -CommandName Restart-SqlService -Scope It -Times 1 -Exactly
                 }
@@ -473,7 +473,7 @@ Describe 'SqlAlwaysOnService\Set-TargetResource' {
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
                     }
 
-                    Should -Invoke -CommandName Import-SQLPSModule -Scope It -Times 1 -Exactly
+                    Should -Invoke -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
                     Should -Invoke -CommandName Enable-SqlAlwaysOn -Scope It -Times 1 -Exactly
                     Should -Invoke -CommandName Restart-SqlService -Scope It -Times 1 -Exactly
                 }

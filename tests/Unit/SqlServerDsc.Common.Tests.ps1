@@ -1574,7 +1574,7 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
 
     Context 'When using feature flag ''AnalysisServicesConnection''' {
         BeforeAll {
-            Mock -CommandName Import-SQLPSModule
+            Mock -CommandName Import-SqlDscPreferredModule
 
             $mockExpectedDataSource = "Data Source=$mockComputerName"
         }
@@ -1583,7 +1583,7 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
             It 'Should not throw when connecting' {
                 { Connect-SQLAnalysis -FeatureFlag 'AnalysisServicesConnection' } | Should -Not -Throw
 
-                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
                     -ParameterFilter $mockNewObject_MicrosoftAnalysisServicesServer_ParameterFilter
             }
@@ -2221,16 +2221,6 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
     }
 }
 
-Describe 'SqlServerDsc.Common\Import-SQLPSModule' -Tag 'ImportSQLPSModule' {
-    BeforeAll {
-        Mock -CommandName Import-SqlDscPreferredModule
-    }
-
-    It 'Should not throw an exception' {
-        { Import-SQLPSModule } | Should -Not -Throw
-    }
-}
-
 Describe 'SqlServerDsc.Common\Get-SqlInstanceMajorVersion' -Tag 'GetSqlInstanceMajorVersion' {
     BeforeAll {
         $mockSqlMajorVersion = 13
@@ -2645,7 +2635,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
     }
 
     BeforeEach {
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
     }
 
     Context 'When connecting to the default instance using integrated Windows Authentication' {
@@ -3217,7 +3207,7 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
         BeforeAll {
             $throwMessage = "Failed to import SQLPS module."
 
-            Mock -CommandName Import-SQLPSModule -MockWith {
+            Mock -CommandName Import-SqlDscPreferredModule -MockWith {
                 throw $throwMessage
             }
         }
@@ -3238,7 +3228,7 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
             $password = ConvertTo-SecureString -String $mockPasswordPlain -AsPlainText -Force
             $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $mockUsername, $password
 
-            Mock -CommandName Import-SQLPSModule
+            Mock -CommandName Import-SqlDscPreferredModule
             Mock -CommandName Invoke-SqlCmd -ParameterFilter {
                 $Username -eq $mockUsername -and $Password -eq $mockPasswordPlain
             }
@@ -3282,7 +3272,7 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
         BeforeEach {
             $errorMessage = 'Failed to run SQL Script'
 
-            Mock -CommandName Import-SQLPSModule
+            Mock -CommandName Import-SqlDscPreferredModule
             Mock -CommandName Invoke-SqlCmd -MockWith {
                 throw $errorMessage
             }
@@ -3302,7 +3292,7 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
             # Import PowerShell module SqlServer stub cmdlets.
             Import-SQLModuleStub
 
-            Mock -CommandName Import-SQLPSModule
+            Mock -CommandName Import-SqlDscPreferredModule
             Mock -CommandName Invoke-SqlCmd
         }
 

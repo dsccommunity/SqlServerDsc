@@ -66,7 +66,7 @@ AfterAll {
 
 Describe 'SqlProtocolTcpIp\Get-TargetResource' -Tag 'Get' {
     BeforeAll {
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
 
         InModuleScope -ScriptBlock {
             $script:mockInstanceName = 'DSCTEST'

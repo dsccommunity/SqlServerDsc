@@ -87,7 +87,7 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
         #>
         Import-Module -Name 'PSScriptAnalyzer'
 
-        $expectedErrorRecordMessage = 'The function is not calling Import-SQLPSModule or Connect-SQL. If it is meant not to, then suppress the rule ''SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO'' with a justification. See https://github.com/PowerShell/PSScriptAnalyzer#suppressing-rules for more information.'
+        $expectedErrorRecordMessage = 'The function is not calling Import-SqlDscPreferredModule or Connect-SQL. If it is meant not to, then suppress the rule ''SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO'' with a justification. See https://github.com/PowerShell/PSScriptAnalyzer#suppressing-rules for more information.'
     }
 
     Context 'When calling the function directly' {
@@ -96,7 +96,7 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
             $ruleName = 'Measure-CommandsNeededToLoadSMO'
         }
 
-        Context 'When a function do not have a call to neither Import-SQLPSModule or Connect-SQL' {
+        Context 'When a function do not have a call to neither Import-SqlDscPreferredModule or Connect-SQL' {
             It 'Should write the correct error record for function <FunctionName>' -ForEach $testCase {
                 $definition = "
                     function Get-Something {}
@@ -126,10 +126,10 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
             }
         }
 
-        Context 'When a function have a call to Import-SQLPSModule' {
+        Context 'When a function have a call to Import-SqlDscPreferredModule' {
             It 'Should not return an error record for function <FunctionName>' -ForEach $testCase {
                 $definition = "
-                    function Import-SQLPSModule {}
+                    function Import-SqlDscPreferredModule {}
 
                     function $FunctionName
                     {
@@ -137,7 +137,7 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
                         [OutputType([System.Collections.Hashtable])]
                         param ()
 
-                        Import-SQLPSModule
+                        Import-SqlDscPreferredModule
 
                         return @{}
                     }
@@ -192,7 +192,7 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
             $ruleName = 'SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO'
         }
 
-        Context 'When a function do not have a call to neither Import-SQLPSModule or Connect-SQL' {
+        Context 'When a function do not have a call to neither Import-SqlDscPreferredModule or Connect-SQL' {
             It 'Should write the correct error record for function <FunctionName>' -ForEach $testCase {
                 $invokeScriptAnalyzerParameters['ScriptDefinition'] = "
                     function Get-Something {}
@@ -236,10 +236,10 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
             }
         }
 
-        Context 'When a function have a call to Import-SQLPSModule' {
+        Context 'When a function have a call to Import-SqlDscPreferredModule' {
             It 'Should not write an error record for function <FunctionName>' -ForEach $testCase {
                 $invokeScriptAnalyzerParameters['ScriptDefinition'] = "
-                    function Import-SQLPSModule {}
+                    function Import-SqlDscPreferredModule {}
 
                     function $FunctionName
                     {
@@ -247,7 +247,7 @@ Describe 'Measure-CommandsNeededToLoadSMO' {
                         [OutputType([System.Collections.Hashtable])]
                         param ()
 
-                        Import-SQLPSModule
+                        Import-SqlDscPreferredModule
 
                         return @{}
                     }
