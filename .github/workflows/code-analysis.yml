@@ -1,6 +1,4 @@
 name: Code analysis
-runs:
-  using: 'node16'
 
 on:
   push:
