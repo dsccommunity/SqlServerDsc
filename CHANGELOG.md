@@ -23,7 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Invoke-SetupAction`
   - The parameter `SqlSysAdminAccounts` is no longer mandatory to allow
     installation where the database engine is not installed.
-
+- `Install-SqlDscServer`
+  - The parameter `SqlSysAdminAccounts` is no longer mandatory to allow
+    installation where the database engine is not installed.
 
 ## [16.1.0] - 2023-02-28
 
