@@ -26,6 +26,25 @@ jobs:
       - name: Run PSScriptAnalyzer
         shell: pwsh
         run: |
+          # Only get the analyzer rule modules.
+          @'
+          @{
+              PSDependOptions                = @{
+                  AddToPath  = $true
+                  Target     = 'output\RequiredModules'
+                  Parameters = @{
+                      Repository = 'PSGallery'
+                  }
+              }
+
+              # Analyzer rules
+              'DscResource.AnalyzerRules'    = 'latest'
+              'Indented.ScriptAnalyzerRules' = 'latest'
+          }
+          '@ | Set-Content -Path 'RequiredModules.psd1'
+
+          ./build.ps1 -ResolveDependency -Tasks noop
+
           Add-Type -Path './tests/Unit/Stubs/SMO.cs'
 
           Import-Module ConvertToSARIF -Force
