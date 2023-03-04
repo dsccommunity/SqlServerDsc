@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update `appveyor.yml` to use `dotnet tool install` to install _GitVersion_.
   - The private function `Import-SQLPSModule` was replaced throughout with
     the public command `Import-SqlDscPreferredModule` ([issue #1848](https://github.com/dsccommunity/SqlServerDsc/issues/1848)).
+  - Removed the regular expression `features?` from the GitVersion configuration.
+    Before, if a fix commit mentioned the word feature but means a SQL Server
+    feature GitVersion would bump minor instead of patch number.
 
 ### Fixed
 
