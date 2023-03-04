@@ -37,6 +37,8 @@ jobs:
                   }
               }
 
+              InvokeBuild                    = 'latest'
+
               # Analyzer rules
               'DscResource.AnalyzerRules'    = 'latest'
               'Indented.ScriptAnalyzerRules' = 'latest'
