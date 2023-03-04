@@ -854,7 +854,7 @@ function Install-SqlDscServer
         [System.String]
         $SqlSvcStartupType,
 
-        [Parameter(ParameterSetName = 'Install', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallRole')]
         [System.String[]]

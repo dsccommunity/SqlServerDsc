@@ -187,4 +187,21 @@ function Assert-SetupActionProperties
             )
         }
     }
+
+    if ($SetupAction -in ('Install'))
+    {
+        if ($Property.ContainsKey('Features') -and $Property.Features -contains 'SQLENGINE')
+        {
+            Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @(
+                'SqlSysAdminAccounts'
+            )
+        }
+
+        if ($Property.ContainsKey('Features') -and $Property.Features -contains 'AS')
+        {
+            Assert-BoundParameter -BoundParameterList $Property -RequiredParameter @(
+                'ASSysAdminAccounts'
+            )
+        }
+    }
 }

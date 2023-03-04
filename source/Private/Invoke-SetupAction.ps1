@@ -1031,7 +1031,7 @@ function Invoke-SetupAction
         [System.String]
         $SqlSvcStartupType,
 
-        [Parameter(ParameterSetName = 'Install', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'CompleteImage')]
         [Parameter(ParameterSetName = 'RebuildDatabase', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
