@@ -31,8 +31,6 @@ jobs:
           Save-Module -Name 'DscResource.AnalyzerRules' -Path './output/RequiredM*odules' -Force
           Save-Module -Name 'Indented.ScriptAnalyzerRules' -Path './output/RequiredModules' -Force
 
-          ./build.ps1 -ResolveDependency -Tasks noop
-
           Add-Type -Path './tests/Unit/Stubs/SMO.cs'
 
           Import-Module ConvertToSARIF -Force
