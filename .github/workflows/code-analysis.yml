@@ -24,12 +24,13 @@ jobs:
           modules-to-cache: "PSScriptAnalyzer::,ConvertToSARIF::"
           updatable: true
       - name: Run PSScriptAnalyzer
-        uses: microsoft/psscriptanalyzer-action@v1.0
-        with:
-          path: ./source
-          recurse: true
-          output: results.sarif
-          settings: ./.vscode/analyzersettings.psd1
+        shell: pwsh
+        run: |
+          Import-Module ConvertToSARIF -Force
+
+          Get-ChildItem -Path ./source/ -Recurse -Include @('*.psm1', '*.ps1') -File |
+            Invoke-ScriptAnalyzer -Settings ./.github/workflows/PSScriptAnalyzerSettings.psd1 |
+            ConvertTo-SARIF -FilePath results.sarif
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v2
         with:
