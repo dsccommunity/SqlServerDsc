@@ -93,7 +93,7 @@ function Get-TargetResource
         $script:localizedData.GetCurrentState -f $InstanceName
     )
 
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     $sqlMajorVersion = Get-SqlInstanceMajorVersion -InstanceName $InstanceName
     $localSqlName = Get-SqlLocalServerName -InstanceName $InstanceName
@@ -227,7 +227,7 @@ function Set-TargetResource
         $UninstallWithForce = $true
     )
 
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     if (($DistributorMode -eq 'Remote') -and (-not $RemoteDistributor))
     {

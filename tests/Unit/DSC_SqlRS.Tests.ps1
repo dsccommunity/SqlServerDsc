@@ -507,7 +507,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         #>
         Mock -CommandName Invoke-CimMethod -MockWith $mockInvokeCimMethod
 
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
         Mock -CommandName Invoke-SqlCmd
         Mock -CommandName Restart-ReportingServicesService
         Mock -CommandName Invoke-RsCimMethod

@@ -488,8 +488,18 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             MockMissingParameterName = 'RSSvcAccount'
             MockFeature = 'RS'
         }
+        @{
+            MockSetupAction = 'Install'
+            MockFeature = 'AS'
+            MockMissingParameterName = 'ASSysAdminAccounts'
+        }
+        @{
+            MockSetupAction = 'Install'
+            MockFeature = 'SQLENGINE'
+            MockMissingParameterName = 'SqlSysAdminAccounts'
+        }
     ) {
-        It 'Should not throw an exception' {
+        It 'Should throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{
@@ -508,7 +518,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             MockSetupAction = 'CompleteFailoverCluster'
         }
     ) {
-        It 'Should not throw an exception' {
+        It 'Should throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{
@@ -524,7 +534,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             MockSetupAction = 'AddNode'
         }
     ) {
-        It 'Should not throw an exception' {
+        It 'Should throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{

@@ -32,7 +32,6 @@
         'Connect-SQL'
         'Connect-SQLAnalysis'
         'Get-SqlInstanceMajorVersion'
-        'Import-SQLPSModule'
         'Restart-SqlService'
         'Restart-ReportingServicesService'
         'Invoke-Query'
