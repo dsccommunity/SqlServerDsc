@@ -50,9 +50,9 @@ BeforeAll {
         {
             <#
                 The version below is what the MS download page said, but the .exe is
-                reporting 15.0.7842.32355 when used in the integration test.
+                reporting 15.0.8434.2956 when used in the integration test.
             #>
-            $script:mockSourceMediaDisplayName = 'Microsoft SQL Server 2019 Reporting Services (15.0.1102.911 - 6/24/2021)'
+            $script:mockSourceMediaDisplayName = 'Microsoft SQL Server 2019 Reporting Services (15.0.1102.1047 - 2/6/2023)'
             $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/1/a/a/1aaa9177-3578-4931-b8f3-373b24f63342/SQLServerReportingServices.exe'
         }
 
@@ -102,7 +102,7 @@ AfterAll {
     Older versions of Reporting Services (eg. 2016) are integration tested in
     separate tests (part of resource SqlSetup).
 #>
-Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', <# 'Integration_SQL2019', #> 'Integration_SQL2022') {
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }

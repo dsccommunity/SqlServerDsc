@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Update `appveyor.yml` to use `dotnet tool install` to install _GitVersion_.
+  - Re-enable integration tests for SqlRSSetup and SqlRS when running against
+    SQL Server 2019 ([issue #1847](https://github.com/dsccommunity/SqlServerDsc/issues/1847)).
   - The private function `Import-SQLPSModule` was replaced throughout with
     the public command `Import-SqlDscPreferredModule` ([issue #1848](https://github.com/dsccommunity/SqlServerDsc/issues/1848)).
 
