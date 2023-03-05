@@ -71,7 +71,10 @@
         'UseSyntacticallyCorrectExamples'
     )
 
-    # TODO: This is not excluded correctly, see test QA/ScriptAnalyzer.Tests.ps1 for more information.
+    <#
+        TODO: This is not excluded correctly, see test QA/ScriptAnalyzer.Tests.ps1
+        or the GitHub Action workflow Code Analysis for more information.
+    #>
     ExcludeRules        = @(
         'TypeNotFound' # Because classes in the project cannot be found unless built.
         'RequiresModuleInvalid' # Because 'using module' in prefix.ps1 cannot be resolved as source file.

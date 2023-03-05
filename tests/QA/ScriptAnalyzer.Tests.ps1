@@ -73,7 +73,7 @@ Describe 'Script Analyzer Rules' {
             $pssaError = Invoke-ScriptAnalyzer -Path $ScriptPath -Settings $scriptAnalyzerSettingsPath
 
             <#
-                Filter out rule TypeNotFound.
+                Filter out rules.
 
                 TODO: The rules (e.g. "TypeNotFound") are not excluded correctly even if it
                       is excluded in the file 'analyzersettings.psd1'. This is a workaround
