@@ -72,13 +72,14 @@
     )
 
     <#
-        TODO: This is not excluded correctly, see test QA/ScriptAnalyzer.Tests.ps1
-        or the GitHub Action workflow Code Analysis for more information.
+        The following types are not rules but parse errors reported by PSScriptAnalyzer
+        so they cannot be ecluded. They need to be filtered out from the result of
+        Invoke-ScriptAnalyzer.
+
+        TypeNotFound - Because classes in the project cannot be found unless built.
+        RequiresModuleInvalid - Because 'using module' in prefix.ps1 cannot be resolved as source file.
     #>
-    ExcludeRules        = @(
-        'TypeNotFound' # Because classes in the project cannot be found unless built.
-        'RequiresModuleInvalid' # Because 'using module' in prefix.ps1 cannot be resolved as source file.
-    )
+    ExcludeRules        = @()
 
     Rules               = @{
         PSUseConsistentWhitespace  = @{
