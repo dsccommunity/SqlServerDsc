@@ -19,11 +19,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: PowerShell Module Cache
-        uses: potatoqualitee/psmodulecache@v5.2
-        with:
-          modules-to-cache: "ConvertToSARIF::"
-          updatable: true
       - name: Build Module
         shell: powershell
         run: |
