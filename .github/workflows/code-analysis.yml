@@ -48,7 +48,10 @@ jobs:
 
           Write-Information -MessageData 'Running PSScriptAnalyzer.' -InformationAction 'Continue'
           $filesToScan |
-            Invoke-ScriptAnalyzer -Settings './.vscode/analyzersettings.psd1' |
+            Invoke-ScriptAnalyzer -Settings './.vscode/analyzersettings.psd1' -ExcludeRule @(
+                'TypeNotFound' # Because classes in the project cannot be found unless built.
+                'RequiresModuleInvalid' # Because 'using module' in prefix.ps1 cannot be resolved as source file.
+            ) |
             ConvertTo-SARIF -FilePath 'results.sarif'
 
           Write-Information -MessageData 'Analyzing done.' -InformationAction 'Continue'
