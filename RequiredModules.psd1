@@ -9,6 +9,7 @@
 
     InvokeBuild                    = 'latest'
     PSScriptAnalyzer               = 'latest'
+    ConvertToSARIF                 = 'latest' # cSpell: disable-line
 
     <#
         If preview release of Pester prevents release we should temporary shift
