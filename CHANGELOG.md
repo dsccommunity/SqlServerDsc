@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed the regular expression `features?` from the GitVersion configuration.
     Before, if a fix commit mentioned the word feature but means a SQL Server
     feature GitVersion would bump minor instead of patch number.
+- `Get-SqlDscAudit`
+  - The parameter `Name` is no longer mandatory. When left out all the current
+    audits are returned ([issue #1812](https://github.com/dsccommunity/SqlServerDsc/issues/1812)).
 
 ### Fixed
 
@@ -255,9 +258,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Get-TargetResource` was updated to always return an array for parameter
     `TraceFlags`, `TraceFlagsToInclude`, and `TraceFlagsToInclude`. _The last_
     _two properties will always return an empty array._
-- `Get-SqlDscAudit`
-  - The parameter `Name` is no longer mandatory. When left out all the current
-    audits are returned ([issue #1812](https://github.com/dsccommunity/SqlServerDsc/issues/1812)).
 
 ### Fixed
 
