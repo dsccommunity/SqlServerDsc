@@ -44,7 +44,7 @@ jobs:
           Import-Module -Name 'PSScriptAnalyzer' -Force
 
           $filesToScan = Get-ChildItem -Path './source/' -Recurse -Include @('*.psm1', '*.ps1') -File
-          Write-Information -MessageData ("Will scan the files:`n`r{0}." -f ($filesToScan.FullName -join "`n`r")) -InformationAction 'Continue'
+          Write-Information -MessageData ("Will scan the files:`n`r{0}." -f ($filesToScan.FullName -join "`n`r`t")) -InformationAction 'Continue'
 
           Write-Information -MessageData 'Running PSScriptAnalyzer.' -InformationAction 'Continue'
           $filesToScan |
