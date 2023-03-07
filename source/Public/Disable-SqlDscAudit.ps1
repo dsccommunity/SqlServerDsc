@@ -86,7 +86,7 @@ function Disable-SqlDscAudit
 
             # If this command does not find the audit it will throw an exception.
             $auditObjectArray = $serverObject |
-                Get-SqlDscAudit -Name @getSqlDscAuditParameters
+                Get-SqlDscAudit @getSqlDscAuditParameters
 
             # Pick the only object in the array.
             $AuditObject = $auditObjectArray | Select-Object -First 1
