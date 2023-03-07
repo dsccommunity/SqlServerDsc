@@ -214,10 +214,9 @@ function New-SqlDscAudit
             ErrorAction = 'SilentlyContinue'
         }
 
-        $auditObject = Get-SqlDscAudit @getSqlDscAuditParameters |
-            Select-Object -First 1
+        $auditObject = Get-SqlDscAudit @getSqlDscAuditParameters
 
-        if ($auditObject)
+        if ($auditObject.Count -gt 0)
         {
             $auditAlreadyPresentMessage = $script:localizedData.Audit_AlreadyPresent -f $Name
 

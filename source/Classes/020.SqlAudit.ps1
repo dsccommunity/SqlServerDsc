@@ -260,9 +260,11 @@ class SqlAudit : SqlResourceBase
 
         $serverObject = $this.GetServerObject()
 
-        $auditObject = $serverObject |
-            Get-SqlDscAudit -Name $properties.Name -ErrorAction 'SilentlyContinue' |
-            Select-Object -First 1
+        $auditObjectArray = $serverObject |
+            Get-SqlDscAudit -Name $properties.Name -ErrorAction 'SilentlyContinue'
+
+        # Pick the only object in the array.
+        $auditObject = $auditObjectArray | Select-Object -First 1
 
         if ($auditObject)
         {
@@ -350,9 +352,11 @@ class SqlAudit : SqlResourceBase
             #>
             if ($this.Ensure -eq [Ensure]::Present)
             {
-                $auditObject = $serverObject |
-                    Get-SqlDscAudit -Name $this.Name -ErrorAction 'Stop' |
-                    Select-Object -First 1
+                $auditObjectArray = $serverObject |
+                    Get-SqlDscAudit -Name $this.Name -ErrorAction 'Stop'
+
+                # Pick the only object in the array.
+                $auditObject = $auditObjectArray | Select-Object -First 1
 
                 if ($auditObject)
                 {
