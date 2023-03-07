@@ -85,10 +85,8 @@ function Remove-SqlDscAudit
             }
 
             # If this command does not find the audit it will throw an exception.
-            $AuditObject = [Microsoft.SqlServer.Management.Smo.Audit] (
-                Get-SqlDscAudit @getSqlDscAuditParameters |
+            $AuditObject = Get-SqlDscAudit @getSqlDscAuditParameters |
                     Select-Object -First 1
-            )
         }
 
         $verboseDescriptionMessage = $script:localizedData.Audit_Remove_ShouldProcessVerboseDescription -f $AuditObject.Name, $AuditObject.Parent.InstanceName
