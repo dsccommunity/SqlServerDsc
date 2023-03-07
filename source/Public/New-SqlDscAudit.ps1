@@ -216,7 +216,7 @@ function New-SqlDscAudit
 
         $auditObject = Get-SqlDscAudit @getSqlDscAuditParameters
 
-        if ($auditObject)
+        if ($auditObject.Count -gt 0)
         {
             $auditAlreadyPresentMessage = $script:localizedData.Audit_AlreadyPresent -f $Name
 

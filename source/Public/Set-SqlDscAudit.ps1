@@ -259,7 +259,11 @@ function Set-SqlDscAudit
                 ErrorAction = 'Stop'
             }
 
-            $AuditObject = Get-SqlDscAudit @getSqlDscAuditParameters
+            # If this command does not find the audit it will throw an exception.
+            $auditObjectArray = Get-SqlDscAudit @getSqlDscAuditParameters
+
+            # Pick the only object in the array.
+            $AuditObject = $auditObjectArray | Select-Object -First 1
         }
 
         if ($Refresh.IsPresent)
