@@ -964,15 +964,48 @@ function Test-TargetResource
         $result = $false
     }
 
-    $compareParameters = @{
-        ReferenceObject  = $currentConfig.ReportsReservedUrl
-        DifferenceObject = $ReportsReservedUrl
+    if ($PSBoundParameters.ContainsKey('ReportServerReservedUrl'))
+    {
+        if ($null -eq $currentConfig.ReportServerReservedUrl)
+        {
+            Write-Verbose -Message "Report server reserved URLs on $DatabaseServerName\$DatabaseInstanceName are missing, should be $($ReportServerReservedUrl -join ', ')."
+            $result = $false
+        }
+        else
+        {
+            $compareParameters = @{
+                ReferenceObject  = $currentConfig.ReportServerReservedUrl
+                DifferenceObject = $ReportServerReservedUrl
+            }
+
+            if ($null -ne (Compare-Object @compareParameters))
+            {
+                Write-Verbose -Message "Report server reserved URLs on $DatabaseServerName\$DatabaseInstanceName are $($currentConfig.ReportServerReservedUrl -join ', '), should be $($ReportServerReservedUrl -join ', ')."
+                $result = $false
+            }
+        }
     }
 
-    if (($null -ne $ReportsReservedUrl) -and ($null -ne (Compare-Object @compareParameters)))
+    if ($PSBoundParameters.ContainsKey('ReportsReservedUrl'))
     {
-        Write-Verbose -Message "Reports reserved URLs on $DatabaseServerName\$DatabaseInstanceName are $($currentConfig.ReportsReservedUrl -join ', ')), should be $($ReportsReservedUrl -join ', ')."
-        $result = $false
+        if ($null -eq $currentConfig.ReportServerReservedUrl)
+        {
+            Write-Verbose -Message "Reports reserved URLs on $DatabaseServerName\$DatabaseInstanceName are missing, should be $($ReportsReservedUrl -join ', ')."
+            $result = $false
+        }
+        else
+        {
+            $compareParameters = @{
+                ReferenceObject  = $currentConfig.ReportsReservedUrl
+                DifferenceObject = $ReportsReservedUrl
+            }
+
+            if ($null -ne (Compare-Object @compareParameters))
+            {
+                Write-Verbose -Message "Reports reserved URLs on $DatabaseServerName\$DatabaseInstanceName are $($currentConfig.ReportsReservedUrl -join ', ')), should be $($ReportsReservedUrl -join ', ')."
+                $result = $false
+            }
+        }
     }
 
     if ($PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl)
