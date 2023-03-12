@@ -1134,7 +1134,7 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
             }
         }
 
-        Context 'When Report Server virtual directory is different' {
+        Context 'When Reports virtual directory is different' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
