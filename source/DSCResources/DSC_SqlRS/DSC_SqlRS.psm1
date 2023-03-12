@@ -977,7 +977,7 @@ function Test-TargetResource
 
     if ($PSBoundParameters.ContainsKey('ReportsReservedUrl'))
     {
-        if ($null -eq $currentConfig.ReportServerReservedUrl)
+        if ($null -eq $currentConfig.ReportsReservedUrl)
         {
             Write-Verbose -Message "Reports reserved URLs on $DatabaseServerName\$DatabaseInstanceName are missing, should be $($ReportsReservedUrl -join ', ')."
             $result = $false
