@@ -953,17 +953,6 @@ function Test-TargetResource
         $result = $false
     }
 
-    $compareParameters = @{
-        ReferenceObject  = $currentConfig.ReportServerReservedUrl
-        DifferenceObject = $ReportServerReservedUrl
-    }
-
-    if (($null -ne $ReportServerReservedUrl) -and ($null -ne (Compare-Object @compareParameters)))
-    {
-        Write-Verbose -Message "Report server reserved URLs on $DatabaseServerName\$DatabaseInstanceName are $($currentConfig.ReportServerReservedUrl -join ', '), should be $($ReportServerReservedUrl -join ', ')."
-        $result = $false
-    }
-
     if ($PSBoundParameters.ContainsKey('ReportServerReservedUrl'))
     {
         if ($null -eq $currentConfig.ReportServerReservedUrl)
@@ -988,7 +977,7 @@ function Test-TargetResource
 
     if ($PSBoundParameters.ContainsKey('ReportsReservedUrl'))
     {
-        if ($null -eq $currentConfig.ReportServerReservedUrl)
+        if ($null -eq $currentConfig.ReportsReservedUrl)
         {
             Write-Verbose -Message "Reports reserved URLs on $DatabaseServerName\$DatabaseInstanceName are missing, should be $($ReportsReservedUrl -join ', ')."
             $result = $false
