@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     installation where the database engine is not installed.
 - `SqlRS`
   - Test renamed to `When Reports virtual directory is different` so it is more correct and not a duplicate
+  - Fixed issue of configuring reporting services ([issue #1868](https://github.com/dsccommunity/SqlServerDsc/issues/1868)).
 
 ## [16.1.0] - 2023-02-28
 
