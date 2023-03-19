@@ -206,7 +206,7 @@ stages:
                   # 'tests/Integration/DSC_SqlTraceFlag.Integration.Tests.ps1'
                   # Group 3
                   # 'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlRS_Default.Integration.Tests.ps1'
                   # 'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
                   # 'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
                   # 'tests/Integration/DSC_SqlAudit.Integration.Tests.ps1'
