@@ -1105,6 +1105,62 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
             }
         }
 
+        Context 'When current Report Server reserved URL is $null' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        IsInitialized           = $false
+                        ReportServerReservedUrl = $null
+                    }
+                }
+            }
+
+            It 'Should return state as not in desired state' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $testParameters = @{
+                        InstanceName            = 'INSTANCE'
+                        DatabaseServerName      = 'DBSERVER'
+                        DatabaseInstanceName    = 'DBINSTANCE'
+                        ReportServerReservedUrl = 'ReportServer_SQL2016'
+                    }
+
+                    $resultTestTargetResource = Test-TargetResource @testParameters
+
+                    $resultTestTargetResource | Should -BeFalse
+                }
+            }
+        }
+
+        Context 'When current Reports reserved URL is $null' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        IsInitialized      = $false
+                        ReportsReservedUrl = $null
+                    }
+                }
+            }
+
+            It 'Should return state as not in desired state' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $testParameters = @{
+                        InstanceName         = 'INSTANCE'
+                        DatabaseServerName   = 'DBSERVER'
+                        DatabaseInstanceName = 'DBINSTANCE'
+                        ReportsReservedUrl   = 'Reports_SQL2016'
+                    }
+
+                    $resultTestTargetResource = Test-TargetResource @testParameters
+
+                    $resultTestTargetResource | Should -BeFalse
+                }
+            }
+        }
+
         Context 'When Report Server virtual directory is different' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
