@@ -196,7 +196,7 @@ stages:
                   # 'tests/Integration/DSC_SqlLogin.Integration.Tests.ps1'
                   # 'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
                   # 'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
-                  # 'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
                   # 'tests/Integration/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
                   # 'tests/Integration/DSC_SqlDatabase.Integration.Tests.ps1'
                   # 'tests/Integration/DSC_SqlAlwaysOnService.Integration.Tests.ps1'
@@ -262,7 +262,6 @@ stages:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2022'
         variables:
-          SKIP_DATABASE_ENGINE_INSTANCE: false
           SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
           SKIP_ANALYSIS_MULTI_INSTANCE: true
           SKIP_ANALYSIS_TABULAR_INSTANCE: true
