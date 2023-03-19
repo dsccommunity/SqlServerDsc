@@ -397,8 +397,16 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 # Make sure PSGallery is trusted.
                 Set-PSRepository -Name 'PSGallery' -InstallationPolicy 'Trusted'
 
-                # Uninstall any existing SqlServer module, to make we only have the one we need.
-                Get-Module -Name 'SqlServer' -ListAvailable | Uninstall-Module -ErrorAction 'Stop'
+                <#
+                    Remove any existing SqlServer module, to make we only have the one we need.
+                    Uninstall-Module could not be used in this case, as it loaded the module
+                    that was suppose to be removed, rendering it impossible to remove.
+                #>
+                Get-Module -Name 'SqlServer' -ListAvailable |
+                    ForEach-Object -Process {
+                        $_.ModuleBase |
+                            Remove-Item -Recurse -Force -ErrorAction 'Stop'
+                    }
 
                 # Make sure we use TLS 1.2.
                 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
@@ -462,6 +470,8 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                             $moduleVersion = '{0}-{1}' -f $moduleVersion, $sqlServerModule.PrivateData.PSData.Prerelease
                         }
                     }
+
+                    Write-Verbose -Message ('Found SqlServer module v{0}.' -f $moduleVersion) -Verbose
                 }
 
                 return @{
