@@ -187,6 +187,21 @@ stages:
               script: 'winrm quickconfig -quiet'
               pwsh: false
           - powershell: |
+              <#
+                  Remove any existing versions of the SqlServer module. If SqlServerDsc
+                  import the module it will render one of them locked for removal when
+                  the assembly is loaded into the session.
+              #>
+              $sqlServerModule = Get-Module -Name 'SqlServer' -ListAvailable
+              $sqlServerModule
+              $sqlServerModule |
+                  ForEach-Object -Process {
+                      $_.ModuleBase |
+                          Remove-Item -Recurse -Force -ErrorAction 'Stop' -Verbose
+                  }
+            name: removeSqlServerModule
+            displayName: 'Remove SqlServer module'
+          - powershell: |
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
                   # Group 1
@@ -282,6 +297,21 @@ stages:
               targetType: 'inline'
               script: 'winrm quickconfig -quiet'
               pwsh: false
+          - powershell: |
+              <#
+                  Remove any existing versions of the SqlServer module. If SqlServerDsc
+                  import the module it will render one of them locked for removal when
+                  the assembly is loaded into the session.
+              #>
+              $sqlServerModule = Get-Module -Name 'SqlServer' -ListAvailable
+              $sqlServerModule
+              $sqlServerModule |
+                  ForEach-Object -Process {
+                      $_.ModuleBase |
+                          Remove-Item -Recurse -Force -ErrorAction 'Stop' -Verbose
+                  }
+            name: removeSqlServerModule
+            displayName: 'Remove SqlServer module'
           - powershell: |
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
