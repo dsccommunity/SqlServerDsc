@@ -462,6 +462,8 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                             $moduleVersion = '{0}-{1}' -f $moduleVersion, $sqlServerModule.PrivateData.PSData.Prerelease
                         }
                     }
+
+                    Write-Verbose -Message ('Found SqlServer module v{0}.' -f $moduleVersion) -Verbose
                 }
 
                 return @{
