@@ -100,7 +100,26 @@ function Import-SqlDscPreferredModule
                 PowerShell session environment variable PSModulePath to make sure it
                 contains all paths.
             #>
-            Set-PSModulePath -Path ([System.Environment]::GetEnvironmentVariable('PSModulePath', 'Machine'))
+
+            <#
+                Get the environment variables from all targets session, user and machine.
+                Casts the value to System.String to convert $null values to empty string.
+            #>
+            $modulePathSession = [System.String] [System.Environment]::GetEnvironmentVariable('PSModulePath')
+            $modulePathUser = [System.String] [System.Environment]::GetEnvironmentVariable('PSModulePath', 'User')
+            $modulePathMachine = [System.String] [System.Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
+
+            $modulePath = $modulePathSession + ';'  + $modulePathUser + ';' + $modulePathMachine
+
+            $modulePathArray = $modulePath -split ';' |
+                Where-Object -FilterScript {
+                    -not [System.String]::IsNullOrEmpty($_)
+                } |
+                Sort-Object -Unique
+
+            $modulePath = $modulePathArray -join ';'
+
+            Set-PSModulePath -Path $modulePath
         }
 
         # Get the newest SQLPS module if more than one exist.

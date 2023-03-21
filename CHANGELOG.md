@@ -30,6 +30,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Get-SqlDscAudit`
   - The parameter `Name` is no longer mandatory. When left out all the current
     audits are returned ([issue #1812](https://github.com/dsccommunity/SqlServerDsc/issues/1812)).
+- `Import-SqlDscPreferredModule`
+  - Now correctly preserves paths that is set in the session for the environment
+    variable `$env:PSModulePath`. If the module _SqlServer_ or _SQLPS_ are not
+    found the command will populate the `$env:PSModulePath` with the
+    unique paths from all targets; session, user, and machine. This is done
+    so that any new path that was added to the machine or user target will
+    also be set in the session.
 
 ### Fixed
 
