@@ -477,8 +477,14 @@ function Set-TargetResource
                 ServerInstance = $reportingServicesConnection
             }
 
+            Write-Verbose -Message ('PSModulePath: {0}' -f $env:PSModulePath) -Verbose
+            Write-Verbose -Message ("Loaded modules:`r`n{0}" -f (Get-Module | Out-String )) -Verbose
+            Write-Verbose -Message ("Available SqlServer modules:`r`n{0}" -f (Get-Module -Name @('SqlServer', 'SQLPS') -ListAvailable | Out-String )) -Verbose
+
+
             if ($PSBoundParameters.ContainsKey('Encrypt'))
             {
+                Write-Verbose -Message 'DEBUG1' -Verbose
                 $commandInvokeSqlCmd = Get-Command -Name 'Invoke-SqlCmd'
 
                 if ($null -ne $commandInvokeSqlCmd -and $commandInvokeSqlCmd.Parameters.Keys -contains 'Encrypt')
@@ -486,6 +492,8 @@ function Set-TargetResource
                     $invokeSqlCmdParameters.Encrypt = $Encrypt
                 }
             }
+
+            Write-Verbose -Message 'DEBUG2' -Verbose
 
             Invoke-SqlCmd @invokeSqlCmdParameters -Query $reportingServicesDatabaseScript.Script
             Invoke-SqlCmd @invokeSqlCmdParameters -Query $reportingServicesDatabaseRightsScript.Script
