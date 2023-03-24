@@ -471,16 +471,16 @@ function Set-TargetResource
                 and if importing SQLPS, change directory back to the original one, since SQLPS changes the
                 current directory to SQLSERVER:\ on import.
             #>
-            Import-SqlDscPreferredModule
-
-            $invokeSqlCmdParameters = @{
-                ServerInstance = $reportingServicesConnection
-            }
+            Import-SqlDscPreferredModule -Force
 
             Write-Verbose -Message ("PSModulePath: {0}`r`n" -f $env:PSModulePath) -Verbose
             Write-Verbose -Message ("Loaded modules:`r`n{0}`r`n" -f (Get-Module | Out-String )) -Verbose
             Write-Verbose -Message ("Available SqlServer modules:`r`n{0}`r`n" -f (Get-Module -Name @('SqlServer', 'SQLPS') -ListAvailable | Out-String )) -Verbose
             Write-Verbose -Message ("Invoke-SqlCmd:`r`n{0}`r`n" -f (Get-Command -Name 'Invoke-SqlCmd' -ErrorAction 'SilentlyContinue' | Out-String )) -Verbose
+
+            $invokeSqlCmdParameters = @{
+                ServerInstance = $reportingServicesConnection
+            }
 
             if ($PSBoundParameters.ContainsKey('Encrypt'))
             {
