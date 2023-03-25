@@ -471,7 +471,7 @@ function Set-TargetResource
                 and if importing SQLPS, change directory back to the original one, since SQLPS changes the
                 current directory to SQLSERVER:\ on import.
             #>
-            Import-SqlDscPreferredModule -Force
+            Import-SqlDscPreferredModule -Force -Verbose
 
             Write-Verbose -Message ("PSModulePath: {0}`r`n" -f $env:PSModulePath) -Verbose
             Write-Verbose -Message ("Loaded modules:`r`n{0}`r`n" -f (Get-Module | Out-String )) -Verbose

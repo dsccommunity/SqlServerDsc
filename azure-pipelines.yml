@@ -192,15 +192,16 @@ stages:
                   import the module it will render one of them locked for removal when
                   the assembly is loaded into the session.
               #>
-              $sqlServerModule = Get-Module -Name 'SqlServer' -ListAvailable
+              $sqlServerModule = Get-Module -Name @('SqlServer','SQLPS') -ListAvailable
               $sqlServerModule
               Write-Information -Message 'Removing existing modules' -InformationAction 'Continue'
 
               # Remove versions
               $sqlServerModule |
                   ForEach-Object -Process {
+                      Write-Information -Message ('Removing module version: {0}' -f $_.ModuleBase) -InformationAction 'Continue'
                       $_.ModuleBase |
-                          Remove-Item -Recurse -Force -ErrorAction 'Stop' -Verbose
+                          Remove-Item -Recurse -Force -ErrorAction 'Stop'
                   }
 
               # Remove module folder
@@ -209,8 +210,9 @@ stages:
                       $parentFolder = Split-Path -Path $_.ModuleBase
                       if ((Test-Path -Path $parentFolder))
                       {
-                        $parentFolder |
-                            Remove-Item -Recurse -Force -ErrorAction 'Stop' -Verbose
+                          Write-Information -Message ('Removing module folder: {0}' -f $parentFolder) -InformationAction 'Continue'
+                          $parentFolder |
+                              Remove-Item -Recurse -Force -ErrorAction 'Stop'
                       }
                   }
             name: removeSqlServerModule
@@ -317,15 +319,16 @@ stages:
                   import the module it will render one of them locked for removal when
                   the assembly is loaded into the session.
               #>
-              $sqlServerModule = Get-Module -Name 'SqlServer' -ListAvailable
+              $sqlServerModule = Get-Module -Name @('SqlServer','SQLPS') -ListAvailable
               $sqlServerModule
               Write-Information -Message 'Removing existing modules' -InformationAction 'Continue'
 
               # Remove versions
               $sqlServerModule |
                   ForEach-Object -Process {
+                      Write-Information -Message ('Removing module version: {0}' -f $_.ModuleBase) -InformationAction 'Continue'
                       $_.ModuleBase |
-                          Remove-Item -Recurse -Force -ErrorAction 'Stop' -Verbose
+                          Remove-Item -Recurse -Force -ErrorAction 'Stop'
                   }
 
               # Remove module folder
@@ -334,8 +337,9 @@ stages:
                       $parentFolder = Split-Path -Path $_.ModuleBase
                       if ((Test-Path -Path $parentFolder))
                       {
-                        $parentFolder |
-                            Remove-Item -Recurse -Force -ErrorAction 'Stop' -Verbose
+                          Write-Information -Message ('Removing module folder: {0}' -f $parentFolder) -InformationAction 'Continue'
+                          $parentFolder |
+                              Remove-Item -Recurse -Force -ErrorAction 'Stop'
                       }
                   }
             name: removeSqlServerModule
