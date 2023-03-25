@@ -55,8 +55,7 @@ install:
     $sqlServerModule = Get-Module -Name @('SqlServer','SQLPS') -ListAvailable
     if ($sqlServerModule)
     {
-        Write-Information -Message 'Existing SqlServer or SQLPS modules:' -InformationAction 'Continue'
-        $sqlServerModule |
+        $existingModulesString = $sqlServerModule |
             Select-Object -Property @(
                 'Name',
                 'Version',
@@ -65,9 +64,12 @@ install:
                     Expression = { $_.PrivateData.PSData.Prerelease }
                 },
                 'Path'
-            )
+            ) |
+            Out-String
 
-        Write-Information -Message 'Removing existing modules' -InformationAction 'Continue'
+        Write-Information -Message ('Existing SqlServer or SQLPS modules: {0}' -f $existingModulesString) -InformationAction 'Continue'
+
+        Write-Information -Message 'Removing existing modules.' -InformationAction 'Continue'
 
         # Remove versions
         $sqlServerModule |
