@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - New GitHub Actions workflow that run PSScriptAnalyzer for PRs so any
     issues are shown directly in the PR's changed files ([issue #1860](https://github.com/dsccommunity/SqlServerDsc/issues/1860)).
+  - Added a separate integration test jobs for SQL Server Reporting Services
+    to be able to test configuring SQL Server Reportings Services using
+    other values that the default values.
 
 ### Changed
 
@@ -22,9 +25,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed the regular expression `features?` from the GitVersion configuration.
     Before, if a fix commit mentioned the word feature but means a SQL Server
     feature GitVersion would bump minor instead of patch number.
+  - When running in Azure Pipelines any existing SqlServer module is removed
+    before running integration tests, so the tests can update to latest version.
 - `Get-SqlDscAudit`
   - The parameter `Name` is no longer mandatory. When left out all the current
     audits are returned ([issue #1812](https://github.com/dsccommunity/SqlServerDsc/issues/1812)).
+- `Import-SqlDscPreferredModule`
+  - Now correctly preserves paths that is set in the session for the environment
+    variable `$env:PSModulePath`. If the module _SqlServer_ or _SQLPS_ are not
+    found the command will populate the `$env:PSModulePath` with the
+    unique paths from all targets; session, user, and machine. This is done
+    so that any new path that was added to the machine or user target will
+    also be set in the session.
+  - Now imports the preferred module into the global scope so that MOF-based
+    resources (that is in another module scope) can use the imported module.
 
 ### Fixed
 
@@ -41,8 +55,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The parameter `SqlSysAdminAccounts` is no longer mandatory to allow
     installation where the database engine is not installed.
 - `SqlRS`
-  - Test renamed to `When Reports virtual directory is different` so it is more correct and not a duplicate
   - Fixed issue of configuring reporting services ([issue #1868](https://github.com/dsccommunity/SqlServerDsc/issues/1868)).
+  - Test renamed to `When Reports virtual directory is different` so it
+    is more correct and not a duplicate.
 
 ## [16.1.0] - 2023-02-28
 
