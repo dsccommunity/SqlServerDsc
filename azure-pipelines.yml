@@ -192,29 +192,49 @@ stages:
                   import the module it will render one of them locked for removal when
                   the assembly is loaded into the session.
               #>
+              Write-Information -Message 'No existing SqlServer or SQLPS modules, nothing to remove.' -InformationAction 'Continue'
+
               $sqlServerModule = Get-Module -Name @('SqlServer','SQLPS') -ListAvailable
-              $sqlServerModule
-              Write-Information -Message 'Removing existing modules' -InformationAction 'Continue'
+              if ($sqlServerModule)
+              {
+                  Write-Information -Message 'Existing SqlServer or SQLPS modules:' -InformationAction 'Continue'
+                  $sqlServerModule |
+                      Select-Object -Property @(
+                          'Name',
+                          'Version',
+                          @{
+                              Name = 'Prerelease'
+                              Expression = { $_.PrivateData.PSData.Prerelease }
+                          },
+                          'Path'
+                      )
 
-              # Remove versions
-              $sqlServerModule |
-                  ForEach-Object -Process {
-                      Write-Information -Message ('Removing module version: {0}' -f $_.ModuleBase) -InformationAction 'Continue'
-                      $_.ModuleBase |
-                          Remove-Item -Recurse -Force -ErrorAction 'Stop'
-                  }
+                  Write-Information -Message 'Removing existing modules' -InformationAction 'Continue'
 
-              # Remove module folder
-              $sqlServerModule |
-                  ForEach-Object -Process {
-                      $parentFolder = Split-Path -Path $_.ModuleBase
-                      if ((Test-Path -Path $parentFolder))
-                      {
-                          Write-Information -Message ('Removing module folder: {0}' -f $parentFolder) -InformationAction 'Continue'
-                          $parentFolder |
+                  # Remove versions
+                  $sqlServerModule |
+                      ForEach-Object -Process {
+                          Write-Information -Message ('Removing module version: {0}' -f $_.ModuleBase) -InformationAction 'Continue'
+                          $_.ModuleBase |
                               Remove-Item -Recurse -Force -ErrorAction 'Stop'
                       }
-                  }
+
+                  # Remove module folder
+                  $sqlServerModule |
+                      ForEach-Object -Process {
+                          $parentFolder = Split-Path -Path $_.ModuleBase
+                          if ((Test-Path -Path $parentFolder))
+                          {
+                              Write-Information -Message ('Removing module folder: {0}' -f $parentFolder) -InformationAction 'Continue'
+                              $parentFolder |
+                                  Remove-Item -Recurse -Force -ErrorAction 'Stop'
+                          }
+                      }
+              }
+              else
+              {
+                  Write-Information -Message 'No existing SqlServer or SQLPS modules, nothing to remove.' -InformationAction 'Continue'
+              }
             name: removeSqlServerModule
             displayName: 'Remove SqlServer module'
           - powershell: |
@@ -319,29 +339,49 @@ stages:
                   import the module it will render one of them locked for removal when
                   the assembly is loaded into the session.
               #>
+              Write-Information -Message 'No existing SqlServer or SQLPS modules, nothing to remove.' -InformationAction 'Continue'
+
               $sqlServerModule = Get-Module -Name @('SqlServer','SQLPS') -ListAvailable
-              $sqlServerModule
-              Write-Information -Message 'Removing existing modules' -InformationAction 'Continue'
+              if ($sqlServerModule)
+              {
+                  Write-Information -Message 'Existing SqlServer or SQLPS modules:' -InformationAction 'Continue'
+                  $sqlServerModule |
+                      Select-Object -Property @(
+                          'Name',
+                          'Version',
+                          @{
+                              Name = 'Prerelease'
+                              Expression = { $_.PrivateData.PSData.Prerelease }
+                          },
+                          'Path'
+                      )
 
-              # Remove versions
-              $sqlServerModule |
-                  ForEach-Object -Process {
-                      Write-Information -Message ('Removing module version: {0}' -f $_.ModuleBase) -InformationAction 'Continue'
-                      $_.ModuleBase |
-                          Remove-Item -Recurse -Force -ErrorAction 'Stop'
-                  }
+                  Write-Information -Message 'Removing existing modules' -InformationAction 'Continue'
 
-              # Remove module folder
-              $sqlServerModule |
-                  ForEach-Object -Process {
-                      $parentFolder = Split-Path -Path $_.ModuleBase
-                      if ((Test-Path -Path $parentFolder))
-                      {
-                          Write-Information -Message ('Removing module folder: {0}' -f $parentFolder) -InformationAction 'Continue'
-                          $parentFolder |
+                  # Remove versions
+                  $sqlServerModule |
+                      ForEach-Object -Process {
+                          Write-Information -Message ('Removing module version: {0}' -f $_.ModuleBase) -InformationAction 'Continue'
+                          $_.ModuleBase |
                               Remove-Item -Recurse -Force -ErrorAction 'Stop'
                       }
-                  }
+
+                  # Remove module folder
+                  $sqlServerModule |
+                      ForEach-Object -Process {
+                          $parentFolder = Split-Path -Path $_.ModuleBase
+                          if ((Test-Path -Path $parentFolder))
+                          {
+                              Write-Information -Message ('Removing module folder: {0}' -f $parentFolder) -InformationAction 'Continue'
+                              $parentFolder |
+                                  Remove-Item -Recurse -Force -ErrorAction 'Stop'
+                          }
+                      }
+              }
+              else
+              {
+                  Write-Information -Message 'No existing SqlServer or SQLPS modules, nothing to remove.' -InformationAction 'Continue'
+              }
             name: removeSqlServerModule
             displayName: 'Remove SqlServer module'
           - powershell: |
