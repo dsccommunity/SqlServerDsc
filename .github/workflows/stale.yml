@@ -15,7 +15,7 @@ jobs:
         close-issue-message: 'This issue has been automatically closed because it is has not had activity from the community in the last 40 days. If this issue was wrongly closed, for a issue author please comment and re-open it, if you are not the issue author comment with a reason for it to be reopened and tag a maintainer in the comment.'
         days-before-issue-stale: 30
         days-before-issue-close: 40
-        exempt-issue-labels: 'bug,enhancement,tests,documentation,resource proposal,on hold,resolved'
+        exempt-issue-labels: 'bug,enhancement,tests,documentation,resource proposal,command proposal,on hold,resolved'
         stale-issue-label: 'stale'
         stale-pr-message: 'Labeling this pull request (PR) as abandoned since it has gone 14 days or more since the last update. An abandoned PR can be continued by another contributor. The abandoned label will be removed if work on this PR is taken up again.'
         days-before-pr-stale: 14
