@@ -45,6 +45,10 @@ install:
 
     winrm quickconfig -quiet # cSpell: disable-line
 
+    Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+    Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+    Remove-Module -Name CommonTestHelper
+
 # DEBUG: If running on own AppVeyor project, comment the line below that skips if it is not a pull request
 build_script:
 - pwsh: |
