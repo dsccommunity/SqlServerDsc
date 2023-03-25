@@ -471,18 +471,7 @@ function Set-TargetResource
                 and if importing SQLPS, change directory back to the original one, since SQLPS changes the
                 current directory to SQLSERVER:\ on import.
             #>
-            Import-SqlDscPreferredModule -Force -Verbose
-
-            Write-Verbose -Message ("PSModulePath: {0}`r`n" -f $env:PSModulePath) -Verbose
-            Write-Verbose -Message ("Loaded modules:`r`n{0}`r`n" -f (Get-Module | Out-String )) -Verbose
-            Write-Verbose -Message ("Loaded modules (all):`r`n{0}`r`n" -f (Get-Module -All | Out-String )) -Verbose
-
-            Write-Verbose -Message ("Available SqlServer modules:`r`n{0}`r`n" -f (Get-Module -Name @('SqlServer', 'SQLPS') -ListAvailable | Out-String )) -Verbose
-
-            Import-Module -Name 'SqlServer' -Force
-
-            Write-Verbose -Message ("Loaded modules:`r`n{0}`r`n" -f (Get-Module | Out-String )) -Verbose
-            Write-Verbose -Message ("Invoke-SqlCmd:`r`n{0}`r`n" -f (Get-Command -Name 'Invoke-SqlCmd' -ErrorAction 'SilentlyContinue' | Out-String )) -Verbose
+            Import-SqlDscPreferredModule
 
             $invokeSqlCmdParameters = @{
                 ServerInstance = $reportingServicesConnection
@@ -490,7 +479,6 @@ function Set-TargetResource
 
             if ($PSBoundParameters.ContainsKey('Encrypt'))
             {
-                Write-Verbose -Message 'DEBUG1' -Verbose
                 $commandInvokeSqlCmd = Get-Command -Name 'Invoke-SqlCmd'
 
                 if ($null -ne $commandInvokeSqlCmd -and $commandInvokeSqlCmd.Parameters.Keys -contains 'Encrypt')
@@ -498,8 +486,6 @@ function Set-TargetResource
                     $invokeSqlCmdParameters.Encrypt = $Encrypt
                 }
             }
-
-            Write-Verbose -Message 'DEBUG2' -Verbose
 
             Invoke-SqlCmd @invokeSqlCmdParameters -Query $reportingServicesDatabaseScript.Script
             Invoke-SqlCmd @invokeSqlCmdParameters -Query $reportingServicesDatabaseRightsScript.Script

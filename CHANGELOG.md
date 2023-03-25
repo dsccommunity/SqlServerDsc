@@ -37,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     unique paths from all targets; session, user, and machine. This is done
     so that any new path that was added to the machine or user target will
     also be set in the session.
+  - Now imports the preferred module into the global scope so that MOF-based
+    resources (that is in another module scope) can use the imported module.
 
 ### Fixed
 

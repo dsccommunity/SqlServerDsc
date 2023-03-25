@@ -4,6 +4,7 @@
 
     .DESCRIPTION
         Imports the module SqlServer (preferred) or SQLPS in a standardized way.
+        The module is always imported globally.
 
     .PARAMETER PreferredModule
         Specifies the name of the preferred module. Defaults to 'SqlServer'.
@@ -153,7 +154,7 @@ function Import-SqlDscPreferredModule
                 SQLPS has unapproved verbs, disable checking to ignore Warnings.
                 Suppressing verbose so all cmdlet is not listed.
             #>
-            $importedModule = Import-Module -Name $availableModuleName -DisableNameChecking -Verbose:$false -Force:$Force -PassThru -ErrorAction 'Stop'
+            $importedModule = Import-Module -Name $availableModuleName -DisableNameChecking -Verbose:$false -Force:$Force -Global -PassThru -ErrorAction 'Stop'
 
             <#
                 SQLPS returns two entries, one with module type 'Script' and another with module type 'Manifest'.
