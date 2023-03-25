@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed the regular expression `features?` from the GitVersion configuration.
     Before, if a fix commit mentioned the word feature but means a SQL Server
     feature GitVersion would bump minor instead of patch number.
+  - Update pipeline script that is used to resolve dependencies.
   - When running in Azure Pipelines any existing SqlServer module is removed
     before running integration tests, so the tests can update to latest version.
 - `Get-SqlDscAudit`
