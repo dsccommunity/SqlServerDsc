@@ -43,7 +43,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Now imports the preferred module into the global scope so that MOF-based
     resources (that is in another module scope) can use the imported module.
 
-
 ### Fixed
 
 - `Assert-SetupActionProperties`
