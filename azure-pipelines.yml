@@ -187,56 +187,9 @@ stages:
               script: 'winrm quickconfig -quiet'
               pwsh: false
           - powershell: |
-              <#
-                  Remove any existing versions of the SqlServer module. If SqlServerDsc
-                  import the module it will render one of them locked for removal when
-                  the assembly is loaded into the session.
-              #>
-              Write-Information -Message 'No existing SqlServer or SQLPS modules, nothing to remove.' -InformationAction 'Continue'
-
-              $sqlServerModule = Get-Module -Name @('SqlServer','SQLPS') -ListAvailable
-              if ($sqlServerModule)
-              {
-                  $existingModulesString = $sqlServerModule |
-                      Select-Object -Property @(
-                          'Name',
-                          'Version',
-                          @{
-                              Name = 'Prerelease'
-                              Expression = { $_.PrivateData.PSData.Prerelease }
-                          },
-                          'Path'
-                      ) |
-                      Out-String
-
-                  Write-Information -Message ('Existing SqlServer or SQLPS modules: {0}' -f $existingModulesString) -InformationAction 'Continue'
-
-                  Write-Information -Message 'Removing existing modules.' -InformationAction 'Continue'
-
-                  # Remove versions
-                  $sqlServerModule |
-                      ForEach-Object -Process {
-                          Write-Information -Message ('Removing module version: {0}' -f $_.ModuleBase) -InformationAction 'Continue'
-                          $_.ModuleBase |
-                              Remove-Item -Recurse -Force -ErrorAction 'Stop'
-                      }
-
-                  # Remove module folder
-                  $sqlServerModule |
-                      ForEach-Object -Process {
-                          $parentFolder = Split-Path -Path $_.ModuleBase
-                          if ((Test-Path -Path $parentFolder))
-                          {
-                              Write-Information -Message ('Removing module folder: {0}' -f $parentFolder) -InformationAction 'Continue'
-                              $parentFolder |
-                                  Remove-Item -Recurse -Force -ErrorAction 'Stop'
-                          }
-                      }
-              }
-              else
-              {
-                  Write-Information -Message 'No existing SqlServer or SQLPS modules, nothing to remove.' -InformationAction 'Continue'
-              }
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+              Remove-Module -Name CommonTestHelper
             name: removeSqlServerModule
             displayName: 'Remove SqlServer module'
           - powershell: |
@@ -336,56 +289,9 @@ stages:
               script: 'winrm quickconfig -quiet'
               pwsh: false
           - powershell: |
-              <#
-                  Remove any existing versions of the SqlServer module. If SqlServerDsc
-                  import the module it will render one of them locked for removal when
-                  the assembly is loaded into the session.
-              #>
-              Write-Information -Message 'No existing SqlServer or SQLPS modules, nothing to remove.' -InformationAction 'Continue'
-
-              $sqlServerModule = Get-Module -Name @('SqlServer','SQLPS') -ListAvailable
-              if ($sqlServerModule)
-              {
-                  $existingModulesString = $sqlServerModule |
-                      Select-Object -Property @(
-                          'Name',
-                          'Version',
-                          @{
-                              Name = 'Prerelease'
-                              Expression = { $_.PrivateData.PSData.Prerelease }
-                          },
-                          'Path'
-                      ) |
-                      Out-String
-
-                  Write-Information -Message ('Existing SqlServer or SQLPS modules: {0}' -f $existingModulesString) -InformationAction 'Continue'
-
-                  Write-Information -Message 'Removing existing modules.' -InformationAction 'Continue'
-
-                  # Remove versions
-                  $sqlServerModule |
-                      ForEach-Object -Process {
-                          Write-Information -Message ('Removing module version: {0}' -f $_.ModuleBase) -InformationAction 'Continue'
-                          $_.ModuleBase |
-                              Remove-Item -Recurse -Force -ErrorAction 'Stop'
-                      }
-
-                  # Remove module folder
-                  $sqlServerModule |
-                      ForEach-Object -Process {
-                          $parentFolder = Split-Path -Path $_.ModuleBase
-                          if ((Test-Path -Path $parentFolder))
-                          {
-                              Write-Information -Message ('Removing module folder: {0}' -f $parentFolder) -InformationAction 'Continue'
-                              $parentFolder |
-                                  Remove-Item -Recurse -Force -ErrorAction 'Stop'
-                          }
-                      }
-              }
-              else
-              {
-                  Write-Information -Message 'No existing SqlServer or SQLPS modules, nothing to remove.' -InformationAction 'Continue'
-              }
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+              Remove-Module -Name CommonTestHelper
             name: removeSqlServerModule
             displayName: 'Remove SqlServer module'
           - powershell: |
