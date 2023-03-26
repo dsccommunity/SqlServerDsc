@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added a separate integration test jobs for SQL Server Reporting Services
     to be able to test configuring SQL Server Reportings Services using
     other values that the default values.
+  - Now updates GitHub Actions automatically by allowing dependabot sending
+    in pull requests.
 
 ### Changed
 
@@ -28,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update pipeline script that is used to resolve dependencies.
   - When running in Azure Pipelines any existing SqlServer module is removed
     before running integration tests, so the tests can update to latest version.
+  - Now the new label 'command proposal' is an exempt for labeling issues stale.
   - Update the initializing header for all integration test to be equal to
     the unit tests.
 - `Get-SqlDscAudit`
