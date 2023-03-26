@@ -26,7 +26,7 @@ else
                 InstanceName           = 'DSCSQLTEST'
 
                 AuditName1             = 'FileAudit'
-                Path1                  = 'C:\Temp\audit\'
+                Path1                  = 'C:\Temp\audit'
                 MaximumFileSize1       = 10
                 MaximumFileSizeUnit1   = 'Megabyte'
                 MaximumRolloverFiles1  = 11
