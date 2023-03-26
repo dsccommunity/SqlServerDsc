@@ -16,11 +16,17 @@ image:
 environment:
   # DEBUG: Un-comment this to get the same password for the RDP session for each build
   #APPVEYOR_RDP_PASSWORD: D5c1234!
+  # DEBUG: Un-comment these to skip installing the various instances (to speed up debug)
+  #SKIP_DATABASE_ENGINE_INSTANCE: true
+  #SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
+  #SKIP_ANALYSIS_MULTI_INSTANCE: true
+  #SKIP_ANALYSIS_TABULAR_INSTANCE: true
   matrix:
   # DEBUG: Comment and un-comment the different SQL Server version that should be tested.
   - TEST_CONFIGURATION: Integration_SQL2016
   - TEST_CONFIGURATION: Integration_SQL2017
   #- TEST_CONFIGURATION: Integration_SQL2019
+  #- TEST_CONFIGURATION: Integration_SQL2022
 
 # DEBUG: See section on_finish last in this file on how to block build to keep RDP open.
 # DEBUG: If running on own AppVeyor project, comment the line below that skips if it is not a pull request
@@ -29,7 +35,7 @@ init:
     # Only run for pull requests
     if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { Write-Host -ForegroundColor 'Yellow' -Object 'Not a pull request, skipping.'; return }
 
-    iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+    iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 # DEBUG: If running on own AppVeyor project, comment the line below that skips if it is not a pull request
 install:
@@ -37,13 +43,24 @@ install:
     # Only run for pull requests
     if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { Write-Host -ForegroundColor 'Yellow' -Object 'Not a pull request, skipping.'; return }
 
-    winrm quickconfig -quiet
+    winrm quickconfig -quiet # cSpell: disable-line
+
+    Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+    Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+    Remove-Module -Name CommonTestHelper
 
 # DEBUG: If running on own AppVeyor project, comment the line below that skips if it is not a pull request
 build_script:
 - pwsh: |
     # Only run for pull requests
     if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { Write-Host -ForegroundColor 'Yellow' -Object 'Not a pull request, skipping.'; return }
+
+    dotnet tool install --global GitVersion.Tool
+    $env:IGNORE_NORMALISATION_GIT_HEAD_MOVE = 1 # cSpell: disable-line
+    dotnet-gitversion
+    $gitVersionObject = dotnet-gitversion | ConvertFrom-Json
+    $gitVersionObject
+    $env:ModuleVersion = $gitVersionObject.NuGetVersionV2
 
     # Build the module
     ./build.ps1 -ResolveDependency -tasks build
@@ -73,6 +90,7 @@ test_script:
         #'tests/Integration/DSC_SqlAgentOperator.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlServiceAccount.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlTraceFlag.Integration.Tests.ps1'
         ## Group 3
         #'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
         'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'

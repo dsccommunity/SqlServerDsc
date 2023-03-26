@@ -208,7 +208,7 @@ function Set-TargetResource
                 $script:localizedData.CreateAvailabilityGroupListener -f $Name, $AvailabilityGroup, $InstanceName
             )
 
-            $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+            $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
             $availabilityGroupObject = $sqlServerObject.AvailabilityGroups[$AvailabilityGroup]
             if ($availabilityGroupObject)
@@ -268,7 +268,7 @@ function Set-TargetResource
                 $script:localizedData.DropAvailabilityGroupListener -f $Name, $AvailabilityGroup, $InstanceName
             )
 
-            $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+            $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
             $availabilityGroupObject = $sqlServerObject.AvailabilityGroups[$AvailabilityGroup]
             if ($availabilityGroupObject)
@@ -325,7 +325,7 @@ function Set-TargetResource
                 New-InvalidOperationException -Message $errorMessage
             }
 
-            $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+            $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
             $availabilityGroupObject = $sqlServerObject.AvailabilityGroups[$AvailabilityGroup]
             if ($availabilityGroupObject)
@@ -591,7 +591,7 @@ function Get-SQLAlwaysOnAvailabilityGroupListener
         $script:localizedData.DebugConnectingAvailabilityGroup -f $Name, [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     $availabilityGroupObject = $sqlServerObject.AvailabilityGroups[$AvailabilityGroup]
     if ($availabilityGroupObject)

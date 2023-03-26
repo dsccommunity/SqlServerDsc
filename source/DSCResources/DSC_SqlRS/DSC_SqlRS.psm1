@@ -18,6 +18,15 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
     .PARAMETER DatabaseInstanceName
         Name of the SQL Server instance to host the Reporting Service database.
+
+    .PARAMETER Encrypt
+        Specifies how encryption should be enforced when using command `Invoke-SqlCmd`.
+        When not specified, the default value is `Mandatory`.
+
+        This value maps to the Encrypt property SqlConnectionEncryptOption
+        on the SqlConnection object of the Microsoft.Data.SqlClient driver.
+
+        This parameter can only be used when the module SqlServer v22.x.x is installed.
 #>
 function Get-TargetResource
 {
@@ -36,7 +45,12 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $DatabaseInstanceName
+        $DatabaseInstanceName,
+
+        [Parameter()]
+        [ValidateSet('Mandatory', 'Optional', 'Strict')]
+        [System.String]
+        $Encrypt
     )
 
     Write-Verbose -Message (
@@ -53,6 +67,7 @@ function Get-TargetResource
         ReportsReservedUrl           = $null
         UseSsl                       = $false
         IsInitialized                = $false
+        Encrypt                      = $Encrypt
     }
 
     $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
@@ -170,6 +185,15 @@ function Get-TargetResource
         settings change. If this parameter is set to $true, Reporting Services
         will not be restarted, even after initialization.
 
+    .PARAMETER Encrypt
+        Specifies how encryption should be enforced when using command `Invoke-SqlCmd`.
+        When not specified, the default value is `Mandatory`.
+
+        This value maps to the Encrypt property SqlConnectionEncryptOption
+        on the SqlConnection object of the Microsoft.Data.SqlClient driver.
+
+        This parameter can only be used when the module SqlServer v22.x.x is installed.
+
     .NOTES
         To find out the parameter names for the methods in the class
         MSReportServer_ConfigurationSetting it's easy to list them using the
@@ -247,7 +271,12 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $SuppressRestart
+        $SuppressRestart,
+
+        [Parameter()]
+        [ValidateSet('Mandatory', 'Optional', 'Strict')]
+        [System.String]
+        $Encrypt
     )
 
     $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
@@ -438,13 +467,28 @@ function Set-TargetResource
             $reportingServicesDatabaseRightsScript = Invoke-RsCimMethod @invokeRsCimMethodParameters
 
             <#
-                Import-SQLPSModule cmdlet will import SQLPS (SQL 2012/14) or SqlServer module (SQL 2016),
+                Import-SqlDscPreferredModule cmdlet will import SQLPS (SQL 2012/14) or SqlServer module (SQL 2016),
                 and if importing SQLPS, change directory back to the original one, since SQLPS changes the
                 current directory to SQLSERVER:\ on import.
             #>
-            Import-SQLPSModule
-            Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseScript.Script
-            Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseRightsScript.Script
+            Import-SqlDscPreferredModule
+
+            $invokeSqlCmdParameters = @{
+                ServerInstance = $reportingServicesConnection
+            }
+
+            if ($PSBoundParameters.ContainsKey('Encrypt'))
+            {
+                $commandInvokeSqlCmd = Get-Command -Name 'Invoke-SqlCmd'
+
+                if ($null -ne $commandInvokeSqlCmd -and $commandInvokeSqlCmd.Parameters.Keys -contains 'Encrypt')
+                {
+                    $invokeSqlCmdParameters.Encrypt = $Encrypt
+                }
+            }
+
+            Invoke-SqlCmd @invokeSqlCmdParameters -Query $reportingServicesDatabaseScript.Script
+            Invoke-SqlCmd @invokeSqlCmdParameters -Query $reportingServicesDatabaseRightsScript.Script
 
             Write-Verbose -Message "Set database connection on $DatabaseServerName\$DatabaseInstanceName to database '$reportingServicesDatabaseName'."
 
@@ -816,7 +860,16 @@ function Set-TargetResource
     .PARAMETER SuppressRestart
         Reporting Services need to be restarted after initialization or
         settings change. If this parameter is set to $true, Reporting Services
-        will not be restarted, even after initialisation.
+        will not be restarted, even after initialization.
+
+    .PARAMETER Encrypt
+        Specifies how encryption should be enforced when using command `Invoke-SqlCmd`.
+        When not specified, the default value is `Mandatory`.
+
+        This value maps to the Encrypt property SqlConnectionEncryptOption
+        on the SqlConnection object of the Microsoft.Data.SqlClient driver.
+
+        This parameter can only be used when the module SqlServer v22.x.x is installed.
 #>
 function Test-TargetResource
 {
@@ -859,7 +912,12 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $SuppressRestart
+        $SuppressRestart,
+
+        [Parameter()]
+        [ValidateSet('Mandatory', 'Optional', 'Strict')]
+        [System.String]
+        $Encrypt
     )
 
     $result = $true
@@ -868,6 +926,11 @@ function Test-TargetResource
         InstanceName         = $InstanceName
         DatabaseServerName   = $DatabaseServerName
         DatabaseInstanceName = $DatabaseInstanceName
+    }
+
+    if ($PSBoundParameters.ContainsKey('Encrypt'))
+    {
+        $getTargetResourceParameters.Encrypt = $Encrypt
     }
 
     $currentConfig = Get-TargetResource @getTargetResourceParameters
@@ -890,26 +953,48 @@ function Test-TargetResource
         $result = $false
     }
 
-    $compareParameters = @{
-        ReferenceObject  = $currentConfig.ReportServerReservedUrl
-        DifferenceObject = $ReportServerReservedUrl
-    }
-
-    if (($null -ne $ReportServerReservedUrl) -and ($null -ne (Compare-Object @compareParameters)))
+    if ($PSBoundParameters.ContainsKey('ReportServerReservedUrl'))
     {
-        Write-Verbose -Message "Report server reserved URLs on $DatabaseServerName\$DatabaseInstanceName are $($currentConfig.ReportServerReservedUrl -join ', '), should be $($ReportServerReservedUrl -join ', ')."
-        $result = $false
+        if ($null -eq $currentConfig.ReportServerReservedUrl)
+        {
+            Write-Verbose -Message "Report server reserved URLs on $DatabaseServerName\$DatabaseInstanceName are missing, should be $($ReportServerReservedUrl -join ', ')."
+            $result = $false
+        }
+        else
+        {
+            $compareParameters = @{
+                ReferenceObject  = $currentConfig.ReportServerReservedUrl
+                DifferenceObject = $ReportServerReservedUrl
+            }
+
+            if ($null -ne (Compare-Object @compareParameters))
+            {
+                Write-Verbose -Message "Report server reserved URLs on $DatabaseServerName\$DatabaseInstanceName are $($currentConfig.ReportServerReservedUrl -join ', '), should be $($ReportServerReservedUrl -join ', ')."
+                $result = $false
+            }
+        }
     }
 
-    $compareParameters = @{
-        ReferenceObject  = $currentConfig.ReportsReservedUrl
-        DifferenceObject = $ReportsReservedUrl
-    }
-
-    if (($null -ne $ReportsReservedUrl) -and ($null -ne (Compare-Object @compareParameters)))
+    if ($PSBoundParameters.ContainsKey('ReportsReservedUrl'))
     {
-        Write-Verbose -Message "Reports reserved URLs on $DatabaseServerName\$DatabaseInstanceName are $($currentConfig.ReportsReservedUrl -join ', ')), should be $($ReportsReservedUrl -join ', ')."
-        $result = $false
+        if ($null -eq $currentConfig.ReportsReservedUrl)
+        {
+            Write-Verbose -Message "Reports reserved URLs on $DatabaseServerName\$DatabaseInstanceName are missing, should be $($ReportsReservedUrl -join ', ')."
+            $result = $false
+        }
+        else
+        {
+            $compareParameters = @{
+                ReferenceObject  = $currentConfig.ReportsReservedUrl
+                DifferenceObject = $ReportsReservedUrl
+            }
+
+            if ($null -ne (Compare-Object @compareParameters))
+            {
+                Write-Verbose -Message "Reports reserved URLs on $DatabaseServerName\$DatabaseInstanceName are $($currentConfig.ReportsReservedUrl -join ', ')), should be $($ReportsReservedUrl -join ', ')."
+                $result = $false
+            }
+        }
     }
 
     if ($PSBoundParameters.ContainsKey('UseSsl') -and $UseSsl -ne $currentConfig.UseSsl)

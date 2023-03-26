@@ -32,7 +32,6 @@
         'Connect-SQL'
         'Connect-SQLAnalysis'
         'Get-SqlInstanceMajorVersion'
-        'Import-SQLPSModule'
         'Restart-SqlService'
         'Restart-ReportingServicesService'
         'Invoke-Query'
@@ -52,7 +51,6 @@
         'Get-ProtocolNameProperties'
         'Get-ServerProtocolObject'
         'Import-Assembly'
-        'Set-PSModulePath'
         'ConvertTo-ServerInstanceName'
         'Get-FilePathMajorVersion'
         'Test-FeatureFlag'
@@ -75,4 +73,3 @@
 
     } # End of PrivateData hashtable
 }
-

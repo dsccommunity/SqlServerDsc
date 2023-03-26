@@ -46,7 +46,6 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 #>
 function Get-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='This resource explicitly loads assemblies from the GAC. This is being tracked in issue https://github.com/dsccommunity/SqlServerDsc/issues/1352')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -93,6 +92,8 @@ function Get-TargetResource
     Write-Verbose -Message (
         $script:localizedData.GetCurrentState -f $InstanceName
     )
+
+    Import-SqlDscPreferredModule
 
     $sqlMajorVersion = Get-SqlInstanceMajorVersion -InstanceName $InstanceName
     $localSqlName = Get-SqlLocalServerName -InstanceName $InstanceName
@@ -184,7 +185,6 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='This resource explicitly loads assemblies from the GAC. This is being tracked in issue https://github.com/dsccommunity/SqlServerDsc/issues/1352')]
     [CmdletBinding()]
     param
     (
@@ -226,6 +226,8 @@ function Set-TargetResource
         [System.Boolean]
         $UninstallWithForce = $true
     )
+
+    Import-SqlDscPreferredModule
 
     if (($DistributorMode -eq 'Remote') -and (-not $RemoteDistributor))
     {
@@ -347,7 +349,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='This resource explicitly loads assemblies from the GAC. This is being tracked in issue https://github.com/dsccommunity/SqlServerDsc/issues/1352')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='It is imported in Get-TargetResource, also this resource explicitly loads assemblies from the GAC. This is being tracked in issue https://github.com/dsccommunity/SqlServerDsc/issues/1352')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -435,8 +437,28 @@ function New-ServerConnection
         $SqlServerName
     )
 
-    $connInfo = Get-ConnectionInfoAssembly -SqlMajorVersion $SqlMajorVersion
-    $serverConnection = New-Object $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') $SqlServerName
+    if ($SqlMajorVersion -eq 16)
+    {
+        <#
+            For SQL Server 2022 the object must be created with New-Object and
+            also requires the module SqlServer v22 (minimum v22.0.49-preview).
+        #>
+        $serverConnection = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList $SqlServerName
+    }
+    else
+    {
+        <#
+            SQL Server 2016, 2017, and 2019 must use the assembly in the GAC. If the
+            method for SQL Server 2022 is used it throws the error:
+
+            Cannot find an overload for "ReplicationServer" and the argument count: "1".
+                + CategoryInfo          : InvalidOperation: (:) [], CimException
+                + FullyQualifiedErrorId : ConstructorInvokedThrowException,Microsoft.PowerShell.Commands.NewObjectCommand
+                + PSComputerName        : localhost
+        #>
+        $connInfo = Get-ConnectionInfoAssembly -SqlMajorVersion $SqlMajorVersion
+        $serverConnection = New-Object -TypeName $connInfo.GetType('Microsoft.SqlServer.Management.Common.ServerConnection') -ArgumentList $SqlServerName
+    }
 
     return $serverConnection
 }
@@ -848,6 +870,7 @@ function Get-ConnectionInfoAssembly
         Import-Module SqlServer
         $connectionInfo = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList @('testclu01a\SQL2014')
         # Missing assembly 'Microsoft.SqlServer.Rmo' in module SqlServer prevents this call from working.
+        # Tracked in issue https://github.com/microsoft/sqlmanagementobjects/issues/59.
         $replication = New-Object -TypeName 'Microsoft.SqlServer.Replication.ReplicationServer' -ArgumentList @($connectionInfo)
 #>
 function Get-RmoAssembly

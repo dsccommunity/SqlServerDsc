@@ -53,7 +53,7 @@ function Get-TargetResource
 
     try
     {
-        $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+        $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
         $endpointObject = $sqlServerObject.Endpoints[$Name]
         if ( $null -ne $endpointObject )
@@ -169,7 +169,7 @@ function Set-TargetResource
             $script:localizedData.SetEndpointPermission -f $Name, $InstanceName
         )
 
-        $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+        $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
         $endpointObject = $sqlServerObject.Endpoints[$Name]
         if ($null -ne $endpointObject)

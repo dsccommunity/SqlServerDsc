@@ -219,6 +219,7 @@ Configuration DSC_SqlScript_RunSqlScriptAsWindowsUser_Config
                 ('DatabaseName={0}' -f $Node.Database1Name)
             )
             QueryTimeout         = 30
+            Encrypt              = 'Optional'
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -249,6 +250,7 @@ Configuration DSC_SqlScript_RunSqlScriptAsSqlUser_Config
                 ('DatabaseName={0}' -f $Node.Database2Name)
             )
             QueryTimeout   = 30
+            Encrypt        = 'Optional'
             Credential     = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.SqlLogin_UserName, (ConvertTo-SecureString -String $Node.SqlLogin_Password -AsPlainText -Force))
@@ -281,6 +283,7 @@ Configuration DSC_SqlScript_RunSqlScriptWithVariablesDisabled_Config
             SetFilePath       = $Node.SetSqlScriptPath
             DisableVariables  = $true
             QueryTimeout      = 30
+            Encrypt           = 'Optional'
             Credential        = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
                 -ArgumentList @($Node.SqlLogin_UserName, (ConvertTo-SecureString -String $Node.SqlLogin_Password -AsPlainText -Force))
@@ -316,4 +319,3 @@ Configuration DSC_SqlScript_RemoveDatabase3_Config
         }
     }
 }
-

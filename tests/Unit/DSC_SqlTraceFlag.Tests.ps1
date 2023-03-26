@@ -33,6 +33,8 @@ BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlTraceFlag'
 
+    $env:SqlServerDscCI = $true
+
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
         -DSCResourceName $script:dscResourceName `
@@ -64,6 +66,8 @@ AfterAll {
 
     # Remove module common test helper.
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
+
+    Remove-Item -Path 'env:SqlServerDscCI'
 }
 
 Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
@@ -150,7 +154,7 @@ Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
             $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer'
         }
 
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
 
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
@@ -287,7 +291,7 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $mockTestTargetResourceParameters.TraceFlags = @()
+                    $mockTestTargetResourceParameters.ClearAllTraceFlags = $true
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
@@ -462,7 +466,7 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $mockTestTargetResourceParameters.TraceFlags = @()
+                    $mockTestTargetResourceParameters.ClearAllTraceFlags = $true
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
@@ -817,7 +821,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
             $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer'
         }
 
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
         Mock -CommandName Restart-SqlService
 
         InModuleScope -ScriptBlock {
@@ -831,17 +835,32 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
     BeforeEach {
         InModuleScope -ScriptBlock {
+            $script:mockMethodAlterRan = $false
             $script:mockSetTargetResourceParameters = $script:mockDefaultParameters.Clone()
         }
     }
 
     Context 'When the system is not in the desired state' {
+        Context 'When no trace flag parameter is assigned' {
+            It 'Should not throw and set no value' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $script:mockMethodAlterRan | Should -BeFalse -Because 'no TraceFlag parameter was set'
+                }
+
+                Should -Invoke -CommandName New-Object -Exactly -Times 0 -Scope It
+            }
+        }
+
         Context 'When there should be no trace flags' {
             It 'Should not throw and set the correct value' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $mockSetTargetResourceParameters.TraceFlags = @()
+                    $mockSetTargetResourceParameters.ClearAllTraceFlags = $true
 
                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 

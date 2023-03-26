@@ -2,6 +2,9 @@
     .SYNOPSIS
         Get server audit.
 
+    .DESCRIPTION
+        This command gets a server audit from a SQL Server Database Engine instance.
+
     .PARAMETER ServerObject
         Specifies current server connection object.
 
@@ -22,12 +25,13 @@
         Get the audit named **MyFileAudit**.
 
     .OUTPUTS
-        `[Microsoft.SqlServer.Management.Smo.Audit]`.
+        `[Microsoft.SqlServer.Management.Smo.Audit]`
 #>
 function Get-SqlDscAudit
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Justification = 'Because the rule does not understands that the command returns [System.String[]] when using , (comma) in the return statement')]
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
-    [OutputType([Microsoft.SqlServer.Management.Smo.Audit])]
+    [OutputType([Microsoft.SqlServer.Management.Smo.Audit[]])]
     [CmdletBinding()]
     param
     (
@@ -35,7 +39,7 @@ function Get-SqlDscAudit
         [Microsoft.SqlServer.Management.Smo.Server]
         $ServerObject,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [System.String]
         $Name,
 
@@ -44,27 +48,39 @@ function Get-SqlDscAudit
         $Refresh
     )
 
-    if ($Refresh.IsPresent)
+    process
     {
-        # Make sure the audits are up-to-date to get any newly created audits.
-        $ServerObject.Audits.Refresh()
-    }
-
-    $auditObject = $ServerObject.Audits[$Name]
-
-    if (-not $AuditObject)
-    {
-        $missingAuditMessage = $script:localizedData.Audit_Missing -f $Name
-
-        $writeErrorParameters = @{
-            Message = $missingAuditMessage
-            Category = 'InvalidOperation'
-            ErrorId = 'GSDA0001' # cspell: disable-line
-            TargetObject = $Name
+        if ($Refresh.IsPresent)
+        {
+            # Make sure the audits are up-to-date to get any newly created audits.
+            $ServerObject.Audits.Refresh()
         }
 
-        Write-Error @writeErrorParameters
-    }
+        $auditObject = @()
 
-    return $auditObject
+        if ($PSBoundParameters.ContainsKey('Name'))
+        {
+            $auditObject = $ServerObject.Audits[$Name]
+
+            if (-not $AuditObject)
+            {
+                $missingAuditMessage = $script:localizedData.Audit_Missing -f $Name
+
+                $writeErrorParameters = @{
+                    Message = $missingAuditMessage
+                    Category = 'InvalidOperation'
+                    ErrorId = 'GSDA0001' # cspell: disable-line
+                    TargetObject = $Name
+                }
+
+                Write-Error @writeErrorParameters
+            }
+        }
+        else
+        {
+            $auditObject = $ServerObject.Audits
+        }
+
+        return , [Microsoft.SqlServer.Management.Smo.Audit[]] $auditObject
+    }
 }

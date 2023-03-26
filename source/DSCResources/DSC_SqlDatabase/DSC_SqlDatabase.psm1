@@ -15,6 +15,7 @@ $script:supportedCompatibilityLevels = @{
     13 = @('Version100', 'Version110', 'Version120', 'Version130')
     14 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140')
     15 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150')
+    16 = @('Version100', 'Version110', 'Version120', 'Version130', 'Version140', 'Version150', 'Version160')
 }
 
 <#
@@ -77,7 +78,7 @@ function Get-TargetResource
         OwnerName          = $null
     }
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     if ($sqlServerObject)
     {
@@ -186,7 +187,7 @@ function Set-TargetResource
         $OwnerName
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     if ($sqlServerObject)
     {

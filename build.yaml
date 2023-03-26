@@ -40,8 +40,10 @@ CopyPaths:
   - en-US
   - Modules
 Prefix: prefix.ps1
+Suffix: suffix.ps1
 Encoding: UTF8
 VersionedOutputDirectory: true
+BuiltModuleSubdirectory: builtModule
 
 ModuleBuildTasks:
   Sampler:
@@ -74,6 +76,12 @@ NestedModule:
     AddToManifest: false
     Exclude: PSGetModuleInfo.xml
 
+  DscResource.Base:
+    CopyOnly: true
+    Path: ./output/RequiredModules/DscResource.Base
+    AddToManifest: false
+    Exclude: PSGetModuleInfo.xml
+
 ####################################################
 #          Pester Configuration (Sampler)          #
 ####################################################
@@ -90,14 +98,13 @@ Pester:
       CoveragePercentTarget: 85
       OutputPath: JaCoCo_coverage.xml
       OutputEncoding: ascii
-      # There is a bug in Pester when running unit tests for classes when 'UseBreakpoints' is turned off.
-      # See error in gist: https://gist.github.com/johlju/c16dfd9587c7e066e8825fc54b33a703
-      UseBreakpoints: true
+      UseBreakpoints: false
     TestResult:
       OutputFormat: NUnitXML
       OutputEncoding: ascii
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
+    - Modules/DscResource.Base
 
 ####################################################
 #      Pester Configuration (DscResource.Test)     #
@@ -120,6 +127,7 @@ DscTest:
       - output
     ExcludeModuleFile:
       - Modules/DscResource.Common
+      - Modules/DscResource.Base
       # Must exclude built module file because it should not be tested like MOF-based resources
       - SqlServerDsc.psm1
     MainGitBranch: main

@@ -33,6 +33,8 @@ BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlScriptQuery'
 
+    $env:SqlServerDscCI = $true
+
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
         -DSCResourceName $script:dscResourceName `
@@ -67,6 +69,8 @@ AfterAll {
 
     # Remove module common test helper.
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
+
+    Remove-Item -Path 'env:SqlServerDscCI'
 }
 
 Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
@@ -79,6 +83,7 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
                 GetQuery     = "GetQuery;"
                 TestQuery    = "TestQuery;"
                 SetQuery     = "SetQuery;"
+                Encrypt      = 'Optional'
             }
         }
     }
@@ -171,6 +176,7 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
                 GetQuery     = "GetQuery;"
                 TestQuery    = "TestQuery;"
                 SetQuery     = "SetQuery;"
+                Encrypt      = 'Optional'
             }
         }
     }
@@ -243,6 +249,7 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
                 GetQuery     = "GetQuery;"
                 TestQuery    = "TestQuery;"
                 SetQuery     = "SetQuery;"
+                Encrypt      = 'Optional'
             }
         }
     }

@@ -254,6 +254,18 @@ There are [stub classes](https://github.com/PowerShell/SqlServerDsc/blob/main/Te
 for the SMO classes which can be used and improved on when creating tests where
 SMO classes are used in the code being tested.
 
+#### Using stub modules
+
+There are [stub modules](https://github.com/PowerShell/SqlServerDsc/blob/main/Tests/Unit/Stubs)
+for the modules SQLPS and SqlServer. The stub modules should be used when
+writing unit test so that mocks have something to hook onto without the
+need to have the real modules installed.
+
+There is documentation how to generate the stub modules for the unit tests in
+['tests/Unit/Stubs`](https://github.com/dsccommunity/SqlServerDsc/tree/main/tests/Unit/Stubs).
+The stub modules only need to be updated when there is changes to the source
+module.
+
 ### Integration tests
 
 Integration tests should be written for resources so they can be validated by

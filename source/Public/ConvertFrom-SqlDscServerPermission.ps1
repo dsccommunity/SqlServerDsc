@@ -3,6 +3,10 @@
         Converts a ServerPermission object into an object of the type
         Microsoft.SqlServer.Management.Smo.ServerPermissionSet.
 
+    .DESCRIPTION
+        Converts a ServerPermission object into an object of the type
+        Microsoft.SqlServer.Management.Smo.ServerPermissionSet.
+
     .PARAMETER Permission
         Specifies a ServerPermission object.
 

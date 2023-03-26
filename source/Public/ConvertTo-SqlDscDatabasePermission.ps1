@@ -3,6 +3,10 @@
         Converts a collection of Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo
         objects into an array of DatabasePermission objects.
 
+    .DESCRIPTION
+        Converts a collection of Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo
+        objects into an array of DatabasePermission objects.
+
     .PARAMETER DatabasePermissionInfo
         Specifies a collection of Microsoft.SqlServer.Management.Smo.DatabasePermissionInfo
         objects.

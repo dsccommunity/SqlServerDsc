@@ -13,7 +13,7 @@
     "powershell.codeFormatting.alignPropertyValuePairs": true,
     "powershell.codeFormatting.useConstantStrings": true,
     "powershell.developer.bundledModulesPath": "${cwd}/output/RequiredModules",
-    "powershell.scriptAnalysis.settingsPath": ".vscode\\analyzersettings.psd1",
+    "powershell.scriptAnalysis.settingsPath": ".vscode/analyzersettings.psd1",
     "powershell.scriptAnalysis.enable": true,
     "files.trimTrailingWhitespace": true,
     "files.trimFinalNewlines": true,
@@ -98,9 +98,11 @@
     },
     "powershell.pester.useLegacyCodeLens": false,
     "pester.testFilePath": [
+        "[tT]ests/[qQ][aA]/*.[tT]ests.[pP][sS]1",
+        "[tT]ests/[uU]nit/**/*.[tT]ests.[pP][sS]1",
         "[tT]ests/[uU]nit/*.[tT]ests.[pP][sS]1"
     ],
-    "pester.runTestsInNewProcess": false,
+    "pester.runTestsInNewProcess": true,
     "pester.pesterModulePath": "./output/RequiredModules/Pester",
     "powershell.pester.codeLens": true,
     "pester.suppressCodeLensNotice": true

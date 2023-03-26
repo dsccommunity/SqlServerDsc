@@ -56,7 +56,7 @@ function Get-TargetResource
         $RestartTimeout = 120
     )
 
-    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $sqlServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     $isAlwaysOnEnabled = [System.Boolean] $sqlServerObject.IsHadrEnabled
     if ($isAlwaysOnEnabled -eq $true)
@@ -137,7 +137,7 @@ function Set-TargetResource
         $serverInstance = "$ServerName\$InstanceName"
     }
 
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     switch ($Ensure)
     {

@@ -5,10 +5,311 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Changes to SqlAGListener
+### Added
+
+- SqlServerDsc
+  - New GitHub Actions workflow that run PSScriptAnalyzer for PRs so any
+    issues are shown directly in the PR's changed files ([issue #1860](https://github.com/dsccommunity/SqlServerDsc/issues/1860)).
+  - Added a separate integration test jobs for SQL Server Reporting Services
+    to be able to test configuring SQL Server Reportings Services using
+    other values that the default values.
+  - Now updates GitHub Actions automatically by allowing dependabot sending
+    in pull requests.
+
+### Changed
+
+- SqlServerDsc
+  - Update `appveyor.yml` to use `dotnet tool install` to install _GitVersion_.
+  - Re-enable integration tests for SqlRSSetup and SqlRS when running against
+    SQL Server 2019 ([issue #1847](https://github.com/dsccommunity/SqlServerDsc/issues/1847)).
+  - The private function `Import-SQLPSModule` was replaced throughout with
+    the public command `Import-SqlDscPreferredModule` ([issue #1848](https://github.com/dsccommunity/SqlServerDsc/issues/1848)).
+  - Removed the regular expression `features?` from the GitVersion configuration.
+    Before, if a fix commit mentioned the word feature but means a SQL Server
+    feature GitVersion would bump minor instead of patch number.
+  - Update pipeline script that is used to resolve dependencies.
+  - When running in Azure Pipelines any existing SqlServer module is removed
+    before running integration tests, so the tests can update to latest version.
+  - Now the new label 'command proposal' is an exempt for labeling issues stale.
+  - Update the initializing header for all integration test to be equal to
+    the unit tests.
+  - Rename task jobs in Azure Pipelines ([issue #1881](https://github.com/dsccommunity/SqlServerDsc/issues/1881)).
+- `Get-SqlDscAudit`
+  - The parameter `Name` is no longer mandatory. When left out all the current
+    audits are returned ([issue #1812](https://github.com/dsccommunity/SqlServerDsc/issues/1812)).
+- `Import-SqlDscPreferredModule`
+  - Now correctly preserves paths that is set in the session for the environment
+    variable `$env:PSModulePath`. If the module _SqlServer_ or _SQLPS_ are not
+    found the command will populate the `$env:PSModulePath` with the
+    unique paths from all targets; session, user, and machine. This is done
+    so that any new path that was added to the machine or user target will
+    also be set in the session.
+  - Now imports the preferred module into the global scope so that MOF-based
+    resources (that is in another module scope) can use the imported module.
+  - Some code cleanup ([issue #1881](https://github.com/dsccommunity/SqlServerDsc/issues/1881)).
+- SqlAGListener
   - Made the resource cluster aware. When ProcessOnlyOnActiveNode is specified,
     the resource will only determine if a change is needed if the target node
     is the active host of the SQL Server instance ([issue #871](https://github.com/dsccommunity/SqlServerDsc/issues/871)).
+
+### Fixed
+
+- `Assert-SetupActionProperties`
+  - Now throws an exception if the setup action is `Install` and the feature
+    analysis services is specified without the parameter `ASSysAdminAccounts`
+    ([issue #1845](https://github.com/dsccommunity/SqlServerDsc/issues/1845)).
+  - Now throws an exception if the setup action is `Install` and the feature
+    database engine is specified without the parameter `SqlSysAdminAccounts`.
+- `Invoke-SetupAction`
+  - The parameter `SqlSysAdminAccounts` is no longer mandatory to allow
+    installation where the database engine is not installed.
+- `Install-SqlDscServer`
+  - The parameter `SqlSysAdminAccounts` is no longer mandatory to allow
+    installation where the database engine is not installed.
+- `SqlRS`
+  - Fixed issue of configuring reporting services ([issue #1868](https://github.com/dsccommunity/SqlServerDsc/issues/1868)).
+  - Test renamed to `When Reports virtual directory is different` so it
+    is more correct and not a duplicate.
+  - Integration tests configuration names was renamed to better tell what
+    the configuration does ([issue #1880](https://github.com/dsccommunity/SqlServerDsc/issues/1880)).
+
+## [16.1.0] - 2023-02-28
+
+### Removed
+
+- SqlServerDsc
+  - Removed `Assert-ElevatedUser` from private functions ([issue #1797](https://github.com/dsccommunity/SqlServerDsc/issues/1797)).
+    - `Assert-ElevatedUser` added to _DscResource.Common_ public functions
+      ([issue #82](https://github.com/dsccommunity/DscResource.Common/issues/82)).
+  - Removed `Test-IsNumericType` from private functions ([issue #1795](https://github.com/dsccommunity/SqlServerDsc/issues/1795)).
+    - `Test-IsNumericType` added to _DscResource.Common_ public functions
+    ([issue #87](https://github.com/dsccommunity/DscResource.Common/issues/87)).
+  - Removed `Test-ServiceAccountRequirePassword` from private functions ([issue #1794](https://github.com/dsccommunity/SqlServerDsc/issues/1794)
+    - Replaced by `Test-AccountRequirePassword` that was added to _DscResource.Common_
+      public functions ([issue #93](https://github.com/dsccommunity/DscResource.Common/issues/93)).
+  - Removed `Assert-RequiredCommandParameter` from private functions ([issue #1796](https://github.com/dsccommunity/SqlServerDsc/issues/1796)).
+    - Replaced by `Assert-BoundParameter` (part of _DscResource.Common_)
+      that had a new parameter set added ([issue #92](https://github.com/dsccommunity/DscResource.Common/issues/92)).
+  - Removed private function `Test-ResourceDscPropertyIsAssigned` and
+    `Test-ResourceHasDscProperty`. Both are replaced by `Test-DscProperty`
+    which is now part of the module _DscResource.Common_.
+  - Removed private function `Get-DscProperty`. It is replaced by `Get-DscProperty`
+    which is now part of the module _DscResource.Common_.
+  - The class `ResourceBase` and `Reason` has been removed, they are now
+    part of the module _DscResource.Base_.
+  - The enum `Ensure` has been removed, is is now part of the module
+    _DscResource.Base_.
+  - The private functions that the class `ResourceBase` depended on has been
+    moved to the module _DscResource.Base_.
+    - `ConvertFrom-CompareResult`
+    - `ConvertTo-Reason`
+    - `Get-ClassName`
+    - `Get-LocalizedDataRecursive`
+  - Added documentation how to generate stub modules for the unit tests.
+    The documentation can be found in ['tests/Unit/Stubs`](https://github.com/dsccommunity/SqlServerDsc/tree/main/tests/Unit/Stubs).
+  - SqlRSSetup and SqlRS
+    - Removed the integration test when running against SQL Server 2019,
+      due to the URL to download the Reporting Services 2019 executable
+      no longer works.
+
+### Added
+
+- SqlServerDsc
+  - The following private functions were added to the module (see comment-based
+    help for more information):
+    - `Assert-SetupActionProperties`
+    - `Invoke-SetupAction`
+    - `ConvertTo-ManagedServiceType`
+    - `ConvertFrom-ManagedServiceType`
+    - `Assert-ManagedServiceType`
+  - The following public functions were added to the module (see comment-based
+    help for more information):
+    - `Install-SqlDscServer`
+    - `Uninstall-SqlDscServer`
+    - `Add-SqlDscNode`
+    - `Remove-SqlDscNode`
+    - `Repair-SqlDscServer`
+    - `Complete-SqlDscImage`
+    - `Complete-SqlDscFailoverCluster`
+    - `Initialize-SqlDscRebuildDatabase`
+    - `Import-SqlDscPreferredModule`
+    - `Get-SqlDscManagedComputer`
+    - `Get-SqlDscManagedComputerService`
+    - `Get-SqlDscTraceFlag`
+    - `Add-SqlDscTraceFlag`
+    - `Remove-SqlDscTraceFlag`
+    - `Set-SqlDscTraceFlag`
+    - `Get-SqlDscStartupParameter`
+    - `Set-SqlDscStartupParameter`
+  - Added class `StartupParameters` which can parse the startup parameters
+    of a manged computer service object.
+  - Added class `SqlReason` to be used as the type of the DSC property `Reasons`
+    for class-based resources.
+  - New GitHub issue templates for proposing new public commands, proposing
+    an enhancement to an existing command, or having a problem with an existing
+    command.
+  - Integration tests are now also run on SQL Server 2022 and SQL Server
+    Reporting Services 2022.
+  - Integration tests now wait for LCM after each It-block, not just at the
+    end of a Context-block. Hopefully this will mitigate some of the intermittent
+    errors we have seen when running the integration tests in the pipeline.
+  - Use preview version of Pester to support the development of Pester as
+    this is a code base with a diverse set of tests thar can help catch
+    issues in Pester. If preview release of Pester prevents release we
+    should temporary shift back to stable.
+  - New QA tests for public commands and private functions.
+- SqlDatabase
+  - Added compatibility levels for SQL Server 2022 (major version 16).
+- SqlSetup
+  - Paths for SQL Server 2022 are correctly returned by Get.
+- SqlRS
+  - Added optional parameter `Encrypt`. Parameter `Encrypt` controls whether
+    the connection used by `Invoke-SqlCmd should enforce encryption. This
+    parameter can only be used together with the module _SqlServer_ v22.x
+    (minimum v22.0.49-preview). The parameter will be ignored if an older
+    major versions of the module _SqlServer_ is used.
+- SqlScript
+  - Added optional parameter `Encrypt`. Parameter `Encrypt` controls whether
+    the connection used by `Invoke-SqlCmd should enforce encryption. This
+    parameter can only be used together with the module _SqlServer_ v22.x
+    (minimum v22.0.49-preview). The parameter will be ignored if an older
+    major versions of the module _SqlServer_ is used.
+- SqlScriptQuery
+  - Added optional parameter `Encrypt`. Parameter `Encrypt` controls whether
+    the connection used by `Invoke-SqlCmd should enforce encryption. This
+    parameter can only be used together with the module _SqlServer_ v22.x
+    (minimum v22.0.49-preview). The parameter will be ignored if an older
+    major versions of the module _SqlServer_ is used.
+- SqlTraceFlag
+  - The resource is now tested with an integration tests ([issue #1835](https://github.com/dsccommunity/SqlServerDsc/issues/1835)).
+  - A new parameter `ClearAllTraceFlags` was added so a configuration
+    can enforce that there should be no trace flags.
+- The public commands `Add-SqlDscNode`, `Complete-SqlDscFailoverCluster`,
+  `Complete-SqlDscImage`, `Install-SqlDscServer`, and `Repair-SqlDscServer`
+  now support the setup argument `ProductCoveredBySA` ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
+
+### Changed
+
+- SqlServerDsc
+  - Update Stale GitHub Action to v7.
+  - Update to build module in separate folder under `output`.
+  - Moved the build step of the pipeline to a Windows build worker when
+    running in Azure DevOps.
+  - Class-based resources now uses the parent class `ResourceBase` from the
+    module _DscResource.Base_ ([issue #1790](https://github.com/dsccommunity/SqlServerDsc/issues/1790)).
+  - Settings for the _Visual Studio Code_ extension _Pester Tests_ was changed
+    to be able to run all unit tests, and all tests run by the extension
+    are now run in a separate process to be able to handle changes in
+    class-based resources.
+  - The AppVeyor configuration file was updated to include the possibility
+    to run integration tests for SQL Server 2022.
+  - The AppVeyor configuration file was updated to include the possibility
+    to run skip installing one or more SQL Server instances when debugging
+    in AppVeyor to help maximize the time alloted be run.
+  - The stubs in `SqlServerStub.psm1` are now based on the commands from the
+    module SqlServer v22.0.49-preview.
+  - The module will now call `Import-SqlDscPreferredModule` when the module
+    is imported to make sure SqlServer (default preferred module) or SQLPS
+    is loaded into the session. This will make it possible for classes and
+    commands to use and return SQL types. If no module is found it will
+    output a warning to install any of the dependent modules.
+  - Add empty constructor to classes to be able to use Pester's new code
+    coverage method. See more information can be found in [pester/Pester#2306](https://github.com/pester/Pester/issues/2306).
+  - The type of the property `Reasons` was changed in the class-based resources.
+    This resolves a problem when using two DSC resource modules that was
+    using the same class-type for the property `Reasons`. Resolves the issues
+    [issue #1831](https://github.com/dsccommunity/SqlServerDsc/issues/1831),
+    [issue #1832](https://github.com/dsccommunity/SqlServerDsc/issues/1832),
+    and [issue #1833](https://github.com/dsccommunity/SqlServerDsc/issues/1833).
+- `Install-SqlServerDsc`
+  - No longer throws an exception when parameter `AgtSvcAccount` is not specified.
+- SqlAgReplica
+  - Converted unit test to Pester 5.
+  - `Update-AvailabilityGroupReplica` to trigger once within `Set-TargetResource`
+    for all AvailabilityReplica changes.
+- Private function `Invoke-SetupAction` ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
+  - Was changed to support the SQL Server 2022 GA feature `AzureExtension`
+    (that replaced the feature name `ARC`).
+  - Support the setup argument `ProductCoveredBySA`.
+  - No longer supports the argument `OnBoardSQLToARC` as it was removed in
+    SQL Server 2022 GA.
+- `Install-SqlDscServer`
+  - Was changed to support the SQL Server 2022 GA feature `AzureExtension`
+    (that replaced the feature name `ARC`) ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
+- `Uninstall-SqlDscServer`
+  - Was changed to support the SQL Server 2022 GA feature `AzureExtension`
+    (that replaced the feature name `ARC`) ([issue #1798](https://github.com/dsccommunity/SqlServerDsc/issues/1798)).
+  - Now support the argument `SuppressPrivacyStatementNotice` ([issue #1809](https://github.com/dsccommunity/SqlServerDsc/issues/1809)).
+- `Import-SqlDscPreferredModule`
+  - No longer tries to get the environment variables from the machine state
+    when run on Linux or macOS. This will allow the unit tests to run
+    cross-plattform.
+- SqlReplication
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1801](https://github.com/dsccommunity/SqlServerDsc/issues/1801)).
+- SqlProtocol
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1802](https://github.com/dsccommunity/SqlServerDsc/issues/1802)).
+- SqlProtocolTcpIp
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1805](https://github.com/dsccommunity/SqlServerDsc/issues/1805)).
+- SqlServiceAccount
+  - The resource now supports SQL Server 2022. The resource will require
+    the module _SqlServer_ v22.0.49-preview or newer when used against an
+    SQL Server 2022 instance ([issue #1800](https://github.com/dsccommunity/SqlServerDsc/issues/1800)).
+- SqlSetup
+  - Integration tests now used _SqlServer_ module version 22.0.49-preview
+    when running against _SQL Server 2022_, when testing _SQL Server 2016_,
+    _SQL Server 2017_, and _SQL Server 2019_ the module version 21.1.18256
+    is used.
+  - Integration tests now supports installing preview versions of the module
+    _SqlServer_.
+- SqlServerDsc.Common
+  - `Import-SQLPSModule`
+    - Small changed to the localized string verbose message when the preferred
+      module (_SqlServer_) is not found.
+  - `Invoke-SqlScript`
+    - Added the optional parameter `Encrypt` which controls whether the connection
+      used by `Invoke-SqlCmd` should enforce encryption. This parameter can
+      only be used together with the module _SqlServer_ v22.x (minimum
+      v22.0.49-preview). The parameter will be ignored if an older major
+      versions of the module _SqlServer_ is used.
+  - `Connect-SQL`
+    - Was updated to handle both `-ErrorAction 'Stop'` and `-ErrorAction 'SilentlyContinue'`
+      when passed to the command ([issue #1837](https://github.com/dsccommunity/SqlServerDsc/issues/1837)).
+    - Now returns a more clear error message when the status of a database
+      instance is not `Online`.
+  - `Import-SQLPSModule`
+    - The function was changed to call public command `Import-SqlDscPreferredModule`.
+- SqlTraceFlag
+  - The examples was updated to show that values should be passed as an array,
+    even when there is only one value.
+  - `Get-TargetResource` was updated to always return an array for parameter
+    `TraceFlags`, `TraceFlagsToInclude`, and `TraceFlagsToInclude`. _The last_
+    _two properties will always return an empty array._
+
+### Fixed
+
+- SqlServerDsc
+  - Localized strings file `en-US/SqlServerDsc.strings.psd1` no longer
+    referencing the wrong module in a comment.
+- SqlAGReplica
+  - No longer tries to enforce EndpointHostName when it is not part of the
+    configuration ([issue #1821](https://github.com/dsccommunity/SqlServerDsc/issues/1821)).
+  - Now `Get-TargetResource` always returns values for the properties `Name`
+    and `AvailabilityGroupName` ([issue #1822](https://github.com/dsccommunity/SqlServerDsc/issues/1822)).
+  - Now `Test-TargetResource` no longer test properties that cannot
+    be enforced ([issue #1822](https://github.com/dsccommunity/SqlServerDsc/issues/1822)).
+- SqlTraceFlag
+  - `Set-TargetResource` was updated to handle a single trace flag in the
+    current state ([issue #1834](https://github.com/dsccommunity/SqlServerDsc/issues/1834)).
+  - `Set-TargetResource` was updated to correctly include or exclude a single
+    flag ([issue #1834](https://github.com/dsccommunity/SqlServerDsc/issues/1834)).
+- SqlAudit
+  - Return the correct type for parameter `LogType` when calling method `Get()`.
 
 ## [16.0.0] - 2022-09-09
 
@@ -216,7 +517,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlAlwaysOnService
   - BREAKING CHANGE: The parameter `IsHadrEnabled` is no longer returned by
     `Get-TargetResource`. The `Ensure` parameter now returns `Present` if
-    Always On HADR is enabled and `Absent` if it is disabled.
+    Always On High Availability Diaster Recovery is enabled and `Absent`
+    if it is disabled.
 - SqlDatabasePermission
   - BREAKING CHANGE: The resource has been refactored. The parameters
     `ParameterState` and `Permissions` has been replaced by parameters
@@ -333,8 +635,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ConvertTo-Reason`
   - Fix to handle `$null` values on Windows PowerShell.
   - If the property name contain the word 'Path' the value will be parsed to
-    replace backslash or slashes at the end of the string, e.g. `'/mypath/'`
-    will become `'/mypath'`.
+    replace backslash or slashes at the end of the string, e.g. `'/myPath/'`
+    will become `'/myPath'`.
 - `ResourceBase`
   - Now handles `Ensure` correctly from derived `GetCurrentState()`. But
     requires that the `GetCurrentState()` only return key property if object
@@ -2238,7 +2540,7 @@ in a future release.
       MSFT\_xSQLServerEndpointPermission.psm1, MSFT\_xSQLServerEndpointState.psm1,
       MSFT\_xSQLServerNetwork.psm1, MSFT\_xSQLServerPermission.psm1,
       MSFT\_xSQLServerReplication.psm1, MSFT\_xSQLServerScript.psm1,
-      SQLPSStub.psm1, SQLServerStub.psm1.
+      SQLPSStub.psm1, SqlServerStub.psm1.
   - Opt-in for script files common tests ([issue #707](https://github.com/dsccommunity/SqlServerDsc/issues/707)).
     - Removed Byte Order Mark (BOM) from the files; DSCClusterSqlBuild.ps1,
       DSCFCISqlBuild.ps1, DSCSqlBuild.ps1, DSCSQLBuildEncrypted.ps1,

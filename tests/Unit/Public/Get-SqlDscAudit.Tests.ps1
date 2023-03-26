@@ -26,6 +26,8 @@ BeforeDiscovery {
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
 
+    $env:SqlServerDscCI = $true
+
     Import-Module -Name $script:dscModuleName
 
     # Loading mocked classes
@@ -43,9 +45,36 @@ AfterAll {
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
+
+    Remove-Item -Path 'env:SqlServerDscCI'
 }
 
 Describe 'Get-SqlDscAudit' -Tag 'Public' {
+    It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
+        @{
+            MockParameterSetName = '__AllParameterSets'
+            MockExpectedParameters = '[-ServerObject] <Server> [[-Name] <string>] [-Refresh] [<CommonParameters>]'
+        }
+    ) {
+        $result = (Get-Command -Name 'Get-SqlDscAudit').ParameterSets |
+            Where-Object -FilterScript {
+                $_.Name -eq $mockParameterSetName
+            } |
+            Select-Object -Property @(
+                @{
+                    Name = 'ParameterSetName'
+                    Expression = { $_.Name }
+                },
+                @{
+                    Name = 'ParameterListAsString'
+                    Expression = { $_.ToString() }
+                }
+            )
+
+        $result.ParameterSetName | Should -Be $MockParameterSetName
+        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+    }
+
     Context 'When no audit exist' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
@@ -110,11 +139,49 @@ Describe 'Get-SqlDscAudit' -Tag 'Public' {
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should return the correct values' {
-                $result = Get-SqlDscAudit @mockDefaultParameters
+                $result = $mockServerObject | Get-SqlDscAudit -Name 'Log1'
 
                 $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Audit'
                 $result.Name | Should -Be 'Log1'
             }
+        }
+    }
+
+    Context 'When getting all current audits' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject.InstanceName = 'TestInstance'
+
+            $mockServerObject = $mockServerObject |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                    return @(
+                        (
+                            New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                                $mockServerObject,
+                                'Log1'
+                            )
+                        ),
+                        (
+                            New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                                $mockServerObject,
+                                'Log2'
+                            )
+                        )
+                    )
+                } -PassThru -Force
+
+            $mockDefaultParameters = @{
+                ServerObject = $mockServerObject
+            }
+        }
+
+        It 'Should return the correct values' {
+            $result = Get-SqlDscAudit @mockDefaultParameters
+
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Audit'
+            $result | Should -HaveCount 2
+            $result.Name | Should -Contain 'Log1'
+            $result.Name | Should -Contain 'Log2'
         }
     }
 }

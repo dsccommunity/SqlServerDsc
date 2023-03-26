@@ -33,6 +33,8 @@ BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlRS'
 
+    $env:SqlServerDscCI = $true
+
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
         -DSCResourceName $script:dscResourceName `
@@ -64,6 +66,8 @@ AfterAll {
 
     # Remove module common test helper.
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
+
+    Remove-Item -Path 'env:SqlServerDscCI'
 }
 
 Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
@@ -128,7 +132,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                 Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $false -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockDefaultInstanceName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
-                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru -Force |
                 Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force
         }
 
@@ -145,6 +149,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                 InstanceName         = $mockNamedInstanceName
                 DatabaseServerName   = $mockReportingServicesDatabaseServerName
                 DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
+                Encrypt              = 'Optional'
             }
         }
     }
@@ -181,6 +186,7 @@ Describe 'SqlRS\Get-TargetResource' -Tag 'Get' {
                 $resultGetTargetResource.InstanceName | Should -Be $mockNamedInstanceName
                 $resultGetTargetResource.DatabaseServerName | Should -Be $mockReportingServicesDatabaseServerName
                 $resultGetTargetResource.DatabaseInstanceName | Should -Be $mockReportingServicesDatabaseNamedInstanceName
+                $resultGetTargetResource.Encrypt | Should -Be 'Optional'
                 $resultGetTargetResource | Should -BeOfType [System.Collections.Hashtable]
             }
         }
@@ -371,20 +377,28 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
     BeforeAll {
         InModuleScope -ScriptBlock {
             # Inject a stub in the module scope to support testing cross-plattform
-            function script:Get-CimInstance {
+            function script:Get-CimInstance
+            {
+                [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
                 param
                 (
                     $ClassName
                 )
+
+                return
             }
 
             # Inject a stub in the module scope to support testing cross-plattform
-            function script:Invoke-CimMethod  {
+            function script:Invoke-CimMethod
+            {
+                [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
                 param
                 (
                     $MethodName,
                     $Arguments
                 )
+
+                return
             }
         }
 
@@ -465,7 +479,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $false -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value $mockDefaultInstanceName -PassThru |
                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value '' -PassThru |
-                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru -Force
+                Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportManager' -Value '' -PassThru -Force |
                 Add-Member -MemberType NoteProperty -Name 'SecureConnectionLevel' -Value $mockDynamicSecureConnectionLevel -PassThru -Force
         }
 
@@ -493,8 +507,8 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         #>
         Mock -CommandName Invoke-CimMethod -MockWith $mockInvokeCimMethod
 
-        Mock -CommandName Import-SQLPSModule
-        Mock -CommandName Invoke-Sqlcmd
+        Mock -CommandName Import-SqlDscPreferredModule
+        Mock -CommandName Invoke-SqlCmd
         Mock -CommandName Restart-ReportingServicesService
         Mock -CommandName Invoke-RsCimMethod
         Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_GenerateDatabaseCreationScript -ParameterFilter {
@@ -522,12 +536,16 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             $script:mockReportingServicesDatabaseNamedInstanceName = $mockNamedInstanceName
 
             # Inject a stub in the module scope to support testing cross-plattform
-            function script:Invoke-CimMethod  {
+            function script:Invoke-CimMethod
+            {
+                [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
                 param
                 (
                     $MethodName,
                     $Arguments
                 )
+
+                return
             }
         }
     }
@@ -547,6 +565,18 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Mock -CommandName Test-TargetResource -MockWith {
                     return $true
+                }
+
+                BeforeAll {
+                    Mock -CommandName Get-Command -ParameterFilter {
+                        $Name -eq 'Invoke-SqlCmd'
+                    } -MockWith {
+                        return @{
+                            Parameters = @{
+                                Keys = @()
+                            }
+                        }
+                    }
                 }
             }
 
@@ -611,7 +641,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 2 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
             }
 
@@ -625,6 +655,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
+                        # This tests should not pass the parameter Encrypt to test that det default value works.
                         $mockDefaultParameters = @{
                             InstanceName         = $mockNamedInstanceName
                             DatabaseServerName   = $mockReportingServicesDatabaseServerName
@@ -633,6 +664,10 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                         }
 
                         { Set-TargetResource @mockDefaultParameters } | Should -Throw -ExpectedMessage ('*' + $script:localizedData.TestFailedAfterSet)
+
+                        Should -Invoke -CommandName Invoke-SqlCmd -ParameterFilter {
+                            $PesterBoundParameters.Keys -notcontains 'Encrypt'
+                        } -Times 2 -Exactly -Scope It
                     }
                 }
             }
@@ -750,7 +785,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 } -Exactly -Times 2 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 0 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
             }
         }
@@ -845,7 +880,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 } -Exactly -Times 2 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 0 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 0 -Scope It
             }
         }
@@ -858,10 +893,22 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                     return $true
                 }
 
+                                Mock -CommandName Get-Command -ParameterFilter {
+                    $Name -eq 'Invoke-SqlCmd'
+                } -MockWith {
+                    return @{
+                        Parameters = @{
+                            Keys = @('Encrypt')
+                        }
+                    }
+                }
+
                 $defaultParameters = @{
                     InstanceName         = $mockDefaultInstanceName
                     DatabaseServerName   = $mockReportingServicesDatabaseServerName
                     DatabaseInstanceName = $mockReportingServicesDatabaseDefaultInstanceName
+                    # Testing passing Encrypt.
+                    Encrypt                      = 'Optional'
                 }
             }
 
@@ -920,8 +967,12 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 2 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
+
+                Should -Invoke -CommandName Invoke-SqlCmd -ParameterFilter {
+                    $Encrypt -eq 'Optional'
+                } -Times 2 -Exactly -Scope It
             }
         }
     }
@@ -1019,7 +1070,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             } -Exactly -Times 1 -Scope It
 
             Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Invoke-Sqlcmd -Exactly -Times 2 -Scope It
+            Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 2 -Scope It
             Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
         }
     }
@@ -1044,6 +1095,63 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
                         InstanceName         = 'INSTANCE'
                         DatabaseServerName   = 'DBSERVER'
                         DatabaseInstanceName = 'DBINSTANCE'
+                        Encrypt              = 'Optional'
+                    }
+
+                    $resultTestTargetResource = Test-TargetResource @testParameters
+
+                    $resultTestTargetResource | Should -BeFalse
+                }
+            }
+        }
+
+        Context 'When current Report Server reserved URL is $null' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        IsInitialized           = $false
+                        ReportServerReservedUrl = $null
+                    }
+                }
+            }
+
+            It 'Should return state as not in desired state' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $testParameters = @{
+                        InstanceName            = 'INSTANCE'
+                        DatabaseServerName      = 'DBSERVER'
+                        DatabaseInstanceName    = 'DBINSTANCE'
+                        ReportServerReservedUrl = 'ReportServer_SQL2016'
+                    }
+
+                    $resultTestTargetResource = Test-TargetResource @testParameters
+
+                    $resultTestTargetResource | Should -BeFalse
+                }
+            }
+        }
+
+        Context 'When current Reports reserved URL is $null' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        IsInitialized      = $false
+                        ReportsReservedUrl = $null
+                    }
+                }
+            }
+
+            It 'Should return state as not in desired state' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $testParameters = @{
+                        InstanceName         = 'INSTANCE'
+                        DatabaseServerName   = 'DBSERVER'
+                        DatabaseInstanceName = 'DBINSTANCE'
+                        ReportsReservedUrl   = 'Reports_SQL2016'
                     }
 
                     $resultTestTargetResource = Test-TargetResource @testParameters
@@ -1082,7 +1190,7 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
             }
         }
 
-        Context 'When Report Server virtual directory is different' {
+        Context 'When Reports virtual directory is different' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
@@ -1233,12 +1341,16 @@ Describe 'SqlRS\Invoke-RsCimMethod' -Tag 'Helper' {
             )
 
             # Inject a stub in the module scope to support testing cross-plattform
-            function script:Invoke-CimMethod  {
+            function script:Invoke-CimMethod
+            {
+                [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
                 param
                 (
                     $MethodName,
                     $Arguments
                 )
+
+                return
             }
         }
     }
@@ -1396,11 +1508,15 @@ Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
 
         # Inject a stub in the module scope to support testing cross-plattform
         InModuleScope -ScriptBlock {
-            function script:Get-CimInstance {
+            function script:Get-CimInstance
+            {
+                [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules\Measure-ParameterBlockParameterAttribute', '', Justification='The stub cannot use [Parameter()].')]
                 param
                 (
                     $ClassName
                 )
+
+                return
             }
         }
     }

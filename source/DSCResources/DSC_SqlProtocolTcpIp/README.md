@@ -20,6 +20,8 @@ For more information about static and dynamic ports read the article
   TcpIp protocol must also set the **Listen All** property to **No**.
   This can be done with the resource `SqlProtocol` using the
   parameter `ListenOnAllIpAddresses`.
+* When using the resource against an SQL Server 2022 instance, the module
+  _SqlServer_ v22.0.49-preview or newer must be installed.
 
 ## Known issues
 

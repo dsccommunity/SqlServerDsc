@@ -2,6 +2,9 @@
     .SYNOPSIS
         Removes a server audit.
 
+    .DESCRIPTION
+        This command removes a server audit from a SQL Server Database Engine instance.
+
     .PARAMETER ServerObject
         Specifies current server connection object.
 
@@ -65,34 +68,40 @@ function Remove-SqlDscAudit
         $Refresh
     )
 
-    if ($Force.IsPresent)
+    process
     {
-        $ConfirmPreference = 'None'
-    }
-
-    if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
-    {
-        $getSqlDscAuditParameters = @{
-            ServerObject = $ServerObject
-            Name = $Name
-            Refresh = $Refresh
-            ErrorAction = 'Stop'
+        if ($Force.IsPresent)
+        {
+            $ConfirmPreference = 'None'
         }
 
-        # If this command does not find the audit it will throw an exception.
-        $AuditObject = Get-SqlDscAudit @getSqlDscAuditParameters
-    }
+        if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
+        {
+            $getSqlDscAuditParameters = @{
+                ServerObject = $ServerObject
+                Name = $Name
+                Refresh = $Refresh
+                ErrorAction = 'Stop'
+            }
 
-    $verboseDescriptionMessage = $script:localizedData.Audit_Remove_ShouldProcessVerboseDescription -f $AuditObject.Name, $AuditObject.Parent.InstanceName
-    $verboseWarningMessage = $script:localizedData.Audit_Remove_ShouldProcessVerboseWarning -f $AuditObject.Name
-    $captionMessage = $script:localizedData.Audit_Remove_ShouldProcessCaption
+            # If this command does not find the audit it will throw an exception.
+            $auditObjectArray = Get-SqlDscAudit @getSqlDscAuditParameters
 
-    if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
-    {
-        <#
-            If the passed audit object has already been dropped, then we silently
-            do nothing, using the method DropIfExist(), since the job is done.
-        #>
-        $AuditObject.DropIfExists()
+            # Pick the only object in the array.
+            $AuditObject = $auditObjectArray | Select-Object -First 1
+        }
+
+        $verboseDescriptionMessage = $script:localizedData.Audit_Remove_ShouldProcessVerboseDescription -f $AuditObject.Name, $AuditObject.Parent.InstanceName
+        $verboseWarningMessage = $script:localizedData.Audit_Remove_ShouldProcessVerboseWarning -f $AuditObject.Name
+        $captionMessage = $script:localizedData.Audit_Remove_ShouldProcessCaption
+
+        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        {
+            <#
+                If the passed audit object has already been dropped, then we silently
+                do nothing, using the method DropIfExist(), since the job is done.
+            #>
+            $AuditObject.DropIfExists()
+        }
     }
 }

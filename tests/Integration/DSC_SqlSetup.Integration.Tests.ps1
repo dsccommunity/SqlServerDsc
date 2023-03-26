@@ -1,11 +1,25 @@
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
+param ()
+
 BeforeDiscovery {
     try
     {
-        Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        if (-not (Get-Module -Name 'DscResource.Test'))
+        {
+            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
+            {
+                # Redirect all streams to $null, except the error stream (stream 2)
+                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+            }
+
+            # If the dependencies has not been resolved, this will throw an error.
+            Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
 
     <#
@@ -71,8 +85,15 @@ BeforeAll {
         This is used in both the configuration file and in this script file
         to run the correct tests depending of what version of SQL Server is
         being tested in the current job.
+
+        The actual download URL can easiest be found in the browser download history.
     #>
-    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
+    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022')
+    {
+        $script:sqlVersion = '160'
+        $script:mockSourceDownloadExeUrl = 'https://download.microsoft.com/download/c/c/9/cc9c6797-383c-4b24-8920-dc057c1de9d3/SQL2022-SSEI-Dev.exe'
+    }
+    elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
     {
         $script:sqlVersion = '150'
         $script:mockSourceDownloadExeUrl = 'https://download.microsoft.com/download/d/a/2/da259851-b941-459d-989c-54a18a5d44dd/SQL2019-SSEI-Dev.exe'
@@ -119,7 +140,6 @@ BeforeAll {
             # Rename the ISO to maintain consistency of names within integration tests
             Rename-Item -Path $ConfigurationData.AllNodes.DownloadIsoPath `
                 -NewName $(Split-Path -Path $ConfigurationData.AllNodes.ImagePath -Leaf) | Out-Null
-
         }
         else
         {
@@ -154,7 +174,7 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019') {
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
@@ -166,7 +186,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
@@ -201,7 +221,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
@@ -236,7 +256,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_InstallDatabaseEngineNamedInstanceAsSystem_Config"
-    ) {
+    ) -Skip:$(if ($env:SKIP_DATABASE_ENGINE_INSTANCE) { $true } else { $false }) {
         BeforeAll {
             $configurationName = $_
             $script:itBlockError = @()
@@ -366,12 +386,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_StopServicesInstance_Config"
-    ) {
+    ) -Skip:$(if ($env:SKIP_DATABASE_ENGINE_INSTANCE) { $true } else { $false }) {
         BeforeAll {
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
@@ -401,7 +421,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_InstallDatabaseEngineDefaultInstanceAsUser_Config"
-    ) {
+    ) -Skip:$(if ($env:SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE) { $true } else { $false }) {
         BeforeAll {
             $configurationName = $_
             $script:itBlockError = @()
@@ -526,12 +546,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_StopSqlServerDefaultInstance_Config"
-    ) {
+    ) -Skip:$(if ($env:SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE) { $true } else { $false }) {
         BeforeAll {
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
@@ -561,7 +581,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_InstallMultiDimensionalAnalysisServicesAsSystem_Config"
-    ) {
+    ) -Skip:$(if ($env:SKIP_ANALYSIS_MULTI_INSTANCE) { $true } else { $false }) {
         BeforeAll {
             $configurationName = $_
             $script:itBlockError = @()
@@ -636,7 +656,21 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.FailoverClusterGroupName   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterIPAddress   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
-            $resourceCurrentState.Features                   | Should -Be $ConfigurationData.AllNodes.AnalysisServicesMultiFeatures
+
+            if ($script:sqlVersion -in (160))
+            {
+                <#
+                    The features CONN, BC, SDK is no longer supported after SQL Server 2019.
+                    Thus they are not installed with the Database Engine instance DSCSQLTEST
+                    in prior test, so this test do not find them already installed.
+                #>
+                $resourceCurrentState.Features | Should -Be 'AS'
+            }
+            else
+            {
+                $resourceCurrentState.Features | Should -Be 'AS,CONN,BC,SDK'
+            }
+
             $resourceCurrentState.ForceReboot                | Should -BeNullOrEmpty
             $resourceCurrentState.FTSvcAccount               | Should -BeNullOrEmpty
             $resourceCurrentState.FTSvcAccountUsername       | Should -BeNullOrEmpty
@@ -678,12 +712,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_StopMultiDimensionalAnalysisServices_Config"
-    ) {
+    ) -Skip:$(if ($env:SKIP_ANALYSIS_MULTI_INSTANCE) { $true } else { $false }) {
         BeforeAll {
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
@@ -713,7 +747,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_InstallTabularAnalysisServicesAsSystem_Config"
-    ) {
+    ) -Skip:$(if ($env:SKIP_ANALYSIS_TABULAR_INSTANCE) { $true } else { $false }) {
         BeforeAll {
             $configurationName = $_
             $script:itBlockError = @()
@@ -788,7 +822,21 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.FailoverClusterGroupName   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterIPAddress   | Should -BeNullOrEmpty
             $resourceCurrentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
-            $resourceCurrentState.Features                   | Should -Be $ConfigurationData.AllNodes.AnalysisServicesTabularFeatures
+
+            if ($script:sqlVersion -in (160))
+            {
+                <#
+                    The features CONN, BC, SDK is no longer supported after SQL Server 2019.
+                    Thus they are not installed with the Database Engine instance DSCSQLTEST
+                    in prior test, so this test do not find them already installed.
+                #>
+                $resourceCurrentState.Features | Should -Be 'AS'
+            }
+            else
+            {
+                $resourceCurrentState.Features | Should -Be 'AS,CONN,BC,SDK'
+            }
+
             $resourceCurrentState.ForceReboot                | Should -BeNullOrEmpty
             $resourceCurrentState.FTSvcAccount               | Should -BeNullOrEmpty
             $resourceCurrentState.FTSvcAccountUsername       | Should -BeNullOrEmpty
@@ -830,12 +878,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_StopTabularAnalysisServices_Config"
-    ) {
+    ) -Skip:$(if ($env:SKIP_ANALYSIS_TABULAR_INSTANCE) { $true } else { $false }) {
         BeforeAll {
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
@@ -865,12 +913,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
     Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_StartServicesInstance_Config"
-    ) {
+    ) -Skip:$(if ($env:SKIP_DATABASE_ENGINE_INSTANCE) { $true } else { $false }) {
         BeforeAll {
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 

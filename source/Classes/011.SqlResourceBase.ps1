@@ -43,10 +43,11 @@ class SqlResourceBase : ResourceBase
     $Credential
 
     [DscProperty(NotConfigurable)]
-    [Reason[]]
+    [SqlReason[]]
     $Reasons
 
-    SqlResourceBase () : base ()
+    # Passing the module's base directory to the base constructor.
+    SqlResourceBase () : base ($PSScriptRoot)
     {
         $this.SqlServerObject = $null
     }
@@ -66,6 +67,7 @@ class SqlResourceBase : ResourceBase
             $connectSqlDscDatabaseEngineParameters = @{
                 ServerName   = $this.ServerName
                 InstanceName = $this.InstanceName
+                ErrorAction  = 'Stop'
             }
 
             if ($this.Credential)

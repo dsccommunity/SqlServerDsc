@@ -57,6 +57,8 @@ BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlSetup'
 
+    $env:SqlServerDscCI = $true
+
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
         -DSCResourceName $script:dscResourceName `
@@ -82,6 +84,8 @@ AfterAll {
 
     # Remove module common test helper.
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
+
+    Remove-Item -Path 'env:SqlServerDscCI'
 }
 
 Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
@@ -2142,7 +2146,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
         # General mocks
         Mock -CommandName Get-PSDrive
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
         Mock -CommandName Get-FilePathMajorVersion -MockWith $mockGetSqlMajorVersion
 
         # Mocking SharedDirectory and SharedWowDirectory (when not previously installed)
@@ -2260,7 +2264,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -2531,7 +2535,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                     Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 0 -Scope It
+                    Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 0 -Scope It
                 }
             }
         }
@@ -2808,7 +2812,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                 }
 
                 Should -Invoke -CommandName Write-Warning -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Import-SQLPSModule -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 0 -Scope It
             }
         }
     }

@@ -19,13 +19,14 @@ variables:
   sourceFolderName: source
   defaultBranch: main
 
+# cSpell: ignore setvariable updatebuildnumber DSCSQLTEST hqrmtest quickconfig
 stages:
   - stage: Build
     jobs:
       - job: Package_Module
         displayName: 'Package Module'
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: 'windows-latest'
         steps:
           - pwsh: |
               dotnet tool install --global GitVersion.Tool
@@ -61,6 +62,9 @@ stages:
         pool:
           vmImage: 'windows-2022'
         timeoutInMinutes: 0
+        variables:
+          # This sets environment variable $env:SqlServerDscCI.
+          SqlServerDscCI: true
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -105,6 +109,9 @@ stages:
         pool:
           vmImage: 'windows-2019'
         timeoutInMinutes: 0
+        variables:
+          # This sets environment variable $env:SqlServerDscCI.
+          SqlServerDscCI: true
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -156,12 +163,15 @@ stages:
             SQL2019_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2022_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+            SQL2022_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
         pool:
           vmImage: $(JOB_VMIMAGE)
         timeoutInMinutes: 0
-        variables:
-          # This sets environment variable $env:CI.
-          CI: true
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -176,6 +186,12 @@ stages:
               targetType: 'inline'
               script: 'winrm quickconfig -quiet'
               pwsh: false
+          - powershell: |
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+              Remove-Module -Name CommonTestHelper
+            name: cleanCIWorker
+            displayName: 'Clean CI worker'
           - powershell: |
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
@@ -193,9 +209,10 @@ stages:
                   'tests/Integration/DSC_SqlAgentOperator.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlServiceAccount.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlTraceFlag.Integration.Tests.ps1'
                   # Group 3
                   'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlRS_Default.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
                   'tests/Integration/DSC_SqlAudit.Integration.Tests.ps1'
@@ -221,6 +238,81 @@ stages:
               testResultsFormat: 'NUnit'
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
+
+      - job: Test_Integration_RS
+        displayName: 'Integration Reporting Services'
+        strategy:
+          matrix:
+            SQL2016_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2016'
+            SQL2016_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2016'
+            SQL2017_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2017'
+            SQL2017_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2017'
+            SQL2019_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2019_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2022_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+            SQL2022_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+        variables:
+          SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
+          SKIP_ANALYSIS_MULTI_INSTANCE: true
+          SKIP_ANALYSIS_TABULAR_INSTANCE: true
+        pool:
+          vmImage: $(JOB_VMIMAGE)
+        timeoutInMinutes: 0
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Configure WinRM'
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
+          - powershell: |
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+              Remove-Module -Name CommonTestHelper
+            name: cleanCIWorker
+            displayName: 'Clean CI worker'
+          - powershell: |
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
+                  # Run the integration tests in a specific group order.
+                  # Group 1
+                  'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
+                  # Group 2
+                  'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
+                  # Group 3
+                  'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
+              )
+            name: test
+            displayName: 'Run Reporting Services Integration Test'
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Integration RS ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
       - job: Code_Coverage
         displayName: 'Publish Code Coverage'

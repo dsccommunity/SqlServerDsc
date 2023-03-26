@@ -33,6 +33,8 @@ BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlAlias'
 
+    $env:SqlServerDscCI = $true
+
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
         -DSCResourceName $script:dscResourceName `
@@ -47,7 +49,8 @@ BeforeAll {
 
     # Inject a stub in the module scope to support testing cross-plattform
     InModuleScope -ScriptBlock {
-        function script:Get-CimInstance {
+        function script:Get-CimInstance
+        {
             param
             (
                 $ClassName
@@ -68,6 +71,8 @@ AfterAll {
 
     # Remove module common test helper.
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
+
+    Remove-Item -Path 'env:SqlServerDscCI'
 }
 
 Describe 'SqlAlias\Get-TargetResource' {

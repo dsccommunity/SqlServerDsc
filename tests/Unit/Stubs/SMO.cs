@@ -922,7 +922,80 @@ namespace Microsoft.SqlServer.Management.Smo
         public Microsoft.SqlServer.Management.Smo.SqlSmoState? State { get; set; }
     }
 
+    public class Property
+    {
+        // Property
+        public System.String Name { get; set; }
+        public System.Object Value { get; set; }
+        public System.Type Type { get; set; }
+        public System.Boolean Writable { get; set; }
+        public System.Boolean Readable { get; set; }
+        public System.Boolean Expensive { get; set; }
+        public System.Boolean Dirty { get; set; }
+        public System.Boolean Retrieved { get; set; }
+        public System.Boolean IsNull { get; set; }
+
+        // Fabricated constructor
+        private Property() { }
+        public static Property CreateTypeInstance()
+        {
+            return new Property();
+        }
+    }
+
+    public class PropertyCollection
+    {
+        // Property
+        public System.Int32 Count { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Property Item { get; set; }
+        public System.Boolean IsSynchronized { get; set; }
+        public System.Object SyncRoot { get; set; }
+
+        // Fabricated constructor
+        private PropertyCollection() { }
+        public static PropertyCollection CreateTypeInstance()
+        {
+            return new PropertyCollection();
+        }
+    }
+
     #endregion Public Classes
+}
+
+namespace Microsoft.SqlServer.Management.Sdk.Sfc
+{
+    public class XPathExpression
+    {
+        // Constructor
+        public XPathExpression(System.String strXPathExpression) { }
+
+        // Property
+        public System.Int32 Length { get; set; }
+        public System.String ExpressionSkeleton { get; set; }
+
+        // Fabricated constructor
+        private XPathExpression() { }
+        public static XPathExpression CreateTypeInstance()
+        {
+            return new XPathExpression();
+        }
+    }
+
+    public class Urn
+    {
+        // Constructor
+        public Urn() { }
+        public Urn(System.String value) { }
+
+        // Property
+        public Microsoft.SqlServer.Management.Sdk.Sfc.XPathExpression XPathExpression { get; set; }
+        public System.String Value { get; set; }
+        public System.String DomainInstanceName { get; set; }
+        public System.String Type { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Parent { get; set; }
+
+    }
+
 }
 
 namespace Microsoft.SqlServer.Management.Smo.Wmi
@@ -932,38 +1005,408 @@ namespace Microsoft.SqlServer.Management.Smo.Wmi
     // TypeName: Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType
     // Used by:
     //  DSC_SqlServiceAccount.Tests.ps1
-    public enum ManagedServiceType
+    public enum ManagedServiceType : int
     {
         SqlServer = 1,
-
         SqlAgent = 2,
-
         Search = 3,
-
         SqlServerIntegrationService = 4,
-
         AnalysisServer = 5,
-
         ReportServer = 6,
-
         SqlBrowser = 7,
+        NotificationServer = 8,
+    }
 
-        NotificationServer = 8
+    public enum ServiceErrorControl : int
+    {
+        Ignore = 0,
+        Normal = 1,
+        Severe = 2,
+        Critical = 3,
+        Unknown = 4,
+    }
+
+    public enum ServiceState : int
+    {
+        Stopped = 1,
+        StartPending = 2,
+        StopPending = 3,
+        Running = 4,
+        ContinuePending = 5,
+        PausePending = 6,
+        Paused = 7,
+        Unknown = 8,
+    }
+
+    public enum ServiceStartMode : int
+    {
+        Boot = 0,
+        System = 1,
+        Auto = 2,
+        Manual = 3,
+        Disabled = 4,
+    }
+
+   public enum ProviderArchitecture : int
+    {
+        Default = 0,
+        Use32bit = 32,
+        Use64bit = 64,
     }
 
     #endregion
 
     #region Public Classes
 
+    // TypeName: Microsoft.SqlServer.Management.Smo.Wmi.Service
+    // Used by:
+    //  Get-SqlDscManagedComputerService
+    public class Service
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer Parent { get; set; }
+        public System.Boolean AcceptsPause { get; set; }
+        public System.Boolean AcceptsStop { get; set; }
+        public System.String Description { get; set; }
+        public System.String DisplayName { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServiceErrorControl ErrorControl { get; set; }
+        public System.Int32 ExitCode { get; set; }
+        public System.String PathName { get; set; }
+        public System.Int32 ProcessId { get; set; }
+        public System.String ServiceAccount { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServiceState ServiceState { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServiceStartMode StartMode { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType Type { get; set; }
+        public System.Boolean IsHadrEnabled { get; set; }
+        public System.String StartupParameters { get; set; }
+        public System.Collections.Specialized.StringCollection Dependencies { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection AdvancedProperties { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public System.String Name { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+
+        // Fabricated constructor
+        private Service() { }
+        public static Service CreateTypeInstance()
+        {
+            return new Service();
+        }
+    }
+
+    // TypeName: Microsoft.SqlServer.Management.Smo.Wmi.ServiceCollection
+    // Used by:
+    //  Get-SqlDscManagedComputerService
+    public class ServiceCollection
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Wmi.Service Item { get; set; }
+        public System.Int32 Count { get; set; }
+        public System.Boolean IsSynchronized { get; set; }
+        public System.Object SyncRoot { get; set; }
+
+        // Fabricated constructor
+        private ServiceCollection() { }
+        public static ServiceCollection CreateTypeInstance()
+        {
+            return new ServiceCollection();
+        }
+    }
+
+    public class WmiConnectionInfo
+    {
+        // Property
+        public System.TimeSpan Timeout { get; set; }
+        public System.String MachineName { get; set; }
+        public System.String Username { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.ProviderArchitecture ProviderArchitecture { get; set; }
+
+        // Fabricated constructor
+        private WmiConnectionInfo() { }
+        public static WmiConnectionInfo CreateTypeInstance()
+        {
+            return new WmiConnectionInfo();
+        }
+    }
+
+    public class NetLibInfo
+    {
+        // Property
+        public System.String FileName { get; set; }
+        public System.String Version { get; set; }
+        public System.DateTime Date { get; set; }
+        public System.Int32 Size { get; set; }
+
+        // Fabricated constructor
+        private NetLibInfo() { }
+        public static NetLibInfo CreateTypeInstance()
+        {
+            return new NetLibInfo();
+        }
+    }
+
+    public class ProtocolProperty
+    {
+        // Property
+        public System.String Name { get; set; }
+        public System.Object Value { get; set; }
+        public System.Type Type { get; set; }
+        public System.Boolean Writable { get; set; }
+        public System.Boolean Readable { get; set; }
+        public System.Boolean Expensive { get; set; }
+        public System.Boolean Dirty { get; set; }
+        public System.Boolean Retrieved { get; set; }
+        public System.Boolean IsNull { get; set; }
+
+        // Fabricated constructor
+        private ProtocolProperty() { }
+        public static ProtocolProperty CreateTypeInstance()
+        {
+            return new ProtocolProperty();
+        }
+    }
+
+    public class ProtocolPropertyCollection
+    {
+        // Property
+        public System.Int32 Count { get; set; }
+        public System.Boolean IsSynchronized { get; set; }
+        public System.Object SyncRoot { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.ProtocolProperty Item { get; set; }
+
+        // Fabricated constructor
+        private ProtocolPropertyCollection() { }
+        public static ProtocolPropertyCollection CreateTypeInstance()
+        {
+            return new ProtocolPropertyCollection();
+        }
+    }
+
+    public class ClientProtocol
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer Parent { get; set; }
+        public System.String DisplayName { get; set; }
+        public System.Boolean IsEnabled { get; set; }
+        public System.String NetworkLibrary { get; set; }
+        public System.Int32 Order { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.NetLibInfo NetLibInfo { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.ProtocolPropertyCollection ProtocolProperties { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public System.String Name { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+
+        // Fabricated constructor
+        private ClientProtocol() { }
+        public static ClientProtocol CreateTypeInstance()
+        {
+            return new ClientProtocol();
+        }
+    }
+
+    public class ClientProtocolCollection
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Wmi.ClientProtocol Item { get; set; }
+        public System.Int32 Count { get; set; }
+        public System.Boolean IsSynchronized { get; set; }
+        public System.Object SyncRoot { get; set; }
+
+        // Fabricated constructor
+        private ClientProtocolCollection() { }
+        public static ClientProtocolCollection CreateTypeInstance()
+        {
+            return new ClientProtocolCollection();
+        }
+    }
+
+    public class IPAddressPropertyCollection
+    {
+        // Property
+        public System.Int32 Count { get; set; }
+        public System.Boolean IsSynchronized { get; set; }
+        public System.Object SyncRoot { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.ProtocolProperty Item { get; set; }
+
+        // Fabricated constructor
+        private IPAddressPropertyCollection() { }
+        public static IPAddressPropertyCollection CreateTypeInstance()
+        {
+            return new IPAddressPropertyCollection();
+        }
+    }
+
+    public class ServerIPAddress
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol Parent { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.IPAddressPropertyCollection IPAddressProperties { get; set; }
+        public System.Net.IPAddress IPAddress { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public System.String Name { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+
+        // Fabricated constructor
+        private ServerIPAddress() { }
+        public static ServerIPAddress CreateTypeInstance()
+        {
+            return new ServerIPAddress();
+        }
+    }
+
+    public class ServerIPAddressCollection
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddress Item { get; set; }
+        public System.Int32 Count { get; set; }
+        public System.Boolean IsSynchronized { get; set; }
+        public System.Object SyncRoot { get; set; }
+
+        // Fabricated constructor
+        private ServerIPAddressCollection() { }
+        public static ServerIPAddressCollection CreateTypeInstance()
+        {
+            return new ServerIPAddressCollection();
+        }
+    }
+
+    public class ServerProtocol
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance Parent { get; set; }
+        public System.String DisplayName { get; set; }
+        public System.Boolean HasMultiIPAddresses { get; set; }
+        public System.Boolean IsEnabled { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerIPAddressCollection IPAddresses { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.ProtocolPropertyCollection ProtocolProperties { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public System.String Name { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+
+        // Fabricated constructor
+        private ServerProtocol() { }
+        public static ServerProtocol CreateTypeInstance()
+        {
+            return new ServerProtocol();
+        }
+    }
+
+    public class ServerProtocolCollection
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocol Item { get; set; }
+        public System.Int32 Count { get; set; }
+        public System.Boolean IsSynchronized { get; set; }
+        public System.Object SyncRoot { get; set; }
+
+        // Fabricated constructor
+        private ServerProtocolCollection() { }
+        public static ServerProtocolCollection CreateTypeInstance()
+        {
+            return new ServerProtocolCollection();
+        }
+    }
+
+    public class ServerInstance
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer Parent { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerProtocolCollection ServerProtocols { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public System.String Name { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+
+        // Fabricated constructor
+        private ServerInstance() { }
+        public static ServerInstance CreateTypeInstance()
+        {
+            return new ServerInstance();
+        }
+    }
+
+    public class ServerInstanceCollection
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerInstance Item { get; set; }
+        public System.Int32 Count { get; set; }
+        public System.Boolean IsSynchronized { get; set; }
+        public System.Object SyncRoot { get; set; }
+
+        // Fabricated constructor
+        private ServerInstanceCollection() { }
+        public static ServerInstanceCollection CreateTypeInstance()
+        {
+            return new ServerInstanceCollection();
+        }
+    }
+
+    public class ServerAlias
+    {
+        // Constructor
+        public ServerAlias(Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer managedComputer, System.String name) { }
+        public ServerAlias() { }
+
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer Parent { get; set; }
+        public System.String ConnectionString { get; set; }
+        public System.String ProtocolName { get; set; }
+        public System.String ServerName { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public System.String Name { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+    }
+
+    public class ServerAliasCollection
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerAlias Item { get; set; }
+        public System.Int32 Count { get; set; }
+        public System.Boolean IsSynchronized { get; set; }
+        public System.Object SyncRoot { get; set; }
+
+        // Fabricated constructor
+        private ServerAliasCollection() { }
+        public static ServerAliasCollection CreateTypeInstance()
+        {
+            return new ServerAliasCollection();
+        }
+    }
+
     // TypeName: Microsoft.SqlServer.Management.Smo.Wmi.ManagedComputer
     // Used by:
     //  DSC_SqlTraceFlag.Tests.ps1
+    //  Get-SqlDscManagedComputerService
     public class ManagedComputer
     {
-        public string Name;
-        public string State;
-        public ArrayList ServerInstances;
-        public ArrayList Services;
+        // Constructor
+        public ManagedComputer() { }
+        public ManagedComputer(System.String machineName) { }
+        public ManagedComputer(System.String machineName, System.String userName, System.String password) { }
+        public ManagedComputer(System.String machineName, System.String userName, System.String password, Microsoft.SqlServer.Management.Smo.Wmi.ProviderArchitecture providerArchitecture) { }
+
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Wmi.WmiConnectionInfo ConnectionSettings { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServiceCollection Services { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.ClientProtocolCollection ClientProtocols { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerInstanceCollection ServerInstances { get; set; }
+        public Microsoft.SqlServer.Management.Smo.Wmi.ServerAliasCollection ServerAliases { get; set; }
+        public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        public System.String Name { get; set; }
+        public Microsoft.SqlServer.Management.Smo.PropertyCollection Properties { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
     }
+
     #endregion
 }

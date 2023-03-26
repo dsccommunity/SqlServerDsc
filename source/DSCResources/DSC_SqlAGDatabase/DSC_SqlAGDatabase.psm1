@@ -72,7 +72,7 @@ function Get-TargetResource
     }
 
     # Connect to the instance
-    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     # Is this node actively hosting the SQL instance?
     $currentConfiguration.IsActiveNode = Test-ActiveNode -ServerObject $serverObject
@@ -210,10 +210,10 @@ function Set-TargetResource
         $StatementTimeout = 600
     )
 
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     # Connect to the defined instance
-    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -StatementTimeout $StatementTimeout
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -StatementTimeout $StatementTimeout -ErrorAction 'Stop'
 
     # Get the Availability Group
     $availabilityGroup = $serverObject.AvailabilityGroups[$AvailabilityGroupName]
@@ -264,7 +264,7 @@ function Set-TargetResource
 
                 foreach ( $availabilityGroupReplica in $secondaryReplicas )
                 {
-                    $currentAvailabilityGroupReplicaServerObject = Connect-SQL -ServerName $availabilityGroupReplica.Name
+                    $currentAvailabilityGroupReplicaServerObject = Connect-SQL -ServerName $availabilityGroupReplica.Name -ErrorAction 'Stop'
                     $impersonatePermissionsStatus.Add(
                         $availabilityGroupReplica.Name,
                         ( Test-ImpersonatePermissions -ServerObject $currentAvailabilityGroupReplicaServerObject -Securable $databaseObject.Owner )
@@ -328,7 +328,7 @@ function Set-TargetResource
                 foreach ( $availabilityGroupReplica in $secondaryReplicas )
                 {
                     $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
-                    $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
+                    $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters -ErrorAction 'Stop'
                     $availabilityReplicaFilestreamLevel.Add($availabilityGroupReplica.Name, $currentAvailabilityGroupReplicaServerObject.FilestreamLevel)
                 }
 
@@ -349,7 +349,7 @@ function Set-TargetResource
                 foreach ( $availabilityGroupReplica in $secondaryReplicas )
                 {
                     $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
-                    $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
+                    $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters -ErrorAction 'Stop'
                     $availabilityReplicaContainmentEnabled.Add($availabilityGroupReplica.Name, $currentAvailabilityGroupReplicaServerObject.Configuration.ContainmentEnabled.ConfigValue)
                 }
 
@@ -373,7 +373,7 @@ function Set-TargetResource
             foreach ( $availabilityGroupReplica in $secondaryReplicas )
             {
                 $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
-                $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
+                $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters -ErrorAction 'Stop'
 
                 $missingDirectories = @()
                 foreach ( $databaseFileDirectory in $databaseFileDirectories )
@@ -411,7 +411,7 @@ function Set-TargetResource
                 foreach ( $availabilityGroupReplica in $secondaryReplicas )
                 {
                     $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
-                    $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
+                    $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters -ErrorAction 'Stop'
 
                     [System.Array] $installedCertificateThumbprints = $currentAvailabilityGroupReplicaServerObject.Databases['master'].Certificates |
                         ForEach-Object -Process { [System.BitConverter]::ToString($_.Thumbprint) }
@@ -594,7 +594,7 @@ function Set-TargetResource
                     {
                         # Connect to the replica
                         $connectSqlParameters = Split-FullSqlInstanceName -FullSqlInstanceName $availabilityGroupReplica.Name
-                        $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters
+                        $currentAvailabilityGroupReplicaServerObject = Connect-SQL @connectSqlParameters -ErrorAction 'Stop'
                         $currentReplicaAvailabilityGroupObject = $currentAvailabilityGroupReplicaServerObject.AvailabilityGroups[$AvailabilityGroupName]
 
                         if ( $availabilityGroupReplica.SeedingMode -eq 'MANUAL')
@@ -801,7 +801,7 @@ function Test-TargetResource
     }
 
     # Connect to the defined instance
-    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     # Get the Availability Group if it exists
     if ( -not [System.String]::IsNullOrEmpty($currentConfiguration.AvailabilityGroupName) )

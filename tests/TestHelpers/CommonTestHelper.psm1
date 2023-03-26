@@ -39,7 +39,7 @@ function Import-SqlModuleStub
     #>
     $modulesAndStubs = @{
         SQLPS     = 'SQLPSStub'
-        SqlServer = 'SQLServerStub'
+        SqlServer = 'SqlServerStub'
     }
 
     # Determine which module to ensure is loaded based on the parameters passed
@@ -436,5 +436,82 @@ function Test-SetupArgument
 
         $argumentValue = $actualValues.$argumentKey
         $argumentValue | Should -Be $ExpectedArgument.$argumentKey -Because 'the argument should have been set to the correct value when calling setup.exe'
+    }
+}
+
+<#
+    .SYNOPSIS
+        Remove installed module.
+
+    .PARAMETER Name
+        Specifies an array of module names to remove. Defaults to 'SqlServer' and
+        'SQLPS'.
+
+    .NOTES
+        Removes any existing versions of the SqlServer and SQLPS module.
+        Importing module SqlServerDsc will import the module SqlServer or SQLPS.
+        If SqlServer is imported it will render it locked and it is not possible
+        to switch to another version. Also, regardless of SqlServer or SQLPS it
+        could load the wrong assembly versions which will break SqlServerDsc if,
+        for example, SqlServer is switch to another version.
+#>
+function Remove-PowerShellModuleFromCI
+{
+    param
+    (
+        [Parameter()]
+        [System.String[]]
+        $Name = @('SqlServer', 'SQLPS')
+    )
+
+    Write-Information -MessageData 'Checking if any path in $env:PSModulePath contain a module that are not suppose to be present.' -InformationAction 'Continue'
+
+    $sqlServerModule = Get-Module -Name $Name -ListAvailable
+
+    if ($sqlServerModule)
+    {
+        $existingModulesString = $sqlServerModule |
+            Select-Object -Property @(
+                'Name',
+                'Version',
+                @{
+                    Name = 'Prerelease'
+                    Expression = { $_.PrivateData.PSData.Prerelease }
+                },
+                'Path'
+            ) |
+            Out-String
+
+        Write-Information -MessageData ('Existing modules: {0}' -f $existingModulesString) -InformationAction 'Continue'
+
+        Write-Information -MessageData 'Removing the found modules.' -InformationAction 'Continue'
+
+        # Remove versions, removes each file to detect if any file cannot be removed (e.g. locked assembly).
+        $sqlServerModule |
+            ForEach-Object -Process {
+                Write-Information -MessageData ('Removing module version: {0}' -f $_.ModuleBase) -InformationAction 'Continue'
+
+                $_.ModuleBase |
+                    Remove-Item -Recurse -Force -ErrorAction 'Stop'
+            }
+
+        # Remove the module folder that is left by previous call.
+        $sqlServerModule |
+            ForEach-Object -Process {
+                $parentFolder = Split-Path -Path $_.ModuleBase
+
+                # Only remove if the path exist and does not end with '/Modules'.
+                if ($parentFolder -notmatch 'modules$' -and (Test-Path -Path $parentFolder))
+                {
+                    Write-Information -MessageData ('Removing module folder: {0}' -f $parentFolder) -InformationAction 'Continue'
+
+                    $parentFolder |
+                        Remove-Item -Recurse -Force -ErrorAction 'Stop'
+                }
+            }
+    }
+    else
+    {
+        Write-Information -MessageData 'No existing SqlServer or SQLPS modules, nothing to remove.' -InformationAction 'Continue'
     }
 }

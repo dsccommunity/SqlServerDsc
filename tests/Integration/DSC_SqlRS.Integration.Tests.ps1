@@ -1,11 +1,25 @@
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
+param ()
+
 BeforeDiscovery {
     try
     {
-        Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        if (-not (Get-Module -Name 'DscResource.Test'))
+        {
+            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
+            {
+                # Redirect all streams to $null, except the error stream (stream 2)
+                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+            }
+
+            # If the dependencies has not been resolved, this will throw an error.
+            Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
 
     <#
@@ -35,7 +49,11 @@ BeforeAll {
         to run the correct tests depending of what version of SQL Server is
         being tested in the current job.
     #>
-    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
+    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022')
+    {
+        $script:sqlVersion = '160'
+    }
+    elseif (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
     {
         $script:sqlVersion = '150'
     }
@@ -60,7 +78,7 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019') {
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
@@ -72,7 +90,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
@@ -101,13 +119,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
     }
 
     Context ('When using configuration <_>') -ForEach @(
-        "$($script:dscResourceName)_InstallReportingServices_Config"
+        "$($script:dscResourceName)_ConfigureReportingServices_Config"
     ) {
         BeforeAll {
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
@@ -151,6 +169,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.DatabaseInstanceName | Should -Be $ConfigurationData.AllNodes.DatabaseInstanceName
             $resourceCurrentState.IsInitialized | Should -Be $true
             $resourceCurrentState.UseSsl | Should -Be $false
+            $resourceCurrentState.ReportServerReservedUrl | Should -Contain 'http://+:80'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -161,7 +180,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             # Wait for 1 minute for the ReportServer to be ready.
             Start-Sleep -Seconds 30
 
-            if ($script:sqlVersion -in @('140', '150'))
+            if ($script:sqlVersion -in @('140', '150', '160'))
             {
                 # SSRS 2017 and 2019 do not support multiple instances
                 $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
@@ -191,195 +210,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should be able to access the Reports site without any error' {
-            if ($script:sqlVersion -in @('140', '150'))
-            {
-                # SSRS 2017 and 2019 do not support multiple instances
-                $reportsUri = 'http://{0}/Reports' -f $env:COMPUTERNAME
-            }
-            else
-            {
-                $reportsUri = 'http://{0}/Reports_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
-            }
-
-            try
-            {
-                $webRequestReportServer = Invoke-WebRequest -Uri $reportsUri -UseDefaultCredentials
-                # if the request finishes successfully this should return status code 200.
-                $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
-            }
-            catch
-            {
-                <#
-                    If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
-                    we can pull the status code from the Exception.Response property.
-                #>
-                $webRequestResponse = $_.Exception.Response
-                $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
-            }
-
-            $webRequestStatusCode | Should -BeExactly 200
-        }
-    }
-
-    Context ('When using configuration <_>') -ForEach @(
-        "$($script:dscResourceName)_InstallReportingServices_ConfigureSsl_Config"
-    ) {
-        BeforeAll {
-            $configurationName = $_
-        }
-
-        AfterAll {
-            Wait-ForIdleLcm
-        }
-
-        It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                         = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData                  = $ConfigurationData
-                }
-
-                & $configurationName @configurationParameters
-
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
-
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
-        }
-
-        It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
-        }
-
-        It 'Should have set the resource and all the parameters should match' {
-            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                $_.ConfigurationName -eq $configurationName `
-                -and $_.ResourceId -eq $resourceId
-            }
-
-            $resourceCurrentState.UseSsl | Should -Be $true
-        }
-
-        It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
-        }
-
-        <#
-            We expect this to throw any error. Usually 'Unable to connect to the remote server' but it
-            can also throw and 'The underlying connection was closed: An unexpected error occurred on a send'.
-            When we support SSL fully with this resource, this should not throw at all. So leaving this
-            as this without testing for the correct error message on purpose.
-        #>
-        It 'Should not be able to access the ReportServer site and throw an error message' {
-            if ($script:sqlVersion -in @('140', '150'))
-            {
-                # SSRS 2017 and 2019 do not support multiple instances
-                $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
-            }
-            else
-            {
-                $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
-            }
-
-            { Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials } | Should -Throw
-        }
-    }
-
-    Context ('When using configuration <_>') -ForEach @(
-        "$($script:dscResourceName)_InstallReportingServices_RestoreToNoSsl_Config"
-    ) {
-        BeforeAll {
-            $configurationName = $_
-        }
-
-        AfterAll {
-            Wait-ForIdleLcm
-        }
-
-        It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath                         = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData                  = $ConfigurationData
-                }
-
-                & $configurationName @configurationParameters
-
-                $startDscConfigurationParameters = @{
-                    Path         = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait         = $true
-                    Verbose      = $true
-                    Force        = $true
-                    ErrorAction  = 'Stop'
-                }
-
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
-        }
-
-        It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
-        }
-
-        It 'Should have set the resource and all the parameters should match' {
-            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
-                $_.ConfigurationName -eq $configurationName `
-                -and $_.ResourceId -eq $resourceId
-            }
-
-            $resourceCurrentState.UseSsl | Should -Be $false
-        }
-
-        It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
-        }
-
-        It 'Should be able to access the ReportServer site without any error' {
-            if ($script:sqlVersion -in @('140', '150'))
-            {
-                # SSRS 2017 and 2019 do not support multiple instances
-                $reportServerUri = 'http://{0}/ReportServer' -f $env:COMPUTERNAME
-            }
-            else
-            {
-                $reportServerUri = 'http://{0}/ReportServer_{1}' -f $env:COMPUTERNAME, $ConfigurationData.AllNodes.InstanceName
-            }
-
-            try
-            {
-                $webRequestReportServer = Invoke-WebRequest -Uri $reportServerUri -UseDefaultCredentials
-                # if the request finishes successfully this should return status code 200.
-                $webRequestStatusCode = $webRequestReportServer.StatusCode -as [int]
-            }
-            catch
-            {
-                <#
-                    If the request generated an exception i.e. "HTTP Error 503. The service is unavailable."
-                    we can pull the status code from the Exception.Response property.
-                #>
-                $webRequestResponse = $_.Exception.Response
-                $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
-            }
-
-            $webRequestStatusCode | Should -BeExactly 200
-        }
-
-        It 'Should be able to access the Reports site without any error' {
-            if ($script:sqlVersion -in @('140', '150'))
+            if ($script:sqlVersion -in @('140', '150', '160'))
             {
                 # SSRS 2017 and 2019 do not support multiple instances
                 $reportsUri = 'http://{0}/Reports' -f $env:COMPUTERNAME
@@ -416,7 +247,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 

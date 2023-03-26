@@ -1,0 +1,67 @@
+name: Code analysis
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+# cSpell: ignore potatoqualitee codeql SARIF
+jobs:
+  pssa:
+    name: PSScriptAnalyzer
+    runs-on: windows-latest
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+      #actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Build Module
+        shell: powershell
+        run: |
+          Write-Information -MessageData 'Module is being built so that examples can be scanned.' -InformationAction 'Continue'
+          .\build.ps1 -ResolveDependency -Tasks 'build'
+      - name: Run PSScriptAnalyzer
+        shell: powershell
+        run: |
+          Write-Information -MessageData 'Prepare the test pipeline.' -InformationAction 'Continue'
+          .\build.ps1 -Tasks 'noop'
+
+          Write-Information -MessageData 'Load SMO stubs into session.' -InformationAction 'Continue'
+          Add-Type -Path './tests/Unit/Stubs/SMO.cs'
+
+          Write-Information -MessageData 'Import module ConvertToSARIF into the session.' -InformationAction 'Continue'
+          Import-Module -Name 'ConvertToSARIF' -Force
+
+          Write-Information -MessageData 'Import module PSScriptAnalyzer into the session.' -InformationAction 'Continue'
+          Import-Module -Name 'PSScriptAnalyzer' -Force
+
+          $filesToScan = Get-ChildItem -Path './source/' -Recurse -Include @('*.psm1', '*.ps1') -File
+          Write-Information -MessageData ("Will scan the files:`n`r`t{0}." -f ($filesToScan.FullName -join "`n`r`t")) -InformationAction 'Continue'
+
+          Write-Information -MessageData 'Running PSScriptAnalyzer.' -InformationAction 'Continue'
+          $pssaError = $filesToScan |
+              Invoke-ScriptAnalyzer -Settings './.vscode/analyzersettings.psd1'
+
+          $parseErrorTypes = @(
+              'TypeNotFound'
+              'RequiresModuleInvalid'
+          )
+          Write-Information -MessageData ('Filter out reported parse errors that is unable to be resolved in source files: {0}' -f ($parseErrorTypes -join ', ')) -InformationAction 'Continue'
+          $pssaError = $pssaError |
+              Where-Object -FilterScript {
+                  $_.RuleName -notin $parseErrorTypes
+              }
+
+          Write-Information -MessageData 'Converting PSScriptAnalyzer result to SARIF.' -InformationAction 'Continue'
+          $pssaError |
+            ConvertTo-SARIF -FilePath 'results.sarif'
+
+          Write-Information -MessageData 'Analyzing done.' -InformationAction 'Continue'
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: results.sarif

@@ -1,11 +1,25 @@
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
+param ()
+
 BeforeDiscovery {
     try
     {
-        Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        if (-not (Get-Module -Name 'DscResource.Test'))
+        {
+            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
+            {
+                # Redirect all streams to $null, except the error stream (stream 2)
+                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+            }
+
+            # If the dependencies has not been resolved, this will throw an error.
+            Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
 
     <#
@@ -50,10 +64,20 @@ BeforeAll {
         {
             <#
                 The version below is what the MS download page said, but the .exe is
+                reporting 15.0.8434.2956 when used in the integration test.
+            #>
+            $script:mockSourceMediaDisplayName = 'Microsoft SQL Server 2019 Reporting Services (15.0.1102.1047 - 2/6/2023)'
+            $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/1/a/a/1aaa9177-3578-4931-b8f3-373b24f63342/SQLServerReportingServices.exe'
+        }
+
+        if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022')
+        {
+            <#
+                The version below is what the MS download page said, but the .exe is
                 reporting 15.0.7842.32355 when used in the integration test.
             #>
-            $script:mockSourceMediaDisplayName = 'Microsoft SQL Server 2019 Reporting Services (15.0.1102.911 - 6/24/2021)'
-            $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/1/a/a/1aaa9177-3578-4931-b8f3-373b24f63342/SQLServerReportingServices.exe'
+            $script:mockSourceMediaDisplayName = 'Microsoft SQL Server 2022 Reporting Services (16.0.1113.11 - 11/23/2022)'
+            $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/8/3/2/832616ff-af64-42b5-a0b1-5eb07f71dec9/SQLServerReportingServices.exe'
         }
 
         Write-Verbose -Message ('Start downloading the {1} executable at {0}.' -f (Get-Date -Format 'yyyy-MM-dd hh:mm:ss'), $script:mockSourceMediaDisplayName) -Verbose
@@ -92,7 +116,7 @@ AfterAll {
     Older versions of Reporting Services (eg. 2016) are integration tested in
     separate tests (part of resource SqlSetup).
 #>
-Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019') {
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
@@ -104,7 +128,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 
@@ -157,6 +181,11 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
             {
                 $resourceCurrentState.CurrentVersion | Should -BeGreaterThan ([System.Version] '15.0.0.0')
             }
+
+            if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022')
+            {
+                $resourceCurrentState.CurrentVersion | Should -BeGreaterThan ([System.Version] '16.0.0.0')
+            }
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -171,7 +200,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
             $configurationName = $_
         }
 
-        AfterAll {
+        AfterEach {
             Wait-ForIdleLcm
         }
 

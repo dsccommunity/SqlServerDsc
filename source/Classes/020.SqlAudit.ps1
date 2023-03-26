@@ -260,8 +260,11 @@ class SqlAudit : SqlResourceBase
 
         $serverObject = $this.GetServerObject()
 
-        $auditObject = $serverObject |
+        $auditObjectArray = $serverObject |
             Get-SqlDscAudit -Name $properties.Name -ErrorAction 'SilentlyContinue'
+
+        # Pick the only object in the array.
+        $auditObject = $auditObjectArray | Select-Object -First 1
 
         if ($auditObject)
         {
@@ -269,7 +272,7 @@ class SqlAudit : SqlResourceBase
 
             if ($auditObject.DestinationType -in @('ApplicationLog', 'SecurityLog'))
             {
-                $currentState.LogType = $auditObject.DestinationType
+                $currentState.LogType = $auditObject.DestinationType.ToString()
             }
 
             if ($auditObject.FilePath)
@@ -349,8 +352,11 @@ class SqlAudit : SqlResourceBase
             #>
             if ($this.Ensure -eq [Ensure]::Present)
             {
-                $auditObject = $serverObject |
+                $auditObjectArray = $serverObject |
                     Get-SqlDscAudit -Name $this.Name -ErrorAction 'Stop'
+
+                # Pick the only object in the array.
+                $auditObject = $auditObjectArray | Select-Object -First 1
 
                 if ($auditObject)
                 {
@@ -407,7 +413,7 @@ class SqlAudit : SqlResourceBase
                         }
 
                         # Get all optional properties that has an assigned value.
-                        $assignedOptionalDscProperties = $this | Get-DscProperty -HasValue -Type 'Optional' -ExcludeName @(
+                        $assignedOptionalDscProperties = $this | Get-DscProperty -HasValue -Attribute 'Optional' -ExcludeName @(
                             # Remove optional properties that is not an audit property.
                             'ServerName'
                             'Ensure'
@@ -565,7 +571,7 @@ class SqlAudit : SqlResourceBase
     hidden [System.Object] CreateAudit()
     {
         # Get all properties that has an assigned value.
-        $assignedDscProperties = $this | Get-DscProperty -HasValue -Type @(
+        $assignedDscProperties = $this | Get-DscProperty -HasValue -Attribute @(
             'Key'
             'Optional'
         ) -ExcludeName @(

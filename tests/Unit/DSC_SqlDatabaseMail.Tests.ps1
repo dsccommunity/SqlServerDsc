@@ -34,14 +34,7 @@ BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlDatabaseMail'
 
-    try
-    {
-        Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
-    }
-    catch [System.IO.FileNotFoundException]
-    {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
-    }
+    $env:SqlServerDscCI = $true
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
@@ -68,6 +61,8 @@ AfterAll {
 
     # Remove module common test helper.
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
+
+    Remove-Item -Path 'env:SqlServerDscCI'
 }
 
 Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {

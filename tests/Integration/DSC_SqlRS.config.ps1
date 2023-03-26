@@ -17,7 +17,12 @@ else
     $mockLastDrive = ((Get-Volume).DriveLetter | Sort-Object | Select-Object -Last 1)
     $mockIsoMediaDriveLetter = [char](([int][char]$mockLastDrive) + 1)
 
-    if ($script:sqlVersion -eq '150')
+    if ($script:sqlVersion -eq '160')
+    {
+        # SQL2022
+        $instanceName = 'SSRS'
+    }
+    elseif ($script:sqlVersion -eq '150')
     {
         # SQL2019
         $instanceName = 'SSRS'
@@ -139,7 +144,7 @@ Configuration DSC_SqlRS_CreateDependencies_Config
             DSC_SqlRSSetup.Integration.Tests.ps1 will have installed SSRS 2017 or 2019.
             We just need to start SSRS.
         #>
-        elseif ($script:sqlVersion -in @('140', '150'))
+        elseif ($script:sqlVersion -in @('140', '150', '160'))
         {
             Service 'StartReportingServicesInstance'
             {
@@ -154,7 +159,7 @@ Configuration DSC_SqlRS_CreateDependencies_Config
     .SYNOPSIS
         Configures the Reporting Services.
 #>
-Configuration DSC_SqlRS_InstallReportingServices_Config
+Configuration DSC_SqlRS_ConfigureReportingServices_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -171,68 +176,9 @@ Configuration DSC_SqlRS_InstallReportingServices_Config
             #>
             DatabaseServerName   = $Node.DatabaseServerName
             DatabaseInstanceName = $Node.DatabaseInstanceName
+            Encrypt              = 'Optional'
 
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @(
-                    $Node.RunAs_UserName, (ConvertTo-SecureString -String $Node.RunAs_Password -AsPlainText -Force))
-        }
-    }
-}
-
-<#
-    .SYNOPSIS
-        Enables SSL on the Reporting Services.
-#>
-Configuration DSC_SqlRS_InstallReportingServices_ConfigureSsl_Config
-{
-    Import-DscResource -ModuleName 'SqlServerDsc'
-
-    node $AllNodes.NodeName
-    {
-        SqlRS 'Integration_Test'
-        {
-            # Instance name for the Reporting Services.
-            InstanceName         = $Node.InstanceName
-            UseSsl               = $true
-
-            <#
-                Instance for Reporting Services databases.
-                Note: This instance is created in a prior integration test.
-            #>
-            DatabaseServerName   = $Node.DatabaseServerName
-            DatabaseInstanceName = $Node.DatabaseInstanceName
-
-            PsDscRunAsCredential = New-Object `
-                -TypeName System.Management.Automation.PSCredential `
-                -ArgumentList @(
-                    $Node.RunAs_UserName, (ConvertTo-SecureString -String $Node.RunAs_Password -AsPlainText -Force))
-        }
-    }
-}
-
-<#
-    .SYNOPSIS
-        Disables SSL on the Reporting Services.
-#>
-Configuration DSC_SqlRS_InstallReportingServices_RestoreToNoSsl_Config
-{
-    Import-DscResource -ModuleName 'SqlServerDsc'
-
-    node $AllNodes.NodeName
-    {
-        SqlRS 'Integration_Test'
-        {
-            # Instance name for the Reporting Services.
-            InstanceName         = $Node.InstanceName
-            UseSsl               = $false
-
-            <#
-                Instance for Reporting Services databases.
-                Note: This instance is created in a prior integration test.
-            #>
-            DatabaseServerName   = $Node.DatabaseServerName
-            DatabaseInstanceName = $Node.DatabaseInstanceName
+            ReportServerReservedUrl = @('http://+:80')
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `
@@ -260,7 +206,7 @@ Configuration DSC_SqlRS_StopReportingServicesInstance_Config
                 State = 'Stopped'
             }
         }
-        elseif ($script:sqlVersion -in @('150','140'))
+        elseif ($script:sqlVersion -in @('140', '150', '160'))
         {
             Service 'StopReportingServicesInstance'
             {

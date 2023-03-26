@@ -2,6 +2,9 @@
     .SYNOPSIS
         Disables a server audit.
 
+    .DESCRIPTION
+        This command disables a server audit in a SQL Server Database Engine instance.
+
     .PARAMETER ServerObject
         Specifies current server connection object.
 
@@ -65,30 +68,36 @@ function Disable-SqlDscAudit
         $Refresh
     )
 
-    if ($Force.IsPresent)
+    process
     {
-        $ConfirmPreference = 'None'
-    }
-
-    if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
-    {
-        $getSqlDscAuditParameters = @{
-            ServerObject = $ServerObject
-            Name = $Name
-            Refresh = $Refresh
-            ErrorAction = 'Stop'
+        if ($Force.IsPresent)
+        {
+            $ConfirmPreference = 'None'
         }
 
-        # If this command does not find the audit it will throw an exception.
-        $AuditObject = Get-SqlDscAudit @getSqlDscAuditParameters
-    }
+        if ($PSCmdlet.ParameterSetName -eq 'ServerObject')
+        {
+            $getSqlDscAuditParameters = @{
+                ServerObject = $ServerObject
+                Name = $Name
+                Refresh = $Refresh
+                ErrorAction = 'Stop'
+            }
 
-    $verboseDescriptionMessage = $script:localizedData.Audit_Disable_ShouldProcessVerboseDescription -f $AuditObject.Name, $AuditObject.Parent.InstanceName
-    $verboseWarningMessage = $script:localizedData.Audit_Disable_ShouldProcessVerboseWarning -f $AuditObject.Name
-    $captionMessage = $script:localizedData.Audit_Disable_ShouldProcessCaption
+            # If this command does not find the audit it will throw an exception.
+            $auditObjectArray = Get-SqlDscAudit @getSqlDscAuditParameters
 
-    if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
-    {
-        $AuditObject.Disable()
+            # Pick the only object in the array.
+            $AuditObject = $auditObjectArray | Select-Object -First 1
+        }
+
+        $verboseDescriptionMessage = $script:localizedData.Audit_Disable_ShouldProcessVerboseDescription -f $AuditObject.Name, $AuditObject.Parent.InstanceName
+        $verboseWarningMessage = $script:localizedData.Audit_Disable_ShouldProcessVerboseWarning -f $AuditObject.Name
+        $captionMessage = $script:localizedData.Audit_Disable_ShouldProcessCaption
+
+        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        {
+            $AuditObject.Disable()
+        }
     }
 }

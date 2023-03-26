@@ -458,7 +458,7 @@ function Start-SqlSetupProcess
         Connects to the instance 'MyInstance' on the local server.
 
     .EXAMPLE
-        Connect-SQL ServerName 'sql.company.local' -InstanceName 'MyInstance'
+        Connect-SQL ServerName 'sql.company.local' -InstanceName 'MyInstance' -ErrorAction 'Stop'
 
         Connects to the instance 'MyInstance' on the server 'sql.company.local'.
 #>
@@ -496,7 +496,7 @@ function Connect-SQL
         $StatementTimeout = 600
     )
 
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     if ($InstanceName -eq 'MSSQLSERVER')
     {
@@ -553,7 +553,15 @@ function Connect-SQL
     {
         $sqlConnectionContext.Connect()
 
-        if ($sqlServerObject.Status -match '^Online$')
+        $instanceStatus = $sqlServerObject.Status
+
+        if ($instanceStatus)
+        {
+            # Property Status is of type Enum ServerStatus, we return the string equivalent.
+            $instanceStatus = $instanceStatus.ToString()
+        }
+
+        if ($instanceStatus -match '^Online$')
         {
             Write-Verbose -Message (
                 $script:localizedData.ConnectedToDatabaseEngineInstance -f $databaseEngineInstance
@@ -563,13 +571,52 @@ function Connect-SQL
         }
         else
         {
-            throw
+            if ([System.String]::IsNullOrEmpty($instanceStatus))
+            {
+                $instanceStatus = 'Unknown'
+            }
+
+            $errorMessage = $script:localizedData.DatabaseEngineInstanceNotOnline -f @(
+                $databaseEngineInstance,
+                $instanceStatus
+            )
+
+            $invalidOperationException = New-Object -TypeName 'InvalidOperationException' -ArgumentList @($errorMessage)
+
+            $newObjectParameters = @{
+                TypeName     = 'System.Management.Automation.ErrorRecord'
+                ArgumentList = @(
+                    $invalidOperationException.ToString(),
+                    'CS0001',
+                    'InvalidOperation',
+                    $databaseEngineInstance
+                )
+            }
+
+            $errorRecordToThrow = New-Object @newObjectParameters
+
+            Write-Error -ErrorRecord $errorRecordToThrow
         }
     }
     catch
     {
         $errorMessage = $script:localizedData.FailedToConnectToDatabaseEngineInstance -f $databaseEngineInstance
-        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+
+        $invalidOperationException = New-Object -TypeName 'InvalidOperationException' -ArgumentList @($errorMessage, $_.Exception)
+
+        $newObjectParameters = @{
+            TypeName     = 'System.Management.Automation.ErrorRecord'
+            ArgumentList = @(
+                $invalidOperationException.ToString(),
+                'CS0002',
+                'InvalidOperation',
+                $databaseEngineInstance
+            )
+        }
+
+        $errorRecordToThrow = New-Object @newObjectParameters
+
+        Write-Error -ErrorRecord $errorRecordToThrow
     }
     finally
     {
@@ -650,7 +697,7 @@ function Connect-SQLAnalysis
     {
         if ((Test-FeatureFlag -FeatureFlag $FeatureFlag -TestFlag 'AnalysisServicesConnection'))
         {
-            Import-SQLPSModule
+            Import-SqlDscPreferredModule
 
             $analysisServicesObject = New-Object -TypeName 'Microsoft.AnalysisServices.Server'
 
@@ -815,133 +862,6 @@ function Get-SqlInstanceMajorVersion
 
 <#
     .SYNOPSIS
-        Imports the module SQLPS in a standardized way.
-
-    .PARAMETER Force
-        Forces the removal of the previous SQL module, to load the same or newer
-        version fresh. This is meant to make sure the newest version is used, with
-        the latest assemblies.
-
-#>
-function Import-SQLPSModule
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Force
-    )
-
-    if ($Force.IsPresent)
-    {
-        Write-Verbose -Message $script:localizedData.ModuleForceRemoval -Verbose
-        Remove-Module -Name @('SqlServer', 'SQLPS', 'SQLASCmdlets') -Force -ErrorAction SilentlyContinue
-    }
-
-    <#
-        Check if either of the modules are already loaded into the session.
-        Prefer to use the first one (in order found).
-        NOTE: There should actually only be either SqlServer or SQLPS loaded,
-        otherwise there can be problems with wrong assemblies being loaded.
-    #>
-    $loadedModuleName = (Get-Module -Name @('SqlServer', 'SQLPS') | Select-Object -First 1).Name
-    if ($loadedModuleName)
-    {
-        Write-Verbose -Message ($script:localizedData.PowerShellModuleAlreadyImported -f $loadedModuleName) -Verbose
-        return
-    }
-
-    $availableModuleName = $null
-
-    # Get the newest SqlServer module if more than one exist
-    $availableModule = Get-Module -FullyQualifiedName 'SqlServer' -ListAvailable |
-        Sort-Object -Property 'Version' -Descending |
-        Select-Object -First 1 -Property Name, Path, Version
-
-    if ($availableModule)
-    {
-        $availableModuleName = $availableModule.Name
-        Write-Verbose -Message ($script:localizedData.PreferredModuleFound) -Verbose
-    }
-    else
-    {
-        Write-Verbose -Message ($script:localizedData.PreferredModuleNotFound) -Verbose
-
-        <#
-            After installing SQL Server the current PowerShell session doesn't know about the new path
-            that was added for the SQLPS module.
-            This reloads PowerShell session environment variable PSModulePath to make sure it contains
-            all paths.
-        #>
-        Set-PSModulePath -Path ([System.Environment]::GetEnvironmentVariable('PSModulePath', 'Machine'))
-
-        <#
-            Get the newest SQLPS module if more than one exist.
-        #>
-        $availableModule = Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable |
-            Select-Object -Property Name, Path, @{
-                Name       = 'Version'
-                Expression = {
-                    # Parse the build version number '120', '130' from the Path.
-                    (Select-String -InputObject $_.Path -Pattern '\\([0-9]{3})\\' -List).Matches.Groups[1].Value
-                }
-            } |
-            Sort-Object -Property 'Version' -Descending |
-            Select-Object -First 1
-
-        if ($availableModule)
-        {
-            # This sets $availableModuleName to the Path of the module to be loaded.
-            $availableModuleName = Split-Path -Path $availableModule.Path -Parent
-        }
-    }
-
-    if ($availableModuleName)
-    {
-        try
-        {
-            Write-Debug -Message ($script:localizedData.DebugMessagePushingLocation)
-            Push-Location
-
-            <#
-                SQLPS has unapproved verbs, disable checking to ignore Warnings.
-                Suppressing verbose so all cmdlet is not listed.
-            #>
-            $importedModule = Import-Module -Name $availableModuleName -DisableNameChecking -Verbose:$false -Force:$Force -PassThru -ErrorAction Stop
-
-            <#
-                SQLPS returns two entries, one with module type 'Script' and another with module type 'Manifest'.
-                Only return the object with module type 'Manifest'.
-                SqlServer only returns one object (of module type 'Script'), so no need to do anything for SqlServer module.
-            #>
-            if ($availableModuleName -ne 'SqlServer')
-            {
-                $importedModule = $importedModule | Where-Object -Property 'ModuleType' -EQ -Value 'Manifest'
-            }
-
-            Write-Verbose -Message ($script:localizedData.ImportedPowerShellModule -f $importedModule.Name, $importedModule.Version, $importedModule.Path) -Verbose
-        }
-        catch
-        {
-            $errorMessage = $script:localizedData.FailedToImportPowerShellSqlModule -f $availableModuleName
-            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-        }
-        finally
-        {
-            Write-Debug -Message ($script:localizedData.DebugMessagePoppingLocation)
-            Pop-Location
-        }
-    }
-    else
-    {
-        $errorMessage = $script:localizedData.PowerShellSqlModuleNotFound
-        New-InvalidOperationException -Message $errorMessage
-    }
-}
-
-<#
-    .SYNOPSIS
         Restarts a SQL Server instance and associated services
 
     .PARAMETER ServerName
@@ -1028,7 +948,7 @@ function Restart-SqlService
     if (-not $SkipClusterCheck.IsPresent)
     {
         ## Connect to the instance
-        $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+        $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
         if ($serverObject.IsClustered)
         {
@@ -1397,6 +1317,7 @@ function Restart-ReportingServicesService
 #>
 function Invoke-Query
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when the output type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [CmdletBinding(DefaultParameterSetName = 'SqlServer')]
     param
     (
@@ -1468,7 +1389,7 @@ function Invoke-Query
             $connectSQLParameters.SetupCredential = $DatabaseCredential
         }
 
-        $serverObject = Connect-SQL @connectSQLParameters
+        $serverObject = Connect-SQL @connectSQLParameters -ErrorAction 'Stop'
     }
 
     $redactedQuery = $Query
@@ -1716,7 +1637,7 @@ function Test-AvailabilityReplicaSeedingModeAutomatic
     # Assume automatic seeding is disabled by default
     $availabilityReplicaSeedingModeAutomatic = $false
 
-    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+    $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
     # Only check the seeding mode if this is SQL 2016 or newer
     if ( $serverObject.Version -ge 13 )
@@ -1775,7 +1696,7 @@ function Get-PrimaryReplicaServerObject
     # Determine if we're connected to the primary replica
     if ( ( $AvailabilityGroup.PrimaryReplicaServerName -ne $serverObject.DomainInstanceName ) -and ( -not [System.String]::IsNullOrEmpty($AvailabilityGroup.PrimaryReplicaServerName) ) )
     {
-        $primaryReplicaServerObject = Connect-SQL -ServerName $AvailabilityGroup.PrimaryReplicaServerName
+        $primaryReplicaServerObject = Connect-SQL -ServerName $AvailabilityGroup.PrimaryReplicaServerName -ErrorAction 'Stop'
     }
 
     return $primaryReplicaServerObject
@@ -2096,6 +2017,31 @@ function Test-ActiveNode
         scripting variables that share a format such as $(variable_name). For more
         information how to use this, please go to the help documentation for
         [Invoke-Sqlcmd](https://docs.microsoft.com/en-us/powershell/module/sqlserver/Invoke-Sqlcmd).
+
+    .PARAMETER Encrypt
+        Specifies how encryption should be enforced. When not specified, the default
+        value is `Mandatory`.
+
+        This value maps to the Encrypt property SqlConnectionEncryptOption
+        on the SqlConnection object of the Microsoft.Data.SqlClient driver.
+
+        This parameter can only be used when the module SqlServer v22.x.x is installed.
+
+    .NOTES
+        Parameter `Encrypt` controls whether the connection used by `Invoke-SqlCmd`
+        should enforce encryption. This parameter can only be used together with the
+        module _SqlServer_ v22.x (minimum v22.0.49-preview). The parameter will be
+        ignored if an older major versions of the module _SqlServer_ is used.
+        Encryption is mandatory by default, which generates the following exception
+        when the correct certificates are not present:
+
+        "A connection was successfully established with the server, but then
+        an error occurred during the login process. (provider: SSL Provider,
+        error: 0 - The certificate chain was issued by an authority that is
+        not trusted.)"
+
+        For more details, see the article [Connect to SQL Server with strict encryption](https://learn.microsoft.com/en-us/sql/relational-databases/security/networking/connect-with-strict-encryption?view=sql-server-ver16)
+        and [Configure SQL Server Database Engine for encrypting connections](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/configure-sql-server-encryption?view=sql-server-ver16).
 #>
 function Invoke-SqlScript
 {
@@ -2129,10 +2075,15 @@ function Invoke-SqlScript
 
         [Parameter()]
         [System.Boolean]
-        $DisableVariables
+        $DisableVariables,
+
+        [Parameter()]
+        [ValidateSet('Mandatory', 'Optional', 'Strict')]
+        [System.String]
+        $Encrypt
     )
 
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     if ($PSCmdlet.ParameterSetName -eq 'File')
     {
@@ -2151,6 +2102,16 @@ function Invoke-SqlScript
     }
 
     $null = $PSBoundParameters.Remove('Credential')
+
+    if ($PSBoundParameters.ContainsKey('Encrypt'))
+    {
+        $commandInvokeSqlCmd = Get-Command -Name 'Invoke-SqlCmd'
+
+        if ($null -ne $commandInvokeSqlCmd -and $commandInvokeSqlCmd.Parameters.Keys -notcontains 'Encrypt')
+        {
+            $null = $PSBoundParameters.Remove('Encrypt')
+        }
+    }
 
     Invoke-SqlCmd @PSBoundParameters
 }

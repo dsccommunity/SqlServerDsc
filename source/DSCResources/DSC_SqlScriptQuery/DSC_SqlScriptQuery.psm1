@@ -21,7 +21,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
     .PARAMETER TestQuery
         The full query that will perform the Test Action
         Any script that does not throw an error or returns null is evaluated to true.
-        The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
+        The cmdlet `Invoke-SqlCmd` treats T-SQL Print statements as verbose text, and will not cause the test to return false.
 
     .PARAMETER SetQuery
         The full query that will perform the Set Action
@@ -36,24 +36,33 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         then SYSTEM account will be used to authenticate using Windows Authentication.
 
     .PARAMETER Variable
-        Specifies, as a string array, a Invoke-Sqlcmd scripting variable for use in the Invoke-Sqlcmd script, and sets a value for the variable.
+        Specifies, as a string array, a `Invoke-SqlCmd` scripting variable for use in the `Invoke-SqlCmd` script, and sets a value for the variable.
         Use a Windows PowerShell array to specify multiple variables and their values. For more information how to use this,
-        please go to the help documentation for [Invoke-Sqlcmd](https://docs.microsoft.com/en-us/powershell/module/sqlserver/invoke-sqlcmd).
+        please go to the help documentation for [`Invoke-SqlCmd`](https://docs.microsoft.com/en-us/powershell/module/sqlserver/Invoke-SqlCmd).
 
     .PARAMETER DisableVariables
-        Specifies, as a boolean, whether or not PowerShell will ignore sqlcmd scripting variables that share a format such as $(variable_name).
-        For more information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://docs.microsoft.com/en-us/powershell/module/sqlserver/invoke-sqlcmd).
+        Specifies, as a boolean, whether or not PowerShell will ignore `Invoke-SqlCmd` scripting variables that share a format such as $(variable_name).
+        For more information how to use this, please go to the help documentation for [`Invoke-SqlCmd`](https://docs.microsoft.com/en-us/powershell/module/sqlserver/Invoke-SqlCmd).
 
     .PARAMETER QueryTimeout
         Specifies, as an integer, the number of seconds after which the T-SQL script execution will time out.
-        In some SQL Server versions there is a bug in Invoke-Sqlcmd where the normal default value 0 (no timeout) is not respected and the default value is incorrectly set to 30 seconds.
+        In some SQL Server versions there is a bug in `Invoke-SqlCmd` where the normal default value 0 (no timeout) is not respected and the default value is incorrectly set to 30 seconds.
+
+    .PARAMETER Encrypt
+        Specifies how encryption should be enforced when using command `Invoke-SqlCmd`.
+        When not specified, the default value is `Mandatory`.
+
+        This value maps to the Encrypt property SqlConnectionEncryptOption
+        on the SqlConnection object of the Microsoft.Data.SqlClient driver.
+
+        This parameter can only be used when the module SqlServer v22.x.x is installed.
 
     .OUTPUTS
         Hash table containing key 'GetResult' which holds the value of the result from the SQL script that was ran from the parameter 'GetQuery'.
 #>
 function Get-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SQLPSModule is implicitly called in Invoke-SqlScript')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SqlDscPreferredModule is implicitly called in Invoke-SqlScript')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -94,7 +103,12 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $DisableVariables
+        $DisableVariables,
+
+        [Parameter()]
+        [ValidateSet('Mandatory', 'Optional', 'Strict')]
+        [System.String]
+        $Encrypt
     )
 
     Write-Verbose -Message (
@@ -114,6 +128,11 @@ function Get-TargetResource
         ErrorAction      = 'Stop'
     }
 
+    if ($PSBoundParameters.ContainsKey('Encrypt'))
+    {
+        $invokeParameters.Encrypt = $Encrypt
+    }
+
     $result = Invoke-SqlScript @invokeParameters
 
     $getResult = Out-String -InputObject $result
@@ -129,6 +148,7 @@ function Get-TargetResource
         Variable         = [System.String[]] $Variable
         DisableVariables = [System.Boolean] $DisableVariables
         GetResult        = [System.String[]] $getResult
+        Encrypt          = [System.String] $Encrypt
     }
 
     return $returnValue
@@ -151,7 +171,7 @@ function Get-TargetResource
     .PARAMETER TestQuery
         The full query that will perform the Test Action
         Any script that does not throw an error or returns null is evaluated to true.
-        The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
+        The cmdlet `Invoke-SqlCmd` treats T-SQL Print statements as verbose text, and will not cause the test to return false.
 
         Not used in Set-TargetResource.
 
@@ -169,20 +189,29 @@ function Get-TargetResource
 
     .PARAMETER QueryTimeout
         Specifies, as an integer, the number of seconds after which the T-SQL script execution will time out.
-        In some SQL Server versions there is a bug in Invoke-Sqlcmd where the normal default value 0 (no timeout) is not respected and the default value is incorrectly set to 30 seconds.
+        In some SQL Server versions there is a bug in `Invoke-SqlCmd` where the normal default value 0 (no timeout) is not respected and the default value is incorrectly set to 30 seconds.
 
     .PARAMETER Variable
-        Specifies, as a string array, a Invoke-Sqlcmd scripting variable for use in the Invoke-Sqlcmd script, and sets a value for the variable.
+        Specifies, as a string array, a `Invoke-SqlCmd` scripting variable for use in the `Invoke-SqlCmd` script, and sets a value for the variable.
         Use a Windows PowerShell array to specify multiple variables and their values. For more information how to use this,
-        please go to the help documentation for [Invoke-Sqlcmd](https://docs.microsoft.com/en-us/powershell/module/sqlserver/invoke-sqlcmd).
+        please go to the help documentation for [`Invoke-SqlCmd`](https://docs.microsoft.com/en-us/powershell/module/sqlserver/Invoke-SqlCmd).
 
     .PARAMETER DisableVariables
-        Specifies, as a boolean, whether or not PowerShell will ignore sqlcmd scripting variables that share a format such as $(variable_name).
-        For more information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://docs.microsoft.com/en-us/powershell/module/sqlserver/invoke-sqlcmd)")]
+        Specifies, as a boolean, whether or not PowerShell will ignore `Invoke-SqlCmd` scripting variables that share a format such as $(variable_name).
+        For more information how to use this, please go to the help documentation for [`Invoke-SqlCmd`](https://docs.microsoft.com/en-us/powershell/module/sqlserver/Invoke-SqlCmd)")]
+
+    .PARAMETER Encrypt
+        Specifies how encryption should be enforced when using command `Invoke-SqlCmd`.
+        When not specified, the default value is `Mandatory`.
+
+        This value maps to the Encrypt property SqlConnectionEncryptOption
+        on the SqlConnection object of the Microsoft.Data.SqlClient driver.
+
+        This parameter can only be used when the module SqlServer v22.x.x is installed.
 #>
 function Set-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SQLPSModule is implicitly called in Invoke-SqlScript')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SqlDscPreferredModule is implicitly called in Invoke-SqlScript')]
     [CmdletBinding()]
     param
     (
@@ -222,7 +251,12 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $DisableVariables
+        $DisableVariables,
+
+        [Parameter()]
+        [ValidateSet('Mandatory', 'Optional', 'Strict')]
+        [System.String]
+        $Encrypt
     )
 
     Write-Verbose -Message (
@@ -240,6 +274,11 @@ function Set-TargetResource
         QueryTimeout     = $QueryTimeout
         Verbose          = $VerbosePreference
         ErrorAction      = 'Stop'
+    }
+
+    if ($PSBoundParameters.ContainsKey('Encrypt'))
+    {
+        $invokeParameters.Encrypt = $Encrypt
     }
 
     Invoke-SqlScript @invokeParameters
@@ -262,7 +301,7 @@ function Set-TargetResource
     .PARAMETER TestQuery
         The full query that will perform the Test Action
         Any script that does not throw an error or returns null is evaluated to true.
-        The cmdlet Invoke-Sqlcmd treats T-SQL Print statements as verbose text, and will not cause the test to return false.
+        The cmdlet `Invoke-SqlCmd` treats T-SQL Print statements as verbose text, and will not cause the test to return false.
 
     .PARAMETER SetQuery
         The full query that will perform the Set Action
@@ -280,21 +319,29 @@ function Set-TargetResource
 
     .PARAMETER QueryTimeout
         Specifies, as an integer, the number of seconds after which the T-SQL script execution will time out.
-        In some SQL Server versions there is a bug in Invoke-Sqlcmd where the normal default value 0 (no timeout) is not respected and the default value is incorrectly set to 30 seconds.
+        In some SQL Server versions there is a bug in `Invoke-SqlCmd` where the normal default value 0 (no timeout) is not respected and the default value is incorrectly set to 30 seconds.
 
     .PARAMETER Variable
-        Specifies, as a string array, a Invoke-Sqlcmd scripting variable for use in the Invoke-Sqlcmd script, and sets a value for the variable.
+        Specifies, as a string array, a `Invoke-SqlCmd` scripting variable for use in the `Invoke-SqlCmd` script, and sets a value for the variable.
         Use a Windows PowerShell array to specify multiple variables and their values. For more information how to use this,
-        please go to the help documentation for [Invoke-Sqlcmd](https://docs.microsoft.com/en-us/powershell/module/sqlserver/invoke-sqlcmd).
+        please go to the help documentation for [`Invoke-SqlCmd`](https://docs.microsoft.com/en-us/powershell/module/sqlserver/Invoke-SqlCmd).
 
     .PARAMETER DisableVariables
-        Specifies, as a boolean, whether or not PowerShell will ignore sqlcmd scripting variables that share a format such as $(variable_name).
-        For more information how to use this, please go to the help documentation for [Invoke-Sqlcmd](https://docs.microsoft.com/en-us/powershell/module/sqlserver/invoke-sqlcmd)")]
+        Specifies, as a boolean, whether or not PowerShell will ignore `Invoke-SqlCmd` scripting variables that share a format such as $(variable_name).
+        For more information how to use this, please go to the help documentation for [`Invoke-SqlCmd`](https://docs.microsoft.com/en-us/powershell/module/sqlserver/Invoke-SqlCmd)")]
 
+    .PARAMETER Encrypt
+        Specifies how encryption should be enforced when using command `Invoke-SqlCmd`.
+        When not specified, the default value is `Mandatory`.
+
+        This value maps to the Encrypt property SqlConnectionEncryptOption
+        on the SqlConnection object of the Microsoft.Data.SqlClient driver.
+
+        This parameter can only be used when the module SqlServer v22.x.x is installed.
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SQLPSModule is implicitly called in Invoke-SqlScript')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SqlDscPreferredModule is implicitly called in Invoke-SqlScript')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -335,7 +382,12 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $DisableVariables
+        $DisableVariables,
+
+        [Parameter()]
+        [ValidateSet('Mandatory', 'Optional', 'Strict')]
+        [System.String]
+        $Encrypt
     )
 
     Write-Verbose -Message (
@@ -353,6 +405,11 @@ function Test-TargetResource
         QueryTimeout     = $QueryTimeout
         Verbose          = $VerbosePreference
         ErrorAction      = 'Stop'
+    }
+
+    if ($PSBoundParameters.ContainsKey('Encrypt'))
+    {
+        $invokeParameters.Encrypt = $Encrypt
     }
 
     $result = $null
