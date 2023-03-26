@@ -119,7 +119,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
     }
 
     Context ('When using configuration <_>') -ForEach @(
-        "$($script:dscResourceName)_InstallReportingServices_Config"
+        "$($script:dscResourceName)_ConfigureReportingServices_Config"
     ) {
         BeforeAll {
             $configurationName = $_

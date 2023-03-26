@@ -110,7 +110,7 @@ function Import-SqlDscPreferredModule
             $modulePathUser = [System.String] [System.Environment]::GetEnvironmentVariable('PSModulePath', 'User')
             $modulePathMachine = [System.String] [System.Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
 
-            $modulePath = $modulePathSession + ';'  + $modulePathUser + ';' + $modulePathMachine
+            $modulePath = $modulePathSession, $modulePathUser, $modulePathMachine -join ';'
 
             $modulePathArray = $modulePath -split ';' |
                 Where-Object -FilterScript {

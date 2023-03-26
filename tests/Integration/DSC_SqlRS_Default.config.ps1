@@ -159,7 +159,7 @@ Configuration DSC_SqlRS_CreateDependencies_Config
     .SYNOPSIS
         Configures the Reporting Services.
 #>
-Configuration DSC_SqlRS_InstallReportingServices_Config
+Configuration DSC_SqlRS_ConfigureReportingServices_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -190,7 +190,7 @@ Configuration DSC_SqlRS_InstallReportingServices_Config
     .SYNOPSIS
         Enables SSL on the Reporting Services.
 #>
-Configuration DSC_SqlRS_InstallReportingServices_ConfigureSsl_Config
+Configuration DSC_SqlRS_ConfigureSsl_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -222,7 +222,7 @@ Configuration DSC_SqlRS_InstallReportingServices_ConfigureSsl_Config
     .SYNOPSIS
         Disables SSL on the Reporting Services.
 #>
-Configuration DSC_SqlRS_InstallReportingServices_RestoreToNoSsl_Config
+Configuration DSC_SqlRS_RestoreToNoSsl_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 
