@@ -159,7 +159,7 @@ Configuration DSC_SqlRS_CreateDependencies_Config
     .SYNOPSIS
         Configures the Reporting Services.
 #>
-Configuration DSC_SqlRS_InstallReportingServices_Config
+Configuration DSC_SqlRS_ConfigureReportingServices_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
 

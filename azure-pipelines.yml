@@ -190,8 +190,8 @@ stages:
               Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
               Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
               Remove-Module -Name CommonTestHelper
-            name: removeSqlServerModule
-            displayName: 'Remove SqlServer module'
+            name: cleanCIWorker
+            displayName: 'Clean CI worker'
           - powershell: |
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
@@ -292,8 +292,8 @@ stages:
               Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
               Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
               Remove-Module -Name CommonTestHelper
-            name: removeSqlServerModule
-            displayName: 'Remove SqlServer module'
+            name: cleanCIWorker
+            displayName: 'Clean CI worker'
           - powershell: |
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
