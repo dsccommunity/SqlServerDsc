@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Now the new label 'command proposal' is an exempt for labeling issues stale.
   - Update the initializing header for all integration test to be equal to
     the unit tests.
-  - Rename task jobs in Azure Pipelines ([issue #1812](https://github.com/dsccommunity/SqlServerDsc/issues/1881)).
+  - Rename task jobs in Azure Pipelines ([issue #1881](https://github.com/dsccommunity/SqlServerDsc/issues/1881)).
 - `Get-SqlDscAudit`
   - The parameter `Name` is no longer mandatory. When left out all the current
     audits are returned ([issue #1812](https://github.com/dsccommunity/SqlServerDsc/issues/1812)).
@@ -46,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     also be set in the session.
   - Now imports the preferred module into the global scope so that MOF-based
     resources (that is in another module scope) can use the imported module.
-  - Some code cleanup ([issue #1812](https://github.com/dsccommunity/SqlServerDsc/issues/1881)).
+  - Some code cleanup ([issue #1881](https://github.com/dsccommunity/SqlServerDsc/issues/1881)).
 
 ### Fixed
 
