@@ -747,7 +747,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         Mock -CommandName Backup-EncryptionKey
         Mock -CommandName Connect-UncPath
         Mock -CommandName Disconnect-UncPath
-        Mock -CommandName Import-SQLPSModule
+        Mock -CommandName Import-SqlDscPreferredModule
         Mock -CommandName Invoke-Sqlcmd
         Mock -CommandName New-Item
         Mock -CommandName Restart-ReportingServicesService

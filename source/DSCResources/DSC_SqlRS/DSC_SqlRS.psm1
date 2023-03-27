@@ -436,7 +436,7 @@ function Set-TargetResource
         'SSRS'
     )
 
-    Import-SQLPSModule
+    Import-SqlDscPreferredModule
 
     $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
 
