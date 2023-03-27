@@ -664,6 +664,7 @@ function Set-TargetResource
 
             Invoke-SqlCmd @invokeSqlCmdParameters -Query $reportingServicesDatabaseScript.Script
             Invoke-SqlCmd @invokeSqlCmdParameters -Query $reportingServicesDatabaseRightsScript.Script
+        }
 
         # Set the database connection
         if (
@@ -1458,7 +1459,6 @@ function Test-TargetResource
         if ($null -eq $currentConfig.ReportServerReservedUrl)
         {
             Write-Verbose -Message "Report server reserved URLs on $DatabaseServerName\$DatabaseInstanceName are missing, should be $($ReportServerReservedUrl -join ', ')."
-
             $result = $false
         }
         else
@@ -1482,12 +1482,6 @@ function Test-TargetResource
             }
         }
     }
-    else
-    {
-        $compareParameters = @{
-            ReferenceObject  = $currentConfig.ReportServerReservedUrl
-            DifferenceObject = $ReportServerReservedUrl
-        }
 
     if ($PSBoundParameters.ContainsKey('ReportsReservedUrl'))
     {
@@ -1513,39 +1507,8 @@ function Test-TargetResource
                         ($ReportsReservedUrl -join ', ')
                     )
                 )
-
                 $result = $false
             }
-        }
-    }
-    else
-    {
-        $compareParameters = @{
-            ReferenceObject  = $currentConfig.ReportsReservedUrl
-            DifferenceObject = $ReportsReservedUrl
-        }
-    }
-
-    if ( $null -eq $currentConfig.ReportsReservedUrl )
-    {
-        Write-Verbose -Message (
-            $script:localizedData.ReportsReservedUrlNotInDesiredState -f $DatabaseServerName, $DatabaseInstanceName, '', ( $ReportsReservedUrl -join ', ' )
-        ) -Verbose
-        $result = $false
-    }
-    else
-    {
-        $compareParameters = @{
-            ReferenceObject  = $currentConfig.ReportsReservedUrl
-            DifferenceObject = $ReportsReservedUrl
-        }
-
-        if ( $null -ne ( Compare-Object @compareParameters ) )
-        {
-            Write-Verbose -Message (
-                $script:localizedData.ReportsReservedUrlNotInDesiredState -f $DatabaseServerName, $DatabaseInstanceName, ( $currentConfig.ReportsReservedUrl -join ', ' ), ( $ReportsReservedUrl -join ', ' )
-            ) -Verbose
-            $result = $false
         }
     }
 
