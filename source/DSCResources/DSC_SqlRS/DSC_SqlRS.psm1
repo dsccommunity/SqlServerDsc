@@ -440,11 +440,6 @@ function Set-TargetResource
 
     $reportingServicesData = Get-ReportingServicesData -InstanceName $InstanceName
 
-    if ( $reportingServicesData.SqlVersion -lt 14 )
-    {
-        throw $script:localizedData.VersionNotSupported
-    }
-
     if ( $null -ne $reportingServicesData.Configuration )
     {
         $restartReportingService = $false
@@ -591,7 +586,6 @@ function Set-TargetResource
             }
 
             $reportingServicesDatabaseScript = Invoke-RsCimMethod @invokeRsCimMethodParameters
-            Invoke-Sqlcmd -ServerInstance $reportingServicesConnection -Query $reportingServicesDatabaseScript.Script
         }
 
         # Generate the database rights script
