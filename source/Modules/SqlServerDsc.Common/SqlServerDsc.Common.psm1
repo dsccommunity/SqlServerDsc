@@ -1030,7 +1030,7 @@ function Restart-SqlService
 
             # Waiting 2 seconds to not hammer the SQL Server instance.
             Start-Sleep -Seconds 2
-        } until ($connectTimer.Elapsed.Seconds -ge $Timeout)
+        } until ($connectTimer.Elapsed.TotalSeconds -ge $Timeout)
 
         $connectTimer.Stop()
 
