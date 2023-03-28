@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SqlSecureConnection`
   - Added new parameter `ServerName` that will be used as the host name when
     restarting the SQL Server instance. The specified value should be the same
-    name that is used in the certificate.
+    name that is used in the certificate ([issue #1888](https://github.com/dsccommunity/SqlServerDsc/issues/1888)).
 
 ### Changed
 
