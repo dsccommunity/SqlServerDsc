@@ -15,6 +15,7 @@ Configuration Example
             ForceEncryption = $true
             Ensure          = 'Present'
             ServiceAccount  = 'SqlSvc'
+            ServerName      = 'host.company.local'
         }
     }
 }
