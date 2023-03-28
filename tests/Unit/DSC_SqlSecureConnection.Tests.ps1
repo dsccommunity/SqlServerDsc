@@ -97,6 +97,7 @@ Describe 'SqlSecureConnection\Get-TargetResource' -Tag 'Get' {
             BeforeEach {
                 InModuleScope -ScriptBlock {
                     $script:mockGetTargetResourceParameters.Ensure = 'Present'
+                    $script:mockGetTargetResourceParameters.ServerName = 'MyHostName'
                 }
             }
 
@@ -125,6 +126,7 @@ Describe 'SqlSecureConnection\Get-TargetResource' -Tag 'Get' {
                         $resultGetTargetResource.ServiceAccount | Should -Be 'SqlSvc'
                         $resultGetTargetResource.ForceEncryption | Should -BeTrue
                         $resultGetTargetResource.Ensure | Should -Be 'Present'
+                        $resultGetTargetResource.ServerName | Should -Be 'MyHostName'
                     }
 
                     Should -Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
@@ -165,6 +167,7 @@ Describe 'SqlSecureConnection\Get-TargetResource' -Tag 'Get' {
                         $resultGetTargetResource.ServiceAccount | Should -Be 'SqlSvc'
                         $resultGetTargetResource.ForceEncryption | Should -BeFalse
                         $resultGetTargetResource.Ensure | Should -Be 'Absent'
+                        $resultGetTargetResource.ServerName | Should -Be 'localhost'
                     }
 
                     Should -Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
@@ -386,7 +389,9 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
 
                 Should -Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToLower() }
                 Should -Invoke -CommandName Set-CertificatePermission -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToLower() }
-                Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Restart-SqlService -ParameterFilter {
+                    $ServerName -eq 'localhost'
+                } -Exactly -Times 1 -Scope It
             }
         }
 
@@ -436,12 +441,14 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    { Set-TargetResource @mockSetTargetResourceParameters -ServerName 'MyHostName'} | Should -Not -Throw
                 }
 
                 Should -Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Set-CertificatePermission -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Restart-SqlService -ParameterFilter {
+                    $ServerName -eq 'MyHostName'
+                } -Exactly -Times 1 -Scope It
             }
         }
 

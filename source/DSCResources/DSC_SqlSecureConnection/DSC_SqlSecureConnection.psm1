@@ -29,6 +29,13 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         If set to $true then the required restart will be suppressed.
         You will need to restart the service before changes will take effect.
         The default value is $false.
+
+    .PARAMETER ServerName
+        Specifies the host name that will be used when restarting the SQL Server
+        instance. If the SQL Server belongs to a cluster or availability group
+        specify the host name for the listener or cluster group. The specified
+        name must match the name that is used by the certificate specified for
+        the parameter `Thumbprint`. Default value is `localhost`.
 #>
 function Get-TargetResource
 {
@@ -61,7 +68,11 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $SuppressRestart = $false
+        $SuppressRestart = $false,
+
+        [Parameter()]
+        [System.String]
+        $ServerName = 'localhost'
     )
 
     Write-Verbose -Message (
@@ -165,6 +176,7 @@ function Get-TargetResource
         Ensure          = [System.String] $ensureValue
         ServiceAccount  = [System.String] $ServiceAccount
         SuppressRestart = [System.Boolean] $SuppressRestart
+        ServerName      = [System.String] $ServerName
     }
 }
 
@@ -191,6 +203,13 @@ function Get-TargetResource
         If set to $true then the required restart will be suppressed.
         You will need to restart the service before changes will take effect.
         The default value is $false.
+
+    .PARAMETER ServerName
+        Specifies the host name that will be used when restarting the SQL Server
+        instance. If the SQL Server belongs to a cluster or availability group
+        specify the host name for the listener or cluster group. The specified
+        name must match the name that is used by the certificate specified for
+        the parameter `Thumbprint`. Default value is `localhost`.
 #>
 function Set-TargetResource
 {
@@ -222,7 +241,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $SuppressRestart = $false
+        $SuppressRestart = $false,
+
+        [Parameter()]
+        [System.String]
+        $ServerName = 'localhost'
     )
 
     # Configuration manager requires thumbprint to be lowercase or it won't display the configured certificate.
@@ -282,7 +305,7 @@ function Set-TargetResource
             $script:localizedData.RestartingService -f $InstanceName
         )
 
-        Restart-SqlService -ServerName localhost -InstanceName $InstanceName
+        Restart-SqlService -ServerName $ServerName -InstanceName $InstanceName
     }
 }
 
@@ -309,6 +332,15 @@ function Set-TargetResource
         If set to $true then the required restart will be suppressed.
         You will need to restart the service before changes will take effect.
         The default value is $false.
+
+        Not used in Test-TargetResource.
+
+    .PARAMETER ServerName
+        Specifies the host name that will be used when restarting the SQL Server
+        instance. If the SQL Server belongs to a cluster or availability group
+        specify the host name for the listener or cluster group. The specified
+        name must match the name that is used by the certificate specified for
+        the parameter `Thumbprint`. Default value is `localhost`.
 
         Not used in Test-TargetResource.
 #>
@@ -343,7 +375,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $SuppressRestart = $false
+        $SuppressRestart = $false,
+
+        [Parameter()]
+        [System.String]
+        $ServerName = 'localhost'
     )
 
     $parameters = @{
