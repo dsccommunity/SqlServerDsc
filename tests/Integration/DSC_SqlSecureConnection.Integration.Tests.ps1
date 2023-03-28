@@ -171,7 +171,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Thumbprint | Should -BeNullOrEmpty
+            $resourceCurrentState.Thumbprint | Should -Be 'Empty'
             $resourceCurrentState.ForceEncryption | Should -BeFalse
             $resourceCurrentState.ServerName | Should -Be 'localhost'
         }
