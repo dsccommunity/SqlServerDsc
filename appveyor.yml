@@ -24,7 +24,7 @@ environment:
   matrix:
   # DEBUG: Comment and un-comment the different SQL Server version that should be tested.
   - TEST_CONFIGURATION: Integration_SQL2016
-  - TEST_CONFIGURATION: Integration_SQL2017
+  #- TEST_CONFIGURATION: Integration_SQL2017
   #- TEST_CONFIGURATION: Integration_SQL2019
   #- TEST_CONFIGURATION: Integration_SQL2022
 
@@ -83,7 +83,7 @@ test_script:
         #'tests/Integration/DSC_SqlLogin.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
-        'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlDatabase.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlAlwaysOnService.Integration.Tests.ps1'
@@ -93,10 +93,11 @@ test_script:
         #'tests/Integration/DSC_SqlTraceFlag.Integration.Tests.ps1'
         ## Group 3
         #'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
-        'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
+        #'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
-        #'tests/Integration/DSC_SqlAudit.Integration.Tests.ps1'
+        'tests/Integration/DSC_SqlAudit.Integration.Tests.ps1'
+        'tests/Integration/DSC_SqlServerAuditSpecification.Integration.Tests.ps1'
         ## Group 4
         #'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
         #'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'

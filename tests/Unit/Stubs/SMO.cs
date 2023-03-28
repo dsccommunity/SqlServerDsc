@@ -146,6 +146,62 @@ namespace Microsoft.SqlServer.Management.Smo
         FailOperation = 2,
     }
 
+    public enum AuditActionType : int
+    {
+        ApplicationRoleChangePasswordGroup = 0,
+        AuditChangeGroup = 1,
+        BackupRestoreGroup = 2,
+        BatchCompletedGroup = 3,
+        BatchStartedGroup = 4,
+        BrokerLoginGroup = 5,
+        DatabaseChangeGroup = 6,
+        DatabaseLogoutGroup = 7,
+        DatabaseMirroringLoginGroup = 8,
+        DatabaseObjectAccessGroup = 9,
+        DatabaseObjectChangeGroup = 10,
+        DatabaseObjectOwnershipChangeGroup = 11,
+        DatabaseObjectPermissionChangeGroup = 12,
+        DatabaseOperationGroup = 13,
+        DatabaseOwnershipChangeGroup = 14,
+        DatabasePermissionChangeGroup = 15,
+        DatabasePrincipalChangeGroup = 16,
+        DatabasePrincipalImpersonationGroup = 17,
+        DatabaseRoleMemberChangeGroup = 18,
+        DbccGroup = 19,
+        Delete = 20,
+        Execute = 21,
+        FailedDatabaseAuthenticationGroup = 22,
+        FailedLoginGroup = 23,
+        FullTextGroup = 24,
+        GlobalTransactionsLoginGroup = 25,
+        Insert = 26,
+        LoginChangePasswordGroup = 27,
+        LogoutGroup = 28,
+        Receive = 29,
+        References = 30,
+        SchemaObjectAccessGroup = 31,
+        SchemaObjectChangeGroup = 32,
+        SchemaObjectOwnershipChangeGroup = 33,
+        SchemaObjectPermissionChangeGroup = 34,
+        Select = 35,
+        ServerObjectChangeGroup = 36,
+        ServerObjectOwnershipChangeGroup = 37,
+        ServerObjectPermissionChangeGroup = 38,
+        ServerOperationGroup = 39,
+        ServerPermissionChangeGroup = 40,
+        ServerPrincipalChangeGroup = 41,
+        ServerPrincipalImpersonationGroup = 42,
+        ServerRoleMemberChangeGroup = 43,
+        ServerStateChangeGroup = 44,
+        SuccessfulDatabaseAuthenticationGroup = 45,
+        SuccessfulLoginGroup = 46,
+        TraceChangeGroup = 47,
+        Update = 48,
+        UserChangePasswordGroup = 49,
+        UserDefinedAuditGroup = 50,
+        TransactionGroup = 51,
+    }
+
     public enum SqlSmoState : int
     {
         Pending = 0,
@@ -158,6 +214,27 @@ namespace Microsoft.SqlServer.Management.Smo
     #endregion Public Enums
 
     #region Public Classes
+
+    public class SqlSmoObject
+    {
+        // Property
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState State { get; set; }
+        // public Microsoft.SqlServer.Management.Smo.AbstractCollectionBase ParentCollection { get; set; }
+        // public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        // public Microsoft.SqlServer.Management.Smo.SqlPropertyCollection Properties { get; set; }
+        // public Microsoft.SqlServer.Management.Common.ServerVersion ServerVersion { get; set; }
+        // public Microsoft.SqlServer.Management.Common.DatabaseEngineType DatabaseEngineType { get; set; }
+        // public Microsoft.SqlServer.Management.Common.DatabaseEngineEdition DatabaseEngineEdition { get; set; }
+        // public Microsoft.SqlServer.Management.Smo.ExecutionManager ExecutionManager { get; set; }
+
+        // Fabricated constructor
+        private SqlSmoObject() { }
+        public static SqlSmoObject CreateTypeInstance()
+        {
+            return new SqlSmoObject();
+        }
+    }
 
     // Typename: Microsoft.SqlServer.Management.Smo.ObjectPermissionSet
     // BaseType: Microsoft.SqlServer.Management.Smo.PermissionSetBase
@@ -956,6 +1033,75 @@ namespace Microsoft.SqlServer.Management.Smo
         public static PropertyCollection CreateTypeInstance()
         {
             return new PropertyCollection();
+        }
+    }
+
+    public class ServerAuditSpecification
+    {
+        // Constructor
+        public ServerAuditSpecification() { }
+        public ServerAuditSpecification(Microsoft.SqlServer.Management.Smo.Server server, System.String name) { }
+
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Server Parent { get; set; }
+        public System.String AuditName { get; set; }
+        public System.DateTime? CreateDate { get; set; }
+        public System.DateTime? DateLastModified { get; set; }
+        public System.Boolean? Enabled { get; set; }
+        public System.Guid? Guid { get; set; }
+        public System.Int32? ID { get; set; }
+        public System.String Name { get; set; }
+        // public Microsoft.SqlServer.Management.Smo.AbstractCollectionBase ParentCollection { get; set; }
+        // public Microsoft.SqlServer.Management.Sdk.Sfc.Urn Urn { get; set; }
+        // public Microsoft.SqlServer.Management.Smo.SqlPropertyCollection Properties { get; set; }
+        // public Microsoft.SqlServer.Management.Common.ServerVersion ServerVersion { get; set; }
+        // public Microsoft.SqlServer.Management.Common.DatabaseEngineType DatabaseEngineType { get; set; }
+        // public Microsoft.SqlServer.Management.Common.DatabaseEngineEdition DatabaseEngineEdition { get; set; }
+        // public Microsoft.SqlServer.Management.Smo.ExecutionManager ExecutionManager { get; set; }
+        public System.Object UserData { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoState? State { get; set; }
+    }
+
+    public class ServerAuditSpecificationCollection
+    {
+        // Property
+        public Microsoft.SqlServer.Management.Smo.Server Parent { get; set; }
+        // Item is handled differently in the real class, see:
+        // https://github.com/microsoft/sqlmanagementobjects/blob/main/src/Microsoft/SqlServer/Management/Smo/Collections/ServerAuditSpecificationCollection.cs
+        public Microsoft.SqlServer.Management.Smo.ServerAuditSpecification Item { get; set; }
+        public System.Boolean? IsSynchronized { get; set; }
+        public System.Object SyncRoot { get; set; }
+        public System.Int32? Count { get; set; }
+        public Microsoft.SqlServer.Management.Smo.SqlSmoObject ParentInstance { get; set; }
+
+        // Fabricated constructor
+        private ServerAuditSpecificationCollection() { }
+        public static ServerAuditSpecificationCollection CreateTypeInstance()
+        {
+            return new ServerAuditSpecificationCollection();
+        }
+    }
+
+    public class AuditSpecificationDetail
+    {
+        // Constructor
+        public AuditSpecificationDetail(Microsoft.SqlServer.Management.Smo.AuditActionType action, System.String objectClass, System.String objectSchema, System.String objectName, System.String principal) { }
+        public AuditSpecificationDetail(Microsoft.SqlServer.Management.Smo.AuditActionType action, System.String objectSchema, System.String objectName, System.String principal) { }
+        public AuditSpecificationDetail(Microsoft.SqlServer.Management.Smo.AuditActionType action, System.String objectName, System.String principal) { }
+        public AuditSpecificationDetail(Microsoft.SqlServer.Management.Smo.AuditActionType action) { }
+
+        // Property
+        public Microsoft.SqlServer.Management.Smo.AuditActionType Action { get; set; }
+        public System.String ObjectClass { get; set; }
+        public System.String ObjectName { get; set; }
+        public System.String ObjectSchema { get; set; }
+        public System.String Principal { get; set; }
+
+        // Fabricated constructor
+        private AuditSpecificationDetail() { }
+        public static AuditSpecificationDetail CreateTypeInstance()
+        {
+            return new AuditSpecificationDetail();
         }
     }
 
