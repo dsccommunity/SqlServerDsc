@@ -72,6 +72,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     is more correct and not a duplicate.
   - Integration tests configuration names was renamed to better tell what
     the configuration does ([issue #1880](https://github.com/dsccommunity/SqlServerDsc/issues/1880)).
+- SqlServerDsc.Common
+  - The command `Restart-SqlService` was updated to correctly evaluate when
+    the timeout value is reached ([issue #1889](https://github.com/dsccommunity/SqlServerDsc/issues/1889)).
 
 ## [16.1.0] - 2023-02-28
 
