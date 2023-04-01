@@ -43,11 +43,12 @@ Configuration DSC_SqlSecureConnection_AddSecureConnection_Config
     {
         SqlSecureConnection 'Integration_Test'
         {
-            InstanceName = $Node.InstanceName
-            Ensure = 'Present'
-            Thumbprint = $Node.Thumbprint
-            ServiceAccount = $Node.ServiceAccount
+            InstanceName    = $Node.InstanceName
+            Ensure          = 'Present'
+            Thumbprint      = $Node.Thumbprint
+            ServiceAccount  = $Node.ServiceAccount
             ForceEncryption = $true
+            ServerName      = 'localhost'
         }
     }
 }
@@ -64,9 +65,9 @@ Configuration DSC_SqlSecureConnection_RemoveSecureConnection_Config
     {
         SqlSecureConnection 'Integration_Test'
         {
-            InstanceName = $Node.InstanceName
-            Ensure = 'Absent'
-            Thumbprint = ''
+            InstanceName   = $Node.InstanceName
+            Ensure         = 'Absent'
+            Thumbprint     = ''
             ServiceAccount = $Node.ServiceAccount
         }
     }

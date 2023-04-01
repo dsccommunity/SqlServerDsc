@@ -8,5 +8,5 @@ class DSC_SqlSecureConnection : OMI_BaseResource
     [Required, Description("Name of the account running the _SQL Server_ _Windows_ service. If this parameter is set to `'LocalSystem'` then a connection error is displayed, instead use the value `'SYSTEM'`.")] String ServiceAccount;
     [Write, Description("If set to `$true` then the required restart will be suppressed. You will need to restart the service before changes will take effect. The default value is `$false`.")] Boolean SuppressRestart;
     [Write, Description("If encryption should be enabled (`'Present'`) or disabled (`'Absent'`)."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("Specifies the host name that will be used when restarting the SQL Server instance. If the SQL Server belongs to a cluster or availability group specify the host name for the listener or cluster group. The specified name must match the name that is used by the certificate specified for the parameter `Thumbprint`. Default value is `localhost`.")] String ServerName;
 };
-

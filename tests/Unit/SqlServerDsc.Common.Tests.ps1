@@ -1088,6 +1088,10 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
                     Restart-SqlService -ServerName $env:ComputerName -InstanceName 'MSSQLSERVER' -Timeout 4 -SkipClusterCheck
                 } | Should -Throw -ExpectedMessage $mockErrorMessage
 
+                <#
+                    Not using -Exactly to handle when CI is slower, result is
+                    that there are 3 calls to Connect-SQL.
+                #>
                 Should -Invoke -CommandName Connect-SQL -ParameterFilter {
                     <#
                         Make sure we assert the second call to Connect-SQL
@@ -1096,7 +1100,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
                         we cannot use `$PSBoundParameters.ContainsKey('ErrorAction') -eq $true`.
                     #>
                     $ErrorAction -eq 'SilentlyContinue'
-                } -Scope It -Exactly -Times 2
+                } -Scope It -Times 2
             }
         }
     }

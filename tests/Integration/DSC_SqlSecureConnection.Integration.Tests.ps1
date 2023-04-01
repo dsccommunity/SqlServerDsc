@@ -114,8 +114,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 $_.ConfigurationName -eq $configurationName `
                 -and $_.ResourceId -eq $resourceId
             }
+
             $resourceCurrentState.Thumbprint | Should -Be $env:SqlCertificateThumbprint
-            $resourceCurrentState.ForceEncryption | Should -Be $true
+            $resourceCurrentState.ForceEncryption | Should -BeTrue
+            $resourceCurrentState.ServerName | Should -Be 'localhost'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -169,8 +171,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resultObject.Thumbprint | Should -BeNullOrEmpty
-            $resourceCurrentState.ForceEncryption | Should -Be $false
+            $resourceCurrentState.Thumbprint | Should -Be 'Empty'
+            $resourceCurrentState.ForceEncryption | Should -BeFalse
+            $resourceCurrentState.ServerName | Should -Be 'localhost'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {

@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     other values that the default values.
   - Now updates GitHub Actions automatically by allowing dependabot sending
     in pull requests.
+- `SqlSecureConnection`
+  - Added new parameter `ServerName` that will be used as the host name when
+    restarting the SQL Server instance. The specified value should be the same
+    name that is used in the certificate ([issue #1888](https://github.com/dsccommunity/SqlServerDsc/issues/1888)).
 
 ### Changed
 
