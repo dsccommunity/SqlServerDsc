@@ -1044,63 +1044,123 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
         }
 
         Context 'When it fails to connect to the instance within the timeout period' {
-            BeforeAll {
-                Mock -CommandName Connect-SQL -MockWith {
-                    return @{
-                        Name = 'MSSQLSERVER'
-                        InstanceName = ''
-                        ServiceName = 'MSSQLSERVER'
-                        Status = 'Offline'
+            Context 'When the connection throws an exception' {
+                BeforeAll {
+                    Mock -CommandName Connect-SQL -MockWith {
+                        # Using SilentlyContinue to not show the errors in the Pester output.
+                        Write-Error -Message 'Mock connection error' -ErrorAction 'SilentlyContinue'
                     }
+
+                    Mock -CommandName Get-Service -MockWith {
+                        return @{
+                            Name = 'MSSQLSERVER'
+                            DisplayName = 'Microsoft SQL Server (MSSQLSERVER)'
+                            DependentServices = @(
+                                @{
+                                    Name = 'SQLSERVERAGENT'
+                                    DisplayName = 'SQL Server Agent (MSSQLSERVER)'
+                                    Status = 'Running'
+                                    DependentServices = @()
+                                }
+                            )
+                        }
+                    }
+
+                    Mock -CommandName Restart-Service
+                    Mock -CommandName Start-Service
                 }
 
-                Mock -CommandName Get-Service -MockWith {
-                    return @{
-                        Name = 'MSSQLSERVER'
-                        DisplayName = 'Microsoft SQL Server (MSSQLSERVER)'
-                        DependentServices = @(
-                            @{
-                                Name = 'SQLSERVERAGENT'
-                                DisplayName = 'SQL Server Agent (MSSQLSERVER)'
-                                Status = 'Running'
-                                DependentServices = @()
-                            }
-                        )
+                It 'Should wait for timeout before throwing error message' {
+                    $mockLocalizedString = InModuleScope -ScriptBlock {
+                        $localizedData.FailedToConnectToInstanceTimeout
                     }
-                }
 
-                Mock -CommandName Restart-Service
-                Mock -CommandName Start-Service
+                    $mockErrorMessage = Get-InvalidOperationRecord -Message (
+                        # For error message, it just look for start of JSON block regardless what is in it.
+                        $mockLocalizedString -f $env:ComputerName, 'MSSQLSERVER', 4, '{*'
+                    )
+
+                    $mockErrorMessage.Exception.Message | Should -Not -BeNullOrEmpty
+
+                    {
+                        Restart-SqlService -ServerName $env:ComputerName -InstanceName 'MSSQLSERVER' -Timeout 4 -SkipClusterCheck
+                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+
+                    <#
+                        Not using -Exactly to handle when CI is slower, result is
+                        that there are 3 calls to Connect-SQL.
+                    #>
+                    Should -Invoke -CommandName Connect-SQL -ParameterFilter {
+                        <#
+                            Make sure we assert the second call to Connect-SQL
+
+                            Due to issue https://github.com/pester/Pester/issues/1542
+                            we cannot use `$PSBoundParameters.ContainsKey('ErrorAction') -eq $true`.
+                        #>
+                        $ErrorAction -eq 'SilentlyContinue'
+                    } -Scope It -Times 2
+                }
             }
 
-            It 'Should wait for timeout before throwing error message' {
-                $mockLocalizedString = InModuleScope -ScriptBlock {
-                    $localizedData.FailedToConnectToInstanceTimeout
+            Context 'When the Status returns offline' {
+                BeforeAll {
+                    Mock -CommandName Connect-SQL -MockWith {
+                        return @{
+                            Name = 'MSSQLSERVER'
+                            InstanceName = ''
+                            ServiceName = 'MSSQLSERVER'
+                            Status = 'Offline'
+                        }
+                    }
+
+                    Mock -CommandName Get-Service -MockWith {
+                        return @{
+                            Name = 'MSSQLSERVER'
+                            DisplayName = 'Microsoft SQL Server (MSSQLSERVER)'
+                            DependentServices = @(
+                                @{
+                                    Name = 'SQLSERVERAGENT'
+                                    DisplayName = 'SQL Server Agent (MSSQLSERVER)'
+                                    Status = 'Running'
+                                    DependentServices = @()
+                                }
+                            )
+                        }
+                    }
+
+                    Mock -CommandName Restart-Service
+                    Mock -CommandName Start-Service
                 }
 
-                $mockErrorMessage = Get-InvalidOperationRecord -Message (
-                    $mockLocalizedString -f $env:ComputerName, 'MSSQLSERVER', 4
-                )
+                It 'Should wait for timeout before throwing error message' {
+                    $mockLocalizedString = InModuleScope -ScriptBlock {
+                        $localizedData.FailedToConnectToInstanceTimeout
+                    }
 
-                $mockErrorMessage.Exception.Message | Should -Not -BeNullOrEmpty
+                    $mockErrorMessage = Get-InvalidOperationRecord -Message (
+                        $mockLocalizedString -f $env:ComputerName, 'MSSQLSERVER', 4, ''
+                    )
 
-                {
-                    Restart-SqlService -ServerName $env:ComputerName -InstanceName 'MSSQLSERVER' -Timeout 4 -SkipClusterCheck
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    $mockErrorMessage.Exception.Message | Should -Not -BeNullOrEmpty
 
-                <#
-                    Not using -Exactly to handle when CI is slower, result is
-                    that there are 3 calls to Connect-SQL.
-                #>
-                Should -Invoke -CommandName Connect-SQL -ParameterFilter {
+                    {
+                        Restart-SqlService -ServerName $env:ComputerName -InstanceName 'MSSQLSERVER' -Timeout 4 -SkipClusterCheck
+                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+
                     <#
-                        Make sure we assert the second call to Connect-SQL
-
-                        Due to issue https://github.com/pester/Pester/issues/1542
-                        we cannot use `$PSBoundParameters.ContainsKey('ErrorAction') -eq $true`.
+                        Not using -Exactly to handle when CI is slower, result is
+                        that there are 3 calls to Connect-SQL.
                     #>
-                    $ErrorAction -eq 'SilentlyContinue'
-                } -Scope It -Times 2
+                    Should -Invoke -CommandName Connect-SQL -ParameterFilter {
+                        <#
+                            Make sure we assert the second call to Connect-SQL
+
+                            Due to issue https://github.com/pester/Pester/issues/1542
+                            we cannot use `$PSBoundParameters.ContainsKey('ErrorAction') -eq $true`.
+                        #>
+                        $ErrorAction -eq 'SilentlyContinue'
+                    } -Scope It -Times 2
+                }
             }
         }
     }
