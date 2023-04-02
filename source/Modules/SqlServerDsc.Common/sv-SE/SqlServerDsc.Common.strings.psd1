@@ -34,7 +34,7 @@ ConvertFrom-StringData @'
     WaitServiceRestart = Waiting {0} seconds before starting service '{1}'. (SQLCOMMON0041)
     StartingDependentService = Startar tjänst {0} (SQLCOMMON0042)
     WaitingInstanceTimeout = Waiting for instance {0}\\{1} to report status online, with a timeout value of {2} seconds. (SQLCOMMON0043)
-    FailedToConnectToInstanceTimeout = Failed to connect to the instance {0}\\{1} within the timeout period of {2} seconds. (SQLCOMMON0044)
+    FailedToConnectToInstanceTimeout = Failed to connect to the instance {0}\\{1} within the timeout period of {2} seconds (SQLCOMMON0044). Last seen error: {3}
     ExecuteQueryWithResultsFailed = Exekvering av fråga med resultat misslyckades mot databas '{0}'. (SQLCOMMON0045)
     ExecuteNonQueryFailed = Exekvering av icke-fråga misslyckades på databas '{0}'. (SQLCOMMON0046)
     AlterAvailabilityGroupReplicaFailed = Misslyckades att ändra Availability Group kopia '{0}'. (SQLCOMMON0047)
