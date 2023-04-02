@@ -1014,10 +1014,12 @@ function Restart-SqlService
     {
         $connectTimer = [System.Diagnostics.StopWatch]::StartNew()
 
+        $connectSqlError = $null
+
         do
         {
             # This call, if it fails, will take between ~9-10 seconds to return.
-            $testConnectionServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'SilentlyContinue'
+            $testConnectionServerObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'SilentlyContinue' -ErrorVariable 'connectSqlError'
 
             # Make sure we have an SMO object to test Status
             if ($testConnectionServerObject)
@@ -1037,8 +1039,22 @@ function Restart-SqlService
         # Was the timeout period reach before able to connect to the SQL Server instance?
         if (-not $testConnectionServerObject -or $testConnectionServerObject.Status -ne 'Online')
         {
-            $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f $ServerName, $InstanceName, $Timeout
-            New-InvalidOperationException -Message $errorMessage
+            $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f @(
+                $ServerName,
+                $InstanceName,
+                $Timeout
+            )
+
+            $newInvalidOperationExceptionParameters = @{
+                Message = $errorMessage
+            }
+
+            if ($connectSqlError)
+            {
+                $newInvalidOperationExceptionParameters.ErrorRecord = $connectSqlError[$connectSqlError.Count - 1]
+            }
+
+            New-InvalidOperationException @newInvalidOperationExceptionParameters
         }
     }
 }
