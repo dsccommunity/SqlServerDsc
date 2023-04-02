@@ -55,7 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Restart-SqlService` no longer silently ignores errors that prevents
      the instance to go online. If the instance has not gone online during
      the timeout period the error thrown will no contain the last error
-     reported by `Connect-SQL`.
+     reported by `Connect-SQL` ([issue #1891](https://github.com/dsccommunity/SqlServerDsc/issues/1891)).
 
 ### Fixed
 
