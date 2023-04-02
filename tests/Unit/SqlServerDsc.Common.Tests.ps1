@@ -804,19 +804,32 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
     BeforeAll {
         InModuleScope -ScriptBlock {
             # Stubs for cross-platform testing.
-            function Script:Get-Service {
+            function script:Get-Service
+            {
                 throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
             }
 
-            function Script:Restart-Service {
+            function script:Restart-Service
+            {
                 throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
             }
 
-            function Script:Start-Service {
+            function script:Start-Service
+            {
                 throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
             }
         }
     }
+
+    AfterAll {
+        InModuleScope -ScriptBlock {
+            # Remove stubs that was used for cross-platform testing.
+            Remove-Item -Path function:Get-Service
+            Remove-Item -Path function:Restart-Service
+            Remove-Item -Path function:Start-Service
+        }
+    }
+
     Context 'Restart-SqlService standalone instance' {
         Context 'When the Windows services should be restarted' {
             BeforeAll {
