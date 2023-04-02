@@ -801,6 +801,22 @@ Describe 'SqlServerDsc.Common\Start-SqlSetupProcess' -Tag 'StartSqlSetupProcess'
 }
 
 Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            # Stubs for cross-platform testing.
+            function Script:Get-Service {
+                throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
+            }
+
+            function Script:Restart-Service {
+                throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
+            }
+
+            function Script:Start-Service {
+                throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
+            }
+        }
+    }
     Context 'Restart-SqlService standalone instance' {
         Context 'When the Windows services should be restarted' {
             BeforeAll {
@@ -834,7 +850,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             }
 
             It 'Should restart SQL Service and running SQL Agent service' {
-                { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
+                { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
 
                 Should -Invoke -CommandName Connect-SQL -ParameterFilter {
                     <#
@@ -854,7 +870,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
 
             Context 'When skipping the cluster check' {
                 It 'Should restart SQL Service and running SQL Agent service' {
-                    { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'MSSQLSERVER' -SkipClusterCheck } | Should -Not -Throw
+                    { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -SkipClusterCheck } | Should -Not -Throw
 
                     Should -Invoke -CommandName Connect-SQL -ParameterFilter {
                         <#
@@ -875,7 +891,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
 
             Context 'When skipping the online check' {
                 It 'Should restart SQL Service and running SQL Agent service and not wait for the SQL Server instance to come back online' {
-                    { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'MSSQLSERVER' -SkipWaitForOnline } | Should -Not -Throw
+                    { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -SkipWaitForOnline } | Should -Not -Throw
 
                     Should -Invoke -CommandName Connect-SQL -ParameterFilter {
                         <#
@@ -923,7 +939,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             }
 
             It 'Should just call Restart-SqlClusterService to restart the SQL Server cluster instance' {
-                { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
+                { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
 
                 Should -Invoke -CommandName Connect-SQL -ParameterFilter {
                     <#
@@ -943,7 +959,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
 
             Context 'When passing the Timeout value' {
                 It 'Should just call Restart-SqlClusterService with the correct parameter' {
-                    { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'MSSQLSERVER' -Timeout 120 } | Should -Not -Throw
+                    { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -Timeout 120 } | Should -Not -Throw
 
                     Should -Invoke -CommandName Restart-SqlClusterService -ParameterFilter {
                         <#
@@ -957,7 +973,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
 
             Context 'When passing the OwnerNode value' {
                 It 'Should just call Restart-SqlClusterService with the correct parameter' {
-                    { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'MSSQLSERVER' -OwnerNode @('TestNode') } | Should -Not -Throw
+                    { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -OwnerNode @('TestNode') } | Should -Not -Throw
 
                     Should -Invoke -CommandName Restart-SqlClusterService -ParameterFilter {
                         <#
@@ -995,7 +1011,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             }
 
             It 'Should restart SQL Service and not try to restart missing SQL Agent service' {
-                { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'NOAGENT' -SkipClusterCheck } | Should -Not -Throw
+                { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'NOAGENT' -SkipClusterCheck } | Should -Not -Throw
 
                 Should -Invoke -CommandName Get-Service -Scope It -Exactly -Times 1
                 Should -Invoke -CommandName Restart-Service -Scope It -Exactly -Times 1
@@ -1035,7 +1051,7 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
             }
 
             It 'Should restart SQL Service and not try to restart stopped SQL Agent service' {
-                { Restart-SqlService -ServerName $env:COMPUTERNAME -InstanceName 'STOPPEDAGENT' -SkipClusterCheck } | Should -Not -Throw
+                { Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'STOPPEDAGENT' -SkipClusterCheck } | Should -Not -Throw
 
                 Should -Invoke -CommandName Get-Service -Scope It -Exactly -Times 1
                 Should -Invoke -CommandName Restart-Service -Scope It -Exactly -Times 1
@@ -1076,14 +1092,13 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
                     }
 
                     $mockErrorMessage = Get-InvalidOperationRecord -Message (
-                        # For error message, it just look for start of JSON block regardless what is in it.
-                        $mockLocalizedString -f $env:ComputerName, 'MSSQLSERVER', 4, '{*'
+                        ($mockLocalizedString -f (Get-ComputerName), 'MSSQLSERVER', 4) + '*Mock connection error*'
                     )
 
                     $mockErrorMessage.Exception.Message | Should -Not -BeNullOrEmpty
 
                     {
-                        Restart-SqlService -ServerName $env:ComputerName -InstanceName 'MSSQLSERVER' -Timeout 4 -SkipClusterCheck
+                        Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -Timeout 4 -SkipClusterCheck
                     } | Should -Throw -ExpectedMessage $mockErrorMessage
 
                     <#
@@ -1138,13 +1153,13 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
                     }
 
                     $mockErrorMessage = Get-InvalidOperationRecord -Message (
-                        $mockLocalizedString -f $env:ComputerName, 'MSSQLSERVER', 4, ''
+                        $mockLocalizedString -f (Get-ComputerName), 'MSSQLSERVER', 4
                     )
 
                     $mockErrorMessage.Exception.Message | Should -Not -BeNullOrEmpty
 
                     {
-                        Restart-SqlService -ServerName $env:ComputerName -InstanceName 'MSSQLSERVER' -Timeout 4 -SkipClusterCheck
+                        Restart-SqlService -ServerName (Get-ComputerName) -InstanceName 'MSSQLSERVER' -Timeout 4 -SkipClusterCheck
                     } | Should -Throw -ExpectedMessage $mockErrorMessage
 
                     <#

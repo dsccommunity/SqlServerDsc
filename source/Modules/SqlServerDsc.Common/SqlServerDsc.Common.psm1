@@ -1039,21 +1039,22 @@ function Restart-SqlService
         # Was the timeout period reach before able to connect to the SQL Server instance?
         if (-not $testConnectionServerObject -or $testConnectionServerObject.Status -ne 'Online')
         {
-            $errorJsonString = $connectSqlError |
-                ConvertTo-Json -Depth 4
-
             $errorMessage = $script:localizedData.FailedToConnectToInstanceTimeout -f @(
                 $ServerName,
                 $InstanceName,
-                $Timeout,
-                (
-                    # Passing to Out-String to handle $null value.
-                    $errorJsonString |
-                        Out-String
-                )
+                $Timeout
             )
 
-            New-InvalidOperationException -Message $errorMessage
+            $newInvalidOperationExceptionParameters = @{
+                Message = $errorMessage
+            }
+
+            if ($connectSqlError)
+            {
+                $newInvalidOperationExceptionParameters.ErrorRecord = $connectSqlError[$connectSqlError.Count - 1]
+            }
+
+            New-InvalidOperationException @newInvalidOperationExceptionParameters
         }
     }
 }
