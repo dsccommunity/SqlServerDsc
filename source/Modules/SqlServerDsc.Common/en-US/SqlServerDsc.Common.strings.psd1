@@ -28,7 +28,7 @@ ConvertFrom-StringData @'
     WaitServiceRestart = Waiting {0} seconds before starting service '{1}'. (SQLCOMMON0041)
     StartingDependentService = Starting service '{0}'. (SQLCOMMON0042)
     WaitingInstanceTimeout = Waiting for instance {0}\\{1} to report status online, with a timeout value of {2} seconds. (SQLCOMMON0043)
-    FailedToConnectToInstanceTimeout = Failed to connect to the instance {0}\\{1} within the timeout period of {2} seconds (SQLCOMMON0044). Last seen error: {3}
+    FailedToConnectToInstanceTimeout = Failed to connect to the instance {0}\\{1} within the timeout period of {2} seconds. (SQLCOMMON0044)
     ExecuteQueryWithResultsFailed = Executing query with results failed on database '{0}'. (SQLCOMMON0045)
     ExecuteNonQueryFailed = Executing non-query failed on database '{0}'. (SQLCOMMON0046)
     AlterAvailabilityGroupReplicaFailed = Failed to alter the availability group replica '{0}'. (SQLCOMMON0047)
