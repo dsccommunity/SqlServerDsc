@@ -37,7 +37,7 @@ else
                 # Features CONN, BC, SDK, SNAC_SDK, DREPLAY_CLT, DREPLAY_CTLR are no longer supported in 2022.
                 SupportedFeatures               = 'SQLENGINE,REPLICATION'
 
-                SqlServerModuleVersion          = '22.0.49-preview'
+                SqlServerModuleVersion          = '22.0.59'
             }
         }
 
