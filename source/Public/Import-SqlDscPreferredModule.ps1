@@ -75,72 +75,7 @@ function Import-SqlDscPreferredModule
         }
     }
 
-    $availableModuleName = $null
-
-    # Get the newest SqlServer module if more than one exist
-    $availableModule = Get-Module -FullyQualifiedName $PreferredModule -ListAvailable |
-        Sort-Object -Property 'Version' -Descending |
-        Select-Object -First 1 -Property 'Name', 'Path', 'Version'
-
-    if ($availableModule)
-    {
-        $availableModuleName = $availableModule.Name
-
-        Write-Verbose -Message ($script:localizedData.PreferredModule_ModuleFound -f $availableModuleName)
-    }
-    else
-    {
-        Write-Verbose -Message ($script:localizedData.PreferredModule_ModuleNotFound)
-
-        # Only run on Windows that has Machine state.
-        if (-not ($IsLinux -or $IsMacOS))
-        {
-            <#
-                After installing SQL Server the current PowerShell session doesn't know
-                about the new path that was added for the SQLPS module. This reloads
-                PowerShell session environment variable PSModulePath to make sure it
-                contains all paths.
-            #>
-
-            <#
-                Get the environment variables from all targets session, user and machine.
-                Casts the value to System.String to convert $null values to empty string.
-            #>
-            $modulePathSession = [System.String] [System.Environment]::GetEnvironmentVariable('PSModulePath')
-            $modulePathUser = [System.String] [System.Environment]::GetEnvironmentVariable('PSModulePath', 'User')
-            $modulePathMachine = [System.String] [System.Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
-
-            $modulePath = $modulePathSession, $modulePathUser, $modulePathMachine -join ';'
-
-            $modulePathArray = $modulePath -split ';' |
-                Where-Object -FilterScript {
-                    -not [System.String]::IsNullOrEmpty($_)
-                } |
-                Sort-Object -Unique
-
-            $modulePath = $modulePathArray -join ';'
-
-            Set-PSModulePath -Path $modulePath
-        }
-
-        # Get the newest SQLPS module if more than one exist.
-        $availableModule = Get-Module -FullyQualifiedName 'SQLPS' -ListAvailable |
-            Select-Object -Property Name, Path, @{
-                Name       = 'Version'
-                Expression = {
-                    # Parse the build version number '120', '130' from the Path.
-                    (Select-String -InputObject $_.Path -Pattern '\\([0-9]{3})\\' -List).Matches.Groups[1].Value
-                }
-            } |
-            Sort-Object -Property 'Version' -Descending |
-            Select-Object -First 1
-
-        if ($availableModule)
-        {
-            # This sets $availableModuleName to the Path of the module to be loaded.
-            $availableModuleName = Split-Path -Path $availableModule.Path -Parent
-        }
-    }
+    $availableModuleName = Get-SqlDscPreferredModule -Name @($PreferredModule, 'SQLPS') -Refresh
 
     if ($availableModuleName)
     {
