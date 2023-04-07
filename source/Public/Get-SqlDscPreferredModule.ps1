@@ -134,7 +134,6 @@ function Get-SqlDscPreferredModule
 
     foreach ($preferredModuleName in $Name)
     {
-        # Get the latest version if available.
         $preferredModule = $availableModule |
             Where-Object -Property 'Name' -EQ -Value $preferredModuleName
 
@@ -142,6 +141,7 @@ function Get-SqlDscPreferredModule
         {
             if ($preferredModule.Name -eq 'SQLPS')
             {
+                # Get the latest version if available.
                 $preferredModule = $preferredModule |
                     Sort-Object -Property 'Version' -Descending |
                     Select-Object -First 1
