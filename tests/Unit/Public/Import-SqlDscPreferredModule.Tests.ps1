@@ -134,22 +134,6 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
             return $importModuleResult
         }
 
-        $mockGetModuleSqlServer = {
-            # Return an array to test so that the latest version is only imported.
-            return @(
-                [PSCustomObject] @{
-                    Name = 'SqlServer'
-                    Version = [Version] '1.0'
-                }
-
-                [PSCustomObject] @{
-                    Name = 'SqlServer'
-                    Version = [Version] '2.0'
-                }
-            )
-        }
-
-        Mock -CommandName Set-PSModulePath
         Mock -CommandName Push-Location
         Mock -CommandName Pop-Location
     }
@@ -191,12 +175,9 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
     Context 'When module SqlServer exists, but not loaded into the session' {
         BeforeAll {
             Mock -CommandName Import-Module -MockWith $mockImportModule
-            Mock -CommandName Get-Module -ParameterFilter {
-                $PesterBoundParameters.ContainsKey('Name')
-            }
-
-            Mock -CommandName Get-Module -MockWith $mockGetModuleSqlServer -ParameterFilter {
-                $FullyQualifiedName.Name -eq 'SqlServer' -and $ListAvailable -eq $true
+            Mock -CommandName Get-Module
+            Mock -CommandName Get-SqlDscPreferredModule -MockWith {
+                return 'SqlServer'
             }
 
             $mockExpectedModuleNameToImport = 'SqlServer'
@@ -205,9 +186,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         It 'Should import the SqlServer module without throwing' {
             { Import-SqlDscPreferredModule } | Should -Not -Throw
 
-            Should -Invoke -CommandName Get-Module -ParameterFilter {
-                $FullyQualifiedName.Name -eq 'SqlServer' -and $ListAvailable -eq $true
-            } -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Push-Location -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Pop-Location -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Import-Module -Exactly -Times 1 -Scope It
@@ -218,48 +197,17 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Import-Module -MockWith $mockImportModule
             Mock -CommandName Remove-Module
-            Mock -CommandName Get-Module -ParameterFilter {
-                $PesterBoundParameters.ContainsKey('Name')
+            Mock -CommandName Get-SqlDscPreferredModule -MockWith {
+                return $sqlPsExpectedModulePath
             }
 
             $mockExpectedModuleNameToImport = $sqlPsExpectedModulePath
-
-            Mock -CommandName Get-Module -MockWith {
-                # Return an array to test so that the latest version is only imported.
-                return @(
-                    [PSCustomObject] @{
-                        Name = 'SQLPS'
-                        # This is a path to an older version of SQL PS than $sqlPsLatestModulePath.
-                        Path = 'C:\Program Files (x86)\Microsoft SQL Server\120\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-                    }
-
-                    [PSCustomObject] @{
-                        Name = 'SQLPS'
-                        Path = $sqlPsLatestModulePath
-                    }
-                )
-            } -ParameterFilter {
-                $FullyQualifiedName.Name -eq 'SQLPS' -and $ListAvailable -eq $true
-            }
-
-            Mock -CommandName Get-Module -MockWith {
-                return $null
-            } -ParameterFilter {
-                $FullyQualifiedName.Name -eq 'SqlServer' -and $ListAvailable -eq $true
-            }
         }
 
         It 'Should import the SqlServer module without throwing' {
             { Import-SqlDscPreferredModule -Force } | Should -Not -Throw
 
-            Should -Invoke -CommandName Get-Module -ParameterFilter {
-                $FullyQualifiedName.Name -eq 'SqlServer' -and $ListAvailable -eq $true
-            } -Exactly -Times 1 -Scope It
-
-            Should -Invoke -CommandName Get-Module -ParameterFilter {
-                $FullyQualifiedName.Name -eq 'SQLPS' -and $ListAvailable -eq $true
-            } -Exactly -Times 1 -Scope It
-
+            Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Push-Location -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Pop-Location -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Remove-Module -Exactly -Times 1 -Scope It
@@ -270,10 +218,10 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
     Context 'When neither SqlServer or SQLPS exists' {
         BeforeAll {
             Mock -CommandName Import-Module
+            Mock -CommandName Get-Module
+            Mock -CommandName Get-SqlDscPreferredModule
 
             $mockExpectedModuleNameToImport = $sqlPsExpectedModulePath
-
-            Mock -CommandName Get-Module
         }
 
         It 'Should throw the correct error message' {
@@ -283,14 +231,8 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
 
             { Import-SqlDscPreferredModule } | Should -Throw -ExpectedMessage $mockLocalizedString
 
-            Should -Invoke -CommandName Get-Module -ParameterFilter {
-                $FullyQualifiedName.Name -eq 'SqlServer' -and $ListAvailable -eq $true
-            } -Exactly -Times 1 -Scope It
-
-            Should -Invoke -CommandName Get-Module -ParameterFilter {
-                $FullyQualifiedName.Name -eq 'SQLPS' -and $ListAvailable -eq $true
-            } -Exactly -Times 1 -Scope It
-
+            Should -Invoke -CommandName Get-Module -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Push-Location -Exactly -Times 0 -Scope It
             Should -Invoke -CommandName Pop-Location -Exactly -Times 0 -Scope It
             Should -Invoke -CommandName Import-Module -Exactly -Times 0 -Scope It
