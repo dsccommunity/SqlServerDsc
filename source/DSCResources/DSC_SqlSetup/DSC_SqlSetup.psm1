@@ -45,6 +45,13 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         Specifies to install the English version of SQL Server on a localized operating
         system when the installation media includes language packs for both English and
         the language corresponding to the operating system.
+
+    .PARAMETER ServerName
+        Specifies the host or network name of the _SQL Server_ instance. If the
+        SQL Server belongs to a cluster or availability group it could be set to
+        the host name for the listener or cluster group. If using a secure connection
+        the specified value should be the same name that is used in the certificate.
+        Default value is the current computer name.
 #>
 function Get-TargetResource
 {
@@ -85,7 +92,11 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $UseEnglish
+        $UseEnglish,
+
+        [Parameter()]
+        [System.String]
+        $ServerName
     )
 
     if ($FeatureFlag)
@@ -144,6 +155,7 @@ function Get-TargetResource
         FailoverClusterGroupName   = $null
         FailoverClusterIPAddress   = $null
         UseEnglish                 = $UseEnglish
+        ServerName                 = $ServerName
     }
 
     <#
@@ -156,7 +168,14 @@ function Get-TargetResource
     }
     else
     {
-        $sqlHostName = Get-ComputerName
+        if ($PSBoundParameters.ContainsKey('ServerName'))
+        {
+            $sqlHostName = $ServerName
+        }
+        else
+        {
+            $sqlHostName = Get-ComputerName
+        }
     }
 
     # Force drive list update, to pick up any newly mounted volumes
@@ -642,6 +661,13 @@ function Get-TargetResource
 
     .PARAMETER SkipRule
         Specifies optional skip rules during setup.
+
+    .PARAMETER ServerName
+        Specifies the host or network name of the _SQL Server_ instance. If the
+        SQL Server belongs to a cluster or availability group it could be set to
+        the host name for the listener or cluster group. If using a secure connection
+        the specified value should be the same name that is used in the certificate.
+        Default value is the current computer name.
 #>
 function Set-TargetResource
 {
@@ -903,7 +929,11 @@ function Set-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String[]]
-        $SkipRule
+        $SkipRule,
+
+        [Parameter()]
+        [System.String]
+        $ServerName
     )
 
     <#
@@ -925,6 +955,11 @@ function Set-TargetResource
         InstanceName               = $InstanceName
         FailoverClusterNetworkName = $FailoverClusterNetworkName
         FeatureFlag                = $FeatureFlag
+    }
+
+    if ($PSBoundParameters.ContainsKey('ServerName'))
+    {
+        $getTargetResourceParameters.ServerName = $ServerName
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
@@ -1854,6 +1889,13 @@ function Set-TargetResource
         Specifies optional skip rules during setup.
 
         Not used in Test-TargetResource.
+
+    .PARAMETER ServerName
+        Specifies the host or network name of the _SQL Server_ instance. If the
+        SQL Server belongs to a cluster or availability group it could be set to
+        the host name for the listener or cluster group. If using a secure connection
+        the specified value should be the same name that is used in the certificate.
+        Default value is the current computer name.
 #>
 function Test-TargetResource
 {
@@ -2115,7 +2157,11 @@ function Test-TargetResource
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String[]]
-        $SkipRule
+        $SkipRule,
+
+        [Parameter()]
+        [System.String]
+        $ServerName
     )
 
     <#
@@ -2136,9 +2182,13 @@ function Test-TargetResource
         FeatureFlag                = $FeatureFlag
     }
 
-    $boundParameters = $PSBoundParameters
+    if ($PSBoundParameters.ContainsKey('ServerName'))
+    {
+        $getTargetResourceParameters.ServerName = $ServerName
+    }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
     if ($null -eq $getTargetResourceResult.Features -or $getTargetResourceResult.Features -eq '')
     {
         Write-Verbose -Message $script:localizedData.NoFeaturesFound
@@ -2160,6 +2210,7 @@ function Test-TargetResource
             if ($feature -notin $foundFeaturesArray)
             {
                 Write-Verbose -Message ($script:localizedData.UnableToFindFeature -f $feature, $($getTargetResourceResult.Features))
+
                 $result = $false
             }
         }
@@ -2173,14 +2224,15 @@ function Test-TargetResource
     {
         Write-Verbose -Message $script:localizedData.EvaluatingClusterParameters
 
-        $variableNames = $boundParameters.Keys |
+        $variableNames = $PSBoundParameters.Keys |
             Where-Object -FilterScript { $_ -imatch "^FailoverCluster" }
 
         foreach ($variableName in $variableNames)
         {
-            if ($getTargetResourceResult.$variableName -ne $boundParameters[$variableName])
+            if ($getTargetResourceResult.$variableName -ne $PSBoundParameters.$variableName)
             {
-                Write-Verbose -Message ($script:localizedData.ClusterParameterIsNotInDesiredState -f $variableName, $($boundParameters[$variableName]))
+                Write-Verbose -Message ($script:localizedData.ClusterParameterIsNotInDesiredState -f $variableName, ($PSBoundParameters.$variableName))
+
                 $result = $false
             }
         }
