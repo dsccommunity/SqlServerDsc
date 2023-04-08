@@ -68,6 +68,6 @@ class DSC_SqlSetup : OMI_BaseResource
     [Write, Description("Feature flags are used to toggle DSC resource functionality on or off. See the DSC resource documentation for what additional functionality exist through a feature flag.")] String FeatureFlag[];
     [Write, Description("Specifies to install the English version of _SQL Server_ on a localized operating system when the installation media includes language packs for both English and the language corresponding to the operating system.")] Boolean UseEnglish;
     [Write, Description("Specifies optional skip rules during setup.")] String SkipRule[];
-    [Write, Description("Specifies the host or network name of the _SQL Server_ instance. If the SQL Server belongs to a cluster or availability group specify the host name for the listener or cluster group. Default value is the current computer name.")] String ServerName;
+    [Write, Description("Specifies the host or network name of the _SQL Server_ instance. If the SQL Server belongs to a cluster or availability group it could be set to the host name for the listener or cluster group. If using a secure connection the specified value should be the same name that is used in the certificate. Default value is the current computer name.")] String ServerName;
     [Read, Description("Returns a boolean value of `$true` if the instance is clustered, otherwise it returns `$false`.")] Boolean IsClustered;
 };

@@ -47,10 +47,11 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         the language corresponding to the operating system.
 
     .PARAMETER ServerName
-        Specifies the host name of the SQL Server to be configured. If the SQL
-        Server belongs to a cluster or availability group specify the host name
-        for the listener or cluster group. Default value is the current computer
-        name.
+        Specifies the host or network name of the _SQL Server_ instance. If the
+        SQL Server belongs to a cluster or availability group it could be set to
+        the host name for the listener or cluster group. If using a secure connection
+        the specified value should be the same name that is used in the certificate.
+        Default value is the current computer name.
 #>
 function Get-TargetResource
 {
@@ -662,10 +663,11 @@ function Get-TargetResource
         Specifies optional skip rules during setup.
 
     .PARAMETER ServerName
-        Specifies the host name of the SQL Server to be configured. If the SQL
-        Server belongs to a cluster or availability group specify the host name
-        for the listener or cluster group. Default value is the current computer
-        name.
+        Specifies the host or network name of the _SQL Server_ instance. If the
+        SQL Server belongs to a cluster or availability group it could be set to
+        the host name for the listener or cluster group. If using a secure connection
+        the specified value should be the same name that is used in the certificate.
+        Default value is the current computer name.
 #>
 function Set-TargetResource
 {
@@ -1889,10 +1891,11 @@ function Set-TargetResource
         Not used in Test-TargetResource.
 
     .PARAMETER ServerName
-        Specifies the host name of the SQL Server to be configured. If the SQL
-        Server belongs to a cluster or availability group specify the host name
-        for the listener or cluster group. Default value is the current computer
-        name.
+        Specifies the host or network name of the _SQL Server_ instance. If the
+        SQL Server belongs to a cluster or availability group it could be set to
+        the host name for the listener or cluster group. If using a secure connection
+        the specified value should be the same name that is used in the certificate.
+        Default value is the current computer name.
 #>
 function Test-TargetResource
 {
