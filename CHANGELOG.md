@@ -18,10 +18,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New public command:
     - `Get-SqlDscPreferredModule` - Returns the name of the first available
       preferred module ([issue #1879](https://github.com/dsccommunity/SqlServerDsc/issues/1879)).
-- `SqlSecureConnection`
+- SqlSecureConnection
   - Added new parameter `ServerName` that will be used as the host name when
     restarting the SQL Server instance. The specified value should be the same
     name that is used in the certificate ([issue #1888](https://github.com/dsccommunity/SqlServerDsc/issues/1888)).
+- SqlSetup
+  - Added new parameter `ServerName` that will be used as the host name when
+    evaluating the SQL Server instance. If using a secure connection the
+    specified value should be the same name that is used in the certificate
+    ([issue #1893](https://github.com/dsccommunity/SqlServerDsc/issues/1893)).
 
 ### Changed
 
