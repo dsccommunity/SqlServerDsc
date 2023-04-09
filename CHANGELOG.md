@@ -5,6 +5,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- SqlServerDsc
+  - Removed internal function `Invoke-SqlScript` that was a wrapper for
+    the command `Invoke-SqlCmd`. The resources SqlScript and SqlScriptQuery
+    was instead refactored to use `Invoke-SqlCmd` directly ([issue #1896](https://github.com/dsccommunity/SqlServerDsc/issues/1896)).
+
 ### Added
 
 - SqlServerDsc

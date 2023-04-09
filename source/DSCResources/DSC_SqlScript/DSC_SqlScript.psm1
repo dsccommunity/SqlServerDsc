@@ -62,7 +62,6 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 #>
 function Get-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SqlDscPreferredModule is implicitly called in Invoke-SqlScript')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -111,29 +110,15 @@ function Get-TargetResource
         $Encrypt
     )
 
-    $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
-
-    $invokeParameters = @{
-        ServerInstance   = $serverInstance
-        InputFile        = $GetFilePath
-        Credential       = $Credential
-        Variable         = $Variable
-        DisableVariables = $DisableVariables
-        QueryTimeout     = $QueryTimeout
-        Verbose          = $VerbosePreference
-        ErrorAction      = 'Stop'
-    }
-
-    if ($PSBoundParameters.ContainsKey('Encrypt'))
-    {
-        $invokeParameters.Encrypt = $Encrypt
-    }
-
     Write-Verbose -Message (
         $script:localizedData.ExecutingGetScript -f $GetFilePath, $InstanceName, $ServerName
     )
 
-    $result = Invoke-SqlScript @invokeParameters
+    Import-SqlDscPreferredModule
+
+    $invokeSqlCmdParameters = Get-InvokeSqlCmdParameter -BoundParameters $PSBoundParameters
+
+    $result = Invoke-SqlCmd @invokeSqlCmdParameters
 
     $getResult = Out-String -InputObject $result
 
@@ -211,7 +196,6 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SqlDscPreferredModule is implicitly called in Invoke-SqlScript')]
     [CmdletBinding()]
     param
     (
@@ -259,29 +243,15 @@ function Set-TargetResource
         $Encrypt
     )
 
-    $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
-
     Write-Verbose -Message (
         $script:localizedData.ExecutingSetScript -f $SetFilePath, $InstanceName, $ServerName
     )
 
-    $invokeParameters = @{
-        ServerInstance   = $serverInstance
-        InputFile        = $SetFilePath
-        Credential       = $Credential
-        Variable         = $Variable
-        DisableVariables = $DisableVariables
-        QueryTimeout     = $QueryTimeout
-        Verbose          = $VerbosePreference
-        ErrorAction      = 'Stop'
-    }
+    Import-SqlDscPreferredModule
 
-    if ($PSBoundParameters.ContainsKey('Encrypt'))
-    {
-        $invokeParameters.Encrypt = $Encrypt
-    }
+    $invokeSqlCmdParameters = Get-InvokeSqlCmdParameter -BoundParameters $PSBoundParameters
 
-    Invoke-SqlScript @invokeParameters
+    Invoke-SqlCmd @invokeSqlCmdParameters | Out-Null
 }
 
 <#
@@ -341,7 +311,6 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SqlDscPreferredModule is implicitly called in Invoke-SqlScript')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -394,23 +363,9 @@ function Test-TargetResource
         $script:localizedData.TestingConfiguration
     )
 
-    $serverInstance = ConvertTo-ServerInstanceName -InstanceName $InstanceName -ServerName $ServerName
+    Import-SqlDscPreferredModule
 
-    $invokeParameters = @{
-        ServerInstance   = $serverInstance
-        InputFile        = $TestFilePath
-        Credential       = $Credential
-        Variable         = $Variable
-        DisableVariables = $DisableVariables
-        QueryTimeout     = $QueryTimeout
-        Verbose          = $VerbosePreference
-        ErrorAction      = 'Stop'
-    }
-
-    if ($PSBoundParameters.ContainsKey('Encrypt'))
-    {
-        $invokeParameters.Encrypt = $Encrypt
-    }
+    $invokeSqlCmdParameters = Get-InvokeSqlCmdParameter -BoundParameters $PSBoundParameters
 
     $result = $null
 
@@ -420,11 +375,12 @@ function Test-TargetResource
             $script:localizedData.ExecutingTestScript -f $TestFilePath, $InstanceName, $ServerName
         )
 
-        $result = Invoke-SqlScript @invokeParameters
+        $result = Invoke-SqlCmd @invokeSqlCmdParameters
     }
     catch [Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException]
     {
         Write-Verbose $_
+
         return $false
     }
 
@@ -444,4 +400,83 @@ function Test-TargetResource
 
         return $false
     }
+}
+
+<#
+    .SYNOPSIS
+        Returns the parameters that should be used to call Invoke-SqlCmd.
+
+    .PARAMETER BoundParameters
+        Specifies the parameters that was bound when the resource was called.
+
+    .NOTES
+        When this resource is refactored into a class-based resource, this function
+        should be moved to a method in a base class.
+
+        Parameter `Encrypt` controls whether the connection used by `Invoke-SqlCmd`
+        should enforce encryption. This parameter can only be used together with the
+        module _SqlServer_ v22.x (minimum v22.0.49-preview). The parameter will be
+        ignored if an older major versions of the module _SqlServer_ is used.
+        Encryption is mandatory by default, which generates the following exception
+        when the correct certificates are not present:
+
+        "A connection was successfully established with the server, but then
+        an error occurred during the login process. (provider: SSL Provider,
+        error: 0 - The certificate chain was issued by an authority that is
+        not trusted.)"
+
+        For more details, see the article [Connect to SQL Server with strict encryption](https://learn.microsoft.com/en-us/sql/relational-databases/security/networking/connect-with-strict-encryption?view=sql-server-ver16)
+        and [Configure SQL Server Database Engine for encrypting connections](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/configure-sql-server-encryption?view=sql-server-ver16).
+#>
+function Get-InvokeSqlCmdParameter
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $BoundParameters
+    )
+
+    $serverInstance = ConvertTo-ServerInstanceName -InstanceName $BoundParameters.InstanceName -ServerName $BoundParameters.ServerName
+
+    $invokeSqlCmdParameters = @{
+        ServerInstance = $serverInstance
+        InputFile      = $BoundParameters.GetFilePath
+        Verbose        = $VerbosePreference
+        ErrorAction    = 'Stop'
+    }
+
+    if ($BoundParameters.ContainsKey('Credential'))
+    {
+        $invokeSqlCmdParameters.Credential = $BoundParameters.Credential
+    }
+
+    if ($BoundParameters.ContainsKey('Variable'))
+    {
+        $invokeSqlCmdParameters.Variable = $BoundParameters.Variable
+    }
+
+    if ($BoundParameters.ContainsKey('DisableVariables'))
+    {
+        $invokeSqlCmdParameters.DisableVariables = $BoundParameters.DisableVariables
+    }
+
+    if ($BoundParameters.ContainsKey('QueryTimeout'))
+    {
+        $invokeSqlCmdParameters.QueryTimeout = $BoundParameters.QueryTimeout
+    }
+
+    if ($BoundParameters.ContainsKey('Encrypt'))
+    {
+        $commandInvokeSqlCmd = Get-Command -Name 'Invoke-SqlCmd'
+
+        if ($null -ne $commandInvokeSqlCmd -and $commandInvokeSqlCmd.Parameters.Keys -contains 'Encrypt')
+        {
+            $invokeSqlCmdParameters.Encrypt = $BoundParameters.Encrypt
+        }
+    }
+
+    return $invokeSqlCmdParameters
 }

@@ -75,6 +75,8 @@ AfterAll {
 
 Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
     BeforeAll {
+        Mock -CommandName Import-SqlDscPreferredModule
+
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
             $script:mockDefaultParameters = @{
@@ -96,7 +98,7 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
 
     Context 'When Get-TargetResource returns script results successfully' {
         BeforeAll {
-            Mock -CommandName Invoke-SqlScript -MockWith {
+            Mock -CommandName Invoke-SqlCmd -MockWith {
                 return ''
             }
         }
@@ -118,7 +120,7 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
 
     Context 'When Get-TargetResource returns script results successfully with query timeout' {
         BeforeAll {
-            Mock -CommandName Invoke-SqlScript -MockWith {
+            Mock -CommandName Invoke-SqlCmd -MockWith {
                 return ''
             }
         }
@@ -149,7 +151,7 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
 
     Context 'When Get-TargetResource throws an error when running the script in the GetFilePath parameter' {
         BeforeAll {
-            Mock -CommandName Invoke-SqlScript -MockWith {
+            Mock -CommandName Invoke-SqlCmd -MockWith {
                 throw 'Failed to run SQL Script'
             }
         }
@@ -168,6 +170,8 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
 
 Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
     BeforeAll {
+        Mock -CommandName Import-SqlDscPreferredModule
+
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
             $script:mockDefaultParameters = @{
@@ -189,7 +193,7 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
 
     Context 'When Set-TargetResource runs script without issue' {
         BeforeAll {
-            Mock -CommandName Invoke-SqlScript -MockWith {
+            Mock -CommandName Invoke-SqlCmd -MockWith {
                 return ''
             }
         }
@@ -205,7 +209,7 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
 
     Context 'When Set-TargetResource runs script without issue using timeout' {
         BeforeAll {
-            Mock -CommandName Invoke-SqlScript -MockWith {
+            Mock -CommandName Invoke-SqlCmd -MockWith {
                 return ''
             }
         }
@@ -221,7 +225,7 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
 
     Context 'When Set-TargetResource throws an error when running the script in the SetFilePath parameter' {
         BeforeAll {
-            Mock -CommandName Invoke-SqlScript -MockWith {
+            Mock -CommandName Invoke-SqlCmd -MockWith {
                 throw 'Failed to run SQL Script'
             }
         }
@@ -241,6 +245,8 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
 
 Describe 'SqlScriptQuery\Test-TargetResource' {
     BeforeAll {
+        Mock -CommandName Import-SqlDscPreferredModule
+
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
             $script:mockDefaultParameters = @{
@@ -263,7 +269,7 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
     Context 'When the system is in the desired state' {
         Context 'When Test-TargetResource runs script without issue' {
             BeforeAll {
-                Mock -CommandName Invoke-SqlScript
+                Mock -CommandName Invoke-SqlCmd
             }
 
             It 'Should return true' {
@@ -279,7 +285,7 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
 
         Context 'When Test-TargetResource runs script without issue with timeout' {
             BeforeAll {
-                Mock -CommandName Invoke-SqlScript
+                Mock -CommandName Invoke-SqlCmd
             }
 
             It 'Should return true' {
@@ -304,9 +310,9 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
     }
 
     Context 'When the system is not in the desired state' {
-        Context 'When Invoke-SqlScript returns an SQL error code from the script that was ran' {
+        Context 'When Invoke-SqlCmd returns an SQL error code from the script that was ran' {
             BeforeAll {
-                Mock -CommandName Invoke-SqlScript -MockWith {
+                Mock -CommandName Invoke-SqlCmd -MockWith {
                     return 1
                 }
             }
@@ -333,7 +339,7 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
 
         Context 'When Test-TargetResource throws the exception SqlPowerShellSqlExecutionException when running the script in the TestFilePath parameter' {
             BeforeAll {
-                Mock -CommandName Invoke-SqlScript -MockWith {
+                Mock -CommandName Invoke-SqlCmd -MockWith {
                     throw New-Object -TypeName Microsoft.SqlServer.Management.PowerShell.SqlPowerShellSqlExecutionException
                 }
             }
@@ -351,7 +357,7 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
 
         Context 'When Test-TargetResource throws an unexpected error when running the script in the TestFilePath parameter' {
             BeforeAll {
-                Mock -CommandName Invoke-SqlScript -MockWith {
+                Mock -CommandName Invoke-SqlCmd -MockWith {
                     throw 'Failed to run SQL Script'
                 }
             }
@@ -363,6 +369,114 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
                     $mockErrorMessage = 'Failed to run SQL Script'
 
                     { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                }
+            }
+        }
+    }
+}
+
+Describe 'SqlScript\Get-InvokeSqlCmdParameter' {
+    It 'Should return a hashtable with the correct values' {
+        InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
+            $mockBoundParameters = @{
+                ServerName = 'MockHost'
+                InstanceName = 'MSSQLSERVER'
+                Credential = [PSCredential]::new('MockUser')
+                Variable = 'MyVariable'
+                DisableVariables = $true
+                QueryTimeout = 1000
+                InputFile = $TestDrive
+            }
+
+            $result = Get-InvokeSqlCmdParameter $mockBoundParameters
+
+            $result | Should -BeOfType [System.Collections.Hashtable]
+
+            $result.Count | Should -Be 8
+
+            $result.ServerInstance | Should -Be 'MockHost'
+            $result.InputFile = $TestDrive
+            $result.Credential | Should -BeOfType [PSCredential]
+            $result.Variable | Should -Be 'MyVariable'
+            $result.DisableVariables | Should -BeTrue
+            $result.QueryTimeout | Should -Be 1000
+            $result.Verbose | Should -Be $VerbosePreference
+            $result.ErrorAction | Should -Be 'Stop'
+        }
+    }
+
+    Context 'When passing parameter Encrypt' {
+        Context 'When Invoke-SqlCmd does not contain parameter Encrypt' {
+            BeforeAll {
+                Mock -CommandName Get-Command -ParameterFilter {
+                    $Name -eq 'Invoke-SqlCmd'
+                } -MockWith {
+                    return @{
+                        Parameters = @{}
+                    }
+                }
+            }
+
+            It 'Should return a hashtable with the correct values' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockBoundParameters = @{
+                        ServerName = 'MockHost'
+                        InstanceName = 'INSTANCE'
+                        Encrypt = 'Optional'
+                    }
+
+                    $result = Get-InvokeSqlCmdParameter $mockBoundParameters
+
+                    $result | Should -BeOfType [System.Collections.Hashtable]
+
+                    $result.Count | Should -Be 4
+
+                    $result.ServerInstance | Should -Be 'MockHost\INSTANCE'
+                    $result.InputFile = $TestDrive
+                    $result.Verbose | Should -Be $VerbosePreference
+                    $result.ErrorAction | Should -Be 'Stop'
+                }
+            }
+        }
+
+        Context 'When Invoke-SqlCmd does not contain parameter Encrypt' {
+            BeforeAll {
+                Mock -CommandName Get-Command -ParameterFilter {
+                    $Name -eq 'Invoke-SqlCmd'
+                } -MockWith {
+                    return @{
+                        Parameters = @{
+                            Encrypt = 'AnyValue'
+                        }
+                    }
+                }
+            }
+
+            It 'Should return a hashtable with the correct values' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockBoundParameters = @{
+                        ServerName = 'MockHost'
+                        InstanceName = 'INSTANCE'
+                        Encrypt = 'Optional'
+                    }
+
+                    $result = Get-InvokeSqlCmdParameter $mockBoundParameters
+
+                    $result | Should -BeOfType [System.Collections.Hashtable]
+
+                    $result.Count | Should -Be 5
+
+                    $result.ServerInstance | Should -Be 'MockHost\INSTANCE'
+                    $result.InputFile = $TestDrive
+                    $result.Verbose | Should -Be $VerbosePreference
+                    $result.ErrorAction | Should -Be 'Stop'
+                    $result.Encrypt | Should -Be 'Optional'
                 }
             }
         }

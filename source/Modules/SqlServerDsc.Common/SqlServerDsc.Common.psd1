@@ -43,7 +43,6 @@
         'Split-FullSqlInstanceName'
         'Test-ClusterPermissions'
         'Test-ActiveNode'
-        'Invoke-SqlScript'
         'Get-ServiceAccount'
         'Find-ExceptionByNumber'
         'Compare-ResourcePropertyState'
