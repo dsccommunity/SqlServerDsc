@@ -414,7 +414,14 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 }
 
                 # Install the required SqlServer module version.
-                $installedModule = Install-Module @installModuleParameters
+                $installedModule = Install-Module @installModuleParameters |
+                    Where-Object -FilterScript {
+                        <#
+                            Need to filter out the right module since it also installs
+                            the dependent module dbatools.library.
+                        #>
+                        $_.Name -eq 'dbatools'
+                    }
 
                 Write-Verbose -Message ('Installed dbatools module version {0}' -f $installedModule.Version)
             }
