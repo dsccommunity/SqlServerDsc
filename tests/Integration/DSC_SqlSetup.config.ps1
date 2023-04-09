@@ -416,7 +416,7 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 # Install the required SqlServer module version.
                 $installedModule = Install-Module @installModuleParameters
 
-                Write-Verbose -Message ('Installed SqlServer module version {0}' -f $installedModule.Version)
+                Write-Verbose -Message ('Installed dbatools module version {0}' -f $installedModule.Version)
             }
 
             TestScript = {
@@ -429,12 +429,12 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
 
                 if ($getScriptResult.Result -eq $Using:Node.SqlServerModuleVersion)
                 {
-                    Write-Verbose -Message ('The node already contain the module SqlServer with version {0}.' -f $Using:Node.SqlServerModuleVersion)
+                    Write-Verbose -Message ('The node already contain the module dbatools with version {0}.' -f $Using:Node.SqlServerModuleVersion)
 
                     return $true
                 }
 
-                Write-Verbose -Message ('The module SqlServer with version {0} is not installed.' -f $Using:Node.SqlServerModuleVersion)
+                Write-Verbose -Message ('The module dbatools with version {0} is not installed.' -f $Using:Node.SqlServerModuleVersion)
 
                 return $false
             }
@@ -463,7 +463,7 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                         }
                     }
 
-                    Write-Verbose -Message ('Found SqlServer module v{0}.' -f $moduleVersion) -Verbose
+                    Write-Verbose -Message ('Found dbatools module v{0}.' -f $moduleVersion) -Verbose
                 }
 
                 return @{
