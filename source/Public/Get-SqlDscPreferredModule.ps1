@@ -51,7 +51,7 @@ function Get-SqlDscPreferredModule
     (
         [Parameter()]
         [System.String[]]
-        $Name = @('SqlServer', 'SQLPS'),
+        $Name = @('dbatools', 'SQLPS'),
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
