@@ -57,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
      the instance to go online. If the instance has not gone online during
      the timeout period the error thrown will no contain the last error
      reported by `Connect-SQL` ([issue #1891](https://github.com/dsccommunity/SqlServerDsc/issues/1891)).
+  - `Invoke-SqlScript` no longer passes the parameter `Variable` to
+    `Invoke-SqlCmd` if it is not set ([issue #1896](https://github.com/dsccommunity/SqlServerDsc/issues/1896)).
 
 ### Fixed
 
