@@ -311,6 +311,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     SourceCredential = $null
                     SourcePath = $TestDrive
                     Feature = 'NewFeature' # Test enabling a code-feature.
+                    ServerName = 'host.company.local'
                 }
             }
         }
@@ -376,6 +377,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.ASConfigDir | Should -BeNullOrEmpty
                 $result.ASServerMode | Should -BeNullOrEmpty
                 $result.ISSvcAccountUsername | Should -BeNullOrEmpty
+                $result.ServerName | Should -Be 'host.company.local'
             }
         }
     }
@@ -1734,6 +1736,7 @@ Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
                     $mockTestTargetResourceParameters.InstanceName = 'MSSQLSERVER'
                     $mockTestTargetResourceParameters.SourceCredential = $null
                     $mockTestTargetResourceParameters.SourcePath = $TestDrive
+                    $mockTestTargetResourceParameters.ServerName = 'host.company.local'
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
@@ -2300,6 +2303,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             SourcePath = $TestDrive
                             ProductKey = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
                             NpEnabled = $true
+                            ServerName = 'host.company.local'
                         }
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw

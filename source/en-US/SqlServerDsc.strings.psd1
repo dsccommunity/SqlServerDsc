@@ -147,9 +147,11 @@ ConvertFrom-StringData @'
     TraceFlag_Remove_ShouldProcessCaption = Remove trace flag from instance
     TraceFlag_Remove_NoCurrentTraceFlags = There are no current trace flags on instance. Nothing to remove.
 
-    ## Import-SqlDscPreferredModule
+    ## Get-SqlDscPreferredModule
     PreferredModule_ModuleFound = Preferred module {0} found.
-    PreferredModule_ModuleNotFound = Information: No preferred PowerShell module was found, trying to use the SQLPS module.
+    PreferredModule_ModuleNotFound =  No preferred PowerShell module was found.
+
+    ## Import-SqlDscPreferredModule
     PreferredModule_ImportedModule = Imported PowerShell module '{0}' with version '{1}' from path '{2}'.
     PreferredModule_AlreadyImported = Found PowerShell module {0} already imported in the session.
     PreferredModule_ForceRemoval = Forcibly removed the SQL PowerShell module from the session to import it fresh again.
