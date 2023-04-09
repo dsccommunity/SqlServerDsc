@@ -59,6 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
      reported by `Connect-SQL` ([issue #1891](https://github.com/dsccommunity/SqlServerDsc/issues/1891)).
   - `Invoke-SqlScript` no longer passes the parameter `Variable` to
     `Invoke-SqlCmd` if it is not set ([issue #1896](https://github.com/dsccommunity/SqlServerDsc/issues/1896)).
+- `DatabasePermission`
+  - Class was updated with the latest database permissions.
 
 ### Fixed
 
