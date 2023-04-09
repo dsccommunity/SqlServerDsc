@@ -40,7 +40,7 @@ function Import-SqlDscPreferredModule
     (
         [Parameter()]
         [System.String]
-        $PreferredModule = 'SqlServer',
+        $PreferredModule = 'dbatools',
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]

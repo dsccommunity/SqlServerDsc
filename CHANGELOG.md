@@ -84,6 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the unit tests.
   - Rename task jobs in Azure Pipelines ([issue #1881](https://github.com/dsccommunity/SqlServerDsc/issues/1881)).
   - Bump SqlServer version to 22.0.59 for integration tests for SQL Server 2022.
+  - Using dbatools as the preferred module.
 - `Get-SqlDscAudit`
   - The parameter `Name` is no longer mandatory. When left out all the current
     audits are returned ([issue #1812](https://github.com/dsccommunity/SqlServerDsc/issues/1812)).

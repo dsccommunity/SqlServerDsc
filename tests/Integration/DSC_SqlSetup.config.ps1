@@ -37,7 +37,7 @@ else
                 # Features CONN, BC, SDK, SNAC_SDK, DREPLAY_CLT, DREPLAY_CTLR are no longer supported in 2022.
                 SupportedFeatures               = 'SQLENGINE,REPLICATION'
 
-                SqlServerModuleVersion          = '22.0.59'
+                SqlServerModuleVersion          = '2.0.0-preview2'
             }
         }
 
@@ -54,7 +54,7 @@ else
 
                 SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
-                SqlServerModuleVersion          = '21.1.18256'
+                SqlServerModuleVersion          = '2.0.0-preview2'
             }
         }
 
@@ -67,7 +67,7 @@ else
 
                 SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
-                SqlServerModuleVersion          = '21.1.18256'
+                SqlServerModuleVersion          = '2.0.0-preview2'
             }
         }
 
@@ -80,7 +80,7 @@ else
 
                 SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
-                SqlServerModuleVersion          = '21.1.18256'
+                SqlServerModuleVersion          = '2.0.0-preview2'
             }
         }
     }
@@ -398,13 +398,13 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 Set-PSRepository -Name 'PSGallery' -InstallationPolicy 'Trusted'
 
                 # Uninstall any existing SqlServer module, to make we only have the one we need.
-                Get-Module -Name 'SqlServer' -ListAvailable | Uninstall-Module -ErrorAction 'Stop'
+                Get-Module -Name 'dbatools' -ListAvailable | Uninstall-Module -ErrorAction 'Stop'
 
                 # Make sure we use TLS 1.2.
                 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
                 $installModuleParameters = @{
-                    Name            = 'SqlServer'
+                    Name            = 'dbatools'
                     Scope           = 'AllUsers'
                     Force           = $true
                     RequiredVersion = $Using:Node.SqlServerModuleVersion
@@ -447,7 +447,7 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 Import-Module -Name 'PackageManagement' -MinimumVersion '1.4.8.1' -Force
                 Import-Module -Name 'PowerShellGet' -MinimumVersion '2.2.5' -Force
 
-                $sqlServerModule = Get-Module -Name 'SqlServer' -ListAvailable |
+                $sqlServerModule = Get-Module -Name 'dbatools' -ListAvailable |
                     Sort-Object -Property Version -Descending |
                     Select-Object -First 1
 
