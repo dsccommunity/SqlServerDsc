@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc.Common
   - Removed the function `Invoke-Query`. It is replaced by the command
-    `Invoke-SqlDscQuery`.
+    `Invoke-SqlDscQuery` ([issue #1902](https://github.com/dsccommunity/SqlServerDsc/issues/1902)).
 
 ## [16.2.0] - 2023-04-10
 
