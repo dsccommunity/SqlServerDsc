@@ -595,7 +595,7 @@ Describe 'SqlDatabaseUser\Test-TargetResource' -Tag 'Test' {
 
 Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
     BeforeAll {
-        Mock -CommandName Invoke-Query
+        Mock -CommandName Invoke-SqlDscQuery
         Mock -CommandName Assert-SqlLogin
         Mock -CommandName Assert-DatabaseAsymmetricKey
         Mock -CommandName Assert-DatabaseCertificate
@@ -651,7 +651,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                 }
 
                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-Query -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
             }
         }
 
@@ -689,7 +689,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                 }
 
                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-Query -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
             }
         }
     }
@@ -728,14 +728,14 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                 }
 
                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-Query -ParameterFilter {
+                Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                     $Query -eq ('DROP USER [{0}];' -f 'DatabaseUser1')
                 } -Exactly -Times 1 -Scope It
             }
 
-            Context 'When trying to drop a database user but Invoke-Query fails' {
+            Context 'When trying to drop a database user but Invoke-SqlDscQuery fails' {
                 BeforeAll {
-                    Mock -CommandName Invoke-Query -MockWith {
+                    Mock -CommandName Invoke-SqlDscQuery -MockWith {
                         throw
                     }
                 }
@@ -757,7 +757,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Invoke-Query -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -804,7 +804,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                         }
 
                         Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                        Should -Invoke -CommandName Invoke-Query -ParameterFilter {
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                             $Query -eq ('CREATE USER [{0}] FOR LOGIN [{1}];' -f 'DatabaseUser1', 'CONTOSO\Login1')
                         } -Exactly -Times 1 -Scope It
 
@@ -836,7 +836,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                         }
 
                         Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                        Should -Invoke -CommandName Invoke-Query -ParameterFilter {
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                             $Query -eq ('CREATE USER [{0}] FOR LOGIN [{1}];' -f 'DatabaseUser1', 'CONTOSO\Login1')
                         } -Exactly -Times 1 -Scope It
 
@@ -862,7 +862,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Invoke-Query -ParameterFilter {
+                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                         $Query -eq ('CREATE USER [{0}] WITHOUT LOGIN;' -f 'DatabaseUser1')
                     } -Exactly -Times 1 -Scope It
                 }
@@ -884,7 +884,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Invoke-Query -ParameterFilter {
+                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                         $Query -eq ('CREATE USER [{0}] FOR CERTIFICATE [{1}];' -f 'DatabaseUser1', 'Certificate1')
                     } -Exactly -Times 1 -Scope It
                 }
@@ -906,15 +906,15 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Invoke-Query -ParameterFilter {
+                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                         $Query -eq ('CREATE USER [{0}] FOR ASYMMETRIC KEY [{1}];' -f 'DatabaseUser1', 'AsymmetricKey1')
                     } -Exactly -Times 1 -Scope It
                 }
             }
 
-            Context 'When trying to create a database user but Invoke-Query fails' {
+            Context 'When trying to create a database user but Invoke-SqlDscQuery fails' {
                 BeforeAll {
-                    Mock -CommandName Invoke-Query -MockWith {
+                    Mock -CommandName Invoke-SqlDscQuery -MockWith {
                         throw
                     }
                 }
@@ -937,7 +937,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Invoke-Query -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 1 -Scope It
                 }
             }
         }
@@ -984,7 +984,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                         }
 
                         Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                        Should -Invoke -CommandName Invoke-Query -ParameterFilter {
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                             $Query -eq ('ALTER USER [{0}] WITH NAME = [{1}], LOGIN = [{2}];' -f 'DatabaseUser1', 'DatabaseUser1', 'OtherLogin1')
                         } -Exactly -Times 1 -Scope It
 
@@ -1016,7 +1016,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                         }
 
                         Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                        Should -Invoke -CommandName Invoke-Query -ParameterFilter {
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                             $Query -eq ('ALTER USER [{0}] WITH NAME = [{1}], LOGIN = [{2}];' -f 'DatabaseUser1', 'DatabaseUser1', 'OtherLogin1')
                         } -Exactly -Times 1 -Scope It
 
@@ -1026,9 +1026,9 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     }
                 }
 
-                Context 'When trying to alter the login name but Invoke-Query fails' {
+                Context 'When trying to alter the login name but Invoke-SqlDscQuery fails' {
                     BeforeAll {
-                        Mock -CommandName Invoke-Query -MockWith {
+                        Mock -CommandName Invoke-SqlDscQuery -MockWith {
                             throw
                         }
                     }
@@ -1051,7 +1051,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                         }
 
                         Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                        Should -Invoke -CommandName Invoke-Query -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -1092,11 +1092,11 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
 
-                    Should -Invoke -CommandName Invoke-Query -ParameterFilter {
+                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                         $Query -eq ('DROP USER [{0}];' -f 'DatabaseUser1')
                     } -Exactly -Times 1 -Scope It
 
-                    Should -Invoke -CommandName Invoke-Query -ParameterFilter {
+                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                         $Query -eq ('CREATE USER [{0}] FOR ASYMMETRIC KEY [{1}];' -f 'DatabaseUser1', 'OtherAsymmetricKey1')
                     } -Exactly -Times 1 -Scope It
                 }
@@ -1138,11 +1138,11 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
 
-                    Should -Invoke -CommandName Invoke-Query -ParameterFilter {
+                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                         $Query -eq ('DROP USER [{0}];' -f 'DatabaseUser1')
                     } -Exactly -Times 1 -Scope It
 
-                    Should -Invoke -CommandName Invoke-Query -ParameterFilter {
+                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                         $Query -eq ('CREATE USER [{0}] FOR CERTIFICATE [{1}];' -f 'DatabaseUser1', 'OtherCertificate1')
                     } -Exactly -Times 1 -Scope It
                 }
@@ -1184,11 +1184,11 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
 
-                    Should -Invoke -CommandName Invoke-Query -ParameterFilter {
+                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                         $Query -eq ('DROP USER [{0}];' -f 'DatabaseUser1')
                     } -Exactly -Times 1 -Scope It
 
-                    Should -Invoke -CommandName Invoke-Query -ParameterFilter {
+                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
                         $Query -eq ('CREATE USER [{0}] FOR LOGIN [{1}];' -f 'DatabaseUser1', 'OtherLogin1')
                     } -Exactly -Times 1 -Scope It
                 }
@@ -1230,7 +1230,7 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     }
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Invoke-Query -Exactly -Times 0 -Scope It
+                    Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
                 }
             }
         }

@@ -219,11 +219,11 @@ function Set-TargetResource
     # Get-TargetResource will also help us to test if the database exist.
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-    # Default parameters for the cmdlet Invoke-Query used throughout.
-    $invokeQueryParameters = @{
-        ServerName   = $ServerName
-        InstanceName = $InstanceName
-        Database     = $DatabaseName
+    # Default parameters for the cmdlet Invoke-SqlDscQuery used throughout.
+    $invokeSqlDscQueryParameters = @{
+        ServerName    = $ServerName
+        InstanceName  = $InstanceName
+        DatabaseNamne = $DatabaseName
     }
 
     $recreateDatabaseUser = $false
@@ -262,7 +262,7 @@ function Set-TargetResource
                                     See remarks section in this article:
                                     https://docs.microsoft.com/en-us/sql/t-sql/statements/alter-user-transact-sql#remarks
                                 #>
-                                Invoke-Query @invokeQueryParameters -Query (
+                                Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query (
                                     'ALTER USER [{0}] WITH NAME = [{1}], LOGIN = [{2}];' -f $Name, $Name, $LoginName
                                 )
                             }
@@ -338,7 +338,7 @@ function Set-TargetResource
                 $script:localizedData.DropDatabaseUser -f $Name, $DatabaseName
             )
 
-            Invoke-Query @invokeQueryParameters -Query (
+            Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query (
                 'DROP USER [{0}];' -f $Name
             )
         }
@@ -376,14 +376,14 @@ function Set-TargetResource
                     # Assert that the login exist.
                     Assert-SqlLogin @assertSqlLoginParameters
 
-                    Invoke-Query @invokeQueryParameters -Query (
+                    Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query (
                         'CREATE USER [{0}] FOR LOGIN [{1}];' -f $Name, $LoginName
                     )
                 }
 
                 'NoLogin'
                 {
-                    Invoke-Query @invokeQueryParameters -Query (
+                    Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query (
                         'CREATE USER [{0}] WITHOUT LOGIN;' -f $Name
                     )
                 }
@@ -393,7 +393,7 @@ function Set-TargetResource
                     # Assert that the asymmetric key exist.
                     Assert-DatabaseAsymmetricKey @PSBoundParameters
 
-                    Invoke-Query @invokeQueryParameters -Query (
+                    Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query (
                         'CREATE USER [{0}] FOR ASYMMETRIC KEY [{1}];' -f $Name, $AsymmetricKeyName
                     )
                 }
@@ -403,7 +403,7 @@ function Set-TargetResource
                     # Assert that the certificate exist.
                     Assert-DatabaseCertificate @PSBoundParameters
 
-                    Invoke-Query @invokeQueryParameters -Query (
+                    Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query (
                         'CREATE USER [{0}] FOR CERTIFICATE [{1}];' -f $Name, $CertificateName
                     )
                 }
