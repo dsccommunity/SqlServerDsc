@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update the initializing header for all integration test to be equal to
     the unit tests.
   - Rename task jobs in Azure Pipelines ([issue #1881](https://github.com/dsccommunity/SqlServerDsc/issues/1881)).
+  - Bump SqlServer version to 22.0.59 for integration tests for SQL Server 2022.
 - `Get-SqlDscAudit`
   - The parameter `Name` is no longer mandatory. When left out all the current
     audits are returned ([issue #1812](https://github.com/dsccommunity/SqlServerDsc/issues/1812)).
@@ -65,6 +66,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
      the instance to go online. If the instance has not gone online during
      the timeout period the error thrown will no contain the last error
      reported by `Connect-SQL` ([issue #1891](https://github.com/dsccommunity/SqlServerDsc/issues/1891)).
+  - `Invoke-SqlScript` no longer passes the parameter `Variable` to
+    `Invoke-SqlCmd` if it is not set ([issue #1896](https://github.com/dsccommunity/SqlServerDsc/issues/1896)).
+- `DatabasePermission`
+  - Class was updated with the latest database permissions.
 
 ### Fixed
 

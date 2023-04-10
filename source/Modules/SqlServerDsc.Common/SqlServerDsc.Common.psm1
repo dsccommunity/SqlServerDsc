@@ -2021,18 +2021,18 @@ function Test-ActiveNode
     .PARAMETER QueryTimeout
         Specifies, as an integer, the number of seconds after which the T-SQL
         script execution will time out. In some SQL Server versions there is a
-        bug in Invoke-Sqlcmd where the normal default value 0 (no timeout) is not
+        bug in Invoke-SqlCmd where the normal default value 0 (no timeout) is not
         respected and the default value is incorrectly set to 30 seconds.
 
     .PARAMETER Variable
-        Creates a Invoke-Sqlcmd scripting variable for use in the Invoke-Sqlcmd
+        Creates a Invoke-SqlCmd scripting variable for use in the Invoke-SqlCmd
         script, and sets a value for the variable.
 
     .PARAMETER DisableVariables
-        Specifies, as a boolean, whether or not PowerShell will ignore sqlcmd
+        Specifies, as a boolean, whether or not PowerShell will ignore Invoke-SqlCmd
         scripting variables that share a format such as $(variable_name). For more
         information how to use this, please go to the help documentation for
-        [Invoke-Sqlcmd](https://docs.microsoft.com/en-us/powershell/module/sqlserver/Invoke-Sqlcmd).
+        [Invoke-SqlCmd](https://docs.microsoft.com/en-us/powershell/module/sqlserver/Invoke-Sqlcmd).
 
     .PARAMETER Encrypt
         Specifies how encryption should be enforced. When not specified, the default
@@ -2044,6 +2044,11 @@ function Test-ActiveNode
         This parameter can only be used when the module SqlServer v22.x.x is installed.
 
     .NOTES
+        This wrapper for Invoke-SqlCmd make verbose functionality of PRINT and
+        RAISEERROR statements work as those are outputted in the verbose output
+        stream. For some reason having the wrapper in a separate module seems to
+        trigger (so that it works getting) the verbose output for those statements.
+
         Parameter `Encrypt` controls whether the connection used by `Invoke-SqlCmd`
         should enforce encryption. This parameter can only be used together with the
         module _SqlServer_ v22.x (minimum v22.0.49-preview). The parameter will be
@@ -2127,6 +2132,11 @@ function Invoke-SqlScript
         {
             $null = $PSBoundParameters.Remove('Encrypt')
         }
+    }
+
+    if ([System.String]::IsNullOrEmpty($Variable))
+    {
+        $null = $PSBoundParameters.Remove('Variable')
     }
 
     Invoke-SqlCmd @PSBoundParameters
