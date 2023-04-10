@@ -223,7 +223,7 @@ function Set-TargetResource
     $invokeSqlDscQueryParameters = @{
         ServerName    = $ServerName
         InstanceName  = $InstanceName
-        DatabaseNamne = $DatabaseName
+        DatabaseName = $DatabaseName
     }
 
     $recreateDatabaseUser = $false

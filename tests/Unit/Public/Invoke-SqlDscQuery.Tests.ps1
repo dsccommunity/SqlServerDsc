@@ -60,7 +60,7 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
         }
 
         It 'Should execute the query without throwing and without returning any result' {
-            $result = Invoke-SqlDscQuery -ServerObject $mockServerObject -DatabaseName 'master' -Query 'select name from sys.databases'
+            $result = Invoke-SqlDscQuery -ServerObject $mockServerObject -DatabaseName 'master' -Query 'select name from sys.databases' -Force
 
             $result | Should -BeNullOrEmpty
 
@@ -73,7 +73,7 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
 
         Context 'When passing ServerObject over the pipeline' {
             It 'Should execute the query without throwing and without returning any result' {
-                $result = $mockServerObject | Invoke-SqlDscQuery -DatabaseName 'master' -Query 'select name from sys.databases'
+                $result = $mockServerObject | Invoke-SqlDscQuery -DatabaseName 'master' -Query 'select name from sys.databases' -Force
 
                 $result | Should -BeNullOrEmpty
 
@@ -94,7 +94,7 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
         }
 
         It 'Should execute the query without throwing and without returning any result' {
-            $result = Invoke-SqlDscQuery -StatementTimeout 900 -ServerObject $mockServerObject -DatabaseName 'master' -Query 'select name from sys.databases'
+            $result = Invoke-SqlDscQuery -StatementTimeout 900 -ServerObject $mockServerObject -DatabaseName 'master' -Query 'select name from sys.databases' -Force
 
             $result | Should -BeNullOrEmpty
 
@@ -115,7 +115,7 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
         }
 
         It 'Should execute the query without throwing and without returning any result' {
-            $result = Invoke-SqlDscQuery -RedactText @('MyString') -ServerObject $mockServerObject -DatabaseName 'master' -Query 'select name from sys.databases'
+            $result = Invoke-SqlDscQuery -RedactText @('MyString') -ServerObject $mockServerObject -DatabaseName 'master' -Query 'select name from sys.databases' -Force
 
             $result | Should -BeNullOrEmpty
 
@@ -137,7 +137,7 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
         }
 
         It 'Should execute the query without throwing and without returning any result' {
-            $result = Invoke-SqlDscQuery -PassThru -ServerObject $mockServerObject -DatabaseName 'master' -Query 'select name from sys.databases'
+            $result = Invoke-SqlDscQuery -PassThru -ServerObject $mockServerObject -DatabaseName 'master' -Query 'select name from sys.databases' -Force
 
             $result | Should -BeNullOrEmpty
 
