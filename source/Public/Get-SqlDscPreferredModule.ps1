@@ -70,28 +70,7 @@ function Get-SqlDscPreferredModule
                 contains all paths.
             #>
 
-            <#
-                TODO: This should be replaced by Get-PSModulePath that is in
-                PR https://github.com/dsccommunity/DscResource.Common/pull/104.
-            #>
-
-            <#
-                Get the environment variables from all targets session, user and machine.
-                Casts the value to System.String to convert $null values to empty string.
-            #>
-            $modulePathSession = [System.String] [System.Environment]::GetEnvironmentVariable('PSModulePath')
-            $modulePathUser = [System.String] [System.Environment]::GetEnvironmentVariable('PSModulePath', 'User')
-            $modulePathMachine = [System.String] [System.Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
-
-            $modulePath = $modulePathSession, $modulePathUser, $modulePathMachine -join ';'
-
-            $modulePathArray = $modulePath -split ';' |
-                Where-Object -FilterScript {
-                    -not [System.String]::IsNullOrEmpty($_)
-                } |
-                Sort-Object -Unique
-
-            $modulePath = $modulePathArray -join ';'
+            $modulePath = Get-PSModulePath -FromTarget 'Session', 'User', 'Machine'
 
             Set-PSModulePath -Path $modulePath
         }

@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New public command:
     - `Get-SqlDscPreferredModule` - Returns the name of the first available
       preferred module ([issue #1879](https://github.com/dsccommunity/SqlServerDsc/issues/1879)).
+      - Re-using the command `Get-PSModulePath` from the module DscResource.Common.
 - SqlSecureConnection
   - Added new parameter `ServerName` that will be used as the host name when
     restarting the SQL Server instance. The specified value should be the same

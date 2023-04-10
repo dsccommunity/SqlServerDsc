@@ -406,6 +406,10 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
     Context 'When specifying the parameter Refresh' {
         BeforeAll {
             Mock -CommandName Set-PSModulePath
+            Mock -CommandName Get-PSModulePath -MockWith {
+                return 'MockPath'
+            }
+
             Mock -CommandName Get-Module -MockWith {
                 return @{
                     Name = 'SqlServer'
