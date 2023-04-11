@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed the function `Invoke-Query`. It is replaced by the command
     `Invoke-SqlDscQuery` ([issue #1902](https://github.com/dsccommunity/SqlServerDsc/issues/1902)).
 
+### Added
+
+- SqlServerDsc
+  - New public command:
+    - `Disconnect-SqlDscDatabaseEngine` - Disconnects from a SQL Server instance
+      that was previously connected to using `Connect-SqlDscDatabaseEngine`.
+  - New private command:
+    - `ConvertTo-RedactedText` - Used to redact sensitive information from
+      text that then can be used in console output like verbose messages.
+
 ## [16.2.0] - 2023-04-10
 
 ### Added
@@ -27,8 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `Get-SqlDscPreferredModule` - Returns the name of the first available
       preferred module ([issue #1879](https://github.com/dsccommunity/SqlServerDsc/issues/1879)).
       - Re-using the command `Get-PSModulePath` from the module DscResource.Common.
-    - `Disconnect-SqlDscDatabaseEngine` - Disconnects from a SQL Server instance
-      that was previously connected to using `Connect-SqlDscDatabaseEngine`.
 - SqlSecureConnection
   - Added new parameter `ServerName` that will be used as the host name when
     restarting the SQL Server instance. The specified value should be the same
