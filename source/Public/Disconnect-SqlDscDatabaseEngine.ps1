@@ -8,6 +8,9 @@
     .PARAMETER ServerObject
         Specifies a current server connection object.
 
+    .PARAMETER Force
+        Specifies that the audit should be removed with out any confirmation.
+
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine
         Disconnect-SqlDscDatabaseEngine -ServerObject $serverObject

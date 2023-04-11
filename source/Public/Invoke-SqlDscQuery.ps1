@@ -38,9 +38,12 @@
         Set the query StatementTimeout in seconds. Default 600 seconds (10 minutes).
 
     .PARAMETER RedactText
-        One or more strings to redact from the query when verbose messages are
-        written to the console. Strings here will be escaped so they will not
+        One or more text strings to redact from the query when verbose messages
+        are written to the console. Strings will be escaped so they will not
         be interpreted as regular expressions (RegEx).
+
+    .PARAMETER Force
+        Specifies that the audit should be removed with out any confirmation.
 
     .OUTPUTS
         `[System.Data.DataSet]` when passing parameter **PassThru**, otherwise
@@ -169,23 +172,12 @@ function Invoke-SqlDscQuery
 
             $ServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
         }
+
+        $redactedQuery = ConvertTo-RedactedText -Text $Query -RedactPhrase $RedactText
     }
 
     process
     {
-        $redactedQuery = $Query
-
-        foreach ($redactString in $RedactText)
-        {
-            <#
-                Escaping the string to handle strings which could look like
-                regular expressions, like passwords.
-            #>
-            $escapedRedactedString = [System.Text.RegularExpressions.Regex]::Escape($redactString)
-
-            $redactedQuery = $redactedQuery -ireplace $escapedRedactedString, '*******' # cSpell: ignore ireplace
-        }
-
         $result = $null
 
         $verboseDescriptionMessage = $script:localizedData.Query_Invoke_ShouldProcessVerboseDescription -f $InstanceName
@@ -213,7 +205,7 @@ function Invoke-SqlDscQuery
                 {
                     Write-Verbose -Message (
                         $script:localizedData.Query_Invoke_ExecuteQueryWithResults -f $redactedQuery
-                    ) -Verbose
+                    )
 
                     $result = $ServerObject.Databases[$DatabaseName].ExecuteWithResults($Query)
 
@@ -223,7 +215,7 @@ function Invoke-SqlDscQuery
                 {
                     Write-Verbose -Message (
                         $script:localizedData.Query_Invoke_ExecuteNonQuery -f $redactedQuery
-                    ) -Verbose
+                    )
 
                     $null = $ServerObject.Databases[$DatabaseName].ExecuteNonQuery($Query)
                 }
