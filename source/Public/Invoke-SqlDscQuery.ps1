@@ -135,6 +135,7 @@ function Invoke-SqlDscQuery
         $StatementTimeout = 600,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.String[]]
         $RedactText,
 
@@ -173,7 +174,10 @@ function Invoke-SqlDscQuery
             $ServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
         }
 
-        $redactedQuery = ConvertTo-RedactedText -Text $Query -RedactPhrase $RedactText
+        if ($PSBoundParameters.ContainsKey('RedactText'))
+        {
+            $redactedQuery = ConvertTo-RedactedText -Text $Query -RedactPhrase $RedactText
+        }
     }
 
     process
