@@ -37,7 +37,7 @@ else
                 # Features CONN, BC, SDK, SNAC_SDK, DREPLAY_CLT, DREPLAY_CTLR are no longer supported in 2022.
                 SupportedFeatures               = 'SQLENGINE,REPLICATION'
 
-                SqlServerModuleVersion          = '2.0.0-preview2'
+                SqlServerModuleVersion          = '2.0.0-preview3'
             }
         }
 
@@ -54,7 +54,7 @@ else
 
                 SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
-                SqlServerModuleVersion          = '2.0.0-preview2'
+                SqlServerModuleVersion          = '2.0.0-preview3'
             }
         }
 
@@ -67,7 +67,7 @@ else
 
                 SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
-                SqlServerModuleVersion          = '2.0.0-preview2'
+                SqlServerModuleVersion          = '2.0.0-preview3'
             }
         }
 
@@ -80,7 +80,7 @@ else
 
                 SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
-                SqlServerModuleVersion          = '2.0.0-preview2'
+                SqlServerModuleVersion          = '2.0.0-preview3'
             }
         }
     }
