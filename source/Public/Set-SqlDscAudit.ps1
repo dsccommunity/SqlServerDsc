@@ -33,7 +33,7 @@
         as database mirroring an audit needs a specific GUID.
 
     .PARAMETER Force
-        Specifies that the audit should be updated with out any confirmation.
+        Specifies that the audit should be updated without any confirmation.
 
     .PARAMETER Refresh
         Specifies that the audit object should be refreshed before updating. This

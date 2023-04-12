@@ -9,7 +9,7 @@
         Specifies a current server connection object.
 
     .PARAMETER Force
-        Specifies that the audit should be removed with out any confirmation.
+        Specifies that there is no confirmation before disconnect.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine

@@ -43,7 +43,7 @@
         be interpreted as regular expressions (RegEx).
 
     .PARAMETER Force
-        Specifies that the audit should be removed with out any confirmation.
+        Specifies that the query should be executed without any confirmation.
 
     .OUTPUTS
         `[System.Data.DataSet]` when passing parameter **PassThru**, otherwise

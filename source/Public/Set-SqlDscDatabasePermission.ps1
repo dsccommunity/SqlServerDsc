@@ -29,7 +29,7 @@
         and the revocation will cascade.
 
     .PARAMETER Force
-        Specifies that the permissions should be set with out any confirmation.
+        Specifies that the permissions should be set without any confirmation.
 
     .OUTPUTS
         None.

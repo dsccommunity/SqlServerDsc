@@ -15,7 +15,7 @@
         Specifies the name of the server audit to be enabled.
 
     .PARAMETER Force
-        Specifies that the audit should be enabled with out any confirmation.
+        Specifies that the audit should be enabled without any confirmation.
 
     .PARAMETER Refresh
         Specifies that the **ServerObject**'s audits should be refreshed before
