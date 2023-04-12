@@ -424,6 +424,11 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                     }
 
                 Write-Verbose -Message ('Installed dbatools module version {0}' -f $installedModule.Version)
+
+                Set-DbatoolsConfig -Name Import.EncryptionMessageCheck -Value $false -PassThru |
+                    Register-DbatoolsConfig -Verbose
+
+                Write-Verbose -Message 'Disabled dbatools setting Import.EncryptionMessageCheck'
             }
 
             TestScript = {
