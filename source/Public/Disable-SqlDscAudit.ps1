@@ -15,7 +15,7 @@
         Specifies the name of the server audit to be disabled.
 
     .PARAMETER Force
-        Specifies that the audit should be disabled with out any confirmation.
+        Specifies that the audit should be disabled without any confirmation.
 
     .PARAMETER Refresh
         Specifies that the **ServerObject**'s audits should be refreshed before

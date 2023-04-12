@@ -1266,197 +1266,6 @@ function Restart-ReportingServicesService
     }
 }
 
-
-<#
-    .SYNOPSIS
-        Executes a query on the specified database.
-
-    .PARAMETER ServerName
-        The hostname of the server that hosts the SQL instance.
-
-    .PARAMETER InstanceName
-        The name of the SQL instance that hosts the database.
-
-    .PARAMETER Database
-        Specify the name of the database to execute the query on.
-
-    .PARAMETER Query
-        The query string to execute.
-
-    .PARAMETER DatabaseCredential
-        PSCredential object with the credentials to use to impersonate a user
-        when connecting. If this is not provided then the current user will be
-        used to connect to the SQL Server Database Engine instance.
-
-    .PARAMETER LoginType
-        Specifies which type of logon credential should be used. The valid types are
-        Integrated, WindowsUser, and SqlLogin. If WindowsUser or SqlLogin are specified
-        then the SetupCredential needs to be specified as well.
-
-    .PARAMETER SqlServerObject
-        You can pass in an object type of 'Microsoft.SqlServer.Management.Smo.Server'.
-        This can also be passed in through the pipeline. See examples.
-
-    .PARAMETER WithResults
-        Specifies if the query should return results.
-
-    .PARAMETER StatementTimeout
-        Set the query StatementTimeout in seconds. Default 600 seconds (10mins).
-
-    .PARAMETER RedactText
-        One or more strings to redact from the query when verbose messages are
-        written to the console. Strings here will be escaped so they will not
-        be interpreted as regular expressions (RegEx).
-
-    .EXAMPLE
-        Invoke-Query -ServerName Server1 -InstanceName MSSQLSERVER -Database master `
-            -Query 'SELECT name FROM sys.databases' -WithResults
-
-    .EXAMPLE
-        Invoke-Query -ServerName Server1 -InstanceName MSSQLSERVER -Database master `
-            -Query 'RESTORE DATABASE [NorthWinds] WITH RECOVERY'
-
-    .EXAMPLE
-        Connect-SQL @sqlConnectionParameters | Invoke-Query -Database master `
-            -Query 'SELECT name FROM sys.databases' -WithResults
-
-    .EXAMPLE
-        Invoke-Query -ServerName Server1 -InstanceName MSSQLSERVER -Database MyDatabase `
-             -Query "select * from MyTable where password = 'PlaceholderPa\ssw0rd1' and password = 'placeholder secret passphrase'" `
-             -WithResults -RedactText @('PlaceholderPa\sSw0rd1','Placeholder Secret PassPhrase') -Verbose
-
-    .NOTES
-        The script analyzer rule UseSyntacticallyCorrectExamples will fail in VS Code
-        on this function unless the SMO types are loaded (either the real ones or the
-        stubs). When the rule is run in the pipeline the test will load the SMO stub
-        classes for proper testing of the rule.
-#>
-function Invoke-Query
-{
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when the output type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
-    [CmdletBinding(DefaultParameterSetName = 'SqlServer')]
-    param
-    (
-        [Parameter(ParameterSetName = 'SqlServer')]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $ServerName = (Get-ComputerName),
-
-        [Parameter(ParameterSetName = 'SqlServer')]
-        [System.String]
-        $InstanceName = 'MSSQLSERVER',
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Database,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Query,
-
-        [Parameter()]
-        [Alias('SetupCredential')]
-        [System.Management.Automation.PSCredential]
-        $DatabaseCredential,
-
-        [Parameter()]
-        [ValidateSet('Integrated', 'WindowsUser', 'SqlLogin')]
-        [System.String]
-        $LoginType = 'Integrated',
-
-        [Parameter(ValueFromPipeline, ParameterSetName = 'SqlObject', Mandatory = $true)]
-        [ValidateNotNull()]
-        [Microsoft.SqlServer.Management.Smo.Server]
-        $SqlServerObject,
-
-        [Parameter()]
-        [Switch]
-        $WithResults,
-
-        [Parameter()]
-        [ValidateNotNull()]
-        [System.Int32]
-        $StatementTimeout = 600,
-
-        [Parameter()]
-        [System.String[]]
-        $RedactText
-    )
-
-    if ($PSCmdlet.ParameterSetName -eq 'SqlObject')
-    {
-        $serverObject = $SqlServerObject
-    }
-    elseif ($PSCmdlet.ParameterSetName -eq 'SqlServer')
-    {
-        $connectSQLParameters = @{
-            ServerName       = $ServerName
-            InstanceName     = $InstanceName
-            StatementTimeout = $StatementTimeout
-        }
-
-        if ($LoginType -ne 'Integrated')
-        {
-            $connectSQLParameters['LoginType'] = $LoginType
-        }
-
-        if ($PSBoundParameters.ContainsKey('DatabaseCredential'))
-        {
-            $connectSQLParameters.SetupCredential = $DatabaseCredential
-        }
-
-        $serverObject = Connect-SQL @connectSQLParameters -ErrorAction 'Stop'
-    }
-
-    $redactedQuery = $Query
-
-    foreach ($redactString in $RedactText)
-    {
-        <#
-            Escaping the string to handle strings which could look like
-            regular expressions, like passwords.
-        #>
-        $escapedRedactedString = [System.Text.RegularExpressions.Regex]::Escape($redactString)
-
-        $redactedQuery = $redactedQuery -ireplace $escapedRedactedString, '*******'
-    }
-
-    if ($WithResults)
-    {
-        try
-        {
-            Write-Verbose -Message (
-                $script:localizedData.ExecuteQueryWithResults -f $redactedQuery
-            ) -Verbose
-
-            $result = $serverObject.Databases[$Database].ExecuteWithResults($Query)
-        }
-        catch
-        {
-            $errorMessage = $script:localizedData.ExecuteQueryWithResultsFailed -f $Database
-            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-        }
-    }
-    else
-    {
-        try
-        {
-            Write-Verbose -Message (
-                $script:localizedData.ExecuteNonQuery -f $redactedQuery
-            ) -Verbose
-
-            $serverObject.Databases[$Database].ExecuteNonQuery($Query)
-        }
-        catch
-        {
-            $errorMessage = $script:localizedData.ExecuteNonQueryFailed -f $Database
-            New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
-        }
-    }
-
-    return $result
-}
-
 <#
     .SYNOPSIS
         Executes the alter method on an Availability Group Replica object.
@@ -1564,11 +1373,11 @@ function Test-LoginEffectivePermissions
     # Assume the permissions are not present
     $permissionsPresent = $false
 
-    $invokeQueryParameters = @{
+    $invokeSqlDscQueryParameters = @{
         ServerName   = $ServerName
         InstanceName = $InstanceName
-        Database     = 'master'
-        WithResults  = $true
+        DatabaseName = 'master'
+        PassThru     = $true
     }
 
     if ( [System.String]::IsNullOrEmpty($SecurableName) )
@@ -1592,7 +1401,7 @@ function Test-LoginEffectivePermissions
 
     Write-Verbose -Message ($script:localizedData.GetEffectivePermissionForLogin -f $LoginName, $InstanceName) -Verbose
 
-    $loginEffectivePermissionsResult = Invoke-Query @invokeQueryParameters -Query $queryToGetEffectivePermissionsForLogin
+    $loginEffectivePermissionsResult = Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $queryToGetEffectivePermissionsForLogin
     $loginEffectivePermissions = $loginEffectivePermissionsResult.Tables.Rows.permission_name
 
     if ( $null -ne $loginEffectivePermissions )
@@ -1658,11 +1467,11 @@ function Test-AvailabilityReplicaSeedingModeAutomatic
     # Only check the seeding mode if this is SQL 2016 or newer
     if ( $serverObject.Version -ge 13 )
     {
-        $invokeQueryParams = @{
+        $invokeSqlDscQueryParameters = @{
             ServerName   = $ServerName
             InstanceName = $InstanceName
-            Database     = 'master'
-            WithResults  = $true
+            DatabaseName = 'master'
+            PassThru     = $true
         }
 
         $queryToGetSeedingMode = "
@@ -1672,7 +1481,7 @@ function Test-AvailabilityReplicaSeedingModeAutomatic
             WHERE ag.name = '$AvailabilityGroupName'
                 AND ar.replica_server_name = '$AvailabilityReplicaName'
         "
-        $seedingModeResults = Invoke-Query @invokeQueryParams -Query $queryToGetSeedingMode
+        $seedingModeResults = Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $queryToGetSeedingMode
         $seedingMode = $seedingModeResults.Tables.Rows.seeding_mode_desc
 
         if ( $seedingMode -eq 'Automatic' )

@@ -1,3 +1,4 @@
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Because ConvertTo-SecureString is used to simplify the tests.')]
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 param ()
 
@@ -50,101 +51,328 @@ AfterAll {
 }
 
 Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
-    Context 'When calling the command with only mandatory parameters' {
+    It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
+        @{
+            MockParameterSetName   = 'ByServerName'
+            # cSpell: disable-next
+            MockExpectedParameters = '-DatabaseName <string> -Query <string> [-ServerName <string>] [-InstanceName <string>] [-Credential <pscredential>] [-LoginType <string>] [-PassThru] [-StatementTimeout <int>] [-RedactText <string[]>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+        }
+        @{
+            MockParameterSetName   = 'ByServerObject'
+            # cSpell: disable-next
+            MockExpectedParameters = '-ServerObject <Server> -DatabaseName <string> -Query <string> [-PassThru] [-StatementTimeout <int>] [-RedactText <string[]>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+        }
+    ) {
+        $result = (Get-Command -Name 'Invoke-SqlDscQuery').ParameterSets |
+            Where-Object -FilterScript {
+                $_.Name -eq $mockParameterSetName
+            } |
+            Select-Object -Property @(
+                @{
+                    Name       = 'ParameterSetName'
+                    Expression = { $_.Name }
+                },
+                @{
+                    Name       = 'ParameterListAsString'
+                    Expression = { $_.ToString() }
+                }
+            )
+
+        $result.ParameterSetName | Should -Be $MockParameterSetName
+        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+    }
+
+    Context 'When executing a query that cannot return any results' {
         BeforeAll {
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $databaseObject = New-Object -TypeName PSCustomObject |
+                Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'MockDatabase' -PassThru |
+                Add-Member -MemberType 'ScriptMethod' -Name 'ExecuteNonQuery' -Value {
+                    param
+                    (
+                        [Parameter()]
+                        [System.String]
+                        $sqlCommand
+                    )
 
-            Mock -CommandName Invoke-Query
+                    $script:mockMethodExecuteNonQueryCallCount += 1
+                } -PassThru -Force
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'NoteProperty' -Name 'Databases' -Value @{
+                    'MockDatabase' = $databaseObject
+                } -PassThru -Force
+
+            $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerConnection' |
+                Add-Member -MemberType 'NoteProperty' -Name 'StatementTimeout' -Value 100 -PassThru -Force
+
+            $mockServerObject.ConnectionContext = $mockConnectionContext
         }
 
-        It 'Should execute the query without throwing and without returning any result' {
-            $result = Invoke-SqlDscQuery -ServerObject $mockServerObject -DatabaseName 'master' -Query 'select name from sys.databases'
-
-            $result | Should -BeNullOrEmpty
-
-            Should -Invoke -CommandName Invoke-Query -ParameterFilter {
-                $PesterBoundParameters.Keys -contains 'SqlServerObject' -and
-                $PesterBoundParameters.Keys -contains 'Database' -and
-                $PesterBoundParameters.Keys -contains 'Query'
-            } -Exactly -Times 1 -Scope It
+        BeforeEach {
+            $script:mockMethodExecuteNonQueryCallCount = 0
+            $script:mockMethodExecuteWithResultsCallCount = 0
         }
 
-        Context 'When passing ServerObject over the pipeline' {
+        Context 'When calling using an existing server object' {
+            Context 'When calling the command with only mandatory parameters' {
+                Context 'When using parameter Confirm with value $false' {
+                    It 'Should execute the query without throwing and without returning any result' {
+                        $result = Invoke-SqlDscQuery -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Confirm:$false
+
+                        $result | Should -BeNullOrEmpty
+
+                        $mockMethodExecuteNonQueryCallCount | Should -Be 1
+                    }
+                }
+
+                Context 'When using parameter Force' {
+                    It 'Should execute the query without throwing and without returning any result' {
+                        $result = Invoke-SqlDscQuery -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
+
+                        $result | Should -BeNullOrEmpty
+
+                        $mockMethodExecuteNonQueryCallCount | Should -Be 1
+                    }
+                }
+
+                Context 'When using parameter WhatId' {
+                    It 'Should execute the query without throwing and without returning any result' {
+                        $result = Invoke-SqlDscQuery -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -WhatIf
+
+                        $result | Should -BeNullOrEmpty
+
+                        $mockMethodExecuteNonQueryCallCount | Should -Be 0
+                    }
+                }
+
+                Context 'When passing parameter ServerObject over the pipeline' {
+                    It 'Should execute the query without throwing and without returning any result' {
+                        $result = $mockServerObject | Invoke-SqlDscQuery -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
+
+                        $result | Should -BeNullOrEmpty
+
+                        $mockMethodExecuteNonQueryCallCount | Should -Be 1
+                    }
+                }
+            }
+
+            Context 'When calling the command with optional parameter StatementTimeout' {
+                It 'Should execute the query without throwing and without returning any result' {
+                    $result = Invoke-SqlDscQuery -StatementTimeout 900 -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
+
+                    $result | Should -BeNullOrEmpty
+
+                    $mockMethodExecuteNonQueryCallCount | Should -Be 1
+                }
+            }
+
+            Context 'When calling the command with optional parameter RedactText' {
+                It 'Should execute the query without throwing and without returning any result' {
+                    $result = Invoke-SqlDscQuery -RedactText @('MyString') -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
+
+                    $result | Should -BeNullOrEmpty
+
+                    $mockMethodExecuteNonQueryCallCount | Should -Be 1
+                }
+            }
+        }
+
+        Context 'When calling by using server name and instance name' {
+            BeforeAll {
+                $mockSqlCredentialUserName = 'TestUserName12345'
+                $mockSqlCredentialPassword = 'StrongOne7.'
+                $mockSqlCredentialSecurePassword = ConvertTo-SecureString -String $mockSqlCredentialPassword -AsPlainText -Force
+                $mockSqlCredential = [System.Management.Automation.PSCredential]::new($mockSqlCredentialUserName, $mockSqlCredentialSecurePassword)
+
+                Mock -CommandName Disconnect-SqlDscDatabaseEngine
+                Mock -CommandName Connect-SqlDscDatabaseEngine -MockWith {
+                    return $mockServerObject
+                }
+            }
+
             It 'Should execute the query without throwing and without returning any result' {
-                $result = $mockServerObject | Invoke-SqlDscQuery -DatabaseName 'master' -Query 'select name from sys.databases'
+                $result = Invoke-SqlDscQuery -ServerName 'localhost' -InstanceName 'INSTANCE' -LoginType 'WindowsUser' -Credential $mockSqlCredential -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
 
                 $result | Should -BeNullOrEmpty
 
-                Should -Invoke -CommandName Invoke-Query -ParameterFilter {
-                    $PesterBoundParameters.Keys -contains 'SqlServerObject' -and
-                    $PesterBoundParameters.Keys -contains 'Database' -and
-                    $PesterBoundParameters.Keys -contains 'Query'
-                } -Exactly -Times 1 -Scope It
+                $mockMethodExecuteNonQueryCallCount | Should -Be 1
+
+                Should -Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Disconnect-SqlDscDatabaseEngine -Exactly -Times 1 -Scope It
             }
         }
     }
 
-    Context 'When calling the command with optional parameter StatementTimeout' {
+    Context 'When executing a query that should return results' {
         BeforeAll {
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $databaseObject = New-Object -TypeName PSCustomObject |
+                Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'MockDatabase' -PassThru |
+                Add-Member -MemberType ScriptMethod -Name 'ExecuteWithResults' -Value {
+                    param
+                    (
+                        [Parameter()]
+                        [System.String]
+                        $sqlCommand
+                    )
 
-            Mock -CommandName Invoke-Query
+                    $script:mockMethodExecuteWithResultsCallCount += 1
+
+                    return New-Object -TypeName 'System.Data.DataSet'
+                } -PassThru -Force
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'NoteProperty' -Name 'Databases' -Value @{
+                    'MockDatabase' = $databaseObject
+                } -PassThru -Force
+
+            $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerConnection' |
+                Add-Member -MemberType 'NoteProperty' -Name 'StatementTimeout' -Value 100 -PassThru -Force
+
+            $mockServerObject.ConnectionContext = $mockConnectionContext
         }
 
-        It 'Should execute the query without throwing and without returning any result' {
-            $result = Invoke-SqlDscQuery -StatementTimeout 900 -ServerObject $mockServerObject -DatabaseName 'master' -Query 'select name from sys.databases'
+        BeforeEach {
+            $script:mockMethodExecuteWithResultsCallCount = 0
+        }
 
-            $result | Should -BeNullOrEmpty
+        Context 'When calling using an existing server object' {
+            Context 'When calling the command with optional parameter PassThru' {
+                Context 'When using parameter Confirm with value $false' {
+                    It 'Should execute the query without throwing and return the expected data set' {
+                        $result = Invoke-SqlDscQuery -PassThru -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-Query -ParameterFilter {
-                $PesterBoundParameters.Keys -contains 'SqlServerObject' -and
-                $PesterBoundParameters.Keys -contains 'Database' -and
-                $PesterBoundParameters.Keys -contains 'Query' -and
-                $PesterBoundParameters.Keys -contains 'StatementTimeout'
-            } -Exactly -Times 1 -Scope It
+                        $result | Should -HaveType [System.Data.DataSet]
+
+                        $mockMethodExecuteWithResultsCallCount | Should -Be 1
+                    }
+                }
+
+                Context 'When using parameter Force' {
+                    It 'Should execute the query without throwing and return the expected data set' {
+                        $result = Invoke-SqlDscQuery -PassThru -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
+
+                        $result | Should -HaveType [System.Data.DataSet]
+
+                        $mockMethodExecuteWithResultsCallCount | Should -Be 1
+                    }
+                }
+
+                Context 'When using parameter WhatIf' {
+                    It 'Should execute the query without throwing and return the expected data set' {
+                        $result = Invoke-SqlDscQuery -PassThru -ServerObject $mockServerObject -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -WhatIf
+
+                        $result | Should -BeNullOrEmpty
+
+                        $mockMethodExecuteWithResultsCallCount | Should -Be 0
+                    }
+                }
+
+                Context 'When passing parameter ServerObject over the pipeline' {
+                    It 'Should execute the query without throwing and return the expected data set' {
+                        $result = $mockServerObject | Invoke-SqlDscQuery -PassThru -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
+
+                        $result | Should -HaveType [System.Data.DataSet]
+
+                        $mockMethodExecuteWithResultsCallCount | Should -Be 1
+                    }
+                }
+            }
         }
     }
 
-    Context 'When calling the command with optional parameter RedactText' {
+    Context 'When an exception is thrown' {
         BeforeAll {
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $databaseObject = New-Object -TypeName PSCustomObject |
+                Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'MockDatabase' -PassThru |
+                Add-Member -MemberType ScriptMethod -Name 'ExecuteWithResults' -Value {
+                    $script:mockMethodExecuteWithResultsCallCount += 1
 
-            Mock -CommandName Invoke-Query
+                    throw 'Mocked error'
+                } -PassThru |
+                Add-Member -MemberType 'ScriptMethod' -Name 'ExecuteNonQuery' -Value {
+                    $script:mockMethodExecuteNonQueryCallCount += 1
+                } -PassThru -Force
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'NoteProperty' -Name 'Databases' -Value @{
+                    'MockDatabase' = $databaseObject
+                } -PassThru -Force
+
+            $mockConnectionContext = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerConnection' |
+                Add-Member -MemberType 'NoteProperty' -Name 'StatementTimeout' -Value 100 -PassThru -Force
+
+            $mockServerObject.ConnectionContext = $mockConnectionContext
         }
 
-        It 'Should execute the query without throwing and without returning any result' {
-            $result = Invoke-SqlDscQuery -RedactText @('MyString') -ServerObject $mockServerObject -DatabaseName 'master' -Query 'select name from sys.databases'
-
-            $result | Should -BeNullOrEmpty
-
-            Should -Invoke -CommandName Invoke-Query -ParameterFilter {
-                $PesterBoundParameters.Keys -contains 'SqlServerObject' -and
-                $PesterBoundParameters.Keys -contains 'Database' -and
-                $PesterBoundParameters.Keys -contains 'Query' -and
-                $PesterBoundParameters.Keys -contains 'RedactText'
-            } -Exactly -Times 1 -Scope It
-        }
-    }
-
-    Context 'When calling the command with optional parameter PassThru' {
-        BeforeAll {
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-
-            # Actual testing that Invoke-Query returns values is done in the unit tests for Invoke-Query.
-            Mock -CommandName Invoke-Query
+        BeforeEach {
+            $script:mockMethodExecuteWithResultsCallCount = 0
+            $script:mockMethodExecuteNonQueryCallCount = 0
         }
 
-        It 'Should execute the query without throwing and without returning any result' {
-            $result = Invoke-SqlDscQuery -PassThru -ServerObject $mockServerObject -DatabaseName 'master' -Query 'select name from sys.databases'
+        Context 'When ErrorAction is set to Stop' {
+            BeforeAll {
+                $mockInvokeSqlDscQueryParameters = @{
+                    PassThru     = $true
+                    ServerObject = $mockServerObject
+                    DatabaseName = 'MockDatabase'
+                    Query        = 'select name from sys.databases'
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+            }
 
-            $result | Should -BeNullOrEmpty
+            Context 'When executing a query that should return results' {
+                It 'Should throw the correct error' {
+                    {
+                        Invoke-SqlDscQuery @mockInvokeSqlDscQueryParameters
+                    } | Should -Throw -ExpectedMessage '*Mocked error*'
 
-            Should -Invoke -CommandName Invoke-Query -ParameterFilter {
-                $PesterBoundParameters.Keys -contains 'SqlServerObject' -and
-                $PesterBoundParameters.Keys -contains 'Database' -and
-                $PesterBoundParameters.Keys -contains 'Query' -and
-                $PesterBoundParameters.Keys -contains 'WithResults'
-            } -Exactly -Times 1 -Scope It
+                    $mockMethodExecuteWithResultsCallCount | Should -Be 1
+                }
+            }
+
+            Context 'When executing a query that cannot return any results' {
+                It 'Should throw the correct error' {
+                    {
+                        Invoke-SqlDscQuery @mockInvokeSqlDscQueryParameters
+                    } | Should -Throw -ExpectedMessage '*Mocked error*'
+
+                    $mockMethodExecuteWithResultsCallCount | Should -Be 1
+                }
+            }
+        }
+
+        Context 'When ErrorAction is set to Ignore or SilentlyContinue' {
+            BeforeAll {
+                $mockInvokeSqlDscQueryParameters = @{
+                    PassThru     = $true
+                    ServerObject = $mockServerObject
+                    DatabaseName = 'MockDatabase'
+                    Query        = 'select name from sys.databases'
+                    Force        = $true
+                    ErrorAction  = 'Ignore'
+                }
+            }
+
+            Context 'When executing a query that should return results' {
+                It 'Should not throw an exception and does not return any result' {
+                    $result = Invoke-SqlDscQuery @mockInvokeSqlDscQueryParameters
+
+                    $result | Should -BeNullOrEmpty
+
+                    $mockMethodExecuteWithResultsCallCount | Should -Be 1
+                }
+            }
+
+            Context 'When executing a query that cannot return any results' {
+                It 'Should not throw an exception and does not return any result' {
+                    $result = Invoke-SqlDscQuery @mockInvokeSqlDscQueryParameters
+
+                    $result | Should -BeNullOrEmpty
+
+                    $mockMethodExecuteWithResultsCallCount | Should -Be 1
+                }
+            }
         }
     }
 }

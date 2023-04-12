@@ -158,4 +158,18 @@ ConvertFrom-StringData @'
     PreferredModule_PushingLocation = SQLPS module changes CWD to SQLServer:\ when loading, pushing location to pop it when module is loaded.
     PreferredModule_PoppingLocation = Popping location back to what it was before importing SQLPS module.
     PreferredModule_FailedFinding = Failed to find a dependent module. Unable to run SQL Server commands or use SQL Server types. Please install the {0} or SQLPS then try to import SqlServerDsc again.
+
+    ## Invoke-SqlDscQuery
+    Query_Invoke_ShouldProcessVerboseDescription = Executing a Transact-SQL query on the instance '{0}'.
+    Query_Invoke_ShouldProcessVerboseWarning = Are you sure you want to execute the Transact-SQL script on the instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Query_Invoke_ShouldProcessCaption = Execute Transact-SQL script on instance
+    Query_Invoke_ExecuteQueryWithResults = Returning the results of the query `{0}`.
+    Query_Invoke_ExecuteNonQuery = Executing the query `{0}`.
+
+    ## Disconnect-SqlDscDatabaseEngine
+    DatabaseEngine_Disconnect_ShouldProcessVerboseDescription = Disconnecting from the instance '{0}'.
+    DatabaseEngine_Disconnect_ShouldProcessVerboseWarning = Are you sure you want to disconnect from the instance '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    DatabaseEngine_Disconnect_ShouldProcessCaption = Disconnect from instance
 '@

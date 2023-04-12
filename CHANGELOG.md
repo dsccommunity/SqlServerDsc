@@ -5,6 +5,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Remove
+
+- SqlServerDsc.Common
+  - Removed the function `Invoke-Query`. It is replaced by the command
+    `Invoke-SqlDscQuery` ([issue #1902](https://github.com/dsccommunity/SqlServerDsc/issues/1902)).
+
+### Added
+
+- SqlServerDsc
+  - New public command:
+    - `Disconnect-SqlDscDatabaseEngine` - Disconnects from a SQL Server instance
+      that was previously connected to using `Connect-SqlDscDatabaseEngine`.
+  - New private command:
+    - `ConvertTo-RedactedText` - Used to redact sensitive information from
+      text that then can be used in console output like verbose messages.
+
 ## [16.2.0] - 2023-04-10
 
 ### Added

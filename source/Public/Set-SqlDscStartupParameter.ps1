@@ -25,7 +25,7 @@
         only by SQL Server support engineers."
 
     .PARAMETER Force
-        Specifies that the startup parameters should be set with out any confirmation.
+        Specifies that the startup parameters should be set without any confirmation.
 
     .EXAMPLE
         Set-SqlDscStartupParameters -TraceFlag 4199

@@ -19,7 +19,7 @@
         Specifies the trace flags to remove.
 
     .PARAMETER Force
-        Specifies that the trace flag should be removed with out any confirmation.
+        Specifies that the trace flag should be removed without any confirmation.
 
     .EXAMPLE
         Remove-SqlDscTraceFlag -TraceFlag 4199

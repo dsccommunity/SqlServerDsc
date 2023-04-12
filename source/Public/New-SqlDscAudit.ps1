@@ -29,7 +29,7 @@
         as database mirroring an audit needs a specific GUID.
 
     .PARAMETER Force
-        Specifies that the audit should be created with out any confirmation.
+        Specifies that the audit should be created without any confirmation.
 
     .PARAMETER Refresh
         Specifies that the **ServerObject**'s audits should be refreshed before

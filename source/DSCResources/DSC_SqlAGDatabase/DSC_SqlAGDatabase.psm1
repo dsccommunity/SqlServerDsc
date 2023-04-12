@@ -379,7 +379,7 @@ function Set-TargetResource
                 foreach ( $databaseFileDirectory in $databaseFileDirectories )
                 {
                     $fileExistsQuery = "EXEC master.dbo.xp_fileexist '$databaseFileDirectory'"
-                    $fileExistsResult = Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $fileExistsQuery -WithResults
+                    $fileExistsResult = Invoke-SqlDscQuery -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -DatabaseName 'master' -Query $fileExistsQuery -PassThru
 
                     if ( $fileExistsResult.Tables.Rows.'File is a Directory' -ne 1 )
                     {
@@ -600,8 +600,8 @@ function Set-TargetResource
                         if ( $availabilityGroupReplica.SeedingMode -eq 'MANUAL')
                         {
                             # Restore the database
-                            Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreDatabaseQueryString -StatementTimeout $StatementTimeout
-                            Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $restoreLogQueryString -StatementTimeout $StatementTimeout
+                            Invoke-SqlDscQuery -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -DatabaseName 'master' -Query $restoreDatabaseQueryString -StatementTimeout $StatementTimeout
+                            Invoke-SqlDscQuery -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -DatabaseName 'master' -Query $restoreLogQueryString -StatementTimeout $StatementTimeout
                         }
 
                         # Add the database to the Availability Group

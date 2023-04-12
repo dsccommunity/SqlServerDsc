@@ -19,7 +19,7 @@
         Specifies the trace flags to set.
 
     .PARAMETER Force
-        Specifies that the trace flag should be set with out any confirmation.
+        Specifies that the trace flag should be set without any confirmation.
 
     .EXAMPLE
         Set-SqlDscTraceFlag -TraceFlag 4199

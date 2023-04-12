@@ -1856,321 +1856,6 @@ Describe 'SqlServerDsc.Common\Connect-SQLAnalysis' -Tag 'ConnectSQLAnalysis' {
     }
 }
 
-Describe 'SqlServerDsc.Common\Invoke-Query' -Tag 'InvokeQuery' {
-    BeforeAll {
-        $mockExpectedQuery = ''
-
-        $mockSqlCredentialUserName = 'TestUserName12345'
-        $mockSqlCredentialPassword = 'StrongOne7.'
-        $mockSqlCredentialSecurePassword = ConvertTo-SecureString -String $mockSqlCredentialPassword -AsPlainText -Force
-        $mockSqlCredential = New-Object -TypeName PSCredential -ArgumentList ($mockSqlCredentialUserName, $mockSqlCredentialSecurePassword)
-
-        $masterDatabaseObject = New-Object -TypeName PSObject
-        $masterDatabaseObject | Add-Member -MemberType NoteProperty -Name 'Name' -Value 'master'
-        $masterDatabaseObject | Add-Member -MemberType ScriptMethod -Name 'ExecuteNonQuery' -Value {
-            param
-            (
-                [Parameter()]
-                [System.String]
-                $sqlCommand
-            )
-
-            if ( $sqlCommand -ne $mockExpectedQuery )
-            {
-                throw
-            }
-        }
-
-        $masterDatabaseObject | Add-Member -MemberType ScriptMethod -Name 'ExecuteWithResults' -Value {
-            param
-            (
-                [Parameter()]
-                [System.String]
-                $sqlCommand
-            )
-
-            if ( $sqlCommand -ne $mockExpectedQuery )
-            {
-                throw
-            }
-
-            return New-Object -TypeName System.Data.DataSet
-        }
-
-        $databasesObject = New-Object -TypeName PSObject
-        $databasesObject | Add-Member -MemberType NoteProperty -Name 'Databases' -Value @{
-            'master' = $masterDatabaseObject
-        }
-
-        $mockSMOServer = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-        $mockSMOServer | Add-Member -MemberType NoteProperty -Name 'Databases' -Value @{
-            'master' = $masterDatabaseObject
-        } -Force
-
-        $mockConnectSql = {
-            return @($databasesObject)
-        }
-
-        $queryParameters = @{
-            ServerName         = 'Server1'
-            InstanceName       = 'MSSQLSERVER'
-            Database           = 'master'
-            Query              = ''
-            DatabaseCredential = $mockSqlCredential
-        }
-
-        $queryParametersWithSMO = @{
-            Query              = ''
-            SqlServerObject    = $mockSMOServer
-            Database           = 'master'
-        }
-    }
-
-    BeforeEach {
-        Mock -CommandName Connect-SQL -MockWith $mockConnectSql
-    }
-
-    Context 'When executing a query with no results' {
-        AfterEach {
-            Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-        }
-
-        It 'Should execute the query silently' {
-            $queryParameters.Query = "EXEC sp_configure 'show advanced option', '1'"
-            $mockExpectedQuery = $queryParameters.Query.Clone()
-
-            { Invoke-Query @queryParameters } | Should -Not -Throw
-
-            Should -Invoke -CommandName Connect-SQL -ParameterFilter {
-                <#
-                    Should not be called with a login type.
-
-                    Due to issue https://github.com/pester/Pester/issues/1542
-                    we cannot use `$PSBoundParameters.ContainsKey('LoginType') -eq $false`.
-                #>
-                $null -eq $LoginType
-            } -Scope It -Times 1 -Exactly
-        }
-
-        It 'Should throw the correct error, ExecuteNonQueryFailed, when executing the query fails' {
-            $queryParameters.Query = 'BadQuery'
-
-            $mockLocalizedString = InModuleScope -ScriptBlock {
-                $script:localizedData.ExecuteNonQueryFailed
-            }
-
-            $mockErrorRecord = Get-InvalidOperationRecord -Message (
-                $mockLocalizedString -f $queryParameters.Database
-            )
-
-            { Invoke-Query @queryParameters } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
-        }
-
-        Context 'When text should be redacted' {
-            BeforeAll {
-                Mock -CommandName Write-Verbose -ParameterFilter {
-                    $mockLocalizedString = InModuleScope -ScriptBlock {
-                        $script:localizedData.ExecuteNonQuery
-                    }
-
-                    $Message -eq (
-                        $mockLocalizedString -f
-                            "select * from MyTable where password = '*******' and password = '*******'"
-                    )
-                } -MockWith {
-                    <#
-                        MUST return another message than the parameter filter
-                        is looking for, otherwise we get into a endless loop.
-                        We returning the to show in the output how the verbose
-                        message was redacted.
-                    #>
-                    Write-Verbose -Message ('MOCK OUTPUT: {0}' -f $Message) -Verbose
-                }
-            }
-
-            It 'Should execute the query silently and redact text in the verbose output' {
-                $queryParameters.Query = "select * from MyTable where password = 'Pa\ssw0rd1' and password = 'secret passphrase'"
-                $mockExpectedQuery = $queryParameters.Query.Clone()
-
-                # The `Secret PassPhrase` is using the casing like this to test case-insensitive replace.
-                { Invoke-Query @queryParameters -RedactText @('Pa\sSw0rd1', 'Secret PassPhrase') } | Should -Not -Throw
-            }
-        }
-    }
-
-    Context 'When executing a query with no results using Windows impersonation' {
-        It 'Should execute the query silently' {
-            $testParameters = $queryParameters.Clone()
-            $testParameters.LoginType = 'WindowsUser'
-            $testParameters.Query = "EXEC sp_configure 'show advanced option', '1'"
-            $mockExpectedQuery = $testParameters.Query.Clone()
-
-            { Invoke-Query @testParameters } | Should -Not -Throw
-
-            Should -Invoke -CommandName Connect-SQL -ParameterFilter {
-                $LoginType -eq 'WindowsUser'
-            } -Scope It -Times 1 -Exactly
-        }
-    }
-
-    Context 'when executing a query with no results using SQL impersonation' {
-        It 'Should execute the query silently' {
-            $testParameters = $queryParameters.Clone()
-            $testParameters.LoginType = 'SqlLogin'
-            $testParameters.Query = "EXEC sp_configure 'show advanced option', '1'"
-            $mockExpectedQuery = $testParameters.Query.Clone()
-
-            { Invoke-Query @testParameters } | Should -Not -Throw
-
-            Should -Invoke -CommandName Connect-SQL -ParameterFilter {
-                $LoginType -eq 'SqlLogin'
-            } -Scope It -Times 1 -Exactly
-        }
-    }
-
-    Context 'when executing a query with results' {
-        It 'Should execute the query and return a result set' {
-            $queryParameters.Query = 'SELECT name FROM sys.databases'
-            $mockExpectedQuery = $queryParameters.Query.Clone()
-
-            Invoke-Query @queryParameters -WithResults | Should -Not -BeNullOrEmpty
-
-            Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-        }
-
-        It 'Should throw the correct error, ExecuteQueryWithResultsFailed, when executing the query fails' {
-            $queryParameters.Query = 'BadQuery'
-
-            $mockLocalizedString = InModuleScope -ScriptBlock {
-                $script:localizedData.ExecuteQueryWithResultsFailed
-            }
-
-            $mockErrorRecord = Get-InvalidOperationRecord -Message (
-                $mockLocalizedString -f $queryParameters.Database
-            )
-
-            { Invoke-Query @queryParameters -WithResults } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
-
-            Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-        }
-
-        Context 'When text should be redacted' {
-            BeforeAll {
-                Mock -CommandName Write-Verbose -ParameterFilter {
-                    $mockLocalizedString = InModuleScope -ScriptBlock {
-                        $script:localizedData.ExecuteQueryWithResults
-                    }
-
-                    $Message -eq (
-                        $mockLocalizedString -f
-                            "select * from MyTable where password = '*******' and password = '*******'"
-                    )
-                } -MockWith {
-                    <#
-                        MUST return another message than the parameter filter
-                        is looking for, otherwise we get into a endless loop.
-                        We returning the to show in the output how the verbose
-                        message was redacted.
-                    #>
-                    Write-Verbose -Message ('MOCK OUTPUT: {0}' -f $Message) -Verbose
-                }
-            }
-
-            It 'Should execute the query silently and redact text in the verbose output' {
-                $queryParameters.Query = "select * from MyTable where password = 'Pa\ssw0rd1' and password = 'secret passphrase'"
-                $mockExpectedQuery = $queryParameters.Query.Clone()
-
-                # The `Secret PassPhrase` is using the casing like this to test case-insensitive replace.
-                { Invoke-Query @queryParameters -RedactText @('Pa\sSw0rd1', 'Secret PassPhrase') -WithResults } | Should -Not -Throw
-            }
-        }
-    }
-
-    Context 'When passing in an SMO Server Object' {
-        Context 'Execute a query with no results' {
-            It 'Should execute the query silently' {
-                $queryParametersWithSMO.Query = "EXEC sp_configure 'show advanced option', '1'"
-                $mockExpectedQuery = $queryParametersWithSMO.Query.Clone()
-
-                { Invoke-Query @queryParametersWithSMO } | Should -Not -Throw
-
-                Should -Invoke -CommandName Connect-SQL -Scope It -Times 0 -Exactly
-            }
-
-            It 'Should throw the correct error, ExecuteNonQueryFailed, when executing the query fails' {
-                $queryParametersWithSMO.Query = 'BadQuery'
-
-                $mockLocalizedString = InModuleScope -ScriptBlock {
-                    $script:localizedData.ExecuteNonQueryFailed
-                }
-
-                $mockErrorRecord = Get-InvalidOperationRecord -Message (
-                    $mockLocalizedString -f $queryParameters.Database
-                )
-
-                { Invoke-Query @queryParametersWithSMO } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
-
-                Should -Invoke -CommandName Connect-SQL -Scope It -Times 0 -Exactly
-            }
-        }
-
-        Context 'When executing a query with results' {
-            It 'Should execute the query and return a result set' {
-                $queryParametersWithSMO.Query = 'SELECT name FROM sys.databases'
-                $mockExpectedQuery = $queryParametersWithSMO.Query.Clone()
-
-                Invoke-Query @queryParametersWithSMO -WithResults | Should -Not -BeNullOrEmpty
-
-                Should -Invoke -CommandName Connect-SQL -Scope It -Times 0 -Exactly
-            }
-
-            It 'Should throw the correct error, ExecuteQueryWithResultsFailed, when executing the query fails' {
-                $queryParametersWithSMO.Query = 'BadQuery'
-
-                $mockLocalizedString = InModuleScope -ScriptBlock {
-                    $script:localizedData.ExecuteQueryWithResultsFailed
-                }
-
-                $mockErrorRecord = Get-InvalidOperationRecord -Message (
-                    $mockLocalizedString -f $queryParameters.Database
-                )
-
-                { Invoke-Query @queryParametersWithSMO -WithResults } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
-
-                Should -Invoke -CommandName Connect-SQL -Scope It -Times 0 -Exactly
-            }
-        }
-
-        Context 'When executing a query with piped SMO server object' {
-            It 'Should execute the query and return a result set' {
-                $mockQuery = 'SELECT name FROM sys.databases'
-                $mockExpectedQuery = $mockQuery
-
-                $mockSMOServer | Invoke-Query -Query $mockQuery -Database master -WithResults |
-                    Should -Not -BeNullOrEmpty
-
-                Should -Invoke -CommandName Connect-SQL -Scope It -Times 0 -Exactly
-            }
-
-            It 'Should throw the correct error, ExecuteQueryWithResultsFailed, when executing the query fails' {
-                $mockQuery = 'BadQuery'
-
-                $mockLocalizedString = InModuleScope -ScriptBlock {
-                    $script:localizedData.ExecuteQueryWithResultsFailed
-                }
-
-                $mockErrorRecord = Get-InvalidOperationRecord -Message (
-                    $mockLocalizedString -f $queryParameters.Database
-                )
-
-                { $mockSMOServer | Invoke-Query -Query $mockQuery -Database master -WithResults } | Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
-
-                Should -Invoke -CommandName Connect-SQL -Scope It -Times 0 -Exactly
-            }
-        }
-    }
-}
-
 Describe 'SqlServerDsc.Common\Update-AvailabilityGroupReplica' -Tag 'UpdateAvailabilityGroupReplica' {
     Context 'When the Availability Group Replica is altered' {
         It 'Should silently alter the Availability Group Replica' {
@@ -2251,7 +1936,7 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
     }
 
     BeforeEach {
-        Mock -CommandName Invoke-Query -MockWith $mockInvokeQueryPermissionsResult
+        Mock -CommandName Invoke-SqlDscQuery -MockWith $mockInvokeQueryPermissionsResult
     }
 
     Context 'When all of the permissions are present' {
@@ -2261,7 +1946,7 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
 
             Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -Be $true
 
-            Should -Invoke -CommandName Invoke-Query -Scope It -Times 1 -Exactly
+            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
         }
 
         It 'Should return $true when the desired login permissions are present' {
@@ -2270,7 +1955,7 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
 
             Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -Be $true
 
-            Should -Invoke -CommandName Invoke-Query -Scope It -Times 1 -Exactly
+            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
         }
     }
 
@@ -2281,7 +1966,7 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
 
             Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -Be $false
 
-            Should -Invoke -CommandName Invoke-Query -Scope It -Times 1 -Exactly
+            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
         }
 
         It 'Should return $false when the specified login has no server permissions assigned' {
@@ -2290,7 +1975,7 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
 
             Test-LoginEffectivePermissions @testLoginEffectiveServerPermissionsParams | Should -Be $false
 
-            Should -Invoke -CommandName Invoke-Query -Scope It -Times 1 -Exactly
+            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
         }
 
         It 'Should return $false when the desired login permissions are not present' {
@@ -2299,7 +1984,7 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
 
             Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -Be $false
 
-            Should -Invoke -CommandName Invoke-Query -Scope It -Times 1 -Exactly
+            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
         }
 
         It 'Should return $false when the specified login has no login permissions assigned' {
@@ -2308,7 +1993,7 @@ Describe 'SqlServerDsc.Common\Test-LoginEffectivePermissions' -Tag 'TestLoginEff
 
             Test-LoginEffectivePermissions @testLoginEffectiveLoginPermissionsParams | Should -Be $false
 
-            Should -Invoke -CommandName Invoke-Query -Scope It -Times 1 -Exactly
+            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
         }
     }
 }
@@ -2509,7 +2194,7 @@ Describe 'SqlServerDsc.Common\Test-AvailabilityReplicaSeedingModeAutomatic' -Tag
     Context 'When the replica seeding mode is manual' {
         BeforeEach {
             Mock -CommandName Connect-SQL -MockWith $mockConnectSql
-            Mock -CommandName Invoke-Query -MockWith $mockInvokeQuery
+            Mock -CommandName Invoke-SqlDscQuery -MockWith $mockInvokeQuery
         }
 
         It 'Should return $false when the instance version is <_>' -ForEach @(11, 12) {
@@ -2518,7 +2203,7 @@ Describe 'SqlServerDsc.Common\Test-AvailabilityReplicaSeedingModeAutomatic' -Tag
             Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should -Be $false
 
             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-            Should -Invoke -CommandName Invoke-Query -Scope It -Times 0 -Exactly
+            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly
         }
 
         # Test SQL 2016 and later where Seeding Mode is supported.
@@ -2528,14 +2213,14 @@ Describe 'SqlServerDsc.Common\Test-AvailabilityReplicaSeedingModeAutomatic' -Tag
             Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should -Be $false
 
             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-            Should -Invoke -CommandName Invoke-Query -Scope It -Times 1 -Exactly
+            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
         }
     }
 
     Context 'When the replica seeding mode is automatic' {
         BeforeEach {
             Mock -CommandName Connect-SQL -MockWith $mockConnectSql
-            Mock -CommandName Invoke-Query -MockWith $mockInvokeQuery
+            Mock -CommandName Invoke-SqlDscQuery -MockWith $mockInvokeQuery
         }
 
         # Test SQL 2016 and later where Seeding Mode is supported.
@@ -2546,7 +2231,7 @@ Describe 'SqlServerDsc.Common\Test-AvailabilityReplicaSeedingModeAutomatic' -Tag
             Test-AvailabilityReplicaSeedingModeAutomatic @testAvailabilityReplicaSeedingModeAutomaticParams | Should -Be $true
 
             Should -Invoke -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-            Should -Invoke -CommandName Invoke-Query -Scope It -Times 1 -Exactly
+            Should -Invoke -CommandName Invoke-SqlDscQuery -Scope It -Times 1 -Exactly
         }
     }
 }
