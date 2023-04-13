@@ -49,6 +49,9 @@ function Get-TargetResource
         $script:localizedData.GetAvailabilityGroup -f $Name, $AvailabilityGroupName, $InstanceName
     )
 
+    # Define current version for check compatibility
+    $sqlMajorVersion = $serverObject.Version.Major
+
     # Connect to the instance
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
@@ -82,6 +85,11 @@ function Get-TargetResource
         EndpointHostName              = $serverObject.NetName
     }
 
+    if ( $sqlMajorVersion -ge 13 )
+    {
+        $alwaysOnAvailabilityGroupReplicaResource.Add('SeedingMode', '')
+    }
+
     # Get the availability group
     $availabilityGroup = $serverObject.AvailabilityGroups[$AvailabilityGroupName]
 
@@ -102,6 +110,11 @@ function Get-TargetResource
             $alwaysOnAvailabilityGroupReplicaResource.EndpointUrl = $availabilityGroupReplica.EndpointUrl
             $alwaysOnAvailabilityGroupReplicaResource.ReadOnlyRoutingConnectionUrl = $availabilityGroupReplica.ReadOnlyRoutingConnectionUrl
             $alwaysOnAvailabilityGroupReplicaResource.ReadOnlyRoutingList = $availabilityGroupReplica.ReadOnlyRoutingList
+
+            if ( $sqlMajorVersion -ge 13 )
+            {
+                $alwaysOnAvailabilityGroupReplicaResource.'SeedingMode' = $availabilityGroupReplica.SeedingMode
+            }
         }
     }
 
@@ -161,6 +174,9 @@ function Get-TargetResource
     .PARAMETER ProcessOnlyOnActiveNode
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
         Not used in Set-TargetResource.
+
+    .PARAMETER SeedingMode
+        Specifies the seeding mode. When creating a replica the default is 'Manual'.
 #>
 function Set-TargetResource
 {
@@ -235,8 +251,16 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $ProcessOnlyOnActiveNode
+        $ProcessOnlyOnActiveNode,
+
+        [Parameter()]
+        [ValidateSet('Automatic', 'Manual')]
+        [System.String]
+        $SeedingMode = 'Manual'
     )
+
+    # Define current version for check compatibility
+    $sqlMajorVersion = $serverObject.Version.Major
 
     Import-SqlDscPreferredModule
 
@@ -396,10 +420,17 @@ function Set-TargetResource
                         $availabilityGroupReplicaUpdatesRequired = $true
                     }
 
+                    if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroupReplica.SeedingMode ) )
+                    {
+                        $availabilityGroup.SeedingMode = $SeedingMode
+                        $availabilityGroupReplicaUpdatesRequired = $true
+                    }
+
                     if ( $availabilityGroupReplicaUpdatesRequired )
                     {
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
+
                 }
                 else
                 {
@@ -455,6 +486,11 @@ function Set-TargetResource
                     if ( $ReadOnlyRoutingList )
                     {
                         $newAvailabilityGroupReplicaParams.Add('ReadOnlyRoutingList', $ReadOnlyRoutingList)
+                    }
+
+                    if ( $sqlMajorVersion -ge 13 )
+                    {
+                        $newAvailabilityGroupReplicaParams.Add('SeedingMode', $SeedingMode)
                     }
 
                     # Create the Availability Group Replica
@@ -550,10 +586,13 @@ function Set-TargetResource
 
     .PARAMETER ProcessOnlyOnActiveNode
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+
+    .PARAMETER SeedingMode
+        Specifies the seeding mode. When creating a replica the default is 'Manual'.
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -626,8 +665,16 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $ProcessOnlyOnActiveNode
+        $ProcessOnlyOnActiveNode,
+
+        [Parameter()]
+        [ValidateSet('Automatic', 'Manual')]
+        [System.String]
+        $SeedingMode = 'Manual'
     )
+
+    # Define current version for check compatibility
+    $sqlMajorVersion = $serverObject.Version.Major
 
     $getTargetResourceParameters = @{
         InstanceName          = $InstanceName
@@ -683,6 +730,10 @@ function Test-TargetResource
                 'ReadOnlyRoutingConnectionUrl',
                 'ReadOnlyRoutingList'
             )
+            if ($sqlMajorVersion -ge 13)
+            {
+                $parametersToCheck += 'SeedingMode'
+            }
 
             if ( $getTargetResourceResult.Ensure -eq 'Present' )
             {
