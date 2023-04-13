@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Server 2016 and higher.
 - SqlAgReplica
   - Added ne parameter `SeedingMode` that will set the SeedingMode for the SQL
-    Server 2016 and higher.
+    Server 2016 and higher ([issue #487](https://github.com/dsccommunity/SqlServerDsc/issues/487)).
 
 ## [16.2.0] - 2023-04-10
 
