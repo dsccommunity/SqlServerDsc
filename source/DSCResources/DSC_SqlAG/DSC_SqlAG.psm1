@@ -93,6 +93,7 @@ function Get-TargetResource
             $alwaysOnAvailabilityGroupResource.Add('BasicAvailabilityGroup', $availabilityGroup.BasicAvailabilityGroup)
             $alwaysOnAvailabilityGroupResource.Add('DatabaseHealthTrigger', $availabilityGroup.DatabaseHealthTrigger)
             $alwaysOnAvailabilityGroupResource.Add('DtcSupportEnabled', $availabilityGroup.DtcSupportEnabled)
+            $alwaysOnAvailabilityGroupResource.Add('SeedingMode', $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode)
         }
     }
 
@@ -147,6 +148,9 @@ function Get-TargetResource
 
     .PARAMETER FailoverMode
         Specifies the failover mode. When creating a group the default is 'Manual'.
+
+    .PARAMETER SeedingMode
+        Specifies the seeding mode. When creating a group the default is 'Manual'.
 
     .PARAMETER HealthCheckTimeout
         Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. When creating a group the default is 30,000.
@@ -233,6 +237,11 @@ function Set-TargetResource
         [ValidateSet('Automatic', 'Manual')]
         [System.String]
         $FailoverMode = 'Manual',
+
+        [Parameter()]
+        [ValidateSet('Automatic', 'Manual')]
+        [System.String]
+        $SeedingMode = 'Manual',
 
         [Parameter()]
         [System.UInt32]
@@ -369,6 +378,7 @@ function Set-TargetResource
                     $newAvailabilityGroupParams.Add('BasicAvailabilityGroup', $BasicAvailabilityGroup)
                     $newAvailabilityGroupParams.Add('DatabaseHealthTrigger', $DatabaseHealthTrigger)
                     $newAvailabilityGroupParams.Add('DtcSupportEnabled', $DtcSupportEnabled)
+                    $newAvailabilityGroupParams.Add('SeedingMode', $SeedingMode)
                 }
 
                 if ( $FailureConditionLevel )
@@ -496,6 +506,12 @@ function Set-TargetResource
                     $availabilityGroup.HealthCheckTimeout = $HealthCheckTimeout
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
                 }
+
+                if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode ) )
+                {
+                    $availabilityGroup.SeedingMode = $SeedingMode
+                    Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
+                }
             }
         }
     }
@@ -550,6 +566,9 @@ function Set-TargetResource
     .PARAMETER FailoverMode
         Specifies the failover mode. When creating a group the default is 'Manual'.
 
+    .PARAMETER SeedingMode
+        Specifies the seeding mode. When creating a group the default is 'Manual'.
+
     .PARAMETER HealthCheckTimeout
         Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. When creating a group the default is 30,000.
 
@@ -558,7 +577,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -630,6 +649,11 @@ function Test-TargetResource
         [ValidateSet('Automatic', 'Manual')]
         [System.String]
         $FailoverMode = 'Manual',
+
+        [Parameter()]
+        [ValidateSet('Automatic', 'Manual')]
+        [System.String]
+        $SeedingMode = 'Manual',
 
         [Parameter()]
         [System.UInt32]
@@ -710,6 +734,7 @@ function Test-TargetResource
             {
                 $parametersToCheck += 'BasicAvailabilityGroup'
                 $parametersToCheck += 'DatabaseHealthTrigger'
+                $parametersToCheck += 'SeedingMode'
             }
 
             if ( $getTargetResourceResult.Ensure -eq 'Present' )
