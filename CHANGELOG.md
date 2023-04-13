@@ -20,6 +20,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New private command:
     - `ConvertTo-RedactedText` - Used to redact sensitive information from
       text that then can be used in console output like verbose messages.
+- SqlAg
+  - Added ne parameter `SeedingMode` that will set the SeedingMode for the SQL
+    Server 2016 and higher.
+- SqlAgReplica
+  - Added ne parameter `SeedingMode` that will set the SeedingMode for the SQL
+    Server 2016 and higher.
 
 ## [16.2.0] - 2023-04-10
 
