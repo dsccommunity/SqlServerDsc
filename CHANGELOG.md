@@ -14,14 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - SqlServerDsc
-  - New public command:
+  - New public commands:
     - `Disconnect-SqlDscDatabaseEngine` - Disconnects from a SQL Server instance
       that was previously connected to using `Connect-SqlDscDatabaseEngine`.
     - `Test-SqlDscIsSupportedFeature` - Evaluates if a feature is supported by a specific
       Microsoft SQL Server major version. _This command must be extended with_
       _a full list of when features were added and removed in each major_
       _version to fully work_.
-  - New private command:
+  - New private commands:
     - `ConvertTo-RedactedText` - Used to redact sensitive information from
       text that then can be used in console output like verbose messages.
     - `Get-FileVersionInformation` - Returns the version information
