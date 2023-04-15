@@ -5,7 +5,7 @@
     .DESCRIPTION
         Returns the version information for a file.
 
-    .PARAMETER Path
+    .PARAMETER FilePath
         Specifies the file for which to return the version information.
 
     .EXAMPLE
