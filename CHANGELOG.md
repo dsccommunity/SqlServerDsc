@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - SqlServerDsc
+  - New class-based resource:
+    - `SqlInstal` - Handles the Microsoft SQL Server setup action `Install`.
   - New public command:
     - `Disconnect-SqlDscDatabaseEngine` - Disconnects from a SQL Server instance
       that was previously connected to using `Connect-SqlDscDatabaseEngine`.
