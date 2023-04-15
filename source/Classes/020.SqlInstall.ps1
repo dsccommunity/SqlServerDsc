@@ -56,277 +56,277 @@
         setup executable normally ask for.
 
     .PARAMETER SuppressPrivacyStatementNotice
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER IAcknowledgeEntCalLimits
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER Enu
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER UpdateEnabled
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER UpdateSource
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER Features
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER InstallSharedDir
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER InstallSharedWowDir
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER InstanceDir
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER InstanceId
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER PBEngSvcAccount
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER PBEngSvcPassword
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER PBEngSvcStartupType
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER PBDMSSvcAccount
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER PBDMSSvcPassword
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER PBDMSSvcStartupType
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER PBStartPortRange
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER PBEndPortRange
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER PBScaleOut
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ProductKey
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER AgtSvcAccount
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER AgtSvcPassword
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER AgtSvcStartupType
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ASBackupDir
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ASCollation
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ASConfigDir
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ASDataDir
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ASLogDir
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ASTempDir
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ASServerMode
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ASSvcAccount
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ASSvcPassword
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ASSvcStartupType
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ASSysAdminAccounts
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ASProviderMSOLAP
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER BrowserSvcStartupType
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER FTUpgradeOption
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER EnableRanU
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER InstallSqlDataDir
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlBackupDir
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SecurityMode
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SAPwd
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlCollation
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlSvcAccount
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlSvcPassword
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlSvcStartupType
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlSysAdminAccounts
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlTempDbDir
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlTempDbLogDir
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlTempDbFileCount
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlTempDbFileSize
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlTempDbFileGrowth
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlTempDbLogFileSize
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlTempDbLogFileGrowth
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlUserDbDir
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlSvcInstantFileInit
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlUserDbLogDir
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlMaxDop
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER UseSqlRecommendedMemoryLimits
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlMinMemory
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlMaxMemory
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER FileStreamLevel
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER FileStreamShareName
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ISSvcAccount
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ISSvcPassword
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ISSvcStartupType
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER AllowUpgradeForSSRSSharePointMode
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER NpEnabled
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER TcpEnabled
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER RsInstallMode
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER RSSvcAccount
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER RSSvcPassword
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER RSSvcStartupType
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER MPYCacheDirectory
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER MRCacheDirectory
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlInstJava
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SqlJavaDir
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER FailoverClusterGroup
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER FailoverClusterDisks
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER FailoverClusterNetworkName
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER FailoverClusterIPAddresses
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER FailoverClusterRollOwnership
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER AzureSubscriptionId
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER AzureResourceGroup
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER AzureRegion
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER AzureTenantId
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER AzureServicePrincipal
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER AzureServicePrincipalSecret
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER AzureArcProxy
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER SkipRules
-        See the notes section for more information.
+        See the description section for more information.
 
     .PARAMETER ProductCoveredBySA
-        See the notes section for more information.
+        See the description section for more information.
 
     .EXAMPLE
         TODO: Must update the example.
