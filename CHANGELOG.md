@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Now able to use dbatools as one of the preferred modules.
 - Gitversion no longer evaluates bumping major version using the word "major".
 - Update private commands:
   - `Assert-SetupActionProperties` was changed to throw
@@ -57,11 +58,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ([issue #1918](https://github.com/dsccommunity/SqlServerDsc/issues/1918)).
   - Correctly outputs query in verbose message when parameter `RedactText`
     is not passed.
-
-### Changed
-
-- SqlServerDsc
-  - Now able to use dbatools as one of the preferred modules.
 
 ## [16.2.0] - 2023-04-10
 
