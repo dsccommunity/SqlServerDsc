@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Gitversion no longer evaluates bumping major version using the word "major".
-- Update private command:
+- Update private commands:
   - `Assert-SetupActionProperties` was changed to throw
     an exception when a feature is not supported (calls `Assert-Feature`).
     The private command is indirectly used by the setup action commands.
