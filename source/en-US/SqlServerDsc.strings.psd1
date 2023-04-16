@@ -172,4 +172,10 @@ ConvertFrom-StringData @'
     DatabaseEngine_Disconnect_ShouldProcessVerboseWarning = Are you sure you want to disconnect from the instance '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     DatabaseEngine_Disconnect_ShouldProcessCaption = Disconnect from instance
+
+    ## Assert-Feature
+    Feature_Assert_NotSupportedFeature = The feature '{0}' is not supported for Microsoft SQL Server product version {1}. See the Microsoft SQL Server documentation https://learn.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt#Feature for more information.
+
+    ## Get-FileVersionInformation
+    FileVersionInformation_Get_FilePathIsNotFile = The specified path is not a file.
 '@

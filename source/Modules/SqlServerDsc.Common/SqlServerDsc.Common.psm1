@@ -2218,6 +2218,10 @@ function ConvertTo-ServerInstanceName
 
     .PARAMETER Path
         String containing the path to the SQL Server setup.exe executable.
+
+    .NOTES
+        This function should be removed when it is not longer used, and instead
+        the private function Get-FileVersionInformation shall be used.
 #>
 function Get-FilePathMajorVersion
 {

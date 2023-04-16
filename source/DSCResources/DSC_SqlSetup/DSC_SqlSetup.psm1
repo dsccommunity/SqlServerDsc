@@ -1022,7 +1022,7 @@ function Set-TargetResource
 
     foreach ($feature in $featuresArray)
     {
-        if (($sqlVersion -in ('13', '14', '15', '16')) -and ($feature -in ('ADV_SSMS', 'SSMS')))
+        if (-not ($feature | Test-SqlDscIsSupportedFeature -ProductVersion $sqlVersion))
         {
             $errorMessage = $script:localizedData.FeatureNotSupported -f $feature
             New-InvalidOperationException -Message $errorMessage

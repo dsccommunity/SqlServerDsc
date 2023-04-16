@@ -2200,12 +2200,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         UpdateEnabled = 'True'
                         UpdateSource = 'C:\Updates' # Regression test for issue #720
                         ASServerMode = 'TABULAR'
-                        RSInstallMode = 'DefaultNativeMode'
                         SqlSvcStartupType = 'Automatic'
                         AgtSvcStartupType = 'Automatic'
                         AsSvcStartupType = 'Automatic'
                         IsSvcStartupType = 'Automatic'
-                        RsSvcStartupType = 'Automatic'
                         SqlTempDbFileCount = 2
                         SqlTempDbFileSize = 128
                         SqlTempDbFileGrowth = 128
@@ -2214,9 +2212,15 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         BrowserSvcStartupType = 'Automatic'
                     }
 
-                    if ($MockSqlMajorVersion -in ('13', '14', '15'))
+                    if ($MockSqlMajorVersion -in ('13'))
                     {
                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS'
+                        $mockStartSqlSetupProcessExpectedArgument.RSInstallMode = 'DefaultNativeMode'
+                        $mockStartSqlSetupProcessExpectedArgument.RsSvcStartupType = 'Automatic'
+                    }
+                    elseif ($MockSqlMajorVersion -in ('14', '15'))
+                    {
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,CONN,BC,SDK,MDS'
                     }
                     else
                     {
@@ -2242,12 +2246,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             UpdateEnabled = 'True'
                             UpdateSource = 'C:\Updates\' # Regression test for issue #720
                             ASServerMode = 'TABULAR'
-                            RSInstallMode = 'DefaultNativeMode'
                             SqlSvcStartupType = 'Automatic'
                             AgtSvcStartupType = 'Automatic'
                             AsSvcStartupType = 'Automatic'
                             IsSvcStartupType = 'Automatic'
-                            RsSvcStartupType = 'Automatic'
                             SqlTempDbFileCount = 2
                             SqlTempDbFileSize = 128
                             SqlTempDbFileGrowth = 128
@@ -2259,6 +2261,16 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         if ($MockSqlMajorVersion -in ('13', '14', '15'))
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SSMS,ADV_SSMS', ''
+                        }
+
+                        if ($MockSqlMajorVersion -in ('13'))
+                        {
+                            $mockSetTargetResourceParameters.RSInstallMode = 'DefaultNativeMode'
+                            $mockSetTargetResourceParameters.RsSvcStartupType = 'Automatic'
+                        }
+                        elseif ($MockSqlMajorVersion -in ('14', '15'))
+                        {
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
                         }
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
@@ -2471,12 +2483,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         UpdateEnabled = 'True'
                         UpdateSource = 'C:\Updates' # Regression test for issue #720
                         ASServerMode = 'TABULAR'
-                        RSInstallMode = 'DefaultNativeMode'
                         SqlSvcStartupType = 'Automatic'
                         AgtSvcStartupType = 'Automatic'
                         AsSvcStartupType = 'Automatic'
                         IsSvcStartupType = 'Automatic'
-                        RsSvcStartupType = 'Automatic'
                         SqlTempDbFileCount = 2
                         SqlTempDbFileSize = 128
                         SqlTempDbFileGrowth = 128
@@ -2485,9 +2495,15 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         BrowserSvcStartupType = 'Automatic'
                     }
 
-                    if ($MockSqlMajorVersion -in ('13', '14', '15'))
+                    if ($MockSqlMajorVersion -in ('13'))
                     {
                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS'
+                        $mockStartSqlSetupProcessExpectedArgument.RSInstallMode = 'DefaultNativeMode'
+                        $mockStartSqlSetupProcessExpectedArgument.RsSvcStartupType = 'Automatic'
+                    }
+                    elseif ($MockSqlMajorVersion -in ('14', '15'))
+                    {
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,CONN,BC,SDK,MDS'
                     }
                     else
                     {
@@ -2513,12 +2529,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             UpdateEnabled = 'True'
                             UpdateSource = 'C:\Updates\' # Regression test for issue #720
                             ASServerMode = 'TABULAR'
-                            RSInstallMode = 'DefaultNativeMode'
                             SqlSvcStartupType = 'Automatic'
                             AgtSvcStartupType = 'Automatic'
                             AsSvcStartupType = 'Automatic'
                             IsSvcStartupType = 'Automatic'
-                            RsSvcStartupType = 'Automatic'
                             SqlTempDbFileCount = 2
                             SqlTempDbFileSize = 128
                             SqlTempDbFileGrowth = 128
@@ -2531,6 +2545,16 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         if ($MockSqlMajorVersion -in ('13', '14', '15'))
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SSMS,ADV_SSMS', ''
+                        }
+
+                        if ($MockSqlMajorVersion -in ('13'))
+                        {
+                            $mockSetTargetResourceParameters.RSInstallMode = 'DefaultNativeMode'
+                            $mockSetTargetResourceParameters.RsSvcStartupType = 'Automatic'
+                        }
+                        elseif ($MockSqlMajorVersion -in ('14', '15'))
+                        {
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
                         }
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
@@ -2546,6 +2570,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
         Context 'When installing the database engine and disabling the Named Pipes protocol' {
             BeforeAll {
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return 15
+                }
+
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
                         Features = ''
@@ -2587,6 +2615,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
         Context 'When installing the database engine and disabling the TCP protocol' {
             BeforeAll {
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return 15
+                }
+
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
                         Features = ''
@@ -2628,6 +2660,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
         Context 'When installing the database engine forcing to use english language in media' {
             BeforeAll {
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return 15
+                }
+
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
                         Features = ''
@@ -2669,6 +2705,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
         Context 'When installing using a skip rule' {
             BeforeAll {
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return 15
+                }
+
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
                         Features = ''
@@ -2710,6 +2750,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
         Context 'When installing using multiple skip rules' {
             BeforeAll {
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return 15
+                }
+
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
                         Features = ''
@@ -2756,6 +2800,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
     Context 'When setup process fails with an exit code' {
         BeforeAll {
+            Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                return 15
+            }
+
             Mock -CommandName Get-TargetResource -MockWith {
                 return @{
                     Features = ''
@@ -2952,6 +3000,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
     # For testing AddNode action
     Context 'When action is set to ''AddNode''' {
         BeforeAll {
+            Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                return 15
+            }
+
             Mock -CommandName Get-TargetResource -MockWith {
                 return @{
                     Features = ''
@@ -2996,6 +3048,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
     Context 'When action is set to ''InstallFailoverCluster''' {
         BeforeAll {
+            Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                return 15
+            }
+
             # Cluster shared volumes will be tested and mocked later on.
             Mock -CommandName Get-CimInstance -MockWith {
                 return $null
@@ -3630,6 +3686,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
     Context 'When action is set to ''PrepareFailoverCluster''' {
         BeforeAll {
+            Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                return 15
+            }
+
             Mock -CommandName Get-TargetResource -MockWith {
                 return @{
                     Features = ''
@@ -3711,6 +3771,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
     Context 'When action is set to ''CompleteFailoverCluster''' {
         BeforeAll {
+            Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                return 15
+            }
+
             # Cluster shared volumes will be tested and mocked later on.
             Mock -CommandName Get-CimInstance -MockWith {
                 return $null
