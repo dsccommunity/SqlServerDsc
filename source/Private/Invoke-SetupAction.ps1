@@ -1672,8 +1672,10 @@ function Invoke-SetupAction
 
     if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
     {
+        $expandedMediaPath = [System.Environment]::ExpandEnvironmentVariables($MediaPath)
+
         $startProcessParameters = @{
-            FilePath     = Join-Path -Path $MediaPath -ChildPath 'setup.exe'
+            FilePath     = Join-Path -Path $expandedMediaPath -ChildPath 'setup.exe'
             ArgumentList = $setupArgument
             Timeout      = $Timeout
         }
