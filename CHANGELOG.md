@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Now able to use dbatools as one of the preferred modules.
 - Gitversion no longer evaluates bumping major version using the word "major".
 - Update private command:
   - `Assert-SetupActionProperties` was changed to throw
@@ -38,11 +39,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlSetup
   - Update to support checking non-supported features using the command
     `SqlDscIsSupportedFeature` ([issue #1872](https://github.com/dsccommunity/SqlServerDsc/issues/1872)).
-
-### Changed
-
-- SqlServerDsc
-  - Now able to use dbatools as one of the preferred modules.
 
 ## [16.2.0] - 2023-04-10
 
