@@ -13,28 +13,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- SqlServerDsc
-  - New public commands:
-    - `Disconnect-SqlDscDatabaseEngine` - Disconnects from a SQL Server instance
-      that was previously connected to using `Connect-SqlDscDatabaseEngine`.
-    - `Test-SqlDscIsSupportedFeature` - Evaluates if a feature is supported by a specific
-      Microsoft SQL Server major version. _This command must be extended with_
-      _a full list of when features were added and removed in each major_
-      _version to fully work_.
-  - New private commands:
-    - `ConvertTo-RedactedText` - Used to redact sensitive information from
-      text that then can be used in console output like verbose messages.
-    - `Get-FileVersionInformation` - Returns the version information
-      for a file.
-    - `Assert-Feature` - Throws an exception if a feature is not supported
-      for a specific Microsoft SQL Server major version.
+- New public commands:
+  - `Disconnect-SqlDscDatabaseEngine` - Disconnects from a SQL Server instance
+    that was previously connected to using `Connect-SqlDscDatabaseEngine`.
+  - `Test-SqlDscIsSupportedFeature` - Evaluates if a feature is supported by a specific
+    Microsoft SQL Server major version. _This command must be extended with_
+    _a full list of when features were added and removed in each major_
+    _version to fully work_.
+- New private commands:
+  - `ConvertTo-RedactedText` - Used to redact sensitive information from
+    text that then can be used in console output like verbose messages.
+  - `Get-FileVersionInformation` - Returns the version information
+    for a file.
+  - `Assert-Feature` - Throws an exception if a feature is not supported
+    for a specific Microsoft SQL Server major version.
 
 ### Changed
 
-- Private functions:
+- Gitversion no longer evaluates bumping major version using the word "major".
+- Update private command:
   - `Assert-SetupActionProperties` was changed to throw
-    an exception when a feature is not supported (uses `Assert-Feature`).
-    The private function indirectly used by the setup action commands.
+    an exception when a feature is not supported (calls `Assert-Feature`).
+    The private command is indirectly used by the setup action commands.
 - SqlSetup
   - Update to support checking non-supported features using the command
     `SqlDscIsSupportedFeature` ([issue #1872](https://github.com/dsccommunity/SqlServerDsc/issues/1872)).
