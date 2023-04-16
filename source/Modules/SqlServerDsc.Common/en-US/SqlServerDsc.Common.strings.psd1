@@ -44,4 +44,5 @@ ConvertFrom-StringData @'
     FailedToLoadAssembly = Failed to load the assembly '{0}'. (SQLCOMMON0069)
     FailedToObtainServerInstance = Failed to obtain a SQL Server instance with name '{0}' on server '{1}'. Ensure the SQL Server instance exists on the server and that the 'SQLServer' module references a version of the 'Microsoft.SqlServer.Management.Smo.Wmi' library that supports the version of the SQL Server instance. (SQLCOMMON0070)
     DatabaseEngineInstanceNotOnline = The SQL instance '{0}' was expected to have the status 'Online', but had status '{1}'. (SQLCOMMON0071)
+    WaitForDatabaseEngineInstanceStatus = The SQL instance status is '{0}' waiting for '{1}'.  (SQLCOMMON0072)"
 '@
