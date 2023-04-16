@@ -38,6 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlSetup
   - Update to support checking non-supported features using the command
     `SqlDscIsSupportedFeature` ([issue #1872](https://github.com/dsccommunity/SqlServerDsc/issues/1872)).
+- Update SqlServerDsc.Common Module:
+  - `Connect-SQL` - Function will now wait for the SMO Status property to be
+    'Online' or throw an exception if time exceeds the statement timeout.
 
 ## [16.2.0] - 2023-04-10
 
