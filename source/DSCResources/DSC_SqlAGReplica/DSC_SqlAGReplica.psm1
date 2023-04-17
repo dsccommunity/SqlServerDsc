@@ -429,7 +429,7 @@ function Set-TargetResource
 
                     if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroupReplica.SeedingMode ) -and ( $sqlModuleName -eq 'SQLServer' ) )
                     {
-                        $availabilityGroup.SeedingMode = $SeedingMode
+                        $availabilityGroupReplica.SeedingMode = $SeedingMode
                         $availabilityGroupReplicaUpdatesRequired = $true
                     }
 
