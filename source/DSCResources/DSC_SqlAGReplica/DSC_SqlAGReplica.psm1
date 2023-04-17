@@ -263,13 +263,13 @@ function Set-TargetResource
         $SeedingMode = 'Manual'
     )
 
-    # Define current version for check compatibility
-    $sqlMajorVersion = $serverObject.Version.Major
-
     Import-SqlDscPreferredModule
 
     # Connect to the instance
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
+
+    # Define current version for check compatibility
+    $sqlMajorVersion = $serverObject.Version.Major
 
     # Get SQL module name
     $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
