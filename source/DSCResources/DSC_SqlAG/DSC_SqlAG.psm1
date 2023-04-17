@@ -6,7 +6,6 @@ Import-Module -Name $script:resourceHelperModulePath
 
 $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
-$Script:sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule) -ListAvailable).Name
 <#
     .SYNOPSIS
         Gets the specified Availability Group.
@@ -45,6 +44,9 @@ function Get-TargetResource
 
     # Connect to the instance
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
+
+    # Get SQL module name
+    $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
 
     # Define current version for check compatibility
     $sqlMajorVersion = $serverObject.Version.Major
@@ -94,7 +96,7 @@ function Get-TargetResource
             $alwaysOnAvailabilityGroupResource.Add('BasicAvailabilityGroup', $availabilityGroup.BasicAvailabilityGroup)
             $alwaysOnAvailabilityGroupResource.Add('DatabaseHealthTrigger', $availabilityGroup.DatabaseHealthTrigger)
             $alwaysOnAvailabilityGroupResource.Add('DtcSupportEnabled', $availabilityGroup.DtcSupportEnabled)
-            if ( $Script:sqlModuleName -eq 'SQLServer' )
+            if ( $sqlModuleName -eq 'SQLServer' )
             {
                 $alwaysOnAvailabilityGroupResource.Add('SeedingMode', $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode)
             }
@@ -259,6 +261,9 @@ function Set-TargetResource
     # Connect to the instance
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
+    # Get SQL module name
+    $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
+
     # Determine if HADR is enabled on the instance. If not, throw an error
     if ( -not $serverObject.IsHadrEnabled )
     {
@@ -350,7 +355,7 @@ function Set-TargetResource
                     $newReplicaParams.Add('ConnectionModeInSecondaryRole', $ConnectionModeInSecondaryRole)
                 }
 
-                if ( ( $sqlMajorVersion -ge 13 ) -and ( $Script:sqlModuleName -eq 'SQLServer' ) )
+                if ( ( $sqlMajorVersion -ge 13 ) -and ( $sqlModuleName -eq 'SQLServer' ) )
                 {
                     $newReplicaParams.Add('SeedingMode', $SeedingMode)
                 }
@@ -515,7 +520,7 @@ function Set-TargetResource
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
                 }
 
-                if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode ) -and ( $Script:sqlModuleName -eq 'SQLServer' ) )
+                if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode ) -and ( $sqlModuleName -eq 'SQLServer' ) )
                 {
                     $availabilityGroup.SeedingMode = $SeedingMode
                     Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
@@ -703,6 +708,9 @@ function Test-TargetResource
     # Define current version for check compatibility
     $sqlMajorVersion = $getTargetResourceResult.Version
 
+    # Get SQL module name
+    $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
+
     switch ($Ensure)
     {
         'Absent'
@@ -742,7 +750,7 @@ function Test-TargetResource
             {
                 $parametersToCheck += 'BasicAvailabilityGroup'
                 $parametersToCheck += 'DatabaseHealthTrigger'
-                if ( $Script:sqlModuleName -eq 'SQLServer' )
+                if ( $sqlModuleName -eq 'SQLServer' )
                 {
                     $parametersToCheck += 'SeedingMode'
                 }

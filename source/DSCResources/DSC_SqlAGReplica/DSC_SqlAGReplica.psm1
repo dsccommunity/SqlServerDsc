@@ -6,7 +6,6 @@ Import-Module -Name $script:resourceHelperModulePath
 
 $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
-$Script:sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule) -ListAvailable).Name
 <#
     .SYNOPSIS
         Gets the specified Availability Group Replica from the specified Availability Group.
@@ -57,6 +56,9 @@ function Get-TargetResource
     # Connect to the instance
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
+    # Get SQL module name
+    $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
+
     # Is this node actively hosting the SQL instance?
     $isActiveNode = Test-ActiveNode -ServerObject $serverObject
 
@@ -87,7 +89,7 @@ function Get-TargetResource
         EndpointHostName              = $serverObject.NetName
     }
 
-    if ( ( $sqlMajorVersion -ge 13 ) -and ( $Script:sqlModuleName -eq 'SQLServer' ) )
+    if ( ( $sqlMajorVersion -ge 13 ) -and ( $sqlModuleName -eq 'SQLServer' ) )
     {
         $alwaysOnAvailabilityGroupReplicaResource.Add('SeedingMode', '')
     }
@@ -113,7 +115,7 @@ function Get-TargetResource
             $alwaysOnAvailabilityGroupReplicaResource.ReadOnlyRoutingConnectionUrl = $availabilityGroupReplica.ReadOnlyRoutingConnectionUrl
             $alwaysOnAvailabilityGroupReplicaResource.ReadOnlyRoutingList = $availabilityGroupReplica.ReadOnlyRoutingList
 
-            if ( ( $sqlMajorVersion -ge 13 ) -and ( $Script:sqlModuleName -eq 'SQLServer' ) )
+            if ( ( $sqlMajorVersion -ge 13 ) -and ( $sqlModuleName -eq 'SQLServer' ) )
             {
                 $alwaysOnAvailabilityGroupReplicaResource.'SeedingMode' = $availabilityGroupReplica.SeedingMode
             }
@@ -269,6 +271,9 @@ function Set-TargetResource
     # Connect to the instance
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
+    # Get SQL module name
+    $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
+
     # Determine if HADR is enabled on the instance. If not, throw an error
     if ( -not $serverObject.IsHadrEnabled )
     {
@@ -422,7 +427,7 @@ function Set-TargetResource
                         $availabilityGroupReplicaUpdatesRequired = $true
                     }
 
-                    if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroupReplica.SeedingMode ) -and ( $Script:sqlModuleName -eq 'SQLServer' ) )
+                    if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroupReplica.SeedingMode ) -and ( $sqlModuleName -eq 'SQLServer' ) )
                     {
                         $availabilityGroup.SeedingMode = $SeedingMode
                         $availabilityGroupReplicaUpdatesRequired = $true
@@ -490,7 +495,7 @@ function Set-TargetResource
                         $newAvailabilityGroupReplicaParams.Add('ReadOnlyRoutingList', $ReadOnlyRoutingList)
                     }
 
-                    if ( ( $sqlMajorVersion -ge 13 ) -and ( $Script:sqlModuleName -eq 'SQLServer' ) )
+                    if ( ( $sqlMajorVersion -ge 13 ) -and ( $sqlModuleName -eq 'SQLServer' ) )
                     {
                         $newAvailabilityGroupReplicaParams.Add('SeedingMode', $SeedingMode)
                     }
@@ -678,6 +683,9 @@ function Test-TargetResource
     # Define current version for check compatibility
     $sqlMajorVersion = $serverObject.Version.Major
 
+    # Get SQL module name
+    $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
+
     $getTargetResourceParameters = @{
         InstanceName          = $InstanceName
         ServerName            = $ServerName
@@ -732,7 +740,7 @@ function Test-TargetResource
                 'ReadOnlyRoutingConnectionUrl',
                 'ReadOnlyRoutingList'
             )
-            if (($sqlMajorVersion -ge 13) -and ( $Script:sqlModuleName -eq 'SQLServer' ) )
+            if (($sqlMajorVersion -ge 13) -and ( $sqlModuleName -eq 'SQLServer' ) )
             {
                 $parametersToCheck += 'SeedingMode'
             }
