@@ -346,6 +346,11 @@ function Set-TargetResource
                     $newReplicaParams.Add('ConnectionModeInSecondaryRole', $ConnectionModeInSecondaryRole)
                 }
 
+                if ($sqlMajorVersion -ge 13)
+                {
+                    $newReplicaParams.Add('SeedingMode', $SeedingMode)
+                }
+
                 # Create the new replica object
                 try
                 {
@@ -378,7 +383,6 @@ function Set-TargetResource
                     $newAvailabilityGroupParams.Add('BasicAvailabilityGroup', $BasicAvailabilityGroup)
                     $newAvailabilityGroupParams.Add('DatabaseHealthTrigger', $DatabaseHealthTrigger)
                     $newAvailabilityGroupParams.Add('DtcSupportEnabled', $DtcSupportEnabled)
-                    $newAvailabilityGroupParams.Add('SeedingMode', $SeedingMode)
                 }
 
                 if ( $FailureConditionLevel )
@@ -510,7 +514,7 @@ function Set-TargetResource
                 if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode ) )
                 {
                     $availabilityGroup.SeedingMode = $SeedingMode
-                    Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
+                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
                 }
             }
         }
