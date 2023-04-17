@@ -5,6 +5,8 @@ Import-Module -Name $script:sqlServerDscHelperModulePath
 Import-Module -Name $script:resourceHelperModulePath
 
 $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
+
+$Script:sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule) -ListAvailable).Name
 <#
     .SYNOPSIS
         Gets the specified Availability Group Replica from the specified Availability Group.
@@ -85,7 +87,7 @@ function Get-TargetResource
         EndpointHostName              = $serverObject.NetName
     }
 
-    if ( $sqlMajorVersion -ge 13 )
+    if ( ( $sqlMajorVersion -ge 13 ) -and ( $Script:sqlModuleName -eq 'SQLServer' ) )
     {
         $alwaysOnAvailabilityGroupReplicaResource.Add('SeedingMode', '')
     }
@@ -111,7 +113,7 @@ function Get-TargetResource
             $alwaysOnAvailabilityGroupReplicaResource.ReadOnlyRoutingConnectionUrl = $availabilityGroupReplica.ReadOnlyRoutingConnectionUrl
             $alwaysOnAvailabilityGroupReplicaResource.ReadOnlyRoutingList = $availabilityGroupReplica.ReadOnlyRoutingList
 
-            if ( $sqlMajorVersion -ge 13 )
+            if ( ( $sqlMajorVersion -ge 13 ) -and ( $Script:sqlModuleName -eq 'SQLServer' ) )
             {
                 $alwaysOnAvailabilityGroupReplicaResource.'SeedingMode' = $availabilityGroupReplica.SeedingMode
             }
@@ -176,7 +178,7 @@ function Get-TargetResource
         Not used in Set-TargetResource.
 
     .PARAMETER SeedingMode
-        Specifies the seeding mode. When creating a replica the default is 'Manual'.
+        Specifies the seeding mode. When creating a replica the default is 'Manual'. Requires SQLServer powershell module.
 #>
 function Set-TargetResource
 {
@@ -420,7 +422,7 @@ function Set-TargetResource
                         $availabilityGroupReplicaUpdatesRequired = $true
                     }
 
-                    if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroupReplica.SeedingMode ) )
+                    if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroupReplica.SeedingMode ) -and ( $Script:sqlModuleName -eq 'SQLServer' ) )
                     {
                         $availabilityGroup.SeedingMode = $SeedingMode
                         $availabilityGroupReplicaUpdatesRequired = $true
@@ -488,7 +490,7 @@ function Set-TargetResource
                         $newAvailabilityGroupReplicaParams.Add('ReadOnlyRoutingList', $ReadOnlyRoutingList)
                     }
 
-                    if ( $sqlMajorVersion -ge 13 )
+                    if ( ( $sqlMajorVersion -ge 13 ) -and ( $Script:sqlModuleName -eq 'SQLServer' ) )
                     {
                         $newAvailabilityGroupReplicaParams.Add('SeedingMode', $SeedingMode)
                     }
@@ -588,7 +590,7 @@ function Set-TargetResource
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
 
     .PARAMETER SeedingMode
-        Specifies the seeding mode. When creating a replica the default is 'Manual'.
+        Specifies the seeding mode. When creating a replica the default is 'Manual'.  Requires SQLServer powershell module.
 #>
 function Test-TargetResource
 {
@@ -730,7 +732,7 @@ function Test-TargetResource
                 'ReadOnlyRoutingConnectionUrl',
                 'ReadOnlyRoutingList'
             )
-            if ($sqlMajorVersion -ge 13)
+            if (($sqlMajorVersion -ge 13) -and ( $Script:sqlModuleName -eq 'SQLServer' ) )
             {
                 $parametersToCheck += 'SeedingMode'
             }

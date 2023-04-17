@@ -6,6 +6,7 @@ Import-Module -Name $script:resourceHelperModulePath
 
 $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
+$Script:sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule) -ListAvailable).Name
 <#
     .SYNOPSIS
         Gets the specified Availability Group.
@@ -93,7 +94,10 @@ function Get-TargetResource
             $alwaysOnAvailabilityGroupResource.Add('BasicAvailabilityGroup', $availabilityGroup.BasicAvailabilityGroup)
             $alwaysOnAvailabilityGroupResource.Add('DatabaseHealthTrigger', $availabilityGroup.DatabaseHealthTrigger)
             $alwaysOnAvailabilityGroupResource.Add('DtcSupportEnabled', $availabilityGroup.DtcSupportEnabled)
-            $alwaysOnAvailabilityGroupResource.Add('SeedingMode', $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode)
+            if ( $Script:sqlModuleName -eq 'SQLServer' )
+            {
+                $alwaysOnAvailabilityGroupResource.Add('SeedingMode', $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode)
+            }
         }
     }
 
@@ -150,7 +154,7 @@ function Get-TargetResource
         Specifies the failover mode. When creating a group the default is 'Manual'.
 
     .PARAMETER SeedingMode
-        Specifies the seeding mode. When creating a group the default is 'Manual'.
+        Specifies the seeding mode. When creating a group the default is 'Manual'.  Requires SQLServer powershell module.
 
     .PARAMETER HealthCheckTimeout
         Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. When creating a group the default is 30,000.
@@ -346,7 +350,7 @@ function Set-TargetResource
                     $newReplicaParams.Add('ConnectionModeInSecondaryRole', $ConnectionModeInSecondaryRole)
                 }
 
-                if ($sqlMajorVersion -ge 13)
+                if ( ( $sqlMajorVersion -ge 13 ) -and ( $Script:sqlModuleName -eq 'SQLServer' ) )
                 {
                     $newReplicaParams.Add('SeedingMode', $SeedingMode)
                 }
@@ -511,7 +515,7 @@ function Set-TargetResource
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
                 }
 
-                if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode ) )
+                if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode ) -and ( $Script:sqlModuleName -eq 'SQLServer' ) )
                 {
                     $availabilityGroup.SeedingMode = $SeedingMode
                     Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
@@ -571,7 +575,7 @@ function Set-TargetResource
         Specifies the failover mode. When creating a group the default is 'Manual'.
 
     .PARAMETER SeedingMode
-        Specifies the seeding mode. When creating a group the default is 'Manual'.
+        Specifies the seeding mode. When creating a group the default is 'Manual'.  Requires SQLServer powershell module.
 
     .PARAMETER HealthCheckTimeout
         Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. When creating a group the default is 30,000.
@@ -738,7 +742,10 @@ function Test-TargetResource
             {
                 $parametersToCheck += 'BasicAvailabilityGroup'
                 $parametersToCheck += 'DatabaseHealthTrigger'
-                $parametersToCheck += 'SeedingMode'
+                if ( $Script:sqlModuleName -eq 'SQLServer' )
+                {
+                    $parametersToCheck += 'SeedingMode'
+                }
             }
 
             if ( $getTargetResourceResult.Ensure -eq 'Present' )
