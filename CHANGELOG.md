@@ -31,10 +31,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Gitversion no longer evaluates bumping major version using the word "major".
-- Update private command:
+- Update private commands:
   - `Assert-SetupActionProperties` was changed to throw
     an exception when a feature is not supported (calls `Assert-Feature`).
     The private command is indirectly used by the setup action commands.
+  - `Invoke-SetupAction` was changed to expand environment variables that
+    is passed as the media path.
 - SqlSetup
   - Update to support checking non-supported features using the command
     `SqlDscIsSupportedFeature` ([issue #1872](https://github.com/dsccommunity/SqlServerDsc/issues/1872)).
