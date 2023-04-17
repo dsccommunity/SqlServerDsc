@@ -50,11 +50,11 @@ function Get-TargetResource
         $script:localizedData.GetAvailabilityGroup -f $Name, $AvailabilityGroupName, $InstanceName
     )
 
-    # Define current version for check compatibility
-    $sqlMajorVersion = $serverObject.Version.Major
-
     # Connect to the instance
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
+
+    # Define current version for check compatibility
+    $sqlMajorVersion = $serverObject.Version.Major
 
     # Get SQL module name
     $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
@@ -680,9 +680,6 @@ function Test-TargetResource
         $SeedingMode = 'Manual'
     )
 
-    # Define current version for check compatibility
-    $sqlMajorVersion = $serverObject.Version.Major
-
     # Get SQL module name
     $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
 
@@ -740,7 +737,7 @@ function Test-TargetResource
                 'ReadOnlyRoutingConnectionUrl',
                 'ReadOnlyRoutingList'
             )
-            if (($sqlMajorVersion -ge 13) -and ( $sqlModuleName -eq 'SQLServer' ) )
+            if ( $getTargetResourceResult.SeedingMode)
             {
                 $parametersToCheck += 'SeedingMode'
             }
