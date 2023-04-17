@@ -11,8 +11,6 @@
         Report Manager:
         http://localhost:80/MyReports
         https://localhost:443/MyReports
-
-        Note: this resource does not currently handle SSL bindings for HTTPS endpoints.
 #>
 Configuration Example
 {
@@ -29,6 +27,7 @@ Configuration Example
             ReportsVirtualDirectory      = 'MyReports'
             ReportServerReservedUrl      = @('http://+:80', 'https://+:443')
             ReportsReservedUrl           = @('http://+:80', 'https://+:443')
+            HttpsCertificateThumbprint   = '9BA056B7A32842056D5B09C77F23EE0D13604D80'
         }
     }
 }

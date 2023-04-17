@@ -1203,38 +1203,15 @@ function Restart-ReportingServicesService
     (
         [Parameter()]
         [System.String]
-        $InstanceName = 'MSSQLSERVER',
+        $ServiceName = 'SQLServerReportingServices',
 
         [Parameter()]
         [System.UInt16]
         $WaitTime = 0
     )
 
-    if ($InstanceName -eq 'SSRS')
-    {
-        # Check if we're dealing with SSRS 2017 or SQL2019
-        $ServiceName = 'SQLServerReportingServices'
-
-        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
-        $reportingServicesService = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
-    }
-
-    if ($null -eq $reportingServicesService)
-    {
-        $ServiceName = 'ReportServer'
-
-        <#
-            Pre-2017 SSRS support multiple instances, check if we're dealing
-            with a named instance.
-        #>
-        if (-not ($InstanceName -eq 'MSSQLSERVER'))
-        {
-            $ServiceName += '${0}' -f $InstanceName
-        }
-
-        Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
-        $reportingServicesService = Get-Service -Name $ServiceName
-    }
+    Write-Verbose -Message ($script:localizedData.GetServiceInformation -f $ServiceName) -Verbose
+    $reportingServicesService = Get-Service -Name $ServiceName
 
     <#
         Get all dependent services that are running.

@@ -1,14 +1,14 @@
 # Description
 
 The `SqlRS` DSC resource initializes and configures SQL Reporting Services
-server.
+server and Power BI Report Server.
 
 ## Requirements
 
 * Target machine must be running Windows Server 2012 or later.
-* Target machine must be running SQL Server Reporting Services 20012 or later.
+* Target machine must be running SQL Server Reporting Services 2017 or later.
 * To use parameter `UseSSL` target machine must be running SQL Server Reporting
-  Services 2012 or later.
+  Services 2017 or later.
 * If `PsDscRunAsCredential` common parameter is used to run the resource, the
   specified credential must have permissions to connect to the SQL Server instance
   specified in `DatabaseServerName` and `DatabaseInstanceName`, and have permission
@@ -31,10 +31,6 @@ server.
   and [Configure SQL Server Database Engine for encrypting connections](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/configure-sql-server-encryption?view=sql-server-ver16).
 
 ## Known issues
-
-* This resource does not currently have full SSL support, please see
-  [issue #587](https://github.com/dsccommunity/SqlServerDsc/issues/587) for more
-  information.
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlRS).
 

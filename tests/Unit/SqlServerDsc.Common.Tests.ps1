@@ -2842,7 +2842,7 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
         }
 
         It 'Should restart the service and dependent service' {
-            { Restart-ReportingServicesService -InstanceName 'MSSQLSERVER' } | Should -Not -Throw
+            { Restart-ReportingServicesService -ServiceName $mockServiceName } | Should -Not -Throw
 
             Should -Invoke -CommandName Get-Service -ParameterFilter {
                 $Name -eq $mockServiceName
@@ -2867,7 +2867,7 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
         }
 
         It 'Should restart the service and dependent service' {
-            { Restart-ReportingServicesService -InstanceName 'SSRS' } | Should -Not -Throw
+            { Restart-ReportingServicesService } | Should -Not -Throw
 
             Should -Invoke -CommandName Get-Service -ParameterFilter {
                 $Name -eq $mockServiceName
@@ -2892,7 +2892,32 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
         }
 
         It 'Should restart the service and dependent service' {
-            { Restart-ReportingServicesService -InstanceName 'TEST' } | Should -Not -Throw
+            { Restart-ReportingServicesService -ServiceName $mockServiceName } | Should -Not -Throw
+
+            Should -Invoke -CommandName Get-Service -ParameterFilter {
+                $Name -eq $mockServiceName
+            } -Scope It -Exactly -Times 1
+            Should -Invoke -CommandName Stop-Service -Scope It -Exactly -Times 1
+            Should -Invoke -CommandName Start-Service -Scope It -Exactly -Times 2
+        }
+    }
+
+    Context 'When restarting Power BI Report Server' {
+        BeforeAll {
+            $mockServiceName = 'PowerBIReportServer'
+            $mockDependedServiceName = 'DependentService'
+
+            $mockDynamicServiceName = $mockServiceName
+            $mockDynamicDependedServiceName = $mockDependedServiceName
+            $mockDynamicServiceDisplayName = 'Reporting Services (TEST)'
+
+            Mock -CommandName Stop-Service
+            Mock -CommandName Start-Service
+            Mock -CommandName Get-Service -MockWith $mockGetService
+        }
+
+        It 'Should restart the service and dependent service' {
+            { Restart-ReportingServicesService -ServiceName $mockServiceName } | Should -Not -Throw
 
             Should -Invoke -CommandName Get-Service -ParameterFilter {
                 $Name -eq $mockServiceName
@@ -2918,7 +2943,7 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
         }
 
         It 'Should restart the service and dependent service' {
-            { Restart-ReportingServicesService -InstanceName 'TEST' -WaitTime 1 } | Should -Not -Throw
+            { Restart-ReportingServicesService -ServiceName $mockServiceName -WaitTime 1 } | Should -Not -Throw
 
             Should -Invoke -CommandName Get-Service -ParameterFilter {
                 $Name -eq $mockServiceName
