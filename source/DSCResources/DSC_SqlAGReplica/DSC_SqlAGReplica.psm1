@@ -180,7 +180,8 @@ function Get-TargetResource
         Not used in Set-TargetResource.
 
     .PARAMETER SeedingMode
-        Specifies the seeding mode. When creating a replica the default is 'Manual'. Requires SQLServer powershell module.
+        Specifies the seeding mode. When creating a replica the default is 'Manual'.
+        This parameter can only be used when the module SqlServer is installed.
 #>
 function Set-TargetResource
 {
@@ -595,7 +596,8 @@ function Set-TargetResource
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
 
     .PARAMETER SeedingMode
-        Specifies the seeding mode. When creating a replica the default is 'Manual'.  Requires SQLServer powershell module.
+        Specifies the seeding mode. When creating a replica the default is 'Manual'.
+        This parameter can only be used when the module SqlServer is installed.
 #>
 function Test-TargetResource
 {

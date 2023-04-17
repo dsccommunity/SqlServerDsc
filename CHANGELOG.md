@@ -21,12 +21,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `ConvertTo-RedactedText` - Used to redact sensitive information from
       text that then can be used in console output like verbose messages.
 - SqlAg
-  - Added new parameter `SeedingMode` that will set the SeedingMode for the SQL
-    Server 2016 and higher. Works only with the SQLServer PowerShell module.
+  - Added optional parameter `SeedingMode` that will set the SeedingMode for the
+    SQL Server 2016 and higher. This parameter can only be used together with the
+    module _SqlServer_ installed (tested  v21.0.17099). The parameter will be
+    ignored if SQLPS module will be used.
 - SqlAgReplica
-  - Added new parameter `SeedingMode` that will set the SeedingMode for the SQL
-    Server 2016 and higher ([issue #487](https://github.com/dsccommunity/SqlServerDsc/issues/487)).
-     Works only with the SQLServer PowerShell module.
+  - Added optional parameter `SeedingMode` that will set the SeedingMode for the
+    SQL Server 2016 and higher ([issue #487](https://github.com/dsccommunity/SqlServerDsc/issues/487)).
+    This parameter can only be used together with the module _SqlServer_ installed
+    (tested v21.0.17099). The parameter will be ignored if SQLPS module will be
+    used.
 
 ## [16.2.0] - 2023-04-10
 

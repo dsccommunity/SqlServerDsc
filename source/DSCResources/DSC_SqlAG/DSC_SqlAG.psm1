@@ -156,7 +156,8 @@ function Get-TargetResource
         Specifies the failover mode. When creating a group the default is 'Manual'.
 
     .PARAMETER SeedingMode
-        Specifies the seeding mode. When creating a group the default is 'Manual'.  Requires SQLServer powershell module.
+        Specifies the seeding mode. When creating a group the default is 'Manual'.
+        This parameter can only be used when the module SqlServer is installed.
 
     .PARAMETER HealthCheckTimeout
         Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. When creating a group the default is 30,000.
@@ -580,7 +581,8 @@ function Set-TargetResource
         Specifies the failover mode. When creating a group the default is 'Manual'.
 
     .PARAMETER SeedingMode
-        Specifies the seeding mode. When creating a group the default is 'Manual'.  Requires SQLServer powershell module.
+        Specifies the seeding mode. When creating a group the default is 'Manual'.
+        This parameter can only be used when the module SqlServer is installed.
 
     .PARAMETER HealthCheckTimeout
         Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. When creating a group the default is 30,000.
