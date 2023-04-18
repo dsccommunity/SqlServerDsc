@@ -438,7 +438,6 @@ function Set-TargetResource
                     {
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
                     }
-
                 }
                 else
                 {
@@ -681,9 +680,6 @@ function Test-TargetResource
         [System.String]
         $SeedingMode = 'Manual'
     )
-
-    # Get SQL module name
-    $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
 
     $getTargetResourceParameters = @{
         InstanceName          = $InstanceName
