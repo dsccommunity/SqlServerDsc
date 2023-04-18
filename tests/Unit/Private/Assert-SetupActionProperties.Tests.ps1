@@ -392,9 +392,21 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             MockMissingParameterName = 'AzureServicePrincipalSecret'
         }
      ) {
+        BeforeAll {
+            Mock -CommandName Assert-Feature
+
+            # Required mock for mocking Assert-Feature above.
+            Mock -CommandName Get-FileVersionInformation -MockWith {
+                return @{
+                    ProductVersion = 16
+                }
+            }
+        }
+
         It 'Should throw the correct error' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
+                    $MockParameters.MediaPath = $TestDrive
                     $MockParameters.Features = @(
                         'SQLENGINE'
                         'AZUREEXTENSION'
@@ -499,10 +511,22 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             MockMissingParameterName = 'SqlSysAdminAccounts'
         }
     ) {
+        BeforeAll {
+            Mock -CommandName Assert-Feature
+
+            # Required mock for mocking Assert-Feature above.
+            Mock -CommandName Get-FileVersionInformation -MockWith {
+                return @{
+                    ProductVersion = 16
+                }
+            }
+        }
+
         It 'Should throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 {
                     Assert-SetupActionProperties -Property @{
+                        MediaPath = $TestDrive
                         Features = $MockFeature
                     } -SetupAction $MockSetupAction
                 } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line

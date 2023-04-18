@@ -39,6 +39,16 @@ function Assert-SetupActionProperties
         $SetupAction
     )
 
+    if ($Property.ContainsKey('Features'))
+    {
+        $setupExecutableFileVersion = $Property.MediaPath |
+            Join-Path -ChildPath 'setup.exe' |
+            Get-FileVersionInformation
+
+        $Property.Features |
+            Assert-Feature -ProductVersion $setupExecutableFileVersion.ProductVersion
+    }
+
     # If one of the properties PBStartPortRange and PBEndPortRange are specified, then both must be specified.
     $assertParameters = @('PBStartPortRange', 'PBEndPortRange')
 
