@@ -1120,6 +1120,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     for a file.
   - `Assert-Feature` - Throws an exception if a feature is not supported
     for a specific Microsoft SQL Server major version.
+  - `Get-RegistryPropertyValue` - Returns the value of the provided property
+    at the provided registry path.
 - SqlServerDsc.Common
   - `Connect-SQL`.
     - Add new parameter `Encrypt`.
