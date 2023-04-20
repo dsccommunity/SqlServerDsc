@@ -2422,6 +2422,10 @@ function Get-ServiceAccountParameters
 
     .PARAMETER StartMode
         The StartMode to convert.
+
+    .NOTES
+        This function can be removed when it is no longer needed or replace by
+        private function ConvertFrom-ServiceStartupMode.
 #>
 function ConvertTo-StartupType
 {
