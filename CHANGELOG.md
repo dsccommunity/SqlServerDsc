@@ -33,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     at the provided registry path.
   - `ConvertFrom-ServiceStartMode` - Converts the specified start mode to
     the equivalent normalized startup type.
+  - `Get-InstanceId` - Returns the SQL Server instance id of the specified
+    service type and instance name.
 
 ### Changed
 
