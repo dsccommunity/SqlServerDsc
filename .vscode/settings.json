@@ -69,7 +69,8 @@
         "DynamicAlloc",
         "GetxPDTVariable",
         "Dbcc",
-        "creplace"
+        "creplace",
+        "SSMS"
     ],
     "cSpell.ignorePaths": [
         ".git"
