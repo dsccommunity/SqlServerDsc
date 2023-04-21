@@ -85,16 +85,11 @@ function Import-SqlDscPreferredModule
 
             Push-Location
 
-            Write-Verbose -Message 'DEBUG1' -Verbose
-            Write-Verbose -Message (Measure-DbatoolsImport | Out-String) -Verbose
             <#
                 SQLPS has unapproved verbs, disable checking to ignore Warnings.
                 Suppressing verbose so all cmdlet is not listed.
             #>
             $importedModule = Import-Module -Name $availableModuleName -DisableNameChecking -Verbose:$false -Force:$Force -Global -PassThru -ErrorAction 'Stop'
-
-            Write-Verbose -Message 'DEBUG2' -Verbose
-            Write-Verbose -Message (Measure-DbatoolsImport | Out-String) -Verbose
 
             <#
                 SQLPS returns two entries, one with module type 'Script' and another with module type 'Manifest'.
