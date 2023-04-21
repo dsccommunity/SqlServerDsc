@@ -212,7 +212,7 @@ $SqlAgentServiceSecondaryCredential = New-Object `
     -ArgumentList @($ConfigurationData.AllNodes.SqlAgentServiceSecondaryAccountUserName,
         (ConvertTo-SecureString -String $ConfigurationData.AllNodes.SqlAgentServiceSecondaryAccountPassword -AsPlainText -Force))
 
-Write-Verbose -Message ('Current set preferred module name (SMODefaultModuleName): {0}' -f ($env:SMODefaultModuleName | Out-String))
+Write-Verbose -Message ('Current set preferred module name (SMODefaultModuleName): {0}' -f ($env:SMODefaultModuleName | Out-String)) -Verbose
 
 <#
     .SYNOPSIS
