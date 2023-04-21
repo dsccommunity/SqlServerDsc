@@ -190,6 +190,8 @@ stages:
               Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
               Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
               Remove-Module -Name CommonTestHelper
+              [System.Environment]::SetEnvironmentVariable('SMODefaultModuleName', 'dbatools', [System.EnvironmentVariableTarget]::Machine)
+              $env:SMODefaultModuleName = 'dbatools'
             name: cleanCIWorker
             displayName: 'Clean CI worker'
           - powershell: |
