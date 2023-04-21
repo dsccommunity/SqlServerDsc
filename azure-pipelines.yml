@@ -172,6 +172,8 @@ stages:
         pool:
           vmImage: $(JOB_VMIMAGE)
         timeoutInMinutes: 0
+        variables:
+          SMODefaultModuleName: 'dbatools'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
