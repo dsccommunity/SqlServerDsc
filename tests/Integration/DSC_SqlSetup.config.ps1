@@ -369,7 +369,6 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
 
             GetScript  = {
                 $moduleVersion = $null
-                $sqlServerModule = $null
 
                 # Fetch the newest PowerShellGet version.
                 $powerShellGetModule = Get-Module -Name 'PowerShellGet' -ListAvailable |
@@ -385,6 +384,15 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                     Result = $moduleVersion
                 }
             }
+        }
+
+        Environment 'SetDbatoolsAsDefault'
+        {
+            Name = 'SMODefaultModuleName'
+            Value = 'dbatools'
+            Ensure = 'Present'
+            Path = $false
+            Target = @('Process', 'Machine')
         }
 
         Script 'InstallSqlServerModule'
