@@ -37,7 +37,7 @@ else
                 # Features CONN, BC, SDK, SNAC_SDK, DREPLAY_CLT, DREPLAY_CTLR are no longer supported in 2022.
                 SupportedFeatures               = 'SQLENGINE,REPLICATION'
 
-                SqlServerModuleVersion          = '2.0.0-preview6'
+                SqlServerModuleVersion          = '2.0.0-preview7'
             }
         }
 
@@ -54,7 +54,7 @@ else
 
                 SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
-                SqlServerModuleVersion          = '2.0.0-preview6'
+                SqlServerModuleVersion          = '2.0.0-preview7'
             }
         }
 
@@ -67,7 +67,7 @@ else
 
                 SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
-                SqlServerModuleVersion          = '2.0.0-preview6'
+                SqlServerModuleVersion          = '2.0.0-preview7'
             }
         }
 
@@ -80,7 +80,7 @@ else
 
                 SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
-                SqlServerModuleVersion          = '2.0.0-preview6'
+                SqlServerModuleVersion          = '2.0.0-preview7'
             }
         }
     }
@@ -424,6 +424,8 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                     }
 
                 Write-Verbose -Message ('Installed dbatools module version {0}' -f $installedModule.Version)
+
+                Write-Verbose -Message ('Current set preferred module name (SMODefaultModuleName): {0}' -f ($env:SMODefaultModuleName | Out-String))
 
                 Set-DbatoolsConfig -Name Import.EncryptionMessageCheck -Value $false -PassThru |
                     Register-DbatoolsConfig -Verbose
