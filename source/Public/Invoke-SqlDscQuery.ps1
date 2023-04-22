@@ -191,6 +191,8 @@ function Invoke-SqlDscQuery
             $InstanceName = $ServerObject.InstanceName
         }
 
+        $redactedQuery = $Query
+
         if ($PSBoundParameters.ContainsKey('RedactText'))
         {
             $redactedQuery = ConvertTo-RedactedText -Text $Query -RedactPhrase $RedactText
