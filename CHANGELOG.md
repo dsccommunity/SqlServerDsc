@@ -52,6 +52,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ([issue #1917](https://github.com/dsccommunity/SqlServerDsc/issues/1917)).
   - The parameter `Encrypt` has changed so that `Mandatory` or `Strict`
     will turn on encryption when connecting to the database instance.
+- `Invoke-SqlDscQuery`
+  - Now shows the correct instance name when called using a server object
+    ([issue #1918](https://github.com/dsccommunity/SqlServerDsc/issues/1918)).
 
 ## [16.2.0] - 2023-04-10
 
