@@ -80,7 +80,11 @@ function Connect-SqlDscDatabaseEngine
         [Parameter()]
         [ValidateNotNull()]
         [System.Int32]
-        $StatementTimeout = 600
+        $StatementTimeout = 600,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Encrypt
     )
 
     # Call the private function.

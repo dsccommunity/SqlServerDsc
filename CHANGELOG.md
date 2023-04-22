@@ -27,6 +27,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     for a file.
   - `Assert-Feature` - Throws an exception if a feature is not supported
     for a specific Microsoft SQL Server major version.
+- SqlServerDsc.Common
+  - `Connect-SQL`.
+    - Add new parameter `Encrypt`.
+- `Connect-SqlDscDatabaseEngine`
+  - Add new parameter `Encrypt`.
+- `Invoke-SqlDscQuery`
+  - Add new parameter `Encrypt`.
 
 ### Changed
 
@@ -40,6 +47,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlSetup
   - Update to support checking non-supported features using the command
     `SqlDscIsSupportedFeature` ([issue #1872](https://github.com/dsccommunity/SqlServerDsc/issues/1872)).
+- SqlRS
+  - Now uses the command `Invoke-SqlDscQuery` instead of `Invoke-SqlCmd`
+   ([issue #1917](https://github.com/dsccommunity/SqlServerDsc/issues/1917)).
+  - The parameter `Encrypt` has changed so that `Mandatory` or `Strict`
+    will turn on encryption when connecting to the database instance.
 
 ## [16.2.0] - 2023-04-10
 

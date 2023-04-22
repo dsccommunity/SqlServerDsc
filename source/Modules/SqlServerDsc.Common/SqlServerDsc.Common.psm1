@@ -493,7 +493,11 @@ function Connect-SQL
         [Parameter()]
         [ValidateNotNull()]
         [System.Int32]
-        $StatementTimeout = 600
+        $StatementTimeout = 600,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Encrypt
     )
 
     Import-SqlDscPreferredModule
@@ -512,6 +516,11 @@ function Connect-SQL
     $sqlConnectionContext.ServerInstance = $databaseEngineInstance
     $sqlConnectionContext.StatementTimeout = $StatementTimeout
     $sqlConnectionContext.ApplicationName = 'SqlServerDsc'
+
+    if ($Encrypt.IsPresent)
+    {
+        $sqlConnectionContext.EncryptConnection = $true
+    }
 
     if ($PSCmdlet.ParameterSetName -eq 'SqlServer')
     {

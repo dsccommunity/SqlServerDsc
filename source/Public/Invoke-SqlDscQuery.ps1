@@ -141,6 +141,10 @@ function Invoke-SqlDscQuery
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
+        $Encrypt,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
         $Force
     )
 
@@ -161,6 +165,11 @@ function Invoke-SqlDscQuery
                 Verbose          = $VerbosePreference
             }
 
+            if ($Encrypt.IsPresent)
+            {
+                $connectSqlDscDatabaseEngineParameters.Encrypt = $true
+            }
+
             if ($LoginType -ne 'Integrated')
             {
                 $connectSqlDscDatabaseEngineParameters['LoginType'] = $LoginType
@@ -172,6 +181,11 @@ function Invoke-SqlDscQuery
             }
 
             $ServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+        }
+
+        if ($PSCmdlet.ParameterSetName -eq 'ByServerObject')
+        {
+            $InstanceName = $ServerObject.InstanceName
         }
 
         if ($PSBoundParameters.ContainsKey('RedactText'))

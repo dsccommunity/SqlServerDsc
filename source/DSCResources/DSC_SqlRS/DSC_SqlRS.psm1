@@ -20,13 +20,8 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         Name of the SQL Server instance to host the Reporting Service database.
 
     .PARAMETER Encrypt
-        Specifies how encryption should be enforced when using command `Invoke-SqlCmd`.
-        When not specified, the default value is `Mandatory`.
-
-        This value maps to the Encrypt property SqlConnectionEncryptOption
-        on the SqlConnection object of the Microsoft.Data.SqlClient driver.
-
-        This parameter can only be used when the module SqlServer v22.x.x is installed.
+        Specifies how encryption should be enforced. There are currently no
+        difference between using `Mandatory` or `Strict`.
 #>
 function Get-TargetResource
 {
@@ -186,13 +181,8 @@ function Get-TargetResource
         will not be restarted, even after initialization.
 
     .PARAMETER Encrypt
-        Specifies how encryption should be enforced when using command `Invoke-SqlCmd`.
-        When not specified, the default value is `Mandatory`.
-
-        This value maps to the Encrypt property SqlConnectionEncryptOption
-        on the SqlConnection object of the Microsoft.Data.SqlClient driver.
-
-        This parameter can only be used when the module SqlServer v22.x.x is installed.
+        Specifies how encryption should be enforced. There are currently no
+        difference between using `Mandatory` or `Strict`.
 
     .NOTES
         To find out the parameter names for the methods in the class
@@ -329,15 +319,6 @@ function Set-TargetResource
             $reportingServicesDatabaseName = "ReportServer`$$InstanceName"
         }
 
-        if ( $DatabaseInstanceName -eq 'MSSQLSERVER' )
-        {
-            $reportingServicesConnection = $DatabaseServerName
-        }
-        else
-        {
-            $reportingServicesConnection = "$DatabaseServerName\$DatabaseInstanceName"
-        }
-
         $wmiOperatingSystem = Get-CimInstance -ClassName Win32_OperatingSystem -Namespace 'root/cimv2' -ErrorAction SilentlyContinue
         if ( $null -eq $wmiOperatingSystem )
         {
@@ -466,31 +447,33 @@ function Set-TargetResource
 
             $reportingServicesDatabaseRightsScript = Invoke-RsCimMethod @invokeRsCimMethodParameters
 
-            <#
-                Import-SqlDscPreferredModule cmdlet will import SQLPS (SQL 2012/14) or SqlServer module (SQL 2016),
-                and if importing SQLPS, change directory back to the original one, since SQLPS changes the
-                current directory to SQLSERVER:\ on import.
-            #>
             Import-SqlDscPreferredModule
 
-            $invokeSqlCmdParameters = @{
-                ServerInstance = $reportingServicesConnection
+            $invokeSqlDscQueryParameters = @{
+                ServerName   = $DatabaseServerName
+                InstanceName = $DatabaseInstanceName
+                Verbose      = $VerbosePreference
+                ErrorAction  = 'Stop'
             }
 
-            if ($PSBoundParameters.ContainsKey('Encrypt'))
+            if ($PSBoundParameters.ContainsKey('Encrypt') -and $Encrypt -ne 'Optional')
             {
-                $commandInvokeSqlCmd = Get-Command -Name 'Invoke-SqlCmd'
-
-                if ($null -ne $commandInvokeSqlCmd -and $commandInvokeSqlCmd.Parameters.Keys -contains 'Encrypt')
-                {
-                    $invokeSqlCmdParameters.Encrypt = $Encrypt
-                }
+                $invokeSqlDscQueryParameters.Encrypt = $true
             }
 
-            Invoke-SqlCmd @invokeSqlCmdParameters -Query $reportingServicesDatabaseScript.Script
-            Invoke-SqlCmd @invokeSqlCmdParameters -Query $reportingServicesDatabaseRightsScript.Script
+            Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseScript.Script
+            Invoke-SqlDscQuery @invokeSqlDscQueryParameters -Query $reportingServicesDatabaseRightsScript.Script
 
             Write-Verbose -Message "Set database connection on $DatabaseServerName\$DatabaseInstanceName to database '$reportingServicesDatabaseName'."
+
+            if ( $DatabaseInstanceName -eq 'MSSQLSERVER' )
+            {
+                $reportingServicesConnection = $DatabaseServerName
+            }
+            else
+            {
+                $reportingServicesConnection = "$DatabaseServerName\$DatabaseInstanceName"
+            }
 
             $invokeRsCimMethodParameters = @{
                 CimInstance = $reportingServicesData.Configuration
@@ -863,13 +846,8 @@ function Set-TargetResource
         will not be restarted, even after initialization.
 
     .PARAMETER Encrypt
-        Specifies how encryption should be enforced when using command `Invoke-SqlCmd`.
-        When not specified, the default value is `Mandatory`.
-
-        This value maps to the Encrypt property SqlConnectionEncryptOption
-        on the SqlConnection object of the Microsoft.Data.SqlClient driver.
-
-        This parameter can only be used when the module SqlServer v22.x.x is installed.
+        Specifies how encryption should be enforced. There are currently no
+        difference between using `Mandatory` or `Strict`.
 #>
 function Test-TargetResource
 {
