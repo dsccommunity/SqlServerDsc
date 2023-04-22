@@ -42,6 +42,9 @@
         are written to the console. Strings will be escaped so they will not
         be interpreted as regular expressions (RegEx).
 
+    .PARAMETER Encrypt
+        Specifies if encryption should be used.
+
     .PARAMETER Force
         Specifies that the query should be executed without any confirmation.
 

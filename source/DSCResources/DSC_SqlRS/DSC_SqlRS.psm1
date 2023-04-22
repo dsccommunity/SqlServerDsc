@@ -452,6 +452,7 @@ function Set-TargetResource
             $invokeSqlDscQueryParameters = @{
                 ServerName   = $DatabaseServerName
                 InstanceName = $DatabaseInstanceName
+                Force        = $true
                 Verbose      = $VerbosePreference
                 ErrorAction  = 'Stop'
             }
