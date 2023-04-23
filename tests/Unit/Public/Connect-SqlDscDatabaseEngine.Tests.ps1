@@ -51,33 +51,65 @@ AfterAll {
 }
 
 Describe 'Connect-SqlDscDatabaseEngine' -Tag 'Public' {
-    BeforeAll {
-        Mock -CommandName Connect-Sql
+    It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
+        @{
+            MockParameterSetName   = 'SqlServer'
+            # cSpell: disable-next
+            MockExpectedParameters = '[-ServerName <string>] [-InstanceName <string>] [-StatementTimeout <int>] [-Encrypt] [<CommonParameters>]'
+        }
+        @{
+            MockParameterSetName   = 'SqlServerWithCredential'
+            # cSpell: disable-next
+            MockExpectedParameters = '-Credential <pscredential> [-ServerName <string>] [-InstanceName <string>] [-LoginType <string>] [-StatementTimeout <int>] [-Encrypt] [<CommonParameters>]'
+        }
+    ) {
+        $result = (Get-Command -Name 'Connect-SqlDscDatabaseEngine').ParameterSets |
+            Where-Object -FilterScript {
+                $_.Name -eq $mockParameterSetName
+            } |
+            Select-Object -Property @(
+                @{
+                    Name       = 'ParameterSetName'
+                    Expression = { $_.Name }
+                },
+                @{
+                    Name       = 'ParameterListAsString'
+                    Expression = { $_.ToString() }
+                }
+            )
 
-        $mockCredentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @(
-            'COMPANY\SqlAdmin',
-            ('dummyPassW0rd' | ConvertTo-SecureString -AsPlainText -Force)
-        )
-
+        $result.ParameterSetName | Should -Be $MockParameterSetName
+        $result.ParameterListAsString | Should -Be $MockExpectedParameters
     }
 
-    It 'Should call the correct mock with the expected parameters' {
-        $mockConnectSqlDscDatabaseEngineParameters = @{
-            ServerName       = 'MyServer'
-            InstanceName     = 'MyInstance'
-            Credential       = $mockCredentials
-            LoginType        = 'WindowsUser'
-            StatementTimeout = 800
+    Context 'When connecting to an instance' {
+        BeforeAll {
+            Mock -CommandName Connect-Sql
+
+            $mockCredentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @(
+                'COMPANY\SqlAdmin',
+                ('dummyPassW0rd' | ConvertTo-SecureString -AsPlainText -Force)
+            )
         }
 
-        Connect-SqlDscDatabaseEngine @mockConnectSqlDscDatabaseEngineParameters
+        It 'Should call the correct mock with the expected parameters' {
+            $mockConnectSqlDscDatabaseEngineParameters = @{
+                ServerName       = 'MyServer'
+                InstanceName     = 'MyInstance'
+                Credential       = $mockCredentials
+                LoginType        = 'WindowsUser'
+                StatementTimeout = 800
+            }
 
-        Should -Invoke -CommandName Connect-Sql -ParameterFilter {
-            $ServerName -eq 'MyServer' -and
-            $InstanceName -eq 'MyInstance' -and
-            $Credential -eq $mockCredentials -and
-            $LoginType -eq 'WindowsUser' -and
-            $StatementTimeout -eq 800
+            Connect-SqlDscDatabaseEngine @mockConnectSqlDscDatabaseEngineParameters
+
+            Should -Invoke -CommandName Connect-Sql -ParameterFilter {
+                $ServerName -eq 'MyServer' -and
+                $InstanceName -eq 'MyInstance' -and
+                $Credential -eq $mockCredentials -and
+                $LoginType -eq 'WindowsUser' -and
+                $StatementTimeout -eq 800
+            }
         }
     }
 }

@@ -2364,6 +2364,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                         Add-Member -MemberType NoteProperty -Name ConnectAsUserPassword -Value '' -PassThru |
                         Add-Member -MemberType NoteProperty -Name ConnectAsUserName -Value '' -PassThru |
                         Add-Member -MemberType NoteProperty -Name StatementTimeout -Value 600 -PassThru |
+                        Add-Member -MemberType NoteProperty -Name EncryptConnection -Value $false -PassThru |
                         Add-Member -MemberType NoteProperty -Name ApplicationName -Value 'SqlServerDsc' -PassThru |
                         Add-Member -MemberType ScriptMethod -Name Disconnect -Value {
                             return $true
@@ -2599,6 +2600,25 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
                         -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
                 }
             }
+        }
+    }
+
+    Context 'When using encryption' {
+        BeforeAll {
+            Mock -CommandName New-Object `
+                -MockWith $mockNewObject_MicrosoftDatabaseEngine `
+                -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
+        }
+
+        It 'Should return the correct service instance' {
+            $mockExpectedDatabaseEngineServer = 'SERVER'
+            $mockExpectedDatabaseEngineInstance = 'SqlInstance'
+
+            $databaseEngineServerObject = Connect-SQL -Encrypt -ServerName $mockExpectedDatabaseEngineServer -InstanceName $mockExpectedDatabaseEngineInstance -ErrorAction 'Stop'
+            $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
+
+            Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It `
+                -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
         }
     }
 

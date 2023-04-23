@@ -55,7 +55,7 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
         @{
             MockParameterSetName   = 'ByServerName'
             # cSpell: disable-next
-            MockExpectedParameters = '-DatabaseName <string> -Query <string> [-ServerName <string>] [-InstanceName <string>] [-Credential <pscredential>] [-LoginType <string>] [-PassThru] [-StatementTimeout <int>] [-RedactText <string[]>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-DatabaseName <string> -Query <string> [-ServerName <string>] [-InstanceName <string>] [-Credential <pscredential>] [-LoginType <string>] [-Encrypt] [-PassThru] [-StatementTimeout <int>] [-RedactText <string[]>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName   = 'ByServerObject'
@@ -106,6 +106,7 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
                 Add-Member -MemberType 'NoteProperty' -Name 'StatementTimeout' -Value 100 -PassThru -Force
 
             $mockServerObject.ConnectionContext = $mockConnectionContext
+            $mockServerObject.InstanceName = 'MockInstance'
         }
 
         BeforeEach {
@@ -199,6 +200,19 @@ Describe 'Invoke-SqlDscQuery' -Tag 'Public' {
 
                 Should -Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -Times 1 -Scope It
                 Should -Invoke -CommandName Disconnect-SqlDscDatabaseEngine -Exactly -Times 1 -Scope It
+            }
+
+            Context 'When calling the command with optional parameter Encrypt' {
+                It 'Should execute the query without throwing and without returning any result' {
+                    $result = Invoke-SqlDscQuery -Encrypt -ServerName 'localhost' -InstanceName 'INSTANCE' -DatabaseName 'MockDatabase' -Query 'select name from sys.databases' -Force
+
+                    $result | Should -BeNullOrEmpty
+
+                    $mockMethodExecuteNonQueryCallCount | Should -Be 1
+
+                    Should -Invoke -CommandName Connect-SqlDscDatabaseEngine -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Disconnect-SqlDscDatabaseEngine -Exactly -Times 1 -Scope It
+                }
             }
         }
     }
