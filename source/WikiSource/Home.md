@@ -45,7 +45,9 @@ Get-DscResource -Module SqlServerDsc
 
 - Familiarity with Powershell DSC Framework
 - Powershell 5.0 or higher
-- SqlServer powershell module (optional)
+- PowerShell module containing SMO assemblies (optional)
+  - For example the SqlServer PowerShell module or the dbatools PowerShell
+    module.
 
 ### Familiarity with Powershell DSC Framework
 
@@ -67,11 +69,23 @@ on Windows 7 SP1, Windows 8.1, Windows Server 2012, and Windows Server 2012 R2.
 These resource might not work on PowerShell 7.x because they depend on
 *SQL Server* modules which only works in PowerShell 5.x.
 
-### SqlServer powershell module (optional)
+### PowerShell module containing SMO assemblies (optional)
 
-Optionally the PowerShell Module [*SqlServer*](https://www.powershellgallery.com/packages/SqlServer)
-can be installed which then will be used instead of the PowerShell module
-*SQLPS* that is installed with SQL Server.
+There are two options, installing the [*SqlServer*](https://www.powershellgallery.com/packages/SqlServer)
+*PowerShell* module or the *dbatools PowerShell* module.
+
+If the *SqlServer* module is present it will be used instead of *SQLPS*
+automatically.
+
+To use the [*dbatools*]((https://www.powershellgallery.com/packages/dbatools))
+module as a replacement for *SQLPS* the environment variable `SMODefaultModuleName`
+must be set to the value `dbatools`. This environment variable can be set
+machine-wide, or at minimum set for each user that runs DSC resources, on
+the target node. Make sure you comply with any license terms that is part
+of dbatools.
+
+>**NOTE:** It is also possible to use any module as a preferred module if
+>its name is set as the value of the environment variable `SMODefaultModuleName`.
 
 ## Change log
 

@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Now able to use dbatools as one of the preferred modules.
+- Now able to use [DbaTools](https://dbatools.io) as one of the preferred modules.
 - Gitversion no longer evaluates bumping major version using the word "major".
 - Update private commands:
   - `Assert-SetupActionProperties` was changed to throw
@@ -104,7 +104,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the unit tests.
   - Rename task jobs in Azure Pipelines ([issue #1881](https://github.com/dsccommunity/SqlServerDsc/issues/1881)).
   - Bump SqlServer version to 22.0.59 for integration tests for SQL Server 2022.
-  - Using dbatools as the preferred module.
 - `Get-SqlDscAudit`
   - The parameter `Name` is no longer mandatory. When left out all the current
     audits are returned ([issue #1812](https://github.com/dsccommunity/SqlServerDsc/issues/1812)).
