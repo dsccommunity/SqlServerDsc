@@ -447,6 +447,9 @@ function Start-SqlSetupProcess
     .PARAMETER StatementTimeout
         Set the query StatementTimeout in seconds. Default 600 seconds (10 minutes).
 
+    .PARAMETER Encrypt
+        Specifies if encryption should be used.
+
     .EXAMPLE
         Connect-SQL
 
@@ -493,7 +496,11 @@ function Connect-SQL
         [Parameter()]
         [ValidateNotNull()]
         [System.Int32]
-        $StatementTimeout = 600
+        $StatementTimeout = 600,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Encrypt
     )
 
     Import-SqlDscPreferredModule
@@ -512,6 +519,11 @@ function Connect-SQL
     $sqlConnectionContext.ServerInstance = $databaseEngineInstance
     $sqlConnectionContext.StatementTimeout = $StatementTimeout
     $sqlConnectionContext.ApplicationName = 'SqlServerDsc'
+
+    if ($Encrypt.IsPresent)
+    {
+        $sqlConnectionContext.EncryptConnection = $true
+    }
 
     if ($PSCmdlet.ParameterSetName -eq 'SqlServer')
     {
