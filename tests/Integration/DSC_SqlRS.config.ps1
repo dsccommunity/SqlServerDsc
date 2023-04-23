@@ -78,10 +78,17 @@ Configuration DSC_SqlRS_CreateDependencies_Config
 {
     Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
     Import-DscResource -ModuleName 'StorageDsc' -ModuleVersion '4.9.0.0'
+    Import-DscResource -ModuleName 'WSManDsc' -ModuleVersion '3.1.1'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
+        WSManConfig Config
+        {
+            IsSingleInstance  = 'Yes'
+            MaxEnvelopeSizeKb = 600
+        }
+
         User 'CreateReportingServicesServiceAccount'
         {
             Ensure   = 'Present'
