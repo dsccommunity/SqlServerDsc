@@ -77,7 +77,7 @@ There are two options, installing the [*SqlServer*](https://www.powershellgaller
 If the *SqlServer* module is present it will be used instead of *SQLPS*
 automatically.
 
-To use the [*dbatools*]((https://www.powershellgallery.com/packages/dbatools))
+To use the [*dbatools*](https://www.powershellgallery.com/packages/dbatools)
 module as a replacement for *SQLPS* the environment variable `SMODefaultModuleName`
 must be set to the value `dbatools`. This environment variable can be set
 machine-wide, or at minimum set for each user that runs DSC resources, on
