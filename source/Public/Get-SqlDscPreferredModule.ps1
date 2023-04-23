@@ -51,12 +51,24 @@ function Get-SqlDscPreferredModule
     (
         [Parameter()]
         [System.String[]]
-        $Name = @('dbatools', 'SQLPS'),
+        $Name,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
         $Refresh
     )
+
+    if (-not $PSBoundParameters.ContainsKey('Name'))
+    {
+        $Name = if ($env:SMODefaultModuleName)
+        {
+            @($env:SMODefaultModuleName, 'SQLPS')
+        }
+        else
+        {
+            @('SqlServer', 'SQLPS')
+        }
+    }
 
     if ($Refresh.IsPresent)
     {

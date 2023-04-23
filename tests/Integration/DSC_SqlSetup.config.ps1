@@ -1,7 +1,6 @@
-#region HEADER
-# Integration Test Config Template Version: 1.2.0
-#endregion
-
+<#
+    cSpell: ignore MSAS SNAC DREPLAY CTLR dbatools DSCSQLTEST DSCTABULAR DSCMULTI Hadr SQLAGENT SQLSERVERAGENT
+#>
 $configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
 if (Test-Path -Path $configFile)
 {
@@ -37,7 +36,8 @@ else
                 # Features CONN, BC, SDK, SNAC_SDK, DREPLAY_CLT, DREPLAY_CTLR are no longer supported in 2022.
                 SupportedFeatures               = 'SQLENGINE,REPLICATION'
 
-                SqlServerModuleVersion          = '2.0.0-preview7'
+                SqlServerModuleVersion          = '22.0.59'
+                DbatoolsModuleVersion           = '2.0.0-preview7'
             }
         }
 
@@ -54,7 +54,8 @@ else
 
                 SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
-                SqlServerModuleVersion          = '2.0.0-preview7'
+                SqlServerModuleVersion          = '21.1.18256'
+                DbatoolsModuleVersion           = '2.0.0-preview7'
             }
         }
 
@@ -67,7 +68,8 @@ else
 
                 SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
-                SqlServerModuleVersion          = '2.0.0-preview7'
+                SqlServerModuleVersion          = '21.1.18256'
+                DbatoolsModuleVersion           = '2.0.0-preview7'
             }
         }
 
@@ -80,7 +82,8 @@ else
 
                 SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
-                SqlServerModuleVersion          = '2.0.0-preview7'
+                SqlServerModuleVersion          = '21.1.18256'
+                DbatoolsModuleVersion           = '2.0.0-preview7'
             }
         }
     }
@@ -89,13 +92,31 @@ else
     $env:IsoDriveLetter = $mockIsoMediaDriveLetter
     $env:IsoImagePath = Join-Path -Path $env:TEMP -ChildPath $versionSpecificData.IsoImageName
 
+    if ($env:SMODefaultModuleName -and $env:SMODefaultModuleName -eq 'SqlServer')
+    {
+        $SMOModuleName = $env:SMODefaultModuleName
+        $SMOModuleVersion = $versionSpecificData.SqlServerModuleVersion
+    }
+    elseif ($env:SMODefaultModuleName -and $env:SMODefaultModuleName -eq 'dbatools')
+    {
+        $SMOModuleName = $env:SMODefaultModuleName
+        $SMOModuleVersion = $versionSpecificData.DbatoolsModuleVersion
+    }
+    else
+    {
+        $SMOModuleName = 'SqlServer'
+        $SMOModuleVersion = $versionSpecificData.SqlServerModuleVersion
+    }
+
     $ConfigurationData = @{
         AllNodes = @(
             @{
                 NodeName                                = 'localhost'
 
-                SqlServerModuleVersion                  = $versionSpecificData.SqlServerModuleVersion
-                SqlServerModuleVersionIsPrerelease      = $true
+                SMOModuleName                           = $SMOModuleName
+
+                SMOModuleVersion                        = $SMOModuleVersion
+                SMOModuleVersionIsPrerelease            = $true
 
                 SqlServerInstanceIdPrefix               = $versionSpecificData.SqlServerInstanceIdPrefix
                 AnalysisServiceInstanceIdPrefix         = $versionSpecificData.AnalysisServiceInstanceIdPrefix
@@ -212,8 +233,6 @@ $SqlAgentServiceSecondaryCredential = New-Object `
     -ArgumentList @($ConfigurationData.AllNodes.SqlAgentServiceSecondaryAccountUserName,
         (ConvertTo-SecureString -String $ConfigurationData.AllNodes.SqlAgentServiceSecondaryAccountPassword -AsPlainText -Force))
 
-Write-Verbose -Message ('Current set preferred module name (SMODefaultModuleName): {0}' -f ($env:SMODefaultModuleName | Out-String)) -Verbose
-
 <#
     .SYNOPSIS
         Setting up the dependencies to test installing SQL Server instances.
@@ -308,7 +327,7 @@ Configuration DSC_SqlSetup_CreateDependencies_Config
         that it does not conflict with the SqlServerStubs module that is used by
         unit tests.
 #>
-Configuration DSC_SqlSetup_InstallSqlServerModule_Config
+Configuration DSC_SqlSetup_InstallSMOModule_Config
 {
     Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
 
@@ -388,16 +407,20 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
             }
         }
 
-        Environment 'SetDbatoolsAsDefault'
+        # Only set the environment variable for the LCM user only if the pipeline has it configured.
+        if ($env:SMODefaultModuleName)
         {
-            Name = 'SMODefaultModuleName'
-            Value = 'dbatools'
-            Ensure = 'Present'
-            Path = $false
-            Target = @('Process', 'Machine')
+            Environment 'SetSMODefaultModuleName'
+            {
+                Name = 'SMODefaultModuleName'
+                Value = $env:SMODefaultModuleName
+                Ensure = 'Present'
+                Path = $false
+                Target = @('Process', 'Machine')
+            }
         }
 
-        Script 'InstallSqlServerModule'
+        Script 'InstallSMOModule'
         {
             DependsOn  = @(
                 '[Script]InstallPowerShellGet'
@@ -408,17 +431,17 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 Set-PSRepository -Name 'PSGallery' -InstallationPolicy 'Trusted'
 
                 # Uninstall any existing SqlServer module, to make we only have the one we need.
-                Get-Module -Name 'dbatools' -ListAvailable | Uninstall-Module -ErrorAction 'Stop'
+                Get-Module -Name $using:Node.SMOModuleName -ListAvailable | Uninstall-Module -ErrorAction 'Stop'
 
                 # Make sure we use TLS 1.2.
                 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
                 $installModuleParameters = @{
-                    Name            = 'dbatools'
+                    Name            = $using:Node.SMOModuleName
                     Scope           = 'AllUsers'
                     Force           = $true
-                    RequiredVersion = $Using:Node.SqlServerModuleVersion
-                    AllowPrerelease = $Using:Node.SqlServerModuleVersionIsPrerelease
+                    RequiredVersion = $Using:Node.SMOModuleVersion
+                    AllowPrerelease = $Using:Node.SMOModuleVersionIsPrerelease
                     AllowClobber    = $true # Needed to handle existens of module SQLPS.
                     PassThru        = $true
                 }
@@ -427,20 +450,23 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 $installedModule = Install-Module @installModuleParameters |
                     Where-Object -FilterScript {
                         <#
-                            Need to filter out the right module since it also installs
-                            the dependent module dbatools.library.
+                            Need to filter out the right module since if dependencies are
+                            also installed they will also be in the returned array.
                         #>
-                        $_.Name -eq 'dbatools'
+                        $_.Name -eq $using:Node.SMOModuleName
                     }
 
-                Write-Verbose -Message ('Installed dbatools module version {0}' -f $installedModule.Version)
+                Write-Verbose -Message ('Installed {0} module version {1}' -f $using:Node.SMOModuleName, $installedModule.Version)
 
                 Write-Verbose -Message ('Current set preferred module name (SMODefaultModuleName): {0}' -f ($env:SMODefaultModuleName | Out-String))
 
-                Set-DbatoolsConfig -Name Import.EncryptionMessageCheck -Value $false -PassThru |
-                    Register-DbatoolsConfig -Verbose
+                if ($using:Node.SMOModuleName -eq 'dbatools')
+                {
+                    Set-DbatoolsConfig -Name Import.EncryptionMessageCheck -Value $false -PassThru |
+                        Register-DbatoolsConfig -Verbose
 
-                Write-Verbose -Message 'Disabled dbatools setting Import.EncryptionMessageCheck'
+                    Write-Verbose -Message 'Disabled dbatools setting Import.EncryptionMessageCheck'
+                }
             }
 
             TestScript = {
@@ -451,43 +477,43 @@ Configuration DSC_SqlSetup_InstallSqlServerModule_Config
                 #>
                 $getScriptResult = & ([ScriptBlock]::Create($GetScript))
 
-                if ($getScriptResult.Result -eq $Using:Node.SqlServerModuleVersion)
+                if ($getScriptResult.Result -eq $Using:Node.SMOModuleVersion)
                 {
-                    Write-Verbose -Message ('The node already contain the module dbatools with version {0}.' -f $Using:Node.SqlServerModuleVersion)
+                    Write-Verbose -Message ('The node already contain the module {0} with version {1}.' -f $using:Node.SMOModuleName, $Using:Node.SMOModuleVersion)
 
                     return $true
                 }
 
-                Write-Verbose -Message ('The module dbatools with version {0} is not installed.' -f $Using:Node.SqlServerModuleVersion)
+                Write-Verbose -Message ('The module {0} with version {1} is not installed.' -f $using:Node.SMOModuleName, $Using:Node.SMOModuleVersion)
 
                 return $false
             }
 
             GetScript  = {
                 $moduleVersion = $null
-                $sqlServerModule = $null
+                $smoModule = $null
 
                 # Forcibly import the required modules that is required for using prerelease modules.
                 Import-Module -Name 'PackageManagement' -MinimumVersion '1.4.8.1' -Force
                 Import-Module -Name 'PowerShellGet' -MinimumVersion '2.2.5' -Force
 
-                $sqlServerModule = Get-Module -Name 'dbatools' -ListAvailable |
+                $smoModule = Get-Module -Name $using:Node.SMOModuleName -ListAvailable |
                     Sort-Object -Property Version -Descending |
                     Select-Object -First 1
 
-                if ($sqlServerModule)
+                if ($smoModule)
                 {
-                    $moduleVersion = $sqlServerModule.Version.ToString()
+                    $moduleVersion = $smoModule.Version.ToString()
 
-                    if ($sqlServerModule.PrivateData.PSData.Keys -contains 'Prerelease')
+                    if ($smoModule.PrivateData.PSData.Keys -contains 'Prerelease')
                     {
-                        if (-not [System.String]::IsNullOrEmpty($sqlServerModule.PrivateData.PSData.Prerelease))
+                        if (-not [System.String]::IsNullOrEmpty($smoModule.PrivateData.PSData.Prerelease))
                         {
-                            $moduleVersion = '{0}-{1}' -f $moduleVersion, $sqlServerModule.PrivateData.PSData.Prerelease
+                            $moduleVersion = '{0}-{1}' -f $moduleVersion, $smoModule.PrivateData.PSData.Prerelease
                         }
                     }
 
-                    Write-Verbose -Message ('Found dbatools module v{0}.' -f $moduleVersion) -Verbose
+                    Write-Verbose -Message ('Found {0} module v{1}.' -f $using:Node.SMOModuleName, $moduleVersion) -Verbose
                 }
 
                 return @{
