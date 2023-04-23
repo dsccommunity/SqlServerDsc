@@ -119,6 +119,10 @@ function Invoke-SqlDscQuery
         [System.String]
         $LoginType = 'Integrated',
 
+        [Parameter(ParameterSetName = 'ByServerName')]
+        [System.Management.Automation.SwitchParameter]
+        $Encrypt,
+
         [Parameter(Mandatory = $true)]
         [System.String]
         $DatabaseName,
@@ -141,10 +145,6 @@ function Invoke-SqlDscQuery
         [ValidateNotNullOrEmpty()]
         [System.String[]]
         $RedactText,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Encrypt,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
