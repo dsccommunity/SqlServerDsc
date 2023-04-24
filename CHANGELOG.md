@@ -37,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Now able to use [DbaTools](https://dbatools.io) as a preferred module
+  (with some restrictions).
 - Gitversion no longer evaluates bumping major version using the word "major".
 - Update private commands:
   - `Assert-SetupActionProperties` was changed to throw

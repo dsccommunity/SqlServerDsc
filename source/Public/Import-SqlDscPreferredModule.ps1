@@ -40,12 +40,24 @@ function Import-SqlDscPreferredModule
     (
         [Parameter()]
         [System.String]
-        $PreferredModule = 'SqlServer',
+        $PreferredModule,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
         $Force
     )
+
+    if (-not $PSBoundParameters.ContainsKey('PreferredModule'))
+    {
+        $PreferredModule = if ($env:SMODefaultModuleName)
+        {
+            $env:SMODefaultModuleName
+        }
+        else
+        {
+            'SqlServer'
+        }
+    }
 
     if ($Force.IsPresent)
     {
