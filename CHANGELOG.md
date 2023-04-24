@@ -51,7 +51,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     This parameter can only be used together with the module _SqlServer_ installed
     (tested v21.0.17099). The parameter will be ignored if SQLPS module will be
     used.
->>>>>>> upstream/main
 
 ## [16.2.0] - 2023-04-10
 
