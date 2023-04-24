@@ -562,6 +562,7 @@ function Connect-SQL
             report 'Online' immediately eventhough the Connect() was successful.  The loop is to
             ensure the SMO's Status property was been updated.
         #>
+        $sleepInSeconds = 2
         do
         {
             $instanceStatus = $sqlServerObject.Status
@@ -580,11 +581,11 @@ function Connect-SQL
                 break
             }
 
-            Write-Verbose -Message (
-                $script:localizedData.WaitForDatabaseEngineInstanceStatus -f $instanceStatus, $onlineStatus
-            ) -Verbose
+            Write-Debug -Message (
+                $script:localizedData.WaitForDatabaseEngineInstanceStatus -f $instanceStatus, $onlineStatus, $sleepInSeconds
+            )
 
-            Start-Sleep -Seconds 2
+            Start-Sleep -Seconds $sleepInSeconds
             $sqlServerObject.Refresh()
         } while ($connectTimer.Elapsed.TotalSeconds -lt $StatementTimeout)
 
