@@ -39,6 +39,7 @@ function Import-SqlDscPreferredModule
     param
     (
         [Parameter()]
+        [ValidateNotNullOrEmpty]
         [System.String]
         $PreferredModule,
 
@@ -47,27 +48,39 @@ function Import-SqlDscPreferredModule
         $Force
     )
 
-    if (-not $PSBoundParameters.ContainsKey('PreferredModule'))
-    {
-        $PreferredModule = if ($env:SMODefaultModuleName)
-        {
-            $env:SMODefaultModuleName
-        }
-        else
-        {
-            'SqlServer'
-        }
+    $getSqlDscPreferredModuleParameters = @{
+        Refresh = $true
     }
+
+    if ($PSBoundParameters.ContainsKey('PreferredModule'))
+    {
+        $getSqlDscPreferredModuleParameters.PreferredModule = $PreferredModule
+    }
+
+    $availableModuleName = Get-SqlDscPreferredModule @getSqlDscPreferredModuleParameters
 
     if ($Force.IsPresent)
     {
         Write-Verbose -Message $script:localizedData.PreferredModule_ForceRemoval
 
-        Remove-Module -Name @(
-            $PreferredModule,
-            'SQLPS',
-            'SQLASCmdlets' # cSpell: disable-line
-        ) -Force -ErrorAction 'SilentlyContinue'
+        $removeModule = @()
+
+        if ($PSBoundParameters.ContainsKey('PreferredModule'))
+        {
+            $removeModule += $PreferredModule
+        }
+
+        if ($availableModuleName)
+        {
+            $removeModule += $availableModuleName
+        }
+
+        if ($removeModule -contains 'SQLPS')
+        {
+            $removeModule += 'SQLASCmdlets' # cSpell: disable-line
+        }
+
+        Remove-Module -Name $removeModule -Force -ErrorAction 'SilentlyContinue'
     }
     else
     {
@@ -77,7 +90,7 @@ function Import-SqlDscPreferredModule
             NOTE: There should actually only be either SqlServer or SQLPS loaded,
             otherwise there can be problems with wrong assemblies being loaded.
         #>
-        $loadedModuleName = (Get-Module -Name @($PreferredModule, 'SQLPS') | Select-Object -First 1).Name
+        $loadedModuleName = (Get-Module -Name $PreferredModule | Select-Object -First 1).Name
 
         if ($loadedModuleName)
         {
@@ -86,8 +99,6 @@ function Import-SqlDscPreferredModule
             return
         }
     }
-
-    $availableModuleName = Get-SqlDscPreferredModule -Name @($PreferredModule, 'SQLPS') -Refresh
 
     if ($availableModuleName)
     {
@@ -108,7 +119,7 @@ function Import-SqlDscPreferredModule
                 Only return the object with module type 'Manifest'.
                 SqlServer only returns one object (of module type 'Script'), so no need to do anything for SqlServer module.
             #>
-            if ($availableModuleName -ne $PreferredModule)
+            if ($availableModuleName -eq 'SQLPS')
             {
                 $importedModule = $importedModule | Where-Object -Property 'ModuleType' -EQ -Value 'Manifest'
             }
