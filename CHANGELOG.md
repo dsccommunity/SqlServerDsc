@@ -27,9 +27,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     for a file.
   - `Assert-Feature` - Throws an exception if a feature is not supported
     for a specific Microsoft SQL Server major version.
+- SqlServerDsc.Common
+  - `Connect-SQL`.
+    - Add new parameter `Encrypt`.
+- `Connect-SqlDscDatabaseEngine`
+  - Add new parameter `Encrypt`.
+- `Invoke-SqlDscQuery`
+  - Add new parameter `Encrypt`.
 
 ### Changed
 
+- Now able to use [DbaTools](https://dbatools.io) as a preferred module
+  (with some restrictions).
 - Gitversion no longer evaluates bumping major version using the word "major".
 - Update private commands:
   - `Assert-SetupActionProperties` was changed to throw
@@ -43,6 +52,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update SqlServerDsc.Common Module:
   - `Connect-SQL` - Function will now wait for the SMO Status property to be
     'Online' or throw an exception if time exceeds the statement timeout.
+- SqlRS
+  - Now uses the command `Invoke-SqlDscQuery` instead of `Invoke-SqlCmd`
+   ([issue #1917](https://github.com/dsccommunity/SqlServerDsc/issues/1917)).
+  - The parameter `Encrypt` has changed so that `Mandatory` or `Strict`
+    will turn on encryption when connecting to the database instance.
+- `Invoke-SqlDscQuery`
+  - Now shows the correct instance name when called using a server object
+    ([issue #1918](https://github.com/dsccommunity/SqlServerDsc/issues/1918)).
+  - Correctly outputs query in verbose message when parameter `RedactText`
+    is not passed.
 
 ## [16.2.0] - 2023-04-10
 

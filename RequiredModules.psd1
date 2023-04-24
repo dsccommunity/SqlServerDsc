@@ -48,4 +48,5 @@
     PSDscResources                 = '2.12.0.0'
     StorageDsc                     = '4.9.0.0'
     NetworkingDsc                  = '7.4.0.0'
+    WSManDsc                       = '3.1.1'
 }

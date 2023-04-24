@@ -31,6 +31,9 @@
     .PARAMETER StatementTimeout
         Set the query StatementTimeout in seconds. Default 600 seconds (10 minutes).
 
+    .PARAMETER Encrypt
+        Specifies if encryption should be used.
+
     .EXAMPLE
         Connect-SqlDscDatabaseEngine
 
@@ -80,7 +83,11 @@ function Connect-SqlDscDatabaseEngine
         [Parameter()]
         [ValidateNotNull()]
         [System.Int32]
-        $StatementTimeout = 600
+        $StatementTimeout = 600,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Encrypt
     )
 
     # Call the private function.
