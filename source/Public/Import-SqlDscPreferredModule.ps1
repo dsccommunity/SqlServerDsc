@@ -1,18 +1,25 @@
 <#
     .SYNOPSIS
-        Imports the module SqlServer (preferred) or SQLPS in a standardized way.
+        Imports a (preferred) module in a standardized way.
 
     .DESCRIPTION
-        Imports the module SqlServer (preferred) or SQLPS in a standardized way.
+        Imports a (preferred) module in a standardized way. If the parameter `Name`
+        is not specified the command will imports the default module SqlServer
+        if it exist, otherwise SQLPS.
+
+        If the environment variable `SMODefaultModuleName` is set to a module name
+        that name will be used as the preferred module name instead of the default
+        module 'SqlServer'.
+
         The module is always imported globally.
 
-    .PARAMETER PreferredModule
-        Specifies the name of the preferred module. Defaults to 'SqlServer'.
+    .PARAMETER Name
+        Specifies the name of a preferred module.
 
     .PARAMETER Force
-        Forces the removal of the previous SQL module, to load the same or newer
-        version fresh. This is meant to make sure the newest version is used, with
-        the latest assemblies.
+        Forces the removal of the previous module, to load the same or newer version
+        fresh. This is meant to make sure the newest version is used, with the latest
+        assemblies.
 
     .EXAMPLE
         Import-SqlDscPreferredModule
@@ -23,15 +30,15 @@
     .EXAMPLE
         Import-SqlDscPreferredModule -Force
 
-        Removes any already loaded module of the default preferred module (SqlServer)
-        and the module SQLPS, then it will forcibly import the default preferred
-        module if it exist, otherwise it will try to import the module SQLPS.
+        Will forcibly import the default preferred module if it exist, otherwise
+        it will try to import the module SQLPS. Prior to importing it will remove
+        an already loaded module.
 
     .EXAMPLE
-        Import-SqlDscPreferredModule -PreferredModule 'OtherSqlModule'
+        Import-SqlDscPreferredModule -Name 'OtherSqlModule'
 
-        Imports the specified preferred module OtherSqlModule if it exist, otherwise
-        it will try to import the module SQLPS.
+        Imports the specified preferred module OtherSqlModule if it exist. If it
+        does not exist it will throw an exception.
 #>
 function Import-SqlDscPreferredModule
 {
@@ -39,9 +46,10 @@ function Import-SqlDscPreferredModule
     param
     (
         [Parameter()]
-        [ValidateNotNullOrEmpty]
+        [Alias('PreferredModule')]
+        [ValidateNotNullOrEmpty()]
         [System.String]
-        $PreferredModule,
+        $Name,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -52,9 +60,9 @@ function Import-SqlDscPreferredModule
         Refresh = $true
     }
 
-    if ($PSBoundParameters.ContainsKey('PreferredModule'))
+    if ($PSBoundParameters.ContainsKey('Name'))
     {
-        $getSqlDscPreferredModuleParameters.PreferredModule = $PreferredModule
+        $getSqlDscPreferredModuleParameters.Name = @($Name, 'SQLPS')
     }
 
     $availableModuleName = Get-SqlDscPreferredModule @getSqlDscPreferredModuleParameters
@@ -65,11 +73,12 @@ function Import-SqlDscPreferredModule
 
         $removeModule = @()
 
-        if ($PSBoundParameters.ContainsKey('PreferredModule'))
+        if ($PSBoundParameters.ContainsKey('Name'))
         {
-            $removeModule += $PreferredModule
+            $removeModule += $Name
         }
 
+        # Available module could be
         if ($availableModuleName)
         {
             $removeModule += $availableModuleName
@@ -82,26 +91,22 @@ function Import-SqlDscPreferredModule
 
         Remove-Module -Name $removeModule -Force -ErrorAction 'SilentlyContinue'
     }
-    else
-    {
-        <#
-            Check if either of the modules are already loaded into the session.
-            Prefer to use the first one (in order found).
-            NOTE: There should actually only be either SqlServer or SQLPS loaded,
-            otherwise there can be problems with wrong assemblies being loaded.
-        #>
-        $loadedModuleName = (Get-Module -Name $PreferredModule | Select-Object -First 1).Name
-
-        if ($loadedModuleName)
-        {
-            Write-Verbose -Message ($script:localizedData.PreferredModule_AlreadyImported -f $loadedModuleName)
-
-            return
-        }
-    }
 
     if ($availableModuleName)
     {
+        if (-not $Force.IsPresent)
+        {
+            # Check if the preferred module is already loaded into the session.
+            $loadedModuleName = (Get-Module -Name $availableModuleName | Select-Object -First 1).Name
+
+            if ($loadedModuleName)
+            {
+                Write-Verbose -Message ($script:localizedData.PreferredModule_AlreadyImported -f $loadedModuleName)
+
+                return
+            }
+        }
+
         try
         {
             Write-Debug -Message ($script:localizedData.PreferredModule_PushingLocation)
@@ -137,7 +142,7 @@ function Import-SqlDscPreferredModule
     {
         $PSCmdlet.ThrowTerminatingError(
             [System.Management.Automation.ErrorRecord]::new(
-                ($script:localizedData.PreferredModule_FailedFinding -f $PreferredModule),
+                ($script:localizedData.PreferredModule_FailedFinding),
                 'ISDPM0001', # cspell: disable-line
                 [System.Management.Automation.ErrorCategory]::ObjectNotFound,
                 'PreferredModule'
