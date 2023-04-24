@@ -243,6 +243,7 @@ stages:
 
       - job: Test_Integration_dbatools
         displayName: 'Integration (dbatools)'
+        dependsOn: Test_Integration
         strategy:
           matrix:
             SQL2016_WIN2022:
@@ -276,12 +277,13 @@ stages:
               targetType: 'inline'
               script: 'winrm quickconfig -quiet'
               pwsh: false
-          # - powershell: |
-          #     Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
-          #     Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
-          #     Remove-Module -Name CommonTestHelper
-          #   name: cleanCIWorker
-          #   displayName: 'Clean CI worker'
+          - powershell: |
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              # Make sure to keep SQLPS so that Invoke-SqlCmd is available.
+              Remove-PowerShellModuleFromCI -Name @('SqlServer')
+              Remove-Module -Name CommonTestHelper
+            name: cleanCIWorker
+            displayName: 'Clean CI worker'
           - powershell: |
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
@@ -406,6 +408,7 @@ stages:
 
       - job: Test_Integration_RS_dbatools
         displayName: 'Integration Reporting Services (dbatools)'
+        dependsOn: Test_Integration_RS
         strategy:
           matrix:
             SQL2016_WIN2022:
@@ -442,12 +445,6 @@ stages:
               targetType: 'inline'
               script: 'winrm quickconfig -quiet'
               pwsh: false
-          # - powershell: |
-          #     Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
-          #     Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
-          #     Remove-Module -Name CommonTestHelper
-          #   name: cleanCIWorker
-          #   displayName: 'Clean CI worker'
           - powershell: |
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
