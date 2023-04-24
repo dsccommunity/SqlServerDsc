@@ -589,8 +589,6 @@ function Connect-SQL
             $sqlServerObject.Refresh()
         } while ($connectTimer.Elapsed.TotalSeconds -lt $StatementTimeout)
 
-        $connectTimer.Stop()
-
         if ($instanceStatus -match '^Online$')
         {
             Write-Verbose -Message (
@@ -645,6 +643,7 @@ function Connect-SQL
     }
     finally
     {
+        $connectTimer.Stop()
         <#
             Connect will ensure we actually can connect, but we need to disconnect
             from the session so we don't have anything hanging. If we need run a
