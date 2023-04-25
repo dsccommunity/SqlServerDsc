@@ -37,8 +37,8 @@
     .EXAMPLE
         Import-SqlDscPreferredModule -Name 'OtherSqlModule'
 
-        Imports the specified preferred module OtherSqlModule if it exist. If it
-        does not exist it will throw an exception.
+        Imports the specified preferred module OtherSqlModule if it exist, otherwise
+        it will try to import the module SQLPS.
 #>
 function Import-SqlDscPreferredModule
 {
