@@ -64,13 +64,13 @@ function Get-SqlDscPreferredModule
 
     if (-not $PSBoundParameters.ContainsKey('Name'))
     {
-        $Name = if ($env:SMODefaultModuleName)
+        if ($env:SMODefaultModuleName)
         {
-            @($env:SMODefaultModuleName, 'SQLPS')
+            $Name = @($env:SMODefaultModuleName, 'SQLPS')
         }
         else
         {
-            @('SqlServer', 'SQLPS')
+            $Name = @('SqlServer', 'SQLPS')
         }
     }
 
