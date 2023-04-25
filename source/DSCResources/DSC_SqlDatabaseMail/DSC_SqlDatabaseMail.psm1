@@ -628,7 +628,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -695,20 +695,20 @@ function Test-TargetResource
         ProfileName    = $ProfileName
     }
 
-    $returnValue = $false
-
-    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-
     Write-Verbose -Message (
         $script:localizedData.TestingConfiguration
     )
 
-    if ($Ensure -eq 'Present')
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
+    $returnValue = $true
+
+    if ($Ensure -eq 'Present' -and $getTargetResourceResult.Ensure -eq 'Present')
     {
-        $returnValue = Test-DscParameterState `
-            -CurrentValues $getTargetResourceResult `
-            -DesiredValues $PSBoundParameters `
-            -ValuesToCheck @(
+        $compareDscParameterStateParameters = @{
+            CurrentValues       = $getTargetResourceResult
+            DesiredValues       = $PSBoundParameters
+            Properties          = @(
                 'AccountName'
                 'EmailAddress'
                 'MailServerName'
@@ -719,14 +719,23 @@ function Test-TargetResource
                 'DisplayName'
                 'Description'
                 'LoggingLevel'
-            ) `
-            -TurnOffTypeChecking
+            )
+            TurnOffTypeChecking = $true
+            Verbose             = $VerbosePreference
+        }
+
+        $resultCompare = Compare-DscParameterState @compareDscParameterStateParameters
+
+        if ($resultCompare.InDesiredState -contains $false)
+        {
+            $returnValue = $false
+        }
     }
     else
     {
-        if ($Ensure -eq $getTargetResourceResult.Ensure)
+        if ($Ensure -ne $getTargetResourceResult.Ensure)
         {
-            $returnValue = $true
+            $returnValue = $false
         }
     }
 
