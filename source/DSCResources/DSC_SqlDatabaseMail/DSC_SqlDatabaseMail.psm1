@@ -138,14 +138,22 @@ function Get-TargetResource
                 $returnValue['DisplayName'] = $databaseMailAccount.DisplayName
                 $returnValue['ReplyToAddress'] = $databaseMailAccount.ReplyToAddress
 
-                # Currently only the first mail server is handled.
-                $mailServer = $databaseMailAccount.MailServers | Select-Object -First 1
+                $mailServer = $databaseMailAccount.MailServers |
+                    Where-Object -FilterScript { $_.Name -eq $MailServerName }
 
-                $returnValue['MailServerName'] = $mailServer.Name
-                $returnValue['TcpPort'] = $mailServer.Port
+                if ($mailServer)
+                {
+                    $returnValue['MailServerName'] = $mailServer.Name
+                    $returnValue['TcpPort'] = $mailServer.Port
+                }
 
-                # Currently only one profile is handled, so this make sure only the first string (profile name) is returned.
-                $returnValue['ProfileName'] = $databaseMail.Profiles | Select-Object -First 1 -ExpandProperty Name
+                $mailProfile = $databaseMail.Profiles |
+                    Where-Object -FilterScript { $_.Name -eq $ProfileName }
+
+                if ($mailProfile)
+                {
+                    $returnValue['ProfileName'] = $mailProfile.Name
+                }
 
                 # SQL Server returns '' for Description property when value is not set.
                 if ([System.String]::IsNullOrEmpty($databaseMailAccount.Description))
