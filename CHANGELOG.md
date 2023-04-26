@@ -49,11 +49,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlSetup
   - Update to support checking non-supported features using the command
     `SqlDscIsSupportedFeature` ([issue #1872](https://github.com/dsccommunity/SqlServerDsc/issues/1872)).
+- Update SqlServerDsc.Common Module:
+  - `Connect-SQL` - Function will now wait for the SMO Status property to be
+    'Online' or throw an exception if time exceeds the statement timeout.
 - SqlRS
   - Now uses the command `Invoke-SqlDscQuery` instead of `Invoke-SqlCmd`
    ([issue #1917](https://github.com/dsccommunity/SqlServerDsc/issues/1917)).
   - The parameter `Encrypt` has changed so that `Mandatory` or `Strict`
     will turn on encryption when connecting to the database instance.
+- SqlDatabaseMail
+  - Update integration tests to verify multiple instances of SqlDatabaseMail
+    in the same configuration ([issue #1871](https://github.com/dsccommunity/SqlServerDsc/issues/1871)).
+  - Changed comparison logic to use `Compare-DscParameterState` ([issue #1871](https://github.com/dsccommunity/SqlServerDsc/issues/1871)).
+  - Return the correct profile name and mail server name from the current
+    state ([issue #1871](https://github.com/dsccommunity/SqlServerDsc/issues/1871)).
 - `Invoke-SqlDscQuery`
   - Now shows the correct instance name when called using a server object
     ([issue #1918](https://github.com/dsccommunity/SqlServerDsc/issues/1918)).
