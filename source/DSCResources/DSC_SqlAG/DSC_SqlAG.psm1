@@ -753,7 +753,7 @@ function Test-TargetResource
             {
                 $parametersToCheck += 'BasicAvailabilityGroup'
                 $parametersToCheck += 'DatabaseHealthTrigger'
-                if ( (Get-Command -Name 'New-SqlAvailabilityReplica').Parameters.ContainsKey('SeedingMode') )
+                if ( $getTargetResourceResult.SeedingMode )
                 {
                     $parametersToCheck += 'SeedingMode'
                 }
