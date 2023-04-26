@@ -138,14 +138,22 @@ function Get-TargetResource
                 $returnValue['DisplayName'] = $databaseMailAccount.DisplayName
                 $returnValue['ReplyToAddress'] = $databaseMailAccount.ReplyToAddress
 
-                # Currently only the first mail server is handled.
-                $mailServer = $databaseMailAccount.MailServers | Select-Object -First 1
+                $mailServer = $databaseMailAccount.MailServers |
+                    Where-Object -FilterScript { $_.Name -eq $MailServerName }
 
-                $returnValue['MailServerName'] = $mailServer.Name
-                $returnValue['TcpPort'] = $mailServer.Port
+                if ($mailServer)
+                {
+                    $returnValue['MailServerName'] = $mailServer.Name
+                    $returnValue['TcpPort'] = $mailServer.Port
+                }
 
-                # Currently only one profile is handled, so this make sure only the first string (profile name) is returned.
-                $returnValue['ProfileName'] = $databaseMail.Profiles | Select-Object -First 1 -ExpandProperty Name
+                $mailProfile = $databaseMail.Profiles |
+                    Where-Object -FilterScript { $_.Name -eq $ProfileName }
+
+                if ($mailProfile)
+                {
+                    $returnValue['ProfileName'] = $mailProfile.Name
+                }
 
                 # SQL Server returns '' for Description property when value is not set.
                 if ([System.String]::IsNullOrEmpty($databaseMailAccount.Description))
@@ -628,7 +636,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -695,20 +703,20 @@ function Test-TargetResource
         ProfileName    = $ProfileName
     }
 
-    $returnValue = $false
-
-    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
-
     Write-Verbose -Message (
         $script:localizedData.TestingConfiguration
     )
 
-    if ($Ensure -eq 'Present')
+    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
+    $returnValue = $true
+
+    if ($Ensure -eq 'Present' -and $getTargetResourceResult.Ensure -eq 'Present')
     {
-        $returnValue = Test-DscParameterState `
-            -CurrentValues $getTargetResourceResult `
-            -DesiredValues $PSBoundParameters `
-            -ValuesToCheck @(
+        $compareDscParameterStateParameters = @{
+            CurrentValues       = $getTargetResourceResult
+            DesiredValues       = $PSBoundParameters
+            Properties          = @(
                 'AccountName'
                 'EmailAddress'
                 'MailServerName'
@@ -719,14 +727,23 @@ function Test-TargetResource
                 'DisplayName'
                 'Description'
                 'LoggingLevel'
-            ) `
-            -TurnOffTypeChecking
+            )
+            TurnOffTypeChecking = $true
+            Verbose             = $VerbosePreference
+        }
+
+        $resultCompare = Compare-DscParameterState @compareDscParameterStateParameters
+
+        if ($resultCompare.InDesiredState -contains $false)
+        {
+            $returnValue = $false
+        }
     }
     else
     {
-        if ($Ensure -eq $getTargetResourceResult.Ensure)
+        if ($Ensure -ne $getTargetResourceResult.Ensure)
         {
-            $returnValue = $true
+            $returnValue = $false
         }
     }
 

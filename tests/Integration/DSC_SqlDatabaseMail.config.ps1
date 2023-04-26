@@ -82,6 +82,54 @@ Configuration DSC_SqlDatabaseMail_Add_Config
     }
 }
 
+Configuration DSC_SqlDatabaseMail_AddMultiple_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlDatabaseMail 'CreateAlertsProfile'
+        {
+            Ensure               = 'Present'
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            AccountName          = 'Company SQL Alerts'
+            ProfileName          = 'Company SQL Alerts'
+            EmailAddress         = 'sqlalerts@company.local'
+            ReplyToAddress       = 'noreply@company.local'
+            DisplayName          = ('Company SQL Alerts {0}' -f $node.InstanceName)
+            MailServerName       = $Node.MailServerName
+            Description          = 'This profile will be used to alert Company SQL Personnel.'
+            LoggingLevel         = 'Extended'
+            TcpPort              = 25
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+
+        SqlDatabaseMail 'CreateMaintenanceNotifyProfile'
+        {
+            Ensure               = 'Present'
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            AccountName          = 'Company SQL Maintenance Notify'
+            ProfileName          = 'Company SQL Maintenance Notify'
+            EmailAddress         = 'sqlmaintnotify@company.local'
+            ReplyToAddress       = 'noreply@company.local'
+            DisplayName          = ('Company Maintenance Alerts {0}' -f $node.InstanceName)
+            MailServerName       = $Node.MailServerName
+            Description          = 'This profile will be used to alert Company Maintenance Personnel.'
+            LoggingLevel         = 'Extended'
+            TcpPort              = 25
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
+
 <#
     .SYNOPSIS
         Removes database mail.
