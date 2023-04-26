@@ -52,7 +52,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         @{
             MockParameterSetName = '__AllParameterSets'
             # cSpell: disable-next
-            MockExpectedParameters = '[[-PreferredModule] <string>] [-Force] [<CommonParameters>]'
+            MockExpectedParameters = '[[-Name] <string>] [-Force] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'Import-SqlDscPreferredModule').ParameterSets |
@@ -140,7 +140,11 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
 
     Context 'When module SqlServer is already loaded into the session' {
         BeforeAll {
-            Mock -CommandName Import-Module -MockWith $mockImportModule
+            Mock -CommandName Import-Module
+            Mock -CommandName Get-SqlDscPreferredModule -MockWith {
+                return 'SqlServer'
+            }
+
             Mock -CommandName Get-Module -MockWith {
                 return @{
                     Name = 'SqlServer'
@@ -157,7 +161,11 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
 
     Context 'When module SQLPS is already loaded into the session' {
         BeforeAll {
-            Mock -CommandName Import-Module -MockWith $mockImportModule
+            Mock -CommandName Import-Module
+            Mock -CommandName Get-SqlDscPreferredModule -MockWith {
+                return 'SQLPS'
+            }
+
             Mock -CommandName Get-Module -MockWith {
                 return @{
                     Name = 'SQLPS'
@@ -193,6 +201,27 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         }
     }
 
+    Context 'When the specific module exists, but not loaded into the session' {
+        BeforeAll {
+            Mock -CommandName Import-Module -MockWith $mockImportModule
+            Mock -CommandName Get-Module
+            Mock -CommandName Get-SqlDscPreferredModule -MockWith {
+                return 'OtherModule'
+            }
+
+            $mockExpectedModuleNameToImport = 'OtherModule'
+        }
+
+        It 'Should import the SqlServer module without throwing' {
+            { Import-SqlDscPreferredModule -Name 'OtherModule' } | Should -Not -Throw
+
+            Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Push-Location -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Pop-Location -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Import-Module -Exactly -Times 1 -Scope It
+        }
+    }
+
     Context 'When only module SQLPS exists, but not loaded into the session, and using -Force' {
         BeforeAll {
             Mock -CommandName Import-Module -MockWith $mockImportModule
@@ -220,22 +249,44 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
             Mock -CommandName Import-Module
             Mock -CommandName Get-Module
             Mock -CommandName Get-SqlDscPreferredModule
-
-            $mockExpectedModuleNameToImport = $sqlPsExpectedModulePath
         }
 
         It 'Should throw the correct error message' {
-            $mockLocalizedString = InModuleScope -ScriptBlock {
-                $script:localizedData.PowerShellSqlModuleNotFound -f 'SqlServer'
+            $mockErrorMessage = InModuleScope -ScriptBlock {
+                $script:localizedData.PreferredModule_FailedFinding
             }
 
-            { Import-SqlDscPreferredModule } | Should -Throw -ExpectedMessage $mockLocalizedString
+            { Import-SqlDscPreferredModule } | Should -Throw -ExpectedMessage $mockErrorMessage
 
-            Should -Invoke -CommandName Get-Module -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-Module -Exactly -Times 0 -Scope It
             Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Push-Location -Exactly -Times 0 -Scope It
             Should -Invoke -CommandName Pop-Location -Exactly -Times 0 -Scope It
             Should -Invoke -CommandName Import-Module -Exactly -Times 0 -Scope It
+        }
+    }
+
+    Context 'When forcibly importing a specific preferred module but only SQLPS is available' {
+        BeforeAll {
+            Mock -CommandName Import-Module -MockWith $mockImportModule
+            Mock -CommandName Get-Module
+            Mock -CommandName Remove-Module
+            Mock -CommandName Get-SqlDscPreferredModule -MockWith {
+                return 'SQLPS'
+            }
+
+            $mockExpectedModuleNameToImport = 'SQLPS'
+        }
+
+        It 'Should import the SqlServer module without throwing' {
+            { Import-SqlDscPreferredModule -Name 'OtherModule' -Force } | Should -Not -Throw
+
+            Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-Module -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Remove-Module -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Push-Location -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Pop-Location -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Import-Module -Exactly -Times 1 -Scope It
         }
     }
 }

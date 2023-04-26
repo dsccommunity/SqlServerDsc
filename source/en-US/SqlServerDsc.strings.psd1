@@ -157,7 +157,7 @@ ConvertFrom-StringData @'
     PreferredModule_ForceRemoval = Forcibly removed the SQL PowerShell module from the session to import it fresh again.
     PreferredModule_PushingLocation = SQLPS module changes CWD to SQLServer:\ when loading, pushing location to pop it when module is loaded.
     PreferredModule_PoppingLocation = Popping location back to what it was before importing SQLPS module.
-    PreferredModule_FailedFinding = Failed to find a dependent module. Unable to run SQL Server commands or use SQL Server types. Please install the {0} or SQLPS then try to import SqlServerDsc again.
+    PreferredModule_FailedFinding = Failed to find a dependent module. Unable to run SQL Server commands or use SQL Server types. Please install one of the preferred SMO modules or the SQLPS module, then try to import SqlServerDsc again.
 
     ## Invoke-SqlDscQuery
     Query_Invoke_ShouldProcessVerboseDescription = Executing a Transact-SQL query on the instance '{0}'.

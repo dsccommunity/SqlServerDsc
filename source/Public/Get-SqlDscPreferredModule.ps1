@@ -5,6 +5,10 @@
     .DESCRIPTION
         Get the first available (preferred) module that is installed.
 
+        If the environment variable `SMODefaultModuleName` is set to a module name
+        that name will be used as the preferred module name instead of the default
+        module 'SqlServer'.
+
     .PARAMETER Name
         Specifies the list of the (preferred) modules to search for, in order.
         Defaults to 'SqlServer' and then 'SQLPS'.
@@ -60,13 +64,13 @@ function Get-SqlDscPreferredModule
 
     if (-not $PSBoundParameters.ContainsKey('Name'))
     {
-        $Name = if ($env:SMODefaultModuleName)
+        if ($env:SMODefaultModuleName)
         {
-            @($env:SMODefaultModuleName, 'SQLPS')
+            $Name = @($env:SMODefaultModuleName, 'SQLPS')
         }
         else
         {
-            @('SqlServer', 'SQLPS')
+            $Name = @('SqlServer', 'SQLPS')
         }
     }
 

@@ -68,6 +68,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ([issue #1918](https://github.com/dsccommunity/SqlServerDsc/issues/1918)).
   - Correctly outputs query in verbose message when parameter `RedactText`
     is not passed.
+- `Import-SqlDscPreferredModule`
+  - Better handle preferred module and re-uses logic in `Get-SqlDscPreferredModule`.
 
 ## [16.2.0] - 2023-04-10
 
