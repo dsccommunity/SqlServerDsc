@@ -56,9 +56,6 @@ function Get-TargetResource
     # Define current version for check compatibility
     $sqlMajorVersion = $serverObject.Version.Major
 
-    # Get SQL module name
-    $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
-
     # Is this node actively hosting the SQL instance?
     $isActiveNode = Test-ActiveNode -ServerObject $serverObject
 
@@ -278,9 +275,6 @@ function Set-TargetResource
 
     # Define current version for check compatibility
     $sqlMajorVersion = $serverObject.Version.Major
-
-    # Get SQL module name
-    $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
 
     # Determine if HADR is enabled on the instance. If not, throw an error
     if ( -not $serverObject.IsHadrEnabled )
