@@ -45,9 +45,6 @@ function Get-TargetResource
     # Connect to the instance
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
-    # Get SQL module name
-    $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
-
     # Define current version for check compatibility
     $sqlMajorVersion = $serverObject.Version.Major
 
@@ -96,9 +93,15 @@ function Get-TargetResource
             $alwaysOnAvailabilityGroupResource.Add('BasicAvailabilityGroup', $availabilityGroup.BasicAvailabilityGroup)
             $alwaysOnAvailabilityGroupResource.Add('DatabaseHealthTrigger', $availabilityGroup.DatabaseHealthTrigger)
             $alwaysOnAvailabilityGroupResource.Add('DtcSupportEnabled', $availabilityGroup.DtcSupportEnabled)
-            if ( $sqlModuleName -eq 'SQLServer' )
+            # Microsoft.SqlServer.Management.Smo.Server from Connect-SQL supports the SeedingMode for SQL 2016 and higher, but New-SqlAvailabilityReplica may not.
+            # Will setting SeedingMode as $null to match ability of Microsoft.SqlServer.Management.Smo.Server and New-SqlAvailabilityReplica
+            if ( (Get-Command -Name 'New-SqlAvailabilityReplica').Parameters.ContainsKey('SeedingMode') )
             {
                 $alwaysOnAvailabilityGroupResource.Add('SeedingMode', $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode)
+            }
+            else
+            {
+                $alwaysOnAvailabilityGroupResource.Add('SeedingMode', $null)
             }
         }
     }
@@ -262,9 +265,6 @@ function Set-TargetResource
     # Connect to the instance
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
-    # Get SQL module name
-    $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
-
     # Determine if HADR is enabled on the instance. If not, throw an error
     if ( -not $serverObject.IsHadrEnabled )
     {
@@ -356,7 +356,7 @@ function Set-TargetResource
                     $newReplicaParams.Add('ConnectionModeInSecondaryRole', $ConnectionModeInSecondaryRole)
                 }
 
-                if ( ( $sqlMajorVersion -ge 13 ) -and ( $sqlModuleName -eq 'SQLServer' ) )
+                if ( ( $sqlMajorVersion -ge 13 ) -and (Get-Command -Name 'New-SqlAvailabilityReplica').Parameters.ContainsKey('SeedingMode') )
                 {
                     $newReplicaParams.Add('SeedingMode', $SeedingMode)
                 }
@@ -521,10 +521,13 @@ function Set-TargetResource
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
                 }
 
-                if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode ) -and ( $sqlModuleName -eq 'SQLServer' ) )
+                if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode )  )
                 {
-                    $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode = $SeedingMode
-                    Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
+                    if ( (Get-Command -Name 'New-SqlAvailabilityReplica').Parameters.ContainsKey('SeedingMode') )
+                    {
+                        $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode = $SeedingMode
+                        Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
+                    }
                 }
             }
         }
@@ -710,9 +713,6 @@ function Test-TargetResource
     # Define current version for check compatibility
     $sqlMajorVersion = $getTargetResourceResult.Version
 
-    # Get SQL module name
-    $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
-
     switch ($Ensure)
     {
         'Absent'
@@ -747,12 +747,13 @@ function Test-TargetResource
             <#
                 Add properties compatible with SQL Server 2016 or later versions
                 DtcSupportEnabled is enabled at the creation of the Availability Group only, hence it will not be checked in this block
+                SeedingMode should be checked only in case if New-SqlAvailabilityReplica support the SeedingMode parameter
             #>
             if ( $sqlMajorVersion -ge 13 )
             {
                 $parametersToCheck += 'BasicAvailabilityGroup'
                 $parametersToCheck += 'DatabaseHealthTrigger'
-                if ( $sqlModuleName -eq 'SQLServer' )
+                if ( $getTargetResourceResult.SeedingMode )
                 {
                     $parametersToCheck += 'SeedingMode'
                 }

@@ -56,9 +56,6 @@ function Get-TargetResource
     # Define current version for check compatibility
     $sqlMajorVersion = $serverObject.Version.Major
 
-    # Get SQL module name
-    $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
-
     # Is this node actively hosting the SQL instance?
     $isActiveNode = Test-ActiveNode -ServerObject $serverObject
 
@@ -89,7 +86,7 @@ function Get-TargetResource
         EndpointHostName              = $serverObject.NetName
     }
 
-    if ( ( $sqlMajorVersion -ge 13 ) -and ( $sqlModuleName -eq 'SQLServer' ) )
+    if ( ( $sqlMajorVersion -ge 13 ) )
     {
         $alwaysOnAvailabilityGroupReplicaResource.Add('SeedingMode', '')
     }
@@ -115,9 +112,16 @@ function Get-TargetResource
             $alwaysOnAvailabilityGroupReplicaResource.ReadOnlyRoutingConnectionUrl = $availabilityGroupReplica.ReadOnlyRoutingConnectionUrl
             $alwaysOnAvailabilityGroupReplicaResource.ReadOnlyRoutingList = $availabilityGroupReplica.ReadOnlyRoutingList
 
-            if ( ( $sqlMajorVersion -ge 13 ) -and ( $sqlModuleName -eq 'SQLServer' ) )
+            if (  $sqlMajorVersion -ge 13  )
             {
-                $alwaysOnAvailabilityGroupReplicaResource.'SeedingMode' = $availabilityGroupReplica.SeedingMode
+                if ( (Get-Command -Name 'New-SqlAvailabilityReplica').Parameters.ContainsKey('SeedingMode') )
+                {
+                    $alwaysOnAvailabilityGroupReplicaResource.'SeedingMode' = $availabilityGroupReplica.SeedingMode
+                }
+                else
+                {
+                    $alwaysOnAvailabilityGroupReplicaResource.'SeedingMode' = $null
+                }
             }
         }
     }
@@ -272,9 +276,6 @@ function Set-TargetResource
     # Define current version for check compatibility
     $sqlMajorVersion = $serverObject.Version.Major
 
-    # Get SQL module name
-    $sqlModuleName = (Get-Module -FullyQualifiedName (Get-SqlDscPreferredModule -ErrorAction 'Stop') -ListAvailable).Name
-
     # Determine if HADR is enabled on the instance. If not, throw an error
     if ( -not $serverObject.IsHadrEnabled )
     {
@@ -428,10 +429,13 @@ function Set-TargetResource
                         $availabilityGroupReplicaUpdatesRequired = $true
                     }
 
-                    if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroupReplica.SeedingMode ) -and ( $sqlModuleName -eq 'SQLServer' ) )
+                    if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroupReplica.SeedingMode ) )
                     {
-                        $availabilityGroupReplica.SeedingMode = $SeedingMode
-                        $availabilityGroupReplicaUpdatesRequired = $true
+                        if ((Get-Command -Name 'New-SqlAvailabilityReplica').Parameters.ContainsKey('SeedingMode'))
+                        {
+                            $availabilityGroupReplica.SeedingMode = $SeedingMode
+                            $availabilityGroupReplicaUpdatesRequired = $true
+                        }
                     }
 
                     if ( $availabilityGroupReplicaUpdatesRequired )
@@ -495,7 +499,7 @@ function Set-TargetResource
                         $newAvailabilityGroupReplicaParams.Add('ReadOnlyRoutingList', $ReadOnlyRoutingList)
                     }
 
-                    if ( ( $sqlMajorVersion -ge 13 ) -and ( $sqlModuleName -eq 'SQLServer' ) )
+                    if ( ( $sqlMajorVersion -ge 13 ) -and (Get-Command -Name 'New-SqlAvailabilityReplica').Parameters.ContainsKey('SeedingMode') )
                     {
                         $newAvailabilityGroupReplicaParams.Add('SeedingMode', $SeedingMode)
                     }
