@@ -423,4 +423,24 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             Should -Invoke -CommandName Set-PSModulePath -Exactly -Times 1 -Scope It
         }
     }
+
+    Context 'When the environment variable SMODefaultModuleName is assigned a module name' {
+        BeforeAll {
+            $env:SMODefaultModuleName = 'OtherModule'
+
+            Mock -CommandName Get-Module -MockWith {
+                return @{
+                    Name = $env:SMODefaultModuleName
+                }
+            }
+        }
+
+        AfterAll {
+            Remove-Item -Path 'env:SMODefaultModuleName'
+        }
+
+        It 'Should return the correct module name' {
+            Get-SqlDscPreferredModule | Should -Be $env:SMODefaultModuleName
+        }
+    }
 }

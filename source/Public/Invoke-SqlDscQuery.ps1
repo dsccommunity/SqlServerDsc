@@ -42,6 +42,9 @@
         are written to the console. Strings will be escaped so they will not
         be interpreted as regular expressions (RegEx).
 
+    .PARAMETER Encrypt
+        Specifies if encryption should be used.
+
     .PARAMETER Force
         Specifies that the query should be executed without any confirmation.
 
@@ -116,6 +119,10 @@ function Invoke-SqlDscQuery
         [System.String]
         $LoginType = 'Integrated',
 
+        [Parameter(ParameterSetName = 'ByServerName')]
+        [System.Management.Automation.SwitchParameter]
+        $Encrypt,
+
         [Parameter(Mandatory = $true)]
         [System.String]
         $DatabaseName,
@@ -161,6 +168,11 @@ function Invoke-SqlDscQuery
                 Verbose          = $VerbosePreference
             }
 
+            if ($Encrypt.IsPresent)
+            {
+                $connectSqlDscDatabaseEngineParameters.Encrypt = $true
+            }
+
             if ($LoginType -ne 'Integrated')
             {
                 $connectSqlDscDatabaseEngineParameters['LoginType'] = $LoginType
@@ -173,6 +185,13 @@ function Invoke-SqlDscQuery
 
             $ServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
         }
+
+        if ($PSCmdlet.ParameterSetName -eq 'ByServerObject')
+        {
+            $InstanceName = $ServerObject.InstanceName
+        }
+
+        $redactedQuery = $Query
 
         if ($PSBoundParameters.ContainsKey('RedactText'))
         {

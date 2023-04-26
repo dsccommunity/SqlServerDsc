@@ -43,6 +43,9 @@ BeforeAll {
 
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
+    # Loading mocked classes
+    Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
+
     # Load the correct SQL Module stub
     $script:stubModuleName = Import-SQLModuleStub -PassThru
 
@@ -508,7 +511,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
         Mock -CommandName Invoke-CimMethod -MockWith $mockInvokeCimMethod
 
         Mock -CommandName Import-SqlDscPreferredModule
-        Mock -CommandName Invoke-SqlCmd
+        Mock -CommandName Invoke-SqlDscQuery
         Mock -CommandName Restart-ReportingServicesService
         Mock -CommandName Invoke-RsCimMethod
         Mock -CommandName Invoke-RsCimMethod -MockWith $mockInvokeRsCimMethod_GenerateDatabaseCreationScript -ParameterFilter {
@@ -565,18 +568,6 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Mock -CommandName Test-TargetResource -MockWith {
                     return $true
-                }
-
-                BeforeAll {
-                    Mock -CommandName Get-Command -ParameterFilter {
-                        $Name -eq 'Invoke-SqlCmd'
-                    } -MockWith {
-                        return @{
-                            Parameters = @{
-                                Keys = @()
-                            }
-                        }
-                    }
                 }
             }
 
@@ -641,7 +632,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
             }
 
@@ -661,12 +652,13 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                             DatabaseServerName   = $mockReportingServicesDatabaseServerName
                             DatabaseInstanceName = $mockReportingServicesDatabaseNamedInstanceName
                             UseSsl               = $true
+                            Encrypt              = 'Mandatory'
                         }
 
                         { Set-TargetResource @mockDefaultParameters } | Should -Throw -ExpectedMessage ('*' + $script:localizedData.TestFailedAfterSet)
 
-                        Should -Invoke -CommandName Invoke-SqlCmd -ParameterFilter {
-                            $PesterBoundParameters.Keys -notcontains 'Encrypt'
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                            $PesterBoundParameters.Keys -contains 'Encrypt'
                         } -Times 2 -Exactly -Scope It
                     }
                 }
@@ -785,7 +777,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 } -Exactly -Times 2 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
             }
         }
@@ -880,7 +872,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 } -Exactly -Times 2 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 0 -Scope It
             }
         }
@@ -891,16 +883,6 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
 
                 Mock -CommandName Test-TargetResource -MockWith {
                     return $true
-                }
-
-                                Mock -CommandName Get-Command -ParameterFilter {
-                    $Name -eq 'Invoke-SqlCmd'
-                } -MockWith {
-                    return @{
-                        Parameters = @{
-                            Keys = @('Encrypt')
-                        }
-                    }
                 }
 
                 $defaultParameters = @{
@@ -967,11 +949,11 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
                 } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 2 -Scope It
+                Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It
                 Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 2 -Scope It
 
-                Should -Invoke -CommandName Invoke-SqlCmd -ParameterFilter {
-                    $Encrypt -eq 'Optional'
+                Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                    $PesterBoundParameters.Keys -notcontains 'Encrypt'
                 } -Times 2 -Exactly -Scope It
             }
         }
@@ -1070,7 +1052,7 @@ Describe 'SqlRS\Set-TargetResource' -Tag 'Set' {
             } -Exactly -Times 1 -Scope It
 
             Should -Invoke -CommandName Get-CimInstance -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Invoke-SqlCmd -Exactly -Times 2 -Scope It
+            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It
             Should -Invoke -CommandName Restart-ReportingServicesService -Exactly -Times 1 -Scope It
         }
     }
@@ -1093,8 +1075,8 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                     $testParameters = @{
                         InstanceName         = 'INSTANCE'
-                        DatabaseServerName   = 'DBSERVER'
-                        DatabaseInstanceName = 'DBINSTANCE'
+                        DatabaseServerName   = 'MockDatabaseServer'
+                        DatabaseInstanceName = 'MockDatabaseInstance'
                         Encrypt              = 'Optional'
                     }
 
@@ -1121,8 +1103,8 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                     $testParameters = @{
                         InstanceName            = 'INSTANCE'
-                        DatabaseServerName      = 'DBSERVER'
-                        DatabaseInstanceName    = 'DBINSTANCE'
+                        DatabaseServerName      = 'MockDatabaseServer'
+                        DatabaseInstanceName    = 'MockDatabaseInstance'
                         ReportServerReservedUrl = 'ReportServer_SQL2016'
                     }
 
@@ -1149,8 +1131,8 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                     $testParameters = @{
                         InstanceName         = 'INSTANCE'
-                        DatabaseServerName   = 'DBSERVER'
-                        DatabaseInstanceName = 'DBINSTANCE'
+                        DatabaseServerName   = 'MockDatabaseServer'
+                        DatabaseInstanceName = 'MockDatabaseInstance'
                         ReportsReservedUrl   = 'Reports_SQL2016'
                     }
 
@@ -1178,8 +1160,8 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                     $testParameters = @{
                         InstanceName                 = 'INSTANCE'
-                        DatabaseServerName           = 'DBSERVER'
-                        DatabaseInstanceName         = 'DBINSTANCE'
+                        DatabaseServerName           = 'MockDatabaseServer'
+                        DatabaseInstanceName         = 'MockDatabaseInstance'
                         ReportsVirtualDirectory      = 'Reports_SQL2016'
                         ReportServerVirtualDirectory = 'ReportServer_NewName'
                     }
@@ -1207,8 +1189,8 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                     $testParameters = @{
                         InstanceName                 = 'INSTANCE'
-                        DatabaseServerName           = 'DBSERVER'
-                        DatabaseInstanceName         = 'DBINSTANCE'
+                        DatabaseServerName           = 'MockDatabaseServer'
+                        DatabaseInstanceName         = 'MockDatabaseInstance'
                         ReportServerVirtualDirectory = 'ReportServer_SQL2016'
                         ReportsVirtualDirectory      = 'Reports_NewName'
                     }
@@ -1236,8 +1218,8 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                     $testParameters = @{
                         InstanceName            = 'INSTANCE'
-                        DatabaseServerName      = 'DBSERVER'
-                        DatabaseInstanceName    = 'DBINSTANCE'
+                        DatabaseServerName      = 'MockDatabaseServer'
+                        DatabaseInstanceName    = 'MockDatabaseInstance'
                         ReportServerReservedUrl = 'https://+:443'
                     }
 
@@ -1264,8 +1246,8 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                     $testParameters = @{
                         InstanceName         = 'INSTANCE'
-                        DatabaseServerName   = 'DBSERVER'
-                        DatabaseInstanceName = 'DBINSTANCE'
+                        DatabaseServerName   = 'MockDatabaseServer'
+                        DatabaseInstanceName = 'MockDatabaseInstance'
                         ReportsReservedUrl   = 'https://+:443'
                     }
 
@@ -1292,8 +1274,8 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                     $testParameters = @{
                         InstanceName         = 'INSTANCE'
-                        DatabaseServerName   = 'DBSERVER'
-                        DatabaseInstanceName = 'DBINSTANCE'
+                        DatabaseServerName   = 'MockDatabaseServer'
+                        DatabaseInstanceName = 'MockDatabaseInstance'
                         UseSsl               = $true
                     }
 
@@ -1320,8 +1302,8 @@ Describe 'SqlRS\Test-TargetResource' -Tag 'Test' {
 
                 $defaultParameters = @{
                     InstanceName         = 'INSTANCE'
-                    DatabaseServerName   = 'DBSERVER'
-                    DatabaseInstanceName = 'DBINSTANCE'
+                    DatabaseServerName   = 'MockDatabaseServer'
+                    DatabaseInstanceName = 'MockDatabaseInstance'
                 }
 
                 $resultTestTargetResource = Test-TargetResource @defaultParameters
@@ -1359,7 +1341,7 @@ Describe 'SqlRS\Invoke-RsCimMethod' -Tag 'Helper' {
         BeforeAll {
             Mock -CommandName Invoke-CimMethod -MockWith {
                 return @{
-                    HRESULT = 0
+                    HRESULT = 0 # cSpell: disable-line
                 }
             }
         }
@@ -1375,7 +1357,7 @@ Describe 'SqlRS\Invoke-RsCimMethod' -Tag 'Helper' {
                     }
 
                     $resultTestTargetResource = Invoke-RsCimMethod @invokeRsCimMethodParameters
-                    $resultTestTargetResource.HRESULT | Should -Be 0
+                    $resultTestTargetResource.HRESULT | Should -Be 0 # cSpell: disable-line
                 }
 
                 Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
@@ -1398,7 +1380,7 @@ Describe 'SqlRS\Invoke-RsCimMethod' -Tag 'Helper' {
                     }
 
                     $resultTestTargetResource = Invoke-RsCimMethod @invokeRsCimMethodParameters
-                    $resultTestTargetResource.HRESULT | Should -Be 0
+                    $resultTestTargetResource.HRESULT | Should -Be 0 # cSpell: disable-line
                 }
 
                 Should -Invoke -CommandName Invoke-CimMethod -ParameterFilter {
@@ -1413,7 +1395,7 @@ Describe 'SqlRS\Invoke-RsCimMethod' -Tag 'Helper' {
             BeforeAll {
                 Mock -CommandName Invoke-CimMethod -MockWith {
                     return @{
-                        HRESULT = 1
+                        HRESULT = 1 # cSpell: disable-line
                         Error   = 'Something went wrong'
                     }
                 }
@@ -1428,6 +1410,7 @@ Describe 'SqlRS\Invoke-RsCimMethod' -Tag 'Helper' {
                         MethodName  = 'AnyMethod'
                     }
 
+                    # cSpell: disable-next
                     { Invoke-RsCimMethod @invokeRsCimMethodParameters } | Should -Throw 'Method AnyMethod() failed with an error. Error: Something went wrong (HRESULT:1)'
                 }
 
@@ -1441,7 +1424,7 @@ Describe 'SqlRS\Invoke-RsCimMethod' -Tag 'Helper' {
             BeforeAll {
                 Mock -CommandName Invoke-CimMethod -MockWith {
                     return New-Object -TypeName Object |
-                        Add-Member -MemberType NoteProperty -Name 'HRESULT' -Value 1 -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'HRESULT' -Value 1 -PassThru | # cSpell: disable-line
                         Add-Member -MemberType NoteProperty -Name 'ExtendedErrors' -Value @('Something went wrong', 'Another thing went wrong') -PassThru -Force
                 }
             }
@@ -1455,6 +1438,7 @@ Describe 'SqlRS\Invoke-RsCimMethod' -Tag 'Helper' {
                         MethodName  = 'AnyMethod'
                     }
 
+                    # cSpell: disable-next
                     { Invoke-RsCimMethod @invokeRsCimMethodParameters } | Should -Throw 'Method AnyMethod() failed with an error. Error: Something went wrong;Another thing went wrong (HRESULT:1)'
                 }
 
@@ -1468,7 +1452,7 @@ Describe 'SqlRS\Invoke-RsCimMethod' -Tag 'Helper' {
 
 Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
     BeforeAll {
-        $mockInstanceId = 'MSRS13.INSTANCE'
+        $mockInstanceId = 'MSRS13.INSTANCE' # cSpell: disable-line
 
         $mockGetItemProperty_Sql2014 = {
             return @{
@@ -1535,7 +1519,7 @@ Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance -ArgumentList @(
                                 'MSReportServer_ConfigurationSetting'
                                 'root/Microsoft/SQLServer/ReportServer/RS_SQL2016/v13/Admin'
-                            ) | Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value 'DBSERVER\DBINSTANCE' -PassThru |
+                            ) | Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value 'MockDatabaseServer\MockDatabaseInstance' -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $false -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value 'INSTANCE' -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'VirtualDirectoryReportServer' -Value 'ReportServer' -PassThru |
@@ -1545,7 +1529,7 @@ Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
                         (
                             # Array is a regression test for issue #819.
                             New-Object -TypeName Object |
-                                Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value 'DBSERVER\DBINSTANCE' -PassThru |
+                                Add-Member -MemberType NoteProperty -Name 'DatabaseServerName' -Value 'MockDatabaseServer\MockDatabaseInstance' -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'IsInitialized' -Value $true -PassThru |
                                 Add-Member -MemberType NoteProperty -Name 'InstanceName' -Value 'DummyInstance' -PassThru -Force
                         )
@@ -1574,7 +1558,7 @@ Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
 
                     $getReportingServicesDataResult.Configuration | Should -BeOfType [Microsoft.Management.Infrastructure.CimInstance]
                     $getReportingServicesDataResult.Configuration.InstanceName | Should -Be 'INSTANCE'
-                    $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be 'DBSERVER\DBINSTANCE'
+                    $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be 'MockDatabaseServer\MockDatabaseInstance'
                     $getReportingServicesDataResult.Configuration.IsInitialized | Should -BeFalse
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be 'ReportServer'
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be 'Reports'
@@ -1614,7 +1598,7 @@ Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
 
                     $getReportingServicesDataResult.Configuration | Should -BeOfType [Microsoft.Management.Infrastructure.CimInstance]
                     $getReportingServicesDataResult.Configuration.InstanceName | Should -Be 'INSTANCE'
-                    $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be 'DBSERVER\DBINSTANCE'
+                    $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be 'MockDatabaseServer\MockDatabaseInstance'
                     $getReportingServicesDataResult.Configuration.IsInitialized | Should -BeFalse
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be 'ReportServer'
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be 'Reports'
@@ -1654,7 +1638,7 @@ Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
 
                     $getReportingServicesDataResult.Configuration | Should -BeOfType [Microsoft.Management.Infrastructure.CimInstance]
                     $getReportingServicesDataResult.Configuration.InstanceName | Should -Be 'INSTANCE'
-                    $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be 'DBSERVER\DBINSTANCE'
+                    $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be 'MockDatabaseServer\MockDatabaseInstance'
                     $getReportingServicesDataResult.Configuration.IsInitialized | Should -BeFalse
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be 'ReportServer'
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be 'Reports'
@@ -1694,7 +1678,7 @@ Describe 'SqlRS\Get-ReportingServicesData' -Tag 'Helper' {
 
                     $getReportingServicesDataResult.Configuration | Should -BeOfType [Microsoft.Management.Infrastructure.CimInstance]
                     $getReportingServicesDataResult.Configuration.InstanceName | Should -Be 'INSTANCE'
-                    $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be 'DBSERVER\DBINSTANCE'
+                    $getReportingServicesDataResult.Configuration.DatabaseServerName | Should -Be 'MockDatabaseServer\MockDatabaseInstance'
                     $getReportingServicesDataResult.Configuration.IsInitialized | Should -BeFalse
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportServer | Should -Be 'ReportServer'
                     $getReportingServicesDataResult.Configuration.VirtualDirectoryReportManager | Should -Be 'Reports'

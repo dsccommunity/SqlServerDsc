@@ -447,6 +447,9 @@ function Start-SqlSetupProcess
     .PARAMETER StatementTimeout
         Set the query StatementTimeout in seconds. Default 600 seconds (10 minutes).
 
+    .PARAMETER Encrypt
+        Specifies if encryption should be used.
+
     .EXAMPLE
         Connect-SQL
 
@@ -493,7 +496,11 @@ function Connect-SQL
         [Parameter()]
         [ValidateNotNull()]
         [System.Int32]
-        $StatementTimeout = 600
+        $StatementTimeout = 600,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Encrypt
     )
 
     Import-SqlDscPreferredModule
@@ -511,7 +518,13 @@ function Connect-SQL
     $sqlConnectionContext = $sqlServerObject.ConnectionContext
     $sqlConnectionContext.ServerInstance = $databaseEngineInstance
     $sqlConnectionContext.StatementTimeout = $StatementTimeout
+    $sqlConnectionContext.ConnectTimeout = $StatementTimeout
     $sqlConnectionContext.ApplicationName = 'SqlServerDsc'
+
+    if ($Encrypt.IsPresent)
+    {
+        $sqlConnectionContext.EncryptConnection = $true
+    }
 
     if ($PSCmdlet.ParameterSetName -eq 'SqlServer')
     {
@@ -551,15 +564,42 @@ function Connect-SQL
 
     try
     {
+        $onlineStatus = 'Online'
+        $connectTimer = [System.Diagnostics.StopWatch]::StartNew()
         $sqlConnectionContext.Connect()
 
-        $instanceStatus = $sqlServerObject.Status
-
-        if ($instanceStatus)
+        <#
+            The addition of the ConnetTimeout property to the ConnectionContext will force the
+            Connect() method to block until successful.  THe SMO object's Status property may not
+            report 'Online' immediately eventhough the Connect() was successful.  The loop is to
+            ensure the SMO's Status property was been updated.
+        #>
+        $sleepInSeconds = 2
+        do
         {
-            # Property Status is of type Enum ServerStatus, we return the string equivalent.
-            $instanceStatus = $instanceStatus.ToString()
-        }
+            $instanceStatus = $sqlServerObject.Status
+            if ([System.String]::IsNullOrEmpty($instanceStatus))
+            {
+                $instanceStatus = 'Unknown'
+            }
+            else
+            {
+                # Property Status is of type Enum ServerStatus, we return the string equivalent.
+                $instanceStatus = $instanceStatus.ToString()
+            }
+
+            if ($instanceStatus -eq $onlineStatus)
+            {
+                break
+            }
+
+            Write-Debug -Message (
+                $script:localizedData.WaitForDatabaseEngineInstanceStatus -f $instanceStatus, $onlineStatus, $sleepInSeconds
+            )
+
+            Start-Sleep -Seconds $sleepInSeconds
+            $sqlServerObject.Refresh()
+        } while ($connectTimer.Elapsed.TotalSeconds -lt $StatementTimeout)
 
         if ($instanceStatus -match '^Online$')
         {
@@ -571,11 +611,6 @@ function Connect-SQL
         }
         else
         {
-            if ([System.String]::IsNullOrEmpty($instanceStatus))
-            {
-                $instanceStatus = 'Unknown'
-            }
-
             $errorMessage = $script:localizedData.DatabaseEngineInstanceNotOnline -f @(
                 $databaseEngineInstance,
                 $instanceStatus
@@ -620,6 +655,7 @@ function Connect-SQL
     }
     finally
     {
+        $connectTimer.Stop()
         <#
             Connect will ensure we actually can connect, but we need to disconnect
             from the session so we don't have anything hanging. If we need run a
