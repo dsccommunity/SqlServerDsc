@@ -150,6 +150,7 @@ Describe 'SqlAGReplica\Get-TargetResource' {
         }
 
         Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer1
+        Mock -CommandName New-SqlAvailabilityReplica
     }
 
     Context 'When the Availability Group Replica is absent' {
