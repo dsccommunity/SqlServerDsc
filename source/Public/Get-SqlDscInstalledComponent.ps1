@@ -46,7 +46,7 @@ function Get-SqlDscInstalledComponent
 
     Assert-ElevatedUser -ErrorAction 'Stop'
 
-    $installedComponents = @()
+    $serviceComponent = @()
 
     $currentInstalledServices = Get-SqlDscManagedComputerService -ServerName $ServerName -ErrorAction 'Stop'
 
@@ -87,7 +87,7 @@ function Get-SqlDscInstalledComponent
             command does not use advanced properties, e.g:
             ($installedService.AdvancedProperties | ? Name -eq 'InstanceId').Value
         #>
-        $serviceComponent = [PSCustomObject] @{
+        $serviceComponent += [PSCustomObject] @{
             ServiceName              = $installedService.Name
             ServiceType              = $serviceType
             ServiceDisplayName       = $installedService.DisplayName
@@ -100,99 +100,132 @@ function Get-SqlDscInstalledComponent
             InstanceId               = $null
             Feature                  = @()
         }
-
-        $installedComponents += $serviceComponent
     }
 
-    # Loop to set InstanceId.
-    foreach ($component in $installedComponents.Where({ $_.ServiceType -in ('DatabaseEngine', 'AnalysisServices', 'ReportingServices') }))
+    # Get InstanceId for all installed services.
+    foreach ($component in $serviceComponent.Where({ $_.ServiceType -in ('DatabaseEngine', 'AnalysisServices', 'ReportingServices') }))
     {
         $component.InstanceId = $component.ServiceType | Get-InstanceId -InstanceName $component.InstanceName
     }
 
-    # Loop to get features.
-    foreach ($component in $installedComponents)
+    $installedComponents = @()
+
+    # Evaluate features based on installed services.
+    foreach ($currentServiceComponent in $serviceComponent)
     {
-        switch ($component.ServiceType)
+        $installedComponent = [PSCustomObject] @{
+            Feature = $null
+        }
+
+        switch ($currentServiceComponent.ServiceType)
         {
             'DatabaseEngine'
             {
-                $component.Feature += 'SQLEngine'
-
-                #$isReplicationInstalled = Test-IsReplicationFeatureInstalled -InstanceName $InstanceName
-
-                if ($isReplicationInstalled)
-                {
-                    $component.Feature += 'Replication'
-                }
-
-                #$isDQInstalled = Test-IsDQComponentInstalled -InstanceName $InstanceName -SqlServerMajorVersion $sqlVersion
-
-                if ($isDQInstalled)
-                {
-                    $component.Feature += 'DQ'
-                }
-
-                #TODO: This has nothing to do with DatabaseEngine.
-                $isDQInstalled = Test-IsDataQualityClientInstalled -Version $component.Version
-
-                if ($isDQInstalled)
-                {
-                    $component.Feature += 'DQC'
-                }
-
-                #$isSsmsInstalled = Test-IsSsmsInstalled -SqlServerMajorVersion $sqlVersion
-
-                if ($isSsmsInstalled)
-                {
-                    $component.Feature += 'SSMS'
-                }
-
-                #$isSsmsAdvancedInstalled = Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion $sqlVersion
-
-                if ($isSsmsAdvancedInstalled)
-                {
-                    $component.Feature += 'ADV_SSMS'
-                }
+                $installedComponent.Feature = 'SQLEngine'
 
                 break
             }
 
             '9'
             {
-                $component.Feature += 'FullText'
+                $installedComponent.Feature += 'FullText'
 
                 break
             }
 
             '12'
             {
-                $component.Feature += 'AdvancedAnalytics'
+                $installedComponent.Feature += 'AdvancedAnalytics'
 
                 break
             }
 
             'AnalysisServices'
             {
-                $component.Feature += 'AS'
+                $installedComponent.Feature += 'AS'
 
                 break
             }
 
             'IntegrationServices'
             {
-                $component.Feature += 'IS'
+                $installedComponent.Feature += 'IS'
 
                 break
             }
 
             'ReportingServices'
             {
-                $component.Feature += 'RS'
+                $installedComponent.Feature += 'RS'
+
+                break
+            }
+
+            Default
+            {
+                # Skip services like SQL Browser and SQL Agent.
 
                 break
             }
         }
+
+        # Skip service if it wasn't detected as a feature.
+        if ($installedComponent.Feature)
+        {
+            $installedComponent |
+                Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value $currentServiceComponent.InstanceName -PassThru |
+                Add-Member -MemberType 'NoteProperty' -Name 'InstanceId' -Value $currentServiceComponent.InstanceId -PassThru |
+                Add-Member -MemberType 'NoteProperty' -Name 'Version' -Value $currentServiceComponent.ServiceExecutableVersion -PassThru |
+                Add-Member -MemberType 'NoteProperty' -Name 'ServiceProperties' -Value $currentServiceComponent
+
+            $installedComponents += $installedComponent
+        }
+    }
+
+    #$isReplicationInstalled = Test-IsReplicationFeatureInstalled -InstanceName $InstanceName
+
+    if ($isReplicationInstalled)
+    {
+        $component.Feature = 'Replication'
+    }
+
+    #$isDQInstalled = Test-IsDQComponentInstalled -InstanceName $InstanceName -SqlServerMajorVersion $sqlVersion
+
+    if ($isDQInstalled)
+    {
+        $component.Feature = 'DQ'
+    }
+
+    # Fetch registry keys that is three digits, like 100, 110, .., 160, and so on.
+    $installedDatabaseLevel = (Split-Path -Leaf -Path (Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\').Name) -match '^\d\d\d$'
+
+    foreach ($databaseLevel in $installedDatabaseLevel)
+    {
+        $databaseLevelVersion = [System.Version] ('{0}.{1}' -f $databaseLevel.Substring(0,2), $databaseLevel.Substring(2,1))
+
+        $isDQInstalled = Test-IsDataQualityClientInstalled -Version $databaseLevelVersion
+
+        if ($isDQInstalled)
+        {
+            $installedComponents += [PSCustomObject] @{
+                Feature = 'DQC'
+                Version = $databaseLevelVersion
+            }
+        }
+    }
+
+    #$isSsmsInstalled = Test-IsSsmsInstalled -SqlServerMajorVersion $sqlVersion
+
+    if ($isSsmsInstalled)
+    {
+        $component.Feature = 'SSMS'
+    }
+
+    #$isSsmsAdvancedInstalled = Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion $sqlVersion
+
+    if ($isSsmsAdvancedInstalled)
+    {
+        $component.Feature = 'ADV_SSMS'
     }
 
 
@@ -206,14 +239,14 @@ function Get-SqlDscInstalledComponent
         {
             $componentsToReturn += $installedComponents |
                 Where-Object -FilterScript {
-                    -not $_.InstanceName -and $_.FileProductVersion.Major -eq $Version.Major
+                    -not $_.InstanceName -and $_.Version.Major -eq $Version.Major
                 }
         }
         else
         {
             $componentsToReturn += $installedComponents |
                 Where-Object -FilterScript {
-                    $_.FileProductVersion.Major -eq $Version.Major
+                    $_.Version.Major -eq $Version.Major
                 }
         }
     }
