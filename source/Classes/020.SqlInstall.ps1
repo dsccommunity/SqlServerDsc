@@ -740,11 +740,8 @@ class SqlInstall : SqlSetupBase
     {
         # These properties will not be enforced.
         $this.ExcludeDscProperties = @(
-            'ServerName'
-            'InstanceName'
-            'Name'
+            'ServerName' # TODO: This should exclude all properties other than Features
             'Credential'
-            'Force'
         )
     }
 
@@ -794,6 +791,17 @@ class SqlInstall : SqlSetupBase
             )
         }
 
+        $setupExecutablePath = Join-Path -Path $this.MediaPath -ChildPath 'setup.exe'
+
+        $setupExecutableVersionInformation = Get-FileVersionInformation -FilePath $setupExecutablePath
+
+        Write-Verbose -Message (
+            $script:localizedData.SetupExecutablePath -f @(
+                $setupExecutablePath,
+                $setupExecutableVersionInformation.ProductVersion
+            )
+        )
+
         <#
             Only set key property Name if the audit exist. Base class will set it
             and handle Ensure.
@@ -803,6 +811,14 @@ class SqlInstall : SqlSetupBase
             InstanceName = $properties.InstanceName
             ServerName   = $this.ServerName
         }
+
+        <#
+            TODO:
+
+            Should call a Get-SqlDscInstalledComponents (optional parameter is InstanceName).
+            Result is InstanceName, list of features, and for each Feature all needed properties.
+        #>
+        $currentInstalledServiceNames = (Get-SqlDscManagedComputerService).Name
 
         $serverObject = $this.GetServerObject()
 
