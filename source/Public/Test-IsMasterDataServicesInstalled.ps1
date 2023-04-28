@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-        Returns whether the Data Quality Client is installed.
+        Returns whether the Master Data Services are installed.
 
     .DESCRIPTION
-        Returns whether the Data Quality Client is installed.
+        Returns whether the Master Data Services are installed.
 
     .PARAMETER Version
        Specifies the version for which to check if component is installed.
@@ -12,11 +12,11 @@
         [System.Boolean]
 
     .EXAMPLE
-        Test-IsDataQualityClientInstalled -Version ([System.Version] '16.0')
+        IsMasterDataServicesInstalled -Version ([System.Version] '16.0')
 
-        Returns $true if Data Quality Client is installed.
+        Returns $true if Master Data Services are installed.
 #>
-function Test-IsDataQualityClientInstalled
+function Test-IsMasterDataServicesInstalled
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -31,15 +31,15 @@ function Test-IsDataQualityClientInstalled
 
     $getRegistryPropertyValueParameters = @{
         Path        = $configurationStateRegistryPath -f $Version.Major
-        Name        = 'SQL_DQ_CLIENT_Full'
+        Name        = 'MDSCoreFeature'
         ErrorAction = 'SilentlyContinue'
     }
 
-    $isDQCInstalled = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
+    $isMDSInstalled = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
     $result = $false
 
-    if ($isDQCInstalled -eq 1)
+    if ($isMDSInstalled -eq 1)
     {
         $result = $true
     }
