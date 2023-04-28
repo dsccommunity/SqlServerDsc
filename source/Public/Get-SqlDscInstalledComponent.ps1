@@ -46,67 +46,7 @@ function Get-SqlDscInstalledComponent
 
     Assert-ElevatedUser -ErrorAction 'Stop'
 
-    $serviceComponent = @()
-
-    $currentInstalledServices = Get-SqlDscManagedComputerService -ServerName $ServerName -ErrorAction 'Stop'
-
-    foreach ($installedService in $currentInstalledServices)
-    {
-        $serviceType = $installedService.Type | ConvertFrom-ManagedServiceType -ErrorAction 'SilentlyContinue'
-
-        if (-not $serviceType)
-        {
-            <#
-                This is a workaround because [Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType]
-                does not support all service types yet.
-            #>
-            $serviceType = $installedService.Type
-        }
-
-        $fileProductVersion = $null
-
-        $serviceExecutablePath = (($installedService.PathName -replace '"') -split ' -')[0]
-
-        if ((Test-Path -Path $serviceExecutablePath))
-        {
-            $fileProductVersion = [System.Version] (Get-FileVersionInformation -FilePath $serviceExecutablePath).ProductVersion
-        }
-
-        # Get InstanceName from the service name if it exist.
-        $serviceInstanceName = if ($installedService.Name -match '\$(.*)$')
-        {
-            $Matches[1]
-        }
-
-        $serviceStartMode = $installedService.StartMode | ConvertFrom-ServiceStartMode
-
-        <#
-            There are more properties that can be fetch from advanced properties,
-            for example InstanceId, Clustered, and Version (for some), but it takes
-            about 6 seconds for it to return a value. Because of the slowness this
-            command does not use advanced properties, e.g:
-            ($installedService.AdvancedProperties | ? Name -eq 'InstanceId').Value
-        #>
-        $serviceComponent += [PSCustomObject] @{
-            ServiceName              = $installedService.Name
-            ServiceType              = $serviceType
-            ServiceDisplayName       = $installedService.DisplayName
-            ServiceAccountName       = $installedService.ServiceAccount
-            ServiceStartMode         = $serviceStartMode
-            InstanceName             = $serviceInstanceName
-            ServiceExecutableVersion = $fileProductVersion
-
-            # Properties that should be on all objects, but set later
-            InstanceId               = $null
-            Feature                  = @()
-        }
-    }
-
-    # Get InstanceId for all installed services.
-    foreach ($component in $serviceComponent.Where({ $_.ServiceType -in ('DatabaseEngine', 'AnalysisServices', 'ReportingServices') }))
-    {
-        $component.InstanceId = $component.ServiceType | Get-InstanceId -InstanceName $component.InstanceName
-    }
+    $serviceComponent = Get-SqlDscInstalledService -ServerName $ServerName
 
     $installedComponents = @()
 
@@ -174,26 +114,21 @@ function Get-SqlDscInstalledComponent
         {
             $installedComponent |
                 Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value $currentServiceComponent.InstanceName -PassThru |
-                Add-Member -MemberType 'NoteProperty' -Name 'InstanceId' -Value $currentServiceComponent.InstanceId -PassThru |
                 Add-Member -MemberType 'NoteProperty' -Name 'Version' -Value $currentServiceComponent.ServiceExecutableVersion -PassThru |
                 Add-Member -MemberType 'NoteProperty' -Name 'ServiceProperties' -Value $currentServiceComponent
 
+            # Get InstanceId for all installed services.
+            if ($currentServiceComponent.ServiceType -in ('DatabaseEngine', 'AnalysisServices', 'ReportingServices'))
+            {
+                $installedComponent |
+                    Add-Member -MemberType 'NoteProperty' -Name 'InstanceId' -Value (
+                        $currentServiceComponent.ServiceType |
+                            Get-InstanceId -InstanceName $currentServiceComponent.InstanceName
+                    )
+            }
+
             $installedComponents += $installedComponent
         }
-    }
-
-    #$isReplicationInstalled = Test-IsReplicationFeatureInstalled -InstanceName $InstanceName
-
-    if ($isReplicationInstalled)
-    {
-        $component.Feature = 'Replication'
-    }
-
-    #$isDQInstalled = Test-IsDQComponentInstalled -InstanceName $InstanceName -SqlServerMajorVersion $sqlVersion
-
-    if ($isDQInstalled)
-    {
-        $component.Feature = 'DQ'
     }
 
     # Fetch registry keys that is three digits, like 100, 110, .., 160, and so on.
@@ -203,6 +138,7 @@ function Get-SqlDscInstalledComponent
     {
         $databaseLevelVersion = [System.Version] ('{0}.{1}' -f $databaseLevel.Substring(0,2), $databaseLevel.Substring(2,1))
 
+        # Look for installed version of Data Quality Client.
         $isDQInstalled = Test-IsDataQualityClientInstalled -Version $databaseLevelVersion
 
         if ($isDQInstalled)
@@ -212,21 +148,122 @@ function Get-SqlDscInstalledComponent
                 Version = $databaseLevelVersion
             }
         }
+
+        # Look for installed version of SQL Server Books Online.
+        $isBOLInstalled = Test-IsBooksOnlineInstalled -Version $databaseLevelVersion
+
+        if ($isBOLInstalled)
+        {
+            $installedComponents += [PSCustomObject] @{
+                Feature = 'BOL'
+                Version = $databaseLevelVersion
+            }
+        }
+
+        # Look for installed version of Connectivity Components.
+        $isConnInstalled = Test-IsConnectivityComponentsInstalled -Version $databaseLevelVersion
+
+        if ($isConnInstalled)
+        {
+            $installedComponents += [PSCustomObject] @{
+                Feature = 'CONN'
+                Version = $databaseLevelVersion
+            }
+        }
+
+        # Look for installed version of Backward Compatibility Components.
+        $isBCInstalled = Test-IsBackwardCompatibilityComponentsInstalled -Version $databaseLevelVersion
+
+        if ($isBCInstalled)
+        {
+            $installedComponents += [PSCustomObject] @{
+                Feature = 'BC'
+                Version = $databaseLevelVersion
+            }
+        }
+
+        # Look for installed version of Software Development Kit.
+        $isSDKInstalled = Test-IsSoftwareDevelopmentKitInstalled -Version $databaseLevelVersion
+
+        if ($isSDKInstalled)
+        {
+            $installedComponents += [PSCustomObject] @{
+                Feature = 'SDK'
+                Version = $databaseLevelVersion
+            }
+        }
+
+        # Look for installed version of Master Data Services.
+        $isMDSInstalled = Test-IsMasterDataServicesInstalled -Version $databaseLevelVersion
+
+        if ($isMDSInstalled)
+        {
+            $installedComponents += [PSCustomObject] @{
+                Feature = 'MDS'
+                Version = $databaseLevelVersion
+            }
+        }
     }
 
-    #$isSsmsInstalled = Test-IsSsmsInstalled -SqlServerMajorVersion $sqlVersion
+    $databaseEngineInstance = $installedComponents |
+            Where-Object -FilterScript {
+                $_.InstanceId -match '^MSSQL'
+            }
 
-    if ($isSsmsInstalled)
+    foreach ($currentInstance in $databaseEngineInstance)
     {
-        $component.Feature = 'SSMS'
+        # Looking for installed version for Replication.
+        $isReplicationInstalled = Test-IsReplicationInstalled -InstanceId $currentInstance.InstanceId
+
+        if ($isReplicationInstalled)
+        {
+            $installedComponents += [PSCustomObject] @{
+                Feature = 'Replication'
+                Version = $currentInstance.Version
+                InstanceName = $currentInstance.InstanceName
+                InstanceId = $currentInstance.InstanceId
+            }
+        }
+
+        # Looking for installed version for Replication.
+        $isReplicationInstalled = Test-IsAdvancedAnalyticsInstalled -InstanceId $currentInstance.InstanceId
+
+        if ($isReplicationInstalled)
+        {
+            $installedComponents += [PSCustomObject] @{
+                Feature = 'AdvancedAnalytics'
+                Version = $currentInstance.Version
+                InstanceName = $currentInstance.InstanceName
+                InstanceId = $currentInstance.InstanceId
+            }
+        }
     }
 
-    #$isSsmsAdvancedInstalled = Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion $sqlVersion
+    # SQL_DQ_Full = DQ : Data Quality Services
+    # sql_inst_mr = SQL_INST_MR : R Open and proprietary R packages
+    # sql_inst_mpy = SQL_INST_MPY : Anaconda and proprietary Python packages.
+    # SQL_Polybase_Core_Inst = PolyBaseCore : PolyBase technology
 
-    if ($isSsmsAdvancedInstalled)
-    {
-        $component.Feature = 'ADV_SSMS'
-    }
+    #$isDQInstalled = Test-IsDQComponentInstalled -InstanceName $InstanceName -SqlServerMajorVersion $sqlVersion
+
+    # if ($isDQInstalled)
+    # {
+    #     $component.Feature = 'DQ'
+    # }
+
+    # #$isSsmsInstalled = Test-IsSsmsInstalled -SqlServerMajorVersion $sqlVersion
+
+    # if ($isSsmsInstalled)
+    # {
+    #     $component.Feature = 'SSMS'
+    # }
+
+    # #$isSsmsAdvancedInstalled = Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion $sqlVersion
+
+    # if ($isSsmsAdvancedInstalled)
+    # {
+    #     $component.Feature = 'ADV_SSMS'
+    # }
 
 
     # Filter result

@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-        Returns whether the Data Quality Client is installed.
+        Returns whether the Books Online is installed.
 
     .DESCRIPTION
-        Returns whether the Data Quality Client is installed.
+        Returns whether the Books Online is installed.
 
     .PARAMETER Version
        Specifies the version for which to check if component is installed.
@@ -12,11 +12,11 @@
         [System.Boolean]
 
     .EXAMPLE
-        Test-IsDataQualityClientInstalled -Version ([System.Version] '16.0')
+        Test-IsBooksOnlineInstalled -Version ([System.Version] '16.0')
 
-        Returns $true if Data Quality Client is installed.
+        Returns $true if SQL Server Books Online is installed.
 #>
-function Test-IsDataQualityClientInstalled
+function Test-IsBooksOnlineInstalled
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -31,15 +31,15 @@ function Test-IsDataQualityClientInstalled
 
     $getRegistryPropertyValueParameters = @{
         Path        = $configurationStateRegistryPath -f $Version.Major
-        Name        = 'SQL_DQ_CLIENT_Full'
+        Name        = 'SQL_BOL_Components'
         ErrorAction = 'SilentlyContinue'
     }
 
-    $isDQCInstalled = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
+    $isBOLInstalled = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
     $result = $false
 
-    if ($isDQCInstalled -eq 1)
+    if ($isBOLInstalled -eq 1)
     {
         $result = $true
     }
