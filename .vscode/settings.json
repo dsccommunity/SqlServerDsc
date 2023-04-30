@@ -73,7 +73,18 @@
         "dbatools",
         "db_datareader",
         "fastbuild",
-        "SSMS"
+        "SSMS",
+        "HKEY",
+        "POWERPIVOT",
+        "Tempdb",
+        "NPENABLED",
+        "TCPENABLED",
+        "RSINSTALLMODE",
+        "SVCACCOUNT",
+        "SVCPASSWORD",
+        "SQLSERVERAGENT",
+        "MSSQLFD",
+        "MSRS"
     ],
     "cSpell.ignorePaths": [
         ".git"

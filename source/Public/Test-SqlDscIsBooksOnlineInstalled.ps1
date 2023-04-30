@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-        Returns whether the Software Development Kit is installed.
+        Returns whether the Books Online is installed.
 
     .DESCRIPTION
-        Returns whether the Software Development Kit is installed.
+        Returns whether the Books Online is installed.
 
     .PARAMETER Version
        Specifies the version for which to check if component is installed.
@@ -12,17 +12,17 @@
         [System.Boolean]
 
     .EXAMPLE
-        Test-IsSoftwareDevelopmentKitInstalled -Version ([System.Version] '16.0')
+        Test-SqlDscIsBooksOnlineInstalled -Version ([System.Version] '16.0')
 
-        Returns $true if Software Development Kit is installed.
+        Returns $true if SQL Server Books Online is installed.
 #>
-function Test-IsSoftwareDevelopmentKitInstalled
+function Test-SqlDscIsBooksOnlineInstalled
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.Version]
         $Version
     )
@@ -31,15 +31,15 @@ function Test-IsSoftwareDevelopmentKitInstalled
 
     $getRegistryPropertyValueParameters = @{
         Path        = $configurationStateRegistryPath -f $Version.Major
-        Name        = 'SDK_Full'
+        Name        = 'SQL_BOL_Components'
         ErrorAction = 'SilentlyContinue'
     }
 
-    $isSDKInstalled = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
+    $isBOLInstalled = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
     $result = $false
 
-    if ($isSDKInstalled -eq 1)
+    if ($isBOLInstalled -eq 1)
     {
         $result = $true
     }

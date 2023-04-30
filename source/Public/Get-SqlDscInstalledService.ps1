@@ -25,15 +25,7 @@ function Get-SqlDscInstalledService
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $ServerName = (Get-ComputerName),
-
-        [Parameter()]
-        [System.String]
-        $InstanceName,
-
-        [Parameter()]
-        [System.Version]
-        $Version
+        $ServerName = (Get-ComputerName)
     )
 
     Assert-ElevatedUser -ErrorAction 'Stop'
