@@ -181,4 +181,16 @@ ConvertFrom-StringData @'
 
     ## Get-SqlDscConfigurationOption
     ConfigurationOption_Get_Missing = There is no configuration option with the name '{0}'.
+
+    ## Test-IsManagementStudioInstalled
+    IsManagementStudioInstalled_Test_NotSupportedVersion = SQL Server Management Studio is not supported for the provided version.
+
+    ## Test-IsManagementStudioAdvancedInstalled
+    IsManagementStudioAdvancedInstalled_Test_NotSupportedVersion = SQL Server Management Studio Advanced is not supported for the provided version.
+
+    ## Get-SqlDscIntegrationServicesSetting
+    IntegrationServicesSetting_Get_NotInstalled = There are no Integration Services installed with version {0}.
+
+    ## Get-SqlDscMasterDataServicesSetting
+    MasterDataServicesSetting_Get_NotInstalled = There are no Master Data Services installed with version {0}.
 '@

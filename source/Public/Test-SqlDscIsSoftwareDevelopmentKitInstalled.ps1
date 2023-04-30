@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-        Returns whether the Master Data Services are installed.
+        Returns whether the Software Development Kit is installed.
 
     .DESCRIPTION
-        Returns whether the Master Data Services are installed.
+        Returns whether the Software Development Kit is installed.
 
     .PARAMETER Version
        Specifies the version for which to check if component is installed.
@@ -12,17 +12,17 @@
         [System.Boolean]
 
     .EXAMPLE
-        IsMasterDataServicesInstalled -Version ([System.Version] '16.0')
+        Test-IsSoftwareDevelopmentKitInstalled -Version ([System.Version] '16.0')
 
-        Returns $true if Master Data Services are installed.
+        Returns $true if Software Development Kit is installed.
 #>
-function Test-IsMasterDataServicesInstalled
+function Test-SqlDscIsSoftwareDevelopmentKitInstalled
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.Version]
         $Version
     )
@@ -31,15 +31,15 @@ function Test-IsMasterDataServicesInstalled
 
     $getRegistryPropertyValueParameters = @{
         Path        = $configurationStateRegistryPath -f $Version.Major
-        Name        = 'MDSCoreFeature'
+        Name        = 'SDK_Full'
         ErrorAction = 'SilentlyContinue'
     }
 
-    $isMDSInstalled = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
+    $isSDKInstalled = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
     $result = $false
 
-    if ($isMDSInstalled -eq 1)
+    if ($isSDKInstalled -eq 1)
     {
         $result = $true
     }
