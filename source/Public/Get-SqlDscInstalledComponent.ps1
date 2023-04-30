@@ -17,7 +17,7 @@
        will be returned.
 
     .EXAMPLE
-        Get-SqlDscInstalledComponents
+        Get-SqlDscInstalledComponent
 
         Returns all the installed components.
 
@@ -59,6 +59,7 @@ function Get-SqlDscInstalledComponent
 
         switch ($currentServiceComponent.ServiceType)
         {
+            # TODO: Add a Test-command for the path HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL13.SQL2016\ConfigurationState\SQL_Engine_Core_Inst
             'DatabaseEngine'
             {
                 $installedComponent.Feature = 'SQLEngine'
@@ -66,6 +67,7 @@ function Get-SqlDscInstalledComponent
                 break
             }
 
+            # TODO: Add a Test-command for the path HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL16.SQL2022\ConfigurationState\SQL_FullText_Adv
             '9'
             {
                 $installedComponent.Feature += 'FullText'
@@ -73,13 +75,7 @@ function Get-SqlDscInstalledComponent
                 break
             }
 
-            '12'
-            {
-                $installedComponent.Feature += 'AdvancedAnalytics'
-
-                break
-            }
-
+            # TODO: Add an Test-command for the path HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\MSAS16.SQL2022\ConfigurationState\Analysis_Server_Full
             'AnalysisServices'
             {
                 $installedComponent.Feature += 'AS'
@@ -87,13 +83,7 @@ function Get-SqlDscInstalledComponent
                 break
             }
 
-            'IntegrationServices'
-            {
-                $installedComponent.Feature += 'IS'
-
-                break
-            }
-
+            # TODO: Add an Test-command for the path HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\MSRS13.SQL2016\ConfigurationState\RS_Server_Adv
             'ReportingServices'
             {
                 $installedComponent.Feature += 'RS'
@@ -101,7 +91,7 @@ function Get-SqlDscInstalledComponent
                 break
             }
 
-            Default
+            default
             {
                 # Skip services like SQL Browser and SQL Agent.
 
@@ -136,10 +126,20 @@ function Get-SqlDscInstalledComponent
 
     foreach ($databaseLevel in $installedDatabaseLevel)
     {
-        $databaseLevelVersion = [System.Version] ('{0}.{1}' -f $databaseLevel.Substring(0,2), $databaseLevel.Substring(2,1))
+        $databaseLevelVersion = [System.Version] ('{0}.{1}' -f $databaseLevel.Substring(0, 2), $databaseLevel.Substring(2, 1))
+
+        $integrationServicesSettings = Get-SqlDscIntegrationServicesSetting -Version $databaseLevelVersion -ErrorAction 'SilentlyContinue'
+
+        if ($integrationServicesSettings)
+        {
+            $installedComponents += [PSCustomObject] @{
+                Feature = 'IS'
+                Version = $integrationServicesSettings.Version
+            }
+        }
 
         # Look for installed version of Data Quality Client.
-        $isDQInstalled = Test-IsDataQualityClientInstalled -Version $databaseLevelVersion
+        $isDQInstalled = Test-SqlDscIsDataQualityClientInstalled -Version $databaseLevelVersion
 
         if ($isDQInstalled)
         {
@@ -150,7 +150,7 @@ function Get-SqlDscInstalledComponent
         }
 
         # Look for installed version of SQL Server Books Online.
-        $isBOLInstalled = Test-IsBooksOnlineInstalled -Version $databaseLevelVersion
+        $isBOLInstalled = Test-SqlDscIsBooksOnlineInstalled -Version $databaseLevelVersion
 
         if ($isBOLInstalled)
         {
@@ -161,7 +161,7 @@ function Get-SqlDscInstalledComponent
         }
 
         # Look for installed version of Connectivity Components.
-        $isConnInstalled = Test-IsConnectivityComponentsInstalled -Version $databaseLevelVersion
+        $isConnInstalled = Test-SqlDscIsConnectivityComponentsInstalled -Version $databaseLevelVersion
 
         if ($isConnInstalled)
         {
@@ -172,7 +172,7 @@ function Get-SqlDscInstalledComponent
         }
 
         # Look for installed version of Backward Compatibility Components.
-        $isBCInstalled = Test-IsBackwardCompatibilityComponentsInstalled -Version $databaseLevelVersion
+        $isBCInstalled = Test-SqlDscIsBackwardCompatibilityComponentsInstalled -Version $databaseLevelVersion
 
         if ($isBCInstalled)
         {
@@ -183,7 +183,7 @@ function Get-SqlDscInstalledComponent
         }
 
         # Look for installed version of Software Development Kit.
-        $isSDKInstalled = Test-IsSoftwareDevelopmentKitInstalled -Version $databaseLevelVersion
+        $isSDKInstalled = Test-SqlDscIsSoftwareDevelopmentKitInstalled -Version $databaseLevelVersion
 
         if ($isSDKInstalled)
         {
@@ -194,77 +194,94 @@ function Get-SqlDscInstalledComponent
         }
 
         # Look for installed version of Master Data Services.
-        $isMDSInstalled = Test-IsMasterDataServicesInstalled -Version $databaseLevelVersion
+        $masterDataServicesSettings = Get-SqlDscMasterDataServicesSetting -Version $databaseLevelVersion -ErrorAction 'SilentlyContinue'
 
-        if ($isMDSInstalled)
+        if ($masterDataServicesSettings)
         {
             $installedComponents += [PSCustomObject] @{
                 Feature = 'MDS'
+                Version = $masterDataServicesSettings.Version
+            }
+        }
+
+        # Look for installed version of SQL Server Management Studio.
+        $isManagementStudioInstalled = Test-SqlDscIsManagementStudioInstalled -Version $databaseLevelVersion -ErrorAction 'SilentlyContinue'
+
+        if ($isManagementStudioInstalled)
+        {
+            $installedComponents += [PSCustomObject] @{
+                Feature = 'SSMS'
+                Version = $databaseLevelVersion
+            }
+        }
+
+        # Look for installed version of SQL Server Management Studio Advanced.
+        $isManagementStudioAdvancedInstalled = Test-SqlDscIsManagementStudioAdvancedInstalled -Version $databaseLevelVersion -ErrorAction 'SilentlyContinue'
+
+        if ($isManagementStudioAdvancedInstalled)
+        {
+            $installedComponents += [PSCustomObject] @{
+                Feature = 'ADV_SSMS'
                 Version = $databaseLevelVersion
             }
         }
     }
 
-    $databaseEngineInstance = $installedComponents |
-            Where-Object -FilterScript {
-                $_.InstanceId -match '^MSSQL'
-            }
+    # Fetch all database engine instances.
+    $installedDatabaseEngineInstance = Get-SqlDscInstalledInstance -ServiceType 'DatabaseEngine'
 
-    foreach ($currentInstance in $databaseEngineInstance)
+    foreach ($currentInstance in $installedDatabaseEngineInstance)
     {
         # Looking for installed version for Replication.
-        $isReplicationInstalled = Test-IsReplicationInstalled -InstanceId $currentInstance.InstanceId
+        $isReplicationInstalled = Test-SqlDscIsReplicationInstalled -InstanceId $currentInstance.InstanceId
 
         if ($isReplicationInstalled)
         {
             $installedComponents += [PSCustomObject] @{
                 Feature = 'Replication'
-                Version = $currentInstance.Version
+                #Version = $currentInstance.Version
                 InstanceName = $currentInstance.InstanceName
                 InstanceId = $currentInstance.InstanceId
             }
         }
 
-        # Looking for installed version for Replication.
-        $isReplicationInstalled = Test-IsAdvancedAnalyticsInstalled -InstanceId $currentInstance.InstanceId
+        # Looking for installed version for Advanced Analytics - R Services (In-Database)).
+        $isReplicationInstalled = Test-SqlDscIsRServicesInstalled -InstanceId $currentInstance.InstanceId
 
         if ($isReplicationInstalled)
         {
             $installedComponents += [PSCustomObject] @{
                 Feature = 'AdvancedAnalytics'
-                Version = $currentInstance.Version
+                #Version = $currentInstance.Version
+                InstanceName = $currentInstance.InstanceName
+                InstanceId = $currentInstance.InstanceId
+            }
+        }
+
+        $isDataQualityServerInstalled = Test-SqlDscIsDataQualityServerInstalled -InstanceId $currentInstance.InstanceId
+
+        if ($isDataQualityServerInstalled)
+        {
+            $installedComponents += [PSCustomObject] @{
+                Feature = 'DQ'
+                #Version = $currentInstance.Version
+                InstanceName = $currentInstance.InstanceName
+                InstanceId = $currentInstance.InstanceId
+            }
+        }
+
+        $isROpenRPackagesInstalled = Test-SqlDscIsROpenRPackagesInstalled -InstanceId $currentInstance.InstanceId
+
+        if ($isROpenRPackagesInstalled)
+        {
+            $installedComponents += [PSCustomObject] @{
+                Feature = 'SQL_INST_MR'
+                #Version = $currentInstance.Version
                 InstanceName = $currentInstance.InstanceName
                 InstanceId = $currentInstance.InstanceId
             }
         }
     }
-
-    # SQL_DQ_Full = DQ : Data Quality Services
-    # sql_inst_mr = SQL_INST_MR : R Open and proprietary R packages
-    # sql_inst_mpy = SQL_INST_MPY : Anaconda and proprietary Python packages.
-    # SQL_Polybase_Core_Inst = PolyBaseCore : PolyBase technology
-
-    #$isDQInstalled = Test-IsDQComponentInstalled -InstanceName $InstanceName -SqlServerMajorVersion $sqlVersion
-
-    # if ($isDQInstalled)
-    # {
-    #     $component.Feature = 'DQ'
-    # }
-
-    # #$isSsmsInstalled = Test-IsSsmsInstalled -SqlServerMajorVersion $sqlVersion
-
-    # if ($isSsmsInstalled)
-    # {
-    #     $component.Feature = 'SSMS'
-    # }
-
-    # #$isSsmsAdvancedInstalled = Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion $sqlVersion
-
-    # if ($isSsmsAdvancedInstalled)
-    # {
-    #     $component.Feature = 'ADV_SSMS'
-    # }
-
 
     # Filter result
 

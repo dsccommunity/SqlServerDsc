@@ -108,7 +108,17 @@
         "maxdop",
         "hotfixes",
         "checkpointing",
-        "SSMS"
+        "SSMS",
+        "HKEY",
+        "POWERPIVOT",
+        "NPENABLED",
+        "TCPENABLED",
+        "RSINSTALLMODE",
+        "SVCACCOUNT",
+        "SVCPASSWORD",
+        "SQLSERVERAGENT",
+        "MSSQLFD",
+        "MSRS"
     ],
     "cSpell.ignorePaths": [
         ".git"

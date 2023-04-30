@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-        Returns whether the Books Online is installed.
+        Returns whether the Connectivity Components are installed.
 
     .DESCRIPTION
-        Returns whether the Books Online is installed.
+        Returns whether the Connectivity Components are installed.
 
     .PARAMETER Version
        Specifies the version for which to check if component is installed.
@@ -12,17 +12,17 @@
         [System.Boolean]
 
     .EXAMPLE
-        Test-IsBooksOnlineInstalled -Version ([System.Version] '16.0')
+        Test-SqlDscIsConnectivityComponentsInstalled -Version ([System.Version] '16.0')
 
-        Returns $true if SQL Server Books Online is installed.
+        Returns $true if Connectivity Components are installed.
 #>
-function Test-IsBooksOnlineInstalled
+function Test-SqlDscIsConnectivityComponentsInstalled
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.Version]
         $Version
     )
@@ -31,15 +31,15 @@ function Test-IsBooksOnlineInstalled
 
     $getRegistryPropertyValueParameters = @{
         Path        = $configurationStateRegistryPath -f $Version.Major
-        Name        = 'SQL_BOL_Components'
+        Name        = 'Connectivity_Full'
         ErrorAction = 'SilentlyContinue'
     }
 
-    $isBOLInstalled = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
+    $isConnInstalled = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
     $result = $false
 
-    if ($isBOLInstalled -eq 1)
+    if ($isConnInstalled -eq 1)
     {
         $result = $true
     }
