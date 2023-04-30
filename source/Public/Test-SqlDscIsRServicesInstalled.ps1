@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-        Returns whether the component Advanced Analytics is installed.
+        Returns whether the component R Services (In-Database) are installed.
 
     .DESCRIPTION
-        Returns whether the component Advanced Analytics is installed.
+        Returns whether the component R Services (In-Database) is installed.
 
     .PARAMETER InstanceId
        Specifies the instance id on which to check if component is installed.
@@ -12,17 +12,17 @@
         [System.Boolean]
 
     .EXAMPLE
-        Test-IsReplicationInstalled -InstanceId 'MSSQL16.SQL2022'
+        Test-IsRServicesInstalled -InstanceId 'MSSQL16.SQL2022'
 
-        Returns $true if Advanced Analytics is installed.
+        Returns $true if R Services (In-Database) is installed.
 #>
-function Test-IsAdvancedAnalyticsInstalled
+function Test-SqlDscIsRServicesInstalled
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceId
     )

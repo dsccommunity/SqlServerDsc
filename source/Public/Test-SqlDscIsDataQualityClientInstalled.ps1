@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-        Returns whether the Connectivity Components are installed.
+        Returns whether the Data Quality Client is installed.
 
     .DESCRIPTION
-        Returns whether the Connectivity Components are installed.
+        Returns whether the Data Quality Client is installed.
 
     .PARAMETER Version
        Specifies the version for which to check if component is installed.
@@ -12,17 +12,17 @@
         [System.Boolean]
 
     .EXAMPLE
-        Test-IsConnectivityComponentsInstalled -Version ([System.Version] '16.0')
+        Test-SqlDscIsDataQualityClientInstalled -Version ([System.Version] '16.0')
 
-        Returns $true if Connectivity Components are installed.
+        Returns $true if Data Quality Client is installed.
 #>
-function Test-IsConnectivityComponentsInstalled
+function Test-SqlDscIsDataQualityClientInstalled
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.Version]
         $Version
     )
@@ -31,15 +31,15 @@ function Test-IsConnectivityComponentsInstalled
 
     $getRegistryPropertyValueParameters = @{
         Path        = $configurationStateRegistryPath -f $Version.Major
-        Name        = 'Connectivity_Full'
+        Name        = 'SQL_DQ_CLIENT_Full'
         ErrorAction = 'SilentlyContinue'
     }
 
-    $isConnInstalled = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
+    $isDQCInstalled = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
     $result = $false
 
-    if ($isConnInstalled -eq 1)
+    if ($isDQCInstalled -eq 1)
     {
         $result = $true
     }

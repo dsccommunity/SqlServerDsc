@@ -621,4 +621,15 @@ ConvertFrom-StringData @'
     Get_SqlDscSetupLog_Header = ==== SQL Server Setup {0} (from {1}) ==== (GSDSL0004)
     Get_SqlDscSetupLog_Footer = ==== End of {0} ==== (GSDSL0005)
     Get_SqlDscSetupLog_PathNotFound = Path '{0}' does not exist. (GSDSL0006)
+    ## Test-IsManagementStudioInstalled
+    IsManagementStudioInstalled_Test_NotSupportedVersion = SQL Server Management Studio is not supported for the provided version.
+
+    ## Test-IsManagementStudioAdvancedInstalled
+    IsManagementStudioAdvancedInstalled_Test_NotSupportedVersion = SQL Server Management Studio Advanced is not supported for the provided version.
+
+    ## Get-SqlDscIntegrationServicesSetting
+    IntegrationServicesSetting_Get_NotInstalled = There are no Integration Services installed with version {0}.
+
+    ## Get-SqlDscMasterDataServicesSetting
+    MasterDataServicesSetting_Get_NotInstalled = There are no Master Data Services installed with version {0}.
 '@
