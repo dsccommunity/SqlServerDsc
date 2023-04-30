@@ -178,4 +178,16 @@ ConvertFrom-StringData @'
 
     ## Get-FileVersionInformation
     FileVersionInformation_Get_FilePathIsNotFile = The specified path is not a file.
+
+    ## Test-IsManagementStudioInstalled
+    IsManagementStudioInstalled_Test_NotSupportedVersion = SQL Server Management Studio is not supported for the provided version.
+
+    ## Test-IsManagementStudioAdvancedInstalled
+    IsManagementStudioAdvancedInstalled_Test_NotSupportedVersion = SQL Server Management Studio Advanced is not supported for the provided version.
+
+    ## Get-SqlDscIntegrationServicesSetting
+    IntegrationServicesSetting_Get_NotInstalled = There are no Integration Services installed with version {0}.
+
+    ## Get-SqlDscMasterDataServicesSetting
+    MasterDataServicesSetting_Get_NotInstalled = There are no Master Data Services installed with version {0}.
 '@

@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-        Returns whether the Data Quality Client is installed.
+        Returns whether the Backward Compatibility Components are installed.
 
     .DESCRIPTION
-        Returns whether the Data Quality Client is installed.
+        Returns whether the Backward Compatibility Components are installed.
 
     .PARAMETER Version
        Specifies the version for which to check if component is installed.
@@ -12,17 +12,17 @@
         [System.Boolean]
 
     .EXAMPLE
-        Test-IsDataQualityClientInstalled -Version ([System.Version] '16.0')
+        Test-SqlDscIsBackwardCompatibilityComponentsInstalled -Version ([System.Version] '16.0')
 
-        Returns $true if Data Quality Client is installed.
+        Returns $true if Backward Compatibility Components are installed.
 #>
-function Test-IsDataQualityClientInstalled
+function Test-SqlDscIsBackwardCompatibilityComponentsInstalled
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.Version]
         $Version
     )
@@ -31,15 +31,15 @@ function Test-IsDataQualityClientInstalled
 
     $getRegistryPropertyValueParameters = @{
         Path        = $configurationStateRegistryPath -f $Version.Major
-        Name        = 'SQL_DQ_CLIENT_Full'
+        Name        = 'Tools_Legacy_Full'
         ErrorAction = 'SilentlyContinue'
     }
 
-    $isDQCInstalled = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
+    $isBCInstalled = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
     $result = $false
 
-    if ($isDQCInstalled -eq 1)
+    if ($isBCInstalled -eq 1)
     {
         $result = $true
     }
