@@ -59,14 +59,6 @@ function Get-SqlDscInstalledComponent
 
         switch ($currentServiceComponent.ServiceType)
         {
-            # TODO: Add a Test-command for the path HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL13.SQL2016\ConfigurationState\SQL_Engine_Core_Inst
-            'DatabaseEngine'
-            {
-                $installedComponent.Feature = 'SQLEngine'
-
-                break
-            }
-
             # TODO: Add a Test-command for the path HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL16.SQL2022\ConfigurationState\SQL_FullText_Adv
             '9'
             {
@@ -114,7 +106,7 @@ function Get-SqlDscInstalledComponent
                     Add-Member -MemberType 'NoteProperty' -Name 'InstanceId' -Value (
                         $currentServiceComponent.ServiceType |
                             Get-InstanceId -InstanceName $currentServiceComponent.InstanceName
-                    )
+                        )
             }
 
             $installedComponents += $installedComponent
@@ -232,16 +224,28 @@ function Get-SqlDscInstalledComponent
 
     foreach ($currentInstance in $installedDatabaseEngineInstance)
     {
+        # Look for installed version of Database Engine.
+        $databaseEngineSettings = Get-SqlDscDatabaseEngineSetting -InstanceId $currentInstance.InstanceId -ErrorAction 'SilentlyContinue'
+
+        if ($databaseEngineSettings)
+        {
+            $installedComponents += [PSCustomObject] @{
+                Feature      = 'SQLENGINE'
+                InstanceName = $currentInstance.InstanceName
+                Version      = $databaseEngineSettings.Version
+            }
+        }
+
         # Looking for installed version for Replication.
         $isReplicationInstalled = Test-SqlDscIsReplicationInstalled -InstanceId $currentInstance.InstanceId
 
         if ($isReplicationInstalled)
         {
             $installedComponents += [PSCustomObject] @{
-                Feature = 'Replication'
+                Feature      = 'Replication'
                 #Version = $currentInstance.Version
                 InstanceName = $currentInstance.InstanceName
-                InstanceId = $currentInstance.InstanceId
+                InstanceId   = $currentInstance.InstanceId
             }
         }
 
@@ -251,10 +255,10 @@ function Get-SqlDscInstalledComponent
         if ($isReplicationInstalled)
         {
             $installedComponents += [PSCustomObject] @{
-                Feature = 'AdvancedAnalytics'
+                Feature      = 'AdvancedAnalytics'
                 #Version = $currentInstance.Version
                 InstanceName = $currentInstance.InstanceName
-                InstanceId = $currentInstance.InstanceId
+                InstanceId   = $currentInstance.InstanceId
             }
         }
 
@@ -263,10 +267,10 @@ function Get-SqlDscInstalledComponent
         if ($isDataQualityServerInstalled)
         {
             $installedComponents += [PSCustomObject] @{
-                Feature = 'DQ'
+                Feature      = 'DQ'
                 #Version = $currentInstance.Version
                 InstanceName = $currentInstance.InstanceName
-                InstanceId = $currentInstance.InstanceId
+                InstanceId   = $currentInstance.InstanceId
             }
         }
 
@@ -275,10 +279,10 @@ function Get-SqlDscInstalledComponent
         if ($isROpenRPackagesInstalled)
         {
             $installedComponents += [PSCustomObject] @{
-                Feature = 'SQL_INST_MR'
+                Feature      = 'SQL_INST_MR'
                 #Version = $currentInstance.Version
                 InstanceName = $currentInstance.InstanceName
-                InstanceId = $currentInstance.InstanceId
+                InstanceId   = $currentInstance.InstanceId
             }
         }
     }
