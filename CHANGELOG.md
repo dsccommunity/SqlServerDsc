@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Temporary disable integration tests for dbatools.
+  - Bumped dbatools to 2.0.1 for the integration tests.
 - SqlAg
   - Added optional parameter `SeedingMode` that will set the SeedingMode for the
     SQL Server 2016 and higher. This parameter can only be used together with the
