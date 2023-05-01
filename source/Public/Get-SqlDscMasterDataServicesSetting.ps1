@@ -38,10 +38,10 @@ function Get-SqlDscMasterDataServicesSetting
 
     if (-not $mdsCoreFeatureSettings)
     {
-        $missingIntegrationServiceMessage = $script:localizedData.MasterDataServicesSetting_Get_NotInstalled -f $Version.ToString()
+        $missingMasterDataServicesMessage = $script:localizedData.MasterDataServicesSetting_Get_NotInstalled -f $Version.ToString()
 
         $writeErrorParameters = @{
-            Message = $missingIntegrationServiceMessage
+            Message = $missingMasterDataServicesMessage
             Category = 'InvalidOperation'
             ErrorId = 'GISS0001' # cspell: disable-line
             TargetObject = $Version
