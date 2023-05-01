@@ -194,4 +194,7 @@ PreferredModule_ModuleVersionNotFound = No preferred Powershell module with vers
 
     ## Get-SqlDscMasterDataServicesSetting
     MasterDataServicesSetting_Get_NotInstalled = There are no Master Data Services installed with version {0}.
+
+    ## Get-SqlDscDatabaseEngineSetting
+    DatabaseEngineSetting_Get_NotInstalled = There are no Database Engine installed with version {0}.
 '@
