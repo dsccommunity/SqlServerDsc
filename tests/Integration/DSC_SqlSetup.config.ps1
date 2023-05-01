@@ -462,10 +462,10 @@ Configuration DSC_SqlSetup_InstallSMOModule_Config
 
                 if ($using:Node.SMOModuleName -eq 'dbatools')
                 {
-                    Set-DbatoolsConfig -Name Import.EncryptionMessageCheck -Value $false -PassThru |
-                        Register-DbatoolsConfig -Verbose
+                    # Set-DbatoolsConfig -Name Import.EncryptionMessageCheck -Value $false -PassThru |
+                    #     Register-DbatoolsConfig -Verbose
 
-                    Write-Verbose -Message 'Disabled dbatools setting Import.EncryptionMessageCheck'
+                    # Write-Verbose -Message 'Disabled dbatools setting Import.EncryptionMessageCheck'
                 }
             }
 
