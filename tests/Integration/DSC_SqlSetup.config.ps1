@@ -436,6 +436,23 @@ Configuration DSC_SqlSetup_InstallSMOModule_Config
                 # Make sure we use TLS 1.2.
                 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
+                if ($using:Node.SMOModuleName -eq 'dbatools')
+                {
+                    $installModuleParameters = @{
+                        Name            = 'dbatools.library'
+                        Scope           = 'AllUsers'
+                        Force           = $true
+                        RequiredVersion = '2023.4.18'
+                        AllowPrerelease = $Using:Node.SMOModuleVersionIsPrerelease
+                        PassThru        = $true
+                    }
+
+                    # Install the required dbatools.library version module version.
+                    $installedModule = Install-Module @installModuleParameters
+
+                    Write-Verbose -Message ('Installed {0} module version {1}' -f 'dbatools.library', $installedModule.Version)
+                }
+
                 $installModuleParameters = @{
                     Name            = $using:Node.SMOModuleName
                     Scope           = 'AllUsers'
@@ -446,7 +463,7 @@ Configuration DSC_SqlSetup_InstallSMOModule_Config
                     PassThru        = $true
                 }
 
-                # Install the required SqlServer module version.
+                # Install the required SMO module version.
                 $installedModule = Install-Module @installModuleParameters |
                     Where-Object -FilterScript {
                         <#

@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- SqlServerDsc
+  - Forcibly use a specific version of dbatools.library to pass integration
+    tests (workaround for issue [#1926 (comment)](https://github.com/dsccommunity/SqlServerDsc/pull/1926#issuecomment-1531685591)).
+
 ## [16.3.0] - 2023-04-26
 
 ### Remove
