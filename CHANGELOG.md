@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     (tested v21.0.17099). The parameter will be ignored if SQLPS module will be
     used.
 
+### Fixed
+
+- `Import-SqlDscPreferredModule`
+  - Now the command does not fail when checking if SQLPS is loaded into the
+    session ([issue #1928](https://github.com/dsccommunity/SqlServerDsc/issues/1928)).
+
 ## [16.3.0] - 2023-04-26
 
 ### Remove
