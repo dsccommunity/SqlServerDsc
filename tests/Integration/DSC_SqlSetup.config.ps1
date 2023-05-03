@@ -198,6 +198,16 @@ else
     }
 }
 
+# Do not use the feature flag AnalysisServicesConnection when running tests with SQLPS.
+$featureFlag = if ((Get-Module -Name 'SqlServer', 'dbatools' -ListAvailable))
+{
+    @('AnalysisServicesConnection')
+}
+else
+{
+    @()
+}
+
 <#
     Creating all the credential objects to save some repeating code.
 #>
@@ -691,7 +701,7 @@ Configuration DSC_SqlSetup_InstallMultiDimensionalAnalysisServicesAsSystem_Confi
     {
         SqlSetup 'Integration_Test'
         {
-            FeatureFlag         = @('AnalysisServicesConnection')
+            FeatureFlag         = [System.String[]] $featureFlag
 
             InstanceName        = $Node.AnalysisServicesMultiInstanceName
             Features            = $Node.AnalysisServicesMultiFeatures
@@ -745,7 +755,7 @@ Configuration DSC_SqlSetup_InstallTabularAnalysisServicesAsSystem_Config
     {
         SqlSetup 'Integration_Test'
         {
-            FeatureFlag         = @('AnalysisServicesConnection')
+            FeatureFlag         = [System.String[]] $featureFlag
 
             InstanceName        = $Node.AnalysisServicesTabularInstanceName
             Features            = $Node.AnalysisServicesTabularFeatures
