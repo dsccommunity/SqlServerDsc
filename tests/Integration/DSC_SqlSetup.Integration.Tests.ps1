@@ -214,7 +214,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
     }
 
-    Context ('When using configuration <_>') -ForEach @(
+    Context ('When using configuration <_>') -Skip:($null -ne $env:SkipInstallSMO) -ForEach @(
         "$($script:dscResourceName)_InstallSMOModule_Config"
     ) {
         BeforeAll {
