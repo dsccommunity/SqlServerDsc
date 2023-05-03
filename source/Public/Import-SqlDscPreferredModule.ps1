@@ -96,8 +96,12 @@ function Import-SqlDscPreferredModule
     {
         if (-not $Force.IsPresent)
         {
-            # Check if the preferred module is already loaded into the session.
-            $loadedModuleName = (Get-Module -Name $availableModuleName | Select-Object -First 1).Name
+            <#
+                Check if the preferred module is already loaded into the session.
+                If the module name is a path the leaf part must be used, which is
+                the module name.
+            #>
+            $loadedModuleName = (Get-Module -Name (Split-Path -Path $availableModuleName -Leaf) | Select-Object -First 1).Name
 
             if ($loadedModuleName)
             {
