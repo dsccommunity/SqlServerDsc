@@ -5,6 +5,7 @@ Import-Module -Name $script:sqlServerDscHelperModulePath
 Import-Module -Name $script:resourceHelperModulePath
 
 $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
+
 <#
     .SYNOPSIS
         Gets the specified Availability Group Replica from the specified Availability Group.
@@ -52,6 +53,9 @@ function Get-TargetResource
     # Connect to the instance
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
 
+    # Define current version for check compatibility
+    $sqlMajorVersion = $serverObject.Version.Major
+
     # Is this node actively hosting the SQL instance?
     $isActiveNode = Test-ActiveNode -ServerObject $serverObject
 
@@ -82,6 +86,11 @@ function Get-TargetResource
         EndpointHostName              = $serverObject.NetName
     }
 
+    if ( ( $sqlMajorVersion -ge 13 ) )
+    {
+        $alwaysOnAvailabilityGroupReplicaResource.Add('SeedingMode', '')
+    }
+
     # Get the availability group
     $availabilityGroup = $serverObject.AvailabilityGroups[$AvailabilityGroupName]
 
@@ -102,6 +111,18 @@ function Get-TargetResource
             $alwaysOnAvailabilityGroupReplicaResource.EndpointUrl = $availabilityGroupReplica.EndpointUrl
             $alwaysOnAvailabilityGroupReplicaResource.ReadOnlyRoutingConnectionUrl = $availabilityGroupReplica.ReadOnlyRoutingConnectionUrl
             $alwaysOnAvailabilityGroupReplicaResource.ReadOnlyRoutingList = $availabilityGroupReplica.ReadOnlyRoutingList
+
+            if (  $sqlMajorVersion -ge 13  )
+            {
+                if ( (Get-Command -Name 'New-SqlAvailabilityReplica').Parameters.ContainsKey('SeedingMode') )
+                {
+                    $alwaysOnAvailabilityGroupReplicaResource.'SeedingMode' = $availabilityGroupReplica.SeedingMode
+                }
+                else
+                {
+                    $alwaysOnAvailabilityGroupReplicaResource.'SeedingMode' = $null
+                }
+            }
         }
     }
 
@@ -161,6 +182,10 @@ function Get-TargetResource
     .PARAMETER ProcessOnlyOnActiveNode
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
         Not used in Set-TargetResource.
+
+    .PARAMETER SeedingMode
+        Specifies the seeding mode. When creating a replica the default is 'Manual'.
+        This parameter can only be used when the module SqlServer is installed.
 #>
 function Set-TargetResource
 {
@@ -235,13 +260,21 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $ProcessOnlyOnActiveNode
+        $ProcessOnlyOnActiveNode,
+
+        [Parameter()]
+        [ValidateSet('Automatic', 'Manual')]
+        [System.String]
+        $SeedingMode = 'Manual'
     )
 
     Import-SqlDscPreferredModule
 
     # Connect to the instance
     $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop'
+
+    # Define current version for check compatibility
+    $sqlMajorVersion = $serverObject.Version.Major
 
     # Determine if HADR is enabled on the instance. If not, throw an error
     if ( -not $serverObject.IsHadrEnabled )
@@ -396,6 +429,15 @@ function Set-TargetResource
                         $availabilityGroupReplicaUpdatesRequired = $true
                     }
 
+                    if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroupReplica.SeedingMode ) )
+                    {
+                        if ((Get-Command -Name 'New-SqlAvailabilityReplica').Parameters.ContainsKey('SeedingMode'))
+                        {
+                            $availabilityGroupReplica.SeedingMode = $SeedingMode
+                            $availabilityGroupReplicaUpdatesRequired = $true
+                        }
+                    }
+
                     if ( $availabilityGroupReplicaUpdatesRequired )
                     {
                         Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroupReplica
@@ -455,6 +497,11 @@ function Set-TargetResource
                     if ( $ReadOnlyRoutingList )
                     {
                         $newAvailabilityGroupReplicaParams.Add('ReadOnlyRoutingList', $ReadOnlyRoutingList)
+                    }
+
+                    if ( ( $sqlMajorVersion -ge 13 ) -and (Get-Command -Name 'New-SqlAvailabilityReplica').Parameters.ContainsKey('SeedingMode') )
+                    {
+                        $newAvailabilityGroupReplicaParams.Add('SeedingMode', $SeedingMode)
                     }
 
                     # Create the Availability Group Replica
@@ -550,10 +597,14 @@ function Set-TargetResource
 
     .PARAMETER ProcessOnlyOnActiveNode
         Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server Instance.
+
+    .PARAMETER SeedingMode
+        Specifies the seeding mode. When creating a replica the default is 'Manual'.
+        This parameter can only be used when the module SqlServer is installed.
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -626,7 +677,12 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $ProcessOnlyOnActiveNode
+        $ProcessOnlyOnActiveNode,
+
+        [Parameter()]
+        [ValidateSet('Automatic', 'Manual')]
+        [System.String]
+        $SeedingMode = 'Manual'
     )
 
     $getTargetResourceParameters = @{
@@ -683,6 +739,10 @@ function Test-TargetResource
                 'ReadOnlyRoutingConnectionUrl',
                 'ReadOnlyRoutingList'
             )
+            if ( $getTargetResourceResult.SeedingMode)
+            {
+                $parametersToCheck += 'SeedingMode'
+            }
 
             if ( $getTargetResourceResult.Ensure -eq 'Present' )
             {

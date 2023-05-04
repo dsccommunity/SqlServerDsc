@@ -84,6 +84,9 @@ Describe 'SqlAGReplica\Get-TargetResource' {
             $mockServerObject.NetName = 'Server1'
             $mockServerObject.IsHadrEnabled = $true
             $mockServerObject.ServiceName = 'MSSQLSERVER'
+            $mockServerObject.Version = @{
+                Major = 13
+            }
 
             # Mock the availability group replicas
             $mockAvailabilityGroupReplica1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
@@ -96,6 +99,7 @@ Describe 'SqlAGReplica\Get-TargetResource' {
             $mockAvailabilityGroupReplica1.Name = 'Server1'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = 'TCP://Server1.domain.com:1433'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica1.SeedingMode = 'Manual'
 
             $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica2.AvailabilityMode = 'AsynchronousCommit'
@@ -107,6 +111,7 @@ Describe 'SqlAGReplica\Get-TargetResource' {
             $mockAvailabilityGroupReplica2.Name = 'Server2'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
 
             $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
@@ -118,6 +123,7 @@ Describe 'SqlAGReplica\Get-TargetResource' {
             $mockAvailabilityGroupReplica3.Name = 'Server3'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
 
             # Mock the availability groups
             $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
@@ -144,6 +150,7 @@ Describe 'SqlAGReplica\Get-TargetResource' {
         }
 
         Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer1
+        Mock -CommandName New-SqlAvailabilityReplica
     }
 
     Context 'When the Availability Group Replica is absent' {
@@ -173,6 +180,7 @@ Describe 'SqlAGReplica\Get-TargetResource' {
                 $getTargetResourceResult.ServerName | Should -Be 'Server1'
                 $getTargetResourceResult.InstanceName | Should -Be 'MSSQLSERVER'
                 $getTargetResourceResult.EndpointHostName | Should -Be 'Server1'
+                $getTargetResourceResult.SeedingMode | Should -BeNullOrEmpty
             }
 
             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -206,6 +214,7 @@ Describe 'SqlAGReplica\Get-TargetResource' {
                 $getTargetResourceResult.ServerName | Should -Be 'Server1'
                 $getTargetResourceResult.InstanceName | Should -Be 'MSSQLSERVER'
                 $getTargetResourceResult.EndpointHostName | Should -Be 'Server1'
+                $getTargetResourceResult.SeedingMode | Should -Be 'Manual'
             }
 
             Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -222,6 +231,9 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             $mockServerObject.NetName = 'Server1'
             $mockServerObject.IsHadrEnabled = $true
             $mockServerObject.ServiceName = 'MSSQLSERVER'
+            $mockServerObject.Version = @{
+                Major = 13
+            }
 
             # Mock the availability group replicas
             $mockAvailabilityGroupReplica1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
@@ -234,6 +246,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             $mockAvailabilityGroupReplica1.Name = 'Server1'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = 'TCP://Server1.domain.com:1433'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica1.SeedingMode = 'Manual'
 
             $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica2.AvailabilityMode = 'AsynchronousCommit'
@@ -245,6 +258,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             $mockAvailabilityGroupReplica2.Name = 'Server2'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
 
             $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
@@ -256,6 +270,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             $mockAvailabilityGroupReplica3.Name = 'Server3'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
 
             # Mock the availability groups
             $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
@@ -287,6 +302,9 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             $mockServerObject.NetName = 'Server2'
             $mockServerObject.IsHadrEnabled = $true
             $mockServerObject.ServiceName = 'MSSQLSERVER'
+            $mockServerObject.Version = @{
+                Major = 13
+            }
 
             #region Mock the availability group replicas
             $mockAvailabilityGroupReplica1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
@@ -299,6 +317,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             $mockAvailabilityGroupReplica1.Name = 'Server1'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = 'TCP://Server1.domain.com:1433'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica1.SeedingMode = 'Manual'
 
             $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica2.AvailabilityMode = 'AsynchronousCommit'
@@ -310,6 +329,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             $mockAvailabilityGroupReplica2.Name = 'Server2'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
 
             $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
@@ -321,6 +341,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             $mockAvailabilityGroupReplica3.Name = 'Server3'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
             #endregion Mock the availability group replicas
 
             # Mock the availability groups
@@ -369,6 +390,9 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             $mockServerObject.NetName = 'Server3'
             $mockServerObject.IsHadrEnabled = $true
             $mockServerObject.ServiceName = 'MSSQLSERVER'
+            $mockServerObject.Version = @{
+                Major = 13
+            }
 
             #region Mock the availability group replicas
             $mockAvailabilityGroupReplica1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
@@ -381,6 +405,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             $mockAvailabilityGroupReplica1.Name = 'Server1'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = 'TCP://Server1.domain.com:1433'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica1.SeedingMode = 'Manual'
 
             $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica2.AvailabilityMode = 'AsynchronousCommit'
@@ -392,6 +417,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             $mockAvailabilityGroupReplica2.Name = 'Server2'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
 
             $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
@@ -403,6 +429,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
             $mockAvailabilityGroupReplica3.Name = 'Server3'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
             #endregion Mock the availability group replicas
 
             # Mock the availability groups
@@ -688,6 +715,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     FailoverMode                  = 'Manual'
                     ReadOnlyRoutingConnectionUrl  = 'TCP://Server1.domain.com:1433'
                     ReadOnlyRoutingList           = @('Server1', 'Server2')
+                    SeedingMode                   = 'Manual'
                 }
 
                 { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
@@ -744,6 +772,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         FailoverMode                  = 'Manual'
                         ReadOnlyRoutingConnectionUrl  = 'TCP://Server1.domain.com:1433'
                         ReadOnlyRoutingList           = @('Server1', 'Server2')
+                        SeedingMode                   = 'Manual'
                     }
 
                     { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
@@ -801,6 +830,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         FailoverMode                  = 'Manual'
                         ReadOnlyRoutingConnectionUrl  = 'TCP://Server1.domain.com:1433'
                         ReadOnlyRoutingList           = @('Server1', 'Server2')
+                        SeedingMode                   = 'Manual'
                     }
 
                     { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
@@ -864,6 +894,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         FailoverMode                  = 'Manual'
                         ReadOnlyRoutingConnectionUrl  = 'TCP://Server1.domain.com:1433'
                         ReadOnlyRoutingList           = @('Server1', 'Server2')
+                        SeedingMode                   = 'Manual'
                     }
 
                     $mockErrorRecord = Get-InvalidOperationRecord -Message (
@@ -932,6 +963,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         FailoverMode                  = 'Manual'
                         ReadOnlyRoutingConnectionUrl  = 'TCP://Server1.domain.com:1433'
                         ReadOnlyRoutingList           = @('Server1', 'Server2')
+                        SeedingMode                   = 'Manual'
                     }
 
                     $mockErrorRecord = Get-InvalidOperationRecord -Message (
@@ -994,6 +1026,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         FailoverMode                  = 'Manual'
                         ReadOnlyRoutingConnectionUrl  = 'TCP://Server1.domain.com:1433'
                         ReadOnlyRoutingList           = @('Server1', 'Server2')
+                        SeedingMode                   = 'Manual'
                     }
 
                     $mockErrorRecord = Get-ObjectNotFoundRecord -Message (
@@ -1058,6 +1091,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         FailoverMode                  = 'Manual'
                         ReadOnlyRoutingConnectionUrl  = 'TCP://Server1.domain.com:1433'
                         ReadOnlyRoutingList           = @('Server1', 'Server2')
+                        SeedingMode                   = 'Manual'
                     }
 
                     $mockErrorRecord = Get-ObjectNotFoundRecord -Message (
@@ -1132,6 +1166,10 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                 MockPropertyName  = 'EndpointHostName'
                 MockPropertyValue = 'AnotherEndpointHostName'
             }
+            @{
+                MockPropertyName  = 'SeedingMode'
+                MockPropertyValue = 'Automatic'
+            }
         ) {
             BeforeAll {
                 Mock -CommandName Remove-SqlAvailabilityReplica
@@ -1156,6 +1194,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         FailoverMode                  = 'Manual'
                         ReadOnlyRoutingConnectionUrl  = 'TCP://Server1.domain.com:1433'
                         ReadOnlyRoutingList           = @('Server1', 'Server2')
+                        SeedingMode                   = 'Manual'
                     }
 
                     $setTargetResourceParameters.$MockPropertyName = $MockPropertyValue
@@ -1247,6 +1286,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         FailoverMode                  = 'Automatic'
                         ReadOnlyRoutingConnectionUrl  = 'TCP://Server1.domain.com:1433'
                         ReadOnlyRoutingList           = @('Server2', 'Server1')
+                        SeedingMode                   = 'Manual'
                     }
 
                     { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
@@ -1279,6 +1319,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         FailoverMode                  = 'Automatic'
                         ReadOnlyRoutingConnectionUrl  = 'TCP://Server1.domain.com:1433'
                         ReadOnlyRoutingList           = @('Server1', 'Server2')
+                        SeedingMode                   = 'Manual'
                     }
 
                     { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
@@ -1601,6 +1642,10 @@ Describe 'SqlAGReplica\Test-TargetResource' {
                 MockPropertyName  = 'ReadOnlyRoutingList'
                 MockPropertyValue = @('Server2', 'Server1')
             }
+            @{
+                MockPropertyName  = 'SeedingMode'
+                MockPropertyValue = 'Automatic'
+            }
         ) {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
@@ -1620,6 +1665,7 @@ Describe 'SqlAGReplica\Test-TargetResource' {
                         FailoverMode                  = 'Manual'
                         ReadOnlyRoutingConnectionUrl  = 'TCP://Server1.domain.com:1433'
                         ReadOnlyRoutingList           = @('Server1', 'Server2')
+                        SeedingMode                   = 'Manual'
 
                         # Read properties
                         EndpointPort                  = '5022'
@@ -1652,16 +1698,16 @@ Describe 'SqlAGReplica\Test-TargetResource' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     @{
-                        Name                          = 'Server1'
-                        AvailabilityGroupName         = 'AG_AllServers'
-                        ServerName                    = 'Server1'
-                        InstanceName                  = 'MSSQLSERVER'
-                        Ensure                        = 'Present'
+                        Name                  = 'Server1'
+                        AvailabilityGroupName = 'AG_AllServers'
+                        ServerName            = 'Server1'
+                        InstanceName          = 'MSSQLSERVER'
+                        Ensure                = 'Present'
 
                         # Read properties
-                        EndpointPort                  = '5022'
-                        EndpointUrl                   = 'TCP://Server1:1433'
-                        IsActiveNode                  = $true
+                        EndpointPort          = '5022'
+                        EndpointUrl           = 'TCP://Server1:1433'
+                        IsActiveNode          = $true
                     }
                 }
             }
@@ -1687,16 +1733,16 @@ Describe 'SqlAGReplica\Test-TargetResource' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     @{
-                        Name                          = 'Server1'
-                        AvailabilityGroupName         = 'AG_AllServers'
-                        ServerName                    = 'Server1'
-                        InstanceName                  = 'MSSQLSERVER'
-                        Ensure                        = 'Present'
+                        Name                  = 'Server1'
+                        AvailabilityGroupName = 'AG_AllServers'
+                        ServerName            = 'Server1'
+                        InstanceName          = 'MSSQLSERVER'
+                        Ensure                = 'Present'
 
                         # Read properties
-                        EndpointPort                  = '5022'
-                        EndpointUrl                   = 'UDP://Server1:5022'
-                        IsActiveNode                  = $true
+                        EndpointPort          = '5022'
+                        EndpointUrl           = 'UDP://Server1:5022'
+                        IsActiveNode          = $true
                     }
                 }
             }

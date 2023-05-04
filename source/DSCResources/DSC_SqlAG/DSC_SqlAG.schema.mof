@@ -16,6 +16,7 @@ class DSC_SqlAG : OMI_BaseResource
     [Write, Description("Specifies the hostname or IP address of the availability group replica endpoint. When creating a group the default is the instance network name.")] String EndpointHostName;
     [Write, Description("Specifies the automatic failover behavior of the availability group."), ValueMap{"OnServerDown","OnServerUnresponsive","OnCriticalServerErrors","OnModerateServerErrors","OnAnyQualifiedFailureCondition"}, Values{"OnServerDown","OnServerUnresponsive","OnCriticalServerErrors","OnModerateServerErrors","OnAnyQualifiedFailureCondition"}] String FailureConditionLevel;
     [Write, Description("Specifies the failover mode. When creating a group the default is `'Manual'`."), ValueMap{"Automatic","Manual"}, Values{"Automatic","Manual"}] String FailoverMode;
+    [Write, Description("Specifies the seeding mode. When creating a group the default is `'Manual`'."), ValueMap{"Automatic","Manual"}, Values{"Automatic","Manual"}] String SeedingMode;
     [Write, Description("Specifies the length of time, in milliseconds, after which _AlwaysOn Availability Groups_ declare an unresponsive server to be unhealthy. When creating a group the default is `30000`.")] UInt32 HealthCheckTimeout;
     [Write, Description("Specifies that the resource will only determine if a change is needed if the target node is the active host of the _SQL Server_ instance.")] Boolean ProcessOnlyOnActiveNode;
     [Read, Description("Returns the URL of the availability group replica endpoint.")] String EndpointUrl;
