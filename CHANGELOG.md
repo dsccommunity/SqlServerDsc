@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Temporary disable integration tests for dbatools.
+- SqlAg
+  - Added optional parameter `SeedingMode` that will set the SeedingMode for the
+    SQL Server 2016 and higher. This parameter can only be used together with the
+    module _SqlServer_ installed (tested  v21.0.17099). The parameter will be
+    ignored if SQLPS module will be used.
+- SqlAgReplica
+  - Added optional parameter `SeedingMode` that will set the SeedingMode for the
+    SQL Server 2016 and higher ([issue #487](https://github.com/dsccommunity/SqlServerDsc/issues/487)).
+    This parameter can only be used together with the module _SqlServer_ installed
+    (tested v21.0.17099). The parameter will be ignored if SQLPS module will be
+    used.
 
 ## [16.3.0] - 2023-04-26
 
@@ -77,17 +88,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     is not passed.
 - `Import-SqlDscPreferredModule`
   - Better handle preferred module and re-uses logic in `Get-SqlDscPreferredModule`.
-- SqlAg
-  - Added optional parameter `SeedingMode` that will set the SeedingMode for the
-    SQL Server 2016 and higher. This parameter can only be used together with the
-    module _SqlServer_ installed (tested  v21.0.17099). The parameter will be
-    ignored if SQLPS module will be used.
-- SqlAgReplica
-  - Added optional parameter `SeedingMode` that will set the SeedingMode for the
-    SQL Server 2016 and higher ([issue #487](https://github.com/dsccommunity/SqlServerDsc/issues/487)).
-    This parameter can only be used together with the module _SqlServer_ installed
-    (tested v21.0.17099). The parameter will be ignored if SQLPS module will be
-    used.
 
 ## [16.2.0] - 2023-04-10
 
