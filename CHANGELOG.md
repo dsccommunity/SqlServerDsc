@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- SqlServerDsc
+  - Re-enable integration tests for dbatools.
+  - Bumped dbatools to v2.0.1 for the integration tests.
+
 ## [16.3.1] - 2023-05-06
 
 ### Changed
