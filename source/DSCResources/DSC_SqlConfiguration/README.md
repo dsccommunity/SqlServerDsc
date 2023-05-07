@@ -3,6 +3,13 @@
 The `SqlConfiguration` DSC resource manages the [SQL Server Configuration Options](https://msdn.microsoft.com/en-us/library/ms189631.aspx)
 on a SQL Server instance.
 
+To list the available configuration option names run:
+
+```powershell
+$serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'SQL2022'
+$serverObject | Get-SqlDscConfigurationOption | ft
+```
+
 ## Requirements
 
 * Target machine must be running Windows Server 2012 or later.
