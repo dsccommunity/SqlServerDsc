@@ -368,7 +368,7 @@ stages:
           - powershell: |
               Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
               # Make sure to keep SQLPS since that is what is being tested.
-              Remove-PowerShellModuleFromCI -Name @('SqlServer')
+              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
               Remove-Module -Name CommonTestHelper
             name: cleanCIWorker
             displayName: 'Clean CI worker'
