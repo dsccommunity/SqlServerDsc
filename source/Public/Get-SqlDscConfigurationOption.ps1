@@ -11,6 +11,12 @@
     .PARAMETER Name
         Specifies the name of the configuration option to get.
 
+    .PARAMETER Refresh
+        Specifies that the **ServerObject**'s configuration property should be
+        refreshed before trying get the available configuration options. This is
+        helpful when run values or configuration values have been modified outside
+        of the specified **ServerObject**.
+
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $sqlServerObject | Get-SqlDscConfigurationOption
@@ -40,11 +46,21 @@ function Get-SqlDscConfigurationOption
 
         [Parameter()]
         [System.String]
-        $Name
+        $Name,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Refresh
     )
 
     process
     {
+        if ($Refresh.IsPresent)
+        {
+            # Make sure the configuration option values are up-to-date.
+            $serverObject.Configuration.Refresh()
+        }
+
         if ($PSBoundParameters.ContainsKey('Name'))
         {
             $configurationOption = $serverObject.Configuration.Properties |

@@ -53,7 +53,7 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName = '__AllParameterSets'
-            MockExpectedParameters = '[-ServerObject] <Server> [[-Name] <string>] [<CommonParameters>]'
+            MockExpectedParameters = '[-ServerObject] <Server> [[-Name] <string>] [-Refresh] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'Get-SqlDscConfigurationOption').ParameterSets |
