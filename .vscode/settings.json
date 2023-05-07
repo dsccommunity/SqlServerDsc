@@ -69,7 +69,8 @@
         "DynamicAlloc",
         "GetxPDTVariable",
         "Dbcc",
-        "creplace"
+        "creplace",
+        "dbatools"
     ],
     "cSpell.ignorePaths": [
         ".git"

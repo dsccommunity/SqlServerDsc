@@ -93,6 +93,16 @@ function Get-TargetResource
             $alwaysOnAvailabilityGroupResource.Add('BasicAvailabilityGroup', $availabilityGroup.BasicAvailabilityGroup)
             $alwaysOnAvailabilityGroupResource.Add('DatabaseHealthTrigger', $availabilityGroup.DatabaseHealthTrigger)
             $alwaysOnAvailabilityGroupResource.Add('DtcSupportEnabled', $availabilityGroup.DtcSupportEnabled)
+            # Microsoft.SqlServer.Management.Smo.Server from Connect-SQL supports the SeedingMode for SQL 2016 and higher, but New-SqlAvailabilityReplica may not.
+            # Will setting SeedingMode as $null to match ability of Microsoft.SqlServer.Management.Smo.Server and New-SqlAvailabilityReplica
+            if ( (Get-Command -Name 'New-SqlAvailabilityReplica').Parameters.ContainsKey('SeedingMode') )
+            {
+                $alwaysOnAvailabilityGroupResource.Add('SeedingMode', $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode)
+            }
+            else
+            {
+                $alwaysOnAvailabilityGroupResource.Add('SeedingMode', $null)
+            }
         }
     }
 
@@ -122,7 +132,7 @@ function Get-TargetResource
         Specifies the replica availability mode. When creating a group the default is 'AsynchronousCommit'.
 
     .PARAMETER BackupPriority
-        Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. When creating a group the efault is 50.
+        Specifies the desired priority of the replicas in performing backups. The acceptable values for this parameter are integers from 0 through 100. Of the set of replicas which are online and available, the replica that has the highest priority performs the backup. When creating a group the default is 50.
 
     .PARAMETER BasicAvailabilityGroup
         Specifies the type of availability group is Basic. This is only available is SQL Server 2016 and later and is ignored when applied to previous versions.
@@ -147,6 +157,10 @@ function Get-TargetResource
 
     .PARAMETER FailoverMode
         Specifies the failover mode. When creating a group the default is 'Manual'.
+
+    .PARAMETER SeedingMode
+        Specifies the seeding mode. When creating a group the default is 'Manual'.
+        This parameter can only be used when the module SqlServer is installed.
 
     .PARAMETER HealthCheckTimeout
         Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. When creating a group the default is 30,000.
@@ -233,6 +247,11 @@ function Set-TargetResource
         [ValidateSet('Automatic', 'Manual')]
         [System.String]
         $FailoverMode = 'Manual',
+
+        [Parameter()]
+        [ValidateSet('Automatic', 'Manual')]
+        [System.String]
+        $SeedingMode = 'Manual',
 
         [Parameter()]
         [System.UInt32]
@@ -335,6 +354,11 @@ function Set-TargetResource
                 if ( $ConnectionModeInSecondaryRole )
                 {
                     $newReplicaParams.Add('ConnectionModeInSecondaryRole', $ConnectionModeInSecondaryRole)
+                }
+
+                if ( ( $sqlMajorVersion -ge 13 ) -and (Get-Command -Name 'New-SqlAvailabilityReplica').Parameters.ContainsKey('SeedingMode') )
+                {
+                    $newReplicaParams.Add('SeedingMode', $SeedingMode)
                 }
 
                 # Create the new replica object
@@ -496,6 +520,15 @@ function Set-TargetResource
                     $availabilityGroup.HealthCheckTimeout = $HealthCheckTimeout
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
                 }
+
+                if ( ( $submittedParameters -contains 'SeedingMode' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $SeedingMode -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode )  )
+                {
+                    if ( (Get-Command -Name 'New-SqlAvailabilityReplica').Parameters.ContainsKey('SeedingMode') )
+                    {
+                        $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].SeedingMode = $SeedingMode
+                        Update-AvailabilityGroupReplica -AvailabilityGroupReplica $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName]
+                    }
+                }
             }
         }
     }
@@ -550,6 +583,10 @@ function Set-TargetResource
     .PARAMETER FailoverMode
         Specifies the failover mode. When creating a group the default is 'Manual'.
 
+    .PARAMETER SeedingMode
+        Specifies the seeding mode. When creating a group the default is 'Manual'.
+        This parameter can only be used when the module SqlServer is installed.
+
     .PARAMETER HealthCheckTimeout
         Specifies the length of time, in milliseconds, after which AlwaysOn availability groups declare an unresponsive server to be unhealthy. When creating a group the default is 30,000.
 
@@ -558,7 +595,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -630,6 +667,11 @@ function Test-TargetResource
         [ValidateSet('Automatic', 'Manual')]
         [System.String]
         $FailoverMode = 'Manual',
+
+        [Parameter()]
+        [ValidateSet('Automatic', 'Manual')]
+        [System.String]
+        $SeedingMode = 'Manual',
 
         [Parameter()]
         [System.UInt32]
@@ -705,11 +747,16 @@ function Test-TargetResource
             <#
                 Add properties compatible with SQL Server 2016 or later versions
                 DtcSupportEnabled is enabled at the creation of the Availability Group only, hence it will not be checked in this block
+                SeedingMode should be checked only in case if New-SqlAvailabilityReplica support the SeedingMode parameter
             #>
             if ( $sqlMajorVersion -ge 13 )
             {
                 $parametersToCheck += 'BasicAvailabilityGroup'
                 $parametersToCheck += 'DatabaseHealthTrigger'
+                if ( $getTargetResourceResult.SeedingMode )
+                {
+                    $parametersToCheck += 'SeedingMode'
+                }
             }
 
             if ( $getTargetResourceResult.Ensure -eq 'Present' )

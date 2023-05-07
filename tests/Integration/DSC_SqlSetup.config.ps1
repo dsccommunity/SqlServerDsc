@@ -37,7 +37,7 @@ else
                 SupportedFeatures               = 'SQLENGINE,REPLICATION'
 
                 SqlServerModuleVersion          = '22.0.59'
-                DbatoolsModuleVersion           = '2.0.0-preview7'
+                DbatoolsModuleVersion           = '2.0.1'
             }
         }
 
@@ -55,7 +55,7 @@ else
                 SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
                 SqlServerModuleVersion          = '21.1.18256'
-                DbatoolsModuleVersion           = '2.0.0-preview7'
+                DbatoolsModuleVersion           = '2.0.1'
             }
         }
 
@@ -69,7 +69,7 @@ else
                 SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
                 SqlServerModuleVersion          = '21.1.18256'
-                DbatoolsModuleVersion           = '2.0.0-preview7'
+                DbatoolsModuleVersion           = '2.0.1'
             }
         }
 
@@ -83,7 +83,7 @@ else
                 SupportedFeatures               = 'SQLENGINE,REPLICATION,CONN,BC,SDK'
 
                 SqlServerModuleVersion          = '21.1.18256'
-                DbatoolsModuleVersion           = '2.0.0-preview7'
+                DbatoolsModuleVersion           = '2.0.1'
             }
         }
     }
