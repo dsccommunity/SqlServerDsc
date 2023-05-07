@@ -178,4 +178,7 @@ ConvertFrom-StringData @'
 
     ## Get-FileVersionInformation
     FileVersionInformation_Get_FilePathIsNotFile = The specified path is not a file.
+
+    ## Get-SqlDscConfigurationOption
+    ConfigurationOption_Get_Missing = There is no configuration option with the name '{0}'.
 '@

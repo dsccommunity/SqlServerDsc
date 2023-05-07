@@ -5,6 +5,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SqlServerDsc
+  - Added new public command:
+    - `Get-SqlDscConfigurationOption` - Returns the available configuration
+      options that can be used with the DSC resource _SqlConfiguration_.
+
 ### Changed
 
 - SqlServerDsc
