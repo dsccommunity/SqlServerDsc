@@ -769,7 +769,6 @@ function Convert-IpAdressGroupCasing
 #>
 function Find-IpAddressGroup
 {
-
     [CmdletBinding()]
     [OutputType([System.String])]
     param
