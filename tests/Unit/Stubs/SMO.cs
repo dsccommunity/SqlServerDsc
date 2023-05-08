@@ -959,6 +959,43 @@ namespace Microsoft.SqlServer.Management.Smo
         }
     }
 
+    public class ConfigProperty
+    {
+        // Property
+        public System.String DisplayName { get; set; }
+        public System.Int32 Number { get; set; }
+        public System.Int32 Minimum { get; set; }
+        public System.Int32 Maximum { get; set; }
+        public System.Boolean IsDynamic { get; set; }
+        public System.Boolean IsAdvanced { get; set; }
+        public System.String Description { get; set; }
+        public System.Int32 RunValue { get; set; }
+        public System.Int32 ConfigValue { get; set; }
+
+        // Fabricated constructor
+        private ConfigProperty() { }
+        public static ConfigProperty CreateTypeInstance()
+        {
+            return new ConfigProperty();
+        }
+    }
+
+    public class ConfigPropertyCollection
+    {
+        // Property
+        public System.Int32 Count { get; set; }
+        public System.Boolean IsSynchronized { get; set; }
+        public System.Object SyncRoot { get; set; }
+        public Microsoft.SqlServer.Management.Smo.ConfigProperty Item { get; set; }
+
+        // Fabricated constructor
+        private ConfigPropertyCollection() { }
+        public static ConfigPropertyCollection CreateTypeInstance()
+        {
+            return new ConfigPropertyCollection();
+        }
+    }
+
     #endregion Public Classes
 }
 

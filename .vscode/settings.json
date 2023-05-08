@@ -71,7 +71,8 @@
         "Dbcc",
         "creplace",
         "dbatools",
-        "db_datareader"
+        "db_datareader",
+        "fastbuild"
     ],
     "cSpell.ignorePaths": [
         ".git"
