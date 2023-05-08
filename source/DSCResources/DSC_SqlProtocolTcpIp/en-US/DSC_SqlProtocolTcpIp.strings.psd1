@@ -14,4 +14,6 @@ ConvertFrom-StringData @'
     GroupIsInDesiredState = The TCP/IP address group '{0}' on the instance '{1}' is already in desired state. (SSPTI0013)
     RestartSuppressed = The restart was suppressed. The configuration will not be active until the node is manually restart. (SSPTI0014)
     FailedToGetSqlServerProtocol = Failed to get the settings for the SQL Server Database Engine server protocol TCP/IP. (SSPTI0015)
+    GetIpAddressGroupByIpAddress = Detect the TCP/IP address group by using the TCP/IP address '{0}'. (SSPTI0016)
+    IpAddressGroupNotFoundError = The TCP/IP address group was not detected because the TCP/IP address '{0}' is not assigned to any TCP/IP address group. (SSPTI0017)
 '@

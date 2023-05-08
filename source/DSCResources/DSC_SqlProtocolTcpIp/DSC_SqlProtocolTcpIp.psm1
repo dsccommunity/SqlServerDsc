@@ -73,6 +73,8 @@ function Get-TargetResource
         $RestartTimeout = 120
     )
 
+    $IpAddressGroup = Find-IpAddressGroup -IpAddressGroup $IpAddressGroup -InstanceName $InstanceName
+
     $IpAddressGroup = Convert-IpAdressGroupCasing -IpAddressGroup $IpAddressGroup
 
     $returnValue = @{
@@ -270,6 +272,8 @@ function Set-TargetResource
         [System.UInt16]
         $RestartTimeout = 120
     )
+
+    $IpAddressGroup = Find-IpAddressGroup -IpAddressGroup $IpAddressGroup -InstanceName $InstanceName
 
     $IpAddressGroup = Convert-IpAdressGroupCasing -IpAddressGroup $IpAddressGroup
 
@@ -536,6 +540,10 @@ function Test-TargetResource
         $RestartTimeout = 120
     )
 
+    $IpAddressGroup = Find-IpAddressGroup -IpAddressGroup $IpAddressGroup -InstanceName $InstanceName
+
+    $IpAddressGroup = Convert-IpAdressGroupCasing -IpAddressGroup $IpAddressGroup
+
     Write-Verbose -Message (
         $script:localizedData.TestDesiredState -f $IpAddressGroup, $InstanceName, $ServerName
     )
@@ -749,4 +757,73 @@ function Convert-IpAdressGroupCasing
     )
 
     return ($IpAddressGroup.ToUpper() -replace 'IPALL', 'IPAll')
+}
+
+
+<#
+    .SYNOPSIS
+        Find's an IP address group by the specified IP.
+
+    .PARAMETER IpAddress
+        The IP address already stored in an IP address group.
+#>
+function Find-IpAddressGroup
+{
+
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $InstanceName,
+
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [System.String]
+        $IpAddressGroup
+    )
+
+    if ($IpAddressGroup -like '*.*.*.*' -or $IpAddressGroup -like '*:*')
+    {
+        # Getting the server protocol properties by using the computer name.
+        $computerName = Get-ComputerName
+
+        Write-Verbose -Message (
+            $script:localizedData.GetIpAddressGroupByIpAddress -f $IpAddressGroup
+        )
+
+        Import-SqlDscPreferredModule
+
+        <#
+            Must connect to the local machine name because $ServerName can
+            point to a cluster instance or availability group listener.
+        #>
+        $getServerProtocolObjectParameters = @{
+            ServerName   = $computerName
+            Instance     = $InstanceName
+            ProtocolName = 'TcpIp'
+        }
+
+        $serverProtocolProperties = Get-ServerProtocolObject @getServerProtocolObjectParameters
+
+        if ($serverProtocolProperties)
+        {
+            foreach ($ipAddressGroupObject in $serverProtocolProperties.IPAddresses)
+            {
+                if ($ipAddressGroupObject.IPAddress.IPAddressToString -eq $IpAddressGroup)
+                {
+                    return $ipAddressGroupObject.Name
+                }
+            }
+        }
+
+        throw (
+            $script:localizedData.IpAddressGroupNotFoundError -f $IpAddressGroup
+        )
+    }
+    else
+    {
+        return $IpAddressGroup
+    }
 }
