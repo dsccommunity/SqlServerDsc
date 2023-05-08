@@ -818,7 +818,7 @@ function Find-IpAddressGroup
             }
         }
 
-        throw (
+        Write-Warning (
             $script:localizedData.IpAddressGroupNotFoundError -f $IpAddressGroup
         )
     }
