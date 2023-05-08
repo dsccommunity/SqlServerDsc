@@ -51,8 +51,8 @@ function Get-SqlDscServerPermission
         $getSqlDscServerPermissionResult = $null
 
         $testSqlDscIsLoginParameters = @{
-            ServerObject      = $ServerObject
-            Name              = $Name
+            ServerObject = $ServerObject
+            Name         = $Name
         }
 
         $isLogin = Test-SqlDscIsLogin @testSqlDscIsLoginParameters

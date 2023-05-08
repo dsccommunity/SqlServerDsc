@@ -209,9 +209,9 @@ function New-SqlDscAudit
 
         $getSqlDscAuditParameters = @{
             ServerObject = $ServerObject
-            Name = $Name
-            Refresh = $Refresh
-            ErrorAction = 'SilentlyContinue'
+            Name         = $Name
+            Refresh      = $Refresh
+            ErrorAction  = 'SilentlyContinue'
         }
 
         $auditObject = Get-SqlDscAudit @getSqlDscAuditParameters

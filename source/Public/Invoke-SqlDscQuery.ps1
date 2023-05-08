@@ -246,9 +246,9 @@ function Invoke-SqlDscQuery
             catch
             {
                 $writeErrorParameters = @{
-                    Message = $_.Exception.ToString()
-                    Category = 'InvalidOperation'
-                    ErrorId = 'ISDQ0001' # cSpell: disable-line
+                    Message      = $_.Exception.ToString()
+                    Category     = 'InvalidOperation'
+                    ErrorId      = 'ISDQ0001' # cSpell: disable-line
                     TargetObject = $DatabaseName
                 }
 

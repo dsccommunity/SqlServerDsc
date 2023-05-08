@@ -67,9 +67,9 @@ function Get-SqlDscAudit
                 $missingAuditMessage = $script:localizedData.Audit_Missing -f $Name
 
                 $writeErrorParameters = @{
-                    Message = $missingAuditMessage
-                    Category = 'InvalidOperation'
-                    ErrorId = 'GSDA0001' # cspell: disable-line
+                    Message      = $missingAuditMessage
+                    Category     = 'InvalidOperation'
+                    ErrorId      = 'GSDA0001' # cspell: disable-line
                     TargetObject = $Name
                 }
 

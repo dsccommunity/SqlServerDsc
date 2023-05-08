@@ -143,13 +143,13 @@ function Set-SqlDscAudit
 
         [Parameter()]
         [ValidateScript({
-            if ($_ -in 1..999 -or $_ -gt 2147483647)
-            {
-                throw ($script:localizedData.Audit_QueueDelayParameterValueInvalid -f $_)
-            }
+                if ($_ -in 1..999 -or $_ -gt 2147483647)
+                {
+                    throw ($script:localizedData.Audit_QueueDelayParameterValueInvalid -f $_)
+                }
 
-            return $true
-        })]
+                return $true
+            })]
         [System.UInt32]
         $QueueDelay,
 
@@ -200,13 +200,13 @@ function Set-SqlDscAudit
         [Parameter(ParameterSetName = 'AuditObjectWithSizeAndMaxFiles', Mandatory = $true)]
         [Parameter(ParameterSetName = 'AuditObjectWithSizeAndMaxRolloverFiles', Mandatory = $true)]
         [ValidateScript({
-            if ($_ -eq 1 -or $_ -gt 2147483647)
-            {
-                throw ($script:localizedData.Audit_MaximumFileSizeParameterValueInvalid -f $_)
-            }
+                if ($_ -eq 1 -or $_ -gt 2147483647)
+                {
+                    throw ($script:localizedData.Audit_MaximumFileSizeParameterValueInvalid -f $_)
+                }
 
-            return $true
-        })]
+                return $true
+            })]
         [System.UInt32]
         $MaximumFileSize,
 
@@ -254,9 +254,9 @@ function Set-SqlDscAudit
         {
             $getSqlDscAuditParameters = @{
                 ServerObject = $ServerObject
-                Name = $Name
-                Refresh = $Refresh
-                ErrorAction = 'Stop'
+                Name         = $Name
+                Refresh      = $Refresh
+                ErrorAction  = 'Stop'
             }
 
             # If this command does not find the audit it will throw an exception.

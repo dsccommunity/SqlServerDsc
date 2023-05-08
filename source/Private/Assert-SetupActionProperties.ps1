@@ -26,7 +26,7 @@
 #>
 function Assert-SetupActionProperties
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='The command uses plural noun to describe that it contain a collection of asserts.')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'The command uses plural noun to describe that it contain a collection of asserts.')]
     [CmdletBinding()]
     param
     (
@@ -54,7 +54,7 @@ function Assert-SetupActionProperties
 
     $assertRequiredCommandParameterParameters = @{
         BoundParameterList = $Property
-        RequiredParameter = $assertParameters
+        RequiredParameter  = $assertParameters
         IfParameterPresent = $assertParameters
     }
 

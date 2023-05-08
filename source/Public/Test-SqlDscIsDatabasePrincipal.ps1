@@ -108,7 +108,7 @@ function Test-SqlDscIsDatabasePrincipal
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
                     ($script:localizedData.IsDatabasePrincipal_DatabaseMissing -f $DatabaseName),
-                    'TSDISO0001',
+                    'TSDISO0001', # cSpell: disable-line
                     [System.Management.Automation.ErrorCategory]::InvalidOperation,
                     $DatabaseName
                 )

@@ -156,5 +156,5 @@ function Repair-SqlDscServer
         $Force
     )
 
-    Invoke-SetupAction -Repair @PSBoundParameters -ErrorAction 'Stop'
+    Invoke-SetupAction -Repair @PSBoundParameters -ErrorAction 'Stop' -Verbose:$VerbosePreference
 }

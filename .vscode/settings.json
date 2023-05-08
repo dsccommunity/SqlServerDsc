@@ -70,7 +70,8 @@
         "GetxPDTVariable",
         "Dbcc",
         "creplace",
-        "dbatools"
+        "dbatools",
+        "db_datareader"
     ],
     "cSpell.ignorePaths": [
         ".git"
