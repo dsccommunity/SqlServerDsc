@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added new public command:
     - `Get-SqlDscConfigurationOption` - Returns the available configuration
       options that can be used with the DSC resource _SqlConfiguration_.
+- SqlProtocolTcpIp
+  - Auto-detect the TCP/IP address group name by IP address
 
 ### Changed
 
