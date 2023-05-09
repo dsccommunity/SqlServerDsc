@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Fix style changes in all private and public commands.
+- `Import-SqlDscPreferredModule`
+  - Now when parameter `Force` is passed the command correctly invoke
+    `Get-SqlDscPreferredModule` using the parameter `Refresh`.
 
 ## [16.3.1] - 2023-05-06
 

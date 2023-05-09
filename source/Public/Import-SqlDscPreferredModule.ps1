@@ -65,6 +65,11 @@ function Import-SqlDscPreferredModule
         $getSqlDscPreferredModuleParameters.Name = @($Name, 'SQLPS')
     }
 
+    if ($PSBoundParameters.ContainsKey('Force'))
+    {
+        $getSqlDscPreferredModuleParameters.Refresh = $true
+    }
+
     $availableModuleName = Get-SqlDscPreferredModule @getSqlDscPreferredModuleParameters
 
     if ($Force.IsPresent)
