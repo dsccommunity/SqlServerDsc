@@ -236,7 +236,10 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         It 'Should import the SqlServer module without throwing' {
             { Import-SqlDscPreferredModule -Force } | Should -Not -Throw
 
-            Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-SqlDscPreferredModule -ParameterFilter {
+                $PesterBoundParameters.ContainsKey('Refresh') -and $Refresh -eq $true
+            } -Exactly -Times 1 -Scope It
+
             Should -Invoke -CommandName Push-Location -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Pop-Location -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Remove-Module -Exactly -Times 1 -Scope It

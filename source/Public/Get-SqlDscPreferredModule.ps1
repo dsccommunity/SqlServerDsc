@@ -162,7 +162,7 @@ function Get-SqlDscPreferredModule
     {
         $errorMessage = $script:localizedData.PreferredModule_ModuleNotFound
 
-         # cSpell: disable-next
+        # cSpell: disable-next
         Write-Error -Message $errorMessage -Category 'ObjectNotFound' -ErrorId 'GSDPM0001' -TargetObject ($Name -join ', ')
     }
 

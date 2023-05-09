@@ -194,7 +194,7 @@ function Set-SqlDscDatabasePermission
                 $PSCmdlet.ThrowTerminatingError(
                     [System.Management.Automation.ErrorRecord]::new(
                         $missingPrincipalMessage,
-                        'GSDDP0001',
+                        'GSDDP0001', # cSpell: disable-line
                         [System.Management.Automation.ErrorCategory]::InvalidOperation,
                         $Name
                     )
@@ -208,7 +208,7 @@ function Set-SqlDscDatabasePermission
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
                     $missingDatabaseMessage,
-                    'GSDDP0002',
+                    'GSDDP0002', # cSpell: disable-line
                     [System.Management.Automation.ErrorCategory]::InvalidOperation,
                     $DatabaseName
                 )

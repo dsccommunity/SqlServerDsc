@@ -9,12 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Integration tests now also run using SQLPS.
+  - Added a new build task `fastbuild` that can be used during development
+    process when there are no need to generate documentation.
+  - Added new public command:
+    - `Get-SqlDscConfigurationOption` - Returns the available configuration
+      options that can be used with the DSC resource _SqlConfiguration_.
 
 ### Changed
 
 - SqlServerDsc
   - Re-enable integration tests for dbatools.
   - Bumped dbatools to v2.0.1 for the integration tests.
+
+### Fixed
+
+- SqlServerDsc
+  - Fix style changes in all private and public commands.
+- `Import-SqlDscPreferredModule`
+  - Now when parameter `Force` is passed the command correctly invoke
+    `Get-SqlDscPreferredModule` using the parameter `Refresh`.
 
 ## [16.3.1] - 2023-05-06
 

@@ -15,11 +15,16 @@ BuildWorkflow:
     - Generate_Conceptual_Help
     - Generate_Wiki_Content
 
+  fastbuild:
+    - Clean
+    - Build_Module_ModuleBuilder
+    - Build_NestedModules_ModuleBuilder
+
   pack:
     - build
-    - package_module_nupkg
+    - package_module_nupkg # cSpell: disable-line
 
-  hqrmtest:
+  hqrmtest: # cSpell: disable-line
     - Invoke_HQRM_Tests_Stop_On_Fail
 
   test:
@@ -146,7 +151,7 @@ Resolve-Dependency:
 GitHubConfig:
   GitHubFilesToAdd:
     - 'CHANGELOG.md'
-  GitHubConfigUserName: dscbot
+  GitHubConfigUserName: dscbot # cSpell: disable-line
   GitHubConfigUserEmail: dsccommunity@outlook.com
   UpdateChangelogOnPrerelease: false
 
