@@ -79,9 +79,9 @@ function Remove-SqlDscAudit
         {
             $getSqlDscAuditParameters = @{
                 ServerObject = $ServerObject
-                Name = $Name
-                Refresh = $Refresh
-                ErrorAction = 'Stop'
+                Name         = $Name
+                Refresh      = $Refresh
+                ErrorAction  = 'Stop'
             }
 
             # If this command does not find the audit it will throw an exception.

@@ -71,6 +71,7 @@
         "Dbcc",
         "creplace",
         "dbatools",
+        "db_datareader",
         "fastbuild"
     ],
     "cSpell.ignorePaths": [

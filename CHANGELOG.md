@@ -20,8 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Re-enable integration tests for dbatools.
   - Bumped dbatools to v2.0.1 for the integration tests.
 
-### fixed
+### Fixed
 
+- SqlServerDsc
+  - Fix style changes in all private and public commands.
 - `Import-SqlDscPreferredModule`
   - Now when parameter `Force` is passed the command correctly invoke
     `Get-SqlDscPreferredModule` using the parameter `Refresh`.

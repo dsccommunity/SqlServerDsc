@@ -95,8 +95,8 @@ function Set-SqlDscServerPermission
         }
 
         $testSqlDscIsLoginParameters = @{
-            ServerObject      = $ServerObject
-            Name              = $Name
+            ServerObject = $ServerObject
+            Name         = $Name
         }
 
         $isLogin = Test-SqlDscIsLogin @testSqlDscIsLoginParameters
@@ -172,7 +172,7 @@ function Set-SqlDscServerPermission
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
                     $missingPrincipalMessage,
-                    'GSDDP0001',
+                    'GSDDP0001', # cSpell: disable-line
                     [System.Management.Automation.ErrorCategory]::InvalidOperation,
                     $Name
                 )

@@ -526,13 +526,13 @@ function Invoke-SetupAction
 
         [Parameter(ParameterSetName = 'UsingConfigurationFile', Mandatory = $true)]
         [ValidateScript({
-            if (-not (Test-Path -Path $_))
-            {
-                throw $script:localizedData.Server_ConfigurationFileNotFound
-            }
+                if (-not (Test-Path -Path $_))
+                {
+                    throw $script:localizedData.Server_ConfigurationFileNotFound
+                }
 
-            return $true
-        })]
+                return $true
+            })]
         [System.String]
         $ConfigurationFile,
 
@@ -565,13 +565,13 @@ function Invoke-SetupAction
 
         [Parameter(Mandatory = $true)]
         [ValidateScript({
-            if (-not (Test-Path -Path (Join-Path -Path $_ -ChildPath 'setup.exe')))
-            {
-                throw $script:localizedData.Server_MediaPathNotFound
-            }
+                if (-not (Test-Path -Path (Join-Path -Path $_ -ChildPath 'setup.exe')))
+                {
+                    throw $script:localizedData.Server_MediaPathNotFound
+                }
 
-            return $true
-        })]
+                return $true
+            })]
         [System.String]
         $MediaPath,
 
@@ -1479,12 +1479,12 @@ function Invoke-SetupAction
         See issue https://github.com/dsccommunity/SqlServerDsc/issues/1254.
     #>
     $boundParameterName.Where( { $_ -in $pathParameter } ).ForEach({
-        # Must not change paths that reference a root directory (they are handle differently later)
-        if ($PSBoundParameters.$_ -notmatch '^[a-zA-Z]:\\$')
-        {
-            $PSBoundParameters.$_ = $PSBoundParameters.$_.TrimEnd('\')
-        }
-    })
+            # Must not change paths that reference a root directory (they are handle differently later)
+            if ($PSBoundParameters.$_ -notmatch '^[a-zA-Z]:\\$')
+            {
+                $PSBoundParameters.$_ = $PSBoundParameters.$_.TrimEnd('\')
+            }
+        })
 
     # Loop through all bound parameters and build arguments for the setup executable.
     foreach ($parameterName in $boundParameterName)
