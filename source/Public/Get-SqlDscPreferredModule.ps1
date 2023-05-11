@@ -127,10 +127,15 @@ function Get-SqlDscPreferredModule
             }
         )
 
+    Write-Verbose -Message ('Get-SqlDscPreferredModule Available Modules: {0}' -f ($availableModule | Out-String)) -Verbose
+
     foreach ($preferredModuleName in $Name)
     {
         $preferredModule = $availableModule |
             Where-Object -Property 'Name' -EQ -Value $preferredModuleName
+
+        Write-Verbose -Message ('PreferredModuleName: {0}' -f $preferredModuleName) -Verbose
+        Write-Verbose -Message ('Found PreferredModule: {0}' -f ($preferredModule | Out-String)) -Verbose
 
         if ($preferredModule)
         {

@@ -1644,9 +1644,9 @@ function Set-TargetResource
 
         if ((-not $setupEndedInError) -and $forceReloadPowerShellModule)
         {
-            Write-Verbose -Message (Get-Module -Name @('SqlServer', 'SqlServerDsc', 'SQLPS') -ListAvailable | Out-String) -Verbose
             Write-Verbose -Message ('Session PSModulePath: {0}' -f $env:PSModulePath) -Verbose
-            Write-Verbose -Message ('All PSModulePath: {0}' -f (Get-Module -Name @('SqlServer', 'SqlServerDsc', 'SQLPS') -ListAvailable | Out-String)) -Verbose
+            Write-Verbose -Message ('Available modules: {0}' -f (Get-Module -Name @('SqlServer', 'SqlServerDsc', 'SQLPS') -ListAvailable | Out-String)) -Verbose
+            Write-Verbose -Message ('All PSModulePath: {0}' -f (Get-PSModulePath -FromTarget 'Session', 'User', 'Machine')) -Verbose
 
             <#
                 Force reload of SQLPS module in case a newer version of
@@ -1659,9 +1659,9 @@ function Set-TargetResource
             #>
             Import-SqlDscPreferredModule -Force -Verbose
 
-            Write-Verbose -Message (Get-Module -Name @('SqlServer', 'SqlServerDsc', 'SQLPS') -ListAvailable | Out-String) -Verbose
             Write-Verbose -Message ('Session PSModulePath: {0}' -f $env:PSModulePath) -Verbose
-            Write-Verbose -Message ('All PSModulePath: {0}' -f (Get-Module -Name @('SqlServer', 'SqlServerDsc', 'SQLPS') -ListAvailable | Out-String)) -Verbose
+            Write-Verbose -Message ('Available modules: {0}' -f (Get-Module -Name @('SqlServer', 'SqlServerDsc', 'SQLPS') -ListAvailable | Out-String)) -Verbose
+            Write-Verbose -Message ('All PSModulePath: {0}' -f (Get-PSModulePath -FromTarget 'Session', 'User', 'Machine')) -Verbose
         }
 
         if (-not (Test-TargetResource @PSBoundParameters))
