@@ -504,7 +504,9 @@ function Connect-SQL
     )
 
     Write-Verbose -Message 'DEBUG2' -Verbose
+    Write-Verbose -Message $env:PSModulePath -Verbose
     Write-Verbose -Message (Get-Module -Name @('SqlServer', 'SqlServerDsc', 'SQLPS') -ListAvailable | Out-String) -Verbose
+    Write-Verbose -Message (Get-PSModulePath -FromTarget 'Session', 'User', 'Machine') -Verbose
 
     Import-SqlDscPreferredModule -Force
 
