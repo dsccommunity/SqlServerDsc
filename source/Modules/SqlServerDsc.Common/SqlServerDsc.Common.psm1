@@ -503,7 +503,12 @@ function Connect-SQL
         $Encrypt
     )
 
-    Import-SqlDscPreferredModule
+    Write-Verbose -Message 'DEBUG2' -Verbose
+    Write-Verbose -Message (Get-Module -Name @('SqlServer', 'SqlServerDsc', 'SQLPS') -ListAvailable | Out-String) -Verbose
+
+    Import-SqlDscPreferredModule -Force
+
+    Write-Verbose -Message (Get-Module -Name @('SqlServer', 'SqlServerDsc', 'SQLPS') -ListAvailable | Out-String) -Verbose
 
     if ($InstanceName -eq 'MSSQLSERVER')
     {
