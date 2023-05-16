@@ -74,7 +74,13 @@ function Get-SqlDscPreferredModule
         }
     }
 
-    if ($Refresh.IsPresent)
+    Write-Verbose -Message ('DEBUG Session: {0}' -f (Get-PSModulePath -FromTarget 'Session')) -Verbose
+    Write-Verbose -Message ('DEBUG User: {0}' -f (Get-PSModulePath -FromTarget 'User')) -Verbose
+    Write-Verbose -Message ('DEBUG Machine: {0}' -f (Get-PSModulePath -FromTarget 'Machine')) -Verbose
+    Write-Verbose -Message ('DEBUG $env: {0}' -f $env:PSModulePath) -Verbose
+
+    #if ($Refresh.IsPresent)
+    if ($true)
     {
         # Only run on Windows that has Machine state.
         if (-not ($IsLinux -or $IsMacOS))
