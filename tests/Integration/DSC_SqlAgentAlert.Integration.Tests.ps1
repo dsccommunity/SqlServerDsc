@@ -2,11 +2,6 @@
 param ()
 
 BeforeDiscovery {
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG1 Session: {0}' -f (Get-PSModulePath -FromTarget 'Session')) -Verbose
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG1 User: {0}' -f (Get-PSModulePath -FromTarget 'User')) -Verbose
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG1 Machine: {0}' -f (Get-PSModulePath -FromTarget 'Machine')) -Verbose
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG1 $env: {0}' -f $env:PSModulePath) -Verbose
-
     try
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
