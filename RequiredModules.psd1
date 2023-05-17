@@ -28,7 +28,14 @@
     Sampler                        = 'latest'
     'Sampler.GitHubTasks'          = 'latest'
     MarkdownLinkCheck              = 'latest'
-    'DscResource.Test'             = 'latest'
+
+    'DscResource.Test'             = @{
+        Version    = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
+
     xDscResourceDesigner           = 'latest'
     'DscResource.DocGenerator'     = 'latest'
 

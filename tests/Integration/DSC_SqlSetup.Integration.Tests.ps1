@@ -174,7 +174,7 @@ AfterAll {
     Write-Verbose -Message ('SqlSetup: DEBUG1 Machine: {0}' -f (Get-PSModulePath -FromTarget 'Machine')) -Verbose
     Write-Verbose -Message ('SqlSetup: DEBUG1 $env: {0}' -f $env:PSModulePath) -Verbose
 
-    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment -KeepNewMachinePSModulePath
 
     Write-Verbose -Message ('SqlSetup: DEBUG2 Session: {0}' -f (Get-PSModulePath -FromTarget 'Session')) -Verbose
     Write-Verbose -Message ('SqlSetup: DEBUG2 User: {0}' -f (Get-PSModulePath -FromTarget 'User')) -Verbose
