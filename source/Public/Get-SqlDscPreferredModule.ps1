@@ -74,8 +74,7 @@ function Get-SqlDscPreferredModule
         }
     }
 
-    #if ($Refresh.IsPresent)
-    if ($true)
+    if ($Refresh.IsPresent)
     {
         # Only run on Windows that has Machine state.
         if (-not ($IsLinux -or $IsMacOS))

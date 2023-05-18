@@ -1639,15 +1639,8 @@ function Set-TargetResource
             $forceReloadPowerShellModule = $true
         }
 
-        Write-Verbose -Message 'DEBUG1' -Verbose
-        Write-Verbose -Message ('Force Reload: {0}' -f ($forceReloadPowerShellModule | Out-String)) -Verbose
-
         if ((-not $setupEndedInError) -and $forceReloadPowerShellModule)
         {
-            Write-Verbose -Message ('Session PSModulePath: {0}' -f $env:PSModulePath) -Verbose
-            Write-Verbose -Message ('Available modules: {0}' -f (Get-Module -Name @('SqlServer', 'SqlServerDsc', 'SQLPS') -ListAvailable | Out-String)) -Verbose
-            Write-Verbose -Message ('All PSModulePath: {0}' -f (Get-PSModulePath -FromTarget 'Session', 'User', 'Machine')) -Verbose
-
             <#
                 Force reload of SQLPS module in case a newer version of
                 SQL Server was installed that contains a newer version
@@ -1657,11 +1650,7 @@ function Set-TargetResource
                 matches the latest assemblies in GAC, mitigating for example
                 issue #1151.
             #>
-            Import-SqlDscPreferredModule -Force -Verbose
-
-            Write-Verbose -Message ('Session PSModulePath: {0}' -f $env:PSModulePath) -Verbose
-            Write-Verbose -Message ('Available modules: {0}' -f (Get-Module -Name @('SqlServer', 'SqlServerDsc', 'SQLPS') -ListAvailable | Out-String)) -Verbose
-            Write-Verbose -Message ('All PSModulePath: {0}' -f (Get-PSModulePath -FromTarget 'Session', 'User', 'Machine')) -Verbose
+            Import-SqlDscPreferredModule -Force
         }
 
         if (-not (Test-TargetResource @PSBoundParameters))
