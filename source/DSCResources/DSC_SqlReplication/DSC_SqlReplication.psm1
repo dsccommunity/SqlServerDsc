@@ -93,15 +93,7 @@ function Get-TargetResource
         $script:localizedData.GetCurrentState -f $InstanceName
     )
 
-    Write-Verbose -Message ('All assemblies: {0}' -f ([System.AppDomain]::CurrentDomain.GetAssemblies() | Out-String)) -Verbose
-    Write-Verbose -Message ('All SQL assemblies: {0}' -f ([System.AppDomain]::CurrentDomain.GetAssemblies() | ? Location -like '*SQL*' | Out-String)) -Verbose
-    Write-Verbose -Message ('ConnectionInfo assembly: {0}' -f ([System.AppDomain]::CurrentDomain.GetAssemblies() | ? Location -like '*ConnectionInfo*' | fl * | Out-String)) -Verbose
-
     Import-SqlDscPreferredModule
-
-    Write-Verbose -Message ('All assemblies: {0}' -f ([System.AppDomain]::CurrentDomain.GetAssemblies() | Out-String)) -Verbose
-    Write-Verbose -Message ('All SQL assemblies: {0}' -f ([System.AppDomain]::CurrentDomain.GetAssemblies() | ? Location -like '*SQL*' | Out-String)) -Verbose
-    Write-Verbose -Message ('ConnectionInfo assembly: {0}' -f ([System.AppDomain]::CurrentDomain.GetAssemblies() | ? Location -like '*ConnectionInfo*' | fl * | Out-String)) -Verbose
 
     $sqlMajorVersion = Get-SqlInstanceMajorVersion -InstanceName $InstanceName
     $localSqlName = Get-SqlLocalServerName -InstanceName $InstanceName
@@ -445,9 +437,8 @@ function New-ServerConnection
         $SqlServerName
     )
 
-    if ($SqlMajorVersion -eq 99)
+    if ($SqlMajorVersion -eq 16)
     {
-        Write-Verbose -Message 'DEBUG100' -Verbose
         <#
             For SQL Server 2022 the object must be created with New-Object and
             also requires the module SqlServer v22 (minimum v22.0.49-preview).
@@ -456,7 +447,6 @@ function New-ServerConnection
     }
     else
     {
-        Write-Verbose -Message 'DEBUG101' -Verbose
         <#
             SQL Server 2016, 2017, and 2019 must use the assembly in the GAC. If the
             method for SQL Server 2022 is used it throws the error:

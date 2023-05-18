@@ -74,11 +74,6 @@ function Get-SqlDscPreferredModule
         }
     }
 
-    Write-Verbose -Message ('Get-SqlDscPreferredModule: DEBUG Session: {0}' -f (Get-PSModulePath -FromTarget 'Session')) -Verbose
-    Write-Verbose -Message ('Get-SqlDscPreferredModule: DEBUG User: {0}' -f (Get-PSModulePath -FromTarget 'User')) -Verbose
-    Write-Verbose -Message ('Get-SqlDscPreferredModule: DEBUG Machine: {0}' -f (Get-PSModulePath -FromTarget 'Machine')) -Verbose
-    Write-Verbose -Message ('Get-SqlDscPreferredModule: DEBUG $env: {0}' -f $env:PSModulePath) -Verbose
-
     #if ($Refresh.IsPresent)
     if ($true)
     {
@@ -133,15 +128,10 @@ function Get-SqlDscPreferredModule
             }
         )
 
-    Write-Verbose -Message ('Get-SqlDscPreferredModule: Available Modules: {0}' -f ($availableModule | Out-String)) -Verbose
-
     foreach ($preferredModuleName in $Name)
     {
         $preferredModule = $availableModule |
             Where-Object -Property 'Name' -EQ -Value $preferredModuleName
-
-        Write-Verbose -Message ('Get-SqlDscPreferredModule: PreferredModuleName: {0}' -f $preferredModuleName) -Verbose
-        Write-Verbose -Message ('Get-SqlDscPreferredModule: Found PreferredModule: {0}' -f ($preferredModule | Out-String)) -Verbose
 
         if ($preferredModule)
         {

@@ -31,11 +31,6 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG2 Session: {0}' -f (Get-PSModulePath -FromTarget 'Session')) -Verbose
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG2 User: {0}' -f (Get-PSModulePath -FromTarget 'User')) -Verbose
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG2 Machine: {0}' -f (Get-PSModulePath -FromTarget 'Machine')) -Verbose
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG2 $env: {0}' -f $env:PSModulePath) -Verbose
-
     # Need to define the variables here which will be used in Pester Run.
     $script:dscModuleName = 'SqlServerDsc'
     $script:dscResourceFriendlyName = 'SqlAgentAlert'
@@ -47,18 +42,8 @@ BeforeAll {
         -ResourceType 'Mof' `
         -TestType 'Integration'
 
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG3 Session: {0}' -f (Get-PSModulePath -FromTarget 'Session')) -Verbose
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG3 User: {0}' -f (Get-PSModulePath -FromTarget 'User')) -Verbose
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG3 Machine: {0}' -f (Get-PSModulePath -FromTarget 'Machine')) -Verbose
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG3 $env: {0}' -f $env:PSModulePath) -Verbose
-
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configFile
-
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG4 Session: {0}' -f (Get-PSModulePath -FromTarget 'Session')) -Verbose
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG4 User: {0}' -f (Get-PSModulePath -FromTarget 'User')) -Verbose
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG4 Machine: {0}' -f (Get-PSModulePath -FromTarget 'Machine')) -Verbose
-    Write-Verbose -Message ('SqlAgentAlert: DEBUG4 $env: {0}' -f $env:PSModulePath) -Verbose
 }
 
 AfterAll {

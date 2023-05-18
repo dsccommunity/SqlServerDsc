@@ -169,17 +169,7 @@ BeforeAll {
 }
 
 AfterAll {
-    Write-Verbose -Message ('SqlSetup: DEBUG1 Session: {0}' -f (Get-PSModulePath -FromTarget 'Session')) -Verbose
-    Write-Verbose -Message ('SqlSetup: DEBUG1 User: {0}' -f (Get-PSModulePath -FromTarget 'User')) -Verbose
-    Write-Verbose -Message ('SqlSetup: DEBUG1 Machine: {0}' -f (Get-PSModulePath -FromTarget 'Machine')) -Verbose
-    Write-Verbose -Message ('SqlSetup: DEBUG1 $env: {0}' -f $env:PSModulePath) -Verbose
-
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment -KeepNewMachinePSModulePath
-
-    Write-Verbose -Message ('SqlSetup: DEBUG2 Session: {0}' -f (Get-PSModulePath -FromTarget 'Session')) -Verbose
-    Write-Verbose -Message ('SqlSetup: DEBUG2 User: {0}' -f (Get-PSModulePath -FromTarget 'User')) -Verbose
-    Write-Verbose -Message ('SqlSetup: DEBUG2 Machine: {0}' -f (Get-PSModulePath -FromTarget 'Machine')) -Verbose
-    Write-Verbose -Message ('SqlSetup: DEBUG2 $env: {0}' -f $env:PSModulePath) -Verbose
 
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }

@@ -503,18 +503,7 @@ function Connect-SQL
         $Encrypt
     )
 
-    Write-Verbose -Message 'DEBUG2' -Verbose
-    Write-Verbose -Message ('Session PSModulePath: {0}' -f $env:PSModulePath) -Verbose
-    Write-Verbose -Message ('Available modules: {0}' -f (Get-Module -Name @('SqlServer', 'SqlServerDsc', 'SQLPS') -ListAvailable | Out-String)) -Verbose
-    Write-Verbose -Message ('All PSModulePath: {0}' -f (Get-PSModulePath -FromTarget 'Session', 'User', 'Machine')) -Verbose
-
-    Write-Verbose -Message 'DEBUG3' -Verbose
-    Write-Verbose -Message ('Found module: {0}' -f (Get-SqlDscPreferredModule -ErrorAction 'Continue')) -Verbose
-    Write-Verbose -Message ('Found module (refresh): {0}' -f (Get-SqlDscPreferredModule -Refresh -ErrorAction 'Stop')) -Verbose
-
     Import-SqlDscPreferredModule -Force
-
-    Write-Verbose -Message (Get-Module -Name @('SqlServer', 'SqlServerDsc', 'SQLPS') -ListAvailable | Out-String) -Verbose
 
     if ($InstanceName -eq 'MSSQLSERVER')
     {
