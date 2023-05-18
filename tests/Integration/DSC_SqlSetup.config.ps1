@@ -205,8 +205,7 @@ $featureFlag = if ((Get-Module -Name 'SqlServer', 'dbatools' -ListAvailable))
 }
 else
 {
-    #@()
-    @('AnalysisServicesConnection')
+    @()
 }
 
 <#
