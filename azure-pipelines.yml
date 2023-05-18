@@ -331,7 +331,7 @@ stages:
 
       - job: Test_Integration_SQLPS
         displayName: 'Integration (SQLPS)'
-        #dependsOn: Test_Integration
+        dependsOn: Test_Integration
         strategy:
           matrix:
             SQL2016_WIN2022:
