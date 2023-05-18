@@ -475,6 +475,7 @@ function Set-TargetResource
                     }
 
                     New-NetFirewallRule @browserFirewallRuleParameters
+                    $getTargetResourceResult.BrowserFirewall = $true
                 }
             }
 
@@ -544,6 +545,7 @@ function Set-TargetResource
                     }
 
                     New-NetFirewallRule @browserFirewallRuleParameters
+                    $getTargetResourceResult.BrowserFirewall = $true
                 }
             }
 

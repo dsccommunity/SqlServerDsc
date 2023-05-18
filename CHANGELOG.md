@@ -28,6 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Import-SqlDscPreferredModule`
   - Now when parameter `Force` is passed the command correctly invoke
     `Get-SqlDscPreferredModule` using the parameter `Refresh`.
+- SqlWindowsFirewall
+  - Fix duplication of SQL Server Browser Firewall Rule when deploying
+    Analysis Services feature ([issue #1942](https://github.com/dsccommunity/SqlServerDsc/issues/1942)).
 
 ## [16.3.1] - 2023-05-06
 
