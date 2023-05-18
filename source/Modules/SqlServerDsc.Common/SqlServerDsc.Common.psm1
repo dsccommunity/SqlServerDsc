@@ -503,7 +503,7 @@ function Connect-SQL
         $Encrypt
     )
 
-    Import-SqlDscPreferredModule -Force
+    Import-SqlDscPreferredModule
 
     if ($InstanceName -eq 'MSSQLSERVER')
     {
