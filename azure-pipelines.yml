@@ -57,277 +57,277 @@ stages:
   - stage: Test
     dependsOn: Build
     jobs:
-      # - job: Test_HQRM
-      #   displayName: 'HQRM'
-      #   pool:
-      #     vmImage: 'windows-2022'
-      #   timeoutInMinutes: 0
-      #   variables:
-      #     # This sets environment variable $env:SqlServerDscCI.
-      #     SqlServerDscCI: true
-      #   steps:
-      #     - task: DownloadPipelineArtifact@2
-      #       displayName: 'Download Build Artifact'
-      #       inputs:
-      #         buildType: 'current'
-      #         artifactName: $(buildArtifactName)
-      #         targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
-      #     # This task need to use Windows PowerShell due to a bug in PS7 that cannot
-      #     # find/use class-based DSC resources that uses inheritance, which result in
-      #     # the examples cannot compile. See the following issue for more information:
-      #     # https://github.com/dsccommunity/DnsServerDsc/issues/268#issuecomment-918505230
-      #     - powershell: |
-      #         # Workaround for issue https://github.com/dsccommunity/DscResource.Test/issues/100
-      #         ./build.ps1 -Task noop
+      - job: Test_HQRM
+        displayName: 'HQRM'
+        pool:
+          vmImage: 'windows-2022'
+        timeoutInMinutes: 0
+        variables:
+          # This sets environment variable $env:SqlServerDscCI.
+          SqlServerDscCI: true
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          # This task need to use Windows PowerShell due to a bug in PS7 that cannot
+          # find/use class-based DSC resources that uses inheritance, which result in
+          # the examples cannot compile. See the following issue for more information:
+          # https://github.com/dsccommunity/DnsServerDsc/issues/268#issuecomment-918505230
+          - powershell: |
+              # Workaround for issue https://github.com/dsccommunity/DscResource.Test/issues/100
+              ./build.ps1 -Task noop
 
-      #         $pesterConfig = New-PesterConfiguration
-      #         $pesterConfig.Run.Path = '.\tests\QA'
-      #         $pesterConfig.Run.Throw = $true
-      #         $pesterConfig.Output.Verbosity = 'Detailed'
+              $pesterConfig = New-PesterConfiguration
+              $pesterConfig.Run.Path = '.\tests\QA'
+              $pesterConfig.Run.Throw = $true
+              $pesterConfig.Output.Verbosity = 'Detailed'
 
-      #         Invoke-Pester -Configuration $pesterConfig
-      #       name: qualityTest
-      #       displayName: 'Run SqlServerDsc QA Test'
-      #     - task: PowerShell@2
-      #       name: test
-      #       displayName: 'Run HQRM Test'
-      #       condition: succeededOrFailed()
-      #       inputs:
-      #         filePath: './build.ps1'
-      #         arguments: '-Tasks hqrmtest'
-      #         pwsh: false
-      #     - task: PublishTestResults@2
-      #       displayName: 'Publish Test Results'
-      #       condition: succeededOrFailed()
-      #       inputs:
-      #         testResultsFormat: 'NUnit'
-      #         testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-      #         testRunTitle: 'HQRM'
+              Invoke-Pester -Configuration $pesterConfig
+            name: qualityTest
+            displayName: 'Run SqlServerDsc QA Test'
+          - task: PowerShell@2
+            name: test
+            displayName: 'Run HQRM Test'
+            condition: succeededOrFailed()
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-Tasks hqrmtest'
+              pwsh: false
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'HQRM'
 
-      # - job: Test_Unit
-      #   displayName: 'Unit'
-      #   pool:
-      #     vmImage: 'windows-2019'
-      #   timeoutInMinutes: 0
-      #   variables:
-      #     # This sets environment variable $env:SqlServerDscCI.
-      #     SqlServerDscCI: true
-      #   steps:
-      #     - task: DownloadPipelineArtifact@2
-      #       displayName: 'Download Build Artifact'
-      #       inputs:
-      #         buildType: 'current'
-      #         artifactName: $(buildArtifactName)
-      #         targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
-      #     - task: PowerShell@2
-      #       name: test
-      #       displayName: 'Run Unit Test'
-      #       inputs:
-      #         filePath: './build.ps1'
-      #         arguments: "-Tasks test -PesterPath 'tests/Unit'"
-      #         pwsh: true
-      #     - task: PublishTestResults@2
-      #       displayName: 'Publish Test Results'
-      #       condition: succeededOrFailed()
-      #       inputs:
-      #         testResultsFormat: 'NUnit'
-      #         testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-      #         testRunTitle: 'Unit (Windows Server 2019)'
-      #     - task: PublishPipelineArtifact@1
-      #       displayName: 'Publish Test Artifact'
-      #       condition: succeededOrFailed()
-      #       inputs:
-      #         targetPath: '$(buildFolderName)/$(testResultFolderName)/'
-      #         artifactName: $(testArtifactName)
-      #         parallel: true
+      - job: Test_Unit
+        displayName: 'Unit'
+        pool:
+          vmImage: 'windows-2019'
+        timeoutInMinutes: 0
+        variables:
+          # This sets environment variable $env:SqlServerDscCI.
+          SqlServerDscCI: true
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PowerShell@2
+            name: test
+            displayName: 'Run Unit Test'
+            inputs:
+              filePath: './build.ps1'
+              arguments: "-Tasks test -PesterPath 'tests/Unit'"
+              pwsh: true
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Unit (Windows Server 2019)'
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Test Artifact'
+            condition: succeededOrFailed()
+            inputs:
+              targetPath: '$(buildFolderName)/$(testResultFolderName)/'
+              artifactName: $(testArtifactName)
+              parallel: true
 
-      # - job: Test_Integration
-      #   displayName: 'Integration'
-      #   strategy:
-      #     matrix:
-      #       SQL2016_WIN2019:
-      #         JOB_VMIMAGE: 'windows-2019'
-      #         TEST_CONFIGURATION: 'Integration_SQL2016'
-      #       SQL2016_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2016'
-      #       SQL2017_WIN2019:
-      #         JOB_VMIMAGE: 'windows-2019'
-      #         TEST_CONFIGURATION: 'Integration_SQL2017'
-      #       SQL2017_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2017'
-      #       SQL2019_WIN2019:
-      #         JOB_VMIMAGE: 'windows-2019'
-      #         TEST_CONFIGURATION: 'Integration_SQL2019'
-      #       SQL2019_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2019'
-      #       SQL2022_WIN2019:
-      #         JOB_VMIMAGE: 'windows-2019'
-      #         TEST_CONFIGURATION: 'Integration_SQL2022'
-      #       SQL2022_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2022'
-      #   pool:
-      #     vmImage: $(JOB_VMIMAGE)
-      #   timeoutInMinutes: 0
-      #   steps:
-      #     - task: DownloadPipelineArtifact@2
-      #       displayName: 'Download Build Artifact'
-      #       inputs:
-      #         buildType: 'current'
-      #         artifactName: $(buildArtifactName)
-      #         targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
-      #     - task: PowerShell@2
-      #       name: configureWinRM
-      #       displayName: 'Configure WinRM'
-      #       inputs:
-      #         targetType: 'inline'
-      #         script: 'winrm quickconfig -quiet'
-      #         pwsh: false
-      #     - powershell: |
-      #         Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
-      #         Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
-      #         Remove-Module -Name CommonTestHelper
-      #       name: cleanCIWorker
-      #       displayName: 'Clean CI worker'
-      #     - powershell: |
-      #         ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
-      #             # Run the integration tests in a specific group order.
-      #             # Group 1
-      #             'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
-      #             # Group 2
-      #             'tests/Integration/DSC_SqlAgentAlert.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlLogin.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlDatabase.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlAlwaysOnService.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlAgentOperator.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlServiceAccount.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlTraceFlag.Integration.Tests.ps1'
-      #             # Group 3
-      #             'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlRS_Default.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlAudit.Integration.Tests.ps1'
-      #             # Group 4
-      #             'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlPermission.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlWindowsFirewall.Integration.Tests.ps1'
-      #             # Group 5
-      #             'tests/Integration/DSC_SqlSecureConnection.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlProtocol.Integration.Tests.ps1'
-      #             # Group 6 (tests makes changes that could make SQL Server to loose connectivity)
-      #             'tests/Integration/DSC_SqlProtocolTcpIp.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlDatabaseObjectPermission.Integration.Tests.ps1'
-      #         )
-      #       name: test
-      #       displayName: 'Run Integration Test'
-      #     - task: PublishTestResults@2
-      #       displayName: 'Publish Test Results'
-      #       condition: succeededOrFailed()
-      #       inputs:
-      #         testResultsFormat: 'NUnit'
-      #         testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-      #         testRunTitle: 'Integration ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
+      - job: Test_Integration
+        displayName: 'Integration'
+        strategy:
+          matrix:
+            SQL2016_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2016'
+            SQL2016_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2016'
+            SQL2017_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2017'
+            SQL2017_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2017'
+            SQL2019_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2019_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2022_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+            SQL2022_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+        pool:
+          vmImage: $(JOB_VMIMAGE)
+        timeoutInMinutes: 0
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Configure WinRM'
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
+          - powershell: |
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+              Remove-Module -Name CommonTestHelper
+            name: cleanCIWorker
+            displayName: 'Clean CI worker'
+          - powershell: |
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
+                  # Run the integration tests in a specific group order.
+                  # Group 1
+                  'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
+                  # Group 2
+                  'tests/Integration/DSC_SqlAgentAlert.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlLogin.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabase.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlAlwaysOnService.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlAgentOperator.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlServiceAccount.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlTraceFlag.Integration.Tests.ps1'
+                  # Group 3
+                  'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlRS_Default.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlAudit.Integration.Tests.ps1'
+                  # Group 4
+                  'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlPermission.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlWindowsFirewall.Integration.Tests.ps1'
+                  # Group 5
+                  'tests/Integration/DSC_SqlSecureConnection.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlProtocol.Integration.Tests.ps1'
+                  # Group 6 (tests makes changes that could make SQL Server to loose connectivity)
+                  'tests/Integration/DSC_SqlProtocolTcpIp.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabaseObjectPermission.Integration.Tests.ps1'
+              )
+            name: test
+            displayName: 'Run Integration Test'
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Integration ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-      # - job: Test_Integration_dbatools
-      #   displayName: 'Integration (dbatools)'
-      #   dependsOn: Test_Integration
-      #   strategy:
-      #     matrix:
-      #       SQL2016_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2016'
-      #       SQL2017_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2017'
-      #       SQL2019_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2019'
-      #       SQL2022_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2022'
-      #   pool:
-      #     vmImage: $(JOB_VMIMAGE)
-      #   timeoutInMinutes: 0
-      #   variables:
-      #     SMODefaultModuleName: 'dbatools'
-      #   steps:
-      #     - task: DownloadPipelineArtifact@2
-      #       displayName: 'Download Build Artifact'
-      #       inputs:
-      #         buildType: 'current'
-      #         artifactName: $(buildArtifactName)
-      #         targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
-      #     - task: PowerShell@2
-      #       name: configureWinRM
-      #       displayName: 'Configure WinRM'
-      #       inputs:
-      #         targetType: 'inline'
-      #         script: 'winrm quickconfig -quiet'
-      #         pwsh: false
-      #     - powershell: |
-      #         Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
-      #         # Make sure to keep SQLPS so that Invoke-SqlCmd is available.
-      #         Remove-PowerShellModuleFromCI -Name @('SqlServer')
-      #         Remove-Module -Name CommonTestHelper
-      #       name: cleanCIWorker
-      #       displayName: 'Clean CI worker'
-      #     - powershell: |
-      #         ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
-      #             # Run the integration tests in a specific group order.
-      #             # Group 1
-      #             'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
-      #             # Group 2
-      #             'tests/Integration/DSC_SqlAgentAlert.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlLogin.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlDatabase.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlAlwaysOnService.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlAgentOperator.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlServiceAccount.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlTraceFlag.Integration.Tests.ps1'
-      #             # Group 3
-      #             'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlRS_Default.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlAudit.Integration.Tests.ps1'
-      #             # Group 4
-      #             'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlPermission.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlWindowsFirewall.Integration.Tests.ps1'
-      #             # Group 5
-      #             'tests/Integration/DSC_SqlSecureConnection.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlProtocol.Integration.Tests.ps1'
-      #             # Group 6 (tests makes changes that could make SQL Server to loose connectivity)
-      #             'tests/Integration/DSC_SqlProtocolTcpIp.Integration.Tests.ps1'
-      #             'tests/Integration/DSC_SqlDatabaseObjectPermission.Integration.Tests.ps1'
-      #         )
-      #       name: test
-      #       displayName: 'Run Integration Test'
-      #     - task: PublishTestResults@2
-      #       displayName: 'Publish Test Results'
-      #       condition: succeededOrFailed()
-      #       inputs:
-      #         testResultsFormat: 'NUnit'
-      #         testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-      #         testRunTitle: 'Integration (dbatools) ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
+      - job: Test_Integration_dbatools
+        displayName: 'Integration (dbatools)'
+        dependsOn: Test_Integration
+        strategy:
+          matrix:
+            SQL2016_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2016'
+            SQL2017_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2017'
+            SQL2019_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2022_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+        pool:
+          vmImage: $(JOB_VMIMAGE)
+        timeoutInMinutes: 0
+        variables:
+          SMODefaultModuleName: 'dbatools'
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Configure WinRM'
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
+          - powershell: |
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              # Make sure to keep SQLPS so that Invoke-SqlCmd is available.
+              Remove-PowerShellModuleFromCI -Name @('SqlServer')
+              Remove-Module -Name CommonTestHelper
+            name: cleanCIWorker
+            displayName: 'Clean CI worker'
+          - powershell: |
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
+                  # Run the integration tests in a specific group order.
+                  # Group 1
+                  'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
+                  # Group 2
+                  'tests/Integration/DSC_SqlAgentAlert.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlLogin.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabase.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlAlwaysOnService.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlAgentOperator.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlServiceAccount.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlTraceFlag.Integration.Tests.ps1'
+                  # Group 3
+                  'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlRS_Default.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlAudit.Integration.Tests.ps1'
+                  # Group 4
+                  'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlPermission.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlWindowsFirewall.Integration.Tests.ps1'
+                  # Group 5
+                  'tests/Integration/DSC_SqlSecureConnection.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlProtocol.Integration.Tests.ps1'
+                  # Group 6 (tests makes changes that could make SQL Server to loose connectivity)
+                  'tests/Integration/DSC_SqlProtocolTcpIp.Integration.Tests.ps1'
+                  'tests/Integration/DSC_SqlDatabaseObjectPermission.Integration.Tests.ps1'
+              )
+            name: test
+            displayName: 'Run Integration Test'
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Integration (dbatools) ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
       - job: Test_Integration_SQLPS
         displayName: 'Integration (SQLPS)'
@@ -420,176 +420,176 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration (dbatools) ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-      # - job: Test_Integration_RS
-      #   displayName: 'Integration Reporting Services'
-      #   strategy:
-      #     matrix:
-      #       SQL2016_WIN2019:
-      #         JOB_VMIMAGE: 'windows-2019'
-      #         TEST_CONFIGURATION: 'Integration_SQL2016'
-      #       SQL2016_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2016'
-      #       SQL2017_WIN2019:
-      #         JOB_VMIMAGE: 'windows-2019'
-      #         TEST_CONFIGURATION: 'Integration_SQL2017'
-      #       SQL2017_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2017'
-      #       SQL2019_WIN2019:
-      #         JOB_VMIMAGE: 'windows-2019'
-      #         TEST_CONFIGURATION: 'Integration_SQL2019'
-      #       SQL2019_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2019'
-      #       SQL2022_WIN2019:
-      #         JOB_VMIMAGE: 'windows-2019'
-      #         TEST_CONFIGURATION: 'Integration_SQL2022'
-      #       SQL2022_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2022'
-      #   variables:
-      #     SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
-      #     SKIP_ANALYSIS_MULTI_INSTANCE: true
-      #     SKIP_ANALYSIS_TABULAR_INSTANCE: true
-      #     SMODefaultModuleName: 'SqlServer'
-      #   pool:
-      #     vmImage: $(JOB_VMIMAGE)
-      #   timeoutInMinutes: 0
-      #   steps:
-      #     - task: DownloadPipelineArtifact@2
-      #       displayName: 'Download Build Artifact'
-      #       inputs:
-      #         buildType: 'current'
-      #         artifactName: $(buildArtifactName)
-      #         targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
-      #     - task: PowerShell@2
-      #       name: configureWinRM
-      #       displayName: 'Configure WinRM'
-      #       inputs:
-      #         targetType: 'inline'
-      #         script: 'winrm quickconfig -quiet'
-      #         pwsh: false
-      #     - powershell: |
-      #         Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
-      #         Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
-      #         Remove-Module -Name CommonTestHelper
-      #       name: cleanCIWorker
-      #       displayName: 'Clean CI worker'
-      #     - powershell: |
-      #         ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
-      #             # Run the integration tests in a specific group order.
-      #             # Group 1
-      #             'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
-      #             # Group 2
-      #             'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
-      #             # Group 3
-      #             'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
-      #         )
-      #       name: test
-      #       displayName: 'Run Reporting Services Integration Test'
-      #     - task: PublishTestResults@2
-      #       displayName: 'Publish Test Results'
-      #       condition: succeededOrFailed()
-      #       inputs:
-      #         testResultsFormat: 'NUnit'
-      #         testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-      #         testRunTitle: 'Integration RS ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
+      - job: Test_Integration_RS
+        displayName: 'Integration Reporting Services'
+        strategy:
+          matrix:
+            SQL2016_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2016'
+            SQL2016_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2016'
+            SQL2017_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2017'
+            SQL2017_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2017'
+            SQL2019_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2019_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2022_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+            SQL2022_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+        variables:
+          SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
+          SKIP_ANALYSIS_MULTI_INSTANCE: true
+          SKIP_ANALYSIS_TABULAR_INSTANCE: true
+          SMODefaultModuleName: 'SqlServer'
+        pool:
+          vmImage: $(JOB_VMIMAGE)
+        timeoutInMinutes: 0
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Configure WinRM'
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
+          - powershell: |
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+              Remove-Module -Name CommonTestHelper
+            name: cleanCIWorker
+            displayName: 'Clean CI worker'
+          - powershell: |
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
+                  # Run the integration tests in a specific group order.
+                  # Group 1
+                  'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
+                  # Group 2
+                  'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
+                  # Group 3
+                  'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
+              )
+            name: test
+            displayName: 'Run Reporting Services Integration Test'
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Integration RS ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-      # - job: Test_Integration_RS_dbatools
-      #   displayName: 'Integration Reporting Services (dbatools)'
-      #   dependsOn: Test_Integration_RS
-      #   strategy:
-      #     matrix:
-      #       SQL2016_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2016'
-      #       SQL2017_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2017'
-      #       SQL2019_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2019'
-      #       SQL2022_WIN2022:
-      #         JOB_VMIMAGE: 'windows-2022'
-      #         TEST_CONFIGURATION: 'Integration_SQL2022'
-      #   variables:
-      #     SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
-      #     SKIP_ANALYSIS_MULTI_INSTANCE: true
-      #     SKIP_ANALYSIS_TABULAR_INSTANCE: true
-      #     SMODefaultModuleName: 'dbatools'
-      #   pool:
-      #     vmImage: $(JOB_VMIMAGE)
-      #   timeoutInMinutes: 0
-      #   steps:
-      #     - task: DownloadPipelineArtifact@2
-      #       displayName: 'Download Build Artifact'
-      #       inputs:
-      #         buildType: 'current'
-      #         artifactName: $(buildArtifactName)
-      #         targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
-      #     - task: PowerShell@2
-      #       name: configureWinRM
-      #       displayName: 'Configure WinRM'
-      #       inputs:
-      #         targetType: 'inline'
-      #         script: 'winrm quickconfig -quiet'
-      #         pwsh: false
-      #     - powershell: |
-      #         ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
-      #             # Run the integration tests in a specific group order.
-      #             # Group 1
-      #             'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
-      #             # Group 2
-      #             'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
-      #             # Group 3
-      #             'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
-      #         )
-      #       name: test
-      #       displayName: 'Run Reporting Services Integration Test'
-      #     - task: PublishTestResults@2
-      #       displayName: 'Publish Test Results'
-      #       condition: succeededOrFailed()
-      #       inputs:
-      #         testResultsFormat: 'NUnit'
-      #         testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-      #         testRunTitle: 'Integration RS (dbatools) ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
+      - job: Test_Integration_RS_dbatools
+        displayName: 'Integration Reporting Services (dbatools)'
+        dependsOn: Test_Integration_RS
+        strategy:
+          matrix:
+            SQL2016_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2016'
+            SQL2017_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2017'
+            SQL2019_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2022_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+        variables:
+          SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
+          SKIP_ANALYSIS_MULTI_INSTANCE: true
+          SKIP_ANALYSIS_TABULAR_INSTANCE: true
+          SMODefaultModuleName: 'dbatools'
+        pool:
+          vmImage: $(JOB_VMIMAGE)
+        timeoutInMinutes: 0
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Configure WinRM'
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
+          - powershell: |
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
+                  # Run the integration tests in a specific group order.
+                  # Group 1
+                  'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
+                  # Group 2
+                  'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
+                  # Group 3
+                  'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
+              )
+            name: test
+            displayName: 'Run Reporting Services Integration Test'
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Integration RS (dbatools) ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-      # - job: Code_Coverage
-      #   displayName: 'Publish Code Coverage'
-      #   dependsOn: Test_Unit
-      #   condition: succeededOrFailed()
-      #   pool:
-      #     vmImage: 'ubuntu-latest'
-      #   timeoutInMinutes: 0
-      #   steps:
-      #     - pwsh: |
-      #         $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
-      #         echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
-      #         echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
-      #       name: dscBuildVariable
-      #       displayName: 'Set Environment Variables'
-      #     - task: DownloadPipelineArtifact@2
-      #       displayName: 'Download Build Artifact'
-      #       inputs:
-      #         buildType: 'current'
-      #         artifactName: $(buildArtifactName)
-      #         targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
-      #     - task: DownloadPipelineArtifact@2
-      #       displayName: 'Download Test Artifact'
-      #       inputs:
-      #         buildType: 'current'
-      #         artifactName: $(testArtifactName)
-      #         targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
-      #     - task: PublishCodeCoverageResults@1
-      #       displayName: 'Publish Code Coverage to Azure DevOps'
-      #       inputs:
-      #         codeCoverageTool: 'JaCoCo'
-      #         summaryFileLocation: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
-      #         pathToSources: '$(Build.SourcesDirectory)/$(sourceFolderName)/'
-      #     - script: |
-      #         bash <(curl -s https://codecov.io/bash) -f "./$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml" -F unit
-      #       displayName: 'Publish Code Coverage to Codecov.io'
+      - job: Code_Coverage
+        displayName: 'Publish Code Coverage'
+        dependsOn: Test_Unit
+        condition: succeededOrFailed()
+        pool:
+          vmImage: 'ubuntu-latest'
+        timeoutInMinutes: 0
+        steps:
+          - pwsh: |
+              $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
+              echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
+              echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
+            name: dscBuildVariable
+            displayName: 'Set Environment Variables'
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Test Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(testArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
+          - task: PublishCodeCoverageResults@1
+            displayName: 'Publish Code Coverage to Azure DevOps'
+            inputs:
+              codeCoverageTool: 'JaCoCo'
+              summaryFileLocation: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
+              pathToSources: '$(Build.SourcesDirectory)/$(sourceFolderName)/'
+          - script: |
+              bash <(curl -s https://codecov.io/bash) -f "./$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml" -F unit
+            displayName: 'Publish Code Coverage to Codecov.io'
 
   - stage: Deploy
     dependsOn: Test
