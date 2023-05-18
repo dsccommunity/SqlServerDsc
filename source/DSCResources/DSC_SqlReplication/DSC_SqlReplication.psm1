@@ -445,7 +445,7 @@ function New-ServerConnection
         $SqlServerName
     )
 
-    if ($SqlMajorVersion -eq 16)
+    if ($SqlMajorVersion -eq 99)
     {
         Write-Verbose -Message 'DEBUG100' -Verbose
         <#
