@@ -1949,7 +1949,17 @@ function Invoke-SqlScript
         $Encrypt
     )
 
-    Import-SqlDscPreferredModule -Force
+    Write-Verbose -Message ('Session PSModulePath: {0}' -f $env:PSModulePath) -Verbose
+    Write-Verbose -Message ('Available modules: {0}' -f (Get-Module -Name @('SqlServer', 'SqlServerDsc', 'SQLPS') -ListAvailable | Out-String)) -Verbose
+    Write-Verbose -Message ('All PSModulePath: {0}' -f (Get-PSModulePath -FromTarget 'Session', 'User', 'Machine')) -Verbose
+
+    Write-Verbose -Message ('Found module: {0}' -f (Get-SqlDscPreferredModule -ErrorAction 'Continue')) -Verbose
+    Write-Verbose -Message ('Found module (refresh): {0}' -f (Get-SqlDscPreferredModule -Refresh -ErrorAction 'Continue')) -Verbose
+
+    Import-SqlDscPreferredModule -Force -Verbose
+
+    Write-Verbose -Message ('Imported modules: {0}' -f (Get-Module | Out-String)) -Verbose
+    Write-Verbose -Message ('All SQLPS commands: {0}' -f (Get-Command -Module 'SQLPS' -ErrorAction 'SilentlyContinue' | Out-String)) -Verbose
 
     if ($PSCmdlet.ParameterSetName -eq 'File')
     {
