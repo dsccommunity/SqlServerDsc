@@ -1949,7 +1949,7 @@ function Invoke-SqlScript
         $Encrypt
     )
 
-    Import-SqlDscPreferredModule
+    Import-SqlDscPreferredModule -Force
 
     if ($PSCmdlet.ParameterSetName -eq 'File')
     {
