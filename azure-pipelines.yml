@@ -277,7 +277,8 @@ stages:
               pwsh: false
           - powershell: |
               Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
-              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+              # Make sure to keep SQLPS so that Invoke-SqlCmd is available.
+              Remove-PowerShellModuleFromCI -Name @('SqlServer')
               Remove-Module -Name CommonTestHelper
             name: cleanCIWorker
             displayName: 'Clean CI worker'
