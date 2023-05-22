@@ -1959,7 +1959,14 @@ function Invoke-SqlScript
     Import-SqlDscPreferredModule -Force -Verbose
 
     Write-Verbose -Message ('Imported modules: {0}' -f (Get-Module | Out-String)) -Verbose
-    Write-Verbose -Message ('All SQLPS commands: {0}' -f (Get-Command -Module 'SQLPS' -ErrorAction 'SilentlyContinue' | Out-String)) -Verbose
+    if ((Get-Module -Name 'SQLPS'))
+    {
+        Write-Verbose -Message ('DEBUG: All SQLPS commands: {0}' -f (Get-Command -Module 'SQLPS' -ErrorAction 'SilentlyContinue' | Out-String)) -Verbose
+    }
+    else
+    {
+        Write-Verbose -Message 'DEBUG: NO SQLPS IS LOADED' -Verbose
+    }
 
     if ($PSCmdlet.ParameterSetName -eq 'File')
     {
