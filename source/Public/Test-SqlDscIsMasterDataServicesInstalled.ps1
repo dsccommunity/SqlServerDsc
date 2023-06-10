@@ -12,7 +12,7 @@
         [System.Boolean]
 
     .EXAMPLE
-        IsMasterDataServicesInstalled -Version ([System.Version] '16.0')
+        Test-SqlDscIsMasterDataServicesInstalled -Version ([System.Version] '16.0')
 
         Returns $true if Master Data Services are installed.
 #>
@@ -29,7 +29,7 @@ function Test-SqlDscIsMasterDataServicesInstalled
 
     $result = $false
 
-    if ((Get-SqlDscMasterDataServicesSetting -Version $Version -ErrorAction 'SilentlyContinue'))
+    if ((Get-SqlDscMasterDataServicesInstalledSetting -Version $Version -ErrorAction 'SilentlyContinue'))
     {
         $result = $true
     }
