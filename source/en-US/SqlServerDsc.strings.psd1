@@ -627,12 +627,12 @@ ConvertFrom-StringData @'
     ## Test-IsManagementStudioAdvancedInstalled
     IsManagementStudioAdvancedInstalled_Test_NotSupportedVersion = SQL Server Management Studio Advanced is not supported for the provided version.
 
-    ## Get-SqlDscIntegrationServicesSetting
+    ## Get-SqlDscIntegrationServicesInstalledSetting
     IntegrationServicesSetting_Get_NotInstalled = There are no Integration Services installed with version {0}.
 
-    ## Get-SqlDscMasterDataServicesSetting
+    ## Get-SqlDscMasterDataServicesInstalledSetting
     MasterDataServicesSetting_Get_NotInstalled = There are no Master Data Services installed with version {0}.
 
-    ## Get-SqlDscDatabaseEngineSetting
+    ## Get-SqlDscDatabaseEngineInstalledSetting
     DatabaseEngineSetting_Get_NotInstalled = There are no Database Engine installed with version {0}.
 '@

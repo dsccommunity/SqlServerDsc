@@ -12,11 +12,11 @@
         `[System.Management.Automation.PSCustomObject]`
 
     .EXAMPLE
-        Get-SqlDscIntegrationServicesSetting -Version ([System.Version] '16.0')
+        Get-SqlDscIntegrationServicesInstalledSetting -Version ([System.Version] '16.0')
 
         Returns the settings for the Integration Services.
 #>
-function Get-SqlDscIntegrationServicesSetting
+function Get-SqlDscIntegrationServicesInstalledSetting
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
