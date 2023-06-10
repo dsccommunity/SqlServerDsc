@@ -29,7 +29,7 @@ function Test-SqlDscIsIntegrationServicesInstalled
 
     $result = $false
 
-    if ((Get-SqlDscIntegrationServicesSetting -Version $Version -ErrorAction 'SilentlyContinue'))
+    if ((Get-SqlDscIntegrationServicesInstalledSetting -Version $Version -ErrorAction 'SilentlyContinue'))
     {
         $result = $true
     }
