@@ -120,13 +120,13 @@ function Get-SqlDscInstalledComponent
     {
         $databaseLevelVersion = [System.Version] ('{0}.{1}' -f $databaseLevel.Substring(0, 2), $databaseLevel.Substring(2, 1))
 
-        $integrationServicesSettings = Get-SqlDscIntegrationServicesSetting -Version $databaseLevelVersion -ErrorAction 'SilentlyContinue'
+        $isIntegrationServicesInstalled = Test-SqlDscIsIntegrationServicesInstalled -Version $databaseLevelVersion
 
-        if ($integrationServicesSettings)
+        if ($isIntegrationServicesInstalled)
         {
             $installedComponents += [PSCustomObject] @{
                 Feature = 'IS'
-                Version = $integrationServicesSettings.Version
+                Version = $databaseLevelVersion
             }
         }
 
@@ -186,13 +186,13 @@ function Get-SqlDscInstalledComponent
         }
 
         # Look for installed version of Master Data Services.
-        $masterDataServicesSettings = Get-SqlDscMasterDataServicesSetting -Version $databaseLevelVersion -ErrorAction 'SilentlyContinue'
+        $masterDataServicesSettings = Test-SqlDscIsMasterDataServicesInstalled -Version $databaseLevelVersion
 
         if ($masterDataServicesSettings)
         {
             $installedComponents += [PSCustomObject] @{
                 Feature = 'MDS'
-                Version = $masterDataServicesSettings.Version
+                Version = $databaseLevelVersion
             }
         }
 
@@ -225,7 +225,7 @@ function Get-SqlDscInstalledComponent
     foreach ($currentInstance in $installedDatabaseEngineInstance)
     {
         # Look for installed version of Database Engine.
-        $databaseEngineSettings = Get-SqlDscDatabaseEngineSetting -InstanceId $currentInstance.InstanceId -ErrorAction 'SilentlyContinue'
+        $databaseEngineSettings = Get-SqlDscDatabaseEngineInstalledSetting -InstanceId $currentInstance.InstanceId -ErrorAction 'SilentlyContinue'
 
         if ($databaseEngineSettings)
         {
