@@ -19,6 +19,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install GitVersion
+        shell: powershell
+        run: |
+          dotnet tool install --global GitVersion.Tool
+      - name: Run GitVersion
+        shell: powershell
+        run: |
+          dotnet-gitversion | ConvertFrom-Json
       - name: Build Module
         shell: powershell
         run: |
