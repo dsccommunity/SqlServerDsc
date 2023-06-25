@@ -42,7 +42,9 @@
 
     # Dependency for integration tests
     LoopbackAdapter                = 'latest'
-    PSPKI                          = 'latest'
+
+    # Need to pin this to 3.7.2 because 4.0.0 made the integration tests fail.
+    PSPKI                          = '3.7.2'
 
     # Prerequisites modules needed for examples or integration tests
     PSDscResources                 = '2.12.0.0'
