@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Re-enable integration tests for dbatools.
   - Bumped dbatools to v2.0.1 for the integration tests.
+  - Running PSScriptAnalyzer on the built module ([issue #1945](https://github.com/dsccommunity/SqlServerDsc/issues/1945)).
 
 ### Fixed
 

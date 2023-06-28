@@ -1,4 +1,4 @@
-name: Code analysis (source)
+name: Code analysis (built module)
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
       - name: Build Module
         shell: powershell
         run: |
-          Write-Information -MessageData 'Module is being built so that examples can be scanned.' -InformationAction 'Continue'
+          Write-Information -MessageData 'Module is being built.' -InformationAction 'Continue'
           .\build.ps1 -ResolveDependency -Tasks 'build'
       - name: Run PSScriptAnalyzer
         shell: powershell
@@ -49,22 +49,12 @@ jobs:
           Write-Information -MessageData 'Import module PSScriptAnalyzer into the session.' -InformationAction 'Continue'
           Import-Module -Name 'PSScriptAnalyzer' -Force
 
-          $filesToScan = Get-ChildItem -Path './source/' -Recurse -Include @('*.psm1', '*.ps1') -File
-          Write-Information -MessageData ("Will scan the files:`n`r`t{0}." -f ($filesToScan.FullName -join "`n`r`t")) -InformationAction 'Continue'
+          $filesToScan = Get-ChildItem -Path './output/builtModule/SqlServerDsc/**/SqlServerDsc.psm1' -File
+          Write-Information -MessageData ("Will scan the file:`t{0}." -f $filesToScan.FullName) -InformationAction 'Continue'
 
-          Write-Information -MessageData 'Running PSScriptAnalyzer.' -InformationAction 'Continue'
+          Write-Information -MessageData 'Running PSScriptAnalyzer on built module.' -InformationAction 'Continue'
           $pssaError = $filesToScan |
               Invoke-ScriptAnalyzer -Settings './.vscode/analyzersettings.psd1'
-
-          $parseErrorTypes = @(
-              'TypeNotFound'
-              'RequiresModuleInvalid'
-          )
-          Write-Information -MessageData ('Filter out reported parse errors that is unable to be resolved in source files: {0}' -f ($parseErrorTypes -join ', ')) -InformationAction 'Continue'
-          $pssaError = $pssaError |
-              Where-Object -FilterScript {
-                  $_.RuleName -notin $parseErrorTypes
-              }
 
           Write-Information -MessageData 'Converting PSScriptAnalyzer result to SARIF.' -InformationAction 'Continue'
           $pssaError |
