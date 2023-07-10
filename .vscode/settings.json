@@ -108,6 +108,5 @@
     "pester.runTestsInNewProcess": true,
     "pester.pesterModulePath": "./output/RequiredModules/Pester",
     "powershell.pester.codeLens": true,
-    "pester.suppressCodeLensNotice": true,
-    "terminal.integrated.cwd": "."
+    "pester.suppressCodeLensNotice": true
 }
