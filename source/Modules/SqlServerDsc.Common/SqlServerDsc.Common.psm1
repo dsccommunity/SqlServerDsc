@@ -621,7 +621,7 @@ function Connect-SQL
             $newObjectParameters = @{
                 TypeName     = 'System.Management.Automation.ErrorRecord'
                 ArgumentList = @(
-                    $invalidOperationException.ToString(),
+                    $invalidOperationException,
                     'CS0001',
                     'InvalidOperation',
                     $databaseEngineInstance
@@ -642,7 +642,7 @@ function Connect-SQL
         $newObjectParameters = @{
             TypeName     = 'System.Management.Automation.ErrorRecord'
             ArgumentList = @(
-                $invalidOperationException.ToString(),
+                $invalidOperationException,
                 'CS0002',
                 'InvalidOperation',
                 $databaseEngineInstance
