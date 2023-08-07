@@ -65,10 +65,11 @@ available on all versions of _SQL Server_.
 - SSMS
 - ADV_SSMS
 
-> **Note:** It is not possible to add or remove features to a SQL Server failover
->cluster. This is a limitation of SQL Server. See article
->[You cannot add or remove features to a SQL Server 2008, SQL Server 2008 R2, or
->SQL Server 2012 failover cluster](https://support.microsoft.com/en-us/help/2547273/you-cannot-add-or-remove-features-to-a-sql-server-2008,-sql-server-2008-r2,-or-sql-server-2012-failover-cluster).
+> [!NOTE]
+> It is not possible to add or remove features to a SQL Server failover
+> cluster. This is a limitation of SQL Server. See article
+> [You cannot add or remove features to a SQL Server 2008, SQL Server 2008 R2, or
+> SQL Server 2012 failover cluster](https://support.microsoft.com/en-us/help/2547273/you-cannot-add-or-remove-features-to-a-sql-server-2008,-sql-server-2008-r2,-or-sql-server-2012-failover-cluster).
 
 ## Skip rules
 
