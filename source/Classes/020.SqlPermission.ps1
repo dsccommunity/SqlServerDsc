@@ -8,9 +8,10 @@
         Server permissions for a login. For more information about permissions,
         please read the article [Permissions (Database Engine)](https://docs.microsoft.com/en-us/sql/relational-databases/security/permissions-database-engine).
 
-        >**Note:** When revoking permission with PermissionState 'GrantWithGrant', both the
-        >grantee and _all the other users the grantee has granted the same permission to_,
-        >will also get their permission revoked.
+        > [!NOTE]
+        > When revoking permission with PermissionState 'GrantWithGrant', both the
+        > grantee and _all the other users the grantee has granted the same permission_
+        > _to_, will also get their permission revoked.
 
         ## Requirements
 

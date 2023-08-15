@@ -12,7 +12,8 @@
         http://localhost:80/MyReports
         https://localhost:443/MyReports
 
-        Note: this resource does not currently handle SSL bindings for HTTPS endpoints.
+        > [!NOTE]
+        > This resource does not currently handle SSL bindings for HTTPS endpoints.
 #>
 Configuration Example
 {

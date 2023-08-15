@@ -7,7 +7,8 @@
         Report Server Web Service: https://localhost:443/MyReportServer ()
         Report Manager: https://localhost:443/MyReports
 
-        Note: this resource does not currently handle SSL bindings for HTTPS endpoints.
+        > [!NOTE]
+        > This resource does not currently handle SSL bindings for HTTPS endpoints.
 #>
 Configuration Example
 {

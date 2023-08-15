@@ -2,7 +2,8 @@
 
 The `SqlDatabaseMail` DSC resource manages SQL Server Database Mail.
 
->**Note:** Database Mail XPs can be enabled using the resource `SqlConfiguration`.
+> [!NOTE]
+> Database Mail XPs can be enabled using the resource `SqlConfiguration`.
 
 ## Requirements
 
