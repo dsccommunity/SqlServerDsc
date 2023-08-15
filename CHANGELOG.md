@@ -24,8 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix a path in VS Code workspace settings to correctly use Script Analyzer on
     Linux and macOS.
   - Updating a note comment in the CONTRIBUTING.md.
+- SqlServerDsc.Common
+  - Fix unit tests so they work cross-platform.
+- ScriptAnalyzer.Tests was fixed so they work cross-platform.
 - SqlSetup
   - Updating a note comment in the README.md.
+- `Get-SqlDscPreferredModule`
+  - Fix unit tests so they work cross-platform.
 
 ### Fixed
 

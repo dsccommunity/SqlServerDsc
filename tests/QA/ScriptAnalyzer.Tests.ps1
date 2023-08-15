@@ -50,6 +50,21 @@ BeforeDiscovery {
 
     foreach ($moduleFile in $moduleFiles)
     {
+        # Skipping Examples on Linux and macOS as they cannot be parsed.
+        if (($IsLinux -or $IsMacOs) -and $moduleFile.FullName -match 'Examples')
+        {
+            continue
+        }
+
+        <#
+            Skipping prefix.psl because it contains `using module` using a relative
+            path which is not available when testing the source (only when built).
+        #>
+        if ($moduleFile.FullName -match 'prefix\.ps1')
+        {
+            continue
+        }
+
         $moduleFilePathNormalized = $moduleFile.FullName -replace '\\', '/'
         $repositoryPathNormalized = $repositoryPath -replace '\\', '/'
         $escapedRepositoryPath = [System.Text.RegularExpressions.RegEx]::Escape($repositoryPathNormalized)
@@ -66,7 +81,7 @@ Describe 'Script Analyzer Rules' {
     Context 'When there are source files' {
         BeforeAll {
             $repositoryPath = Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../..')
-            $scriptAnalyzerSettingsPath = Join-Path -Path $repositoryPath -ChildPath '.vscode\analyzersettings.psd1'
+            $scriptAnalyzerSettingsPath = Join-Path -Path $repositoryPath -ChildPath '.vscode/analyzersettings.psd1'
         }
 
         It 'Should pass all PS Script Analyzer rules for file ''<RelativePath>''' -ForEach $testCases {

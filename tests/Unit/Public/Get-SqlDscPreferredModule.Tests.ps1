@@ -140,7 +140,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule | Should -Be 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS'
+                Get-SqlDscPreferredModule | Should -Be ('C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS' -replace '\\', [IO.Path]::DirectorySeparatorChar)
             }
         }
 
@@ -231,7 +231,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule | Should -Be 'C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules\SQLPS'
+                Get-SqlDscPreferredModule | Should -Be ('C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules\SQLPS' -replace '\\', [IO.Path]::DirectorySeparatorChar)
             }
         }
     }
@@ -302,7 +302,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS'
+                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be ('C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS' -replace '\\', [IO.Path]::DirectorySeparatorChar)
             }
         }
 
@@ -398,12 +398,17 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be 'C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules\SQLPS'
+                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be ('C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules\SQLPS' -replace '\\', [IO.Path]::DirectorySeparatorChar)
             }
         }
     }
 
-    Context 'When specifying the parameter Refresh' {
+    <#
+        This test cannot run on Linux or macOS as Refresh is refreshing the PSModulePath
+        from the environment variable target scope Machine which does not exist
+        on Linux and macOS.
+    #>
+    Context 'When specifying the parameter Refresh' -Skip:($IsLinux -or $IsMacOS) {
         BeforeAll {
             Mock -CommandName Set-PSModulePath
             Mock -CommandName Get-PSModulePath -MockWith {
