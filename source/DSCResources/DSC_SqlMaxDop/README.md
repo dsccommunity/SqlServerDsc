@@ -6,7 +6,7 @@ the number of processors to use in parallel plan execution. Read more about
 max degree of parallelism in this article
 [Configure the max degree of parallelism Server Configuration Option](https://msdn.microsoft.com/en-us/library/ms189094.aspx)
 
-> [!NOTE]
+> [!IMPORTANT]
 > This configuration option can also be configured using the DSC
 > resource _SqlConfiguration_ but will not allow the dynamic configuration
 > as this resource provides. Make sure this value is not configured by both

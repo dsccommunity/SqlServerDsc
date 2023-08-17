@@ -23,9 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix header in unit tests that referenced the wrong path.
   - Fix a path in VS Code workspace settings to correctly use Script Analyzer on
     Linux and macOS.
-  - Updating note comments throughout markdown and generated markdown.
+  - Highlighted note comments throughout markdown and generated markdown.
 - SqlSetup
-  - Updating a note comment in the README.md.
+  - Highlighted a note in the README.md.
+- SqlMemory
+  - Highlighted an important note in the README.md.
+- SqlMaxDop
+  - Highlighted an important note in the README.md.
 
 ### Fixed
 
