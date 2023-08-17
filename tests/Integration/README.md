@@ -80,8 +80,9 @@ All running Database Engine instances also have a SQL Server Agent that is start
 The instance DSCSQLTEST support mixed authentication mode, and will have
 both Named Pipes and TCP/IP protocol enabled.
 
->**Note:** Some services are stopped to save memory on the build worker. See the
->column *State*.
+> [!NOTE]
+> Some services are stopped to save memory on the build worker. See the
+> column *State*.
 
 #### Properties for all instances
 
@@ -94,7 +95,8 @@ both Named Pipes and TCP/IP protocol enabled.
 The following local users are created on the AppVeyor build worker and can
 be used by other integration tests.
 
-> Note: User account names was kept to a maximum of 15 characters.
+> [!NOTE]
+> User account names was kept to a maximum of 15 characters.
 
 <!-- markdownlint-disable MD013 -->
 User | Password | Permission | Description
@@ -137,18 +139,20 @@ The integration tests will install (or upgrade) separate, Microsoft SQL Server
 2017 and 2019, Reporting Services instances and leave them on the build server
 for other integration tests to use.
 
->**NOTE:** Uninstall is not tested, because when upgrading the existing
->Microsoft SQL Server Reporting Services instance it requires a restart,
->that prevents uninstall until the node is restarted.
+> [!NOTE]
+> Uninstall is not tested, because when upgrading the existing
+> Microsoft SQL Server Reporting Services instance it requires a restart,
+> that prevents uninstall until the node is restarted.
 
 Instance |  State
 --- | ---
 SSRS | Stopped
 
->**Note:** The Reporting Services instance is not configured after it is
->installed or upgraded, but if there are already an instance of Reporting
->Services installed on the build worker, it could have been configured.
->Other integration tests need to take that into consideration.
+> [!NOTE]
+> The Reporting Services instance is not configured after it is
+> installed or upgraded, but if there are already an instance of Reporting
+> Services installed on the build worker, it could have been configured.
+> Other integration tests need to take that into consideration.
 
 #### Properties for the instance SSRS 2017
 
@@ -193,14 +197,16 @@ tests creates an Active Directory Detached Cluster with an IP address of
 '192.168.40.11' and the cluster will ignore any other static IP addresses.
 
 <!-- markdownlint-disable MD028 -->
->**Note:** During the tests the gateway of the loopback adapter named 'ClusterNetwork'
->will be set to '192.168.40.254', because it is a requirement to create the cluster,
->but the gateway will be removed in the last clean up test. Gateway is removed so
->that there will be no conflict with the default gateway.
+> [!NOTE]
+> During the tests the gateway of the loopback adapter named 'ClusterNetwork'
+> will be set to '192.168.40.254', because it is a requirement to create the cluster,
+> but the gateway will be removed in the last clean up test. Gateway is removed so
+> that there will be no conflict with the default gateway.
 
->**Note:** The Active Directory Detached Cluster is not fully functioning in the
->sense that it cannot start the Name resource in the 'Cluster Group', but it
->starts enough to be able to run integration tests for AlwaysOn service.s
+> [!NOTE]
+> The Active Directory Detached Cluster is not fully functioning in the
+> sense that it cannot start the Name resource in the 'Cluster Group', but it
+> starts enough to be able to run integration tests for AlwaysOn service.s
 <!-- markdownlint-enable MD028 -->
 
 The tests will leave the AlwaysOn service disabled.
@@ -264,11 +270,13 @@ DscUser4 | SQL | P@ssw0rd1 | *None*
 `$env:COMPUTERNAME`\DscSqlUsers1 | Windows Group | -- | *None*
 
 <!-- markdownlint-disable MD028 -->
->**Note:** The `$env:COMPUTERNAME` is reference to the build workers computer
->name. The SQL login could for example be 'APPVYR-WIN\DscUser1'.
+> [!NOTE]
+> The `$env:COMPUTERNAME` is reference to the build workers computer
+> name. The SQL login could for example be 'APPVYR-WIN\DscUser1'.
 
->**Note:** The password for `DscUser4` is changed to `P@ssw0rd2` during one of the
->`SqlLogin`, integration tests and then set back again in a subsequent test.
+> [!NOTE]
+> The password for `DscUser4` is changed to `P@ssw0rd2` during one of the
+> `SqlLogin`, integration tests and then set back again in a subsequent test.
 <!-- markdownlint-disable MD028 -->
 
 ### SqlAgentAlert
@@ -354,8 +362,9 @@ Instance | Feature | Description
 --- | --- | ---
 SSRS | - | The Reporting Services (2017 or 2019) is initialized, and in a working state.
 
->**Note:** The Reporting Services service is stopped to save memory on the build
->worker.
+> [!NOTE]
+> The Reporting Services service is stopped to save memory on the build
+> worker.
 
 #### Properties for the instance
 
@@ -398,8 +407,9 @@ User3 | NoLogin | SqlLogin | - | - | -
 User5 | Certificate | Certificate | - | Certificate1 | -
 User6 | AsymmetricKey | AsymmetricKey | - | - | AsymmetricKey1
 
->**Note:** The `$env:COMPUTERNAME` is reference to the build workers computer
->name. The SQL login could for example be 'APPVYR-WIN\DscUser1'.
+> [!NOTE]
+> The `$env:COMPUTERNAME` is reference to the build workers computer
+> name. The SQL login could for example be 'APPVYR-WIN\DscUser1'.
 
 The integration test will leave this database certificate for other integration
 tests to use.

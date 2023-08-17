@@ -142,8 +142,9 @@ Feature flags are used to toggle resource functionality on or off. One or
 more feature flags can be added to the parameter `FeatureFlag`, i.e.
 `FeatureFlag = @('DetectionSharedFeatures')`.
 
->**NOTE:** The functionality, exposed with a feature flag, can be changed
->from one release to another, including having breaking changes.
+> [!NOTE]
+> The functionality, exposed with a feature flag, can be changed
+> from one release to another, including having breaking changes.
 
 <!-- markdownlint-disable MD013 -->
 Feature flag | Description

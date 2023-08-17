@@ -26,19 +26,20 @@ used, then the installation will run as SYSTEM.
   is successful (because the executable returns exit code 0) but the
   Microsoft SQL Server Reporting Services instance was not actually removed.
 
->NOTE: When using the action 'Uninstall' and the target node to begin with
->requires a restart, on the first run the Microsoft SQL Server Reporting
->Services instance will not be uninstalled, but instead exits with code
->3010 and the node will be, by default, restarted. On the second run after
->restart, the Microsoft SQL Server Reporting Services instance will be
->uninstalled. If the parameter SuppressRestart is used, then the node must
->be restarted manually before the Microsoft SQL Server Reporting Services
->instance will be successfully uninstalled.
+> [!NOTE]
+> When using the action 'Uninstall' and the target node to begin with
+> requires a restart, on the first run the Microsoft SQL Server Reporting
+> Services instance will not be uninstalled, but instead exits with code
+> 3010 and the node will be, by default, restarted. On the second run after
+> restart, the Microsoft SQL Server Reporting Services instance will be
+> uninstalled. If the parameter SuppressRestart is used, then the node must
+> be restarted manually before the Microsoft SQL Server Reporting Services
+> instance will be successfully uninstalled.
 >
->The Microsoft SQL Server Reporting Services log will indicate that a
->restart is required by outputting; "*No action was taken as a system
->reboot is required (0x8007015E)*". The log is default located in the
->SSRS folder in `%TEMP%`, e.g. `C:\Users\<user>\AppData\Local\Temp\SSRS`.
+> The Microsoft SQL Server Reporting Services log will indicate that a
+> restart is required by outputting; "*No action was taken as a system
+> reboot is required (0x8007015E)*". The log is default located in the
+> SSRS folder in `%TEMP%`, e.g. `C:\Users\<user>\AppData\Local\Temp\SSRS`.
 
 ## Known issues
 
