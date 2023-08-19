@@ -375,7 +375,7 @@
         Installs SQL Server using the configuration file 'MySqlConfig.ini'.
 
     .EXAMPLE
-        Install-SqlDscServer -PrepareImage -AcceptLicensingTerms -InstanceName 'MyInstance' -Features 'SQLENGINE' -InstanceId 'MyInstance' -MediaPath 'E:\'
+        Install-SqlDscServer -PrepareImage -AcceptLicensingTerms -Features 'SQLENGINE' -InstanceId 'MyInstance' -MediaPath 'E:\'
 
         Prepares the server for using the database engine for an instance named 'MyInstance'.
 

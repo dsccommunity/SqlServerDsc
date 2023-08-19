@@ -401,7 +401,7 @@
         Uninstalls the database engine from the named instance MyInstance.
 
     .EXAMPLE
-        Invoke-SetupAction -PrepareImage -AcceptLicensingTerms -InstanceName 'MyInstance' -Features 'SQLENGINE' -InstanceId 'MyInstance' -MediaPath 'E:\'
+        Invoke-SetupAction -PrepareImage -AcceptLicensingTerms -Features 'SQLENGINE' -InstanceId 'MyInstance' -MediaPath 'E:\'
 
         Prepares the server for using the database engine for an instance named 'MyInstance'.
 
