@@ -41,6 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlWindowsFirewall
   - Fix duplication of SQL Server Browser Firewall Rule when deploying
     Analysis Services feature ([issue #1942](https://github.com/dsccommunity/SqlServerDsc/issues/1942)).
+- SqlLogin
+  - Attempting to disable and already disabled login throws an error ([issue #1952](https://github.com/dsccommunity/SqlServerDsc/issues/1952))
 
 ## [16.3.1] - 2023-05-06
 
