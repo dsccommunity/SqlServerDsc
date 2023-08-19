@@ -21,7 +21,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Bumped dbatools to v2.0.1 for the integration tests.
   - Running PSScriptAnalyzer on the built module ([issue #1945](https://github.com/dsccommunity/SqlServerDsc/issues/1945)).
   - Fix header in unit tests that referenced the wrong path.
-  - Fix a path in VS Code workspace settings to correctly use Script Analyzer on Linux and macOS.
+  - Fix a path in VS Code workspace settings to correctly use Script Analyzer on
+    Linux and macOS.
+  - Highlighted note comments throughout markdown and generated markdown.
+- SqlSetup
+  - Highlighted a note in the README.md.
+- SqlMemory
+  - Highlighted an important note in the README.md.
+- SqlMaxDop
+  - Highlighted an important note in the README.md.
 
 ### Fixed
 

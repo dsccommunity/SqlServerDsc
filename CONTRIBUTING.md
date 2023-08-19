@@ -347,8 +347,9 @@ not be used, neither shall the command `Write-Error` with the parameter
 to throw a terminating error. The exception is when a `[ValidateScript()]`
 has to throw an error, then `throw` must be used.
 
->**NOTE:** Below output assumes `$ErrorView` is set to `'NormalView'` in the
->PowerShell session.
+> [!NOTE]
+> Below output assumes `$ErrorView` is set to `'NormalView'` in the
+> PowerShell session.
 
 When using `throw` it will fail on the line with the throw statement
 making it look like it is that statement inside the function that failed,
