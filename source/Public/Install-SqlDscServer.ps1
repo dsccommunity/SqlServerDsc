@@ -471,7 +471,6 @@ function Install-SqlDscServer
         $MediaPath,
 
         [Parameter(ParameterSetName = 'Install', Mandatory = $true)]
-        [Parameter(ParameterSetName = 'PrepareImage', Mandatory = $true)]
         [Parameter(ParameterSetName = 'Upgrade', Mandatory = $true)]
         [Parameter(ParameterSetName = 'EditionUpgrade', Mandatory = $true)]
         [Parameter(ParameterSetName = 'InstallFailoverCluster', Mandatory = $true)]
