@@ -2738,8 +2738,8 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
 
                 $mockErrorMessage = $mockLocalizedString -f 'localhost'
 
-                { Connect-SQL -ServerName 'localhost' -SetupCredential $mockSqlCredential -LoginType 'SqlLogin' -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage ('System.InvalidOperationException: {0}*' -f $mockErrorMessage)
+                { Connect-SQL -ServerName 'localhost' -ErrorAction 'Stop' } |
+                    Should -Throw -ExpectedMessage $mockErrorMessage
 
                 Should -Invoke -CommandName New-Object -ParameterFilter {
                     $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Server'
