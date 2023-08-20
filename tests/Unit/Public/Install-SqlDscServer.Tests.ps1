@@ -72,7 +72,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
         @{
             MockParameterSetName = 'PrepareImage'
             # cSpell: disable-next
-            MockExpectedParameters = '-PrepareImage -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> -InstanceId <string> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstanceDir <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-PrepareImage -AcceptLicensingTerms -MediaPath <string> -Features <string[]> -InstanceId <string> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstanceDir <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'Upgrade'
@@ -2035,7 +2035,6 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     PrepareImage = $true
                     AcceptLicensingTerms = $true
                     MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case.
                     Features = 'SqlEngine'
                     InstanceId = 'Instance'
@@ -2050,7 +2049,6 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                         $ArgumentList | Should -MatchExactly '\/ACTION=PrepareImage'
                         $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/INSTANCEID="Instance"' # cspell: disable-line
 
                         # Return $true if none of the above throw.
@@ -2067,7 +2065,6 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                         $ArgumentList | Should -MatchExactly '\/ACTION=PrepareImage'
                         $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/INSTANCEID="Instance"' # cspell: disable-line
 
                         # Return $true if none of the above throw.
@@ -2146,7 +2143,6 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     PrepareImage = $true
                     AcceptLicensingTerms = $true
                     MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case.
                     Features = 'SqlEngine'
                     InstanceId = 'Instance'
