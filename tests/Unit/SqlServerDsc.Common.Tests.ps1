@@ -491,7 +491,7 @@ Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy'
     }
 }
 
-Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'CopyItemWithRobocopy' {
+Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstallationMediaCopy' {
     BeforeAll {
         $mockSourcePathGuid = 'cc719562-0f46-4a16-8605-9f8a47c70402'
         $mockDestinationPath = 'C:\Users\user\AppData\Local\Temp'
@@ -2881,7 +2881,7 @@ Describe 'SqlServerDsc.Common\Test-ClusterPermissions' -Tag 'TestClusterPermissi
     }
 
     Context 'When the cluster has permissions to the instance' {
-        It "Should return NullOrEmpty when '$($clusterServiceName)' is present and has the permissions to manage availability groups" {
+        It "Should return NullOrEmpty when 'NT SERVICE\ClusSvc' is present and has the permissions to manage availability groups" {
             $mockClusterServicePermissionsPresent = $true
 
             Test-ClusterPermissions -ServerObject $mockServerObject | Should -Be $true
@@ -2894,7 +2894,7 @@ Describe 'SqlServerDsc.Common\Test-ClusterPermissions' -Tag 'TestClusterPermissi
             }
         }
 
-        It "Should return NullOrEmpty when '$($systemAccountName)' is present and has the permissions to manage availability groups" {
+        It "Should return NullOrEmpty when 'NT AUTHORITY\System' is present and has the permissions to manage availability groups" {
             $mockSystemPermissionsPresent = $true
 
             Test-ClusterPermissions -ServerObject $mockServerObject | Should -Be $true
