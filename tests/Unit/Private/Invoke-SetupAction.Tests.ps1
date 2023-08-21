@@ -1383,11 +1383,6 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 MockExpectedRegEx = '\/FAILOVERCLUSTERGROUP="TESTCLU01A"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'FailoverClusterGroup'
-                MockParameterValue = 'TESTCLU01A' # cspell: disable-line
-                MockExpectedRegEx = '\/FAILOVERCLUSTERGROUP="TESTCLU01A"' # cspell: disable-line
-            }
-            @{
                 MockParameterName = 'FailoverClusterDisks'
                 # This is the failover cluster resource name.
                 MockParameterValue = @(
