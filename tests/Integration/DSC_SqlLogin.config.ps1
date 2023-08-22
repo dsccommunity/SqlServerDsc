@@ -66,12 +66,12 @@ else
 #>
 Configuration DSC_SqlLogin_CreateDependencies_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node $AllNodes.NodeName
     {
-        User 'CreateDscUser1'
+        xUser 'CreateDscUser1'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $Node.DscUser1Name -Leaf
@@ -81,7 +81,7 @@ Configuration DSC_SqlLogin_CreateDependencies_Config
                 -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
 
-        User 'CreateDscUser2'
+        xUser 'CreateDscUser2'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $Node.DscUser2Name -Leaf
@@ -91,7 +91,7 @@ Configuration DSC_SqlLogin_CreateDependencies_Config
                 -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
 
-        User 'CreateDscUser3'
+        xUser 'CreateDscUser3'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $Node.DscUser3Name -Leaf
@@ -101,7 +101,7 @@ Configuration DSC_SqlLogin_CreateDependencies_Config
                 -ArgumentList @($Node.Admin_UserName, (ConvertTo-SecureString -String $Node.Admin_Password -AsPlainText -Force))
         }
 
-        Group 'CreateDscSqlUsers1'
+        xGroup 'CreateDscSqlUsers1'
         {
             Ensure    = 'Present'
             GroupName = 'DscSqlUsers1'

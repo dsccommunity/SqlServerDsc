@@ -77,11 +77,11 @@ Configuration DSC_SqlRSSetup_InstallReportingServicesAsUser_Config
 #>
 Configuration DSC_SqlRSSetup_StopReportingServicesInstance_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
 
     node $AllNodes.NodeName
     {
-        Service 'StopReportingServicesInstance'
+        xService 'StopReportingServicesInstance'
         {
             Name  = 'SQLServerReportingServices'
             State = 'Stopped'

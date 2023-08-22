@@ -15,12 +15,14 @@
         If preview release of Pester prevents release we should temporary shift
         back to stable.
     #>
-    Pester                         = @{
-        Version    = 'latest'
-        Parameters = @{
-            AllowPrerelease = $true
-        }
-    }
+    # Pester                         = @{
+    #     Version    = 'latest'
+    #     Parameters = @{
+    #         AllowPrerelease = $true
+    #     }
+    # }
+
+    Pester                         = 'latest'
 
     Plaster                        = 'latest'
     ModuleBuilder                  = 'latest'
@@ -47,8 +49,8 @@
     PSPKI                          = '3.7.2'
 
     # Prerequisites modules needed for examples or integration tests
-    PSDscResources                 = '2.12.0.0'
-    StorageDsc                     = '4.9.0.0'
-    NetworkingDsc                  = '7.4.0.0'
+    xPSDesiredStateConfiguration   = '9.1.0'
+    StorageDsc                     = '5.1.0'
+    NetworkingDsc                  = '9.0.0'
     WSManDsc                       = '3.1.1'
 }

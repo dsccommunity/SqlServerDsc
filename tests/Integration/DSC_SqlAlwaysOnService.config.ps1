@@ -70,18 +70,18 @@ else
 #>
 Configuration DSC_SqlAlwaysOnService_CreateDependencies_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
-    Import-DscResource -ModuleName 'NetworkingDsc' -ModuleVersion '7.4.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
+    Import-DscResource -ModuleName 'NetworkingDsc' -ModuleVersion '9.0.0'
 
     node $AllNodes.NodeName
     {
-        WindowsFeature 'AddFeatureFailoverClustering'
+        xWindowsFeature 'AddFeatureFailoverClustering'
         {
             Ensure = 'Present'
             Name   = 'Failover-clustering'
         }
 
-        WindowsFeature 'AddFeatureFailoverClusteringPowerShellModule'
+        xWindowsFeature 'AddFeatureFailoverClusteringPowerShellModule'
         {
             Ensure = 'Present'
             Name   = 'RSAT-Clustering-PowerShell'
@@ -111,7 +111,7 @@ Configuration DSC_SqlAlwaysOnService_CreateDependencies_Config
             does not support administrative access point at this time.
             Issue https://github.com/PowerShell/xFailOverCluster/issues/147.
         #>
-        Script 'CreateActiveDirectoryDetachedCluster'
+        xScript 'CreateActiveDirectoryDetachedCluster'
         {
             SetScript  = {
                 $clusterStaticIpAddress = $Using:Node.ClusterStaticIpAddress
@@ -198,7 +198,7 @@ Configuration DSC_SqlAlwaysOnService_CreateDependencies_Config
 #>
 Configuration DSC_SqlAlwaysOnService_CleanupDependencies_Config
 {
-    Import-DscResource -ModuleName 'NetworkingDsc' -ModuleVersion '7.4.0.0'
+    Import-DscResource -ModuleName 'NetworkingDsc' -ModuleVersion '9.0.0'
 
     node $AllNodes.NodeName
     {

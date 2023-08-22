@@ -50,17 +50,17 @@ else
 #>
 Configuration DSC_SqlServiceAccount_CreateDependencies_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
 
     node $AllNodes.NodeName
     {
-        Service ('StartSqlServerDefaultInstance{0}' -f $Node.DefaultInstanceName)
+        xService ('StartSqlServerDefaultInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name  = $Node.DefaultInstanceName
             State = 'Running'
         }
 
-        Service ('StartSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
+        xService ('StartSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name  = 'SQLSERVERAGENT'
             State = 'Running'
@@ -192,17 +192,17 @@ Configuration DSC_SqlServiceAccount_SqlServerAgent_DefaultInstance_Restore_Confi
 #>
 Configuration DSC_SqlServiceAccount_StopSqlServerDefaultInstance_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
 
     node $AllNodes.NodeName
     {
-        Service ('StopSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
+        xService ('StopSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name  = 'SQLSERVERAGENT'
             State = 'Stopped'
         }
 
-        Service ('StopSqlServerDefaultInstance{0}' -f $Node.DefaultInstanceName)
+        xService ('StopSqlServerDefaultInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name  = $Node.DefaultInstanceName
             State = 'Stopped'

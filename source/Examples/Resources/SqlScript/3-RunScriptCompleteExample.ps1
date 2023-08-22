@@ -54,12 +54,12 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
-        Script 'CreateFile_GetSqlScript'
+        xScript 'CreateFile_GetSqlScript'
         {
             SetScript  = {
                 $Using:Node.GetSqlScript | Out-File -FilePath $Using:Node.GetSqlScriptPath -Encoding ascii -NoClobber -Force
@@ -90,7 +90,7 @@ Configuration Example
             }
         }
 
-        Script 'CreateFile_TestSqlScript'
+        xScript 'CreateFile_TestSqlScript'
         {
             SetScript  = {
                 $Using:Node.TestSqlScript | Out-File -FilePath $Using:Node.TestSqlScriptPath -Encoding ascii -NoClobber -Force

@@ -239,8 +239,8 @@ $SqlAgentServiceSecondaryCredential = New-Object `
 #>
 Configuration DSC_SqlSetup_CreateDependencies_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
-    Import-DscResource -ModuleName 'StorageDsc' -ModuleVersion '4.9.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
+    Import-DscResource -ModuleName 'StorageDsc' -ModuleVersion '5.1.0'
 
     node $AllNodes.NodeName
     {
@@ -258,56 +258,56 @@ Configuration DSC_SqlSetup_CreateDependencies_Config
             RetryCount       = 10
         }
 
-        User 'CreateSqlServicePrimaryAccount'
+        xUser 'CreateSqlServicePrimaryAccount'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $SqlServicePrimaryCredential.UserName -Leaf
             Password = $SqlServicePrimaryCredential
         }
 
-        User 'CreateSqlAgentServicePrimaryAccount'
+        xUser 'CreateSqlAgentServicePrimaryAccount'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $SqlAgentServicePrimaryCredential.UserName -Leaf
             Password = $SqlAgentServicePrimaryCredential
         }
 
-        User 'CreateSqlServiceSecondaryAccount'
+        xUser 'CreateSqlServiceSecondaryAccount'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $SqlServiceSecondaryCredential.UserName -Leaf
             Password = $SqlServicePrimaryCredential
         }
 
-        User 'CreateSqlAgentServiceSecondaryAccount'
+        xUser 'CreateSqlAgentServiceSecondaryAccount'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $SqlAgentServiceSecondaryCredential.UserName -Leaf
             Password = $SqlAgentServicePrimaryCredential
         }
 
-        User 'CreateSqlInstallAccount'
+        xUser 'CreateSqlInstallAccount'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $SqlInstallCredential.UserName -Leaf
             Password = $SqlInstallCredential
         }
 
-        Group 'AddSqlInstallAsAdministrator'
+        xGroup 'AddSqlInstallAsAdministrator'
         {
             Ensure           = 'Present'
             GroupName        = 'Administrators'
             MembersToInclude = Split-Path -Path $SqlInstallCredential.UserName -Leaf
         }
 
-        User 'CreateSqlAdminAccount'
+        xUser 'CreateSqlAdminAccount'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $SqlAdministratorCredential.UserName -Leaf
             Password = $SqlAdministratorCredential
         }
 
-        WindowsFeature 'NetFramework45'
+        xWindowsFeature 'NetFramework45'
         {
             Name   = 'NET-Framework-45-Core'
             Ensure = 'Present'
@@ -329,11 +329,11 @@ Configuration DSC_SqlSetup_CreateDependencies_Config
 #>
 Configuration DSC_SqlSetup_InstallSMOModule_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
 
     node $AllNodes.NodeName
     {
-        Script 'InstallPowerShellGet'
+        xScript 'InstallPowerShellGet'
         {
             SetScript  = {
                 # Make sure PSGallery is trusted.
@@ -410,7 +410,7 @@ Configuration DSC_SqlSetup_InstallSMOModule_Config
         # Only set the environment variable for the LCM user only if the pipeline has it configured.
         if ($env:SMODefaultModuleName)
         {
-            Environment 'SetSMODefaultModuleName'
+            xEnvironment 'SetSMODefaultModuleName'
             {
                 Name = 'SMODefaultModuleName'
                 Value = $env:SMODefaultModuleName
@@ -420,7 +420,7 @@ Configuration DSC_SqlSetup_InstallSMOModule_Config
             }
         }
 
-        Script 'InstallSMOModule'
+        xScript 'InstallSMOModule'
         {
             DependsOn  = @(
                 '[Script]InstallPowerShellGet'
@@ -594,7 +594,7 @@ Configuration DSC_SqlSetup_InstallDatabaseEngineNamedInstanceAsSystem_Config
 #>
 Configuration DSC_SqlSetup_StopServicesInstance_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
 
     node $AllNodes.NodeName
     {
@@ -602,7 +602,7 @@ Configuration DSC_SqlSetup_StopServicesInstance_Config
             Stopping the SQL Server Agent service for the named instance.
             It will be restarted at the end of the tests.
         #>
-        Service ('StopSqlServerAgentForInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
+        xService ('StopSqlServerAgentForInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
         {
             Name  = ('SQLAGENT${0}' -f $Node.DatabaseEngineNamedInstanceName)
             State = 'Stopped'
@@ -612,7 +612,7 @@ Configuration DSC_SqlSetup_StopServicesInstance_Config
             Stopping the Database Engine named instance. It will be restarted
             at the end of the tests.
         #>
-        Service ('StopSqlServerInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
+        xService ('StopSqlServerInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
         {
             Name  = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
             State = 'Stopped'
@@ -660,18 +660,18 @@ Configuration DSC_SqlSetup_InstallDatabaseEngineDefaultInstanceAsUser_Config
 #>
 Configuration DSC_SqlSetup_StopSqlServerDefaultInstance_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
 
     node $AllNodes.NodeName
     {
-        Service ('StopSqlServerAgentForInstance{0}' -f $Node.DatabaseEngineDefaultInstanceName)
+        xService ('StopSqlServerAgentForInstance{0}' -f $Node.DatabaseEngineDefaultInstanceName)
         {
             Name  = 'SQLSERVERAGENT'
             State = 'Stopped'
         }
 
 
-        Service ('StopSqlServerInstance{0}' -f $Node.DatabaseEngineDefaultInstanceName)
+        xService ('StopSqlServerInstance{0}' -f $Node.DatabaseEngineDefaultInstanceName)
         {
             Name  = $Node.DatabaseEngineDefaultInstanceName
             State = 'Stopped'
@@ -720,11 +720,11 @@ Configuration DSC_SqlSetup_InstallMultiDimensionalAnalysisServicesAsSystem_Confi
 #>
 Configuration DSC_SqlSetup_StopMultiDimensionalAnalysisServices_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
 
     node $AllNodes.NodeName
     {
-        Service ('StopMultiDimensionalAnalysisServicesInstance{0}' -f $Node.AnalysisServicesMultiInstanceName)
+        xService ('StopMultiDimensionalAnalysisServicesInstance{0}' -f $Node.AnalysisServicesMultiInstanceName)
         {
             Name  = ('MSOLAP${0}' -f $Node.AnalysisServicesMultiInstanceName)
             State = 'Stopped'
@@ -774,11 +774,11 @@ Configuration DSC_SqlSetup_InstallTabularAnalysisServicesAsSystem_Config
 #>
 Configuration DSC_SqlSetup_StopTabularAnalysisServices_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
 
     node $AllNodes.NodeName
     {
-        Service ('StopTabularAnalysisServicesInstance{0}' -f $Node.AnalysisServicesTabularInstanceName)
+        xService ('StopTabularAnalysisServicesInstance{0}' -f $Node.AnalysisServicesTabularInstanceName)
         {
             Name  = ('MSOLAP${0}' -f $Node.AnalysisServicesTabularInstanceName)
             State = 'Stopped'
@@ -796,19 +796,19 @@ Configuration DSC_SqlSetup_StopTabularAnalysisServices_Config
 #>
 Configuration DSC_SqlSetup_StartServicesInstance_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
 
     node $AllNodes.NodeName
     {
         # Start the Database Engine named instance.
-        Service ('StartSqlServerInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
+        xService ('StartSqlServerInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
         {
             Name  = ('MSSQL${0}' -f $Node.DatabaseEngineNamedInstanceName)
             State = 'Running'
         }
 
         # Starting the SQL Server Agent service for the named instance.
-        Service ('StartSqlServerAgentForInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
+        xService ('StartSqlServerAgentForInstance{0}' -f $Node.DatabaseEngineNamedInstanceName)
         {
             Name  = ('SQLAGENT${0}' -f $Node.DatabaseEngineNamedInstanceName)
             State = 'Running'

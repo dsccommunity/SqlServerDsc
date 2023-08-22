@@ -42,12 +42,12 @@ Configuration Example
         $ReportingServicesServiceCredential
     )
 
-    Import-DscResource -ModuleName PSDscResources -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     Node localhost
     {
-        WindowsFeature 'NetFramework45'
+        xWindowsFeature 'NetFramework45'
         {
             Name   = 'NET-Framework-45-Core'
             Ensure = 'Present'
