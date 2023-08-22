@@ -52,6 +52,14 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         the host name for the listener or cluster group. If using a secure connection
         the specified value should be the same name that is used in the certificate.
         Default value is the current computer name.
+
+    .PARAMETER SqlVersion
+        Specifies the SQL Server version that should be installed. Only the major
+        version will be used, but the provided value must be set to at least major
+        and minor version (e.g. `14.0`). When providing this parameter the media
+        will not be used to evaluate version. Although, if the setup action is
+        `Upgrade` then setting this parameter will throw an exception as the version
+        from the install media is required.
 #>
 function Get-TargetResource
 {
@@ -96,8 +104,19 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
-        $ServerName
+        $ServerName,
+
+        [Parameter()]
+        [System.String]
+        $SqlVersion
     )
+
+    if ($getTargetResourceParameters.Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
+    {
+        $errorMessage = $script:localizedData.ParameterSqlVersionNotAllowedForSetupActionUpgrade
+
+        New-InvalidOperationException -Message $errorMessage
+    }
 
     if ($FeatureFlag)
     {
@@ -156,6 +175,7 @@ function Get-TargetResource
         FailoverClusterIPAddress   = $null
         UseEnglish                 = $UseEnglish
         ServerName                 = $ServerName
+        SqlVersion                 = $null
     }
 
     <#
@@ -188,18 +208,27 @@ function Get-TargetResource
         Connect-UncPath -RemotePath $SourcePath -SourceCredential $SourceCredential
     }
 
-    $pathToSetupExecutable = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
+    if (-not $PSBoundParameters.ContainsKey('SqlVersion'))
+    {
+        $pathToSetupExecutable = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
 
-    Write-Verbose -Message ($script:localizedData.UsingPath -f $pathToSetupExecutable)
+        Write-Verbose -Message ($script:localizedData.UsingPath -f $pathToSetupExecutable)
 
-    $sqlVersion = Get-FilePathMajorVersion -Path $pathToSetupExecutable
+        $SqlVersion = Get-FilePathMajorVersion -Path $pathToSetupExecutable
+    }
+    else
+    {
+        $SqlVersion = ([System.Version] $SqlVersion).Major
+    }
+
+    $getTargetResourceReturnValue.SqlVersion = $SqlVersion
 
     if ($SourceCredential)
     {
         Disconnect-UncPath -RemotePath $SourcePath
     }
 
-    $serviceNames = Get-ServiceNamesForInstance -InstanceName $InstanceName -SqlServerMajorVersion $sqlVersion
+    $serviceNames = Get-ServiceNamesForInstance -InstanceName $InstanceName -SqlServerMajorVersion $SqlVersion
 
     $features = ''
 
@@ -255,7 +284,7 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.EvaluateDataQualityServicesFeature
 
         # Check if the Data Quality Services sub component is configured.
-        $isDQInstalled = Test-IsDQComponentInstalled -InstanceName $InstanceName -SqlServerMajorVersion $sqlVersion
+        $isDQInstalled = Test-IsDQComponentInstalled -InstanceName $InstanceName -SqlServerMajorVersion $SqlVersion
 
         if ($isDQInstalled)
         {
@@ -276,7 +305,7 @@ function Get-TargetResource
         $getTargetResourceReturnValue.InstanceDir = `
             Get-InstanceProgramPath -InstanceName $InstanceName
 
-        if ($sqlVersion -ge 13)
+        if ($SqlVersion -ge 13)
         {
             # Retrieve information about Tempdb database and its files.
             $currentTempDbProperties = Get-TempDbProperties -ServerName $sqlHostName -InstanceName $InstanceName
@@ -413,15 +442,15 @@ function Get-TargetResource
         Write-Verbose -Message $script:localizedData.IntegrationServicesFeatureNotFound
     }
 
-    $installedSharedFeatures = Get-InstalledSharedFeatures -SqlServerMajorVersion $sqlVersion
+    $installedSharedFeatures = Get-InstalledSharedFeatures -SqlServerMajorVersion $SqlVersion
     $features += '{0},' -f ($installedSharedFeatures -join ',')
 
-    if ((Test-IsSsmsInstalled -SqlServerMajorVersion $sqlVersion))
+    if ((Test-IsSsmsInstalled -SqlServerMajorVersion $SqlVersion))
     {
         $features += 'SSMS,'
     }
 
-    if ((Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion $sqlVersion))
+    if ((Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion $SqlVersion))
     {
         $features += 'ADV_SSMS,'
     }
@@ -430,7 +459,7 @@ function Get-TargetResource
 
     if ($features)
     {
-        $currentSqlSharedPaths = Get-SqlSharedPaths -SqlServerMajorVersion $sqlVersion
+        $currentSqlSharedPaths = Get-SqlSharedPaths -SqlServerMajorVersion $SqlVersion
 
         $getTargetResourceReturnValue.InstallSharedDir = $currentSqlSharedPaths.InstallSharedDir
         $getTargetResourceReturnValue.InstallSharedWOWDir = $currentSqlSharedPaths.InstallSharedWOWDir
@@ -668,6 +697,14 @@ function Get-TargetResource
         the host name for the listener or cluster group. If using a secure connection
         the specified value should be the same name that is used in the certificate.
         Default value is the current computer name.
+
+    .PARAMETER SqlVersion
+        Specifies the SQL Server version that should be installed. Only the major
+        version will be used, but the provided value must be set to at least major
+        and minor version (e.g. `14.0`). When providing this parameter the media
+        will not be used to evaluate version. Although, if the setup action is
+        `Upgrade` then setting this parameter will throw an exception as the version
+        from the install media is required.
 #>
 function Set-TargetResource
 {
@@ -933,8 +970,19 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $ServerName
+        $ServerName,
+
+        [Parameter()]
+        [System.String]
+        $SqlVersion
     )
+
+    if ($getTargetResourceParameters.Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
+    {
+        $errorMessage = $script:localizedData.ParameterSqlVersionNotAllowedForSetupActionUpgrade
+
+        New-InvalidOperationException -Message $errorMessage
+    }
 
     <#
         Fixing issue 448, setting FailoverClusterGroupName to default value
@@ -1008,11 +1056,18 @@ function Set-TargetResource
         $SourcePath = Invoke-InstallationMediaCopy @invokeInstallationMediaCopyParameters
     }
 
-    $pathToSetupExecutable = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
+    if (-not $PSBoundParameters.ContainsKey('SqlVersion'))
+    {
+        $pathToSetupExecutable = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
 
-    Write-Verbose -Message ($script:localizedData.UsingPath -f $pathToSetupExecutable)
+        Write-Verbose -Message ($script:localizedData.UsingPath -f $pathToSetupExecutable)
 
-    $sqlVersion = Get-FilePathMajorVersion -Path $pathToSetupExecutable
+        $SqlVersion = Get-FilePathMajorVersion -Path $pathToSetupExecutable
+    }
+    else
+    {
+        $SqlVersion = ([System.Version] $SqlVersion).Major
+    }
 
     # Determine features to install
     $featuresToInstall = ''
@@ -1022,7 +1077,7 @@ function Set-TargetResource
 
     foreach ($feature in $featuresArray)
     {
-        if (-not ($feature | Test-SqlDscIsSupportedFeature -ProductVersion $sqlVersion))
+        if (-not ($feature | Test-SqlDscIsSupportedFeature -ProductVersion $SqlVersion))
         {
             $errorMessage = $script:localizedData.FeatureNotSupported -f $feature
             New-InvalidOperationException -Message $errorMessage
@@ -1042,7 +1097,7 @@ function Set-TargetResource
     $Features = $featuresToInstall.Trim(',')
 
     # If SQL shared components already installed, clear InstallShared*Dir variables
-    switch ($sqlVersion)
+    switch ($SqlVersion)
     {
         { $_ -in ('10', '11', '12', '13', '14', '15', '16') }
         {
@@ -1550,8 +1605,11 @@ function Set-TargetResource
         $arguments += '/ENU'
     }
 
+    $arguments = $arguments.Trim()
+
     # Replace sensitive values for verbose output
     $log = $arguments
+
     if ($SecurityMode -eq 'SQL')
     {
         $log = $log.Replace($SAPwd.GetNetworkCredential().Password, "********")
@@ -1571,12 +1629,14 @@ function Set-TargetResource
         }
     }
 
-    $arguments = $arguments.Trim()
+    Write-Verbose -Message ($script:localizedData.SetupArguments -f $log)
+
+    $pathToSetupExecutable = Join-Path -Path $SourcePath -ChildPath 'setup.exe'
+
+    Write-Verbose -Message ($script:localizedData.UsingPath -f $pathToSetupExecutable)
 
     try
     {
-        Write-Verbose -Message ($script:localizedData.SetupArguments -f $log)
-
         <#
             This handles when PsDscRunAsCredential is set, or running as the SYSTEM account (when
             PsDscRunAsCredential is not set).
@@ -1896,6 +1956,14 @@ function Set-TargetResource
         the host name for the listener or cluster group. If using a secure connection
         the specified value should be the same name that is used in the certificate.
         Default value is the current computer name.
+
+    .PARAMETER SqlVersion
+        Specifies the SQL Server version that should be installed. Only the major
+        version will be used, but the provided value must be set to at least major
+        and minor version (e.g. `14.0`). When providing this parameter the media
+        will not be used to evaluate version. Although, if the setup action is
+        `Upgrade` then setting this parameter will throw an exception as the version
+        from the install media is required.
 #>
 function Test-TargetResource
 {
@@ -2161,8 +2229,19 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $ServerName
+        $ServerName,
+
+        [Parameter()]
+        [System.String]
+        $SqlVersion
     )
+
+    if ($getTargetResourceParameters.Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
+    {
+        $errorMessage = $script:localizedData.ParameterSqlVersionNotAllowedForSetupActionUpgrade
+
+        New-InvalidOperationException -Message $errorMessage
+    }
 
     <#
         Fixing issue 448, setting FailoverClusterGroupName to default value
@@ -2180,6 +2259,11 @@ function Test-TargetResource
         InstanceName               = $InstanceName
         FailoverClusterNetworkName = $FailoverClusterNetworkName
         FeatureFlag                = $FeatureFlag
+    }
+
+    if ($PSBoundParameters.ContainsKey('SqlVersion'))
+    {
+        $getTargetResourceParameters.SqlVersion = $SqlVersion
     }
 
     if ($PSBoundParameters.ContainsKey('ServerName'))
