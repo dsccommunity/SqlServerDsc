@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - SqlServerDsc
+  - Integration tests now also run using SQLPS.
   - Added a new build task `fastbuild` that can be used during development
     process when there are no need to generate documentation.
   - Added new public command:

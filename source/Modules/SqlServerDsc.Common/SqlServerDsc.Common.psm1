@@ -1949,7 +1949,40 @@ function Invoke-SqlScript
         $Encrypt
     )
 
+    # Write-Verbose -Message ('Session PSModulePath: {0}' -f $env:PSModulePath) -Verbose
+    # Write-Verbose -Message ('Available modules: {0}' -f (Get-Module -Name @('SqlServer', 'SqlServerDsc', 'SQLPS') -ListAvailable | Out-String)) -Verbose
+    # Write-Verbose -Message ('All PSModulePath: {0}' -f (Get-PSModulePath -FromTarget 'Session', 'User', 'Machine')) -Verbose
+
+    # Write-Verbose -Message ('Found module: {0}' -f (Get-SqlDscPreferredModule -ErrorAction 'Continue')) -Verbose
+    # Write-Verbose -Message ('Found module (refresh): {0}' -f (Get-SqlDscPreferredModule -Refresh -ErrorAction 'Continue')) -Verbose
+
+    # Import the preferred module.
     Import-SqlDscPreferredModule
+
+    <#
+        If dbatools was imported as the preferred module and SqlServer is not available
+        then we need to import SQLPS because it will not always be dynamically imported
+        when Invoke-SqlCmd is called.
+
+        Import-SqlDscPreferredModule must be called before Get-SqlDscPreferredModule
+        so that any module set using environment variable SMODefaultModuleName is
+        always imported first.
+    #>
+    if ((Get-SqlDscPreferredModule -Name @('SqlServer', 'dbatools')) -eq 'dbatools')
+    {
+        # Call Get-SqlDscPreferredModule to make sure we get the latest installed version of SQLPS.
+        Import-Module -Name (Get-SqlDscPreferredModule -Name 'SQLPS')
+    }
+
+    Write-Verbose -Message ('Imported modules: {0}' -f (Get-Module | Out-String)) -Verbose
+    if ((Get-Module -Name 'SQLPS'))
+    {
+        Write-Verbose -Message ('DEBUG: All SQLPS commands: {0}' -f (Get-Command -Module 'SQLPS' -ErrorAction 'SilentlyContinue' | Out-String)) -Verbose
+    }
+    else
+    {
+        Write-Verbose -Message 'DEBUG: NO SQLPS IS LOADED' -Verbose
+    }
 
     if ($PSCmdlet.ParameterSetName -eq 'File')
     {

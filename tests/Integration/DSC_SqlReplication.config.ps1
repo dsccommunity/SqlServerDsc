@@ -40,13 +40,13 @@ Configuration DSC_SqlReplication_Prerequisites_Config
 
     node $AllNodes.NodeName
     {
-        Service ('StopSqlServerInstance{0}' -f $Node.DefaultInstanceName)
+        Service ('StartSqlServerInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name  = $Node.DefaultInstanceName
             State = 'Running'
         }
 
-        Service ('StopSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
+        Service ('StartSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name  = 'SQLSERVERAGENT'
             State = 'Running'
