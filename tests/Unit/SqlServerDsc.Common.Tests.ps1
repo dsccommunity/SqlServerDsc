@@ -522,6 +522,10 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
     Context 'When invoking installation media copy, using SourcePath containing leaf' {
         BeforeAll {
             $mockSourcePathUNCWithLeaf = '\\server\share\leaf'
+
+            Mock -CommandName Join-Path -MockWith {
+                return $mockDestinationPath + '\leaf'
+            }
         }
 
         It 'Should call the correct mocks' {
@@ -557,6 +561,10 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
     Context 'When invoking installation media copy, using SourcePath containing a second leaf' {
         BeforeAll {
             $mockSourcePathUNCWithLeaf = '\\server\share\leaf\secondleaf'
+
+            Mock -CommandName Join-Path -MockWith {
+                return $mockDestinationPath + '\secondleaf'
+            }
         }
 
         It 'Should call the correct mocks' {
@@ -592,6 +600,10 @@ Describe 'SqlServerDsc.Common\Invoke-InstallationMediaCopy' -Tag 'InvokeInstalla
     Context 'When invoking installation media copy, using SourcePath without a leaf' {
         BeforeAll {
             $mockSourcePathUNC = '\\server\share'
+
+            Mock -CommandName Join-Path -MockWith {
+                return $mockDestinationPath + '\' + $mockSourcePathGuid
+            }
         }
 
         It 'Should call the correct mocks' {
@@ -642,10 +654,47 @@ Describe 'SqlServerDsc.Common\Connect-UncPath' -Tag 'ConnectUncPath' {
             ($mockFqdnShareCredentialPassword | ConvertTo-SecureString -AsPlainText -Force)
         )
 
+        InModuleScope -ScriptBlock {
+            # Stubs for cross-platform testing.
+            function script:New-SmbMapping
+            {
+                [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Justification = 'Suppressing this rule because parameter Password is used to mock the real command.')]
+                [CmdletBinding()]
+                param
+                (
+                    [Parameter()]
+                    [System.String]
+                    $RemotePath,
+
+                    [Parameter()]
+                    [System.String]
+                    $UserName,
+
+                    [Parameter()]
+                    [System.String]
+                    $Password
+                )
+
+                throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
+            }
+
+            function script:Remove-SmbMapping
+            {
+                throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
+            }
+        }
+
         Mock -CommandName New-SmbMapping -MockWith {
             return @{
                 RemotePath = $mockSourcePathUNC
             }
+        }
+    }
+
+    AfterAll {
+        InModuleScope -ScriptBlock {
+            Remove-Item -Path 'function:/New-SmbMapping'
+            Remove-Item -Path 'function:/Remove-SmbMapping'
         }
     }
 
@@ -725,7 +774,21 @@ Describe 'SqlServerDsc.Common\Disconnect-UncPath' -Tag 'DisconnectUncPath' {
     BeforeAll {
         $mockSourcePathUNC = '\\server\share'
 
+        InModuleScope -ScriptBlock {
+            # Stubs for cross-platform testing.
+            function script:Remove-SmbMapping
+            {
+                throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
+            }
+        }
+
         Mock -CommandName Remove-SmbMapping
+    }
+
+    AfterAll {
+        InModuleScope -ScriptBlock {
+            Remove-Item -Path 'function:/Remove-SmbMapping'
+        }
     }
 
     Context 'When disconnecting from an UNC path' {
@@ -774,10 +837,20 @@ Describe 'SqlServerDsc.Common\Test-PendingRestart' -Tag 'TestPendingRestart' {
 }
 
 Describe 'SqlServerDsc.Common\Start-SqlSetupProcess' -Tag 'StartSqlSetupProcess' {
+    BeforeAll {
+        $mockPowerShellExecutable = if ($IsLinux -or $IsMacOS)
+        {
+            'pwsh'
+        }
+        else
+        {
+            'powershell.exe'
+        }
+    }
     Context 'When starting a process successfully' {
         It 'Should return exit code 0' {
             $startSqlSetupProcessParameters = @{
-                FilePath = 'powershell.exe'
+                FilePath = $mockPowerShellExecutable
                 ArgumentList = '-NonInteractive -NoProfile -Command &{Start-Sleep -Seconds 2}'
                 Timeout = 30
             }
@@ -790,7 +863,7 @@ Describe 'SqlServerDsc.Common\Start-SqlSetupProcess' -Tag 'StartSqlSetupProcess'
     Context 'When starting a process and the process does not finish before the timeout period' {
         It 'Should throw an error message' {
             $startSqlSetupProcessParameters = @{
-                FilePath = 'powershell.exe'
+                FilePath = $mockPowerShellExecutable
                 ArgumentList = '-NonInteractive -NoProfile -Command &{Start-Sleep -Seconds 4}'
                 Timeout = 2
             }
@@ -1194,7 +1267,8 @@ Describe 'SqlServerDsc.Common\Restart-SqlService' -Tag 'RestartSqlService' {
     }
 }
 
-Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlClusterService' {
+# This test is skipped on Linux and macOS due to it is missing CIM Instance.
+Describe 'SqlServerDsc.Common\Restart-SqlClusterService' -Tag 'RestartSqlClusterService' -Skip:($IsLinux -or $IsMacOS) {
     Context 'When not clustered instance is found' {
         BeforeAll {
             Mock -CommandName Get-CimInstance
@@ -2322,7 +2396,7 @@ Describe 'SqlServerDsc.Common\Test-ImpersonatePermissions' -Tag 'TestImpersonate
 }
 
 Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
-    BeforeAll {
+    BeforeEach {
         $mockNewObject_MicrosoftDatabaseEngine = {
             <#
                 $ArgumentList[0] will contain the ServiceInstance when calling mock New-Object.
@@ -2411,23 +2485,22 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
         $mockWinFqdnCredentialPassword = 'StrongerOne7.'
         $mockWinFqdnCredentialSecurePassword = ConvertTo-SecureString -String $mockWinFqdnCredentialPassword -AsPlainText -Force
         $mockWinFqdnCredential = New-Object -TypeName PSCredential -ArgumentList ($mockWinFqdnCredentialUserName, $mockWinFqdnCredentialSecurePassword)
-    }
 
-    BeforeEach {
         Mock -CommandName Import-SqlDscPreferredModule
     }
 
-    Context 'When connecting to the default instance using integrated Windows Authentication' {
-        BeforeAll {
+    # Skipping on Linux and macOS because they do not support Windows Authentication.
+    Context 'When connecting to the default instance using integrated Windows Authentication' -Skip:($IsLinux -or $IsMacOS) {
+        BeforeEach {
+            $mockExpectedDatabaseEngineServer = 'TestServer'
+            $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
+
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
         }
 
         It 'Should return the correct service instance' {
-            $mockExpectedDatabaseEngineServer = 'TestServer'
-            $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
-
             $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -ErrorAction 'Stop'
             $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly $mockExpectedDatabaseEngineServer
 
@@ -2437,17 +2510,17 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
     }
 
     Context 'When connecting to the default instance using SQL Server Authentication' {
-        BeforeAll {
+        BeforeEach {
+            $mockExpectedDatabaseEngineServer = 'TestServer'
+            $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
+            $mockExpectedDatabaseEngineLoginSecure = $false
+
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
         }
 
         It 'Should return the correct service instance' {
-            $mockExpectedDatabaseEngineServer = 'TestServer'
-            $mockExpectedDatabaseEngineInstance = 'MSSQLSERVER'
-            $mockExpectedDatabaseEngineLoginSecure = $false
-
             $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -SetupCredential $mockSqlCredential -LoginType 'SqlLogin' -ErrorAction 'Stop'
             $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $false
             $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSqlCredentialUserName
@@ -2459,17 +2532,18 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
         }
     }
 
-    Context 'When connecting to the named instance using integrated Windows Authentication' {
-        BeforeAll {
+    # Skipping on Linux and macOS because they do not support Windows Authentication.
+    Context 'When connecting to the named instance using integrated Windows Authentication' -Skip:($IsLinux -or $IsMacOS) {
+        BeforeEach {
+            $mockExpectedDatabaseEngineServer = Get-ComputerName
+            $mockExpectedDatabaseEngineInstance = 'SqlInstance'
+
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
         }
 
         It 'Should return the correct service instance' {
-            $mockExpectedDatabaseEngineServer = $env:COMPUTERNAME
-            $mockExpectedDatabaseEngineInstance = 'SqlInstance'
-
             $databaseEngineServerObject = Connect-SQL -InstanceName $mockExpectedDatabaseEngineInstance -ErrorAction 'Stop'
             $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
 
@@ -2479,17 +2553,17 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
     }
 
     Context 'When connecting to the named instance using SQL Server Authentication' {
-        BeforeAll {
+        BeforeEach {
+            $mockExpectedDatabaseEngineServer = Get-ComputerName
+            $mockExpectedDatabaseEngineInstance = 'SqlInstance'
+            $mockExpectedDatabaseEngineLoginSecure = $false
+
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
         }
 
         It 'Should return the correct service instance' {
-            $mockExpectedDatabaseEngineServer = $env:COMPUTERNAME
-            $mockExpectedDatabaseEngineInstance = 'SqlInstance'
-            $mockExpectedDatabaseEngineLoginSecure = $false
-
             $databaseEngineServerObject = Connect-SQL -InstanceName $mockExpectedDatabaseEngineInstance -SetupCredential $mockSqlCredential -LoginType 'SqlLogin' -ErrorAction 'Stop'
             $databaseEngineServerObject.ConnectionContext.LoginSecure | Should -Be $false
             $databaseEngineServerObject.ConnectionContext.Login | Should -Be $mockSqlCredentialUserName
@@ -2501,17 +2575,18 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
         }
     }
 
-    Context 'When connecting to the named instance using integrated Windows Authentication and different server name' {
-        BeforeAll {
+    # Skipping on Linux and macOS because they do not support Windows Authentication.
+    Context 'When connecting to the named instance using integrated Windows Authentication and different server name' -Skip:($IsLinux -or $IsMacOS) {
+        BeforeEach {
+            $mockExpectedDatabaseEngineServer = 'SERVER'
+            $mockExpectedDatabaseEngineInstance = 'SqlInstance'
+
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
         }
 
         It 'Should return the correct service instance' {
-            $mockExpectedDatabaseEngineServer = 'SERVER'
-            $mockExpectedDatabaseEngineInstance = 'SqlInstance'
-
             $databaseEngineServerObject = Connect-SQL -ServerName $mockExpectedDatabaseEngineServer -InstanceName $mockExpectedDatabaseEngineInstance -ErrorAction 'Stop'
             $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
 
@@ -2521,17 +2596,17 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
     }
 
     Context 'When connecting to the named instance using Windows Authentication impersonation' {
-        BeforeAll {
+        BeforeEach {
+            $mockExpectedDatabaseEngineServer = Get-ComputerName
+            $mockExpectedDatabaseEngineInstance = 'SqlInstance'
+
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
-
-            $mockExpectedDatabaseEngineServer = $env:COMPUTERNAME
-            $mockExpectedDatabaseEngineInstance = 'SqlInstance'
         }
 
         Context 'When using the default login type' {
-            BeforeAll {
+            BeforeEach {
                 $testParameters = @{
                     ServerName = $mockExpectedDatabaseEngineServer
                     InstanceName = $mockExpectedDatabaseEngineInstance
@@ -2555,7 +2630,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
 
         Context 'When using the WindowsUser login type' {
             Context 'When authenticating using NetBIOS domain' {
-                BeforeAll {
+                BeforeEach {
                     $testParameters = @{
                         ServerName = $mockExpectedDatabaseEngineServer
                         InstanceName = $mockExpectedDatabaseEngineInstance
@@ -2579,7 +2654,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             }
 
             Context 'When authenticating using Fully Qualified Domain Name (FQDN)' {
-                BeforeAll {
+                BeforeEach {
                     $testParameters = @{
                         ServerName = $mockExpectedDatabaseEngineServer
                         InstanceName = $mockExpectedDatabaseEngineInstance
@@ -2605,16 +2680,17 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
     }
 
     Context 'When using encryption' {
-        BeforeAll {
+        BeforeEach {
+            $mockExpectedDatabaseEngineServer = 'SERVER'
+            $mockExpectedDatabaseEngineInstance = 'SqlInstance'
+
             Mock -CommandName New-Object `
                 -MockWith $mockNewObject_MicrosoftDatabaseEngine `
                 -ParameterFilter $mockNewObject_MicrosoftDatabaseEngine_ParameterFilter
         }
 
-        It 'Should return the correct service instance' {
-            $mockExpectedDatabaseEngineServer = 'SERVER'
-            $mockExpectedDatabaseEngineInstance = 'SqlInstance'
-
+        # Skipping on Linux and macOS because they do not support Windows Authentication.
+        It 'Should return the correct service instance' -Skip:($IsLinux -or $IsMacOS) {
             $databaseEngineServerObject = Connect-SQL -Encrypt -ServerName $mockExpectedDatabaseEngineServer -InstanceName $mockExpectedDatabaseEngineInstance -ErrorAction 'Stop'
             $databaseEngineServerObject.ConnectionContext.ServerInstance | Should -BeExactly "$mockExpectedDatabaseEngineServer\$mockExpectedDatabaseEngineInstance"
 
@@ -2703,7 +2779,7 @@ Describe 'SqlServerDsc.Common\Connect-SQL' -Tag 'ConnectSql' {
             }
 
             It 'Should not throw an exception' {
-                { Connect-SQL -ServerName 'localhost' -ErrorAction 'SilentlyContinue' } |
+                { Connect-SQL -ServerName 'localhost' -SetupCredential $mockSqlCredential -LoginType 'SqlLogin' -ErrorAction 'SilentlyContinue' } |
                     Should -Not -Throw
 
                 Should -Invoke -CommandName New-Object -ParameterFilter {
@@ -2805,7 +2881,7 @@ Describe 'SqlServerDsc.Common\Test-ClusterPermissions' -Tag 'TestClusterPermissi
     }
 
     Context 'When the cluster has permissions to the instance' {
-        It "Should return NullOrEmpty when '$($clusterServiceName)' is present and has the permissions to manage availability groups" {
+        It "Should return NullOrEmpty when 'NT SERVICE\ClusSvc' is present and has the permissions to manage availability groups" {
             $mockClusterServicePermissionsPresent = $true
 
             Test-ClusterPermissions -ServerObject $mockServerObject | Should -Be $true
@@ -2818,7 +2894,7 @@ Describe 'SqlServerDsc.Common\Test-ClusterPermissions' -Tag 'TestClusterPermissi
             }
         }
 
-        It "Should return NullOrEmpty when '$($systemAccountName)' is present and has the permissions to manage availability groups" {
+        It "Should return NullOrEmpty when 'NT AUTHORITY\System' is present and has the permissions to manage availability groups" {
             $mockSystemPermissionsPresent = $true
 
             Test-ClusterPermissions -ServerObject $mockServerObject | Should -Be $true
@@ -2847,6 +2923,40 @@ Describe 'SqlServerDsc.Common\Restart-ReportingServicesService' -Tag 'RestartRep
                     }
                 )
             }
+        }
+
+        InModuleScope -ScriptBlock {
+            # Stubs for cross-platform testing.
+            function script:Get-Service
+            {
+                [CmdletBinding()]
+                param
+                (
+                    [Parameter()]
+                    [System.String]
+                    $Name
+                )
+
+                throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
+            }
+
+            function script:Stop-Service
+            {
+                throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
+            }
+
+            function script:Start-Service
+            {
+                throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
+            }
+        }
+    }
+
+    AfterAll {
+        InModuleScope -ScriptBlock {
+            Remove-Item -Path 'function:/Start-Service'
+            Remove-Item -Path 'function:/Stop-Service'
+            Remove-Item -Path 'function:/Get-Service'
         }
     }
 
@@ -2975,7 +3085,7 @@ Describe 'SqlServerDsc.Common\Test-ActiveNode' -Tag 'TestActiveNode' {
 
         It 'Should return <Result> when the node name is <ComputerNamePhysicalNetBIOS>' -ForEach @(
             @{
-                ComputerNamePhysicalNetBIOS = $env:COMPUTERNAME
+                ComputerNamePhysicalNetBIOS = Get-ComputerName
                 Result = $true
             },
             @{
@@ -2993,12 +3103,12 @@ Describe 'SqlServerDsc.Common\Test-ActiveNode' -Tag 'TestActiveNode' {
 Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
     BeforeAll {
         $invokeScriptFileParameters = @{
-            ServerInstance = $env:COMPUTERNAME
+            ServerInstance = Get-ComputerName
             InputFile = 'set.sql'
         }
 
         $invokeScriptQueryParameters = @{
-            ServerInstance = $env:COMPUTERNAME
+            ServerInstance = Get-ComputerName
             Query = 'Test Query'
         }
     }
@@ -3116,7 +3226,7 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
 
             It 'Should call Invoke-SqlCmd with correct File ParameterSet parameters' {
                 $mockInvokeScriptFileParameters = @{
-                    ServerInstance = $env:COMPUTERNAME
+                    ServerInstance = Get-ComputerName
                     InputFile      = 'set.sql'
                     Encrypt        = 'Optional'
                 }
@@ -3130,7 +3240,7 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
 
             It 'Should call Invoke-SqlCmd with correct Query ParameterSet parameters' {
                 $mockInvokeScriptQueryParameters = @{
-                    ServerInstance = $env:COMPUTERNAME
+                    ServerInstance = Get-ComputerName
                     Query          = 'Test Query'
                     Encrypt        = 'Optional'
                 }
@@ -3158,7 +3268,7 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
 
             It 'Should call Invoke-SqlCmd with correct File ParameterSet parameters' {
                 $mockInvokeScriptFileParameters = @{
-                    ServerInstance = $env:COMPUTERNAME
+                    ServerInstance = Get-ComputerName
                     InputFile      = 'set.sql'
                     Encrypt        = 'Optional'
                 }
@@ -3172,7 +3282,7 @@ Describe 'SqlServerDsc.Common\Invoke-SqlScript' -Tag 'InvokeSqlScript' {
 
             It 'Should call Invoke-SqlCmd with correct Query ParameterSet parameters' {
                 $mockInvokeScriptQueryParameters = @{
-                    ServerInstance = $env:COMPUTERNAME
+                    ServerInstance = Get-ComputerName
                     Query          = 'Test Query'
                     Encrypt        = 'Optional'
                 }
@@ -3361,16 +3471,20 @@ Describe 'SqlServerDsc.Common\Get-ServerProtocolObject' -Tag 'GetServerProtocolO
 }
 
 Describe 'SqlServerDsc.Common\ConvertTo-ServerInstanceName' -Tag 'ConvertToServerInstanceName' {
-    It 'Should return correct service instance for a default instance' {
-        $result = ConvertTo-ServerInstanceName -InstanceName 'MSSQLSERVER' -ServerName $env:COMPUTERNAME
+    BeforeAll {
+        $mockComputerName = Get-ComputerName
+    }
 
-        $result | Should -BeExactly $env:COMPUTERNAME
+    It 'Should return correct service instance for a default instance' {
+        $result = ConvertTo-ServerInstanceName -InstanceName 'MSSQLSERVER' -ServerName $mockComputerName
+
+        $result | Should -BeExactly $mockComputerName
     }
 
     It 'Should return correct service instance for a name instance' {
-        $result = ConvertTo-ServerInstanceName -InstanceName 'MyInstance' -ServerName $env:COMPUTERNAME
+        $result = ConvertTo-ServerInstanceName -InstanceName 'MyInstance' -ServerName $mockComputerName
 
-        $result | Should -BeExactly ('{0}\{1}' -f $env:COMPUTERNAME, 'MyInstance')
+        $result | Should -BeExactly ('{0}\{1}' -f $mockComputerName, 'MyInstance')
     }
 }
 
