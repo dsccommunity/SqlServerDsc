@@ -64,4 +64,5 @@ ConvertFrom-StringData @'
     FeatureAlreadyInstalled = Funktionen '{0}' är redan installerad så den kommer inte bli installerad igen.
     FeatureFlag = Använder tilläggsflagga '{0}'
     DifferentMajorVersion = The instance '{0}' has the wrong major version. The major version is '{1}', but expected version '{2}'.
+    ParameterSqlVersionNotAllowedForSetupActionUpgrade = The parameter SqlVersion is not allowed to be specified when using the setup action Upgrade.
 '@
