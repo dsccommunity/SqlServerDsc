@@ -5,6 +5,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- SqlServerDsc
+  - Updated pipeline files to support ModuleFast.
+
 ## [16.4.0] - 2023-08-22
 
 ### Added
