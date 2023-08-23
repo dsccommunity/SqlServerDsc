@@ -111,7 +111,7 @@ function Get-TargetResource
         $SqlVersion
     )
 
-    if ($getTargetResourceParameters.Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
+    if ($Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
     {
         $errorMessage = $script:localizedData.ParameterSqlVersionNotAllowedForSetupActionUpgrade
 
@@ -977,7 +977,7 @@ function Set-TargetResource
         $SqlVersion
     )
 
-    if ($getTargetResourceParameters.Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
+    if ($Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
     {
         $errorMessage = $script:localizedData.ParameterSqlVersionNotAllowedForSetupActionUpgrade
 
@@ -2236,7 +2236,7 @@ function Test-TargetResource
         $SqlVersion
     )
 
-    if ($getTargetResourceParameters.Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
+    if ($Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
     {
         $errorMessage = $script:localizedData.ParameterSqlVersionNotAllowedForSetupActionUpgrade
 
