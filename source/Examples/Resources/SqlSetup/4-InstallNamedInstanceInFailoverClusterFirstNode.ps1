@@ -53,19 +53,20 @@ Configuration Example
         $SqlAgentServiceCredential = $SqlServiceCredential
     )
 
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
     {
         #region Install prerequisites for SQL Server
-        WindowsFeature 'NetFramework35'
+        xWindowsFeature 'NetFramework35'
         {
             Name   = 'NET-Framework-Core'
             Source = '\\fileserver.company.local\images$\Win2k12R2\Sources\Sxs' # Assumes built-in Everyone has read permission to the share and path.
             Ensure = 'Present'
         }
 
-        WindowsFeature 'NetFramework45'
+        xWindowsFeature 'NetFramework45'
         {
             Name   = 'NET-Framework-45-Core'
             Ensure = 'Present'
