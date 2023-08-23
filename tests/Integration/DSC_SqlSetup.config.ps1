@@ -423,7 +423,7 @@ Configuration DSC_SqlSetup_InstallSMOModule_Config
         xScript 'InstallSMOModule'
         {
             DependsOn  = @(
-                '[Script]InstallPowerShellGet'
+                '[xScript]InstallPowerShellGet'
             )
 
             SetScript  = {

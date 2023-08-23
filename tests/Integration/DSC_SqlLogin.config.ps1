@@ -111,8 +111,8 @@ Configuration DSC_SqlLogin_CreateDependencies_Config
             )
 
             DependsOn = @(
-                '[User]CreateDscUser1'
-                '[User]CreateDscUser2'
+                '[xUser]CreateDscUser1'
+                '[xUser]CreateDscUser2'
             )
         }
 

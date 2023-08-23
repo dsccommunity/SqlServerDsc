@@ -87,7 +87,7 @@ Configuration Example
 
             PsDscRunAsCredential = $SqlInstallCredential
 
-            DependsOn            = '[WindowsFeature]NetFramework35', '[WindowsFeature]NetFramework45'
+            DependsOn            = '[xWindowsFeature]NetFramework35', '[xWindowsFeature]NetFramework45'
         }
         #endregion Install SQL Server
     }

@@ -73,7 +73,7 @@ Configuration Example
             PsDscRunAsCredential  = $SqlInstallCredential
 
             DependsOn             = @(
-                '[WindowsFeature]NetFramework45'
+                '[xWindowsFeature]NetFramework45'
             )
         }
 
@@ -91,7 +91,7 @@ Configuration Example
             PsDscRunAsCredential  = $SqlInstallCredential
 
             DependsOn             = @(
-                '[WindowsFeature]NetFramework45'
+                '[xWindowsFeature]NetFramework45'
                 '[SqlSetup]InstallDatabaseEngine'
             )
         }

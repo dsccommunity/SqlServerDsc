@@ -183,8 +183,8 @@ Configuration DSC_SqlAlwaysOnService_CreateDependencies_Config
             }
 
             DependsOn  = @(
-                '[WindowsFeature]AddFeatureFailoverClustering'
-                '[WindowsFeature]AddFeatureFailoverClusteringPowerShellModule'
+                '[xWindowsFeature]AddFeatureFailoverClustering'
+                '[xWindowsFeature]AddFeatureFailoverClusteringPowerShellModule'
             )
 
         }

@@ -137,8 +137,8 @@ Configuration DSC_SqlRS_CreateDependencies_Config
 
                 DependsOn             = @(
                     '[WaitForVolume]WaitForMountOfIsoMedia'
-                    '[User]CreateReportingServicesServiceAccount'
-                    '[WindowsFeature]NetFramework45'
+                    '[xUser]CreateReportingServicesServiceAccount'
+                    '[xWindowsFeature]NetFramework45'
                 )
 
                 PsDscRunAsCredential = New-Object `
