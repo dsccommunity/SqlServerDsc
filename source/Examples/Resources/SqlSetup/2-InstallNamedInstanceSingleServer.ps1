@@ -38,14 +38,14 @@ Configuration Example
     node localhost
     {
         #region Install prerequisites for SQL Server
-        xWindowsFeature 'NetFramework35'
+        WindowsFeature 'NetFramework35'
         {
             Name   = 'NET-Framework-Core'
             Source = '\\fileserver.company.local\images$\Win2k12R2\Sources\Sxs' # Assumes built-in Everyone has read permission to the share and path.
             Ensure = 'Present'
         }
 
-        xWindowsFeature 'NetFramework45'
+        WindowsFeature 'NetFramework45'
         {
             Name   = 'NET-Framework-45-Core'
             Ensure = 'Present'
@@ -84,7 +84,7 @@ Configuration Example
 
             PsDscRunAsCredential  = $SqlInstallCredential
 
-            DependsOn             = '[xWindowsFeature]NetFramework35', '[xWindowsFeature]NetFramework45'
+            DependsOn             = '[WindowsFeature]NetFramework35', '[WindowsFeature]NetFramework45'
         }
         #endregion Install SQL Server
     }
