@@ -52,12 +52,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added new public command:
     - `Get-SqlDscConfigurationOption` - Returns the available configuration
       options that can be used with the DSC resource _SqlConfiguration_.
-- SqlSetup
-  - Added the parameter `SqlVersion` that can be used to set the SQL Server
-    version to be installed instead of it looking for version in the setup
-    executable of the SQL Server media. This parameter is not allowed for
-    the setup action `Upgrade`, if specified it will throw an exception
-    ([issue #1946](https://github.com/dsccommunity/SqlServerDsc/issues/1946)).
 
 ### Changed
 
