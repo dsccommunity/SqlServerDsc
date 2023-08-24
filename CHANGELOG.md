@@ -5,8 +5,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
 - SqlServerDsc
   - Updated pipeline files to support ModuleFast.
+
+### Changed
+
+- SqlRs
+  - Updated examples to use xPSDesiredStateConfiguration instead of PSDScResources.
+  - Updated integration tests to use xPSDesiredStateConfiguration instead of PSDScResources.
+- SqlScript
+  - Updated examples to use xPSDesiredStateConfiguration instead of PSDScResources.
+  - Updated integration tests to use xPSDesiredStateConfiguration instead of PSDScResources.
+- SqlScriptQuery
+  - Updated examples to use xPSDesiredStateConfiguration instead of PSDScResources.
+- SqlSetup
+  - Updated examples to use xPSDesiredStateConfiguration instead of PSDScResources.
+  - Updated integration tests to use xPSDesiredStateConfiguration instead of PSDScResources.
+- SqlAlwaysOnService
+  - Updated integration tests to use xPSDesiredStateConfiguration instead of PSDScResources.
+- SqlLogin
+  - Updated integration tests to use xPSDesiredStateConfiguration instead of PSDScResources.
+- SqlReplication
+  - Updated integration tests to use xPSDesiredStateConfiguration instead of PSDScResources.
+- SqlRSSetup
+  - Updated integration tests to use xPSDesiredStateConfiguration instead of PSDScResources.
+- SqlServiceAccount
+  - Updated integration tests to use xPSDesiredStateConfiguration instead of PSDScResources.
+- SqlWindowsFirewall
+  - Updated integration tests to use xPSDesiredStateConfiguration instead of PSDScResources.
 
 ## [16.4.0] - 2023-08-22
 
@@ -29,7 +57,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix a path in VS Code workspace settings to correctly use Script Analyzer on
     Linux and macOS.
   - Highlighted note comments throughout markdown and generated markdown.
-  - Updated pipeline files to support ModuleFast.
 - SqlServerDsc.Common
   - Fix unit tests so they work cross-platform.
 - ScriptAnalyzer.Tests was fixed so they work cross-platform.
