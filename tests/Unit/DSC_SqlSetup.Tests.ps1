@@ -636,6 +636,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     InstanceName = 'MSSQLSERVER'
                     SourceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
                     SourcePath = $mockSourcePathUNC
+                    SqlVersion = $MockSqlMajorVersion
                 }
             }
         }
@@ -699,6 +700,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.ASTempDir | Should -BeNullOrEmpty
                 $result.ASConfigDir | Should -BeNullOrEmpty
                 $result.ISSvcAccountUsername | Should -BeNullOrEmpty
+                $result.SqlVersion | Should -Be $MockSqlMajorVersion
             }
         }
     }
