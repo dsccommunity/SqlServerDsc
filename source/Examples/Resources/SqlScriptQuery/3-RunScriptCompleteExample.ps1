@@ -13,7 +13,6 @@ Configuration Example
         $SqlAdministratorCredential
     )
 
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost

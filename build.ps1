@@ -1,6 +1,6 @@
 <#
     .DESCRIPTION
-        Bootstrap and build script for PowerShell module CI/CD pipeline
+        Bootstrap and build script for PowerShell module CI/CD pipeline.
 
     .PARAMETER Tasks
         The task or tasks to run. The default value is '.' (runs the default task).
@@ -56,6 +56,10 @@
 
     .PARAMETER AutoRestore
         Not yet written.
+
+    .PARAMETER UseModuleFast
+        Specifies to use ModuleFast instead of PowerShellGet to resolve dependencies
+        faster.
 #>
 [CmdletBinding()]
 param
@@ -121,7 +125,11 @@ param
 
     [Parameter()]
     [System.Management.Automation.SwitchParameter]
-    $AutoRestore
+    $AutoRestore,
+
+    [Parameter()]
+    [System.Management.Automation.SwitchParameter]
+    $UseModuleFast
 )
 
 <#
@@ -132,7 +140,6 @@ param
 
 process
 {
-
     if ($MyInvocation.ScriptName -notLike '*Invoke-Build.ps1')
     {
         # Only run the process block through InvokeBuild (look at the Begin block at the bottom of this script).
@@ -178,7 +185,7 @@ process
                             ConvertFrom-Yaml -Yaml (Get-Content -Raw $configFile)
                         }
 
-                        # Native Support for JSON and JSONC (by Removing comments)
+                        # Support for JSON and JSONC (by Removing comments) when module PowerShell-Yaml is available
                         '\.[json|jsonc]'
                         {
                             $jsonFile = Get-Content -Raw -Path $configFile
@@ -336,7 +343,7 @@ process
     }
 }
 
-Begin
+begin
 {
     # Find build config if not specified.
     if (-not $BuildConfig)
@@ -450,7 +457,15 @@ Begin
 
     if ($ResolveDependency)
     {
-        Write-Host -Object "[pre-build] Resolving dependencies." -ForegroundColor Green
+        if ($UseModuleFast.IsPresent)
+        {
+            Write-Host -Object "[pre-build] Resolving dependencies using ModuleFast." -ForegroundColor Green
+        }
+        else
+        {
+            Write-Host -Object "[pre-build] Resolving dependencies using PowerShellGet." -ForegroundColor Green
+        }
+
         $resolveDependencyParams = @{ }
 
         # If BuildConfig is a Yaml file, bootstrap powershell-yaml via ResolveDependency.
@@ -466,7 +481,7 @@ Begin
             # The parameter has been explicitly used for calling the .build.ps1
             if ($MyInvocation.BoundParameters.ContainsKey($cmdParameter))
             {
-                $paramValue = $MyInvocation.BoundParameters.ContainsKey($cmdParameter)
+                $paramValue = $MyInvocation.BoundParameters.Item($cmdParameter)
 
                 Write-Debug " adding  $cmdParameter :: $paramValue [from user-provided parameters to Build.ps1]"
 

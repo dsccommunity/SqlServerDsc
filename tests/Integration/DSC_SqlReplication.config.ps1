@@ -36,17 +36,17 @@ else
 #>
 Configuration DSC_SqlReplication_Prerequisites_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
 
     node $AllNodes.NodeName
     {
-        Service ('StopSqlServerInstance{0}' -f $Node.DefaultInstanceName)
+        xService ('StopSqlServerInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name  = $Node.DefaultInstanceName
             State = 'Running'
         }
 
-        Service ('StopSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
+        xService ('StopSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name  = 'SQLSERVERAGENT'
             State = 'Running'
@@ -213,7 +213,7 @@ Configuration DSC_SqlReplication_RemoveDistributor_Config
 Configuration DSC_SqlReplication_Cleanup_Config
 {
     Import-DscResource -ModuleName 'SqlServerDsc'
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
 
     node $AllNodes.NodeName
     {
@@ -241,13 +241,13 @@ Configuration DSC_SqlReplication_Cleanup_Config
                 -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
         }
 
-        Service ('StopSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
+        xService ('StopSqlServerAgentForInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name  = 'SQLSERVERAGENT'
             State = 'Stopped'
         }
 
-        Service ('StopSqlServerInstance{0}' -f $Node.DefaultInstanceName)
+        xService ('StopSqlServerInstance{0}' -f $Node.DefaultInstanceName)
         {
             Name  = $Node.DefaultInstanceName
             State = 'Stopped'

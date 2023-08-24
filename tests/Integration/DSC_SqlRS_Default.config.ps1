@@ -76,8 +76,8 @@ else
 #>
 Configuration DSC_SqlRS_CreateDependencies_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
-    Import-DscResource -ModuleName 'StorageDsc' -ModuleVersion '4.9.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
+    Import-DscResource -ModuleName 'StorageDsc' -ModuleVersion '5.1.0'
     Import-DscResource -ModuleName 'WSManDsc' -ModuleVersion '3.1.1'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
@@ -89,7 +89,7 @@ Configuration DSC_SqlRS_CreateDependencies_Config
             MaxEnvelopeSizeKb = 600
         }
 
-        User 'CreateReportingServicesServiceAccount'
+        xUser 'CreateReportingServicesServiceAccount'
         {
             Ensure   = 'Present'
             UserName = Split-Path -Path $Node.Service_UserName -Leaf
@@ -98,7 +98,7 @@ Configuration DSC_SqlRS_CreateDependencies_Config
                 -ArgumentList @($Node.Service_UserName, (ConvertTo-SecureString -String $Node.Service_Password -AsPlainText -Force))
         }
 
-        WindowsFeature 'NetFramework45'
+        xWindowsFeature 'NetFramework45'
         {
             Name   = 'NET-Framework-45-Core'
             Ensure = 'Present'
@@ -137,8 +137,8 @@ Configuration DSC_SqlRS_CreateDependencies_Config
 
                 DependsOn             = @(
                     '[WaitForVolume]WaitForMountOfIsoMedia'
-                    '[User]CreateReportingServicesServiceAccount'
-                    '[WindowsFeature]NetFramework45'
+                    '[xUser]CreateReportingServicesServiceAccount'
+                    '[xWindowsFeature]NetFramework45'
                 )
 
                 PsDscRunAsCredential = New-Object `
@@ -153,7 +153,7 @@ Configuration DSC_SqlRS_CreateDependencies_Config
         #>
         elseif ($script:sqlVersion -in @('140', '150', '160'))
         {
-            Service 'StartReportingServicesInstance'
+            xService 'StartReportingServicesInstance'
             {
                 Name  = 'SQLServerReportingServices'
                 State = 'Running'
@@ -263,13 +263,13 @@ Configuration DSC_SqlRS_RestoreToNoSsl_Config
 #>
 Configuration DSC_SqlRS_StopReportingServicesInstance_Config
 {
-    Import-DscResource -ModuleName 'PSDscResources' -ModuleVersion '2.12.0.0'
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
 
     node $AllNodes.NodeName
     {
         if ($script:sqlVersion -eq '130')
         {
-            Service ('StopReportingServicesInstance{0}' -f $Node.InstanceName)
+            xService ('StopReportingServicesInstance{0}' -f $Node.InstanceName)
             {
                 Name  = ('ReportServer${0}' -f $Node.InstanceName)
                 State = 'Stopped'
@@ -277,7 +277,7 @@ Configuration DSC_SqlRS_StopReportingServicesInstance_Config
         }
         elseif ($script:sqlVersion -in @('140', '150', '160'))
         {
-            Service 'StopReportingServicesInstance'
+            xService 'StopReportingServicesInstance'
             {
                 Name  = 'SQLServerReportingServices'
                 State = 'Stopped'

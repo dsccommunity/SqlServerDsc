@@ -35,6 +35,7 @@ Configuration Example
         $SqlAgentServiceCredential = $SqlServiceCredential
     )
 
+    Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
     Import-DscResource -ModuleName 'SqlServerDsc'
 
     node localhost
