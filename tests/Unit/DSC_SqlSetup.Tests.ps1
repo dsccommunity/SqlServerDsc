@@ -628,7 +628,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 return @()
             }
 
-            InModuleScope -ScriptBlock {
+            InModuleScope -Parameters $_ -ScriptBlock {
                 $testDrive_DriveShare = (Split-Path -Path $TestDrive -Qualifier) -replace ':', '$'
                 $script:mockSourcePathUNC = Join-Path -Path "\\localhost\$testDrive_DriveShare" -ChildPath (Split-Path -Path $TestDrive -NoQualifier)
 
@@ -636,7 +636,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     InstanceName = 'MSSQLSERVER'
                     SourceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
                     SourcePath = $mockSourcePathUNC
-                    SqlVersion = $MockSqlMajorVersion
+                    SqlVersion = ('{0}.0' -f $MockSqlMajorVersion)
                 }
             }
         }
@@ -670,7 +670,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
         }
 
         It 'Should return the correct values in the hash table' {
-            InModuleScope -ScriptBlock {
+            InModuleScope -Parameters $_ -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
@@ -1747,6 +1747,26 @@ Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
 
                 Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
             }
+
+            Context 'When using parameter SqlVersion' {
+                It 'Should return $false' {
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockTestTargetResourceParameters.InstanceName = 'MSSQLSERVER'
+                        $mockTestTargetResourceParameters.SourceCredential = $null
+                        $mockTestTargetResourceParameters.SourcePath = $TestDrive
+                        $mockTestTargetResourceParameters.ServerName = 'host.company.local'
+                        $mockTestTargetResourceParameters.SqlVersion = '14.0'
+
+                        $result = Test-TargetResource @mockTestTargetResourceParameters
+
+                        $result | Should -BeFalse
+                    }
+
+                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                }
+            }
         }
 
         Context 'When a clustered instance cannot be found' {
@@ -2542,6 +2562,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             SqlTempDbLogFileGrowth = 128
                             BrowserSvcStartupType = 'Automatic'
                             ForceReboot = $true
+                            SqlVersion = ('{0}.0' -f $MockSqlMajorVersion)
                         }
 
                         if ($MockSqlMajorVersion -in ('13', '14', '15'))
