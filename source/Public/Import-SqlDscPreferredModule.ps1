@@ -70,7 +70,7 @@ function Import-SqlDscPreferredModule
         $getSqlDscPreferredModuleParameters.Refresh = $true
     }
 
-    $availableModuleName = Get-SqlDscPreferredModule @getSqlDscPreferredModuleParameters
+    $availableModule = Get-SqlDscPreferredModule @getSqlDscPreferredModuleParameters
 
     if ($Force.IsPresent)
     {
@@ -80,33 +80,31 @@ function Import-SqlDscPreferredModule
 
         if ($PSBoundParameters.ContainsKey('Name'))
         {
-            $removeModule += $Name
+            $removeModule += Get-Module $Name
         }
 
         # Available module could be
-        if ($availableModuleName)
+        if ($availableModule)
         {
-            $removeModule += $availableModuleName
+            $removeModule += $availableModule
         }
 
         if ($removeModule -contains 'SQLPS')
         {
-            $removeModule += 'SQLASCmdlets' # cSpell: disable-line
+            $removeModule += Get-Module -Name 'SQLASCmdlets' # cSpell: disable-line
         }
 
-        Remove-Module -Name $removeModule -Force -ErrorAction 'SilentlyContinue'
+        Remove-Module $removeModule -Force -ErrorAction 'SilentlyContinue'
     }
 
-    if ($availableModuleName)
+    if ($availableModule)
     {
         if (-not $Force.IsPresent)
         {
             <#
                 Check if the preferred module is already loaded into the session.
-                If the module name is a path the leaf part must be used, which is
-                the module name.
             #>
-            $loadedModuleName = (Get-Module -Name (Split-Path -Path $availableModuleName -Leaf) | Select-Object -First 1).Name
+            $loadedModuleName = (Get-Module -Name $availableModule.Name | Select-Object -First 1).Name
 
             if ($loadedModuleName)
             {
@@ -126,14 +124,14 @@ function Import-SqlDscPreferredModule
                 SQLPS has unapproved verbs, disable checking to ignore Warnings.
                 Suppressing verbose so all cmdlet is not listed.
             #>
-            $importedModule = Import-Module -Name $availableModuleName -DisableNameChecking -Verbose:$false -Force:$Force -Global -PassThru -ErrorAction 'Stop'
+            $importedModule = Import-Module -Name $availableModule.Name -RequiredVersion $availableModule.Version -DisableNameChecking -Verbose:$false -Force:$Force -Global -PassThru -ErrorAction 'Stop'
 
             <#
                 SQLPS returns two entries, one with module type 'Script' and another with module type 'Manifest'.
                 Only return the object with module type 'Manifest'.
                 SqlServer only returns one object (of module type 'Script'), so no need to do anything for SqlServer module.
             #>
-            if ($availableModuleName -eq 'SQLPS')
+            if ($availableModule.Name -eq 'SQLPS')
             {
                 $importedModule = $importedModule | Where-Object -Property 'ModuleType' -EQ -Value 'Manifest'
             }
