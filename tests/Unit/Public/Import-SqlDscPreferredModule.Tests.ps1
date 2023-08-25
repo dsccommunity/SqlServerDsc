@@ -141,14 +141,18 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
     Context 'When module SqlServer is already loaded into the session' {
         BeforeAll {
             Mock -CommandName Import-Module
+
+            $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                Name = 'SqlServer'
+                Version = [Version]::new(21, 1, 18068)
+            }
+
             Mock -CommandName Get-SqlDscPreferredModule -MockWith {
-                return 'SqlServer'
+                return $sqlServerModule
             }
 
             Mock -CommandName Get-Module -MockWith {
-                return @{
-                    Name = 'SqlServer'
-                }
+                return $sqlServerModule
             }
         }
 
@@ -162,14 +166,17 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
     Context 'When module SQLPS is already loaded into the session' {
         BeforeAll {
             Mock -CommandName Import-Module
+
+            $sqlpsModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                Name = 'SQLPS'
+            }
+
             Mock -CommandName Get-SqlDscPreferredModule -MockWith {
-                return 'SQLPS'
+                return $sqlpsModule
             }
 
             Mock -CommandName Get-Module -MockWith {
-                return @{
-                    Name = 'SQLPS'
-                }
+                return $sqlpsModule
             }
         }
 
@@ -184,8 +191,14 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Import-Module -MockWith $mockImportModule
             Mock -CommandName Get-Module
+
+            $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                Name = 'SqlServer'
+                Version = [Version]::new(21, 1, 18068)
+            }
+
             Mock -CommandName Get-SqlDscPreferredModule -MockWith {
-                return 'SqlServer'
+                return $sqlServerModule
             }
 
             $mockExpectedModuleNameToImport = 'SqlServer'
@@ -205,8 +218,13 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Import-Module -MockWith $mockImportModule
             Mock -CommandName Get-Module
+
+            $otherModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                Name = 'OtherModule'
+            }
+
             Mock -CommandName Get-SqlDscPreferredModule -MockWith {
-                return 'OtherModule'
+                return $otherModule
             }
 
             $mockExpectedModuleNameToImport = 'OtherModule'
@@ -226,14 +244,20 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Import-Module -MockWith $mockImportModule
             Mock -CommandName Remove-Module
-            Mock -CommandName Get-SqlDscPreferredModule -MockWith {
-                return $sqlPsExpectedModulePath
+
+            $sqlpsModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                Name = 'SQLPS'
+                Path = $sqlPsExpectedModulePath
             }
 
-            $mockExpectedModuleNameToImport = $sqlPsExpectedModulePath
+            Mock -CommandName Get-SqlDscPreferredModule -MockWith {
+                return $sqlpsModule
+            }
+
+            $mockExpectedModuleNameToImport = 'SQLPS'
         }
 
-        It 'Should import the SqlServer module without throwing' {
+        It 'Should import the SQLPS module without throwing' {
             { Import-SqlDscPreferredModule -Force } | Should -Not -Throw
 
             Should -Invoke -CommandName Get-SqlDscPreferredModule -ParameterFilter {
@@ -274,18 +298,23 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
             Mock -CommandName Import-Module -MockWith $mockImportModule
             Mock -CommandName Get-Module
             Mock -CommandName Remove-Module
+
+            $sqlpsModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                Name = 'SQLPS'
+            }
+
             Mock -CommandName Get-SqlDscPreferredModule -MockWith {
-                return 'SQLPS'
+                return $sqlpsModule
             }
 
             $mockExpectedModuleNameToImport = 'SQLPS'
         }
 
-        It 'Should import the SqlServer module without throwing' {
+        It 'Should import the SQLPD module without throwing' {
             { Import-SqlDscPreferredModule -Name 'OtherModule' -Force } | Should -Not -Throw
 
             Should -Invoke -CommandName Get-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-Module -Exactly -Times 0 -Scope It
+            Should -Invoke -CommandName Get-Module -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Remove-Module -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Push-Location -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Pop-Location -Exactly -Times 1 -Scope It
