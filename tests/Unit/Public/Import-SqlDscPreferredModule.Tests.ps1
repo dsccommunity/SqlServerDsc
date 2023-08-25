@@ -89,8 +89,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
 
 
         $mockImportModule = {
-            # Convert the single value array [String[]] to the expected string value [String].
-            $moduleNameToImport = $Name[0]
+            $moduleNameToImport = $ModuleInfo.Name
 
             if ($moduleNameToImport -ne $mockExpectedModuleNameToImport)
             {
