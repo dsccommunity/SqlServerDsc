@@ -131,16 +131,17 @@ function Get-SqlDscPreferredModule
             {
                 # Get the version specified in $env:SMODefaultModuleVersion if available
                 $availableModule = $preferredModules |
-                Where-Object -FilterScript { $_.CalculatedVersion -eq $env:SMODefaultModuleVersion} |
-                Select-Object -First 1
+                    Where-Object -FilterScript { $_.CalculatedVersion -eq $env:SMODefaultModuleVersion} |
+                    Select-Object -First 1
 
                 Write-Verbose -Message ($script:localizedData.PreferredModule_ModuleVersionFound -f $availableModule.PSModuleInfo.Name, $availableModule.CalculatedVersion)
             }
-            else {
+            else
+            {
                 # Get the latest version if available
                 $availableModule = $preferredModules |
-                Sort-Object -Property 'CalculatedVersion' -Descending |
-                Select-Object -First 1
+                    Sort-Object -Property 'CalculatedVersion' -Descending |
+                    Select-Object -First 1
 
                 Write-Verbose -Message ($script:localizedData.PreferredModule_ModuleFound -f $availableModule.PSModuleInfo.Name)
             }
