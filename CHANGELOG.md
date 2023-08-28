@@ -52,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Remove
 
 - SqlServerDsc
-  - Removed PreferredModule_ModuleFound string in favor for more verbose PreferredModule_ModuleVersionFound
+  - Removed PreferredModule_ModuleFound string in favor for more verbose PreferredModule_ModuleVersionFound.
 
 ## [16.4.0] - 2023-08-22
 
