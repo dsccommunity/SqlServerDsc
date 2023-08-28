@@ -133,8 +133,6 @@ function Get-SqlDscPreferredModule
                 $availableModule = $preferredModules |
                     Where-Object -FilterScript { $_.CalculatedVersion -eq $env:SMODefaultModuleVersion} |
                     Select-Object -First 1
-
-                Write-Verbose -Message ($script:localizedData.PreferredModule_ModuleVersionFound -f $availableModule.PSModuleInfo.Name, $availableModule.CalculatedVersion)
             }
             else
             {
@@ -142,9 +140,9 @@ function Get-SqlDscPreferredModule
                 $availableModule = $preferredModules |
                     Sort-Object -Property 'CalculatedVersion' -Descending |
                     Select-Object -First 1
-
-                Write-Verbose -Message ($script:localizedData.PreferredModule_ModuleFound -f $availableModule.PSModuleInfo.Name)
             }
+
+            Write-Verbose -Message ($script:localizedData.PreferredModule_ModuleVersionFound -f $availableModule.PSModuleInfo.Name, $availableModule.CalculatedVersion)
 
             break
         }

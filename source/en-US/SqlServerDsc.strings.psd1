@@ -148,7 +148,6 @@ ConvertFrom-StringData @'
     TraceFlag_Remove_NoCurrentTraceFlags = There are no current trace flags on instance. Nothing to remove.
 
     ## Get-SqlDscPreferredModule
-    PreferredModule_ModuleFound = Preferred module '{0}' found.
     PreferredModule_ModuleVersionFound = Preferred module '{0}' with version '{1}' found.
     PreferredModule_ModuleNotFound =  No preferred PowerShell module was found.
     PreferredModule_ModuleVersionNotFound = No preferred Powershell module with version '{0}' was found.
