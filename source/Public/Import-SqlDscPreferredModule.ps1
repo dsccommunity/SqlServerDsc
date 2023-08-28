@@ -80,7 +80,7 @@ function Import-SqlDscPreferredModule
 
         if ($PSBoundParameters.ContainsKey('Name'))
         {
-            $removeModule += Get-Module $Name
+            $removeModule += Get-Module -Name $Name
         }
 
         # Available module could be
@@ -94,7 +94,7 @@ function Import-SqlDscPreferredModule
             $removeModule += Get-Module -Name 'SQLASCmdlets' # cSpell: disable-line
         }
 
-        Remove-Module $removeModule -Force -ErrorAction 'SilentlyContinue'
+        Remove-Module -ModuleInfo $removeModule -Force -ErrorAction 'SilentlyContinue'
     }
 
     if ($availableModule)
