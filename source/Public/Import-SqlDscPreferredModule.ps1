@@ -104,11 +104,25 @@ function Import-SqlDscPreferredModule
             <#
                 Check if the preferred module is already loaded into the session.
             #>
-            $loadedModuleName = (Get-Module -Name $availableModule.Name | Select-Object -First 1).Name
+            $loadedModule = Get-Module -Name $availableModule.Name | Select-Object -First 1
 
-            if ($loadedModuleName)
+            if ($loadedModule)
             {
-                Write-Verbose -Message ($script:localizedData.PreferredModule_AlreadyImported -f $loadedModuleName)
+                $loadedModuleCalculatedVersion = $loadedModule | Get-SMOModuleCalculatedVersion
+                $availableModuleCalculatedVersion = $availableModule | Get-SMOModuleCalculatedVersion
+                if ($env:SMODefaultModuleVersion -and $loadedModuleCalculatedVersion -ne $availableModuleCalculatedVersion)
+                {
+                    $PSCmdlet.ThrowTerminatingError(
+                        [System.Management.Automation.ErrorRecord]::new(
+                            ($script:localizedData.PreferredModule_WrongModuleVersionLoaded -f $loadedModule.Name, $loadedModule.Version, $availableModule.Version),
+                            'ISDPM0001', # cspell: disable-line
+                            [System.Management.Automation.ErrorCategory]::ObjectNotFound,
+                            'PreferredModule'
+                        )
+                    )
+                }
+
+                Write-Verbose -Message ($script:localizedData.PreferredModule_AlreadyImported -f $loadedModule.Name)
 
                 return
             }

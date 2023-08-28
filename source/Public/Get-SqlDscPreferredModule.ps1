@@ -96,27 +96,7 @@ function Get-SqlDscPreferredModule
         ForEach-Object -Process {
             @{
                 PSModuleInfo = $_
-                CalculatedVersion = .{
-                    if ($_.Name -eq 'SQLPS')
-                    {
-                        <#
-                            Parse the build version number '120', '130' from the Path.
-                            Older version of SQLPS did not have correct versioning.
-                        #>
-                        (Select-String -InputObject $_.Path -Pattern '\\([0-9]{3})\\' -List).Matches.Groups[1].Value
-                    }
-                    else
-                    {
-                        $versionToReturn = $_.Version.ToString()
-
-                        if ($_.PrivateData.PSData.Prerelease)
-                        {
-                            $versionToReturn = '{0}-{1}' -f $_.Version, $_.PrivateData.PSData.Prerelease
-                        }
-
-                        $versionToReturn
-                    }
-                }
+                CalculatedVersion = $_ | Get-SMOModuleCalculatedVersion
             }
         }
 

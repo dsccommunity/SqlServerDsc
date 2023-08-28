@@ -154,6 +154,7 @@ ConvertFrom-StringData @'
 
     ## Import-SqlDscPreferredModule
     PreferredModule_ImportedModule = Imported PowerShell module '{0}' with version '{1}' from path '{2}'.
+    PreferredModule_WrongModuleVersionLoaded = PowerShell module '{0}' with version '{1}' is loaded in the current session, but expected version '{2}'.
     PreferredModule_AlreadyImported = Found PowerShell module {0} already imported in the session.
     PreferredModule_ForceRemoval = Forcibly removed the SQL PowerShell module from the session to import it fresh again.
     PreferredModule_PushingLocation = SQLPS module changes CWD to SQLServer:\ when loading, pushing location to pop it when module is loaded.

@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated pipeline files to support ModuleFast.
   - `Get-SqlDscPreferredModule`
     - Optionally specify what version of the the SQL preferred module to be imported using the SMODefaultModuleVersion environment variable ([issue #1965](https://github.com/dsccommunity/SqlServerDsc/issues/1965)).
+  - New private command:
+    - Get-SMOModuleCalculatedVersion - Returns the version of the SMO module as a string. SQLPS version 120 and 130 do not have the correct version set, so the file path is used to calculate the version.
 - SqlSetup
   - Added the parameter `SqlVersion` that can be used to set the SQL Server
     version to be installed instead of it looking for version in the setup
@@ -48,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Now returns a PSModuleInfo object instead of just the module name.
   - `Import-SqlDscPreferredModule`
     - Handles PSModuleInfo objects from `Get-SqlDscPreferredModule` instead of strings.
+    - Now throws an exception if the currently loaded SMO module version does not match the expected version set in the SMODefaultModuleVersion environment variable.
 
 ### Remove
 
