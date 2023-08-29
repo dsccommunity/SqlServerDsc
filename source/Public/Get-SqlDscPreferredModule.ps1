@@ -103,7 +103,7 @@ function Get-SqlDscPreferredModule
     foreach ($preferredModuleName in $Name)
     {
         $preferredModules = $availableModules |
-            Where-Object -FilterScript { $_.PSModuleInfo.Name -eq $preferredModuleName}
+            Where-Object -FilterScript { $_.PSModuleInfo.Name -eq $preferredModuleName }
 
         if ($preferredModules)
         {
@@ -111,7 +111,7 @@ function Get-SqlDscPreferredModule
             {
                 # Get the version specified in $env:SMODefaultModuleVersion if available
                 $availableModule = $preferredModules |
-                    Where-Object -FilterScript { $_.CalculatedVersion -eq $env:SMODefaultModuleVersion} |
+                    Where-Object -FilterScript { $_.CalculatedVersion -eq $env:SMODefaultModuleVersion } |
                     Select-Object -First 1
             }
             else
@@ -136,7 +136,8 @@ function Get-SqlDscPreferredModule
         {
             $errorMessage = $script:localizedData.PreferredModule_ModuleVersionNotFound -f $env:SMODefaultModuleVersion
         }
-        else {
+        else
+        {
             $errorMessage = $script:localizedData.PreferredModule_ModuleNotFound
         }
 

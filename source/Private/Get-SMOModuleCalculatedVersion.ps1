@@ -18,7 +18,7 @@
         Specifies the PSModuleInfo object for which to return the calculated version.
 
     .EXAMPLE
-        Get-Module -Name 'sqlps' | Get-SMOModuleCalculatedVersion
+        Get-SMOModuleCalculatedVersion -PSModuleInfo (Get-Module -Name 'sqlps')
 
         Returns the calculated version as a string.
 
