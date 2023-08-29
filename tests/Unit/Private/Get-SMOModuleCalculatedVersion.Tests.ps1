@@ -52,65 +52,85 @@ AfterAll {
 Describe 'Get-SMOModuleCalculatedVersion' -Tag 'Private' {
     Context 'When passing in SQLServer module' {
         It 'Should return the correct version' {
-            $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
-                Name = 'SqlServer'
-                Version = [Version]::new(21, 1, 18068)
-            }
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-            $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '21.1.18068'
+                $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SqlServer'
+                    Version = [Version]::new(21, 1, 18068)
+                }
+
+                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '21.1.18068'
+            }
         }
 
         Context 'When module is in pre-release' {
             It 'Should return the correct version' {
-                $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
-                    Name = 'SqlServer'
-                    Version = [Version]::new(22, 0, 49)
-                    PrivateData = @{
-                        PSData = @{
-                            PreRelease = 'preview1'
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                        Name = 'SqlServer'
+                        Version = [Version]::new(22, 0, 49)
+                        PrivateData = @{
+                            PSData = @{
+                                PreRelease = 'preview1'
+                            }
                         }
                     }
-                }
 
-                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '22.0.49-preview1'
+                    $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '22.0.49-preview1'
+                }
             }
         }
     }
 
     Context 'When passing in SQLPS module' {
         It 'Should return the correct version' {
-            $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
-                Name = 'SQLPS'
-                Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-            }
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-            $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '130'
+                $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SQLPS'
+                    Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+                }
+
+                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '130'
+            }
         }
     }
 
     Context 'When passing in any other module' {
         It 'Should return the correct version' {
-            $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
-                Name = 'OtherModule'
-                Version = [Version]::new(1, 0, 0)
-            }
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
 
-            $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '1.0.0'
+                $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'OtherModule'
+                    Version = [Version]::new(1, 0, 0)
+                }
+
+                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '1.0.0'
+            }
         }
 
         Context 'When module is in pre-release' {
             It 'Should return the correct version' {
-                $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
-                    Name = 'OtherModule'
-                    Version = [Version]::new(1, 0, 0)
-                    PrivateData = @{
-                        PSData = @{
-                            PreRelease = 'preview1'
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                        Name = 'OtherModule'
+                        Version = [Version]::new(1, 0, 0)
+                        PrivateData = @{
+                            PSData = @{
+                                PreRelease = 'preview1'
+                            }
                         }
                     }
-                }
 
-                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '1.0.0-preview1'
+                    $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '1.0.0-preview1'
+                }
             }
         }
     }
