@@ -160,54 +160,6 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
 
             Should -Invoke -CommandName Import-Module -Exactly -Times 0 -Scope It
         }
-
-        Context 'When the SMODefaultModuleVersion environment variable is set' {
-            BeforeAll {
-                $env:SMODefaultModuleVersion = '21.1.18068'
-            }
-
-            AfterAll {
-                Remove-Item -Path 'env:SMODefaultModuleVersion'
-            }
-
-            Context 'When the wrong module version is currently loaded in the session' {
-                BeforeAll {
-                    $sqlServerModuleDifferentVersion = New-MockObject -Type 'PSModuleInfo' -Properties @{
-                        Name = 'SqlServer'
-                        Version = [Version]::new(1, 1, 1)
-                    }
-
-                    Mock -CommandName Get-Module -MockWith {
-                        return $sqlServerModuleDifferentVersion
-                    }
-                }
-
-                It 'Should throw the correct error message' {
-                    $errorMessage = InModuleScope -ScriptBlock {
-                        $script:localizedData.PreferredModule_WrongModuleVersionLoaded
-                    }
-
-                    { Import-SqlDscPreferredModule } | Should -Throw -ExpectedMessage ($errorMessage -f $sqlServerModuleDifferentVersion.Name, $sqlServerModuleDifferentVersion.Version, $sqlServerModule.Version)
-                }
-            }
-
-            Context 'When the correct module version is currently loaded in the session' {
-                BeforeAll {
-                    $sqlServerModuleSameVersion = New-MockObject -Type 'PSModuleInfo' -Properties @{
-                        Name = 'SqlServer'
-                        Version = [Version]::new(21, 1, 18068)
-                    }
-
-                    Mock -CommandName Get-Module -MockWith {
-                        return $sqlServerModuleSameVersion
-                    }
-                }
-
-                It 'Should not throw an error' {
-                    { Import-SqlDscPreferredModule } | Should -Not -Throw
-                }
-            }
-        }
     }
 
     Context 'When module SQLPS is already loaded into the session' {
@@ -232,54 +184,6 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
             { Import-SqlDscPreferredModule } | Should -Not -Throw
 
             Should -Invoke -CommandName Import-Module -Exactly -Times 0 -Scope It
-        }
-
-        Context 'When the SMODefaultModuleVersion environment variable is set' {
-            BeforeAll {
-                $env:SMODefaultModuleVersion = '130'
-            }
-
-            AfterAll {
-                Remove-Item -Path 'env:SMODefaultModuleVersion'
-            }
-
-            Context 'When the wrong module version is currently loaded in the session' {
-                BeforeAll {
-                    $sqlpsModuleDifferentVersion = New-MockObject -Type 'PSModuleInfo' -Properties @{
-                        Name = 'SQLPS'
-                        Path = 'C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-                    }
-
-                    Mock -CommandName Get-Module -MockWith {
-                        return $sqlpsModuleDifferentVersion
-                    }
-                }
-
-                It 'Should throw the correct error message' {
-                    $errorMessage = InModuleScope -ScriptBlock {
-                        $script:localizedData.PreferredModule_WrongModuleVersionLoaded
-                    }
-
-                    { Import-SqlDscPreferredModule } | Should -Throw -ExpectedMessage ($errorMessage -f $sqlpsModuleDifferentVersion.Name, $sqlpsModuleDifferentVersion.Version, $sqlpsModule.Version)
-                }
-            }
-
-            Context 'When the correct module version is currently loaded in the session' {
-                BeforeAll {
-                    $sqlpsModuleSameVersion = New-MockObject -Type 'PSModuleInfo' -Properties @{
-                        Name = 'SQLPS'
-                        Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-                    }
-
-                    Mock -CommandName Get-Module -MockWith {
-                        return $sqlpsModuleSameVersion
-                    }
-                }
-
-                It 'Should not throw an error' {
-                    { Import-SqlDscPreferredModule } | Should -Not -Throw
-                }
-            }
         }
     }
 
@@ -371,7 +275,7 @@ Describe 'Import-SqlDscPreferredModule' -Tag 'Public' {
         BeforeAll {
             Mock -CommandName Import-Module
             Mock -CommandName Get-Module
-            Mock -CommandName Get-SqlDscPreferredModule
+            Mock -CommandName Get-SqlDscPreferredModule { throw "Could not find the module" }
         }
 
         It 'Should throw the correct error message' {

@@ -70,7 +70,23 @@ function Import-SqlDscPreferredModule
         $getSqlDscPreferredModuleParameters.Refresh = $true
     }
 
-    $availableModule = Get-SqlDscPreferredModule @getSqlDscPreferredModuleParameters
+    $availableModule = $null
+
+    try
+    {
+        $availableModule = Get-SqlDscPreferredModule @getSqlDscPreferredModuleParameters -ErrorAction 'Stop'
+    }
+    catch
+    {
+        $PSCmdlet.ThrowTerminatingError(
+            [System.Management.Automation.ErrorRecord]::new(
+                ($script:localizedData.PreferredModule_FailedFinding),
+                'ISDPM0001', # cspell: disable-line
+                [System.Management.Automation.ErrorCategory]::ObjectNotFound,
+                'PreferredModule'
+            )
+        )
+    }
 
     if ($Force.IsPresent)
     {
@@ -96,78 +112,49 @@ function Import-SqlDscPreferredModule
 
         Remove-Module -ModuleInfo $removeModule -Force -ErrorAction 'SilentlyContinue'
     }
-
-    if ($availableModule)
-    {
-        if (-not $Force.IsPresent)
-        {
-            <#
-                Check if the preferred module is already loaded into the session.
-            #>
-            $loadedModule = Get-Module -Name $availableModule.Name | Select-Object -First 1
-
-            if ($loadedModule)
-            {
-                $loadedModuleCalculatedVersion = $loadedModule | Get-SMOModuleCalculatedVersion
-                $availableModuleCalculatedVersion = $availableModule | Get-SMOModuleCalculatedVersion
-                if ($env:SMODefaultModuleVersion -and $loadedModuleCalculatedVersion -ne $availableModuleCalculatedVersion)
-                {
-                    $PSCmdlet.ThrowTerminatingError(
-                        [System.Management.Automation.ErrorRecord]::new(
-                            ($script:localizedData.PreferredModule_WrongModuleVersionLoaded -f $loadedModule.Name, $loadedModule.Version, $availableModule.Version),
-                            'ISDPM0001', # cspell: disable-line
-                            [System.Management.Automation.ErrorCategory]::ObjectNotFound,
-                            'PreferredModule'
-                        )
-                    )
-                }
-
-                Write-Verbose -Message ($script:localizedData.PreferredModule_AlreadyImported -f $loadedModule.Name)
-
-                return
-            }
-        }
-
-        try
-        {
-            Write-Debug -Message ($script:localizedData.PreferredModule_PushingLocation)
-
-            Push-Location
-
-            <#
-                SQLPS has unapproved verbs, disable checking to ignore Warnings.
-                Suppressing verbose so all cmdlet is not listed.
-            #>
-            $importedModule = Import-Module -ModuleInfo $availableModule -DisableNameChecking -Verbose:$false -Force:$Force -Global -PassThru -ErrorAction 'Stop'
-
-            <#
-                SQLPS returns two entries, one with module type 'Script' and another with module type 'Manifest'.
-                Only return the object with module type 'Manifest'.
-                SqlServer only returns one object (of module type 'Script'), so no need to do anything for SqlServer module.
-            #>
-            if ($availableModule.Name -eq 'SQLPS')
-            {
-                $importedModule = $importedModule | Where-Object -Property 'ModuleType' -EQ -Value 'Manifest'
-            }
-
-            Write-Verbose -Message ($script:localizedData.PreferredModule_ImportedModule -f $importedModule.Name, $importedModule.Version, $importedModule.Path)
-        }
-        finally
-        {
-            Write-Debug -Message ($script:localizedData.PreferredModule_PoppingLocation)
-
-            Pop-Location
-        }
-    }
     else
     {
-        $PSCmdlet.ThrowTerminatingError(
-            [System.Management.Automation.ErrorRecord]::new(
-                ($script:localizedData.PreferredModule_FailedFinding),
-                'ISDPM0001', # cspell: disable-line
-                [System.Management.Automation.ErrorCategory]::ObjectNotFound,
-                'PreferredModule'
-            )
-        )
+        <#
+            Check if the preferred module is already loaded into the session.
+        #>
+        $loadedModule = Get-Module -Name $availableModule.Name | Select-Object -First 1
+
+        if ($loadedModule)
+        {
+            Write-Verbose -Message ($script:localizedData.PreferredModule_AlreadyImported -f $loadedModule.Name)
+
+            return
+        }
+    }
+
+    try
+    {
+        Write-Debug -Message ($script:localizedData.PreferredModule_PushingLocation)
+
+        Push-Location
+
+        <#
+            SQLPS has unapproved verbs, disable checking to ignore Warnings.
+            Suppressing verbose so all cmdlet is not listed.
+        #>
+        $importedModule = Import-Module -ModuleInfo $availableModule -DisableNameChecking -Verbose:$false -Force:$Force -Global -PassThru -ErrorAction 'Stop'
+
+        <#
+            SQLPS returns two entries, one with module type 'Script' and another with module type 'Manifest'.
+            Only return the object with module type 'Manifest'.
+            SqlServer only returns one object (of module type 'Script'), so no need to do anything for SqlServer module.
+        #>
+        if ($availableModule.Name -eq 'SQLPS')
+        {
+            $importedModule = $importedModule | Where-Object -Property 'ModuleType' -EQ -Value 'Manifest'
+        }
+
+        Write-Verbose -Message ($script:localizedData.PreferredModule_ImportedModule -f $importedModule.Name, $importedModule.Version, $importedModule.Path)
+    }
+    finally
+    {
+        Write-Debug -Message ($script:localizedData.PreferredModule_PoppingLocation)
+
+        Pop-Location
     }
 }
