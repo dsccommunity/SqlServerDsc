@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Updated pipeline files to support ModuleFast.
+  - `Get-SqlDscPreferredModule`
+    - Optionally specify what version of the the SQL preferred module to be imported using the SMODefaultModuleVersion environment variable ([issue #1965](https://github.com/dsccommunity/SqlServerDsc/issues/1965)).
+- New private command:
+  - Get-SMOModuleCalculatedVersion - Returns the version of the SMO module as a string. SQLPS version 120 and 130 do not have the correct version set, so the file path is used to calculate the version.
 - SqlSetup
   - Added the parameter `SqlVersion` that can be used to set the SQL Server
     version to be installed instead of it looking for version in the setup
@@ -41,6 +45,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated integration tests to use xPSDesiredStateConfiguration instead of PSDScResources.
 - SqlWindowsFirewall
   - Updated integration tests to use xPSDesiredStateConfiguration instead of PSDScResources.
+- SqlServerDsc
+  - `Get-SqlDscPreferredModule`
+    - Now returns a PSModuleInfo object instead of just the module name.
+  - `Import-SqlDscPreferredModule`
+    - Handles PSModuleInfo objects from `Get-SqlDscPreferredModule` instead of strings.
+    - Sets -ErrorAction 'Stop' on Get-SqlDscPreferredModule to throw an error if no SQL module is found. The script-terminating error is caught and made into a statement-terminating error.
+
+### Remove
+
+- SqlServerDsc
+  - Removed PreferredModule_ModuleFound string in favor for more verbose PreferredModule_ModuleVersionFound.
 
 ## [16.4.0] - 2023-08-22
 

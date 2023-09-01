@@ -117,121 +117,141 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
 
         Context 'When only first default preferred module is installed' {
             BeforeAll {
+                $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SqlServer'
+                    Version = [Version]::new(21, 1, 18068)
+                }
+
                 Mock -CommandName Get-Module -MockWith {
-                    return @{
-                        Name = 'SqlServer'
-                    }
+                    return $sqlServerModule
                 }
             }
 
-            It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule | Should -Be 'SqlServer'
+            It 'Should return the correct module' {
+                Get-SqlDscPreferredModule | Should -Be $sqlServerModule
             }
         }
 
         Context 'When only second default preferred module is installed' {
             BeforeAll {
+                $sqlpsModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SQLPS'
+                    Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+                }
+
                 Mock -CommandName Get-Module -MockWith {
-                    return @{
-                        Name = 'SQLPS'
-                        Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-                    }
+                    return $sqlpsModule
                 }
             }
 
             It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule | Should -Be ('C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS' -replace '\\', [IO.Path]::DirectorySeparatorChar)
+                Get-SqlDscPreferredModule | Should -Be $sqlpsModule
             }
         }
 
         Context 'When both default preferred modules are installed' {
             BeforeAll {
+                $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SqlServer'
+                    Version = [Version]::new(21, 1, 18068)
+                }
+                $sqlpsModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SQLPS'
+                    Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+                }
+
                 Mock -CommandName Get-Module -MockWith {
                     return @(
-                        @{
-                            Name = 'SqlServer'
-                        }
-                        @{
-                            Name = 'SQLPS'
-                            Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-                        }
+                        $sqlServerModule,
+                        $sqlpsModule
                     )
                 }
             }
 
             It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule | Should -Be 'SqlServer'
+                Get-SqlDscPreferredModule | Should -Be $sqlServerModule
             }
         }
 
         Context 'When there are several installed versions of all default preferred modules' {
             BeforeAll {
+                $sqlServerModule1 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SqlServer'
+                    Version = [Version]::new(21, 1, 18068)
+                }
+                $sqlServerModule2 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SqlServer'
+                    Version = [Version]::new(22, 1, 1)
+                }
+                $sqlpsModule1 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SQLPS'
+                    Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+                }
+                $sqlpsModule2 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SQLPS'
+                    Path = 'C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+                }
+
                 Mock -CommandName Get-Module -MockWith {
                     return @(
-                        @{
-                            Name    = 'SqlServer'
-                            Version = '1.0.0'
-                        }
-                        @{
-                            Name    = 'SqlServer'
-                            Version = '2.0.0'
-                        }
-                        @{
-                            Name = 'SQLPS'
-                            Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-                        }
-                        @{
-                            Name = 'SQLPS'
-                            Path = 'C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-                        }
+                        $sqlServerModule1,
+                        $sqlServerModule2,
+                        $sqlpsModule1,
+                        $sqlpsModule2
                     )
                 }
             }
 
-            It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule | Should -Be 'SqlServer'
+            It 'Should return the latest version of the first default preferred module' {
+                Get-SqlDscPreferredModule | Should -Be $sqlServerModule2
             }
         }
 
         Context 'When there are several installed versions of the first default preferred module' {
             BeforeAll {
+                $sqlServerModule1 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SqlServer'
+                    Version = [Version]::new(21, 1, 18068)
+                }
+                $sqlServerModule2 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SqlServer'
+                    Version = [Version]::new(22, 1, 1)
+                }
+
                 Mock -CommandName Get-Module -MockWith {
                     return @(
-                        @{
-                            Name    = 'SqlServer'
-                            Version = '1.0.0'
-                        }
-                        @{
-                            Name    = 'SqlServer'
-                            Version = '2.0.0'
-                        }
+                        $sqlServerModule1,
+                        $sqlServerModule2
                     )
                 }
             }
 
-            It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule | Should -Be 'SqlServer'
+            It 'Should return the latest version of the first default preferred module' {
+                Get-SqlDscPreferredModule | Should -Be $sqlServerModule2
             }
         }
 
         Context 'When there are several installed versions of the second default preferred module' {
             BeforeAll {
+                $sqlpsModule1 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SQLPS'
+                    Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+                }
+                $sqlpsModule2 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SQLPS'
+                    Path = 'C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+                }
+
                 Mock -CommandName Get-Module -MockWith {
                     return @(
-                        @{
-                            Name = 'SQLPS'
-                            Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-                        }
-                        @{
-                            Name = 'SQLPS'
-                            Path = 'C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-                        }
+                        $sqlpsModule1,
+                        $sqlpsModule2
                     )
                 }
             }
 
-            It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule | Should -Be ('C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules\SQLPS' -replace '\\', [IO.Path]::DirectorySeparatorChar)
+            It 'Should return the latest version of the second default preferred module' {
+                Get-SqlDscPreferredModule | Should -Be $sqlpsModule2
             }
         }
     }
@@ -279,126 +299,246 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
 
         Context 'When only first preferred module is installed' {
             BeforeAll {
+                $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SqlServer'
+                    Version = [Version]::new(21, 1, 18068)
+                }
                 Mock -CommandName Get-Module -MockWith {
-                    return @{
-                        Name = 'SqlServer'
-                    }
+                    return $sqlServerModule
                 }
             }
 
             It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule -Name 'SqlServer' | Should -Be 'SqlServer'
+                Get-SqlDscPreferredModule -Name 'SqlServer' | Should -Be $sqlServerModule
             }
         }
 
         Context 'When only second preferred module is installed' {
             BeforeAll {
+                $sqlpsModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SQLPS'
+                    Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+                }
                 Mock -CommandName Get-Module -MockWith {
-                    return @{
-                        Name = 'SQLPS'
-                        Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-                    }
+                    return $sqlpsModule
                 }
             }
 
             It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be ('C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS' -replace '\\', [IO.Path]::DirectorySeparatorChar)
+                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be $sqlpsModule
             }
         }
 
         Context 'When both preferred modules are installed' {
             BeforeAll {
+                $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SqlServer'
+                    Version = [Version]::new(21, 1, 18068)
+                }
+                $sqlpsModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SQLPS'
+                    Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+                }
+
                 Mock -CommandName Get-Module -MockWith {
                     return @(
-                        @{
-                            Name = 'SqlServer'
-                        }
-                        @{
-                            Name = 'SQLPS'
-                            Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-                        }
+                        $sqlServerModule,
+                        $sqlpsModule
                     )
                 }
             }
 
-            It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be 'SqlServer'
+            It 'Should return the first preferred module' {
+                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be $sqlServerModule
             }
         }
 
         Context 'When there are several installed versions of all preferred modules' {
             BeforeAll {
+                $sqlServerModule1 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SqlServer'
+                    Version = [Version]::new(21, 1, 18068)
+                }
+                $sqlServerModule2 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SqlServer'
+                    Version = [Version]::new(22, 1, 1)
+                    PrivateData = @{
+                        PSData = @{
+                            PreRelease = 'preview1'
+                        }
+                    }
+                }
+                $sqlpsModule1 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SQLPS'
+                    Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+                }
+                $sqlpsModule2 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SQLPS'
+                    Path = 'C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+                }
+
                 Mock -CommandName Get-Module -MockWith {
                     return @(
-                        @{
-                            Name    = 'SqlServer'
-                            Version = '1.0.0'
-                        }
-                        @{
-                            Name    = 'SqlServer'
-                            Version = '2.0.0'
-                            PrivateData = @{
-                                PSData = @{
-                                    PreRelease = 'preview1'
-                                }
-                            }
-                        }
-                        @{
-                            Name = 'SQLPS'
-                            Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-                        }
-                        @{
-                            Name = 'SQLPS'
-                            Path = 'C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-                        }
+                        $sqlServerModule1,
+                        $sqlServerModule2,
+                        $sqlpsModule1,
+                        $sqlpsModule2
                     )
                 }
             }
 
-            It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be 'SqlServer'
+            It 'Should return the latest first preferred module' {
+                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be $sqlServerModule2
+            }
+
+            Context 'When the environment variable SMODefaultModuleVersion is assigned a module version' {
+                Context 'When the version of the module exists' {
+                    BeforeAll {
+                        $env:SMODefaultModuleVersion = '21.1.18068'
+                    }
+
+                    AfterAll {
+                        Remove-Item -Path 'env:SMODefaultModuleVersion'
+                    }
+
+                    It 'Should return the specified module version' {
+                        Get-SqlDscPreferredModule | Should -Be $sqlServerModule1
+                    }
+                }
+
+                Context 'When the version of the module does not exist' {
+                    BeforeAll {
+                        $env:SMODefaultModuleVersion = '1.1.1'
+                    }
+
+                    AfterAll {
+                        Remove-Item -Path 'env:SMODefaultModuleVersion'
+                    }
+
+                    It 'Should throw the correct error' {
+                        $errorMessage = InModuleScope -ScriptBlock {
+                            $script:localizedData.PreferredModule_ModuleVersionNotFound
+                        }
+
+                        { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage ($errorMessage -f $env:SMODefaultModuleVersion)
+                    }
+                }
             }
         }
 
         Context 'When there are several installed versions of the first preferred module' {
             BeforeAll {
+                $sqlServerModule1 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SqlServer'
+                    Version = [Version]::new(21, 1, 18068)
+                }
+                $sqlServerModule2 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SqlServer'
+                    Version = [Version]::new(22, 1, 1)
+                }
+
                 Mock -CommandName Get-Module -MockWith {
                     return @(
-                        @{
-                            Name    = 'SqlServer'
-                            Version = '1.0.0'
-                        }
-                        @{
-                            Name    = 'SqlServer'
-                            Version = '2.0.0'
-                        }
+                        $sqlServerModule1,
+                        $sqlServerModule2
                     )
                 }
             }
 
-            It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be 'SqlServer'
+            It 'Should return the latest version of the first preferred module' {
+                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be $sqlServerModule2
+            }
+
+            Context 'When the environment variable SMODefaultModuleVersion is assigned a module version' {
+                Context 'When the version of the module exists' {
+                    BeforeAll {
+                        $env:SMODefaultModuleVersion = '21.1.18068'
+                    }
+
+                    AfterAll {
+                        Remove-Item -Path 'env:SMODefaultModuleVersion'
+                    }
+
+                    It 'Should return the specified module version' {
+                        Get-SqlDscPreferredModule | Should -Be $sqlServerModule1
+                    }
+                }
+
+                Context 'When the version of the module does not exist' {
+                    BeforeAll {
+                        $env:SMODefaultModuleVersion = '1.1.1'
+                    }
+
+                    AfterAll {
+                        Remove-Item -Path 'env:SMODefaultModuleVersion'
+                    }
+
+                    It 'Should throw the correct error' {
+                        $errorMessage = InModuleScope -ScriptBlock {
+                            $script:localizedData.PreferredModule_ModuleVersionNotFound
+                        }
+
+                        { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage ($errorMessage -f $env:SMODefaultModuleVersion)
+                    }
+                }
             }
         }
 
         Context 'When there are several installed versions of the second preferred module' {
             BeforeAll {
+                $sqlpsModule1 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SQLPS'
+                    Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+                }
+                $sqlpsModule2 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SQLPS'
+                    Path = 'C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
+                }
+
                 Mock -CommandName Get-Module -MockWith {
                     return @(
-                        @{
-                            Name = 'SQLPS'
-                            Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-                        }
-                        @{
-                            Name = 'SQLPS'
-                            Path = 'C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
-                        }
+                        $sqlpsModule1,
+                        $sqlpsModule2
                     )
                 }
             }
 
-            It 'Should return the correct module name' {
-                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be ('C:\Program Files (x86)\Microsoft SQL Server\160\Tools\PowerShell\Modules\SQLPS' -replace '\\', [IO.Path]::DirectorySeparatorChar)
+            It 'Should return the latest version of the second preferred module' {
+                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be $sqlpsModule2
+            }
+
+            Context 'When the environment variable SMODefaultModuleVersion is assigned a module version' {
+                Context 'When the version of the module exists' {
+                    BeforeAll {
+                        $env:SMODefaultModuleVersion = '130'
+                    }
+
+                    AfterAll {
+                        Remove-Item -Path 'env:SMODefaultModuleVersion'
+                    }
+
+                    It 'Should return the specified module version' {
+                        Get-SqlDscPreferredModule | Should -Be $sqlpsModule1
+                    }
+                }
+
+                Context 'When the version of the module does not exist' {
+                    BeforeAll {
+                        $env:SMODefaultModuleVersion = '999'
+                    }
+
+                    AfterAll {
+                        Remove-Item -Path 'env:SMODefaultModuleVersion'
+                    }
+
+                    It 'Should throw the correct error' {
+                        $errorMessage = InModuleScope -ScriptBlock {
+                            $script:localizedData.PreferredModule_ModuleVersionNotFound
+                        }
+
+                        { Get-SqlDscPreferredModule -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage ($errorMessage -f $env:SMODefaultModuleVersion)
+                    }
+                }
             }
         }
     }
@@ -415,15 +555,18 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                 return 'MockPath'
             }
 
+            $sqlServerModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                Name = 'SqlServer'
+                Version = [Version]::new(21, 1, 18068)
+            }
+
             Mock -CommandName Get-Module -MockWith {
-                return @{
-                    Name = 'SqlServer'
-                }
+                return $sqlServerModule
             }
         }
 
         It 'Should return the correct module name' {
-            Get-SqlDscPreferredModule -Refresh | Should -Be 'SqlServer'
+            Get-SqlDscPreferredModule -Refresh | Should -Be $sqlServerModule
 
             Should -Invoke -CommandName Set-PSModulePath -Exactly -Times 1 -Scope It
         }
@@ -433,10 +576,13 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
         BeforeAll {
             $env:SMODefaultModuleName = 'OtherModule'
 
+            $otherModule = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                Name = $env:SMODefaultModuleName
+                Version = [Version]::new(1, 1, 1)
+            }
+
             Mock -CommandName Get-Module -MockWith {
-                return @{
-                    Name = $env:SMODefaultModuleName
-                }
+                return $otherModule
             }
         }
 
@@ -445,7 +591,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
         }
 
         It 'Should return the correct module name' {
-            Get-SqlDscPreferredModule | Should -Be $env:SMODefaultModuleName
+            Get-SqlDscPreferredModule | Should -Be $otherModule
         }
     }
 }
