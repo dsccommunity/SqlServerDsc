@@ -108,5 +108,8 @@
     "pester.runTestsInNewProcess": true,
     "pester.pesterModulePath": "./output/RequiredModules/Pester",
     "powershell.pester.codeLens": true,
-    "pester.suppressCodeLensNotice": true
+    "pester.suppressCodeLensNotice": true,
+    "markdownlint.ignore": [
+        ".github/CODEOWNERS"
+    ]
 }
