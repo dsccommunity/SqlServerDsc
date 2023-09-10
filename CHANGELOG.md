@@ -57,7 +57,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Now returns a PSModuleInfo object instead of just the module name.
   - `Import-SqlDscPreferredModule`
     - Handles PSModuleInfo objects from `Get-SqlDscPreferredModule` instead of strings.
-    - Sets -ErrorAction 'Stop' on Get-SqlDscPreferredModule to throw an error if no SQL module is found. The script-terminating error is caught and made into a statement-terminating error.
+    - Sets -ErrorAction 'Stop' on Get-SqlDscPreferredModule to throw an error if
+      no SQL module is found. The script-terminating error is caught and made into
+      a statement-terminating error.
+  - Bump GitHub Action Checkout to v4.
 
 ### Remove
 
