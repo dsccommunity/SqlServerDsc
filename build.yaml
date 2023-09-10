@@ -14,6 +14,7 @@ BuildWorkflow:
     - Create_Changelog_Release_Output
     - Generate_Conceptual_Help
     - Generate_Wiki_Content
+    - Package_WikContent
 
   fastbuild:
     - Clean
@@ -36,6 +37,42 @@ BuildWorkflow:
     - Publish_Release_To_GitHub
     - Publish_Module_To_gallery
     - Publish_GitHub_Wiki_Content
+
+  Package_WikContent: |
+    {
+        <#
+            This is quick fix for issue https://github.com/PoshCode/ModuleBuilder/issues/103.
+            Aliases need to be added to module manifest, and we can only use
+            New-Alias or Set-Alias together with build tasks. This module
+            already automatically exports aliases using [Alias()] so this quick
+            fix is meant as a workaround until the above issue is resolved.
+        #>
+        param
+        (
+            $OutputDirectory = (property OutputDirectory (Join-Path $BuildRoot 'output')),
+            $ProjectName = (property ProjectName $(Get-SamplerProjectName -BuildRoot $BuildRoot)),
+            $BuildInfo = (property BuildInfo @{ })
+        )
+
+        "`tProject Name             = {0}" -f $ProjectName
+        "`tOutput Directory         = {0}" -f $OutputDirectory
+
+        $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath 'WikiContent'
+        $wikiArchiveSourcePath = Join-Path -Path $wikiOutputPath -ChildPath '*'
+        $wikiPackagePath = Join-Path -Path $OutputDirectory -ChildPath 'WikiContent.zip'
+
+        "`tWiki Output Path         = $wikiOutputPath"
+        "`tWiki Archive Source Path = $wikiArchiveSourcePath"
+        "`tWiki Package Path        = $wikiPackagePath"
+
+        if (-not (Test-Path -Path $wikiOutputPath))
+        {
+            throw 'The Wiki Output Path does not exist. Please run the task Generate_Wiki_Content prior to running this task.'
+        }
+
+        # Overwrites any existing archive.
+        Compress-Archive -Path $wikiArchiveSourcePath -DestinationPath $wikiPackagePath -CompressionLevel 'Optimal' -Force -ErrorAction 'Stop'
+    }
 
 ####################################################
 #           ModuleBuilder Configuration            #
@@ -151,6 +188,8 @@ Resolve-Dependency:
 GitHubConfig:
   GitHubFilesToAdd:
     - 'CHANGELOG.md'
+  ReleaseAssets:
+    - output/WikiContent.zip
   GitHubConfigUserName: dscbot # cSpell: disable-line
   GitHubConfigUserEmail: dsccommunity@outlook.com
   UpdateChangelogOnPrerelease: false
