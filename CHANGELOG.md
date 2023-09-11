@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       ([issue #1965](https://github.com/dsccommunity/SqlServerDsc/issues/1965)).
   - Now package the Wiki content and adds it as a GitHub Release asset so it
     is simpler to get the documentation for a specific version.
+  - CODEOWNERS file was added to support automatically set reviewer.
 - New private command:
   - Get-SMOModuleCalculatedVersion - Returns the version of the SMO module
     as a string. SQLPS version 120 and 130 do not have the correct version set,
