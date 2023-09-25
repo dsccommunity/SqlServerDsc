@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - SqlServerDsc
-  - Updated pipeline files to support ModuleFast.
+  - Updated pipeline files to support ModuleFast and PSResourceGet.
   - `Get-SqlDscPreferredModule`
     - Optionally specify what version of the the SQL preferred module to
       be imported using the SMODefaultModuleVersion environment variable

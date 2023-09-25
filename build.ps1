@@ -60,6 +60,15 @@
     .PARAMETER UseModuleFast
         Specifies to use ModuleFast instead of PowerShellGet to resolve dependencies
         faster.
+
+    .PARAMETER UsePSResourceGet
+        Specifies to use PSResourceGet instead of PowerShellGet to resolve dependencies
+        faster. This can also be configured in Resolve-Dependency.psd1.
+
+    .PARAMETER UsePowerShellGetCompatibilityModule
+        Specifies to use the compatibility module PowerShellGet. This parameter
+        only works then the method of downloading dependencies is PSResourceGet.
+        This can also be configured in Resolve-Dependency.psd1.
 #>
 [CmdletBinding()]
 param
@@ -129,7 +138,15 @@ param
 
     [Parameter()]
     [System.Management.Automation.SwitchParameter]
-    $UseModuleFast
+    $UseModuleFast,
+
+    [Parameter()]
+    [System.Management.Automation.SwitchParameter]
+    $UsePSResourceGet,
+
+    [Parameter()]
+    [System.Management.Automation.SwitchParameter]
+    $UsePowerShellGetCompatibilityModule
 )
 
 <#
@@ -457,14 +474,7 @@ begin
 
     if ($ResolveDependency)
     {
-        if ($UseModuleFast.IsPresent)
-        {
-            Write-Host -Object "[pre-build] Resolving dependencies using ModuleFast." -ForegroundColor Green
-        }
-        else
-        {
-            Write-Host -Object "[pre-build] Resolving dependencies using PowerShellGet." -ForegroundColor Green
-        }
+        Write-Host -Object "[pre-build] Resolving dependencies using preferred method." -ForegroundColor Green
 
         $resolveDependencyParams = @{ }
 
