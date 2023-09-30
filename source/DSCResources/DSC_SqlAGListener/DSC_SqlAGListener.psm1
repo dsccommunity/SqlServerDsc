@@ -24,7 +24,6 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 #>
 function Get-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-SQLAlwaysOnAvailabilityGroupListener is called')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -44,7 +43,11 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $AvailabilityGroup
+        $AvailabilityGroup,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
     Write-Verbose -Message (
@@ -53,6 +56,11 @@ function Get-TargetResource
 
     try
     {
+        $serverObject = Connect-SQL -ServerName $ServerName -InstanceName $InstanceName
+
+        # Is this node actively hosting the SQL instance?
+        $isActiveNode = Test-ActiveNode -ServerObject $serverObject
+
         $availabilityGroupListener = Get-SQLAlwaysOnAvailabilityGroupListener -Name $Name -AvailabilityGroup $AvailabilityGroup -ServerName $ServerName -InstanceName $InstanceName
 
         if ($null -ne $availabilityGroupListener)
@@ -99,14 +107,16 @@ function Get-TargetResource
     }
 
     return @{
-        InstanceName      = [System.String] $InstanceName
-        ServerName        = [System.String] $ServerName
-        Name              = [System.String] $Name
-        Ensure            = [System.String] $ensure
-        AvailabilityGroup = [System.String] $AvailabilityGroup
-        IpAddress         = [System.String[]] $ipAddress
-        Port              = [System.UInt16] $port
-        DHCP              = [System.Boolean] $dhcp
+        InstanceName            = [System.String] $InstanceName
+        ServerName              = [System.String] $ServerName
+        Name                    = [System.String] $Name
+        Ensure                  = [System.String] $ensure
+        AvailabilityGroup       = [System.String] $AvailabilityGroup
+        IpAddress               = [System.String[]] $ipAddress
+        Port                    = [System.UInt16] $port
+        DHCP                    = [System.Boolean] $dhcp
+        ProcessOnlyOnActiveNode = [System.Boolean] $ProcessOnlyOnActiveNode
+        IsActiveNode            = [System.Boolean] $isActiveNode
     }
 }
 
@@ -137,6 +147,10 @@ function Get-TargetResource
 
     .PARAMETER DHCP
         If DHCP should be used for the availability group listener instead of static IP address.
+
+    .PARAMETER ProcessOnlyOnActiveNode
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server instance.
+        Not used in Set-TargetResource.
 #>
 function Set-TargetResource
 {
@@ -175,7 +189,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $DHCP
+        $DHCP,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
     $parameters = @{
@@ -413,10 +431,13 @@ function Set-TargetResource
 
     .PARAMETER DHCP
         If DHCP should be used for the availability group listener instead of static IP address.
+
+    .PARAMETER ProcessOnlyOnActiveNode
+        Specifies that the resource will only determine if a change is needed if the target node is the active host of the SQL Server instance.
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -453,7 +474,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $DHCP
+        $DHCP,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
     $parameters = @{
@@ -470,6 +495,20 @@ function Test-TargetResource
     $availabilityGroupListenerState = Get-TargetResource @parameters
 
     [System.Boolean] $result = $false
+
+    <#
+        If this is supposed to process only the active node, and this is not the
+        active node, don't bother evaluating the test.
+    #>
+    if ($ProcessOnlyOnActiveNode -and -not $availabilityGroupListenerState.IsActiveNode)
+    {
+        # Use localization if the resource has been converted
+        Write-Verbose -Message ('The node ''{0}'' is not actively hosting the instance ''{1}''. Exiting the test.' -f (Get-ComputerName), $InstanceName)
+
+        $result = $true
+
+        return $result
+    }
 
     if ($availabilityGroupListenerState.Ensure -eq $Ensure)
     {
