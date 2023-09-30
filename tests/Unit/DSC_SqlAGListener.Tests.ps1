@@ -45,6 +45,9 @@ BeforeAll {
 
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
 
+    # Loading mocked classes
+    Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
+
     # Load the correct SQL Module stub
     $script:stubModuleName = Import-SQLModuleStub -PassThru
 
@@ -72,7 +75,7 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'SqlAGListener\Get-TargetResource' {
+Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
     BeforeAll {
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
@@ -95,6 +98,14 @@ Describe 'SqlAGListener\Get-TargetResource' {
     Context 'When the system is in the desired state' {
         Context 'When the listener is absent' {
             BeforeAll {
+                Mock -CommandName Connect-SQL -MockWith {
+                    return New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+                }
+
+                Mock -CommandName Test-ActiveNode -MockWith {
+                    return $false
+                }
+
                 Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener
             }
 
@@ -152,12 +163,20 @@ Describe 'SqlAGListener\Get-TargetResource' {
 
         Context 'When listener is present and not using DHCP' {
             BeforeAll {
+                Mock -CommandName Connect-SQL -MockWith {
+                    return New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+                }
+
+                Mock -CommandName Test-ActiveNode -MockWith {
+                    return $false
+                }
+
                 Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
                     return @{
-                        PortNumber = 5031
+                        PortNumber                           = 5031
                         AvailabilityGroupListenerIPAddresses = @{
-                            IsDHCP  = $false
-                            IPAddress = '192.168.0.1'
+                            IsDHCP     = $false
+                            IPAddress  = '192.168.0.1'
                             SubnetMask = '255.255.255.0'
                         }
                     }
@@ -209,6 +228,17 @@ Describe 'SqlAGListener\Get-TargetResource' {
                 }
             }
 
+            It 'Should return that it is not the active node' {
+                InModuleScope -ScriptBlock {
+                    $mockGetTargetResourceParameters.ProcessOnlyOnActiveNode = $true
+
+                    $result = Get-TargetResource @mockGetTargetResourceParameters
+
+                    $result.ProcessOnlyOnActiveNode | Should -BeTrue
+                    $result.IsActiveNode | Should -BeFalse
+                }
+            }
+
             It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
                 InModuleScope -ScriptBlock {
                     { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
@@ -220,12 +250,20 @@ Describe 'SqlAGListener\Get-TargetResource' {
 
         Context 'When listener is present and using DHCP' {
             BeforeAll {
+                Mock -CommandName Connect-SQL -MockWith {
+                    return New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+                }
+
+                Mock -CommandName Test-ActiveNode -MockWith {
+                    return $false
+                }
+
                 Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
                     return @{
-                        PortNumber = 5031
+                        PortNumber                           = 5031
                         AvailabilityGroupListenerIPAddresses = @{
-                            IsDHCP  = $true
-                            IPAddress = '192.168.0.1'
+                            IsDHCP     = $true
+                            IPAddress  = '192.168.0.1'
                             SubnetMask = '255.255.255.0'
                         }
                     }
@@ -286,12 +324,20 @@ Describe 'SqlAGListener\Get-TargetResource' {
 
         Context 'When listener does not have subnet mask' {
             BeforeAll {
+                Mock -CommandName Connect-SQL -MockWith {
+                    return New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+                }
+
+                Mock -CommandName Test-ActiveNode -MockWith {
+                    return $false
+                }
+
                 Mock -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -MockWith {
                     return @{
-                        PortNumber = 5031
+                        PortNumber                           = 5031
                         AvailabilityGroupListenerIPAddresses = @{
-                            IsDHCP  = $false
-                            IPAddress = '192.168.0.1'
+                            IsDHCP     = $false
+                            IPAddress  = '192.168.0.1'
                             SubnetMask = ''
                         }
                     }
@@ -416,30 +462,30 @@ Describe 'SqlAGListener\Test-TargetResource' {
 
         Context 'When the property <MockPropertyName> is in desired state' -ForEach @(
             @{
-                MockPropertyName = 'IpAddress'
+                MockPropertyName  = 'IpAddress'
                 MockExpectedValue = '192.168.10.45/255.255.252.0'
-                MockActualValue = '192.168.10.45/255.255.252.0'
+                MockActualValue   = '192.168.10.45/255.255.252.0'
             }
             @{
-                MockPropertyName = 'Port'
+                MockPropertyName  = 'Port'
                 MockExpectedValue = '5031'
-                MockActualValue = '5031'
+                MockActualValue   = '5031'
             }
             @{
-                MockPropertyName = 'DHCP'
+                MockPropertyName  = 'DHCP'
                 MockExpectedValue = $false
-                MockActualValue = $false
+                MockActualValue   = $false
             }
             @{
-                MockPropertyName = 'DHCP'
+                MockPropertyName  = 'DHCP'
                 MockExpectedValue = $true
-                MockActualValue = $true
+                MockActualValue   = $true
             }
-            ) {
+        ) {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        Ensure = 'Present'
+                        Ensure            = 'Present'
                         $MockPropertyName = $MockActualValue
                     }
                 }
@@ -505,25 +551,25 @@ Describe 'SqlAGListener\Test-TargetResource' {
         Context 'When using static IP address' {
             Context 'When the property <MockPropertyName> is not in desired state' -ForEach @(
                 @{
-                    MockPropertyName = 'IpAddress'
+                    MockPropertyName  = 'IpAddress'
                     MockExpectedValue = '192.168.10.45/255.255.252.0'
-                    MockActualValue = '192.168.10.45/255.255.255.0'
+                    MockActualValue   = '192.168.10.45/255.255.255.0'
                 }
                 @{
-                    MockPropertyName = 'Port'
+                    MockPropertyName  = 'Port'
                     MockExpectedValue = '5031'
-                    MockActualValue = '5030'
+                    MockActualValue   = '5030'
                 }
                 @{
-                    MockPropertyName = 'DHCP'
+                    MockPropertyName  = 'DHCP'
                     MockExpectedValue = $false
-                    MockActualValue = $true
+                    MockActualValue   = $true
                 }
-             ) {
+            ) {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Present'
+                            Ensure            = 'Present'
                             $MockPropertyName = $MockActualValue
                         }
                     }
@@ -543,12 +589,12 @@ Describe 'SqlAGListener\Test-TargetResource' {
             }
 
             Context 'When static IP address is desired but current state is using DHCP' {
-                 BeforeAll {
+                BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Present'
+                            Ensure    = 'Present'
                             IpAddress = '192.168.0.1'
-                            DHCP = $true
+                            DHCP      = $true
                         }
                     }
                 }
@@ -587,15 +633,15 @@ Describe 'SqlAGListener\Test-TargetResource' {
         Context 'When using DHCP' {
             Context 'When the property <MockPropertyName> is not in desired state' -ForEach @(
                 @{
-                    MockPropertyName = 'DHCP'
+                    MockPropertyName  = 'DHCP'
                     MockExpectedValue = $true
-                    MockActualValue = $false
+                    MockActualValue   = $false
                 }
             ) {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Present'
+                            Ensure            = 'Present'
                             $MockPropertyName = $MockActualValue
                         }
                     }
@@ -616,14 +662,14 @@ Describe 'SqlAGListener\Test-TargetResource' {
 
             Context 'When DHCP is desired but current state is using static IP address' {
                 BeforeAll {
-                   Mock -CommandName Get-TargetResource -MockWith {
-                       return @{
-                           Ensure = 'Present'
-                           IpAddress = '192.168.0.1'
-                           DHCP = $false
-                       }
-                   }
-               }
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Ensure    = 'Present'
+                            IpAddress = '192.168.0.1'
+                            DHCP      = $false
+                        }
+                    }
+                }
 
                 It 'Should return $false' {
                     InModuleScope -ScriptBlock {
@@ -636,7 +682,31 @@ Describe 'SqlAGListener\Test-TargetResource' {
 
                     Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
                 }
-           }
+            }
+        }
+
+        Context 'When enforcing the state shall happen only when the node is the active node' {
+            BeforeAll {
+                Mock -CommandName Get-TargetResource -MockWith {
+                    @{
+                        Ensure       = 'Present'
+                        IpAddress    = '192.168.0.1'
+                        DHCP         = $false
+                        IsActiveNode = $false
+                    }
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $mockTestTargetResourceParameters.DHCP = $true
+                    $mockTestTargetResourceParameters.ProcessOnlyOnActiveNode = $true
+
+                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
+                }
+
+                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            }
         }
     }
 }
@@ -692,30 +762,30 @@ Describe 'SqlAGListener\Set-TargetResource' {
                 Mock -CommandName Connect-SQL -MockWith {
                     return New-Object -TypeName Object |
                         Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
-                        return @(
-                            @{
-                                'AG01' = New-Object -TypeName Object |
-                                    Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
-                                    @(
-                                        @{
-                                            AGListener = New-Object -TypeName Object |
-                                                Add-Member -MemberType 'NoteProperty' -Name 'PortNumber' -Value 5031 -PassThru |
-                                                Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListenerIPAddresses' -Value {
-                                                    return @(
-                                                        # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                            return @(
+                                @{
+                                    'AG01' = New-Object -TypeName Object |
+                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                            @(
+                                                @{
+                                                    AGListener = New-Object -TypeName Object |
+                                                        Add-Member -MemberType 'NoteProperty' -Name 'PortNumber' -Value 5031 -PassThru |
+                                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListenerIPAddresses' -Value {
+                                                            return @(
+                                                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
                                                         (New-Object -TypeName Object | # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-                                                                Add-Member -MemberType 'NoteProperty' -Name 'IsDHCP' -Value $true -PassThru |
-                                                                Add-Member -MemberType 'NoteProperty' -Name 'IPAddress' -Value '192.168.0.1' -PassThru |
-                                                                Add-Member -MemberType 'NoteProperty' -Name 'SubnetMask' -Value '255.255.255.0' -PassThru
+                                                                    Add-Member -MemberType 'NoteProperty' -Name 'IsDHCP' -Value $true -PassThru |
+                                                                    Add-Member -MemberType 'NoteProperty' -Name 'IPAddress' -Value '192.168.0.1' -PassThru |
+                                                                    Add-Member -MemberType 'NoteProperty' -Name 'SubnetMask' -Value '255.255.255.0' -PassThru
                                                         )
+                                                                )
+                                                            } -PassThru -Force
+                                                        }
                                                     )
                                                 } -PassThru -Force
-                                        }
-                                    )
-                                } -PassThru -Force
-                            }
-                        )
-                    } -PassThru -Force
+                                            }
+                                        )
+                                    } -PassThru -Force
                 }
             }
 
@@ -731,26 +801,26 @@ Describe 'SqlAGListener\Set-TargetResource' {
 
         Context 'When the property <MockPropertyName> is in desired state' -ForEach @(
             @{
-                MockPropertyName = 'IpAddress'
+                MockPropertyName  = 'IpAddress'
                 MockExpectedValue = '192.168.10.45/255.255.252.0'
             }
             @{
-                MockPropertyName = 'Port'
+                MockPropertyName  = 'Port'
                 MockExpectedValue = '5031'
             }
             @{
-                MockPropertyName = 'DHCP'
+                MockPropertyName  = 'DHCP'
                 MockExpectedValue = $false
             }
             @{
-                MockPropertyName = 'DHCP'
+                MockPropertyName  = 'DHCP'
                 MockExpectedValue = $true
             }
         ) {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        Ensure = 'Present'
+                        Ensure            = 'Present'
                         $MockPropertyName = $MockExpectedValue
                     }
                 }
@@ -767,30 +837,30 @@ Describe 'SqlAGListener\Set-TargetResource' {
 
                     return New-Object -TypeName Object |
                         Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
-                        return @(
-                            @{
-                                AG01 = New-Object -TypeName Object |
-                                    Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
-                                    @(
-                                        @{
-                                            AGListener = New-Object -TypeName Object |
-                                                Add-Member -MemberType 'NoteProperty' -Name 'PortNumber' -Value 5031 -PassThru |
-                                                Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListenerIPAddresses' -Value {
-                                                    # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                                    return @(
+                            return @(
+                                @{
+                                    AG01 = New-Object -TypeName Object |
+                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                            @(
+                                                @{
+                                                    AGListener = New-Object -TypeName Object |
+                                                        Add-Member -MemberType 'NoteProperty' -Name 'PortNumber' -Value 5031 -PassThru |
+                                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListenerIPAddresses' -Value {
+                                                            # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                                            return @(
                                                         (New-Object -TypeName Object | # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-                                                                Add-Member -MemberType 'NoteProperty' -Name 'IsDHCP' -Value $MockDynamicDhcpValue -PassThru |
-                                                                Add-Member -MemberType 'NoteProperty' -Name 'IPAddress' -Value '192.168.0.1' -PassThru |
-                                                                Add-Member -MemberType 'NoteProperty' -Name 'SubnetMask' -Value '255.255.252.0' -PassThru
+                                                                    Add-Member -MemberType 'NoteProperty' -Name 'IsDHCP' -Value $MockDynamicDhcpValue -PassThru |
+                                                                    Add-Member -MemberType 'NoteProperty' -Name 'IPAddress' -Value '192.168.0.1' -PassThru |
+                                                                    Add-Member -MemberType 'NoteProperty' -Name 'SubnetMask' -Value '255.255.252.0' -PassThru
                                                         )
+                                                                )
+                                                            } -PassThru -Force
+                                                        }
                                                     )
                                                 } -PassThru -Force
-                                        }
-                                    )
-                                } -PassThru -Force
-                            }
-                        )
-                    } -PassThru -Force
+                                            }
+                                        )
+                                    } -PassThru -Force
                 }
             }
 
@@ -820,12 +890,12 @@ Describe 'SqlAGListener\Set-TargetResource' {
                     Mock -CommandName Connect-SQL -MockWith {
                         return New-Object -TypeName Object |
                             Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
-                            return @(
-                                @{
-                                    AG01 = New-Object -TypeName Object
-                                }
-                            )
-                        } -PassThru -Force
+                                return @(
+                                    @{
+                                        AG01 = New-Object -TypeName Object
+                                    }
+                                )
+                            } -PassThru -Force
                     }
                 }
 
@@ -854,12 +924,12 @@ Describe 'SqlAGListener\Set-TargetResource' {
                     Mock -CommandName Connect-SQL -MockWith {
                         return New-Object -TypeName Object |
                             Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
-                            return @(
-                                @{
-                                    AG01 = New-Object -TypeName Object
-                                }
-                            )
-                        } -PassThru -Force
+                                return @(
+                                    @{
+                                        AG01 = New-Object -TypeName Object
+                                    }
+                                )
+                            } -PassThru -Force
                     }
                 }
 
@@ -888,12 +958,12 @@ Describe 'SqlAGListener\Set-TargetResource' {
                     Mock -CommandName Connect-SQL -MockWith {
                         return New-Object -TypeName Object |
                             Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
-                            return @(
-                                @{
-                                    AG01 = New-Object -TypeName Object
-                                }
-                            )
-                        } -PassThru -Force
+                                return @(
+                                    @{
+                                        AG01 = New-Object -TypeName Object
+                                    }
+                                )
+                            } -PassThru -Force
                     }
                 }
 
@@ -925,19 +995,19 @@ Describe 'SqlAGListener\Set-TargetResource' {
                     Mock -CommandName Connect-SQL -MockWith {
                         return New-Object -TypeName Object |
                             Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
-                            return @(
-                                @{
-                                    AG01 = New-Object -TypeName Object |
-                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
-                                            return @(
-                                                @{
-                                                    AGListener = New-Object -TypeName Object
-                                                }
-                                            )
-                                        } -PassThru -Force
-                                }
-                            )
-                        } -PassThru -Force
+                                return @(
+                                    @{
+                                        AG01 = New-Object -TypeName Object |
+                                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                                return @(
+                                                    @{
+                                                        AGListener = New-Object -TypeName Object
+                                                    }
+                                                )
+                                            } -PassThru -Force
+                                        }
+                                    )
+                                } -PassThru -Force
                     }
                 }
 
@@ -966,19 +1036,19 @@ Describe 'SqlAGListener\Set-TargetResource' {
                     Mock -CommandName Connect-SQL -MockWith {
                         return New-Object -TypeName Object |
                             Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
-                            return @(
-                                @{
-                                    AG01 = New-Object -TypeName Object |
-                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
-                                            return @(
-                                                @{
-                                                    AGListener = New-Object -TypeName Object
-                                                }
-                                            )
-                                        } -PassThru -Force
-                                }
-                            )
-                        } -PassThru -Force
+                                return @(
+                                    @{
+                                        AG01 = New-Object -TypeName Object |
+                                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                                return @(
+                                                    @{
+                                                        AGListener = New-Object -TypeName Object
+                                                    }
+                                                )
+                                            } -PassThru -Force
+                                        }
+                                    )
+                                } -PassThru -Force
                     }
                 }
 
@@ -1011,19 +1081,19 @@ Describe 'SqlAGListener\Set-TargetResource' {
                     Mock -CommandName Connect-SQL -MockWith {
                         return New-Object -TypeName Object |
                             Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
-                            return @(
-                                @{
-                                    AG01 = New-Object -TypeName Object |
-                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
-                                            return @(
-                                                @{
-                                                    AGListener = New-Object -TypeName Object
-                                                }
-                                            )
-                                        } -PassThru -Force
-                                }
-                            )
-                        } -PassThru -Force
+                                return @(
+                                    @{
+                                        AG01 = New-Object -TypeName Object |
+                                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                                return @(
+                                                    @{
+                                                        AGListener = New-Object -TypeName Object
+                                                    }
+                                                )
+                                            } -PassThru -Force
+                                        }
+                                    )
+                                } -PassThru -Force
                     }
                 }
 
@@ -1050,12 +1120,12 @@ Describe 'SqlAGListener\Set-TargetResource' {
                     Mock -CommandName Connect-SQL -MockWith {
                         return New-Object -TypeName Object |
                             Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
-                            return @(
-                                @{
-                                    AG01 = New-Object -TypeName Object
-                                }
-                            )
-                        } -PassThru -Force
+                                return @(
+                                    @{
+                                        AG01 = New-Object -TypeName Object
+                                    }
+                                )
+                            } -PassThru -Force
                     }
                 }
 
@@ -1087,12 +1157,12 @@ Describe 'SqlAGListener\Set-TargetResource' {
                     Mock -CommandName Connect-SQL -MockWith {
                         return New-Object -TypeName Object |
                             Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
-                            return @(
-                                @{
-                                    AG01 = New-Object -TypeName Object
-                                }
-                            )
-                        } -PassThru -Force
+                                return @(
+                                    @{
+                                        AG01 = New-Object -TypeName Object
+                                    }
+                                )
+                            } -PassThru -Force
                     }
                 }
 
@@ -1123,12 +1193,12 @@ Describe 'SqlAGListener\Set-TargetResource' {
                     Mock -CommandName Connect-SQL -MockWith {
                         return New-Object -TypeName Object |
                             Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
-                            return @(
-                                @{
-                                    AG01 = New-Object -TypeName Object
-                                }
-                            )
-                        } -PassThru -Force
+                                return @(
+                                    @{
+                                        AG01 = New-Object -TypeName Object
+                                    }
+                                )
+                            } -PassThru -Force
                     }
                 }
 
@@ -1159,23 +1229,23 @@ Describe 'SqlAGListener\Set-TargetResource' {
                 Mock -CommandName Connect-SQL -MockWith {
                     return New-Object -TypeName Object |
                         Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
-                        return @(
-                            @{
-                                AG01 = New-Object -TypeName Object |
-                                    Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
-                                        # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                        return @{
-                                            AGListener = New-Object -TypeName Object |
-                                                Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
-                                                    InModuleScope -ScriptBlock {
-                                                        $script:mockMethodDropWasRunCount += 1
-                                                    }
-                                                } -PassThru -Force
+                            return @(
+                                @{
+                                    AG01 = New-Object -TypeName Object |
+                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                            # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                            return @{
+                                                AGListener = New-Object -TypeName Object |
+                                                    Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
+                                                        InModuleScope -ScriptBlock {
+                                                            $script:mockMethodDropWasRunCount += 1
+                                                        }
+                                                    } -PassThru -Force
+                                                }
+                                            } -PassThru -Force
                                         }
-                                    } -PassThru -Force
-                            }
-                        )
-                    } -PassThru -Force
+                                    )
+                                } -PassThru -Force
                 }
             }
 
@@ -1205,27 +1275,27 @@ Describe 'SqlAGListener\Set-TargetResource' {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
                         Ensure = 'Present'
-                        Port = 5031
+                        Port   = 5031
                     }
                 }
 
                 Mock -CommandName Connect-SQL -MockWith {
                     return New-Object -TypeName Object |
                         Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
-                        return @(
-                            @{
-                                AG01 = New-Object -TypeName Object |
-                                    Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
-                                    @(
-                                        @{
-                                            AGListener = New-Object -TypeName Object |
-                                                Add-Member -MemberType 'NoteProperty' -Name 'PortNumber' -Value 5031 -PassThru -Force
+                            return @(
+                                @{
+                                    AG01 = New-Object -TypeName Object |
+                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                            @(
+                                                @{
+                                                    AGListener = New-Object -TypeName Object |
+                                                        Add-Member -MemberType 'NoteProperty' -Name 'PortNumber' -Value 5031 -PassThru -Force
+                                                    }
+                                                )
+                                            } -PassThru -Force
                                         }
                                     )
                                 } -PassThru -Force
-                            }
-                        )
-                    } -PassThru -Force
                 }
             }
 
@@ -1247,7 +1317,7 @@ Describe 'SqlAGListener\Set-TargetResource' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Present'
+                            Ensure    = 'Present'
                             IpAddress = '192.168.0.1/255.255.252.0'
                         }
                     }
@@ -1271,7 +1341,7 @@ Describe 'SqlAGListener\Set-TargetResource' {
                     Mock -CommandName Add-SqlAvailabilityGroupListenerStaticIp
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
-                            Ensure = 'Present'
+                            Ensure    = 'Present'
                             IpAddress = @(
                                 '192.168.0.1/255.255.252.0'
                             )
@@ -1281,29 +1351,29 @@ Describe 'SqlAGListener\Set-TargetResource' {
                     Mock -CommandName Connect-SQL -MockWith {
                         return New-Object -TypeName Object |
                             Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
-                            return @(
-                                @{
-                                    AG01 = New-Object -TypeName Object |
-                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
-                                        @(
-                                            @{
-                                                AGListener = New-Object -TypeName Object |
-                                                    Add-Member -MemberType 'NoteProperty' -Name 'PortNumber' -Value 5031 -PassThru |
-                                                    Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListenerIPAddresses' -Value {
-                                                        # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
-                                                        return @(
+                                return @(
+                                    @{
+                                        AG01 = New-Object -TypeName Object |
+                                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                                @(
+                                                    @{
+                                                        AGListener = New-Object -TypeName Object |
+                                                            Add-Member -MemberType 'NoteProperty' -Name 'PortNumber' -Value 5031 -PassThru |
+                                                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListenerIPAddresses' -Value {
+                                                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                                                                return @(
                                                             (New-Object -TypeName Object | # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-                                                                    Add-Member -MemberType 'NoteProperty' -Name 'IPAddress' -Value '192.168.0.1' -PassThru |
-                                                                    Add-Member -MemberType 'NoteProperty' -Name 'SubnetMask' -Value '255.255.252.0' -PassThru -Force
+                                                                        Add-Member -MemberType 'NoteProperty' -Name 'IPAddress' -Value '192.168.0.1' -PassThru |
+                                                                        Add-Member -MemberType 'NoteProperty' -Name 'SubnetMask' -Value '255.255.252.0' -PassThru -Force
                                                             )
+                                                                    )
+                                                                } -PassThru -Force
+                                                            }
                                                         )
                                                     } -PassThru -Force
-                                            }
-                                        )
-                                    } -PassThru -Force
-                                }
-                            )
-                        } -PassThru -Force
+                                                }
+                                            )
+                                        } -PassThru -Force
                     }
                 }
 
@@ -1329,7 +1399,7 @@ Describe 'SqlAGListener\Set-TargetResource' {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
                         Ensure = 'Present'
-                        DHCP = $false
+                        DHCP   = $false
                     }
                 }
             }
@@ -1349,35 +1419,35 @@ Describe 'SqlAGListener\Set-TargetResource' {
     }
 }
 
-Describe 'SqlAGListener\Get-SQLAlwaysOnAvailabilityGroupListener' {
+Describe 'SqlAGListener\Get-SQLAlwaysOnAvailabilityGroupListener' -Skip:($IsLinux -or $IsMacOS) {
     BeforeAll {
         Mock -CommandName Connect-SQL -MockWith {
             return New-Object -TypeName Object |
                 Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroups' -Value {
-                return @(
-                    @{
-                        AG01 = New-Object -TypeName Object |
-                            Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
-                            @(
-                                @{
-                                    AGListener = New-Object -TypeName Object |
-                                        Add-Member -MemberType 'NoteProperty' -Name 'PortNumber' -Value 5031 -PassThru |
-                                        Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListenerIPAddresses' -Value {
-                                            return @(
-                                                # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
+                    return @(
+                        @{
+                            AG01 = New-Object -TypeName Object |
+                                Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListeners' -Value {
+                                    @(
+                                        @{
+                                            AGListener = New-Object -TypeName Object |
+                                                Add-Member -MemberType 'NoteProperty' -Name 'PortNumber' -Value 5031 -PassThru |
+                                                Add-Member -MemberType 'ScriptProperty' -Name 'AvailabilityGroupListenerIPAddresses' -Value {
+                                                    return @(
+                                                        # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddressCollection
                                                 (New-Object -TypeName Object | # TypeName: Microsoft.SqlServer.Management.Smo.AvailabilityGroupListenerIPAddress
-                                                        Add-Member -MemberType 'NoteProperty' -Name 'IsDHCP' -Value $true -PassThru |
-                                                        Add-Member -MemberType 'NoteProperty' -Name 'IPAddress' -Value '192.168.0.1' -PassThru |
-                                                        Add-Member -MemberType 'NoteProperty' -Name 'SubnetMask' -Value '255.255.255.0' -PassThru
+                                                            Add-Member -MemberType 'NoteProperty' -Name 'IsDHCP' -Value $true -PassThru |
+                                                            Add-Member -MemberType 'NoteProperty' -Name 'IPAddress' -Value '192.168.0.1' -PassThru |
+                                                            Add-Member -MemberType 'NoteProperty' -Name 'SubnetMask' -Value '255.255.255.0' -PassThru
                                                 )
+                                                        )
+                                                    } -PassThru -Force
+                                                }
                                             )
                                         } -PassThru -Force
-                                }
-                            )
-                        } -PassThru -Force
-                    }
-                )
-            } -PassThru -Force
+                                    }
+                                )
+                            } -PassThru -Force
         }
     }
 

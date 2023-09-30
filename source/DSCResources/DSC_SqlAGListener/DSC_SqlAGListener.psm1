@@ -43,7 +43,11 @@ function Get-TargetResource
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $AvailabilityGroup
+        $AvailabilityGroup,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProcessOnlyOnActiveNode
     )
 
     Write-Verbose -Message (
@@ -103,15 +107,16 @@ function Get-TargetResource
     }
 
     return @{
-        InstanceName      = [System.String] $InstanceName
-        ServerName        = [System.String] $ServerName
-        Name              = [System.String] $Name
-        Ensure            = [System.String] $ensure
-        AvailabilityGroup = [System.String] $AvailabilityGroup
-        IpAddress         = [System.String[]] $ipAddress
-        Port              = [System.UInt16] $port
-        DHCP              = [System.Boolean] $dhcp
-        IsActiveNode      = [System.Boolean] $isActiveNode
+        InstanceName            = [System.String] $InstanceName
+        ServerName              = [System.String] $ServerName
+        Name                    = [System.String] $Name
+        Ensure                  = [System.String] $ensure
+        AvailabilityGroup       = [System.String] $AvailabilityGroup
+        IpAddress               = [System.String[]] $ipAddress
+        Port                    = [System.UInt16] $port
+        DHCP                    = [System.Boolean] $dhcp
+        ProcessOnlyOnActiveNode = [System.Boolean] $ProcessOnlyOnActiveNode
+        IsActiveNode            = [System.Boolean] $isActiveNode
     }
 }
 
@@ -432,7 +437,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -495,11 +500,13 @@ function Test-TargetResource
         If this is supposed to process only the active node, and this is not the
         active node, don't bother evaluating the test.
     #>
-    if ( $ProcessOnlyOnActiveNode -and -not $IsActiveNode )
+    if ($ProcessOnlyOnActiveNode -and -not $availabilityGroupListenerState.IsActiveNode)
     {
         # Use localization if the resource has been converted
-        New-VerboseMessage -Message ( 'The node "{0}" is not actively hosting the instance "{1}". Exiting the test.' -f $env:COMPUTERNAME, $SQLInstanceName )
+        Write-Verbose -Message ('The node ''{0}'' is not actively hosting the instance ''{1}''. Exiting the test.' -f (Get-ComputerName), $InstanceName)
+
         $result = $true
+
         return $result
     }
 
