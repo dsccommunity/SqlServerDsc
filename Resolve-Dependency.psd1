@@ -4,7 +4,7 @@
     WithYAML        = $true
 
     UsePSResourceGet = $true
-    PSResourceGetVersion = '0.9.0-rc1'
+    PSResourceGetVersion = '1.0.0'
     UsePowerShellGetCompatibilityModule = $true
     UsePowerShellGetCompatibilityModuleVersion = '3.0.22-beta22'
 }
