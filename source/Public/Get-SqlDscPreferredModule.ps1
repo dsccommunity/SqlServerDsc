@@ -118,7 +118,7 @@ function Get-SqlDscPreferredModule
             {
                 # Get the latest version if available
                 $availableModule = $preferredModules |
-                    Sort-Object -Property 'CalculatedVersion' -Descending |
+                    Sort-Object -Property { ($_.CalculatedVersion -replace '-.+$') -as [version] }, { $_ } -Descending |
                     Select-Object -First 1
             }
 
