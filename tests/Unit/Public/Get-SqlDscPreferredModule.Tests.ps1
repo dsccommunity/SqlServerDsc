@@ -510,7 +510,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             Context 'When the environment variable SMODefaultModuleVersion is assigned a module version' {
                 Context 'When the version of the module exists' {
                     BeforeAll {
-                        $env:SMODefaultModuleVersion = '130'
+                        $env:SMODefaultModuleVersion = '13.0'
                     }
 
                     AfterAll {
