@@ -368,6 +368,15 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                         }
                     }
                 }
+                $sqlServerModule3 = New-MockObject -Type 'PSModuleInfo' -Properties @{
+                    Name = 'SqlServer'
+                    Version = [Version]::new(22, 1, 1)
+                    PrivateData = @{
+                        PSData = @{
+                            PreRelease = 'preview2'
+                        }
+                    }
+                }
                 $sqlpsModule1 = New-MockObject -Type 'PSModuleInfo' -Properties @{
                     Name = 'SQLPS'
                     Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
@@ -381,6 +390,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
                     return @(
                         $sqlServerModule1,
                         $sqlServerModule2,
+                        $sqlServerModule3,
                         $sqlpsModule1,
                         $sqlpsModule2
                     )
@@ -388,7 +398,7 @@ Describe 'Get-SqlDscPreferredModule' -Tag 'Public' {
             }
 
             It 'Should return the latest first preferred module' {
-                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be $sqlServerModule2
+                Get-SqlDscPreferredModule -Name @('SqlServer', 'SQLPS') | Should -Be $sqlServerModule3
             }
 
             Context 'When the environment variable SMODefaultModuleVersion is assigned a module version' {
