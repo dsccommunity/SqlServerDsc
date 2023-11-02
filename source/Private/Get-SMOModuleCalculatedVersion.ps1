@@ -46,7 +46,7 @@ function Get-SMOModuleCalculatedVersion
                 Parse the build version number '120', '130' from the Path.
                 Older version of SQLPS did not have correct versioning.
             #>
-            $version = (Select-String -InputObject $PSModuleInfo.Path -Pattern '\\([0-9]{3})\\' -List).Matches.Groups[1].Value
+            $version = $PSModuleInfo.Path -replace '.*\\(\d{2})(\d)\\.*', '$1.$2'
         }
         else
         {

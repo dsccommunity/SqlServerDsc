@@ -95,7 +95,7 @@ Describe 'Get-SMOModuleCalculatedVersion' -Tag 'Private' {
                     Path = 'C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\Modules\SQLPS\Sqlps.ps1'
                 }
 
-                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '130'
+                $sqlServerModule | Get-SMOModuleCalculatedVersion | Should -Be '13.0'
             }
         }
     }
