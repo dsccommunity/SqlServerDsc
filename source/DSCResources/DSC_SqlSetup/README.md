@@ -65,7 +65,7 @@ available on all versions of _SQL Server_.
 - SSMS
 - ADV_SSMS
 
-> [!NOTE]
+> [!IMPORTANT]
 > It is not possible to add or remove features to a SQL Server failover
 > cluster. This is a limitation of SQL Server. See article
 > [You cannot add or remove features to a SQL Server 2008, SQL Server 2008 R2, or
@@ -142,7 +142,7 @@ Feature flags are used to toggle resource functionality on or off. One or
 more feature flags can be added to the parameter `FeatureFlag`, i.e.
 `FeatureFlag = @('DetectionSharedFeatures')`.
 
-> [!NOTE]
+> [!CAUTION]
 > The functionality, exposed with a feature flag, can be changed
 > from one release to another, including having breaking changes.
 
@@ -156,3 +156,5 @@ AnalysisServicesConnection | A new method of loading the assembly *Microsoft.Ana
 ## Known issues
 
 All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlSetup).
+
+> [!IMPORTANT] The setup action AddNode is not currently functional.
