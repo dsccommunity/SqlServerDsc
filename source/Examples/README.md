@@ -140,7 +140,7 @@ changed to match your configuration. Also, please see other resource examples in
 [xFailOverCluster](https://github.com/PowerShell/xFailOverCluster) to see if
 they could improve you configuration, for example the resource xClusterQuorum.
 
-> [!NOTE]
+> [!IMPORTANT]
 > Make sure any user accounts you use in the configuration exist in
 > Active Directory and that they have the correct permission.
 
@@ -151,7 +151,7 @@ The example shows how to
 And this example shows how to
 [install the second SQL Server Failover Cluster node for a named instance](https://github.com/PowerShell/SqlServerDsc/blob/dev/Examples/Resources/SqlSetup/5-InstallNamedInstanceInFailoverClusterSecondNode.ps1).
 
-> [!NOTE]
+> [!IMPORTANT]
 > Make sure any user accounts you use in the configuration exist in
 > Active Directory and that they have the correct permission.
 
@@ -205,6 +205,6 @@ Once AlwaysOn is enabled we can create the Availability Group. The example [Crea
 shows how to create the Availability Group on the primary replica and join the
 Availability Group on the secondary replica.
 
-> [!NOTE]
+> [!IMPORTANT]
 > Make sure any user accounts you use in the configuration exist in
 > Active Directory and that they have the correct permission.

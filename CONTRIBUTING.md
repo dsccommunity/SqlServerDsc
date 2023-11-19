@@ -347,7 +347,7 @@ not be used, neither shall the command `Write-Error` with the parameter
 to throw a terminating error. The exception is when a `[ValidateScript()]`
 has to throw an error, then `throw` must be used.
 
-> [!NOTE]
+> [!IMPORTANT]
 > Below output assumes `$ErrorView` is set to `'NormalView'` in the
 > PowerShell session.
 

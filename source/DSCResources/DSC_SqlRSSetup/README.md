@@ -26,7 +26,7 @@ used, then the installation will run as SYSTEM.
   is successful (because the executable returns exit code 0) but the
   Microsoft SQL Server Reporting Services instance was not actually removed.
 
-> [!NOTE]
+> [!IMPORTANT]
 > When using the action 'Uninstall' and the target node to begin with
 > requires a restart, on the first run the Microsoft SQL Server Reporting
 > Services instance will not be uninstalled, but instead exits with code

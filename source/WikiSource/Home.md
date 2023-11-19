@@ -84,7 +84,7 @@ machine-wide, or at minimum set for each user that runs DSC resources, on
 the target node. Make sure you comply with any license terms that is part
 of dbatools.
 
-> [!NOTE]
+> [!TIP]
 > It is also possible to use any module as a preferred module if
 > its name is set as the value of the environment variable `SMODefaultModuleName`.
 
