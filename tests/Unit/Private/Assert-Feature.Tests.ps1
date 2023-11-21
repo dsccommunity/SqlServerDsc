@@ -54,12 +54,22 @@ Describe 'Assert-Feature' -Tag 'Private' {
             }
         }
 
-        It 'Should not throw an exception' {
-            InModuleScope -Parameters $_ -ScriptBlock {
+        It 'Should not throw an exception for a single feature' {
+            InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
                 {
-                    Assert-Feature -Feature 'RS' -ProductVersion 13
+                    Assert-Feature -Feature 'RS' -ProductVersion '14'
+                } | Should -Not -Throw
+            }
+        }
+
+        It 'Should not throw an exception for multiple features' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                {
+                    Assert-Feature -Feature 'RS', 'SQLENGINE' -ProductVersion '14'
                 } | Should -Not -Throw
             }
         }
@@ -75,7 +85,7 @@ Describe 'Assert-Feature' -Tag 'Private' {
         Context 'When passing a single feature' {
             Context 'When passing as a named parameter' {
                 It 'Should throw the correct error' {
-                    InModuleScope -Parameters $_ -ScriptBlock {
+                    InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
                         {
@@ -87,7 +97,7 @@ Describe 'Assert-Feature' -Tag 'Private' {
 
             Context 'When passing over the pipeline' {
                 It 'Should throw the correct error' {
-                    InModuleScope -Parameters $_ -ScriptBlock {
+                    InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
                         {
@@ -101,7 +111,7 @@ Describe 'Assert-Feature' -Tag 'Private' {
         Context 'When passing multiple features' {
             Context 'When passing as a named parameter' {
                 It 'Should throw the correct error' {
-                    InModuleScope -Parameters $_ -ScriptBlock {
+                    InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
                         {
@@ -113,7 +123,7 @@ Describe 'Assert-Feature' -Tag 'Private' {
 
             Context 'When passing over the pipeline' {
                 It 'Should throw the correct error' {
-                    InModuleScope -Parameters $_ -ScriptBlock {
+                    InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
                         {
