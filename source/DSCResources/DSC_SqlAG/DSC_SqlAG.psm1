@@ -753,6 +753,7 @@ function Test-TargetResource
             {
                 $parametersToCheck += 'BasicAvailabilityGroup'
                 $parametersToCheck += 'DatabaseHealthTrigger'
+                $parametersToCheck += 'DtcSupportEnabled'
                 if ( $getTargetResourceResult.SeedingMode )
                 {
                     $parametersToCheck += 'SeedingMode'
