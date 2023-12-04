@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Remove duplicate import of DscResource.Common in source/prefix.ps1
+
 ### Fixed
 
 - SqlServerDsc
