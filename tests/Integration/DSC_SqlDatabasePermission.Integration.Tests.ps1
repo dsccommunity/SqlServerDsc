@@ -115,6 +115,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $grantState.Permission | Should -Contain 'Connect'
             $grantState.Permission | Should -Contain 'Select'
             $grantState.Permission | Should -Contain 'CreateTable'
+
+            $resourceCurrentState.Credential | Should -BeOfType [PSCredential]
+            $resourceCurrentState.Credential.Username | Should -Be 'SqlAdmin'
+            $resourceCurrentState.Credential.Password | Should -BeNullOrEmpty
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -725,6 +729,10 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         $resourceCurrentState.Reasons | Should -HaveCount 1
                         $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
                         $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["connect","update","alter"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["Connect"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
+
+                        $resourceCurrentState.Credential | Should -BeOfType [PSCredential]
+                        $resourceCurrentState.Credential.Username | Should -Be 'SqlAdmin'
+                        $resourceCurrentState.Credential.Password | Should -BeNullOrEmpty
                     }
 
                     It 'Should run method Test() and return the state as $false' {

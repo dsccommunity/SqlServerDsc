@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Fix sort to get the latest version
 - `Assert-Feature`
   - Fixed unit tests.
+- SqlDatabasePermission
+  - Now correctly return the username in the property `Credential`.
 
 ### Changed
 

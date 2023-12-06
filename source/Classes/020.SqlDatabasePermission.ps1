@@ -206,10 +206,22 @@ class SqlDatabasePermission : SqlResourceBase
                 return an empty PSCredential-object. Kept it here so it at least
                 return a Credential object.
             #>
-            $currentStateCredential = [PSCredential]::new(
-                $this.Credential.UserName,
-                [SecureString]::new()
-            )
+            # $currentStateCredential = [PSCredential]::new(
+            #     $this.Credential.UserName,
+            #     [SecureString]::new()
+            # )
+
+            $newCimInstanceParameters = @{
+                ClassName = 'MSFT_Credential'
+                ClientOnly = $true
+                Namespace = 'root/microsoft/windows/desiredstateconfiguration'
+                Property = @{
+                    UserName = [System.String] $this.Credential.UserName
+                    Password = ''#$null
+                }
+            }
+
+            $currentStateCredential = New-CimInstance @newCimInstanceParameters
         }
 
         $currentState = @{
