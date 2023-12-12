@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SqlServerDsc
+  - Added build tasks to generate Wiki documentation for public commands.
+
 ### Fixed
 
 - SqlServerDsc

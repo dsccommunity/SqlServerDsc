@@ -15,6 +15,10 @@ BuildWorkflow:
     - Generate_Conceptual_Help
     - Generate_Wiki_Content
     - Package_WikContent
+    #- Set_Documentation_Variables
+    #- Generate_Markdown_For_Public_Commands
+    #- Generate_External_Help_File_For_Public_Commands
+    #- Clean_Markdown_Of_Public_Commands
 
   fastbuild:
     - Clean
@@ -40,13 +44,6 @@ BuildWorkflow:
 
   Package_WikContent: |
     {
-        <#
-            This is quick fix for issue https://github.com/PoshCode/ModuleBuilder/issues/103.
-            Aliases need to be added to module manifest, and we can only use
-            New-Alias or Set-Alias together with build tasks. This module
-            already automatically exports aliases using [Alias()] so this quick
-            fix is meant as a workaround until the above issue is resolved.
-        #>
         param
         (
             $OutputDirectory = (property OutputDirectory (Join-Path $BuildRoot 'output')),
@@ -72,6 +69,59 @@ BuildWorkflow:
 
         # Overwrites any existing archive.
         Compress-Archive -Path $wikiArchiveSourcePath -DestinationPath $wikiPackagePath -CompressionLevel 'Optimal' -Force -ErrorAction 'Stop'
+    }
+
+  Set_Documentation_Variables: |
+    {
+        param
+        (
+            $OutputDirectory = (property OutputDirectory (Join-Path $BuildRoot 'output')),
+            # $TestsDirectory = (property TestsDirectory (Join-Path $BuildRoot 'tests')),
+            # $UnitTestsDirectory = (property UnitTestsDirectory (Join-Path $TestsDirectory 'Unit')),
+            # $StubDirectory = (property StubDirectory (Join-Path $UnitTestsDirectory 'Stubs')),
+            $BuildInfo = (property BuildInfo @{ })
+        )
+
+        # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
+        . Set-SamplerTaskVariable
+
+        "`tProject Name             = {0}" -f $ProjectName
+        "`tOutput Directory         = {0}" -f $OutputDirectory
+
+        $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath 'WikiContent'
+
+        "`tWiki Output Path         = $wikiOutputPath"
+
+        if (-not (Test-Path -Path $wikiOutputPath))
+        {
+            throw 'The Wiki Output Path does not exist. Please run the task Generate_Wiki_Content prior to running this task.'
+        }
+
+        # Set documentation output folder to the output/WikiContent folder.
+        $env:DocOutputFolder = $wikiOutputPath
+
+        # Set that New-MarkdownHelpPage should not generate the module page.
+        $env:WithModulePage = [System.Boolean] $false
+
+        "`tWith Module Page         = $env:WithModulePage"
+
+        # ""
+
+        # "`tTests Directory      = {0}" -f $TestsDirectory
+        # "`tUnit Tests Directory = {0}" -f $UnitTestsDirectory
+        # "`tStub Directory       = {0}" -f $StubDirectory
+
+        # $SMOStub = 'SMO.cs'
+
+        # "`tSMO Stubs            = {0}" -f $SMOStub
+
+        # $env:DependentType = @(Join-Path -Path $StubDirectory -ChildPath 'SMO.cs')
+
+        # "`tDependent Types      = $($env:DependentType -join ', ')"
+
+        $env:DependentModule = 'SqlServer'
+
+        "`tDependent Types      = $($env:DependentModule -join ', ')"
     }
 
 ####################################################
