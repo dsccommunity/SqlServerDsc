@@ -717,7 +717,7 @@ Describe 'SqlAG\Set-TargetResource' {
                     ConnectionModeInPrimaryRole   = 'AllowAllConnections'
                     ConnectionModeInSecondaryRole = 'AllowNoConnections'
                     EndpointHostName              = 'Server1'
-                    FailureConditionLevel         = 'OnServerUnresponsive '
+                    FailureConditionLevel         = 'OnServerUnresponsive'
                     FailoverMode                  = 'Manual'
                     SeedingMode                   = 'Manual'
                 }
