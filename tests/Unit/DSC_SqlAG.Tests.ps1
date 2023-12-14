@@ -779,7 +779,7 @@ Describe 'SqlAG\Set-TargetResource' {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
                 }
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
                 }
 
