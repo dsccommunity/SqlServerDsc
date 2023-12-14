@@ -752,7 +752,6 @@ function Test-TargetResource
 
             <#
                 Add properties compatible with SQL Server 2016 or later versions
-                DtcSupportEnabled is enabled at the creation of the Availability Group only, hence it will not be checked in this block
                 SeedingMode should be checked only in case if New-SqlAvailabilityReplica support the SeedingMode parameter
             #>
             if ( $sqlMajorVersion -ge 13 )
