@@ -464,6 +464,12 @@ function Set-TargetResource
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
                 }
 
+                if ( ( $submittedParameters -contains 'DtcSupportEnabled' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $DtcSupportEnabled -ne $availabilityGroup.DtcSupportEnabled ) )
+                {
+                    $availabilityGroup.DtcSupportEnabled = $DtcSupportEnabled
+                    Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
+                }
+
                 # Make sure ConnectionModeInPrimaryRole has a value in order to avoid false positive matches when the parameter is not defined
                 if ( ( $submittedParameters -contains 'ConnectionModeInPrimaryRole' ) -and ( -not [System.String]::IsNullOrEmpty($ConnectionModeInPrimaryRole) ) -and ( $ConnectionModeInPrimaryRole -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].ConnectionModeInPrimaryRole ) )
                 {
