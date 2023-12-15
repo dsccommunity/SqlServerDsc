@@ -14,9 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Fix sort to get the latest version
 - `Assert-Feature`
   - Fixed unit tests.
+- SqlAGReplica
+  - Fix unit test FailedRemoveAvailabilityGroupReplica
 
 ### Changed
 
+- SqlAG
+  - Converted unit test to Pester 5
+  - DtcSupportEnabled option in Set-TargetResource and TestTargetResource
 - SqlServerDsc
   - Bump PSResourceGet to v1.0.0 (used when resolving dependencies).
   - Update markdown highlights with newly supported keywords.
