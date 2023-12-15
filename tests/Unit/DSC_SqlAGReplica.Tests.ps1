@@ -574,8 +574,9 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         Ensure                = 'Absent'
                     }
 
-                    $mockErrorMessage = $script:localizedData.RemoveAvailabilityGroupReplicaFailed -f $setTargetResourceParameters.Name, $setTargetResourceParameters.AvailabilityGroupName, $setTargetResourceParameters.InstanceName
-
+                    $mockErrorMessage = Get-InvalidOperationRecord -Message (
+                        ($script:localizedData.FailedRemoveAvailabilityGroupReplica -f $setTargetResourceParameters.Name, $setTargetResourceParameters.AvailabilityGroupName, $setTargetResourceParameters.InstanceName) + "*"
+                    )
                     { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
                 }
 

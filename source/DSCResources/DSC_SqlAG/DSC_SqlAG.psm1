@@ -464,6 +464,12 @@ function Set-TargetResource
                     Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
                 }
 
+                if ( ( $submittedParameters -contains 'DtcSupportEnabled' ) -and ( $sqlMajorVersion -ge 13 ) -and ( $DtcSupportEnabled -ne $availabilityGroup.DtcSupportEnabled ) )
+                {
+                    $availabilityGroup.DtcSupportEnabled = $DtcSupportEnabled
+                    Update-AvailabilityGroup -AvailabilityGroup $availabilityGroup
+                }
+
                 # Make sure ConnectionModeInPrimaryRole has a value in order to avoid false positive matches when the parameter is not defined
                 if ( ( $submittedParameters -contains 'ConnectionModeInPrimaryRole' ) -and ( -not [System.String]::IsNullOrEmpty($ConnectionModeInPrimaryRole) ) -and ( $ConnectionModeInPrimaryRole -ne $availabilityGroup.AvailabilityReplicas[$serverObject.DomainInstanceName].ConnectionModeInPrimaryRole ) )
                 {
@@ -746,13 +752,13 @@ function Test-TargetResource
 
             <#
                 Add properties compatible with SQL Server 2016 or later versions
-                DtcSupportEnabled is enabled at the creation of the Availability Group only, hence it will not be checked in this block
                 SeedingMode should be checked only in case if New-SqlAvailabilityReplica support the SeedingMode parameter
             #>
             if ( $sqlMajorVersion -ge 13 )
             {
                 $parametersToCheck += 'BasicAvailabilityGroup'
                 $parametersToCheck += 'DatabaseHealthTrigger'
+                $parametersToCheck += 'DtcSupportEnabled'
                 if ( $getTargetResourceResult.SeedingMode )
                 {
                     $parametersToCheck += 'SeedingMode'

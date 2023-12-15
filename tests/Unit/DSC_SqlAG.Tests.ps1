@@ -1,25 +1,41 @@
 <#
     .SYNOPSIS
-        Automated unit test for DSC_SqlAG DSC resource.
+        Unit test for DSC_SqlAG DSC resource.
 #>
 
-return
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+# Suppressing this rule because tests are mocking passwords in clear text.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
+param ()
 
-Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
-
-$script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlAG'
-
-function Invoke-TestSetup
-{
+BeforeDiscovery {
     try
     {
-        Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
+        if (-not (Get-Module -Name 'DscResource.Test'))
+        {
+            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
+            {
+                # Redirect all streams to $null, except the error stream (stream 2)
+                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+            }
+
+            # If the dependencies has not been resolved, this will throw an error.
+            Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
+}
+
+BeforeAll {
+    $script:dscModuleName = 'SqlServerDsc'
+    $script:dscResourceName = 'DSC_SqlAG'
+
+    $env:SqlServerDscCI = $true
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
@@ -27,1399 +43,1539 @@ function Invoke-TestSetup
         -ResourceType 'Mof' `
         -TestType 'Unit'
 
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
     # Loading mocked classes
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
 
-    # Load the default SQL Module stub
-    Import-SQLModuleStub
+    # Load the correct SQL Module stub
+    $script:stubModuleName = Import-SQLModuleStub -PassThru
+
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
 }
 
-function Invoke-TestCleanup
-{
+AfterAll {
+    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
+    $PSDefaultParameterValues.Remove('Mock:ModuleName')
+    $PSDefaultParameterValues.Remove('Should:ModuleName')
+
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+
+    # Unload the module being tested so that it doesn't impact any other tests.
+    Get-Module -Name $script:dscResourceName -All | Remove-Module -Force
+
+    # Unload the stub module.
+    Remove-SqlModuleStub -Name $script:stubModuleName
+
+    # Remove module common test helper.
+    Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
+
+    Remove-Item -Path 'env:SqlServerDscCI'
 }
-
-Invoke-TestSetup
-
-try
-{
-    InModuleScope $script:dscResourceName {
-        # This is relative to the path of the resource module script, not test test script.
-        $script:moduleRoot = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
-        Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'CommonTestHelper.psm1'))) -Force
-
-        #region parameter mocks
-
-        # Define the values that could be passed into the Name parameter
-        $mockNameParameters = @{
-            AbsentAvailabilityGroup = 'AvailabilityGroup2'
-            CreateAvailabilityGroupFailed = 'AvailabilityGroup5'
-            CreateAvailabilityGroupReplicaFailed = 'AvailabilityGroup4'
-            PresentAvailabilityGroup = 'AvailabilityGroup1'
-            RemoveAvailabilityGroupFailed = 'AvailabilityGroup3'
-        }
-
-        # Define the values that could be passed into the ServerName parameter
-        $mockSqlServerParameters = @{
-            Server1 = @{
-                FQDN = 'Server1.contoso.com'
-                #IP = '192.168.1.1'
-                #NetBIOS = 'Server1'
-            }
-
-            Server2 = @{
-                FQDN = 'Server2.contoso.com'
-                #IP = '192.168.1.2'
-                #NetBIOS = 'Server2'
-            }
-        }
-
-        # Define the values that could be passed into the InstanceName parameter
-        $mockInstanceNameParameters = @(
-            'MSSQLSERVER',
-            'NamedInstance'
-        )
-
-        $mockProcessOnlyOnActiveNode = $true
-
-        #endregion parameter mocks
-
-        #region property mocks
-
-        $mockIsHadrEnabled = $true
-        $mockIsDatabaseMirroringEndpointPresent = $true
-
-        $mockServerObjectProperties = @{
-            Server1 = @{
-                NetName = 'Server1'
-            }
-
-            Server2 = @{
-                NetName = 'Server2'
-            }
-        }
-
-        $mockAvailabilityGroupProperties = @{
-            AutomatedBackupPreference = 'Secondary' # Not the default parameter value
-            BasicAvailabilityGroup = $true # Not the default parameter value
-            DatabaseHealthTrigger = $true # Not the default parameter value
-            DtcSupportEnabled = $true # Not the default parameter value
-            FailureConditionLevel = 'OnCriticalServerErrors' # Not the default parameter value
-            HealthCheckTimeout = 20000
-            Name = $mockNameParameters.PresentAvailabilityGroup
-            PrimaryReplicaServerName = $mockServerObjectProperties.Server1.NetName
-        }
-
-        $mockAvailabilityGroupReplicaProperties = @{
-            Server1 = @{
-                AvailabilityMode = 'SynchronousCommit' # Not the default parameter value
-                BackupPriority = 49 # Not the default parameter value
-                ConnectionModeInPrimaryRole = 'AllowAllConnections' # Not the default parameter value
-                ConnectionModeInSecondaryRole = 'AllowNoConnections' # Not the default parameter value
-                EndpointHostName = $mockServerObjectProperties.Server1.NetName
-                EndpointProtocol = 'TCP'
-                EndpointPort = 5022
-                FailoverMode = 'Automatic' # Not the default parameter value
-                Name = $mockServerObjectProperties.Server1.NetName
-                Role = 'Primary'
-            }
-
-            Server2 = @{
-                AvailabilityMode = 'SynchronousCommit' # Not the default parameter value
-                BackupPriority = 49 # Not the default parameter value
-                ConnectionModeInPrimaryRole = 'AllowAllConnections' # Not the default parameter value
-                ConnectionModeInSecondaryRole = 'AllowNoConnections' # Not the default parameter value
-                EndpointHostName = $mockServerObjectProperties.Server2.NetName
-                EndpointProtocol = 'TCP'
-                EndpointPort = 5022
-                FailoverMode = 'Automatic' # Not the default parameter value
-                Name = $mockServerObjectProperties.Server2.NetName
-                Role = 'Primary'
-            }
-        }
-
-        $mockDatabaseMirroringEndpointProperties = @{
-            Protocol = 'TCP'
-            ListenerPort = 5022
-        }
-
-        #endregion property mocks
-
-        #region test cases
-
-        $getTargetResourceAbsentTestCases = @()
-        $getTargetResourcePresentTestCases = @()
-        $setTargetResourceCreateAvailabilityGroupFailedTestCases = @()
-        $setTargetResourceCreateAvailabilityGroupWithParameterTestCases = @()
-        $setTargetResourcesEndpointUrlTestCases = @()
-        $setTargetResourceEndpointMissingTestCases = @()
-        $setTargetResourceHadrDisabledTestCases = @()
-        $setTargetResourcePropertyIncorrectTestCases = @()
-        $setTargetResourceRemoveAvailabilityGroupTestCases = @()
-        $setTargetResourceRemoveAvailabilityGroupErrorTestCases = @()
-        $testTargetResourceAbsentTestCases = @()
-        $testTargetResourceEndpointIncorrectTestCases = @()
-        $testTargetResourcePresentTestCases = @()
-        $testTargetResourcePropertyIncorrectTestCases = @()
-        $testTargetResourceProcessOnlyOnActiveNodeTestCases = @()
-
-        $majorVersionsToTest = @(12,13)
-        $ensureCasesToTest = @('Absent','Present')
-        $endpointUrlPropertiesToTest = @('EndpointPort','EndpointProtocol')
-
-        $createAvailabilityGroupFailuresToTest = @{
-            $mockNameParameters.CreateAvailabilityGroupFailed = 'CreateAvailabilityGroupFailed'
-            $mockNameParameters.CreateAvailabilityGroupReplicaFailed = 'CreateAvailabilityGroupReplicaFailed'
-        }
-
-        # Get all of the parameters tied with the resource except the required parameters, Ensure, and DtcSupportEnabled
-        $resourceParameters = @{}
-        ( Get-Command -Name Test-TargetResource ).Parameters.Values | Where-Object -FilterScript {
-            (
-                # Ignore these specific parameters. These get tested enough.
-                @('Ensure', 'Name', 'ServerName', 'InstanceName', 'DtcSupportEnabled', 'ProcessOnlyOnActiveNode') -notcontains $_.Name
-            ) -and (
-                # Ignore the CmdletBinding parameters
-                $_.Attributes.TypeId.Name -notcontains 'AliasAttribute'
-            )
-        } | ForEach-Object -Process {
-            $currentParameter = $_.Name
-
-            $resourceParameters.Add(
-                $currentParameter,
-                ( @($mockAvailabilityGroupProperties.$currentParameter,$mockAvailabilityGroupReplicaProperties.Server1.$currentParameter) -join '' )
-            )
-        }
-
-        # Define the properties that are SQL 2016 and newer
-        $sql13AvailabilityGroupProperties = @(
-            'BasicAvailabilityGroup'
-            'DatabaseHealthTrigger'
-            'DtcSupportEnabled'
-        )
-
-        foreach ( $majorVersionToTest in $majorVersionsToTest )
-        {
-            foreach ( $mockSqlServer in $mockSqlServerParameters.GetEnumerator() )
-            {
-                # Determine with SQL Server mock will be used
-                $mockSqlServerToBeUsed = $mockSqlServer.Key
-
-                foreach ( $mockSqlServerParameter in $mockSqlServer.Value.Values )
-                {
-                    foreach ( $mockInstanceNameParameter in $mockInstanceNameParameters )
-                    {
-                        # Build the domain instance name
-                        if ( $mockInstanceNameParameter -eq 'MSSQLSERVER' )
-                        {
-                            $domainInstanceNameProperty = $mockSqlServerParameter
-                        }
-                        else
-                        {
-                            $domainInstanceNameProperty = '{0}\{1}' -f $mockSqlServerParameter,$mockInstanceNameParameter
-                        }
-
-                        if ( $mockSqlServerToBeUsed -eq 'Server1' )
-                        {
-                            $getTargetResourceAbsentTestCases += @{
-                                Name = $mockNameParameters.AbsentAvailabilityGroup
-                                ServerName = $mockSqlServerParameter
-                                InstanceName = $mockInstanceNameParameter
-                                Version = $majorVersionToTest
-                            }
-
-                            $getTargetResourcePresentTestCases += @{
-                                Name = $mockNameParameters.PresentAvailabilityGroup
-                                ServerName = $mockSqlServerParameter
-                                InstanceName = $mockInstanceNameParameter
-                                Version = $majorVersionToTest
-                            }
-
-                            foreach ( $createAvailabilityGroupFailureToTest in $createAvailabilityGroupFailuresToTest.GetEnumerator() )
-                            {
-                                $setTargetResourceCreateAvailabilityGroupFailedTestCases += @{
-                                    ErrorResult = $createAvailabilityGroupFailureToTest.Value
-                                    Ensure = 'Present'
-                                    Name = $createAvailabilityGroupFailureToTest.Key
-                                    ServerName = $mockSqlServerParameter
-                                    InstanceName = $mockInstanceNameParameter
-                                    Version = $majorVersionToTest
-                                }
-                            }
-
-                            $setTargetResourceEndpointMissingTestCases += @{
-                                Ensure = 'Present'
-                                Name = $mockNameParameters.AbsentAvailabilityGroup
-                                Result = $script:localizedData.DatabaseMirroringEndpointNotFound -f ('{0}\{1}' -f $mockSqlServerParameter, $mockInstanceNameParameter)
-                                ServerName = $mockSqlServerParameter
-                                InstanceName = $mockInstanceNameParameter
-                                Version = $majorVersionToTest
-                            }
-
-                            $setTargetResourceHadrDisabledTestCases += @{
-                                Ensure = 'Present'
-                                Name = $mockNameParameters.AbsentAvailabilityGroup
-                                Result = $script:localizedData.HadrNotEnabled
-                                ServerName = $mockSqlServerParameter
-                                InstanceName = $mockInstanceNameParameter
-                                Version = $majorVersionToTest
-                            }
-
-                            $setTargetResourceRemoveAvailabilityGroupTestCases += @{
-                                Ensure = 'Absent'
-                                Name = $mockNameParameters.PresentAvailabilityGroup
-                                ServerName = $mockSqlServerParameter
-                                InstanceName = $mockInstanceNameParameter
-                                Version = $majorVersionToTest
-                            }
-                        }
-
-                        switch ( $mockSqlServerToBeUsed )
-                        {
-                            'Server1'
-                            {
-                                $setTargetResourceRemoveAvailabilityGroupErrorTestCaseErrorResult = 'RemoveAvailabilityGroupFailed'
-                                $setTargetResourceRemoveAvailabilityGroupErrorTestCaseName = $mockNameParameters.RemoveAvailabilityGroupFailed
-                            }
-
-                            'Server2'
-                            {
-                                $setTargetResourceRemoveAvailabilityGroupErrorTestCaseErrorResult = 'InstanceNotPrimaryReplica'
-                                $setTargetResourceRemoveAvailabilityGroupErrorTestCaseName = $mockNameParameters.PresentAvailabilityGroup
-                            }
-                        }
-
-                        $setTargetResourceRemoveAvailabilityGroupErrorTestCases += @{
-                            ErrorResult = $setTargetResourceRemoveAvailabilityGroupErrorTestCaseErrorResult
-                            Ensure = 'Absent'
-                            Name = $setTargetResourceRemoveAvailabilityGroupErrorTestCaseName
-                            ServerName = $mockSqlServerParameter
-                            InstanceName = $mockInstanceNameParameter
-                            Version = $majorVersionToTest
-                        }
-
-                        foreach ( $processOnlyOnActiveNode in @($true,$false) )
-                        {
-                            $testTargetResourceProcessOnlyOnActiveNodeTestCases += @{
-                                Ensure = 'Present'
-                                Name = $mockNameParameters.PresentAvailabilityGroup
-                                ProcessOnlyOnActiveNode = $processOnlyOnActiveNode
-                                ServerName = $mockSqlServerParameter
-                                InstanceName = $mockInstanceNameParameter
-                                Version = $majorVersionToTest
-                            }
-                        }
-
-                        # Create test cases for Absent/Present
-                        foreach ( $ensureCaseToTest in $ensureCasesToTest )
-                        {
-                            $testTargetResourceAbsentTestCases += @{
-                                Ensure = $ensureCaseToTest
-                                Name = $mockNameParameters.AbsentAvailabilityGroup
-                                Result = ( $ensureCaseToTest -eq 'Absent' )
-                                ServerName = $mockSqlServerParameter
-                                InstanceName = $mockInstanceNameParameter
-                                Version = $majorVersionToTest
-                            }
-
-                            $testTargetResourcePresentTestCases += @{
-                                Ensure = $ensureCaseToTest
-                                Name = $mockNameParameters.PresentAvailabilityGroup
-                                Result = ( $ensureCaseToTest -eq 'Present' )
-                                ServerName = $mockSqlServerParameter
-                                InstanceName = $mockInstanceNameParameter
-                                Version = $majorVersionToTest
-                            }
-                        }
-
-                        # Create Present test cases for each parameter
-                        foreach ( $resourceParameter in $resourceParameters.GetEnumerator() )
-                        {
-                            # Move on if we're testing a version less than 13 and it's a property that was only introduced in 13
-                            if ( ( $sql13AvailabilityGroupProperties -contains $resourceParameter.Key ) -and ( $majorVersionToTest -lt 13 ) )
-                            {
-                                # Move to the next parameter
-                                continue
-                            }
-
-                            # Get the current parameter object
-                            $currentParameterObject = ( Get-Command Test-TargetResource ).Parameters.($resourceParameter.Key)
-
-                            switch ( $currentParameterObject.ParameterType.ToString() )
-                            {
-                                'System.Boolean'
-                                {
-                                    # Get the opposite value of what is supplied
-                                    $testCaseParameterValue = -not $resourceParameter.Value
-                                }
-
-                                'System.UInt32'
-                                {
-                                    # Change the supplied number to something else. Absolute value is to protect against zero minus 1
-                                    $testCaseParameterValue = [System.Math]::Abs( ( $resourceParameter.Value - 1 ) )
-                                }
-
-                                'System.String'
-                                {
-                                    # Get the valid values for the current parameter
-                                    $currentParameterValidValues = $currentParameterObject.Attributes.ValidValues
-
-                                    # Select a value other than what is defined in the mocks
-                                    $testCaseParameterValue = $currentParameterValidValues | Where-Object -FilterScript {
-                                        $_ -ne $resourceParameter.Value
-                                    } | Select-Object -First 1
-
-                                    # If the value is null or empty, set it to something
-                                    if ( [System.String]::IsNullOrEmpty($testCaseParameterValue) )
-                                    {
-                                        $testCaseParameterValue = 'AnotherHostName'
-                                    }
-                                }
-
-                                default
-                                {
-                                    $testCaseParameterValue = $null
-                                }
-                            }
-
-                            if ( $mockSqlServerToBeUsed -eq 'Server1' )
-                            {
-                                $setTargetResourceCreateAvailabilityGroupWithParameterTestCases += @{
-                                    DomainInstanceName = $domainInstanceNameProperty
-                                    Ensure = 'Present'
-                                    Name = $mockNameParameters.AbsentAvailabilityGroup
-                                    ParameterName = $resourceParameter.Key
-                                    ParameterValue = $testCaseParameterValue
-                                    ServerName = $mockSqlServerParameter
-                                    InstanceName = $mockInstanceNameParameter
-                                    Version = $majorVersionToTest
-                                }
-                            }
-
-                            $setTargetResourcePropertyIncorrectTestCases += @{
-                                Ensure = 'Present'
-                                Name = $mockNameParameters.PresentAvailabilityGroup
-                                ParameterName = $resourceParameter.Key
-                                ParameterValue = $testCaseParameterValue
-                                Result = $false
-                                ServerName = $mockSqlServerParameter
-                                InstanceName = $mockInstanceNameParameter
-                                Version = $majorVersionToTest
-                            }
-
-                            $testTargetResourcePropertyIncorrectTestCases += @{
-                                Ensure = 'Present'
-                                Name = $mockNameParameters.PresentAvailabilityGroup
-                                ParameterName = $resourceParameter.Key
-                                ParameterValue = $testCaseParameterValue
-                                Result = $false
-                                ServerName = $mockSqlServerParameter
-                                InstanceName = $mockInstanceNameParameter
-                                Version = $majorVersionToTest
-                            }
-                        }
-
-                        # Create Present test cases for the endpoint components
-                        foreach ( $endpointProperty in $endpointUrlPropertiesToTest )
-                        {
-                            switch ( $mockAvailabilityGroupReplicaProperties.Server1.$endpointProperty.GetType().ToString() )
-                            {
-                                'System.Int32'
-                                {
-                                    # Change the supplied number to something else. Absolute value is to protect against zero minus 1
-                                    $endpointPropertyValue = [System.Math]::Abs( ( $mockAvailabilityGroupReplicaProperties.Server1.$endpointProperty - 1 ) )
-                                }
-
-                                'System.String'
-                                {
-                                    $endpointPropertyValue = 'UDP'
-                                }
-                            }
-
-                            $setTargetResourcesEndpointUrlTestCases += @{
-                                EndpointPropertyName = $endpointProperty
-                                EndpointPropertyValue = $endpointPropertyValue
-                                Ensure = 'Present'
-                                Name = $mockNameParameters.PresentAvailabilityGroup
-                                ServerName = $mockSqlServerParameter
-                                InstanceName = $mockInstanceNameParameter
-                                Version = $majorVersionToTest
-                            }
-
-                            $testTargetResourceEndpointIncorrectTestCases += @{
-                                EndpointPropertyName = $endpointProperty
-                                EndpointPropertyValue = $endpointPropertyValue
-                                Ensure = 'Present'
-                                Name = $mockNameParameters.PresentAvailabilityGroup
-                                Result = $false
-                                ServerName = $mockSqlServerParameter
-                                InstanceName = $mockInstanceNameParameter
-                                Version = $majorVersionToTest
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        #endregion test cases
-
-        #region cmdlet mocks
-
-        $mockConnectSql = {
-            param
-            (
-                [Parameter()]
-                [System.String]
-                $ServerName,
-
-                [Parameter()]
-                [System.String]
-                $InstanceName,
-
-                # The following two parameters are used to mock Get-PrimaryReplicaServerObject
-                [Parameter()]
-                [Microsoft.SqlServer.Management.Smo.AvailabilityGroup]
-                $AvailabilityGroup,
-
-                [Parameter()]
-                [Microsoft.SqlServer.Management.Smo.Server]
-                $ServerObject
-            )
-
-            # If this mock function is called from the Get-PrimaryReplicaServerObject command mock
-            if ( [System.String]::IsNullOrEmpty($ServerName) -and [System.String]::IsNullOrEmpty($InstanceName) -and $AvailabilityGroup -and $ServerObject )
-            {
-                $ServerName,$InstanceName = $AvailabilityGroup.PrimaryReplicaServerName.Split('\')
-            }
-
-            # Determine which SQL Server mock data we will use
-            $mockSqlServer = ( $mockSqlServerParameters.GetEnumerator() | Where-Object -FilterScript { $_.Value.Values -contains $ServerName } ).Name
-            if ( [System.String]::IsNullOrEmpty($mockSqlServer) )
-            {
-                $mockSqlServer = $ServerName
-            }
-            $mockCurrentServerObjectProperties = $mockServerObjectProperties.$mockSqlServer
-
-            # Build the domain instance name
-            if ( ( $InstanceName -eq 'MSSQLSERVER' ) -or [System.String]::IsNullOrEmpty($InstanceName) )
-            {
-                $mockDomainInstanceName = $mockCurrentServerObjectProperties.NetName
-                $mockPrimaryReplicaServerName = $mockAvailabilityGroupProperties.PrimaryReplicaServerName
-                $mockAvailabilityGroupReplica1Name = $mockAvailabilityGroupReplicaProperties.Server1.Name
-                $mockAvailabilityGroupReplica2Name = $mockAvailabilityGroupReplicaProperties.Server2.Name
-            }
-            else
-            {
-                $mockDomainInstanceName = '{0}\{1}' -f $mockCurrentServerObjectProperties.NetName,$InstanceName
-                $mockPrimaryReplicaServerName = '{0}\{1}' -f $mockAvailabilityGroupProperties.PrimaryReplicaServerName,$InstanceName
-                $mockAvailabilityGroupReplica1Name = '{0}\{1}' -f $mockAvailabilityGroupReplicaProperties.Server1.Name,$InstanceName
-                $mockAvailabilityGroupReplica2Name = '{0}\{1}' -f $mockAvailabilityGroupReplicaProperties.Server2.Name,$InstanceName
-
-            }
-
+Describe 'SqlAG\Get-TargetResource' {
+    BeforeAll {
+        $mockConnectSqlServer1 = {
+            # Mock the server object
             $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
-            $mockServerObject.DomainInstanceName = $mockDomainInstanceName
-            $mockServerObject.IsHadrEnabled = $mockIsHadrEnabled
-            $mockServerObject.Name = $ServerName
-            $mockServerObject.NetName = $mockCurrentServerObjectProperties.NetName
-            $mockServerObject.ServiceName = $InstanceName
+            $mockServerObject.Name = 'Server1'
+            $mockServerObject.NetName = 'Server1'
+            $mockServerObject.DomainInstanceName = 'Server1'
+            $mockServerObject.IsHadrEnabled = $true
+            $mockServerObject.ServiceName = 'MSSQLSERVER'
             $mockServerObject.Version = @{
-                Major = $Version
+                Major = 13
             }
 
-            # Define the availability group object
-            $mockAvailabilityGroupObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
-            $mockAvailabilityGroupObject.AutomatedBackupPreference = $mockAvailabilityGroupProperties.AutomatedBackupPreference
-            $mockAvailabilityGroupObject.FailureConditionLevel = $mockAvailabilityGroupProperties.FailureConditionLevel
-            $mockAvailabilityGroupObject.HealthCheckTimeout = $mockAvailabilityGroupProperties.HealthCheckTimeout
-            $mockAvailabilityGroupObject.Name = $mockAvailabilityGroupProperties.Name
-            $mockAvailabilityGroupObject.PrimaryReplicaServerName = $mockPrimaryReplicaServerName
-            if ( $Version -ge 13 )
-            {
-                $mockAvailabilityGroupObject.BasicAvailabilityGroup = $mockAvailabilityGroupProperties.BasicAvailabilityGroup
-                $mockAvailabilityGroupObject.DatabaseHealthTrigger = $mockAvailabilityGroupProperties.DatabaseHealthTrigger
-                $mockAvailabilityGroupObject.DtcSupportEnabled = $mockAvailabilityGroupProperties.DtcSupportEnabled
-            }
+            # Mock the availability group replicas
+            $mockAvailabilityGroupReplica1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica1.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica1.BackupPriority = 50
+            $mockAvailabilityGroupReplica1.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica1.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica1.EndpointUrl = 'TCP://Server1:5022'
+            $mockAvailabilityGroupReplica1.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica1.Name = 'Server1'
+            $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = 'TCP://Server1.domain.com:1433'
+            $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica1.SeedingMode = 'Manual'
 
-            # Define an availability group object to use when mocking a remove failure
-            $mockAvailabilityGroupRemoveFailedObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
-            $mockAvailabilityGroupRemoveFailedObject.Name = $mockNameParameters.RemoveAvailabilityGroupFailed
-            $mockAvailabilityGroupRemoveFailedObject.PrimaryReplicaServerName = $mockPrimaryReplicaServerName
+            $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica2.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica2.BackupPriority = 50
+            $mockAvailabilityGroupReplica2.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica2.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica2.EndpointUrl = 'TCP://Server2:5022'
+            $mockAvailabilityGroupReplica2.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica2.Name = 'Server2'
+            $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
+            $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
 
-            # Define the availability replica 1 object
-            $mockAvailabilityReplica1Object = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
-            $mockAvailabilityReplica1Object.Name = $mockAvailabilityGroupReplica1Name
-            $mockAvailabilityReplica1Object.AvailabilityMode = $mockAvailabilityGroupReplicaProperties.Server1.AvailabilityMode
-            $mockAvailabilityReplica1Object.BackupPriority = $mockAvailabilityGroupReplicaProperties.Server1.BackupPriority
-            $mockAvailabilityReplica1Object.ConnectionModeInPrimaryRole = $mockAvailabilityGroupReplicaProperties.Server1.ConnectionModeInPrimaryRole
-            $mockAvailabilityReplica1Object.ConnectionModeInSecondaryRole = $mockAvailabilityGroupReplicaProperties.Server1.ConnectionModeInSecondaryRole
-            $mockAvailabilityReplica1Object.EndpointUrl = "$($mockAvailabilityGroupReplicaProperties.Server1.EndpointProtocol)://$($mockAvailabilityGroupReplicaProperties.Server1.EndpointHostName):$($mockAvailabilityGroupReplicaProperties.Server1.EndpointPort)"
-            $mockAvailabilityReplica1Object.FailoverMode = $mockAvailabilityGroupReplicaProperties.Server1.FailoverMode
-            $mockAvailabilityReplica1Object.Role = $mockAvailabilityGroupReplicaProperties.Server1.Role
+            $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica3.BackupPriority = 50
+            $mockAvailabilityGroupReplica3.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica3.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica3.EndpointUrl = 'TCP://Server3:5022'
+            $mockAvailabilityGroupReplica3.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica3.Name = 'Server3'
+            $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
+            $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
 
-            # Define the availability replica 2 object
-            $mockAvailabilityReplica2Object = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
-            $mockAvailabilityReplica2Object.Name = $mockAvailabilityGroupReplica2Name
-            $mockAvailabilityReplica2Object.AvailabilityMode = $mockAvailabilityGroupReplicaProperties.Server2.AvailabilityMode
-            $mockAvailabilityReplica2Object.BackupPriority = $mockAvailabilityGroupReplicaProperties.Server2.BackupPriority
-            $mockAvailabilityReplica2Object.ConnectionModeInPrimaryRole = $mockAvailabilityGroupReplicaProperties.Server2.ConnectionModeInPrimaryRole
-            $mockAvailabilityReplica2Object.ConnectionModeInSecondaryRole = $mockAvailabilityGroupReplicaProperties.Server2.ConnectionModeInSecondaryRole
-            $mockAvailabilityReplica2Object.EndpointUrl = "$($mockAvailabilityGroupReplicaProperties.Server2.EndpointProtocol)://$($mockAvailabilityGroupReplicaProperties.Server2.EndpointHostName):$($mockAvailabilityGroupReplicaProperties.Server2.EndpointPort)"
-            $mockAvailabilityReplica2Object.FailoverMode = $mockAvailabilityGroupReplicaProperties.Server2.FailoverMode
-            $mockAvailabilityReplica2Object.Role = $mockAvailabilityGroupReplicaProperties.Server2.Role
+            # Mock the availability groups
+            $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+            $mockAvailabilityGroup1.Name = 'AG_AllServers'
+            $mockAvailabilityGroup1.PrimaryReplicaServerName = 'Server2'
+            $mockAvailabilityGroup1.LocalReplicaRole = 'Secondary'
+            $mockAvailabilityGroup1.AutomatedBackupPreference = 'Secondary'
+            $mockAvailabilityGroup1.FailureConditionLevel = 'OnCriticalServerError'
+            $mockAvailabilityGroup1.BasicAvailabilityGroup = $true
+            $mockAvailabilityGroup1.DatabaseHealthTrigger = $true
+            $mockAvailabilityGroup1.DtcSupportEnabled = $true
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica1)
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica2)
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica3)
 
-            # Add the availability group to the server object
-            $mockAvailabilityGroupObject.AvailabilityReplicas.Add($mockAvailabilityReplica1Object)
-            $mockAvailabilityGroupObject.AvailabilityReplicas.Add($mockAvailabilityReplica2Object)
-            $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupObject)
-            $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroupRemoveFailedObject)
+            $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroup1)
 
-            # Define the database mirroring endpoint object
-            if ( $mockIsDatabaseMirroringEndpointPresent )
-            {
-                $mockDatabaseMirroringEndpoint = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Endpoint
-                $mockDatabaseMirroringEndpoint.EndpointType = 'DatabaseMirroring'
-                $mockDatabaseMirroringEndpoint.Protocol = @{
-                    $mockDatabaseMirroringEndpointProperties.Protocol = @{
-                        ListenerPort = $mockDatabaseMirroringEndpointProperties.ListenerPort
-                    }
+            $mockEndpoint = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Endpoint
+            $mockEndpoint.EndpointType = 'DatabaseMirroring'
+            $mockEndpoint.Protocol = @{
+                TCP = @{
+                    ListenerPort = 5022
                 }
-                $mockServerObject.Endpoints.Add($mockDatabaseMirroringEndpoint)
             }
+
+            $mockServerObject.Endpoints.Add($mockEndpoint)
 
             return $mockServerObject
         }
 
-        $mockNewSqlAvailabilityGroup = {
-            if ( $ErrorResult -eq 'CreateAvailabilityGroupFailed' )
-            {
-                throw 'CreateAvailabilityGroupFailed'
+        $mockConnectSqlServer2 = {
+            # Mock the server object
+            $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+            $mockServerObject.Name = 'Server2'
+            $mockServerObject.NetName = 'Server2'
+            $mockServerObject.DomainInstanceName = 'Server2'
+            $mockServerObject.IsHadrEnabled = $true
+            $mockServerObject.ServiceName = 'MSSQLSERVER'
+            $mockServerObject.Version = @{
+                Major = 12
             }
+
+            # Mock the availability group replicas
+            $mockAvailabilityGroupReplica1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica1.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica1.BackupPriority = 50
+            $mockAvailabilityGroupReplica1.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica1.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica1.EndpointUrl = 'TCP://Server1:5022'
+            $mockAvailabilityGroupReplica1.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica1.Name = 'Server1'
+            $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = 'TCP://Server1.domain.com:1433'
+            $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = @('Server1', 'Server2')
+
+            $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica2.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica2.BackupPriority = 50
+            $mockAvailabilityGroupReplica2.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica2.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica2.EndpointUrl = 'TCP://Server2:5022'
+            $mockAvailabilityGroupReplica2.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica2.Name = 'Server2'
+            $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
+            $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
+
+            $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica3.BackupPriority = 50
+            $mockAvailabilityGroupReplica3.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica3.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica3.EndpointUrl = 'TCP://Server3:5022'
+            $mockAvailabilityGroupReplica3.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica3.Name = 'Server3'
+            $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
+            $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
+
+            # Mock the availability groups
+            $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+            $mockAvailabilityGroup1.Name = 'AG_AllServers'
+            $mockAvailabilityGroup1.PrimaryReplicaServerName = 'Server2'
+            $mockAvailabilityGroup1.LocalReplicaRole = 'Secondary'
+            $mockAvailabilityGroup1.AutomatedBackupPreference = 'Secondary'
+            $mockAvailabilityGroup1.FailureConditionLevel = 'OnCriticalServerError'
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica1)
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica2)
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica3)
+
+            $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroup1)
+
+            $mockEndpoint = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Endpoint
+            $mockEndpoint.EndpointType = 'DatabaseMirroring'
+            $mockEndpoint.Protocol = @{
+                TCP = @{
+                    ListenerPort = 5022
+                }
+            }
+
+            $mockServerObject.Endpoints.Add($mockEndpoint)
+
+            return $mockServerObject
         }
 
-        $mockNewSqlAvailabilityGroupReplica = {
-            if ( $ErrorResult -eq 'CreateAvailabilityGroupReplicaFailed' )
-            {
-                throw 'CreateAvailabilityGroupReplicaFailed'
-            }
-
-            return New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+        Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer1 -ParameterFilter {
+            $ServerName -eq 'Server1'
         }
-
-        # Mock the Update-AvailabilityGroup function to ensure the specified property was set correctly
-        $mockUpdateAvailabilityGroup = {
-            param
-            (
-                [Parameter()]
-                [Microsoft.SqlServer.Management.Smo.AvailabilityGroup]
-                $AvailabilityGroup
-            )
-
-            # If the current value of the property that was set is not equal to the desired value
-            if ( $ParameterValue -ne $AvailabilityGroup.$ParameterName )
-            {
-                foreach ( $currentProperty in $resourceParameters.Keys )
-                {
-                    # Determine if the property was submitted as part of the configuration
-                    # $submittedParameters comes from the Set-TargetResource code
-                    if ( $submittedParameters -contains $currentProperty )
-                    {
-                        Write-Verbose -Message "The property '$($currentProperty)' value is '$($AvailabilityGroup.$currentProperty)' and should be '$( ( Get-Variable -Name $currentProperty ).Value )'." -Verbose
-                    }
-                }
-
-                throw "Update-AvailabilityGroup should set the property '$($ParameterName)' to '$($ParameterValue)'."
-            }
+        Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer2 -ParameterFilter {
+            $ServerName -eq 'Server2'
         }
+    }
 
-        # Mock the Update-AvailabilityGroupReplica function to ensure the specified property was set correctly
-        $mockUpdateAvailabilityGroupReplica = {
-            param
-            (
-                [Parameter()]
-                [Microsoft.SqlServer.Management.Smo.AvailabilityReplica]
-                $AvailabilityGroupReplica
-            )
-
-            # Some parameters don't align directly with a property
-            switch ( $ParameterName )
-            {
-                EndpointHostName
-                {
-                    $validatedParameter = 'EndpointUrl'
-                    $validatedParameterValue = "$($mockDatabaseMirroringEndpointProperties.Protocol)://$($ParameterValue):$($mockDatabaseMirroringEndpointProperties.ListenerPort)"
+    Context 'When the Availability Group is absent' {
+        It 'Should not return an Availability Group' {
+            InModuleScope -ScriptBlock {
+                $getTargetResourceParameters = @{
+                    Name         = 'AbsentAG'
+                    ServerName   = 'Server1'
+                    InstanceName = 'MSSQLSERVER'
                 }
 
-                default
-                {
-                    $validatedParameter = $ParameterName
-                    $validatedParameterValue = $ParameterValue
-                }
+                $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
+
+                $getTargetResourceResult.Name | Should -Be 'AbsentAG'
+                $getTargetResourceResult.ServerName | Should -Be 'Server1'
+                $getTargetResourceResult.InstanceName | Should -Be 'MSSQLSERVER'
+                $getTargetResourceResult.Ensure | Should -Be 'Absent'
+                $getTargetResourceResult.IsActiveNode | Should -BeTrue
+                $getTargetResourceResult.AutomatedBackupPreference | Should -BeNullOrEmpty
+                $getTargetResourceResultAvailabilityMode | Should -BeNullOrEmpty
+                $getTargetResourceResultBackupPriority | Should -BeNullOrEmpty
+                $getTargetResourceResultConnectionModeInPrimaryRole | Should -BeNullOrEmpty
+                $getTargetResourceResultConnectionModeInSecondaryRole | Should -BeNullOrEmpty
+                $getTargetResourceResultFailureConditionLevel | Should -BeNullOrEmpty
+                $getTargetResourceResultFailoverMode | Should -BeNullOrEmpty
+                $getTargetResourceResultHealthCheckTimeout | Should -BeNullOrEmpty
+                $getTargetResourceResultEndpointURL | Should -BeNullOrEmpty
+                $getTargetResourceResultEndpointPort | Should -BeNullOrEmpty
+                $getTargetResourceResultEndpointHostName | Should -BeNullOrEmpty
+                $getTargetResourceResultVersion | Should -BeNullOrEmpty
             }
 
-            # If the current value of the property that was set is not equal to the desired value
-            if ( $validatedParameterValue -ne $AvailabilityGroupReplica.$validatedParameter )
-            {
-                foreach ( $currentProperty in $resourceParameters.Keys )
-                {
-                    # Determine if the property was submitted as part of the configuration
-                    # $submittedParameters comes from the Set-TargetResource code
-                    if ( $submittedParameters -contains $currentProperty )
-                    {
-                        switch ( $currentProperty )
-                        {
-                            EndpointHostName
-                            {
-                                $validatedCurrentProperty = 'EndpointUrl'
-                                $validatedCurrentPropertyValue = "$($mockDatabaseMirroringEndpointProperties.Protocol)://$($ParameterValue):$($mockDatabaseMirroringEndpointProperties.ListenerPort)"
-                            }
-
-                            default
-                            {
-                                $validatedCurrentProperty = $currentProperty
-                                $validatedCurrentPropertyValue =$AvailabilityGroupReplica.$currentProperty
-                            }
-                        }
-
-                        Write-Verbose -Message "The property '$($validatedCurrentProperty)' value is '$($AvailabilityGroupReplica.$validatedCurrentProperty)' and should be '$( ( Get-Variable -Name $currentProperty ).Value )'." -Verbose
-                    }
-                }
-
-                throw "Update-AvailabilityGroupReplica should set the property '$($validatedParameter)' to '$($validatedParameterValue)'."
-            }
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
         }
+    }
 
-        #endregion cmdlet mocks
-
-        Describe 'SqlAG\Get-TargetResource' -Tag 'Get' {
-            BeforeAll {
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
-            }
-
-            Context 'When the Availability Group is Absent' {
-
-                It 'Should not return an Availability Group when Name is "<Name>", ServerName is "<ServerName>", InstanceName is "<InstanceName>", and the SQL version is "<Version>"' -TestCases $getTargetResourceAbsentTestCases {
-                    param
-                    (
-                        $Name,
-                        $ServerName,
-                        $InstanceName,
-                        $Version
-                    )
-
-                    # Ensure the correct stubs are loaded for the SQL version
-                    Import-SQLModuleStub -SQLVersion $Version
-
+    Context 'When the Availability Group is present' {
+        Context 'When SQL server version is 13 and higher' {
+            It 'Should return an Availability Group' {
+                InModuleScope -ScriptBlock {
                     $getTargetResourceParameters = @{
-                        Name = $Name
-                        ServerName = $ServerName
-                        InstanceName = $InstanceName
+                        Name         = 'AG_AllServers'
+                        ServerName   = 'Server1'
+                        InstanceName = 'MSSQLSERVER'
                     }
 
-                    $result = Get-TargetResource @getTargetResourceParameters
+                    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                    $result.Ensure | Should -Be 'Absent'
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    $getTargetResourceResult.Name | Should -Be 'AG_AllServers'
+                    $getTargetResourceResult.ServerName | Should -Be 'Server1'
+                    $getTargetResourceResult.InstanceName | Should -Be 'MSSQLSERVER'
+                    $getTargetResourceResult.Ensure | Should -Be 'Present'
+                    $getTargetResourceResult.IsActiveNode | Should -Be  'True'
+                    $getTargetResourceResult.AutomatedBackupPreference | Should -Be 'Secondary'
+                    $getTargetResourceResult.AvailabilityMode | Should -Be 'AsynchronousCommit'
+                    $getTargetResourceResult.BackupPriority | Should -Be 50
+                    $getTargetResourceResult.ConnectionModeInPrimaryRole | Should -Be 'AllowAllConnections'
+                    $getTargetResourceResult.ConnectionModeInSecondaryRole | Should -Be 'AllowNoConnections'
+                    $getTargetResourceResult.FailureConditionLevel | Should -Be 'OnCriticalServerError'
+                    $getTargetResourceResult.FailoverMode | Should -Be 'Manual'
+                    $getTargetResourceResult.HealthCheckTimeout | Should -BeNullOrEmpty
+                    $getTargetResourceResult.EndpointURL | Should -Be 'TCP://Server1:5022'
+                    $getTargetResourceResult.EndpointPort | Should -Be 5022
+                    $getTargetResourceResult.EndpointHostName | Should -Be 'Server1'
+                    $getTargetResourceResult.BasicAvailabilityGroup | Should -Be 'True'
+                    $getTargetResourceResult.DatabaseHealthTrigger | Should -Be 'True'
+                    $getTargetResourceResult.DtcSupportEnabled | Should -Be 'True'
+                    $getTargetResourceResult.Version | Should -Be 13
                 }
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
             }
-
-            Context 'When the Availability Group is Present' {
-                It 'Should return the correct Availability Group properties when Name is "<Name>", ServerName is "<ServerName>", InstanceName is "<InstanceName>", and the SQL version is "<Version>"' -TestCases $getTargetResourcePresentTestCases {
-                    param
-                    (
-                        $Name,
-                        $ServerName,
-                        $InstanceName,
-                        $Version
-                    )
-
-                    # Ensure the correct stubs are loaded for the SQL version
-                    Import-SQLModuleStub -SQLVersion $Version
-
+        }
+        Context 'When SQL server version is 12' {
+            It 'Should return an Availability Group' {
+                InModuleScope -ScriptBlock {
                     $getTargetResourceParameters = @{
-                        Name = $Name
-                        ServerName = $ServerName
-                        InstanceName = $InstanceName
+                        Name         = 'AG_AllServers'
+                        ServerName   = 'Server2'
+                        InstanceName = 'MSSQLSERVER'
                     }
 
-                    # Determine which SQL Server mock data will be used
-                    $mockSqlServer = ( $mockSqlServerParameters.GetEnumerator() | Where-Object -FilterScript { $_.Value.Values -contains $ServerName } ).Name
+                    $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                    $result = Get-TargetResource @getTargetResourceParameters
-
-                    $result.Name | Should -Be $Name
-                    $result.ServerName | Should -Be $ServerName
-                    $result.InstanceName | Should -Be $InstanceName
-                    $result.Ensure | Should -Be 'Present'
-                    $result.AutomatedBackupPreference | Should -Be $mockAvailabilityGroupProperties.AutomatedBackupPreference
-                    $result.AvailabilityMode | Should -Be $mockAvailabilityGroupReplicaProperties.$mockSqlServer.AvailabilityMode
-                    $result.BackupPriority | Should -Be $mockAvailabilityGroupReplicaProperties.$mockSqlServer.BackupPriority
-                    $result.ConnectionModeInPrimaryRole | Should -Be $mockAvailabilityGroupReplicaProperties.$mockSqlServer.ConnectionModeInPrimaryRole
-                    $result.ConnectionModeInSecondaryRole | Should -Be $mockAvailabilityGroupReplicaProperties.$mockSqlServer.ConnectionModeInSecondaryRole
-                    $result.EndpointURL | Should -Be "$($mockAvailabilityGroupReplicaProperties.$mockSqlServer.EndpointProtocol)://$($mockAvailabilityGroupReplicaProperties.$mockSqlServer.EndpointHostName):$($mockAvailabilityGroupReplicaProperties.$mockSqlServer.EndpointPort)"
-                    $result.FailureConditionLevel | Should -Be $mockAvailabilityGroupProperties.FailureConditionLevel
-                    $result.FailoverMode | Should -Be $mockAvailabilityGroupReplicaProperties.$mockSqlServer.FailoverMode
-                    $result.HealthCheckTimeout | Should -Be $mockAvailabilityGroupProperties.HealthCheckTimeout
-
-                    if ( $Version -ge 13 )
-                    {
-                        $result.BasicAvailabilityGroup | Should -Be $mockAvailabilityGroupProperties.BasicAvailabilityGroup
-                        $result.DatabaseHealthTrigger | Should -Be $mockAvailabilityGroupProperties.DatabaseHealthTrigger
-                        $result.DtcSupportEnabled | Should -Be $mockAvailabilityGroupProperties.DtcSupportEnabled
-                    }
-                    else
-                    {
-                        $result.BasicAvailabilityGroup | Should -BeNullOrEmpty
-                        $result.DatabaseHealthTrigger | Should -BeNullOrEmpty
-                        $result.DtcSupportEnabled | Should -BeNullOrEmpty
-                    }
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
+                    $getTargetResourceResult.Name | Should -Be 'AG_AllServers'
+                    $getTargetResourceResult.ServerName | Should -Be 'Server2'
+                    $getTargetResourceResult.InstanceName | Should -Be 'MSSQLSERVER'
+                    $getTargetResourceResult.Ensure | Should -Be 'Present'
+                    $getTargetResourceResult.IsActiveNode | Should -Be  'True'
+                    $getTargetResourceResult.AutomatedBackupPreference | Should -Be 'Secondary'
+                    $getTargetResourceResult.AvailabilityMode | Should -Be 'AsynchronousCommit'
+                    $getTargetResourceResult.BackupPriority | Should -Be 50
+                    $getTargetResourceResult.ConnectionModeInPrimaryRole | Should -Be 'AllowAllConnections'
+                    $getTargetResourceResult.ConnectionModeInSecondaryRole | Should -Be 'AllowNoConnections'
+                    $getTargetResourceResult.FailureConditionLevel | Should -Be 'OnCriticalServerError'
+                    $getTargetResourceResult.FailoverMode | Should -Be 'Manual'
+                    $getTargetResourceResult.HealthCheckTimeout | Should -BeNullOrEmpty
+                    $getTargetResourceResult.EndpointURL | Should -Be 'TCP://Server2:5022'
+                    $getTargetResourceResult.EndpointPort | Should -Be 5022
+                    $getTargetResourceResult.EndpointHostName | Should -Be 'Server2'
+                    $getTargetResourceResult.BasicAvailabilityGroup | Should -BeNullOrEmpty
+                    $getTargetResourceResult.DatabaseHealthTrigger | Should -BeNullOrEmpty
+                    $getTargetResourceResult.DtcSupportEnabled | Should -BeNullOrEmpty
+                    $getTargetResourceResult.Version | Should -Be 12
                 }
-            }
-        }
-
-        Describe 'SqlAG\Set-TargetResource' -Tag 'Set' {
-            BeforeAll {
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
-                Mock -CommandName Get-PrimaryReplicaServerObject -MockWith $mockConnectSql -Verifiable
-                Mock -CommandName New-SqlAvailabilityGroup $mockNewSqlAvailabilityGroup -Verifiable
-                Mock -CommandName New-SqlAvailabilityReplica -MockWith $mockNewSqlAvailabilityGroupReplica -Verifiable
-                Mock -CommandName Remove-SqlAvailabilityGroup -Verifiable -ParameterFilter {
-                    $InputObject.Name -eq $mockNameParameters.PresentAvailabilityGroup
-                }
-                Mock -CommandName Remove-SqlAvailabilityGroup -MockWith {
-                    throw 'RemoveAvailabilityGroupFailed'
-                } -Verifiable -ParameterFilter {
-                    $InputObject.Name -eq $mockNameParameters.RemoveAvailabilityGroupFailed
-                }
-                Mock -CommandName Test-ClusterPermissions -Verifiable
-                Mock -CommandName Update-AvailabilityGroup -MockWith $mockUpdateAvailabilityGroup -Verifiable
-                Mock -CommandName Update-AvailabilityGroupReplica -MockWith $mockUpdateAvailabilityGroupReplica -Verifiable
-            }
-
-            Context 'When the Availability Group is Absent and the desired state is Present and a parameter is supplied' {
-                It 'Should create the availability group "<Name>" with the parameter "<ParameterName>" set to "<ParameterValue>" when Ensure is "<Ensure>", ServerName is "<ServerName>", InstanceName is "<InstanceName>", and the SQL version is "<Version>"' -TestCases $setTargetResourceCreateAvailabilityGroupWithParameterTestCases {
-                    param
-                    (
-                        $DomainInstanceName,
-                        $Ensure,
-                        $Name,
-                        $ParameterName,
-                        $ParameterValue,
-                        $ServerName,
-                        $InstanceName,
-                        $Version
-                    )
-
-                    # Ensure the correct stubs are loaded for the SQL version
-                    Import-SQLModuleStub -SQLVersion $Version
-
-                    $setTargetResourceParameters = @{
-                        Ensure = $Ensure
-                        Name = $Name
-                        ServerName = $ServerName
-                        InstanceName = $InstanceName
-                        $ParameterName = $ParameterValue
-                    }
-
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times @{Absent=0;Present=1}.$Ensure -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times @{Absent=0;Present=1}.$Ensure -Exactly
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.PresentAvailabilityGroup
-                    }
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.RemoveAvailabilityGroupFailed
-                    }
-                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times @{Absent=0;Present=1}.$Ensure -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
-                }
-            }
-
-            Context 'When the Availability Group is Absent, the desired state is Present, and creating the Availability Group fails' {
-                It 'Should throw "<ErrorResult>" when creating the availability group "<Name>" fails, Ensure is "<Ensure>", ServerName is "<ServerName>", InstanceName is "<InstanceName>", and the SQL version is "<Version>"' -TestCases $setTargetResourceCreateAvailabilityGroupFailedTestCases {
-                    param
-                    (
-                        $ErrorResult,
-                        $Ensure,
-                        $Name,
-                        $ServerName,
-                        $InstanceName,
-                        $Version
-                    )
-
-                    # Ensure the correct stubs are loaded for the SQL version
-                    Import-SQLModuleStub -SQLVersion $Version
-
-                    switch ( $ErrorResult )
-                    {
-                        'CreateAvailabilityGroupFailed'
-                        {
-                            $assertCreateAvailabilityGroup = 1
-                            $errorMessage = $script:localizedData.FailedCreateAvailabilityGroup -f $Name, $InstanceName
-                        }
-
-                        'CreateAvailabilityGroupReplicaFailed'
-                        {
-                            $assertCreateAvailabilityGroup = 0
-                            if ($InstanceName -eq 'MSSQLSERVER')
-                            {
-                                $errorMessage = $script:localizedData.FailedCreateAvailabilityGroupReplica -f 'Server1', $InstanceName
-                            }
-                            else
-                            {
-                                $errorMessage = $script:localizedData.FailedCreateAvailabilityGroupReplica -f 'Server1\NamedInstance', $InstanceName
-                            }
-                        }
-                    }
-
-                    $setTargetResourceParameters = @{
-                        Ensure = $Ensure
-                        Name = $Name
-                        ServerName = $ServerName
-                        InstanceName = $InstanceName
-                    }
-
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times $assertCreateAvailabilityGroup -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.PresentAvailabilityGroup
-                    }
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.RemoveAvailabilityGroupFailed
-                    }
-                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
-                }
-            }
-
-            Context 'When the Availability Group is Present and a value is passed to a parameter' {
-                It 'Should set "<ParameterName>" to "<ParameterValue>" when Name is "<Name>", ServerName is "<ServerName>", InstanceName is "<InstanceName>", and the SQL version is "<Version>"' -TestCases $setTargetResourcePropertyIncorrectTestCases {
-                    param
-                    (
-                        $Ensure,
-                        $Name,
-                        $ParameterName,
-                        $ParameterValue,
-                        $Result,
-                        $ServerName,
-                        $InstanceName,
-                        $Version
-                    )
-
-                    # Ensure the correct stubs are loaded for the SQL version
-                    Import-SQLModuleStub -SQLVersion $Version
-
-                    $setTargetResourceParameters = @{
-                        Ensure = $Ensure
-                        Name = $Name
-                        ServerName = $ServerName
-                        InstanceName = $InstanceName
-                        $ParameterName = $ParameterValue
-                    }
-
-                    if ( $mockAvailabilityGroupProperties.Keys -contains $ParameterName )
-                    {
-                        $assertUpdateAvailabilityGroupMockCalled = 1
-                        $assertUpdateAvailabilityGroupReplicaMockCalled = 0
-                    }
-                    elseif ( $mockAvailabilityGroupReplicaProperties.Server1.Keys -contains $ParameterName )
-                    {
-                        $assertUpdateAvailabilityGroupMockCalled = 0
-                        $assertUpdateAvailabilityGroupReplicaMockCalled = 1
-                    }
-
-                    Set-TargetResource @setTargetResourceParameters
-                    #{ Set-TargetResource @setTargetResourceParameters } | Should Not Throw
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.PresentAvailabilityGroup
-                    }
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.RemoveAvailabilityGroupFailed
-                    }
-                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times $assertUpdateAvailabilityGroupMockCalled -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times $assertUpdateAvailabilityGroupReplicaMockCalled -Exactly
-                }
-            }
-
-            Context 'When the Availability Group is Present and the desired state is Absent' {
-                It 'Should remove the Availability Group "<Name>" when Ensure is "<Ensure>", ServerName is "<ServerName>", InstanceName is "<InstanceName>", and the SQL version is "<Version>"' -TestCases $setTargetResourceRemoveAvailabilityGroupTestCases {
-                    param
-                    (
-                        $Ensure,
-                        $Name,
-                        $ServerName,
-                        $InstanceName,
-                        $Version
-                    )
-
-                    # Ensure the correct stubs are loaded for the SQL version
-                    Import-SQLModuleStub -SQLVersion $Version
-
-                    $setTargetResourceParameters = @{
-                        Ensure = $Ensure
-                        Name = $Name
-                        ServerName = $ServerName
-                        InstanceName = $InstanceName
-                    }
-
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 1 -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.PresentAvailabilityGroup
-                    }
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.RemoveAvailabilityGroupFailed
-                    }
-                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
-                }
-            }
-
-            Context 'When the Availability Group is Present and throws an error when removal is attempted' {
-                It 'Should throw "<ErrorResult>" when Ensure is "<Ensure>", Name is "<Name>", ServerName is "<ServerName>", InstanceName is "<InstanceName>", and the SQL version is "<Version>"' -TestCases $setTargetResourceRemoveAvailabilityGroupErrorTestCases {
-                    param
-                    (
-                        $ErrorResult,
-                        $Ensure,
-                        $Name,
-                        $ServerName,
-                        $InstanceName,
-                        $Version
-                    )
-
-                    # Ensure the correct stubs are loaded for the SQL version
-                    Import-SQLModuleStub -SQLVersion $Version
-
-                    switch ( $ErrorResult )
-                    {
-                        'RemoveAvailabilityGroupFailed'
-                        {
-                            $assertRemoveAvailabilityGroupFailed = 1
-                            $errorMessage = $script:localizedData.FailedRemoveAvailabilityGroup -f $Name, $InstanceName
-                        }
-
-                        'InstanceNotPrimaryReplica'
-                        {
-                            $assertRemoveAvailabilityGroupFailed = 0
-                            if ($InstanceName -eq 'MSSQLSERVER')
-                            {
-                                $errorMessage = $script:localizedData.NotPrimaryReplica -f 'Server2', $Name, 'Server1'
-                            }
-                            else
-                            {
-                                $errorMessage = $script:localizedData.NotPrimaryReplica -f 'Server2\NamedInstance', $Name, 'Server1\NamedInstance'
-                            }
-                        }
-                    }
-
-                    $setTargetResourceParameters = @{
-                        Ensure = $Ensure
-                        Name = $Name
-                        ServerName = $ServerName
-                        InstanceName = $InstanceName
-                    }
-
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw $errorMessage
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.PresentAvailabilityGroup
-                    }
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times $assertRemoveAvailabilityGroupFailed -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.RemoveAvailabilityGroupFailed
-                    }
-                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
-                }
-            }
-
-            Context 'When HADR is not enabled' {
-                AfterAll {
-                    $mockIsHadrEnabled = $true
-                }
-
-                BeforeAll {
-                    $mockIsHadrEnabled = $false
-                }
-
-                It 'Should throw "<Result>" when Ensure is "<Ensure>", Name is "<Name>", ServerName is "<ServerName>", InstanceName is "<InstanceName>", and the SQL version is "<Version>"' -TestCases $setTargetResourceHadrDisabledTestCases {
-                    param
-                    (
-                        $Ensure,
-                        $Name,
-                        $Result,
-                        $ServerName,
-                        $InstanceName,
-                        $Version
-                    )
-
-                    # Ensure the correct stubs are loaded for the SQL version
-                    Import-SQLModuleStub -SQLVersion $Version
-
-                    $setTargetResourceParameters = @{
-                        Ensure = $Ensure
-                        Name = $Name
-                        ServerName = $ServerName
-                        InstanceName = $InstanceName
-                    }
-
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw $Result
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.PresentAvailabilityGroup
-                    }
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.RemoveAvailabilityGroupFailed
-                    }
-                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
-                }
-            }
-
-            Context 'When the Database Mirroring Endpoint is missing' {
-                AfterAll {
-                    $mockIsDatabaseMirroringEndpointPresent = $true
-                }
-
-                BeforeAll {
-                    $mockIsDatabaseMirroringEndpointPresent = $false
-                }
-
-                It 'Should throw "<Result>" when Ensure is "<Ensure>", Name is "<Name>", ServerName is "<ServerName>", InstanceName is "<InstanceName>", and the SQL version is "<Version>"' -TestCases $setTargetResourceEndpointMissingTestCases {
-                    param
-                    (
-                        $Ensure,
-                        $Name,
-                        $Result,
-                        $ServerName,
-                        $InstanceName,
-                        $Version
-                    )
-
-                    # Ensure the correct stubs are loaded for the SQL version
-                    Import-SQLModuleStub -SQLVersion $Version
-
-                    $setTargetResourceParameters = @{
-                        Ensure = $Ensure
-                        Name = $Name
-                        ServerName = $ServerName
-                        InstanceName = $InstanceName
-                    }
-
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw $Result
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.PresentAvailabilityGroup
-                    }
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.RemoveAvailabilityGroupFailed
-                    }
-                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
-                }
-            }
-
-            Context 'When the Endpoint URL is incorrect' {
-                AfterEach {
-                    # Restore up the original endpoint url settings
-                    $mockAvailabilityGroupReplicaProperties.Server1 = $mockAvailabilityGroupReplicaPropertiesServer1Original.Clone()
-                    $mockAvailabilityGroupReplicaProperties.Server2 = $mockAvailabilityGroupReplicaPropertiesServer2Original.Clone()
-                }
-
-                BeforeEach {
-                    # Back up the original endpoint url settings
-                    $mockAvailabilityGroupReplicaPropertiesServer1Original = $mockAvailabilityGroupReplicaProperties.Server1.Clone()
-                    $mockAvailabilityGroupReplicaPropertiesServer2Original = $mockAvailabilityGroupReplicaProperties.Server2.Clone()
-                }
-
-                It 'Should set "<EndpointPropertyName>" to "<EndpointPropertyValue>" when Name is "<Name>", ServerName is "<ServerName>", InstanceName is "<InstanceName>", and the SQL version is "<Version>"' -TestCases $setTargetResourcesEndpointUrlTestCases {
-                    param
-                    (
-                        $EndpointPropertyName,
-                        $EndpointPropertyValue,
-                        $Ensure,
-                        $Name,
-                        $ServerName,
-                        $InstanceName,
-                        $Version
-                    )
-
-                    # Ensure the correct stubs are loaded for the SQL version
-                    Import-SQLModuleStub -SQLVersion $Version
-
-                    $mockAvailabilityGroupReplicaProperties.Server1.$EndpointPropertyName = $EndpointPropertyValue
-                    $mockAvailabilityGroupReplicaProperties.Server2.$EndpointPropertyName = $EndpointPropertyValue
-
-                    $setTargetResourceParameters = @{
-                        Ensure = $Ensure
-                        Name = $Name
-                        ServerName = $ServerName
-                        InstanceName = $InstanceName
-                    }
-
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.PresentAvailabilityGroup
-                    }
-                    Assert-MockCalled -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly -ParameterFilter {
-                        $InputObject.Name -eq $mockNameParameters.RemoveAvailabilityGroupFailed
-                    }
-                    Assert-MockCalled -CommandName Test-ClusterPermissions -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
-                    Assert-MockCalled -CommandName Update-AvailabilityGroupReplica -Scope It -Times 1 -Exactly
-                }
-            }
-        }
-
-        Describe 'SqlAG\Test-TargetResource' -Tag 'Test' {
-            BeforeAll {
-                Mock -CommandName Connect-SQL -MockWith $mockConnectSql -Verifiable
-                Mock -CommandName Test-ActiveNode -MockWith {
-                    $mockProcessOnlyOnActiveNode
-                } -Verifiable
-            }
-
-            Context 'When the Availability Group is Absent' {
-                It 'Should be "<Result>" when Ensure is "<Ensure>", Name is "<Name>", ServerName is "<ServerName>", InstanceName is "<InstanceName>", and the SQL version is "<Version>"' -TestCases $testTargetResourceAbsentTestCases {
-                    param
-                    (
-                        $Ensure,
-                        $Name,
-                        $Result,
-                        $ServerName,
-                        $InstanceName,
-                        $Version
-                    )
-
-                    # Ensure the correct stubs are loaded for the SQL version
-                    Import-SQLModuleStub -SQLVersion $Version
-
-                    $testTargetResourceParameters = @{
-                        Ensure = $Ensure
-                        Name = $Name
-                        ServerName = $ServerName
-                        InstanceName = $InstanceName
-                    }
-
-                    Test-TargetResource @testTargetResourceParameters | Should -Be $Result
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-                }
-            }
-
-            Context 'When the Availability Group is Present and the default parameters are passed' {
-                It 'Should be "<Result>" when Ensure is "<Ensure>", Name is "<Name>", ServerName is "<ServerName>", InstanceName is "<InstanceName>", and the SQL version is "<Version>"' -TestCases $testTargetResourcePresentTestCases {
-                    param
-                    (
-                        $Ensure,
-                        $Name,
-                        $Result,
-                        $ServerName,
-                        $InstanceName,
-                        $Version
-                    )
-
-                    # Ensure the correct stubs are loaded for the SQL version
-                    Import-SQLModuleStub -SQLVersion $Version
-
-                    $testTargetResourceParameters = @{
-                        Ensure = $Ensure
-                        Name = $Name
-                        ServerName = $ServerName
-                        InstanceName = $InstanceName
-                    }
-
-                    Test-TargetResource @testTargetResourceParameters | Should -Be $Result
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-                }
-            }
-
-            Context 'When the Availability Group is Present and a value is passed to a parameter' {
-                It 'Should be "<Result>" when "<ParameterName>" is "<ParameterValue>", Name is "<Name>", ServerName is "<ServerName>", InstanceName is "<InstanceName>", and the SQL version is "<Version>"' -TestCases $testTargetResourcePropertyIncorrectTestCases {
-                    param
-                    (
-                        $Ensure,
-                        $Name,
-                        $ParameterName,
-                        $ParameterValue,
-                        $Result,
-                        $ServerName,
-                        $InstanceName,
-                        $Version
-                    )
-
-                    # Ensure the correct stubs are loaded for the SQL version
-                    Import-SQLModuleStub -SQLVersion $Version
-
-                    $testTargetResourceParameters = @{
-                        Ensure = $Ensure
-                        Name = $Name
-                        ServerName = $ServerName
-                        InstanceName = $InstanceName
-                        $ParameterName = $ParameterValue
-                    }
-
-                    Test-TargetResource @testTargetResourceParameters | Should -Be $Result
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-                }
-            }
-
-            Context 'When the Availability Group is Present an Endpoint property is incorrect' {
-                AfterEach {
-                    # Restore up the original endpoint url settings
-                    $mockAvailabilityGroupReplicaProperties.Server1 = $mockAvailabilityGroupReplicaPropertiesServer1Original.Clone()
-                    $mockAvailabilityGroupReplicaProperties.Server2 = $mockAvailabilityGroupReplicaPropertiesServer2Original.Clone()
-                }
-
-                BeforeEach {
-                    # Back up the original endpoint url settings
-                    $mockAvailabilityGroupReplicaPropertiesServer1Original = $mockAvailabilityGroupReplicaProperties.Server1.Clone()
-                    $mockAvailabilityGroupReplicaPropertiesServer2Original = $mockAvailabilityGroupReplicaProperties.Server2.Clone()
-                }
-
-                It 'Should be "<Result>" when "<EndpointPropertyName>" is "<EndpointPropertyValue>", Name is "<Name>", ServerName is "<ServerName>", InstanceName is "<InstanceName>", and the SQL version is "<Version>"' -TestCases $testTargetResourceEndpointIncorrectTestCases {
-                    param
-                    (
-                        $EndpointPropertyName,
-                        $EndpointPropertyValue,
-                        $Ensure,
-                        $Name,
-                        $Result,
-                        $ServerName,
-                        $InstanceName,
-                        $Version
-                    )
-
-                    # Ensure the correct stubs are loaded for the SQL version
-                    Import-SQLModuleStub -SQLVersion $Version
-
-                    $mockAvailabilityGroupReplicaProperties.Server1.$EndpointPropertyName = $EndpointPropertyValue
-                    $mockAvailabilityGroupReplicaProperties.Server2.$EndpointPropertyName = $EndpointPropertyValue
-
-                    $testTargetResourceParameters = @{
-                        Ensure = $Ensure
-                        Name = $Name
-                        ServerName = $ServerName
-                        InstanceName = $InstanceName
-                    }
-
-                    Test-TargetResource @testTargetResourceParameters | Should -Be $Result
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-                }
-            }
-
-            Context 'When the ProcessOnlyOnActiveNode parameter is passed' {
-                AfterAll {
-                    $mockProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNodeOriginal
-                }
-
-                BeforeAll {
-                    $mockProcessOnlyOnActiveNodeOriginal = $mockProcessOnlyOnActiveNode
-                    $mockProcessOnlyOnActiveNode = $false
-                }
-
-                It 'Should be "true" when ProcessOnlyOnActiveNode is "<ProcessOnlyOnActiveNode>", Ensure is "<Ensure>", Name is "<Name>", ServerName is "<ServerName>", InstanceName is "<InstanceName>", and the SQL version is "<Version>"' -TestCases $testTargetResourceProcessOnlyOnActiveNodeTestCases {
-                    param
-                    (
-                        $Ensure,
-                        $Name,
-                        $ProcessOnlyOnActiveNode,
-                        $ServerName,
-                        $InstanceName,
-                        $Version
-                    )
-
-                    # Ensure the correct stubs are loaded for the SQL version
-                    Import-SQLModuleStub -SQLVersion $Version
-
-                    $testTargetResourceParameters = @{
-                        Ensure = $Ensure
-                        Name = $Name
-                        ProcessOnlyOnActiveNode = $ProcessOnlyOnActiveNode
-                        ServerName = $ServerName
-                        InstanceName = $InstanceName
-                    }
-
-                    Test-TargetResource @testTargetResourceParameters | Should Be $true
-
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
-                }
-            }
-        }
-
-        Describe 'SqlAG\Update-AvailabilityGroup' -Tag 'Helper' {
-            BeforeAll {
-                $mockAvailabilityGroup = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
-            }
-
-            Context 'When the Availability Group is altered' {
-                It 'Should silently alter the Availability Group' {
-
-                    { Update-AvailabilityGroup -AvailabilityGroup $mockAvailabilityGroup } | Should -Not -Throw
-                }
-
-                It 'Should throw the correct error, AlterAvailabilityGroupFailed, when altering the Availability Group fails' {
-
-                    $mockAvailabilityGroup.Name = 'AlterFailed'
-
-                    { Update-AvailabilityGroup -AvailabilityGroup $mockAvailabilityGroup } | Should -Throw ($script:localizedData.FailedAlterAvailabilityGroup -f $mockAvailabilityGroup.Name)
-                }
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
             }
         }
     }
 }
-finally
-{
-    Invoke-TestCleanup
+
+Describe 'SqlAG\Set-TargetResource' {
+    BeforeAll {
+        $mockConnectSqlServer1 = {
+            # Mock the server object
+            $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+            $mockServerObject.Name = 'Server1'
+            $mockServerObject.NetName = 'Server1'
+            $mockServerObject.DomainInstanceName = 'Server1'
+            $mockServerObject.IsHadrEnabled = $true
+            $mockServerObject.ServiceName = 'MSSQLSERVER'
+            $mockServerObject.Version = @{
+                Major = 13
+            }
+
+            # Mock the availability group replicas
+            $mockAvailabilityGroupReplica1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica1.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica1.BackupPriority = 50
+            $mockAvailabilityGroupReplica1.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica1.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica1.EndpointUrl = 'TCP://Server1:5022'
+            $mockAvailabilityGroupReplica1.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica1.Name = 'Server1'
+            $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = 'TCP://Server1.domain.com:1433'
+            $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica1.SeedingMode = 'Manual'
+
+            $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica2.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica2.BackupPriority = 50
+            $mockAvailabilityGroupReplica2.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica2.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica2.EndpointUrl = 'TCP://Server2:5022'
+            $mockAvailabilityGroupReplica2.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica2.Name = 'Server2'
+            $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
+            $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
+
+            $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica3.BackupPriority = 50
+            $mockAvailabilityGroupReplica3.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica3.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica3.EndpointUrl = 'TCP://Server3:5022'
+            $mockAvailabilityGroupReplica3.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica3.Name = 'Server3'
+            $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
+            $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
+
+            # Mock the availability groups
+            $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+            $mockAvailabilityGroup1.Name = 'AG_AllServers'
+            $mockAvailabilityGroup1.PrimaryReplicaServerName = 'Server2'
+            $mockAvailabilityGroup1.LocalReplicaRole = 'Secondary'
+            $mockAvailabilityGroup1.AutomatedBackupPreference = 'Secondary'
+            $mockAvailabilityGroup1.BasicAvailabilityGroup = $true
+            $mockAvailabilityGroup1.DatabaseHealthTrigger = $true
+            $mockAvailabilityGroup1.DtcSupportEnabled = $true
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica1)
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica2)
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica3)
+
+            $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroup1)
+
+            $mockEndpoint = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Endpoint
+            $mockEndpoint.EndpointType = 'DatabaseMirroring'
+            $mockEndpoint.Protocol = @{
+                TCP = @{
+                    ListenerPort = 5022
+                }
+            }
+
+            $mockServerObject.Endpoints.Add($mockEndpoint)
+
+            return $mockServerObject
+        }
+
+        $mockConnectSqlServer2 = {
+            # Mock the server object
+            $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+            $mockServerObject.Name = 'Server2'
+            $mockServerObject.NetName = 'Server2'
+            $mockServerObject.DomainInstanceName = 'Server2'
+            $mockServerObject.IsHadrEnabled = $true
+            $mockServerObject.ServiceName = 'MSSQLSERVER'
+            $mockServerObject.Version = @{
+                Major = 12
+            }
+
+            # Mock the availability group replicas
+            $mockAvailabilityGroupReplica1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica1.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica1.BackupPriority = 50
+            $mockAvailabilityGroupReplica1.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica1.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica1.EndpointUrl = 'TCP://Server1:5022'
+            $mockAvailabilityGroupReplica1.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica1.Name = 'Server1'
+            $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = 'TCP://Server1.domain.com:1433'
+            $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica1.SeedingMode = 'Manual'
+
+            $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica2.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica2.BackupPriority = 50
+            $mockAvailabilityGroupReplica2.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica2.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica2.EndpointUrl = 'TCP://Server2:5022'
+            $mockAvailabilityGroupReplica2.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica2.Name = 'Server2'
+            $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
+            $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
+
+            $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica3.BackupPriority = 50
+            $mockAvailabilityGroupReplica3.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica3.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica3.EndpointUrl = 'TCP://Server3:5022'
+            $mockAvailabilityGroupReplica3.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica3.Name = 'Server3'
+            $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
+            $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
+
+            # Mock the availability groups
+            $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+            $mockAvailabilityGroup1.Name = 'AG_AllServers'
+            $mockAvailabilityGroup1.PrimaryReplicaServerName = 'Server2'
+            $mockAvailabilityGroup1.LocalReplicaRole = 'Secondary'
+            $mockAvailabilityGroup1.AutomatedBackupPreference = 'Secondary'
+            $mockAvailabilityGroup1.BasicAvailabilityGroup = $true
+            $mockAvailabilityGroup1.DatabaseHealthTrigger = $true
+            $mockAvailabilityGroup1.DtcSupportEnabled = $true
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica1)
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica2)
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica3)
+
+            $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroup1)
+
+            $mockEndpoint = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Endpoint
+            $mockEndpoint.EndpointType = 'DatabaseMirroring'
+            $mockEndpoint.Protocol = @{
+                TCP = @{
+                    ListenerPort = 5022
+                }
+            }
+
+            $mockServerObject.Endpoints.Add($mockEndpoint)
+
+            return $mockServerObject
+        }
+
+        Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer1 -ParameterFilter {
+            $ServerName -eq 'Server1'
+        }
+        Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer2 -ParameterFilter {
+            $ServerName -eq 'Server2'
+        }
+        Mock -CommandName Get-PrimaryReplicaServerObject -MockWith $mockConnectSqlServer1 -ParameterFilter {
+            $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
+        }
+
+        Mock -CommandName Get-PrimaryReplicaServerObject -MockWith $mockConnectSqlServer2 -ParameterFilter {
+            $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
+        }
+        Mock -CommandName Test-ClusterPermissions
+    }
+    Context 'When the desired state is Absent' {
+        BeforeAll {
+            Mock -CommandName Remove-SqlAvailabilityGroup
+        }
+        Context 'When the availability group exists' {
+            It 'Should silently remove the availability group' {
+                InModuleScope -ScriptBlock {
+                    $setTargetResourceParameters = @{
+                        Name         = 'AG_AllServers'
+                        ServerName   = 'Server2'
+                        InstanceName = 'MSSQLSERVER'
+                        Ensure       = 'Absent'
+                    }
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server1'
+                } -Times 0 -Exactly
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server2'
+                } -Times 1 -Exactly
+
+                Should -Invoke -CommandName Remove-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the availability group exists but the current server is not primary' {
+            It 'Should throw the correct error (NotPrimaryReplica)' {
+                InModuleScope -ScriptBlock {
+                    $setTargetResourceParameters = @{
+                        Name         = 'AG_AllServers'
+                        ServerName   = 'Server1'
+                        InstanceName = 'MSSQLSERVER'
+                        Ensure       = 'Absent'
+                    }
+
+                    $mockErrorMessage = Get-InvalidOperationRecord -Message ($script:localizedData.NotPrimaryReplica -f $setTargetResourceParameters.ServerName, $setTargetResourceParameters.Name, 'Server2')
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server1'
+                } -Times 1 -Exactly
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server2'
+                } -Times 0 -Exactly
+
+                Should -Invoke -CommandName Remove-SqlAvailabilityGroup -Exactly -Times 0 -Scope It
+            }
+
+        }
+
+        Context 'When the removal of the availability group replica fails' {
+            BeforeAll {
+                Mock -CommandName Remove-SqlAvailabilityGroup -MockWith {
+                    throw 'FailedRemoveAvailabilityGroup'
+                }
+            }
+
+            It 'Should throw the correct error (FailedRemoveAvailabilityGroup)' {
+                InModuleScope -ScriptBlock {
+                    $setTargetResourceParameters = @{
+                        Name         = 'AG_AllServers'
+                        ServerName   = 'Server2'
+                        InstanceName = 'MSSQLSERVER'
+                        Ensure       = 'Absent'
+                    }
+
+                    $mockErrorMessage = Get-InvalidOperationRecord -Message (
+                        # Adding wildcard at the end of string so Pester ignores additional messages in the error message (e.g. the string 'Mocked error')
+                    ($script:localizedData.FailedRemoveAvailabilityGroup -f $setTargetResourceParameters.Name, $setTargetResourceParameters.InstanceName) + '*'
+                    )
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server1'
+                } -Times 0 -Exactly
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server2'
+                } -Times 1 -Exactly
+
+                Should -Invoke -CommandName Remove-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+
+    Context 'When HADR is not enabled' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+            $mockServerObject.Name = 'ServerNotEnabled'
+            $mockServerObject.NetName = 'ServerNotEnabled'
+            $mockServerObject.IsHadrEnabled = $false
+            $mockServerObject.ServiceName = 'MSSQLSERVER'
+
+            Mock -CommandName Connect-SQL -MockWith {
+                return $mockServerObject
+            } -ParameterFilter {
+                $ServerName -eq 'ServerNotEnabled'
+            }
+        }
+
+        It 'Should throw the correct error (HadrNotEnabled)' { # cSpell: disable-line
+            InModuleScope -ScriptBlock {
+                $setTargetResourceParameters = @{
+                    Name         = 'AG_PrimaryOnServer2'
+                    ServerName   = 'ServerNotEnabled'
+                    InstanceName = 'MSSQLSERVER'
+                }
+
+                $mockErrorRecord = Get-InvalidOperationRecord -Message (
+                    $script:localizedData.HadrNotEnabled # cSpell: disable-line
+                )
+
+                { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorRecord
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                $ServerName -eq 'ServerNotEnabled'
+            } -Times 1 -Exactly
+
+        }
+    }
+
+    Context 'When the database mirroring endpoint is absent' {
+        BeforeAll {
+            $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+            $mockServerObject.Name = 'ServerWithoutEndpoint'
+            $mockServerObject.NetName = 'ServerWithoutEndpoint'
+            $mockServerObject.IsHadrEnabled = $true
+            $mockServerObject.ServiceName = 'MSSQLSERVER'
+
+            Mock -CommandName Connect-SQL -MockWith {
+                return $mockServerObject
+            } -ParameterFilter {
+                $ServerName -eq 'ServerWithoutEndpoint'
+            }
+        }
+
+        It 'Should throw the correct error (DatabaseMirroringEndpointNotFound)' {
+            InModuleScope -ScriptBlock {
+                $setTargetResourceParameters = @{
+                    Name         = 'AG_PrimaryOnServer2'
+                    ServerName   = 'ServerWithoutEndpoint'
+                    InstanceName = 'MSSQLSERVER'
+                }
+
+                $mockErrorRecord = Get-ObjectNotFoundRecord -Message (
+                    $script:localizedData.DatabaseMirroringEndpointNotFound -f 'ServerWithoutEndpoint\MSSQLSERVER'
+                )
+
+                { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorRecord
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                $ServerName -eq 'ServerWithoutEndpoint'
+            } -Times 1 -Exactly
+
+        }
+    }
+
+    Context 'When the desired state is present and the availability group is absent' {
+        BeforeAll {
+            $mockReplicaObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockReplicaObject.AvailabilityMode = 'AsynchronousCommit'
+            $mockReplicaObject.BackupPriority = 50
+            $mockReplicaObject.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockReplicaObject.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockReplicaObject.EndpointUrl = 'TCP://Server1:5022'
+            $mockReplicaObject.FailoverMode = 'Manual'
+            $mockReplicaObject.Name = 'Server1'
+            $mockReplicaObject.SeedingMode = 'Manual'
+
+            Mock -CommandName New-SqlAvailabilityReplica -MockWith {
+                return $mockReplicaObject
+            } -ParameterFilter {
+                $Name -eq 'Server1'
+            }
+            Mock -CommandName Remove-SqlAvailabilityGroup
+            Mock -CommandName New-SqlAvailabilityGroup
+            Mock -CommandName Update-AvailabilityGroup
+        }
+
+        It 'Should create the availability group' {
+            InModuleScope -ScriptBlock {
+                $setTargetResourceParameters = @{
+                    Name                          = 'AG_PrimaryOnServer2'
+                    ServerName                    = 'Server1'
+                    InstanceName                  = 'MSSQLSERVER'
+                    Ensure                        = 'Present'
+                    AvailabilityMode              = 'AsynchronousCommit'
+                    BackupPriority                = 50
+                    ConnectionModeInPrimaryRole   = 'AllowAllConnections'
+                    ConnectionModeInSecondaryRole = 'AllowNoConnections'
+                    EndpointHostName              = 'Server1'
+                    FailureConditionLevel         = 'OnServerUnresponsive'
+                    FailoverMode                  = 'Manual'
+                    SeedingMode                   = 'Manual'
+                }
+
+                { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                $ServerName -eq 'Server1'
+            } -Times 1 -Exactly
+
+            Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                $ServerName -eq 'Server2'
+            } -Times 0 -Exactly
+
+            Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
+            }
+
+            Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
+            }
+
+            Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
+            Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
+        }
+
+        Context 'When the endpoint hostname is not defined' {
+            It 'Should create the availability group replica' {
+                InModuleScope -ScriptBlock {
+                    $setTargetResourceParameters = @{
+                        Name                          = 'AG_PrimaryOnServer2'
+                        ServerName                    = 'Server1'
+                        InstanceName                  = 'MSSQLSERVER'
+                        Ensure                        = 'Present'
+                        AvailabilityMode              = 'AsynchronousCommit'
+                        BackupPriority                = 50
+                        ConnectionModeInPrimaryRole   = 'AllowAllConnections'
+                        ConnectionModeInSecondaryRole = 'AllowNoConnections'
+                        EndpointHostName              = ''
+                        FailoverMode                  = 'Manual'
+                        SeedingMode                   = 'Manual'
+                    }
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server1'
+                } -Times 1 -Exactly
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server2'
+                } -Times 0 -Exactly
+
+                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
+                }
+
+                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
+                }
+
+                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Remove-SqlAvailabilityGRoup -Scope It -Times 0 -Exactly
+                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
+            }
+        }
+
+        Context 'When the availability group replica fails to create' {
+            BeforeAll {
+                Mock -CommandName New-SqlAvailabilityReplica {
+                    throw 'Mocked error'
+                }
+            }
+
+            It 'Should throw the correct error' {
+                InModuleScope -ScriptBlock {
+                    $setTargetResourceParameters = @{
+                        Name                          = 'AG_PrimaryOnServer2'
+                        ServerName                    = 'Server2'
+                        InstanceName                  = 'MSSQLSERVER'
+                        Ensure                        = 'Present'
+                        AvailabilityMode              = 'AsynchronousCommit'
+                        BackupPriority                = 50
+                        ConnectionModeInPrimaryRole   = 'AllowAllConnections'
+                        ConnectionModeInSecondaryRole = 'AllowNoConnections'
+                        EndpointHostName              = ''
+                        FailoverMode                  = 'Manual'
+                        SeedingMode                   = 'Manual'
+                    }
+
+                    $mockErrorRecord = Get-InvalidOperationRecord -Message (
+                        # Adding wildcard at the end of string so Pester ignores additional messages in the error message (e.g. the string 'Mocked error')
+                        ($script:localizedData.FailedCreateAvailabilityGroupReplica -f $setTargetResourceParameters.ServerName, $setTargetResourceParameters.InstanceName) + '*'
+                    )
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorRecord
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server1'
+                } -Times 0 -Exactly
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server2'
+                } -Times 1 -Exactly
+
+                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
+                }
+
+                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
+                }
+
+                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Remove-SqlAvailabilityGRoup -Scope It -Times 0 -Exactly
+                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
+            }
+        }
+
+        Context 'When the availability group fails to create' {
+            BeforeAll {
+                Mock -CommandName New-SqlAvailabilityGroup {
+                    throw 'Mocked error'
+                }
+            }
+
+            It 'Should throw the correct error' {
+                InModuleScope -ScriptBlock {
+                    $setTargetResourceParameters = @{
+                        Name                          = 'AG_PrimaryOnServer2'
+                        ServerName                    = 'Server1'
+                        InstanceName                  = 'MSSQLSERVER'
+                        Ensure                        = 'Present'
+                        AvailabilityMode              = 'AsynchronousCommit'
+                        BackupPriority                = 50
+                        ConnectionModeInPrimaryRole   = 'AllowAllConnections'
+                        ConnectionModeInSecondaryRole = 'AllowNoConnections'
+                        EndpointHostName              = ''
+                        FailoverMode                  = 'Manual'
+                        SeedingMode                   = 'Manual'
+                    }
+
+                    $mockErrorRecord = Get-InvalidOperationRecord -Message (
+                        # Adding wildcard at the end of string so Pester ignores additional messages in the error message (e.g. the string 'Mocked error')
+                        ($script:localizedData.FailedCreateAvailabilityGroup -f $setTargetResourceParameters.Name, $setTargetResourceParameters.InstanceName) + '*'
+                    )
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorRecord
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server1'
+                } -Times 1 -Exactly
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server2'
+                } -Times 0 -Exactly
+
+                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
+                }
+
+                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
+                }
+
+                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Remove-SqlAvailabilityGRoup -Scope It -Times 0 -Exactly
+                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
+            }
+        }
+    }
+
+    Context 'When the desired state is present and the availability group is present' {
+        Context 'When Availability Group property <MockPropertyName> is not in desired state' -ForEach @(
+            @{
+                MockPropertyName  = 'AutomatedBackupPreference'
+                MockPropertyValue = 'None'
+            }
+            @{
+                MockPropertyName  = 'FailureConditionLevel'
+                MockPropertyValue = 'OnAnyQualifiedFailureCondition'
+            }
+            @{
+                MockPropertyName  = 'HealthCheckTimeout'
+                MockPropertyValue = 10
+            }
+            @{
+                MockPropertyName  = 'BasicAvailabilityGroup'
+                MockPropertyValue = $false
+            }
+            @{
+                MockPropertyName  = 'DatabaseHealthTrigger'
+                MockPropertyValue = $false
+            }
+            @{
+                MockPropertyName  = 'DtcSupportEnabled'
+                MockPropertyValue = $false
+            }
+        ) {
+            BeforeAll {
+                Mock -CommandName Remove-SqlAvailabilityGroup
+                Mock -CommandName Update-AvailabilityGroup
+                Mock -CommandName New-SqlAvailabilityReplica
+                Mock -CommandName New-SqlAvailabilityGroup
+                Mock -CommandName Update-AvailabilityGroupReplica
+            }
+
+            It 'Should set the property to the desired state' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $setTargetResourceParameters = @{
+                        Name                          = 'AG_AllServers'
+                        ServerName                    = 'Server1'
+                        InstanceName                  = 'MSSQLSERVER'
+                        Ensure                        = 'Present'
+                        AvailabilityMode              = 'AsynchronousCommit'
+                        BackupPriority                = 50
+                        ConnectionModeInPrimaryRole   = 'AllowAllConnections'
+                        ConnectionModeInSecondaryRole = 'AllowNoConnections'
+                        EndpointHostName              = 'Server1'
+                        FailoverMode                  = 'Manual'
+                        SeedingMode                   = 'Manual'
+                    }
+
+                    $setTargetResourceParameters.$MockPropertyName = $MockPropertyValue
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server1'
+                } -Times 1 -Exactly
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server2'
+                } -Times 0 -Exactly
+
+                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
+                }
+
+                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
+                }
+
+
+                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Remove-SqlAvailabilityGRoup -Scope It -Times 0 -Exactly
+                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Update-AvailabilityGroup -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 0 -Scope It
+            }
+        }
+
+        Context 'When Availability Group replica property <MockPropertyName> is not in desired state' -ForEach @(
+            @{
+                MockPropertyName  = 'AvailabilityMode'
+                MockPropertyValue = 'SynchronousCommit'
+            }
+            @{
+                MockPropertyName  = 'BackupPriority'
+                MockPropertyValue = 60
+            }
+            @{
+                MockPropertyName  = 'ConnectionModeInPrimaryRole'
+                MockPropertyValue = 'AllowReadWriteConnections'
+            }
+            @{
+                MockPropertyName  = 'ConnectionModeInSecondaryRole'
+                MockPropertyValue = 'AllowReadIntentConnectionsOnly'
+            }
+            @{
+                MockPropertyName  = 'FailoverMode'
+                MockPropertyValue = 'Automatic'
+            }
+            @{
+                MockPropertyName  = 'EndpointHostName'
+                MockPropertyValue = 'Server2'
+            }
+            @{
+                MockPropertyName  = 'SeedingMode'
+                MockPropertyValue = 'Automatic'
+            }
+        ) {
+            BeforeAll {
+                Mock -CommandName Remove-SqlAvailabilityGroup
+                Mock -CommandName Update-AvailabilityGroup
+                Mock -CommandName New-SqlAvailabilityReplica
+                Mock -CommandName New-SqlAvailabilityGroup
+                Mock -CommandName Update-AvailabilityGroupReplica
+            }
+
+            It 'Should set the property to the desired state' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $setTargetResourceParameters = @{
+                        Name                          = 'AG_AllServers'
+                        ServerName                    = 'Server1'
+                        InstanceName                  = 'MSSQLSERVER'
+                        Ensure                        = 'Present'
+                        AvailabilityMode              = 'AsynchronousCommit'
+                        BackupPriority                = 50
+                        ConnectionModeInPrimaryRole   = 'AllowAllConnections'
+                        ConnectionModeInSecondaryRole = 'AllowNoConnections'
+                        EndpointHostName              = 'Server1'
+                        FailoverMode                  = 'Manual'
+                        SeedingMode                   = 'Manual'
+                    }
+
+                    $setTargetResourceParameters.$MockPropertyName = $MockPropertyValue
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server1'
+                } -Times 1 -Exactly
+
+                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                    $ServerName -eq 'Server2'
+                } -Times 0 -Exactly
+
+                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
+                }
+
+                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                    $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
+                }
+
+
+                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Remove-SqlAvailabilityGRoup -Scope It -Times 0 -Exactly
+                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Update-AvailabilityGroup -Exactly -Times 0 -Scope It
+                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the endpoint port differ from the port in the replica''s endpoint URL' {
+            BeforeAll {
+                Mock -CommandName Update-AvailabilityGroupReplica
+
+                Mock -CommandName Connect-Sql -ParameterFilter {
+                    $ServerName -eq 'Server10'
+                } -MockWith {
+                    # Mock the server object
+                    $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+                    $mockServerObject.Name = 'Server10'
+                    $mockServerObject.NetName = 'Server10'
+                    $mockServerObject.IsHadrEnabled = $true
+                    $mockServerObject.ServiceName = 'MSSQLSERVER'
+                    $mockServerObject.DomainInstanceName = 'Server10'
+
+                    # Mock the availability group replicas
+                    $mockAvailabilityGroupReplica1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+                    $mockAvailabilityGroupReplica1.EndpointUrl = 'TCP://Server10:1234'
+                    $mockAvailabilityGroupReplica1.Name = 'Server10'
+
+                    # Mock the availability groups
+                    $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+                    $mockAvailabilityGroup1.Name = 'AG_AllServers'
+                    $mockAvailabilityGroup1.PrimaryReplicaServerName = 'Server10'
+                    $mockAvailabilityGroup1.LocalReplicaRole = 'Primary'
+                    $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica1)
+                    $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroup1)
+
+                    $mockEndpoint = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Endpoint
+                    $mockEndpoint.EndpointType = 'DatabaseMirroring'
+                    $mockEndpoint.Protocol = @{
+                        TCP = @{
+                            ListenerPort = 5022
+                        }
+                    }
+
+                    $mockServerObject.Endpoints.Add($mockEndpoint)
+
+                    return $mockServerObject
+                }
+            }
+
+            It 'Should set the replica''s endpoint URL to use the same port as the endpoint' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $setTargetResourceParameters = @{
+                        Name             = 'AG_AllServers'
+                        ServerName       = 'Server10'
+                        InstanceName     = 'MSSQLSERVER'
+                        Ensure           = 'Present'
+                        EndpointHostName = 'Server10'
+                    }
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When the endpoint protocol differ from the protocol in the replica''s endpoint URL' {
+            BeforeAll {
+                Mock -CommandName Update-AvailabilityGroupReplica
+
+                Mock -CommandName Connect-Sql -ParameterFilter {
+                    $ServerName -eq 'Server10'
+                } -MockWith {
+                    # Mock the server object
+                    $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+                    $mockServerObject.Name = 'Server10'
+                    $mockServerObject.NetName = 'Server10'
+                    $mockServerObject.IsHadrEnabled = $true
+                    $mockServerObject.ServiceName = 'MSSQLSERVER'
+                    $mockServerObject.DomainInstanceName = 'Server10'
+
+                    # Mock the availability group replicas
+                    $mockAvailabilityGroupReplica1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+                    $mockAvailabilityGroupReplica1.EndpointUrl = 'UDP://Server10:5022'
+                    $mockAvailabilityGroupReplica1.Name = 'Server10'
+
+                    # Mock the availability groups
+                    $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+                    $mockAvailabilityGroup1.Name = 'AG_AllServers'
+                    $mockAvailabilityGroup1.PrimaryReplicaServerName = 'Server10'
+                    $mockAvailabilityGroup1.LocalReplicaRole = 'Primary'
+                    $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica1)
+                    $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroup1)
+
+                    $mockEndpoint = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Endpoint
+                    $mockEndpoint.EndpointType = 'DatabaseMirroring'
+                    $mockEndpoint.Protocol = @{
+                        TCP = @{
+                            ListenerPort = 5022
+                        }
+                    }
+
+                    $mockServerObject.Endpoints.Add($mockEndpoint)
+
+                    return $mockServerObject
+                }
+            }
+
+            It 'Should set the replica''s endpoint URL to use the same port as the endpoint' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $setTargetResourceParameters = @{
+                        Name             = 'AG_AllServers'
+                        ServerName       = 'Server10'
+                        InstanceName     = 'MSSQLSERVER'
+                        Ensure           = 'Present'
+                        EndpointHostName = 'Server10'
+                    }
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+}
+
+Describe 'SqlAG\Test-TargetResource' {
+    BeforeAll {
+        $mockConnectSqlServer1 = {
+            # Mock the server object
+            $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+            $mockServerObject.Name = 'Server1'
+            $mockServerObject.NetName = 'Server1'
+            $mockServerObject.DomainInstanceName = 'Server1'
+            $mockServerObject.IsHadrEnabled = $true
+            $mockServerObject.ServiceName = 'MSSQLSERVER'
+            $mockServerObject.Version = @{
+                Major = 13
+            }
+
+            # Mock the availability group replicas
+            $mockAvailabilityGroupReplica1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica1.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica1.BackupPriority = 50
+            $mockAvailabilityGroupReplica1.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica1.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica1.EndpointUrl = 'TCP://Server1:5022'
+            $mockAvailabilityGroupReplica1.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica1.Name = 'Server1'
+            $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = 'TCP://Server1.domain.com:1433'
+            $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica1.SeedingMode = 'Manual'
+
+            $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica2.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica2.BackupPriority = 50
+            $mockAvailabilityGroupReplica2.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica2.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica2.EndpointUrl = 'TCP://Server2:5022'
+            $mockAvailabilityGroupReplica2.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica2.Name = 'Server2'
+            $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
+            $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
+
+            $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica3.BackupPriority = 50
+            $mockAvailabilityGroupReplica3.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica3.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica3.EndpointUrl = 'TCP://Server3:5022'
+            $mockAvailabilityGroupReplica3.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica3.Name = 'Server3'
+            $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
+            $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
+
+            # Mock the availability groups
+            $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+            $mockAvailabilityGroup1.Name = 'AG_AllServers'
+            $mockAvailabilityGroup1.PrimaryReplicaServerName = 'Server2'
+            $mockAvailabilityGroup1.LocalReplicaRole = 'Secondary'
+            $mockAvailabilityGroup1.AutomatedBackupPreference = 'Secondary'
+            $mockAvailabilityGroup1.BasicAvailabilityGroup = $true
+            $mockAvailabilityGroup1.DatabaseHealthTrigger = $true
+            $mockAvailabilityGroup1.DtcSupportEnabled = $true
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica1)
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica2)
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica3)
+
+            $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroup1)
+
+            $mockEndpoint = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Endpoint
+            $mockEndpoint.EndpointType = 'DatabaseMirroring'
+            $mockEndpoint.Protocol = @{
+                TCP = @{
+                    ListenerPort = 5022
+                }
+            }
+
+            $mockServerObject.Endpoints.Add($mockEndpoint)
+
+            return $mockServerObject
+        }
+
+        $mockConnectSqlServer2 = {
+            # Mock the server object
+            $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+            $mockServerObject.Name = 'Server2'
+            $mockServerObject.NetName = 'Server2'
+            $mockServerObject.DomainInstanceName = 'Server2'
+            $mockServerObject.IsHadrEnabled = $true
+            $mockServerObject.ServiceName = 'MSSQLSERVER'
+            $mockServerObject.Version = @{
+                Major = 12
+            }
+
+            # Mock the availability group replicas
+            $mockAvailabilityGroupReplica1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica1.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica1.BackupPriority = 50
+            $mockAvailabilityGroupReplica1.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica1.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica1.EndpointUrl = 'TCP://Server1:5022'
+            $mockAvailabilityGroupReplica1.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica1.Name = 'Server1'
+            $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = 'TCP://Server1.domain.com:1433'
+            $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = @('Server1', 'Server2')
+
+            $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica2.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica2.BackupPriority = 50
+            $mockAvailabilityGroupReplica2.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica2.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica2.EndpointUrl = 'TCP://Server2:5022'
+            $mockAvailabilityGroupReplica2.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica2.Name = 'Server2'
+            $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
+            $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
+
+            $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
+            $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
+            $mockAvailabilityGroupReplica3.BackupPriority = 50
+            $mockAvailabilityGroupReplica3.ConnectionModeInPrimaryRole = 'AllowAllConnections'
+            $mockAvailabilityGroupReplica3.ConnectionModeInSecondaryRole = 'AllowNoConnections'
+            $mockAvailabilityGroupReplica3.EndpointUrl = 'TCP://Server3:5022'
+            $mockAvailabilityGroupReplica3.FailoverMode = 'Manual'
+            $mockAvailabilityGroupReplica3.Name = 'Server3'
+            $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
+            $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
+            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
+
+            # Mock the availability groups
+            $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+            $mockAvailabilityGroup1.Name = 'AG_AllServers'
+            $mockAvailabilityGroup1.PrimaryReplicaServerName = 'Server2'
+            $mockAvailabilityGroup1.LocalReplicaRole = 'Secondary'
+            $mockAvailabilityGroup1.AutomatedBackupPreference = 'Secondary'
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica1)
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica2)
+            $mockAvailabilityGroup1.AvailabilityReplicas.Add($mockAvailabilityGroupReplica3)
+
+            $mockServerObject.AvailabilityGroups.Add($mockAvailabilityGroup1)
+
+            $mockEndpoint = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Endpoint
+            $mockEndpoint.EndpointType = 'DatabaseMirroring'
+            $mockEndpoint.Protocol = @{
+                TCP = @{
+                    ListenerPort = 5022
+                }
+            }
+
+            $mockServerObject.Endpoints.Add($mockEndpoint)
+
+            return $mockServerObject
+        }
+
+        Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer1 -ParameterFilter {
+            $ServerName -eq 'Server1'
+        }
+        Mock -CommandName Connect-SQL -MockWith $mockConnectSqlServer2 -ParameterFilter {
+            $ServerName -eq 'Server2'
+        }
+    }
+    Context 'When the system is in the desired state' {
+        Context 'When the Availability Group should be absent' {
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $testTargetResourceParameters = @{
+                        Name         = 'AbsentAG'
+                        ServerName   = 'Server1'
+                        InstanceName = 'MSSQLSERVER'
+                        Ensure       = 'Absent'
+                    }
+                    Test-TargetResource @testTargetResourceParameters | Should -BeTrue
+                }
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1
+            }
+        }
+        Context 'When the Availability Group should be present' {
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $testTargetResourceParameters = @{
+                        Name         = 'AG_AllServers'
+                        ServerName   = 'Server1'
+                        InstanceName = 'MSSQLSERVER'
+                        Ensure       = 'Present'
+                    }
+                    Test-TargetResource @testTargetResourceParameters | Should -BeTrue
+                }
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        Context 'When the Availability Group should be absent' {
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $testTargetResourceParameters = @{
+                        Name         = 'AG_AllServers'
+                        ServerName   = 'Server1'
+                        InstanceName = 'MSSQLSERVER'
+                        Ensure       = 'Absent'
+                    }
+                    Test-TargetResource @testTargetResourceParameters | Should -BeFalse
+                }
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1
+            }
+        }
+        Context 'When the Availability Group should be present' {
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $testTargetResourceParameters = @{
+                        Name         = 'AbsentAG'
+                        ServerName   = 'Server1'
+                        InstanceName = 'MSSQLSERVER'
+                    }
+                    Test-TargetResource @testTargetResourceParameters | Should -BeFalse
+                }
+                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1
+            }
+        }
+    }
+
+    Context 'When enforcing the state shall happen only when the node is the active node' {
+        BeforeAll {
+            Mock -CommandName Get-TargetResource -MockWith {
+                @{
+                    Name         = 'AG_AllServers'
+                    ServerName   = 'Server1'
+                    InstanceName = 'MSSQLSERVER'
+                    Ensure       = 'Present'
+                    EndpointPort = '5022'
+                    EndpointUrl  = 'TCP://Server1:5022'
+                    IsActiveNode = $false
+                }
+            }
+        }
+
+        It 'Should return $true' {
+            InModuleScope -ScriptBlock {
+                $testTargetResourceParameters = @{
+                    Ensure                  = 'Absent'
+                    Name                    = 'AG_AllServers'
+                    ServerName              = 'Server1'
+                    InstanceName            = 'MSSQLSERVER'
+                    ProcessOnlyOnActiveNode = $true
+                }
+
+                Test-TargetResource @testTargetResourceParameters | Should -BeTrue
+            }
+
+            Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When property <MockPropertyName> is not in desired state' -ForEach @(
+        @{
+            MockPropertyName  = 'AutomatedBackupPreference'
+            MockPropertyValue = 'None'
+        }
+        @{
+            MockPropertyName  = 'AvailabilityMode'
+            MockPropertyValue = 'SynchronousCommit'
+        }
+        @{
+            MockPropertyName  = 'BackupPriority'
+            MockPropertyValue = 60
+        }
+        @{
+            MockPropertyName  = 'ConnectionModeInPrimaryRole'
+            MockPropertyValue = 'AllowReadWriteConnections'
+        }
+        @{
+            MockPropertyName  = 'ConnectionModeInSecondaryRole'
+            MockPropertyValue = 'AllowReadIntentConnectionsOnly'
+        }
+        @{
+            MockPropertyName  = 'FailureConditionLevel'
+            MockPropertyValue = 'OnAnyQualifiedFailureCondition'
+        }
+        @{
+            MockPropertyName  = 'FailoverMode'
+            MockPropertyValue = 'Automatic'
+        }
+        @{
+            MockPropertyName  = 'HealthCheckTimeout'
+            MockPropertyValue = 10
+        }
+        @{
+            MockPropertyName  = 'EndpointHostName'
+            MockPropertyValue = 'Server2'
+        }
+        @{
+            MockPropertyName  = 'BasicAvailabilityGroup'
+            MockPropertyValue = $false
+        }
+        @{
+            MockPropertyName  = 'DatabaseHealthTrigger'
+            MockPropertyValue = $false
+        }
+        @{
+            MockPropertyName  = 'DtcSupportEnabled'
+            MockPropertyValue = $false
+        }
+        @{
+            MockPropertyName  = 'SeedingMode'
+            MockPropertyValue = 'Automatic'
+        }
+    ) {
+        It 'Should return $false' {
+            InModuleScope -Parameters $_ -ScriptBlock {
+                $testTargetResourceParameters = @{
+                    Name                    = 'AG_AllServers'
+                    ServerName              = 'Server1'
+                    InstanceName            = 'MSSQLSERVER'
+                    ProcessOnlyOnActiveNode = $true
+                }
+
+                $testTargetResourceParameters.$MockPropertyName = $MockPropertyValue
+
+                Test-TargetResource @testTargetResourceParameters | Should -BeFalse
+            }
+
+            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1
+        }
+    }
+    Context 'When endpoint port differ from the endpoint URL port' {
+        BeforeAll {
+            Mock -CommandName Get-TargetResource -MockWith {
+                @{
+                    Name         = 'AG_AllServers'
+                    ServerName   = 'Server1'
+                    InstanceName = 'MSSQLSERVER'
+                    Ensure       = 'Present'
+
+                    # Read properties
+                    EndpointPort = '5022'
+                    EndpointUrl  = 'TCP://Server1:1433'
+                    IsActiveNode = $true
+                }
+            }
+        }
+
+        It 'Should return $false' {
+            InModuleScope -ScriptBlock {
+                $testTargetResourceParameters = @{
+                    Name                    = 'AG_AllServers'
+                    ServerName              = 'Server1'
+                    InstanceName            = 'MSSQLSERVER'
+                    ProcessOnlyOnActiveNode = $true
+                }
+
+                Test-TargetResource @testTargetResourceParameters | Should -BeFalse
+            }
+
+            Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When endpoint protocol differ from the endpoint URL protocol' {
+        BeforeAll {
+            Mock -CommandName Get-TargetResource -MockWith {
+                @{
+                    Name         = 'AG_AllServers'
+                    ServerName   = 'Server1'
+                    InstanceName = 'MSSQLSERVER'
+                    Ensure       = 'Present'
+
+                    # Read properties
+                    EndpointPort = '5022'
+                    EndpointUrl  = 'UDP://Server1:5022'
+                    IsActiveNode = $true
+                }
+            }
+        }
+
+        It 'Should return $false' {
+            InModuleScope -ScriptBlock {
+                $testTargetResourceParameters = @{
+                    Name                    = 'AG_AllServers'
+                    ServerName              = 'Server1'
+                    InstanceName            = 'MSSQLSERVER'
+                    ProcessOnlyOnActiveNode = $true
+                }
+
+                Test-TargetResource @testTargetResourceParameters | Should -BeFalse
+            }
+
+            Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+        }
+    }
 }
