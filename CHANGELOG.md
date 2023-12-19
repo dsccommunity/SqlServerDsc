@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServerDsc
   - Bump PSResourceGet to v1.0.0 (used when resolving dependencies).
   - Update markdown highlights with newly supported keywords.
+  - Bump GitHub Action _Stale_ to v9.
   - Bump GitHub Action _CodeQL-Action_ to v3.
 
 ## [16.5.0] - 2023-10-05
