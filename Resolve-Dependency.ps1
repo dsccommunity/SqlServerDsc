@@ -50,6 +50,11 @@
         Specifies to use ModuleFast instead of PowerShellGet to resolve dependencies
         faster.
 
+    .PARAMETER ModuleFastBleedingEdge
+        Specifies to use ModuleFast code that is in the ModuleFast's main branch
+        in its GitHub repository. The parameter UseModuleFast must also be set to
+        true.
+
     .PARAMETER PSResourceGet
         Specifies to use ModuleFast instead of PowerShellGet to resolve dependencies
         faster.
@@ -113,6 +118,10 @@ param
     [Parameter()]
     [System.Management.Automation.SwitchParameter]
     $UseModuleFast,
+
+    [Parameter()]
+    [System.Management.Automation.SwitchParameter]
+    $ModuleFastBleedingEdge,
 
     [Parameter()]
     [System.Management.Automation.SwitchParameter]
@@ -201,25 +210,31 @@ if ($UseModuleFast)
 {
     try
     {
+        $moduleFastBootstrapScriptBlockParameters = @{}
+
+        if ($ModuleFastBleedingEdge)
+        {
+            $moduleFastBootstrapUri = 'bit.ly/modulefastmain' # cSpell: disable-line
+
+            $moduleFastBootstrapScriptBlockParameters.UseMain = $true
+        }
+        else
+        {
+            $moduleFastBootstrapUri = 'bit.ly/modulefast' # cSpell: disable-line
+        }
+
+        Write-Debug -Message ('Using bootstrap script at {0}' -f $moduleFastBootstrapUri)
+
         $invokeWebRequestParameters = @{
-            Uri         = 'bit.ly/modulefast' # cSpell: disable-line
+            Uri         = $moduleFastBootstrapUri
             ErrorAction = 'Stop'
         }
 
         $moduleFastBootstrapScript = Invoke-WebRequest @invokeWebRequestParameters
 
-        <#
-            Using this method instead of the one mentioned in the instructions from
-            https://github.com/JustinGrote/ModuleFast to avoid the PSScriptAnalyzer
-            rule PSAvoidUsingInvokeExpression.
-        #>
         $moduleFastBootstrapScriptBlock = [ScriptBlock]::Create($moduleFastBootstrapScript)
 
-        <#
-            We could pass parameters to the bootstrap script when calling Invoke().
-            But currently the default parameter values works just fine.
-        #>
-        $moduleFastBootstrapScriptBlock.Invoke()
+        & $moduleFastBootstrapScriptBlock @moduleFastBootstrapScriptBlockParameters
     }
     catch
     {
@@ -700,48 +715,53 @@ try
                 'PSDepend' # Always include PSDepend for backward compatibility.
             )
 
-            foreach ($requiredModule in $requiredModules)
+            <#
+                TODO: When a new version of ModuleFast is released this can be moved
+                      down (refactored) into the logic for PSResourceGet as it is then
+                      no longer needed for ModuleFast. The ModuleFast logic for next
+                      version is the logic inside `ModuleFastBleedingEdge` code-blocks.
+            #>
+            if ($UsePSResourceGet -or ($UseModuleFast -and -not $ModuleFastBleedingEdge))
             {
-                # If the RequiredModules.psd1 entry is an Hashtable then special handling is needed.
-                if ($requiredModule.Value -is [System.Collections.Hashtable])
+                foreach ($requiredModule in $requiredModules)
                 {
-                    $saveModuleHashtable = @{
-                        ModuleName      = $requiredModule.Name
-                    }
-
-                    if ($requiredModule.Value.Version -and $requiredModule.Value.Version -ne 'latest')
+                    # If the RequiredModules.psd1 entry is an Hashtable then special handling is needed.
+                    if ($requiredModule.Value -is [System.Collections.Hashtable])
                     {
-                        $saveModuleHashtable.RequiredVersion = $requiredModule.Value.Version
-                    }
+                        $saveModuleHashtable = @{
+                            ModuleName      = $requiredModule.Name
+                        }
 
-                    # ModuleFast does no support preview releases yet.
-                    if ($UsePSResourceGet)
-                    {
+                        if ($requiredModule.Value.Version -and $requiredModule.Value.Version -ne 'latest')
+                        {
+                            $saveModuleHashtable.RequiredVersion = $requiredModule.Value.Version
+                        }
+
                         if ($requiredModule.Value.Parameters.AllowPrerelease -eq $true)
                         {
                             $saveModuleHashtable.Prerelease = $true
                         }
-                    }
 
-                    $modulesToSave += $saveModuleHashtable
-                }
-                else
-                {
-                    if ($requiredModule.Value -eq 'latest')
-                    {
-                        $modulesToSave += $requiredModule.Name
+                        $modulesToSave += $saveModuleHashtable
                     }
                     else
                     {
-                        $modulesToSave += @{
-                            ModuleName      = $requiredModule.Name
-                            RequiredVersion = $requiredModule.Value
+                        if ($requiredModule.Value -eq 'latest')
+                        {
+                            $modulesToSave += $requiredModule.Name
+                        }
+                        else
+                        {
+                            $modulesToSave += @{
+                                ModuleName      = $requiredModule.Name
+                                RequiredVersion = $requiredModule.Value
+                            }
                         }
                     }
                 }
             }
 
-            if ($WithYAML)
+            if ($WithYAML -and $modulesToSave -notcontains 'PowerShell-Yaml')
             {
                 $modulesToSave += 'PowerShell-Yaml'
             }
@@ -752,7 +772,74 @@ try
 
                 Write-Progress -Activity 'ModuleFast:' -PercentComplete 0 -CurrentOperation 'Restoring Build Dependencies'
 
-                $moduleFastPlan = $modulesToSave | Get-ModuleFastPlan
+                <#
+                    TODO: When a new version of ModuleFast is released this should
+                          be the default behavior. See also TODO comment above that
+                          need to be refactored.
+                #>
+                if ($ModuleFastBleedingEdge)
+                {
+                    foreach ($requiredModule in $requiredModules)
+                    {
+                        # If the RequiredModules.psd1 entry is an Hashtable then special handling is needed.
+                        if ($requiredModule.Value -is [System.Collections.Hashtable])
+                        {
+                            if (-not $requiredModule.Value.Version)
+                            {
+                                $requiredModuleVersion = 'latest'
+                            }
+                            else
+                            {
+                                $requiredModuleVersion = $requiredModule.Value.Version
+                            }
+
+                            if ($requiredModuleVersion -eq 'latest')
+                            {
+                                $moduleNameSuffix = ''
+
+                                if ($requiredModule.Value.Parameters.AllowPrerelease -eq $true)
+                                {
+                                    <#
+                                        Adding '!' to the module name indicate to ModuleFast
+                                        that is should also evaluate pre-releases.
+                                    #>
+                                    $moduleNameSuffix = '!'
+                                }
+
+                                $modulesToSave += ('{0}{1}' -f $requiredModule.Name, $moduleNameSuffix)
+                            }
+                            else
+                            {
+                                $modulesToSave += ('{0}@{1}' -f $requiredModule.Name, $requiredModuleVersion)
+                            }
+                        }
+                        else
+                        {
+                            if ($requiredModule.Value -eq 'latest')
+                            {
+                                $modulesToSave += $requiredModule.Name
+                            }
+                            else
+                            {
+                                # Handle different nuget version operators.
+                                if ($requiredModule.Value -match '[@|:|[|(|,|>|<|=]')
+                                {
+                                    $modulesToSave += ('{0}{1}' -f $requiredModule.Name, $requiredModule.Value)
+                                }
+                                else
+                                {
+                                    $modulesToSave += ('{0}@{1}' -f $requiredModule.Name, $requiredModule.Value)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Write-Debug -Message ("Modules required to save:`n{0}" -f ($modulesToSave | Out-String))
+
+                $moduleFastPlan = $modulesToSave | Get-ModuleFastPlan -Update
+
+                Write-Debug -Message ("Modules found missing by Get-ModuleFastPlan:`n{0}" -f ($moduleFastPlan | Out-String))
 
                 if ($moduleFastPlan)
                 {
@@ -760,12 +847,25 @@ try
                     $moduleFastPlan.Name | Get-Module | Remove-Module -Force
 
                     $installModuleFastParameters = @{
-                        ModulesToInstall     = $moduleFastPlan
                         Destination          = $PSDependTarget
                         NoPSModulePathUpdate = $true
                         NoProfileUpdate      = $true
                         Update               = $true
                         Confirm              = $false
+                    }
+
+                    <#
+                        TODO: When a new version of ModuleFast is released this should
+                            be the default behavior. See also TODO comment above that
+                            need to be refactored.
+                    #>
+                    if ($ModuleFastBleedingEdge)
+                    {
+                        $installModuleFastParameters.Specification = $modulesToSave
+                    }
+                    else
+                    {
+                        $installModuleFastParameters.ModulesToInstall = $modulesToSave
                     }
 
                     Install-ModuleFast @installModuleFastParameters

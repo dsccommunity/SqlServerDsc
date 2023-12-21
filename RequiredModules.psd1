@@ -15,14 +15,12 @@
         If preview release of Pester prevents release we should temporary shift
         back to stable.
     #>
-    # Pester                         = @{
-    #     Version    = 'latest'
-    #     Parameters = @{
-    #         AllowPrerelease = $true
-    #     }
-    # }
-
-    Pester                         = 'latest'
+    Pester                         = @{
+        Version    = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
 
     Plaster                        = 'latest'
     ModuleBuilder                  = 'latest'
