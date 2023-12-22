@@ -810,7 +810,7 @@ try
                             }
                             else
                             {
-                                $modulesToSave += ('{0}@{1}' -f $requiredModule.Name, $requiredModuleVersion)
+                                $modulesToSave += ('{0}[{1}]' -f $requiredModule.Name, $requiredModuleVersion)
                             }
                         }
                         else
@@ -822,13 +822,14 @@ try
                             else
                             {
                                 # Handle different nuget version operators.
-                                if ($requiredModule.Value -match '[@|:|[|(|,|>|<|=]')
+                                if ($requiredModule.Value -match '[:|[|(|,|>|<|=]')
                                 {
                                     $modulesToSave += ('{0}{1}' -f $requiredModule.Name, $requiredModule.Value)
                                 }
                                 else
                                 {
-                                    $modulesToSave += ('{0}@{1}' -f $requiredModule.Name, $requiredModule.Value)
+                                    # Assuming the version is a fixed version.
+                                    $modulesToSave += ('{0}[{1}]' -f $requiredModule.Name, $requiredModule.Value)
                                 }
                             }
                         }
