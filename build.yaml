@@ -17,7 +17,6 @@ BuildWorkflow:
     - Check_SqlServer_Availability
     - Generate_Conceptual_Help
     - Generate_Wiki_Content
-    #- Set_Documentation_Variables
     - Generate_Markdown_For_Public_Commands
     - Generate_External_Help_File_For_Public_Commands
     - Clean_Markdown_Of_Public_Commands

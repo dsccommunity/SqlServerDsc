@@ -51,7 +51,7 @@
     NetworkingDsc                  = '9.0.0'
     WSManDsc                       = '3.1.1'
 
-    # Prerequisite module for documentation.
+    # Prerequisite modules for documentation.
     #'DscResource.DocGenerator'     = 'latest'
     'DscResource.DocGenerator'     = @{
         Version    = 'latest'
