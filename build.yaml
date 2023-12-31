@@ -42,14 +42,16 @@ BuildWorkflow:
 
   Check_SqlServer_Availability: |
     {
-      try
-      {
-          [Microsoft.SqlServer.Management.Smo.Server] -as [Type] | Out-Null
-      }
-      catch
-      {
-          throw 'The SqlServer types are not available. Please install the SqlServer module or load SMO stubs types and try again.'
-      }
+        Import-Module -Name SqlServer -ErrorAction 'SilentlyContinue'
+
+        try
+        {
+            [Microsoft.SqlServer.Management.Smo.Server] -as [Type] | Out-Null
+        }
+        catch
+        {
+            throw 'The SqlServer types are not available. Please install the SqlServer module or load SMO stubs types and try again.'
+        }
     }
 
   Package_WikContent: |
