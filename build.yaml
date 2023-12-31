@@ -83,8 +83,6 @@ BuildWorkflow:
         Compress-Archive -Path $wikiArchiveSourcePath -DestinationPath $wikiPackagePath -CompressionLevel 'Optimal' -Force -ErrorAction 'Stop'
     }
 
-
-
 ####################################################
 #           ModuleBuilder Configuration            #
 ####################################################
