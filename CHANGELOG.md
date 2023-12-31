@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Added build tasks to generate Wiki documentation for public commands.
+  - QA test to verify that each public command's script file starts with a
+    new line (needed until PR https://github.com/PoshCode/ModuleBuilder/pull/127
+    is merged and released).
 
 ### Fixed
 
@@ -44,6 +47,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     It is run with the meta task `pack` which is run by the pipeline.
     To run the meta task `docs` the SMO assemblies must be loaded into the
     session, either by importing SqlServer module or loading SMO stubs.
+  - QA test improved to speed up quality testing.
+- SqlSetup
   - Updated integration tests to use PSResourceGet to download required modules.
 
 ## [16.5.0] - 2023-10-05

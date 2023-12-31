@@ -102,7 +102,7 @@ Describe 'Changelog Management' -Tag 'Changelog' {
     }
 
     It 'Changelog should have an Unreleased header' -Skip:$skipTest {
-            (Get-ChangelogData -Path (Join-Path -Path $ProjectPath -ChildPath 'CHANGELOG.md') -ErrorAction Stop).Unreleased | Should -Not -BeNullOrEmpty
+        (Get-ChangelogData -Path (Join-Path -Path $ProjectPath -ChildPath 'CHANGELOG.md') -ErrorAction Stop).Unreleased | Should -Not -BeNullOrEmpty
     }
 }
 
@@ -125,12 +125,23 @@ BeforeDiscovery {
     $allModuleFunctions = & $mut { Get-Command -Module $args[0] -CommandType Function } $script:moduleName
 
     # Build test cases.
-    $testCases = @()
+    $testCasesAllModuleFunction = @()
 
     foreach ($function in $allModuleFunctions)
     {
-        $testCases += @{
+        $testCasesAllModuleFunction += @{
             Name = $function.Name
+        }
+    }
+
+    $allPublicCommand = (Get-Command -Module $script:moduleName).Name
+
+    $testCasesPublicCommand = @()
+
+    foreach ($command in $allPublicCommand)
+    {
+        $testCasesPublicCommand += @{
+            Name = $command
         }
     }
 }
@@ -154,11 +165,11 @@ Describe 'Quality for module' -Tags 'TestQuality' {
         }
     }
 
-    It 'Should have a unit test for <Name>' -ForEach $testCases {
+    It 'Should have a unit test for <Name>' -ForEach $testCasesAllModuleFunction {
         Get-ChildItem -Path 'tests\' -Recurse -Include "$Name.Tests.ps1" | Should -Not -BeNullOrEmpty
     }
 
-    It 'Should pass Script Analyzer for <Name>' -ForEach $testCases -Skip:(-not $scriptAnalyzerRules) {
+    It 'Should pass Script Analyzer for <Name>' -ForEach $testCasesAllModuleFunction -Skip:(-not $scriptAnalyzerRules) {
         $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
 
         $pssaResult = (Invoke-ScriptAnalyzer -Path $functionFile.FullName)
@@ -169,88 +180,46 @@ Describe 'Quality for module' -Tags 'TestQuality' {
 }
 
 Describe 'Help for module' -Tags 'helpQuality' {
-    It 'Should have .SYNOPSIS for <Name>' -ForEach $testCases {
-        $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
+    Context 'Validating help for <Name>' -ForEach $testCasesAllModuleFunction -Tag 'helpQuality' {
+        BeforeAll {
+            $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
 
-        $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
+            $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
 
-        $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
+            $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
 
-        $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
+            $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
 
-        $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
-            Where-Object -FilterScript {
-                $_.Name -eq $Name
+            $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
+                Where-Object -FilterScript {
+                    $_.Name -eq $Name
+                }
+
+            $script:functionHelp = $parsedFunction.GetHelpContent()
+        }
+
+        It 'Should have .SYNOPSIS' {
+            $functionHelp.Synopsis | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should have a .DESCRIPTION with length greater than 40 characters for <Name>' {
+            $functionHelp.Description.Length | Should -BeGreaterThan 40
+        }
+
+        It 'Should have at least one (1) example for <Name>' {
+            $functionHelp.Examples.Count | Should -BeGreaterThan 0
+            $functionHelp.Examples[0] | Should -Match ([regex]::Escape($function.Name))
+            $functionHelp.Examples[0].Length | Should -BeGreaterThan ($function.Name.Length + 10)
+        }
+
+        It 'Should have described all parameters for <Name>' {
+            $parameters = $parsedFunction.Body.ParamBlock.Parameters.Name.VariablePath.ForEach({ $_.ToString() })
+
+            foreach ($parameter in $parameters)
+            {
+                $functionHelp.Parameters.($parameter.ToUpper()) | Should -Not -BeNullOrEmpty -Because ('the parameter {0} must have a description' -f $parameter)
+                $functionHelp.Parameters.($parameter.ToUpper()).Length | Should -BeGreaterThan 25 -Because ('the parameter {0} must have descriptive description' -f $parameter)
             }
-
-        $functionHelp = $parsedFunction.GetHelpContent()
-
-        $functionHelp.Synopsis | Should -Not -BeNullOrEmpty
-    }
-
-    It 'Should have a .DESCRIPTION with length greater than 40 characters for <Name>' -ForEach $testCases {
-        $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
-
-        $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
-
-        $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
-
-        $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
-
-        $parsedFunction = $abstractSyntaxTree.FindAll($astSearchDelegate, $true) |
-            Where-Object -FilterScript {
-                $_.Name -eq $Name
-            }
-
-        $functionHelp = $parsedFunction.GetHelpContent()
-
-        $functionHelp.Description.Length | Should -BeGreaterThan 40
-    }
-
-    It 'Should have at least one (1) example for <Name>' -ForEach $testCases {
-        $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
-
-        $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
-
-        $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
-
-        $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
-
-        $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
-            Where-Object -FilterScript {
-                $_.Name -eq $Name
-            }
-
-        $functionHelp = $parsedFunction.GetHelpContent()
-
-        $functionHelp.Examples.Count | Should -BeGreaterThan 0
-        $functionHelp.Examples[0] | Should -Match ([regex]::Escape($function.Name))
-        $functionHelp.Examples[0].Length | Should -BeGreaterThan ($function.Name.Length + 10)
-
-    }
-
-    It 'Should have described all parameters for <Name>' -ForEach $testCases {
-        $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
-
-        $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
-
-        $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
-
-        $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
-
-        $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
-            Where-Object -FilterScript {
-                $_.Name -eq $Name
-            }
-
-        $functionHelp = $parsedFunction.GetHelpContent()
-
-        $parameters = $parsedFunction.Body.ParamBlock.Parameters.Name.VariablePath.ForEach({ $_.ToString() })
-
-        foreach ($parameter in $parameters)
-        {
-            $functionHelp.Parameters.($parameter.ToUpper()) | Should -Not -BeNullOrEmpty -Because ('the parameter {0} must have a description' -f $parameter)
-            $functionHelp.Parameters.($parameter.ToUpper()).Length | Should -BeGreaterThan 25 -Because ('the parameter {0} must have descriptive description' -f $parameter)
         }
     }
 }
