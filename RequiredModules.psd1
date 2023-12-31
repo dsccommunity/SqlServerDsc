@@ -30,8 +30,6 @@
     MarkdownLinkCheck              = 'latest'
     'DscResource.Test'             = 'latest'
     xDscResourceDesigner           = 'latest'
-    'DscResource.DocGenerator'     = 'latest'
-    PlatyPS                        = 'latest'
 
     # Build dependencies needed for using the module
     'DscResource.Base'             = 'latest'
@@ -53,6 +51,13 @@
     NetworkingDsc                  = '9.0.0'
     WSManDsc                       = '3.1.1'
 
-    # Prerequisite module for documentation and stub creation.
-    SqlServer                      = 'latest'
+    # Prerequisite module for documentation.
+    #'DscResource.DocGenerator'     = 'latest'
+    'DscResource.DocGenerator'     = @{
+        Version    = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
+    PlatyPS                        = 'latest'
 }

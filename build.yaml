@@ -12,21 +12,20 @@ BuildWorkflow:
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
     - Create_Changelog_Release_Output
+
+  docs:
+    - Check_SqlServer_Availability
     - Generate_Conceptual_Help
     - Generate_Wiki_Content
-    - Package_WikContent
     #- Set_Documentation_Variables
-    #- Generate_Markdown_For_Public_Commands
-    #- Generate_External_Help_File_For_Public_Commands
-    #- Clean_Markdown_Of_Public_Commands
-
-  fastbuild:
-    - Clean
-    - Build_Module_ModuleBuilder
-    - Build_NestedModules_ModuleBuilder
+    - Generate_Markdown_For_Public_Commands
+    - Generate_External_Help_File_For_Public_Commands
+    - Clean_Markdown_Of_Public_Commands
+    - Package_WikContent
 
   pack:
     - build
+    - docs
     - package_module_nupkg # cSpell: disable-line
 
   hqrmtest: # cSpell: disable-line
@@ -41,6 +40,18 @@ BuildWorkflow:
     - Publish_Release_To_GitHub
     - Publish_Module_To_gallery
     - Publish_GitHub_Wiki_Content
+
+  Check_SqlServer_Availability: |
+    {
+      try
+      {
+          [Microsoft.SqlServer.Management.Smo.Server] -as [Type] | Out-Null
+      }
+      catch
+      {
+          throw 'The SqlServer types are not available. Please install the SqlServer module or load SMO stubs types and try again.'
+      }
+    }
 
   Package_WikContent: |
     {
@@ -71,58 +82,7 @@ BuildWorkflow:
         Compress-Archive -Path $wikiArchiveSourcePath -DestinationPath $wikiPackagePath -CompressionLevel 'Optimal' -Force -ErrorAction 'Stop'
     }
 
-  Set_Documentation_Variables: |
-    {
-        param
-        (
-            $OutputDirectory = (property OutputDirectory (Join-Path $BuildRoot 'output')),
-            # $TestsDirectory = (property TestsDirectory (Join-Path $BuildRoot 'tests')),
-            # $UnitTestsDirectory = (property UnitTestsDirectory (Join-Path $TestsDirectory 'Unit')),
-            # $StubDirectory = (property StubDirectory (Join-Path $UnitTestsDirectory 'Stubs')),
-            $BuildInfo = (property BuildInfo @{ })
-        )
 
-        # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
-        . Set-SamplerTaskVariable
-
-        "`tProject Name             = {0}" -f $ProjectName
-        "`tOutput Directory         = {0}" -f $OutputDirectory
-
-        $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath 'WikiContent'
-
-        "`tWiki Output Path         = $wikiOutputPath"
-
-        if (-not (Test-Path -Path $wikiOutputPath))
-        {
-            throw 'The Wiki Output Path does not exist. Please run the task Generate_Wiki_Content prior to running this task.'
-        }
-
-        # Set documentation output folder to the output/WikiContent folder.
-        $env:DocOutputFolder = $wikiOutputPath
-
-        # Set that New-MarkdownHelpPage should not generate the module page.
-        $env:WithModulePage = [System.Boolean] $false
-
-        "`tWith Module Page         = $env:WithModulePage"
-
-        # ""
-
-        # "`tTests Directory      = {0}" -f $TestsDirectory
-        # "`tUnit Tests Directory = {0}" -f $UnitTestsDirectory
-        # "`tStub Directory       = {0}" -f $StubDirectory
-
-        # $SMOStub = 'SMO.cs'
-
-        # "`tSMO Stubs            = {0}" -f $SMOStub
-
-        # $env:DependentType = @(Join-Path -Path $StubDirectory -ChildPath 'SMO.cs')
-
-        # "`tDependent Types      = $($env:DependentType -join ', ')"
-
-        $env:DependentModule = 'SqlServer'
-
-        "`tDependent Types      = $($env:DependentModule -join ', ')"
-    }
 
 ####################################################
 #           ModuleBuilder Configuration            #
