@@ -26,6 +26,7 @@ else
 
                 Name            = 'MyOperator'
                 EmailAddress    = 'MyEmail@company.local'
+                NewEmailAddress = 'newemail@company.local'
 
                 CertificateFile = $env:DscPublicCertificatePath
             }
@@ -60,6 +61,31 @@ Configuration DSC_SqlAgentOperator_Add_Config
 
 <#
     .SYNOPSIS
+        Adds a SQL Agent operator.
+#>
+Configuration DSC_SqlAgentOperator_Change_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlAgentOperator 'Integration_Test'
+        {
+            Ensure               = 'Present'
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            Name                 = $Node.Name
+            EmailAddress         = $Node.NewEmailAddress
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
         Removes a SQL Agent operator.
 #>
 Configuration DSC_SqlAgentOperator_Remove_Config
@@ -82,5 +108,3 @@ Configuration DSC_SqlAgentOperator_Remove_Config
         }
     }
 }
-
-
