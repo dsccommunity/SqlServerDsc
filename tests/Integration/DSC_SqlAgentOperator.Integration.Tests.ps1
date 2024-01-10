@@ -215,7 +215,6 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $resourceCurrentState.Ensure | Should -Be 'Present'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.Name
-            Write-Verbose -Message "EmailAddress: $($resourceCurrentState.EmailAddress)" -Verbose
             $resourceCurrentState.EmailAddress | Should -Be ('{0};{1}' -f $ConfigurationData.AllNodes.NewEmailAddress1, $ConfigurationData.AllNodes.NewEmailAddress2 )
         }
 
