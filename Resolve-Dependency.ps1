@@ -55,9 +55,11 @@
         in its GitHub repository. The parameter UseModuleFast must also be set to
         true.
 
-    .PARAMETER PSResourceGet
-        Specifies to use ModuleFast instead of PowerShellGet to resolve dependencies
-        faster.
+    .PARAMETER UsePSResourceGet
+        Specifies to use the new PSResourceGet module instead of the (now legacy) PowerShellGet module.
+
+    .PARAMETER PSResourceGetVersion
+        String specifying the module version for PSResourceGet if the `UsePSResourceGet` switch is utilized.
 
     .NOTES
         Load defaults for parameters values from Resolve-Dependency.psd1 if not
@@ -124,6 +126,10 @@ param
     $ModuleFastBleedingEdge,
 
     [Parameter()]
+    [System.String]
+    $ModuleFastVersion,
+
+    [Parameter()]
     [System.Management.Automation.SwitchParameter]
     $UsePSResourceGet,
 
@@ -187,26 +193,27 @@ catch
     Write-Warning -Message "Error attempting to import Bootstrap's default parameters from '$resolveDependencyConfigPath': $($_.Exception.Message)."
 }
 
-# Handles when both ModuleFast and PSResourceGet is configured or/and passed as parameter.
+# Handle when both ModuleFast and PSResourceGet is configured or/and passed as parameter.
 if ($UseModuleFast -and $UsePSResourceGet)
 {
     Write-Information -MessageData 'Both ModuleFast and PSResourceGet is configured or/and passed as parameter.' -InformationAction 'Continue'
 
-    if ($PSVersionTable.PSVersion -ge '7.2')
+    if ($PSVersionTable.PSVersion -ge '7.3')
     {
         $UsePSResourceGet = $false
 
-        Write-Information -MessageData 'PowerShell 7.2 or higher being used, prefer ModuleFast over PSResourceGet.' -InformationAction 'Continue'
+        Write-Information -MessageData 'PowerShell 7.3 or higher being used, prefer ModuleFast over PSResourceGet.' -InformationAction 'Continue'
     }
     else
     {
         $UseModuleFast = $false
 
-        Write-Information -MessageData 'Older PowerShell or Windows PowerShell being used, prefer PSResourceGet since ModuleFast is not supported on this version of PowerShell.' -InformationAction 'Continue'
+        Write-Information -MessageData 'Windows PowerShell or PowerShell <=7.2 is being used, prefer PSResourceGet since ModuleFast is not supported on this version of PowerShell.' -InformationAction 'Continue'
     }
 }
 
-if ($UseModuleFast)
+# Only bootstrao ModuleFast if it is not already imported.
+if ($UseModuleFast -and -not (Get-Module -Name 'ModuleFast'))
 {
     try
     {
@@ -214,14 +221,22 @@ if ($UseModuleFast)
 
         if ($ModuleFastBleedingEdge)
         {
-            $moduleFastBootstrapUri = 'bit.ly/modulefastmain' # cSpell: disable-line
+            Write-Information -MessageData 'ModuleFast is configured to use Bleeding Edge (directly from ModuleFast''s main branch).' -InformationAction 'Continue'
 
             $moduleFastBootstrapScriptBlockParameters.UseMain = $true
         }
+        elseif($ModuleFastVersion)
+        {
+            Write-Information -MessageData ('ModuleFast is configured to use version {0}.' -f $ModuleFastVersion) -InformationAction 'Continue'
+
+            $moduleFastBootstrapScriptBlockParameters.Release = $ModuleFastVersion
+        }
         else
         {
-            $moduleFastBootstrapUri = 'bit.ly/modulefast' # cSpell: disable-line
+            Write-Information -MessageData 'ModuleFast is configured to use latest released version.' -InformationAction 'Continue'
         }
+
+        $moduleFastBootstrapUri = 'bit.ly/modulefast' # cSpell: disable-line
 
         Write-Debug -Message ('Using bootstrap script at {0}' -f $moduleFastBootstrapUri)
 
@@ -238,9 +253,10 @@ if ($UseModuleFast)
     }
     catch
     {
-        Write-Warning -Message ('ModuleFast could not be bootstrapped. Reverting to PowerShellGet. Error: {0}' -f $_.Exception.Message)
+        Write-Warning -Message ('ModuleFast could not be bootstrapped. Reverting to PSResourceGet. Error: {0}' -f $_.Exception.Message)
 
         $UseModuleFast = $false
+        $UsePSResourceGet = $true
     }
 }
 
@@ -251,7 +267,7 @@ if ($UsePSResourceGet)
     # If PSResourceGet was used prior it will be locked and we can't replace it.
     if ((Test-Path -Path "$PSDependTarget/$psResourceGetModuleName" -PathType 'Container') -and (Get-Module -Name $psResourceGetModuleName))
     {
-        Write-Information -MessageData ('{0} is already saved and loaded into the session. To refresh the module open a new session and resolve dependencies again.' -f $psResourceGetModuleName) -InformationAction 'Continue'
+        Write-Information -MessageData ('{0} is already bootstrapped and imported into the session. If there is a need to refresh the module, open a new session and resolve dependencies again.' -f $psResourceGetModuleName) -InformationAction 'Continue'
     }
     else
     {
@@ -263,12 +279,11 @@ if ($UsePSResourceGet)
         {
             if (-not $PSResourceGetVersion)
             {
-                # Default version to use if non is specified in parameter or in configuration.
-                $PSResourceGetVersion = '0.9.0-rc1'
+                # Default version to use if none is passed in parameter or specified in configuration.
+                $PSResourceGetVersion = '1.0.1'
             }
 
             $invokeWebRequestParameters = @{
-                # TODO: This should be hardcoded to a stable release in the future.
                 # TODO: Should support proxy parameters passed to the script.
                 Uri         = "https://www.powershellgallery.com/api/v2/package/$psResourceGetModuleName/$PSResourceGetVersion"
                 OutFile     = "$PSDependTarget/$psResourceGetModuleName.nupkg" # cSpell: ignore nupkg
@@ -364,6 +379,7 @@ if ($UsePSResourceGet)
     }
 }
 
+# Check if legacy PowerShellGet and PSDepend must be bootstrapped.
 if (-not ($UseModuleFast -or $UsePSResourceGet))
 {
     if ($PSVersionTable.PSVersion.Major -le 5)
@@ -490,6 +506,7 @@ if (-not ($UseModuleFast -or $UsePSResourceGet))
 
 try
 {
+    # Check if legacy PowerShellGet and PSDepend must be used.
     if (-not ($UseModuleFast -or $UsePSResourceGet))
     {
         Write-Progress -Activity 'Bootstrap:' -PercentComplete 25 -CurrentOperation 'Checking PowerShellGet'
@@ -711,30 +728,137 @@ try
             $requiredModules = $requiredModules.GetEnumerator() |
                 Where-Object -FilterScript { $_.Name -ne 'PSDependOptions' }
 
-            $modulesToSave = @(
-                'PSDepend' # Always include PSDepend for backward compatibility.
-            )
-
-            <#
-                TODO: When a new version of ModuleFast is released this can be moved
-                      down (refactored) into the logic for PSResourceGet as it is then
-                      no longer needed for ModuleFast. The ModuleFast logic for next
-                      version is the logic inside `ModuleFastBleedingEdge` code-blocks.
-            #>
-            if ($UsePSResourceGet -or ($UseModuleFast -and -not $ModuleFastBleedingEdge))
+            if ($UseModuleFast)
             {
+                Write-Progress -Activity 'Bootstrap:' -PercentComplete 90 -CurrentOperation 'Invoking ModuleFast'
+
+                Write-Progress -Activity 'ModuleFast:' -PercentComplete 0 -CurrentOperation 'Restoring Build Dependencies'
+
+                $modulesToSave = @(
+                    'PSDepend' # Always include PSDepend for backward compatibility.
+                )
+
+                if ($WithYAML)
+                {
+                    $modulesToSave += 'PowerShell-Yaml'
+                }
+
+                foreach ($requiredModule in $requiredModules)
+                {
+                    # If the RequiredModules.psd1 entry is an Hashtable then special handling is needed.
+                    if ($requiredModule.Value -is [System.Collections.Hashtable])
+                    {
+                        if (-not $requiredModule.Value.Version)
+                        {
+                            $requiredModuleVersion = 'latest'
+                        }
+                        else
+                        {
+                            $requiredModuleVersion = $requiredModule.Value.Version
+                        }
+
+                        if ($requiredModuleVersion -eq 'latest')
+                        {
+                            $moduleNameSuffix = ''
+
+                            if ($requiredModule.Value.Parameters.AllowPrerelease -eq $true)
+                            {
+                                <#
+                                    Adding '!' to the module name indicate to ModuleFast
+                                    that is should also evaluate pre-releases.
+                                #>
+                                $moduleNameSuffix = '!'
+                            }
+
+                            $modulesToSave += ('{0}{1}' -f $requiredModule.Name, $moduleNameSuffix)
+                        }
+                        else
+                        {
+                            $modulesToSave += ('{0}:[{1}]' -f $requiredModule.Name, $requiredModuleVersion)
+                        }
+                    }
+                    else
+                    {
+                        if ($requiredModule.Value -eq 'latest')
+                        {
+                            $modulesToSave += $requiredModule.Name
+                        }
+                        else
+                        {
+                            # Handle different nuget version operators already present.
+                            if ($requiredModule.Value -match '[!|:|[|(|,|>|<|=]')
+                            {
+                                $modulesToSave += ('{0}{1}' -f $requiredModule.Name, $requiredModule.Value)
+                            }
+                            else
+                            {
+                                # Assuming the version is a fixed version.
+                                $modulesToSave += ('{0}:[{1}]' -f $requiredModule.Name, $requiredModule.Value)
+                            }
+                        }
+                    }
+                }
+
+                Write-Debug -Message ("Required modules to retrieve plan for:`n{0}" -f ($modulesToSave | Out-String))
+
+                $installModuleFastParameters = @{
+                    Destination          = $PSDependTarget
+                    DestinationOnly      = $true
+                    NoPSModulePathUpdate = $true
+                    NoProfileUpdate      = $true
+                    Update               = $true
+                    Confirm              = $false
+                }
+
+                $moduleFastPlan = Install-ModuleFast -Specification $modulesToSave -Plan @installModuleFastParameters
+
+                Write-Debug -Message ("Missing modules that need to be saved:`n{0}" -f ($moduleFastPlan | Out-String))
+
+                if ($moduleFastPlan)
+                {
+                    # Clear all modules in plan from the current session so they can be fetched again.
+                    $moduleFastPlan.Name | Get-Module | Remove-Module -Force
+
+                    $moduleFastPlan | Install-ModuleFast @installModuleFastParameters
+                }
+                else
+                {
+                    Write-Verbose -Message 'All required modules were already up to date'
+                }
+
+                Write-Progress -Activity 'ModuleFast:' -PercentComplete 100 -CurrentOperation 'Dependencies restored' -Completed
+            }
+
+            if ($UsePSResourceGet)
+            {
+                Write-Progress -Activity 'Bootstrap:' -PercentComplete 90 -CurrentOperation 'Invoking PSResourceGet'
+
+                $modulesToSave = @(
+                    @{
+                        Name = 'PSDepend'  # Always include PSDepend for backward compatibility.
+                    }
+                )
+
+                if ($WithYAML)
+                {
+                    $modulesToSave += @{
+                        Name = 'PowerShell-Yaml'
+                    }
+                }
+
+                # Prepare hashtable that can be concatenated to the Save-PSResource parameters.
                 foreach ($requiredModule in $requiredModules)
                 {
                     # If the RequiredModules.psd1 entry is an Hashtable then special handling is needed.
                     if ($requiredModule.Value -is [System.Collections.Hashtable])
                     {
                         $saveModuleHashtable = @{
-                            ModuleName      = $requiredModule.Name
+                            Name = $requiredModule.Name
                         }
 
                         if ($requiredModule.Value.Version -and $requiredModule.Value.Version -ne 'latest')
                         {
-                            $saveModuleHashtable.RequiredVersion = $requiredModule.Value.Version
+                            $saveModuleHashtable.Version = $requiredModule.Value.Version
                         }
 
                         if ($requiredModule.Value.Parameters.AllowPrerelease -eq $true)
@@ -748,146 +872,25 @@ try
                     {
                         if ($requiredModule.Value -eq 'latest')
                         {
-                            $modulesToSave += $requiredModule.Name
+                            $modulesToSave += @{
+                                Name = $requiredModule.Name
+                            }
                         }
                         else
                         {
                             $modulesToSave += @{
-                                ModuleName      = $requiredModule.Name
-                                RequiredVersion = $requiredModule.Value
-                            }
-                        }
-                    }
-                }
-            }
-
-            if ($WithYAML -and $modulesToSave -notcontains 'PowerShell-Yaml')
-            {
-                $modulesToSave += 'PowerShell-Yaml'
-            }
-
-            if ($UseModuleFast)
-            {
-                Write-Progress -Activity 'Bootstrap:' -PercentComplete 90 -CurrentOperation 'Invoking ModuleFast'
-
-                Write-Progress -Activity 'ModuleFast:' -PercentComplete 0 -CurrentOperation 'Restoring Build Dependencies'
-
-                <#
-                    TODO: When a new version of ModuleFast is released this should
-                          be the default behavior. See also TODO comment above that
-                          need to be refactored.
-                #>
-                if ($ModuleFastBleedingEdge)
-                {
-                    foreach ($requiredModule in $requiredModules)
-                    {
-                        # If the RequiredModules.psd1 entry is an Hashtable then special handling is needed.
-                        if ($requiredModule.Value -is [System.Collections.Hashtable])
-                        {
-                            if (-not $requiredModule.Value.Version)
-                            {
-                                $requiredModuleVersion = 'latest'
-                            }
-                            else
-                            {
-                                $requiredModuleVersion = $requiredModule.Value.Version
-                            }
-
-                            if ($requiredModuleVersion -eq 'latest')
-                            {
-                                $moduleNameSuffix = ''
-
-                                if ($requiredModule.Value.Parameters.AllowPrerelease -eq $true)
-                                {
-                                    <#
-                                        Adding '!' to the module name indicate to ModuleFast
-                                        that is should also evaluate pre-releases.
-                                    #>
-                                    $moduleNameSuffix = '!'
-                                }
-
-                                $modulesToSave += ('{0}{1}' -f $requiredModule.Name, $moduleNameSuffix)
-                            }
-                            else
-                            {
-                                $modulesToSave += ('{0}[{1}]' -f $requiredModule.Name, $requiredModuleVersion)
-                            }
-                        }
-                        else
-                        {
-                            if ($requiredModule.Value -eq 'latest')
-                            {
-                                $modulesToSave += $requiredModule.Name
-                            }
-                            else
-                            {
-                                # Handle different nuget version operators.
-                                if ($requiredModule.Value -match '[:|[|(|,|>|<|=]')
-                                {
-                                    $modulesToSave += ('{0}{1}' -f $requiredModule.Name, $requiredModule.Value)
-                                }
-                                else
-                                {
-                                    # Assuming the version is a fixed version.
-                                    $modulesToSave += ('{0}[{1}]' -f $requiredModule.Name, $requiredModule.Value)
-                                }
+                                Name    = $requiredModule.Name
+                                Version = $requiredModule.Value
                             }
                         }
                     }
                 }
 
-                Write-Debug -Message ("Modules required to save:`n{0}" -f ($modulesToSave | Out-String))
-
-                $moduleFastPlan = $modulesToSave | Get-ModuleFastPlan -Update
-
-                Write-Debug -Message ("Modules found missing by Get-ModuleFastPlan:`n{0}" -f ($moduleFastPlan | Out-String))
-
-                if ($moduleFastPlan)
-                {
-                    # Clear all modules in plan from the current session so they can be fetched again.
-                    $moduleFastPlan.Name | Get-Module | Remove-Module -Force
-
-                    $installModuleFastParameters = @{
-                        Destination          = $PSDependTarget
-                        NoPSModulePathUpdate = $true
-                        NoProfileUpdate      = $true
-                        Update               = $true
-                        Confirm              = $false
-                    }
-
-                    <#
-                        TODO: When a new version of ModuleFast is released this should
-                            be the default behavior. See also TODO comment above that
-                            need to be refactored.
-                    #>
-                    if ($ModuleFastBleedingEdge)
-                    {
-                        $installModuleFastParameters.Specification = $modulesToSave
-                    }
-                    else
-                    {
-                        $installModuleFastParameters.ModulesToInstall = $modulesToSave
-                    }
-
-                    Install-ModuleFast @installModuleFastParameters
-                }
-                else
-                {
-                    Write-Verbose -Message 'All modules were already up to date'
-                }
-
-                Write-Progress -Activity 'ModuleFast:' -PercentComplete 100 -CurrentOperation 'Dependencies restored' -Completed
-            }
-
-            if ($UsePSResourceGet)
-            {
-                Write-Progress -Activity 'Bootstrap:' -PercentComplete 90 -CurrentOperation 'Invoking PSResourceGet'
+                $percentagePerModule = [System.Math]::Floor(100 / $modulesToSave.Length)
 
                 $progressPercentage = 0
 
                 Write-Progress -Activity 'PSResourceGet:' -PercentComplete $progressPercentage -CurrentOperation 'Restoring Build Dependencies'
-
-                $percentagePerModule = [System.Math]::Floor(100 / $modulesToSave.Length)
 
                 foreach ($currentModule in $modulesToSave)
                 {
@@ -899,29 +902,13 @@ try
                         Confirm         = $false
                     }
 
-                    if ($currentModule -is [System.Collections.Hashtable])
-                    {
-                        $savePSResourceParameters.Name = $currentModule.ModuleName
-
-                        if ($currentModule.RequiredVersion)
-                        {
-                            $savePSResourceParameters.Version = $currentModule.RequiredVersion
-                        }
-
-                        if ($currentModule.Prerelease)
-                        {
-                            $savePSResourceParameters.Prerelease = $currentModule.Prerelease
-                        }
-                    }
-                    else
-                    {
-                        $savePSResourceParameters.Name = $currentModule
-                    }
+                    # Concatenate the module parameters to the Save-PSResource parameters.
+                    $savePSResourceParameters += $currentModule
 
                     # Modules that Sampler depend on that cannot be refreshed without a new session.
-                    $skipModule = @('powershell-yaml')
+                    $skipModule = @('PowerShell-Yaml')
 
-                    if ($savePSResourceParameters.Name -in $skipModule -and (Get-Module -Name 'powershell-yaml'))
+                    if ($savePSResourceParameters.Name -in $skipModule -and (Get-Module -Name $savePSResourceParameters.Name))
                     {
                         Write-Progress -Activity 'PSResourceGet:' -PercentComplete $progressPercentage -CurrentOperation 'Restoring Build Dependencies' -Status ('Skipping module {0}' -f $savePSResourceParameters.Name)
 
@@ -962,6 +949,10 @@ try
 
             Write-Progress -Activity 'PSDepend:' -PercentComplete 100 -CurrentOperation 'Dependencies restored' -Completed
         }
+    }
+    else
+    {
+        Write-Warning -Message "The dependency file '$DependencyFile' could not be found."
     }
 
     Write-Progress -Activity 'Bootstrap:' -PercentComplete 100 -CurrentOperation 'Bootstrap complete' -Completed
