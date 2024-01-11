@@ -112,6 +112,118 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
     }
 
     Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_Change_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                $configurationParameters = @{
+                    OutputPath           = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData    = $ConfigurationData
+                }
+
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                Start-DscConfiguration @startDscConfigurationParameters
+            } | Should -Not -Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            {
+                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+            } | Should -Not -Throw
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.Ensure | Should -Be 'Present'
+            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.Name
+            $resourceCurrentState.EmailAddress | Should -Be $ConfigurationData.AllNodes.NewEmailAddress1
+        }
+
+        It 'Should return $true when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose | Should -Be 'True'
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
+        "$($script:dscResourceName)_Change_MultipleEmailAddresses_Config"
+    ) {
+        BeforeAll {
+            $configurationName = $_
+        }
+
+        AfterEach {
+            Wait-ForIdleLcm
+        }
+
+        It 'Should compile and apply the MOF without throwing' {
+            {
+                $configurationParameters = @{
+                    OutputPath           = $TestDrive
+                    # The variable $ConfigurationData was dot-sourced above.
+                    ConfigurationData    = $ConfigurationData
+                }
+
+                & $configurationName @configurationParameters
+
+                $startDscConfigurationParameters = @{
+                    Path         = $TestDrive
+                    ComputerName = 'localhost'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
+                }
+
+                Start-DscConfiguration @startDscConfigurationParameters
+            } | Should -Not -Throw
+        }
+
+        It 'Should be able to call Get-DscConfiguration without throwing' {
+            {
+                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+            } | Should -Not -Throw
+        }
+
+        It 'Should have set the resource and all the parameters should match' {
+            $resourceCurrentState = $script:currentConfiguration | Where-Object -FilterScript {
+                $_.ConfigurationName -eq $configurationName `
+                -and $_.ResourceId -eq $resourceId
+            }
+
+            $resourceCurrentState.Ensure | Should -Be 'Present'
+            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.Name
+            $resourceCurrentState.EmailAddress | Should -Be ('{0};{1}' -f $ConfigurationData.AllNodes.NewEmailAddress1, $ConfigurationData.AllNodes.NewEmailAddress2 )
+        }
+
+        It 'Should return $true when Test-DscConfiguration is run' {
+            Test-DscConfiguration -Verbose | Should -Be 'True'
+        }
+    }
+
+    Context ('When using configuration <_>') -ForEach @(
         "$($script:dscResourceName)_Remove_Config"
     ) {
         BeforeAll {

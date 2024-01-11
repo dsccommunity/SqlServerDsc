@@ -16,18 +16,20 @@ else
     $ConfigurationData = @{
         AllNodes = @(
             @{
-                NodeName        = 'localhost'
+                NodeName         = 'localhost'
 
-                UserName        = "$env:COMPUTERNAME\SqlInstall"
-                Password        = 'P@ssw0rd1'
+                UserName         = "$env:COMPUTERNAME\SqlInstall"
+                Password         = 'P@ssw0rd1'
 
-                ServerName      = $env:COMPUTERNAME
-                InstanceName    = 'DSCSQLTEST'
+                ServerName       = $env:COMPUTERNAME
+                InstanceName     = 'DSCSQLTEST'
 
-                Name            = 'MyOperator'
-                EmailAddress    = 'MyEmail@company.local'
+                Name             = 'MyOperator'
+                EmailAddress     = 'MyEmail@company.local'
+                NewEmailAddress1 = 'newemail1@company.local'
+                NewEmailAddress2 = 'newemail2@company.local'
 
-                CertificateFile = $env:DscPublicCertificatePath
+                CertificateFile  = $env:DscPublicCertificatePath
             }
         )
     }
@@ -60,6 +62,56 @@ Configuration DSC_SqlAgentOperator_Add_Config
 
 <#
     .SYNOPSIS
+        Changes e-mail address of an SQL Agent operator.
+#>
+Configuration DSC_SqlAgentOperator_Change_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlAgentOperator 'Integration_Test'
+        {
+            Ensure               = 'Present'
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            Name                 = $Node.Name
+            EmailAddress         = $Node.NewEmailAddress1
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Changes to multiple e-mail address of an SQL Agent operator.
+#>
+Configuration DSC_SqlAgentOperator_Change_MultipleEmailAddresses_Config
+{
+    Import-DscResource -ModuleName 'SqlServerDsc'
+
+    node $AllNodes.NodeName
+    {
+        SqlAgentOperator 'Integration_Test'
+        {
+            Ensure               = 'Present'
+            ServerName           = $Node.ServerName
+            InstanceName         = $Node.InstanceName
+            Name                 = $Node.Name
+            EmailAddress         = ('{0};{1}' -f $Node.NewEmailAddress1, $Node.NewEmailAddress2)
+
+            PsDscRunAsCredential = New-Object `
+                -TypeName System.Management.Automation.PSCredential `
+                -ArgumentList @($Node.Username, (ConvertTo-SecureString -String $Node.Password -AsPlainText -Force))
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
         Removes a SQL Agent operator.
 #>
 Configuration DSC_SqlAgentOperator_Remove_Config
@@ -82,5 +134,3 @@ Configuration DSC_SqlAgentOperator_Remove_Config
         }
     }
 }
-
-
