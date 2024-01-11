@@ -212,7 +212,7 @@ if ($UseModuleFast -and $UsePSResourceGet)
     }
 }
 
-# Only bootstrao ModuleFast if it is not already imported.
+# Only bootstrap ModuleFast if it is not already imported.
 if ($UseModuleFast -and -not (Get-Module -Name 'ModuleFast'))
 {
     try
@@ -497,8 +497,12 @@ if (-not ($UseModuleFast -or $UsePSResourceGet))
     # Fail if the given PSGallery is not registered.
     $previousGalleryInstallationPolicy = (Get-PSRepository -Name $Gallery -ErrorAction 'Stop').Trusted
 
+    $updatedGalleryInstallationPolicy = $false
+
     if ($previousGalleryInstallationPolicy -ne $true)
     {
+        $updatedGalleryInstallationPolicy = $true
+
         # Only change policy if the repository is not trusted
         Set-PSRepository -Name $Gallery -InstallationPolicy 'Trusted' -ErrorAction 'Ignore'
     }
@@ -997,10 +1001,10 @@ finally
         Register-PSRepository @registerPSRepositoryParameters
     }
 
-    # Only try to revert installation policy if the repository exist
-    if ((Get-PSRepository -Name $Gallery -ErrorAction 'SilentlyContinue'))
+    if ($updatedGalleryInstallationPolicy -eq $true -and $previousGalleryInstallationPolicy -ne $true)
     {
-        if ($previousGalleryInstallationPolicy -ne $true)
+        # Only try to revert installation policy if the repository exist
+        if ((Get-PSRepository -Name $Gallery -ErrorAction 'SilentlyContinue'))
         {
             # Reverting the Installation Policy for the given gallery if it was not already trusted
             Set-PSRepository -Name $Gallery -InstallationPolicy 'Untrusted'
