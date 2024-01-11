@@ -135,7 +135,15 @@ param
 
     [Parameter()]
     [System.String]
-    $PSResourceGetVersion
+    $PSResourceGetVersion,
+
+    [Parameter()]
+    [System.Management.Automation.SwitchParameter]
+    $UsePowerShellGetCompatibilityModule,
+
+    [Parameter()]
+    [System.String]
+    $UsePowerShellGetCompatibilityModuleVersion
 )
 
 try
@@ -745,6 +753,20 @@ try
                 if ($WithYAML)
                 {
                     $modulesToSave += 'PowerShell-Yaml'
+                }
+
+                if ($UsePowerShellGetCompatibilityModule)
+                {
+                    Write-Debug -Message 'PowerShellGet compatibility module is configured to be used.'
+
+                    if ($UsePowerShellGetCompatibilityModuleVersion)
+                    {
+                        $modulesToSave += ('{0}:[{1}]' -f 'PowerShellGet', $UsePowerShellGetCompatibilityModuleVersion)
+                    }
+                    else
+                    {
+                        $modulesToSave += 'PowerShellGet'
+                    }
                 }
 
                 foreach ($requiredModule in $requiredModules)
