@@ -9,6 +9,6 @@
 
     UsePSResourceGet = $true
     PSResourceGetVersion = '1.0.1'
-    #UsePowerShellGetCompatibilityModule = $true
-    #UsePowerShellGetCompatibilityModuleVersion = '3.0.22-beta22'
+    UsePowerShellGetCompatibilityModule = $true
+    UsePowerShellGetCompatibilityModuleVersion = '3.0.22-beta23'
 }
