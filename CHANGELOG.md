@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlAGReplica
   - Fix unit test FailedRemoveAvailabilityGroupReplica
 - SqlAgentOperator
-  - Unit test for changing e-mail address on an existing operator.
+  - Integration test for changing e-mail address on an existing operator.
 
 ### Changed
 
