@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Return SQLPS version as 12.0 instead of 120
   - `Get-SqlDscPreferredModule`
     - Fix sort to get the latest version
+  - Public commands no handles when both `-Force` and `-Confirm $true`
+    would be passed to command.
 - `Assert-Feature`
   - Fixed unit tests.
 - SqlAGReplica
