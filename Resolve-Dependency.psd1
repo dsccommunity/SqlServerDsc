@@ -4,11 +4,11 @@
     WithYAML        = $true
 
     UseModuleFast = $true
-    ModuleFastVersion = 'v0.1.0'
+    #ModuleFastVersion = '0.1.0'
     #ModuleFastBleedingEdge = $true
 
     UsePSResourceGet = $true
-    PSResourceGetVersion = '1.0.1'
+    #PSResourceGetVersion = '1.0.1'
 
     UsePowerShellGetCompatibilityModule = $true
     UsePowerShellGetCompatibilityModuleVersion = '3.0.23-beta23'
