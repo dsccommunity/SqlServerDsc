@@ -1372,7 +1372,7 @@ function Invoke-SetupAction
         $Force
     )
 
-    if ($Force.IsPresent)
+    if ($Force.IsPresent -and -not $Confirm)
     {
         $ConfirmPreference = 'None'
     }
