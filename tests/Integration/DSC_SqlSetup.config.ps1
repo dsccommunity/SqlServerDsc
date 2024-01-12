@@ -333,80 +333,6 @@ Configuration DSC_SqlSetup_InstallSMOModule_Config
 
     node $AllNodes.NodeName
     {
-        xScript 'InstallPowerShellGet'
-        {
-            SetScript  = {
-                # Make sure PSGallery is trusted.
-                Set-PSRepository -Name 'PSGallery' -InstallationPolicy 'Trusted'
-
-                # Remove any loaded module.
-                Get-Module -Name @('PackageManagement', 'PowerShellGet') -All | Remove-Module -Force
-
-                # Make sure we use TLS 1.2.
-                [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-
-                # Install NuGet package provider and latest version of PowerShellGet.
-                Install-PackageProvider -Name NuGet -Force
-                Install-Module PowerShellGet -AllowClobber -Force
-
-                # Remove any loaded module to hopefully be able to import those that was installed above.
-                Get-Module -Name @('PackageManagement', 'PowerShellGet') -All | Remove-Module -Force
-
-                # Forcibly import the newly installed modules.
-                Import-Module -Name 'PackageManagement' -MinimumVersion '1.4.8.1' -Force
-                Import-Module -Name 'PowerShellGet' -MinimumVersion '2.2.5' -Force
-
-                # Output version information for the loaded modules
-                Write-Verbose -Message (
-                    'Version information of loaded modules: {0}' -f @(
-                        (
-                            Get-Module -Name @('PackageManagement', 'PowerShellGet') |
-                                Select-Object -Property @('Name', 'Version') |
-                                Out-String
-                        )
-                    )
-                )
-            }
-
-            TestScript = {
-                <#
-                    This takes the string of the $GetScript parameter and creates
-                    a new script block (during runtime in the resource) and then
-                    runs that script block.
-                #>
-                $getScriptResult = & ([ScriptBlock]::Create($GetScript))
-
-                if ($getScriptResult.Result -eq '2.2.5')
-                {
-                    Write-Verbose -Message 'The node already contain the required PowerShellGet version'
-
-                    return $true
-                }
-
-                Write-Verbose -Message ('The module PowerShellGet has version {0}, but expected version 2.2.5 to be installed.' -f $getScriptResult.Result)
-
-                return $false
-            }
-
-            GetScript  = {
-                $moduleVersion = $null
-
-                # Fetch the newest PowerShellGet version.
-                $powerShellGetModule = Get-Module -Name 'PowerShellGet' -ListAvailable |
-                    Sort-Object -Property Version -Descending |
-                    Select-Object -First 1
-
-                if ($powerShellGetModule)
-                {
-                    $moduleVersion = $powerShellGetModule.Version.ToString()
-                }
-
-                return @{
-                    Result = $moduleVersion
-                }
-            }
-        }
-
         # Only set the environment variable for the LCM user only if the pipeline has it configured.
         if ($env:SMODefaultModuleName)
         {
@@ -422,16 +348,9 @@ Configuration DSC_SqlSetup_InstallSMOModule_Config
 
         xScript 'InstallSMOModule'
         {
-            DependsOn  = @(
-                '[xScript]InstallPowerShellGet'
-            )
-
-            SetScript  = {
-                # Make sure PSGallery is trusted.
-                Set-PSRepository -Name 'PSGallery' -InstallationPolicy 'Trusted'
-
-                # Uninstall any existing SqlServer module, to make we only have the one we need.
-                Get-Module -Name $using:Node.SMOModuleName -ListAvailable | Uninstall-Module -ErrorAction 'Stop'
+              SetScript  = {
+                # Uninstall any existing SMO module, to make sure there is only one at the end.
+                Get-Module -Name $using:Node.SMOModuleName -ListAvailable | Uninstall-PSResource -ErrorAction 'Stop'
 
                 # Make sure we use TLS 1.2.
                 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
@@ -439,15 +358,16 @@ Configuration DSC_SqlSetup_InstallSMOModule_Config
                 $installModuleParameters = @{
                     Name            = $using:Node.SMOModuleName
                     Scope           = 'AllUsers'
-                    Force           = $true
-                    RequiredVersion = $Using:Node.SMOModuleVersion
-                    AllowPrerelease = $Using:Node.SMOModuleVersionIsPrerelease
-                    AllowClobber    = $true # Needed to handle existens of module SQLPS.
+                    Version         = $Using:Node.SMOModuleVersion
+                    Prerelease      = $Using:Node.SMOModuleVersionIsPrerelease
                     PassThru        = $true
+                    Quiet           = $true
+                    AcceptLicense   = $true
+                    TrustRepository = $true
                 }
 
                 # Install the required SqlServer module version.
-                $installedModule = Install-Module @installModuleParameters |
+                $installedModule = Install-PSResource @installModuleParameters |
                     Where-Object -FilterScript {
                         <#
                             Need to filter out the right module since if dependencies are
@@ -492,10 +412,6 @@ Configuration DSC_SqlSetup_InstallSMOModule_Config
             GetScript  = {
                 $moduleVersion = $null
                 $smoModule = $null
-
-                # Forcibly import the required modules that is required for using prerelease modules.
-                Import-Module -Name 'PackageManagement' -MinimumVersion '1.4.8.1' -Force
-                Import-Module -Name 'PowerShellGet' -MinimumVersion '2.2.5' -Force
 
                 $smoModule = Get-Module -Name $using:Node.SMOModuleName -ListAvailable |
                     Sort-Object -Property Version -Descending |
