@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- SqlServer
+  - Updated pipeline files to support pre-releases with ModuleFast (when
+    resolving dependencies).
 - SqlAG
   - Converted unit test to Pester 5
   - DtcSupportEnabled option in Set-TargetResource and TestTargetResource
@@ -32,6 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update markdown highlights with newly supported keywords.
   - Bump GitHub Action _Stale_ to v9.
   - Bump GitHub Action _CodeQL-Action_ to v3.
+- SqlSetup
+  - Updated integration tests to use PSResourceGet to download required modules.
 
 ## [16.5.0] - 2023-10-05
 
