@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Fix sort to get the latest version
   - Public commands no handles when both `-Force` and `-Confirm $true`
     would be passed to command.
+  - Enabled NUnit results for HQRM tests.
 - `Assert-Feature`
   - Fixed unit tests.
 - SqlAGReplica
