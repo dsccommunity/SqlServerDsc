@@ -3,8 +3,8 @@
     AllowPrerelease = $false
     WithYAML        = $true
 
-    UseModuleFast = $true
-    ModuleFastVersion = '0.1.0'
+    #UseModuleFast = $true
+    #ModuleFastVersion = '0.1.2'
     #ModuleFastBleedingEdge = $true
 
     UsePSResourceGet = $true
