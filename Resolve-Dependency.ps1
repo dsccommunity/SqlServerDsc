@@ -206,17 +206,17 @@ if ($UseModuleFast -and $UsePSResourceGet)
 {
     Write-Information -MessageData 'Both ModuleFast and PSResourceGet is configured or/and passed as parameter.' -InformationAction 'Continue'
 
-    if ($PSVersionTable.PSVersion -ge '7.3')
+    if ($PSVersionTable.PSVersion -ge '7.2')
     {
         $UsePSResourceGet = $false
 
-        Write-Information -MessageData 'PowerShell 7.3 or higher being used, prefer ModuleFast over PSResourceGet.' -InformationAction 'Continue'
+        Write-Information -MessageData 'PowerShell 7.2 or higher being used, prefer ModuleFast over PSResourceGet.' -InformationAction 'Continue'
     }
     else
     {
         $UseModuleFast = $false
 
-        Write-Information -MessageData 'Windows PowerShell or PowerShell <=7.2 is being used, prefer PSResourceGet since ModuleFast is not supported on this version of PowerShell.' -InformationAction 'Continue'
+        Write-Information -MessageData 'Windows PowerShell or PowerShell <=7.1 is being used, prefer PSResourceGet since ModuleFast is not supported on this version of PowerShell.' -InformationAction 'Continue'
     }
 }
 
