@@ -4,7 +4,7 @@
     WithYAML        = $true
 
     UseModuleFast = $true
-    #ModuleFastVersion = '0.1.0'
+    ModuleFastVersion = '0.1.0'
     #ModuleFastBleedingEdge = $true
 
     UsePSResourceGet = $true
