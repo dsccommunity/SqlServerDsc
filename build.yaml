@@ -161,6 +161,7 @@ DscTest:
         Verbosity: Detailed
         CIFormat: Auto
       TestResult:
+        Enabled: true
         OutputFormat: NUnitXML
         OutputEncoding: ascii
         OutputPath: ./output/testResults/NUnitXml_HQRM_Tests.xml
