@@ -9,9 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Added build tasks to generate Wiki documentation for public commands.
-  - QA test to verify that each public command's script file starts with a
-    new line (needed until PR https://github.com/PoshCode/ModuleBuilder/pull/127
-    is merged and released).
 
 ### Fixed
 
