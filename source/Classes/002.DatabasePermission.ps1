@@ -245,4 +245,11 @@ class DatabasePermission : IComparable, System.IEquatable[Object]
 
         return $returnValue
     }
+
+    [System.String] ToString()
+    {
+        $concatenatedPermission = $this.Permission -join ', '
+
+        return ('{0}: {1}' -f $this.State, $concatenatedPermission)
+    }
 }
