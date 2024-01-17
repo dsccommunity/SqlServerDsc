@@ -32,6 +32,19 @@
         the for example [ServerPermission] to the right side, then the left side
         array is filtered with the matching values on the right side. This is the
         normal behavior for other types.
+
+    .EXAMPLE
+        [DatabasePermission] @{}
+
+        Initializes a new instance of the DatabasePermission class without any
+        property values.
+
+    .EXAMPLE
+        [DatabasePermission] @{ State = 'Grant'; Permission = @('Connect', 'Select') }
+
+        Initializes a new instance of the DatabasePermission class with property
+        values.
+
 #>
 class DatabasePermission : IComparable, System.IEquatable[Object]
 {
