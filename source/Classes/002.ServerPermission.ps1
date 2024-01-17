@@ -32,6 +32,18 @@
         the for example [ServerPermission] to the right side, then the left side
         array is filtered with the matching values on the right side. This is the
         normal behavior for other types.
+
+    .EXAMPLE
+        [ServerPermission] @{}
+
+        Initializes a new instance of the ServerPermission class without any
+        property values.
+
+    .EXAMPLE
+        [ServerPermission] @{ State = 'Grant'; Permission = @('ConnectSql', 'ViewServerState') }
+
+        Initializes a new instance of the ServerPermission class with property
+        values.
 #>
 class ServerPermission : IComparable, System.IEquatable[Object]
 {
@@ -183,5 +195,12 @@ class ServerPermission : IComparable, System.IEquatable[Object]
         }
 
         return $returnValue
+    }
+
+    [System.String] ToString()
+    {
+        $concatenatedPermission = $this.Permission -join ', '
+
+        return ('{0}: {1}' -f $this.State, $concatenatedPermission)
     }
 }
