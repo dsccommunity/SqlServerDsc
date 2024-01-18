@@ -261,7 +261,7 @@ class DatabasePermission : IComparable, System.IEquatable[Object]
 
     [System.String] ToString()
     {
-        $concatenatedPermission = $this.Permission -join ', '
+        $concatenatedPermission = ($this.Permission | Sort-Object) -join ', '
 
         return ('{0}: {1}' -f $this.State, $concatenatedPermission)
     }
