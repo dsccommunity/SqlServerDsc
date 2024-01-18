@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SqlServerDsc
+  - Added build tasks to generate Wiki documentation for public commands.
+
 ### Fixed
 
 - SqlServerDsc
@@ -35,6 +40,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update markdown highlights with newly supported keywords.
   - Bump GitHub Action _Stale_ to v9.
   - Bump GitHub Action _CodeQL-Action_ to v3.
+  - Documentation is now built using a separate meta task `docs`.
+    It is run with the meta task `pack` which is run by the pipeline.
+    To run the meta task `docs` the SMO assemblies must be loaded into the
+    session, either by importing SqlServer module or loading SMO stubs.
+  - QA test improved to speed up quality testing.
 - SqlSetup
   - Updated integration tests to use PSResourceGet to download required modules.
 

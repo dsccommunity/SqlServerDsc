@@ -12,17 +12,21 @@ BuildWorkflow:
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
     - Create_Changelog_Release_Output
+
+  docs:
+    - Check_SqlServer_Availability
     - Generate_Conceptual_Help
     - Generate_Wiki_Content
+    - Generate_Markdown_For_Public_Commands
+    - Generate_External_Help_File_For_Public_Commands
+    - Clean_Markdown_Of_Public_Commands
+    - Generate_Wiki_Sidebar
+    - Clean_Markdown_Metadata
     - Package_WikContent
-
-  fastbuild:
-    - Clean
-    - Build_Module_ModuleBuilder
-    - Build_NestedModules_ModuleBuilder
 
   pack:
     - build
+    - docs
     - package_module_nupkg # cSpell: disable-line
 
   hqrmtest: # cSpell: disable-line
@@ -38,15 +42,22 @@ BuildWorkflow:
     - Publish_Module_To_gallery
     - Publish_GitHub_Wiki_Content
 
+  Check_SqlServer_Availability: |
+    {
+        Import-Module -Name SqlServer -ErrorAction 'SilentlyContinue'
+
+        try
+        {
+            [Microsoft.SqlServer.Management.Smo.Server] -as [Type] | Out-Null
+        }
+        catch
+        {
+            throw 'The SqlServer types are not available. Please install the SqlServer module or load SMO stubs types and try again.'
+        }
+    }
+
   Package_WikContent: |
     {
-        <#
-            This is quick fix for issue https://github.com/PoshCode/ModuleBuilder/issues/103.
-            Aliases need to be added to module manifest, and we can only use
-            New-Alias or Set-Alias together with build tasks. This module
-            already automatically exports aliases using [Alias()] so this quick
-            fix is meant as a workaround until the above issue is resolved.
-        #>
         param
         (
             $OutputDirectory = (property OutputDirectory (Join-Path $BuildRoot 'output')),
@@ -207,3 +218,18 @@ DscResource.DocGenerator:
       - '_(.+?)_' # Match Italic (underscore)
       - '\*\*(.+?)\*\*' # Match bold
       - '\*(.+?)\*' # Match Italic (asterisk)
+  Publish_GitHub_Wiki_Content:
+    Debug: false
+  Generate_Wiki_Content:
+    MofResourceMetadata:
+      Type: MofResource
+      Category: Resources
+    ClassResourceMetadata:
+      Type: ClassResource
+      Category: Resources
+    CompositeResourceMetadata:
+      Type: CompositeResource
+      Category: Resources
+  Generate_Wiki_Sidebar:
+     Debug: false
+     AlwaysOverwrite: true
