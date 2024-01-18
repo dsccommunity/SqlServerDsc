@@ -37,6 +37,21 @@ stages:
               }
               Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
             displayName: Calculate ModuleVersion (GitVersion)
+          - pwsh: |
+              <#
+                  This is intentionally not saved to RequiredModules. It is only
+                  used for creating documentation and should not be part of the
+                  build artifact.
+              #>
+              Write-Information -MessageData 'Removing SqlServer and SQLPS from the CI worker.' -InformationAction Continue
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+              Remove-Module -Name CommonTestHelper
+              Write-Information -MessageData 'Installing latest SqlServer on the CI worker' -InformationAction Continue
+              Install-Module -Name SqlServer -Force -Confirm:$false -Verbose
+              Get-Module -Name SqlServer -ListAvailable |
+                  Select-Object -Property Name,Version,@{Name='Prerelease'; Expression={$_.PrivateData.PSData.Prerelease}}, Path
+            displayName: Install SqlServer module
           - task: PowerShell@2
             name: package
             displayName: 'Build & Package Module'
