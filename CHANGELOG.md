@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix unit test FailedRemoveAvailabilityGroupReplica
 - SqlAgentOperator
   - Integration test for changing e-mail address on an existing operator.
+- `DatabasePermission`
+  - New method ToString() for making verbose output better.
+- `ServerPermission`
+  - New method ToString() for making verbose output better.
 
 ### Changed
 
