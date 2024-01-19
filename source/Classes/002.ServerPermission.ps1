@@ -24,6 +24,13 @@
         evaluate during runtime so that no two states are enforcing the same
         permission.
 
+        This class cannot inherit a parent class. If it would have, then the
+        DSC resource (e.g. SqlDatabasePermission) that uses the complex type fail
+        with the error:
+
+            "The 'Permission' property with type 'DatabasePermission' of DSC resource
+            class 'SqlDatabasePermission' is not supported."
+
         The method Equals() returns $false if type is not the same on both sides
         of the comparison. There was a thought to throw an exception if the object
         being compared was of another type, but since there was issues with using
