@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlServer
   - Updated pipeline files to support pre-releases with ModuleFast (when
     resolving dependencies).
+  - Using preview version of DscResource.Common to test new code.
 - SqlAG
   - Converted unit test to Pester 5
   - DtcSupportEnabled option in Set-TargetResource and TestTargetResource

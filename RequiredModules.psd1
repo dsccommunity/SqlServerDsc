@@ -11,10 +11,6 @@
     PSScriptAnalyzer               = 'latest'
     ConvertToSARIF                 = 'latest' # cSpell: disable-line
 
-    <#
-        If preview release of Pester prevents release we should temporary shift
-        back to stable.
-    #>
     Pester                         = @{
         Version    = 'latest'
         Parameters = @{
@@ -33,7 +29,13 @@
 
     # Build dependencies needed for using the module
     'DscResource.Base'             = 'latest'
-    'DscResource.Common'           = 'latest'
+    #'DscResource.Common'           = 'latest'
+    'DscResource.Common'           = @{
+        Version    = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
 
     # Analyzer rules
     'DscResource.AnalyzerRules'    = 'latest'
