@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New method ToString() for making verbose output better.
 - `ServerPermission`
   - New method ToString() for making verbose output better.
+- SqlAgDatabase
+  - Remove unused help file ([issue #1745](https://github.com/dsccommunity/SqlServerDsc/issues/1745)).
 
 ### Changed
 
