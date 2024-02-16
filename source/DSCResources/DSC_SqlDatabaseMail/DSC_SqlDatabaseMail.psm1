@@ -64,18 +64,19 @@ function Get-TargetResource
     )
 
     $returnValue = @{
-        Ensure         = 'Absent'
-        ServerName     = $ServerName
-        InstanceName   = $InstanceName
-        AccountName    = $null
-        EmailAddress   = $null
-        MailServerName = $null
-        LoggingLevel   = $null
-        ProfileName    = $null
-        DisplayName    = $null
-        ReplyToAddress = $null
-        Description    = $null
-        TcpPort        = $null
+        Ensure                = 'Absent'
+        ServerName            = $ServerName
+        InstanceName          = $InstanceName
+        AccountName           = $null
+        EmailAddress          = $null
+        MailServerName        = $null
+        LoggingLevel          = $null
+        ProfileName           = $null
+        DisplayName           = $null
+        ReplyToAddress        = $null
+        Description           = $null
+        TcpPort               = $null
+        UseDefaultCredentials = $null
     }
 
     Write-Verbose -Message (
@@ -145,6 +146,7 @@ function Get-TargetResource
                 {
                     $returnValue['MailServerName'] = $mailServer.Name
                     $returnValue['TcpPort'] = $mailServer.Port
+                    $returnValue['UseDefaultCredentials'] = $mailServer.UseDefaultCredentials # custom
                 }
 
                 $mailProfile = $databaseMail.Profiles |
@@ -233,6 +235,11 @@ function Get-TargetResource
     .PARAMETER TcpPort
         The TCP port used for communication. Default value is port 25.
 
+    .PARAMETER UseDefaultCredentials
+        Controls SMTP server authentication.  The database engine credentials are
+        the default credentials used when $true.  If not specified, the default is
+        $false and an anonymous login is used unless other credentials are provided.
+
     .NOTES
         Information about the different properties can be found here
         https://docs.microsoft.com/en-us/sql/relational-databases/database-mail/configure-database-mail.
@@ -293,7 +300,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.UInt16]
-        $TcpPort = 25
+        $TcpPort = 25,
+
+        [Parameter()]
+        [System.Boolean]
+        $UseDefaultCredentials
     )
 
     Write-Verbose -Message (
@@ -380,6 +391,11 @@ function Set-TargetResource
                         if ($PSBoundParameters.ContainsKey('TcpPort'))
                         {
                             $mailServer.Port = $TcpPort
+                        }
+
+                        if ($PSBoundParameters.ContainsKey('UseDefaultCredentials')) # custom
+                        {
+                            $mailServer.UseDefaultCredentials = $UseDefaultCredentials
                         }
 
                         $mailServer.Alter()
@@ -481,6 +497,21 @@ function Set-TargetResource
                         )
 
                         $mailServer.Port = $TcpPort
+                        $mailServer.Alter()
+                    }
+
+                    $currentUseDefaultCredentials = $mailServer.UseDefaultCredentials #custom
+                    if ($PSBoundParameters.ContainsKey('UseDefaultCredentials') -and $currentUseDefaultCredentials -ne $UseDefaultCredentials)
+                    {
+                        Write-Verbose -Message (
+                            $script:localizedData.UpdatingPropertyOfMailServer -f @(
+                                $currentUseDefaultCredentials
+                                $UseDefaultCredentials
+                                $script:localizedData.MailServerPropertyUseDefaultCredentials
+                            )
+                        )
+
+                        $mailServer.UseDefaultCredentials = $UseDefaultCredentials
                         $mailServer.Alter()
                     }
                 }
@@ -633,6 +664,11 @@ function Set-TargetResource
 
     .PARAMETER TcpPort
         The TCP port used for communication. Default value is port 25.
+
+    .PARAMETER UseDefaultCredentials
+        Controls SMTP server authentication.  The database engine credentials are
+        the default credentials used when $true.  If not specified, the default is
+        $false and an anonymous login is used unless other credentials are provided.
 #>
 function Test-TargetResource
 {
@@ -691,7 +727,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.UInt16]
-        $TcpPort = 25
+        $TcpPort = 25,
+
+        [Parameter()]
+        [System.Boolean]
+        $UseDefaultCredentials
     )
 
     $getTargetResourceParameters = @{
@@ -727,6 +767,7 @@ function Test-TargetResource
                 'DisplayName'
                 'Description'
                 'LoggingLevel'
+                'UseDefaultCredentials'
             )
             TurnOffTypeChecking = $true
             Verbose             = $VerbosePreference

@@ -75,6 +75,7 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
         $mockDisplayName = $mockMailServerName
         $mockDescription = 'My mail description'
         $mockTcpPort = 25
+        $mockUseDefaultCredentials = $false
 
         $mockDatabaseMailDisabledConfigValue = 0
         $mockDatabaseMailEnabledConfigValue = 1
@@ -91,7 +92,8 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
                     return @(
                         New-Object -TypeName Object |
                             Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockMailServerName -PassThru |
-                            Add-Member -MemberType NoteProperty -Name 'Port' -Value $mockTcpPort -PassThru -Force
+                            Add-Member -MemberType NoteProperty -Name 'Port' -Value $mockTcpPort -PassThru -Force |
+                            Add-Member -MemberType NoteProperty -Name 'UseDefaultCredentials' -Value $mockUseDefaultCredentials -PassThru -Force
                         )
                     } -PassThru -Force
         }
@@ -200,6 +202,7 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
                     $getTargetResourceResult.ReplyToAddress | Should -BeNullOrEmpty
                     $getTargetResourceResult.Description | Should -BeNullOrEmpty
                     $getTargetResourceResult.TcpPort | Should -BeNullOrEmpty
+                    $getTargetResourceResult.UseDefaultCredentials | Should -BeNullOrEmpty
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -257,15 +260,16 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
 
             It 'Should return the correct values for the rest of the properties' {
                 $inModuleScopeParameters = @{
-                    MockAccountName    = $mockAccountName
-                    MockEmailAddress   = $mockEmailAddress
-                    MockMailServerName = $mockMailServerName
-                    MockProfileName    = $mockProfileName
-                    MockLoggingLevel   = $mockLoggingLevelNormal
-                    MockDisplayName    = $mockDisplayName
-                    MockReplyToAddress = $mockReplyToAddress
-                    MockDescription    = $mockDescription
-                    MockTcpPort        = $mockTcpPort
+                    MockAccountName       = $mockAccountName
+                    MockEmailAddress      = $mockEmailAddress
+                    MockMailServerName    = $mockMailServerName
+                    MockProfileName       = $mockProfileName
+                    MockLoggingLevel      = $mockLoggingLevelNormal
+                    MockDisplayName       = $mockDisplayName
+                    MockReplyToAddress    = $mockReplyToAddress
+                    MockDescription       = $mockDescription
+                    MockTcpPort           = $mockTcpPort
+                    MockUseDefaultCredentials = $mockUseDefaultCredentials
                 }
 
                 InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
@@ -280,6 +284,7 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
                     $getTargetResourceResult.ReplyToAddress | Should -Be $MockReplyToAddress
                     $getTargetResourceResult.Description | Should -Be $MockDescription
                     $getTargetResourceResult.TcpPort | Should -Be $MockTcpPort
+                    $getTargetResourceResult.UseDefaultCredentials | Should -Be $MockUseDefaultCredentials
                 }
 
                 Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
@@ -410,6 +415,7 @@ Describe 'DSC_SqlDatabaseMail\Test-TargetResource' -Tag 'Test' {
         $mockDisplayName = $mockMailServerName
         $mockDescription = 'My mail description'
         $mockTcpPort = 25
+        $mockUseDefaultCredentials = $false
         $mockLoggingLevel = 'Normal'
 
         InModuleScope -ScriptBlock {
@@ -454,29 +460,31 @@ Describe 'DSC_SqlDatabaseMail\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        Ensure         = 'Present'
-                        ServerName     = $mockServerName
-                        InstanceName   = $mockInstanceName
-                        AccountName    = $mockAccountName
-                        EmailAddress   = $mockEmailAddress
-                        MailServerName = $mockMailServerName
-                        LoggingLevel   = $mockLoggingLevel
-                        ProfileName    = $mockProfileName
-                        DisplayName    = $mockDisplayName
-                        ReplyToAddress = $mockReplyToAddress
-                        Description    = $mockDescription
-                        TcpPort        = $mockTcpPort
+                        Ensure                = 'Present'
+                        ServerName            = $mockServerName
+                        InstanceName          = $mockInstanceName
+                        AccountName           = $mockAccountName
+                        EmailAddress          = $mockEmailAddress
+                        MailServerName        = $mockMailServerName
+                        LoggingLevel          = $mockLoggingLevel
+                        ProfileName           = $mockProfileName
+                        DisplayName           = $mockDisplayName
+                        ReplyToAddress        = $mockReplyToAddress
+                        Description           = $mockDescription
+                        TcpPort               = $mockTcpPort
+                        UseDefaultCredentials = $mockUseDefaultCredentials
                     }
                 }
             }
 
             It 'Should return the state as $true' {
                 $inModuleScopeParameters = @{
-                    MockLoggingLevel   = $mockLoggingLevel
-                    MockDisplayName    = $mockDisplayName
-                    MockReplyToAddress = $mockReplyToAddress
-                    MockDescription    = $mockDescription
-                    MockTcpPort        = $mockTcpPort
+                    MockLoggingLevel          = $mockLoggingLevel
+                    MockDisplayName           = $mockDisplayName
+                    MockReplyToAddress        = $mockReplyToAddress
+                    MockDescription           = $mockDescription
+                    MockTcpPort               = $mockTcpPort
+                    MockUseDefaultCredentials = $mockUseDefaultCredentials
                 }
 
                 InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
@@ -486,6 +494,7 @@ Describe 'DSC_SqlDatabaseMail\Test-TargetResource' -Tag 'Test' {
                     $testTargetResourceParameters.ReplyToAddress = $MockReplyToAddress
                     $testTargetResourceParameters.Description = $MockDescription
                     $testTargetResourceParameters.TcpPort = $MockTcpPort
+                    $testTargetResourceParameters.UseDefaultCredentials = $MockUseDefaultCredentials
 
                     $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
 
@@ -555,24 +564,29 @@ Describe 'DSC_SqlDatabaseMail\Test-TargetResource' -Tag 'Test' {
                         Property      = 'TcpPort'
                         PropertyValue = '2525'
                     }
+                    @{
+                        Property      = 'UseDefaultCredentials'
+                        PropertyValue = $true
+                    }
                 )
             }
 
             BeforeAll {
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
-                        Ensure         = 'Present'
-                        ServerName     = $mockServerName
-                        InstanceName   = $mockInstanceName
-                        AccountName    = $mockAccountName
-                        EmailAddress   = $mockEmailAddress
-                        MailServerName = $mockMailServerName
-                        LoggingLevel   = 'Normal'
-                        ProfileName    = $mockProfileName
-                        DisplayName    = $mockDisplayName
-                        ReplyToAddress = $mockReplyToAddress
-                        Description    = $mockDescription
-                        TcpPort        = $mockTcpPort
+                        Ensure                = 'Present'
+                        ServerName            = $mockServerName
+                        InstanceName          = $mockInstanceName
+                        AccountName           = $mockAccountName
+                        EmailAddress          = $mockEmailAddress
+                        MailServerName        = $mockMailServerName
+                        LoggingLevel          = 'Normal'
+                        ProfileName           = $mockProfileName
+                        DisplayName           = $mockDisplayName
+                        ReplyToAddress        = $mockReplyToAddress
+                        Description           = $mockDescription
+                        TcpPort               = $mockTcpPort
+                        UseDefaultCredentials = $mockUseDefaultCredentials
                     }
                 }
             }
@@ -631,6 +645,7 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
         $mockDisplayName = $mockMailServerName
         $mockDescription = 'My mail description'
         $mockTcpPort = 25
+        $mockUseDefaultCredentials = $false
 
         $mockDatabaseMailDisabledConfigValue = 0
         $mockDatabaseMailEnabledConfigValue = 1
@@ -670,6 +685,7 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                     New-Object -TypeName Object |
                         Add-Member -MemberType NoteProperty -Name 'Name' -Value $mockMailServerName -PassThru |
                         Add-Member -MemberType NoteProperty -Name 'Port' -Value $mockTcpPort -PassThru |
+                        Add-Member -MemberType NoteProperty -Name 'UseDefaultCredentials' -Value $mockUseDefaultCredentials -PassThru |
                         Add-Member -MemberType ScriptMethod -Name 'Rename' -Value {
                             InModuleScope -ScriptBlock {
                                 $script:MailServerRenameMethodCallCount += 1
@@ -872,11 +888,12 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
 
             It 'Should call the correct methods without throwing' {
                 $inModuleScopeParameters = @{
-                    MockLoggingLevel   = $mockLoggingLevelNormal
-                    MockDisplayName    = $mockDisplayName
-                    MockReplyToAddress = $mockReplyToAddress
-                    MockDescription    = $mockDescription
-                    MockTcpPort        = $mockTcpPort
+                    MockLoggingLevel          = $mockLoggingLevelNormal
+                    MockDisplayName           = $mockDisplayName
+                    MockReplyToAddress        = $mockReplyToAddress
+                    MockDescription           = $mockDescription
+                    MockTcpPort               = $mockTcpPort
+                    MockUseDefaultCredentials = $mockUseDefaultCredentials
                 }
 
                 InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
@@ -886,6 +903,7 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                     $setTargetResourceParameters['Description'] = $MockDescription
                     $setTargetResourceParameters['LoggingLevel'] = $MockLoggingLevel
                     $setTargetResourceParameters['TcpPort'] = $MockTcpPort
+                    $setTargetResourceParameters['UseDefaultCredentials'] = $MockUseDefaultCredentials
 
                     { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
 
@@ -975,6 +993,7 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                         $setTargetResourceParameters['ProfileName'] = 'MissingProfile'
                         # Also passing TcpPort when passing in MailServerName to add to code coverage
                         $setTargetResourceParameters['TcpPort'] = 2525
+                        $setTargetResourceParameters['UseDefaultCredentials'] = $true
 
                         { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
 
@@ -1029,6 +1048,10 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                             Property      = 'TcpPort'
                             PropertyValue = '2525'
                         }
+                        @{
+                            Property      = 'UseDefaultCredentials'
+                            PropertyValue = $true
+                        }
                     )
                 }
 
@@ -1064,6 +1087,18 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                             $script:LoggingLevelAlterMethodCallCount | Should -Be 0
                         }
                         elseif ($Property -eq 'TcpPort')
+                        {
+                            $script:MailServerRenameMethodCallCount | Should -Be 0
+                            $script:MailServerAlterMethodCallCount | Should -Be 1
+                            $script:MailAccountAlterMethodCallCount | Should -Be 0
+                            $script:MailProfileCreateMethodCallCount | Should -Be 0
+                            $script:MailProfileAlterMethodCallCount | Should -Be 0
+                            $script:MailProfileAddPrincipalMethodCallCount | Should -Be 0
+                            $script:MailProfileAddAccountMethodCallCount | Should -Be 0
+                            $script:JobServerAlterMethodCallCount | Should -Be 0
+                            $script:LoggingLevelAlterMethodCallCount | Should -Be 0
+                        }
+                        elseif ($Property -eq 'UseDefaultCredentials')
                         {
                             $script:MailServerRenameMethodCallCount | Should -Be 0
                             $script:MailServerAlterMethodCallCount | Should -Be 1
