@@ -244,8 +244,8 @@ function Get-TargetResource
         Information about the different properties can be found here
         https://docs.microsoft.com/en-us/sql/relational-databases/database-mail/configure-database-mail.
 
-        "UseDefaultCredentials" corresponds to "Windows Authentication using Database Engine service credentials" 
-        described at the above link.  This dsc resource does not yet address setting state for basic or anonymous 
+        "UseDefaultCredentials" corresponds to "Windows Authentication using Database Engine service credentials"
+        described at the above link.  This dsc resource does not yet address setting state for basic or anonymous
         SMTP access that's used when UseDefaultCredentials is false.
 
 #>
@@ -397,7 +397,7 @@ function Set-TargetResource
                             $mailServer.Port = $TcpPort
                         }
 
-                        if ($PSBoundParameters.ContainsKey('UseDefaultCredentials')) # custom
+                        if ($PSBoundParameters.ContainsKey('UseDefaultCredentials'))
                         {
                             $mailServer.UseDefaultCredentials = $UseDefaultCredentials
                         }
@@ -504,7 +504,7 @@ function Set-TargetResource
                         $mailServer.Alter()
                     }
 
-                    $currentUseDefaultCredentials = $mailServer.UseDefaultCredentials #custom
+                    $currentUseDefaultCredentials = $mailServer.UseDefaultCredentials
                     if ($PSBoundParameters.ContainsKey('UseDefaultCredentials') -and $currentUseDefaultCredentials -ne $UseDefaultCredentials)
                     {
                         Write-Verbose -Message (
