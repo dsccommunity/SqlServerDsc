@@ -22,7 +22,7 @@ ConvertFrom-StringData @'
     MailServerPropertyReplyToEmailAddress = reply to e-mail address
     MailServerPropertyServerName = server name
     MailServerPropertyTcpPort = TCP port
-    MailServerPropertyUseDefaultCredentials = SMTP server authentication
+    MailServerPropertyUseDefaultCredentials = Use default credentials
     CreatingMailProfile = Creating a public default profile '{0}'.
     MailProfileExist = The public default profile '{0}' already exist.
     ConfigureSqlAgent = Configure the SQL Agent to use Database Mail.

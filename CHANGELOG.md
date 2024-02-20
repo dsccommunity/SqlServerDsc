@@ -9,11 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Added build tasks to generate Wiki documentation for public commands.
-- SqlDatabaseMailDsc
-  - Added the parameter `UseDefaultCredentials` that can be set $true so that
-    SMTP server authentication uses the DatabaseEngine service account. The
-    default is $false which uses a login specified for SMTP authorization.
-    If false and no custom login specified, an anonymous login is used.
+- SqlDatabaseMail
+  - Added the parameter `UseDefaultCredentials` to control use of the DatabaseEngine
+    service account for SMTP server authentication.
 
 ### Fixed
 

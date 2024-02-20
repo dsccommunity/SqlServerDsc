@@ -146,7 +146,7 @@ function Get-TargetResource
                 {
                     $returnValue['MailServerName'] = $mailServer.Name
                     $returnValue['TcpPort'] = $mailServer.Port
-                    $returnValue['UseDefaultCredentials'] = $mailServer.UseDefaultCredentials # custom
+                    $returnValue['UseDefaultCredentials'] = $mailServer.UseDefaultCredentials
                 }
 
                 $mailProfile = $databaseMail.Profiles |
@@ -236,13 +236,17 @@ function Get-TargetResource
         The TCP port used for communication. Default value is port 25.
 
     .PARAMETER UseDefaultCredentials
-        Controls SMTP server authentication.  The database engine credentials are
-        the default credentials used when $true.  If not specified, the default is
-        $false and an anonymous login is used unless other credentials are provided.
+        Controls use of the DatabaseEngine service account for SMTP server authentication.
+        If $true, the DatabaseEngine service account is used access the SMTP server.
+        If $false, DatabaseEngine service account is not used.
 
     .NOTES
         Information about the different properties can be found here
         https://docs.microsoft.com/en-us/sql/relational-databases/database-mail/configure-database-mail.
+
+        "UseDefaultCredentials" corresponds to "Windows Authentication using Database Engine service credentials" 
+        described at the above link.  This dsc resource does not yet address setting state for basic or anonymous 
+        SMTP access that's used when UseDefaultCredentials is false.
 
 #>
 function Set-TargetResource
@@ -666,9 +670,9 @@ function Set-TargetResource
         The TCP port used for communication. Default value is port 25.
 
     .PARAMETER UseDefaultCredentials
-        Controls SMTP server authentication.  The database engine credentials are
-        the default credentials used when $true.  If not specified, the default is
-        $false and an anonymous login is used unless other credentials are provided.
+        Controls use of the DatabaseEngine service account for SMTP server authentication.
+        If $true, the DatabaseEngine service account is used access the SMTP server.
+        If $false, DatabaseEngine service account is not used.
 #>
 function Test-TargetResource
 {
