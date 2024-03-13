@@ -103,7 +103,7 @@ Describe 'SqlServerDsc.Common\Get-RegistryPropertyValue' -Tag 'GetRegistryProper
             $result = Get-RegistryPropertyValue -Path $mockWrongRegistryPath -Name $mockPropertyName
             $result | Should -BeNullOrEmpty
 
-            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It -Module $script:subModuleName
+            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It
         }
     }
 
