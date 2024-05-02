@@ -150,9 +150,12 @@ function Get-TargetResource
                 # Loop through each property to see if it is set to $true
                 foreach ($currentPermissionProperty in $permissionProperties)
                 {
-                    if ($true -in $currentObjectPermissions.PermissionType.$currentPermissionProperty)
-                    {
-                        $currentObjectPermissionNames += $currentPermissionProperty
+                    # Loop through the $currentObjectPermissions array to avoid issues with INSERT
+                    foreach ($objectPermission in $currentObjectPermissions) {
+                        if ($true -in $objectPermission.PermissionType.$currentPermissionProperty)
+                        {
+                            $currentObjectPermissionNames += $currentPermissionProperty
+                        }
                     }
                 }
 
