@@ -224,16 +224,6 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
                     } `
                     -ClientOnly
 
-                $cimInstancePermissionCollection += New-CimInstance `
-                    -ClassName 'DSC_DatabaseObjectPermission' `
-                    -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
-                    -Property @{
-                        State      = 'Grant'
-                        Permission = 'Insert'
-                        Ensure     = '' # Must be empty string to hit a line in the code.
-                    } `
-                    -ClientOnly
-
                 $script:mockGetTargetResourceParameters = @{
                     InstanceName = 'DSCTEST'
                     DatabaseName = 'AdventureWorks'
