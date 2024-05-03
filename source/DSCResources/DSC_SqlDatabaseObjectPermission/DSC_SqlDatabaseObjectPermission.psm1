@@ -151,7 +151,8 @@ function Get-TargetResource
                 foreach ($currentPermissionProperty in $permissionProperties)
                 {
                     # Loop through the $currentObjectPermissions array to avoid issues with INSERT
-                    foreach ($objectPermission in $currentObjectPermissions) {
+                    foreach ($objectPermission in $currentObjectPermissions)
+                    {
                         if ($true -in $objectPermission.PermissionType.$currentPermissionProperty)
                         {
                             $currentObjectPermissionNames += $currentPermissionProperty
