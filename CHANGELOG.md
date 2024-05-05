@@ -55,6 +55,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - DtcSupportEnabled option in Set-TargetResource and TestTargetResource
 - SqlSetup
   - Updated integration tests to use PSResourceGet to download required modules.
+- SqlRS
+  - Integration tests for SQL Server 2022 has been temporarily disabled due
+    to a unknown problem. More information in [issue #2009](https://github.com/dsccommunity/SqlServerDsc/issues/2009).
 
 ## [16.5.0] - 2023-10-05
 
