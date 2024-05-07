@@ -69,7 +69,7 @@ stages:
               publishLocation: 'pipeline'
               parallel: true
 
-  - stage: Test
+  - stage: Quality_Test_and_Unit_Test
     dependsOn: Build
     jobs:
       - job: Test_HQRM
@@ -156,6 +156,93 @@ stages:
               artifactName: $(testArtifactName)
               parallel: true
 
+      - job: Code_Coverage
+        displayName: 'Publish Code Coverage'
+        dependsOn: Test_Unit
+        condition: succeededOrFailed()
+        pool:
+          vmImage: 'ubuntu-latest'
+        timeoutInMinutes: 0
+        steps:
+          - pwsh: |
+              $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
+              echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
+              echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
+            name: dscBuildVariable
+            displayName: 'Set Environment Variables'
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Test Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(testArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
+          - task: PublishCodeCoverageResults@1
+            displayName: 'Publish Code Coverage to Azure DevOps'
+            inputs:
+              codeCoverageTool: 'JaCoCo'
+              summaryFileLocation: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
+              pathToSources: '$(Build.SourcesDirectory)/$(sourceFolderName)/'
+          - script: |
+              bash <(curl -s https://codecov.io/bash) -f "./$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml" -F unit
+            displayName: 'Publish Code Coverage to Codecov.io'
+
+  - stage: Integration_Test_Commands
+    dependsOn: Build
+    jobs:
+      - job: Test_Integration
+        displayName: 'Integration'
+        strategy:
+          matrix:
+            SQL2016_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2016'
+            SQL2016_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2016'
+            SQL2017_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2017'
+            SQL2017_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2017'
+            SQL2019_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2019_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2022_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+            SQL2022_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+        pool:
+          vmImage: $(JOB_VMIMAGE)
+        timeoutInMinutes: 0
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - powershell: |
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+              Remove-Module -Name CommonTestHelper
+            name: cleanCIWorker
+            displayName: 'Clean CI worker'
+
+  - stage: Integration_Test_Resources
+    dependsOn: Build
+    jobs:
       - job: Test_Integration
         displayName: 'Integration'
         strategy:
@@ -478,42 +565,6 @@ stages:
               testResultsFormat: 'NUnit'
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration RS (dbatools) ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
-
-      - job: Code_Coverage
-        displayName: 'Publish Code Coverage'
-        dependsOn: Test_Unit
-        condition: succeededOrFailed()
-        pool:
-          vmImage: 'ubuntu-latest'
-        timeoutInMinutes: 0
-        steps:
-          - pwsh: |
-              $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
-              echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
-              echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
-            name: dscBuildVariable
-            displayName: 'Set Environment Variables'
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download Build Artifact'
-            inputs:
-              buildType: 'current'
-              artifactName: $(buildArtifactName)
-              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download Test Artifact'
-            inputs:
-              buildType: 'current'
-              artifactName: $(testArtifactName)
-              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
-          - task: PublishCodeCoverageResults@1
-            displayName: 'Publish Code Coverage to Azure DevOps'
-            inputs:
-              codeCoverageTool: 'JaCoCo'
-              summaryFileLocation: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
-              pathToSources: '$(Build.SourcesDirectory)/$(sourceFolderName)/'
-          - script: |
-              bash <(curl -s https://codecov.io/bash) -f "./$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml" -F unit
-            displayName: 'Publish Code Coverage to Codecov.io'
 
   - stage: Deploy
     dependsOn: Test
