@@ -1,7 +1,7 @@
 <#
     .SYNOPSIS
-        The SqlResource base have generic properties and methods for the class-based
-        resources.
+        The SqlResourceBase have generic properties and methods that are common for
+        all the class-based resources.
 
     .PARAMETER InstanceName
         The name of the _SQL Server_ instance to be configured. Default value is
