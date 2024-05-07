@@ -570,7 +570,10 @@ stages:
               testRunTitle: 'Integration RS (dbatools) ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
   - stage: Deploy
-    dependsOn: Test
+    dependsOn:
+    - Quality_Test_and_Unit_Test
+    - Integration_Test_Commands
+    - Integration_Test_Resources
     condition: |
       and(
         succeeded(),
