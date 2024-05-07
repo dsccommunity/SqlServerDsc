@@ -23,7 +23,7 @@ BeforeDiscovery {
     }
 }
 
-Describe 'Install-SqlDscServer' {
+Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     Context 'When using Install parameter set' {
         Context 'When installing database engine default instance' {
             It 'Should run the command without throwing' {
