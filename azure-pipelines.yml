@@ -245,7 +245,7 @@ stages:
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
                   # Group 1
-                  #'tests/Integration/Commands/Install-SqlDscServer.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Install-SqlDscServer.Integration.Tests.ps1'
                   # Group 2
                   #'tests/Integration/Commands/Install-SqlDscReportingServices.Integration.Tests.ps1'
               )
