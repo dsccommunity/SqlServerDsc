@@ -241,6 +241,23 @@ stages:
               Remove-Module -Name CommonTestHelper
             name: cleanCIWorker
             displayName: 'Clean CI worker'
+          - powershell: |
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
+                  # Run the integration tests in a specific group order.
+                  # Group 1
+                  #'tests/Integration/Commands/Install-SqlDscServer.Integration.Tests.ps1'
+                  # Group 2
+                  #'tests/Integration/Commands/Install-SqlDscReportingServices.Integration.Tests.ps1'
+              )
+            name: test
+            displayName: 'Run Integration Test'
+          # - task: PublishTestResults@2
+          #   displayName: 'Publish Test Results'
+          #   condition: succeededOrFailed()
+          #   inputs:
+          #     testResultsFormat: 'NUnit'
+          #     testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+          #     testRunTitle: 'Integration ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
   - stage: Integration_Test_Resources
     displayName: 'Integration Test Resources'
@@ -301,38 +318,38 @@ stages:
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
                   # Group 1
-                  'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlSetup.Integration.Tests.ps1'
                   # Group 2
-                  'tests/Integration/DSC_SqlAgentAlert.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlLogin.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlDatabase.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlAlwaysOnService.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlAgentOperator.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServiceAccount.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlTraceFlag.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlAgentAlert.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlLogin.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlEndpoint.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlDatabaseMail.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlRSSetup.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlDatabase.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlAlwaysOnService.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlAgentOperator.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlServiceAccount.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlTraceFlag.Integration.Tests.ps1'
                   # Group 3
-                  'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlRS_Default.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlAudit.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlRole.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlRS_Default.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlDatabaseUser.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlReplication.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlAudit.Integration.Tests.ps1'
                   # Group 4
-                  'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlPermission.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlWindowsFirewall.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlScript.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlDatabasePermission.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlPermission.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlWindowsFirewall.Integration.Tests.ps1'
                   # Group 5
-                  'tests/Integration/DSC_SqlSecureConnection.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlProtocol.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlSecureConnection.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlScriptQuery.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlProtocol.Integration.Tests.ps1'
                   # Group 6 (tests makes changes that could make SQL Server to loose connectivity)
-                  'tests/Integration/DSC_SqlProtocolTcpIp.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlDatabaseObjectPermission.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlProtocolTcpIp.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlDatabaseObjectPermission.Integration.Tests.ps1'
               )
             name: test
             displayName: 'Run Integration Test'
@@ -391,38 +408,38 @@ stages:
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
                   # Group 1
-                  'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlSetup.Integration.Tests.ps1'
                   # Group 2
-                  'tests/Integration/DSC_SqlAgentAlert.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlLogin.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlEndpoint.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlDatabaseMail.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlDatabase.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlAlwaysOnService.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlAgentOperator.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlServiceAccount.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlTraceFlag.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlAgentAlert.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlLogin.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlEndpoint.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlDatabaseMail.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlRSSetup.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlDatabase.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlAlwaysOnService.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlAgentOperator.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlServiceAccount.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlAgentFailsafe.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlTraceFlag.Integration.Tests.ps1'
                   # Group 3
-                  'tests/Integration/DSC_SqlRole.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlRS_Default.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlDatabaseUser.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlReplication.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlAudit.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlRole.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlRS_Default.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlDatabaseUser.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlReplication.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlAudit.Integration.Tests.ps1'
                   # Group 4
-                  'tests/Integration/DSC_SqlScript.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlDatabasePermission.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlPermission.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlWindowsFirewall.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlScript.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlDatabasePermission.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlPermission.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlWindowsFirewall.Integration.Tests.ps1'
                   # Group 5
-                  'tests/Integration/DSC_SqlSecureConnection.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlScriptQuery.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlProtocol.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlSecureConnection.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlScriptQuery.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlProtocol.Integration.Tests.ps1'
                   # Group 6 (tests makes changes that could make SQL Server to loose connectivity)
-                  'tests/Integration/DSC_SqlProtocolTcpIp.Integration.Tests.ps1'
-                  'tests/Integration/DSC_SqlDatabaseObjectPermission.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlProtocolTcpIp.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlDatabaseObjectPermission.Integration.Tests.ps1'
               )
             name: test
             displayName: 'Run Integration Test'
@@ -494,11 +511,11 @@ stages:
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
                   # Group 1
-                  'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlSetup.Integration.Tests.ps1'
                   # Group 2
-                  'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlRSSetup.Integration.Tests.ps1'
                   # Group 3
-                  'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlRS.Integration.Tests.ps1'
               )
             name: test
             displayName: 'Run Reporting Services Integration Test'
@@ -553,11 +570,11 @@ stages:
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
                   # Group 1
-                  'tests/Integration/DSC_SqlSetup.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlSetup.Integration.Tests.ps1'
                   # Group 2
-                  'tests/Integration/DSC_SqlRSSetup.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlRSSetup.Integration.Tests.ps1'
                   # Group 3
-                  'tests/Integration/DSC_SqlRS.Integration.Tests.ps1'
+                  'tests/Integration/Resources/DSC_SqlRS.Integration.Tests.ps1'
               )
             name: test
             displayName: 'Run Reporting Services Integration Test'
