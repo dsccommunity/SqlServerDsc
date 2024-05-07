@@ -70,6 +70,7 @@ stages:
               parallel: true
 
   - stage: Quality_Test_and_Unit_Test
+    displayName: 'Quality Test and Unit Test'
     dependsOn: Build
     jobs:
       - job: Test_HQRM
@@ -193,6 +194,7 @@ stages:
             displayName: 'Publish Code Coverage to Codecov.io'
 
   - stage: Integration_Test_Commands
+    displayName: 'Integration Test Commands'
     dependsOn: Build
     jobs:
       - job: Test_Integration
@@ -241,6 +243,7 @@ stages:
             displayName: 'Clean CI worker'
 
   - stage: Integration_Test_Resources
+    displayName: 'Integration Test Resources'
     dependsOn: Build
     jobs:
       - job: Test_Integration
