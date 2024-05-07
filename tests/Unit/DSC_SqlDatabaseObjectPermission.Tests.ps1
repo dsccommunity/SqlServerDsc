@@ -183,7 +183,7 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
                                     Add-Member -MemberType NoteProperty -Name 'Delete' -Value $false -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'Execute' -Value $false -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'Impersonate' -Value $false -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name 'Insert' -Value $false -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'Insert' -Value $true -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'Receive' -Value $false -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'References' -Value $false -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'Select' -Value $true -PassThru |
@@ -220,6 +220,16 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
                     -Property @{
                         State      = 'Grant'
                         Permission = 'Update'
+                        Ensure     = '' # Must be empty string to hit a line in the code.
+                    } `
+                    -ClientOnly
+
+                $cimInstancePermissionCollection += New-CimInstance `
+                    -ClassName 'DSC_DatabaseObjectPermission' `
+                    -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
+                    -Property @{
+                        State      = 'Grant'
+                        Permission = 'Insert'
                         Ensure     = '' # Must be empty string to hit a line in the code.
                     } `
                     -ClientOnly
