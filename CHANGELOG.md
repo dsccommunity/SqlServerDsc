@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     To run the meta task `docs` the SMO assemblies must be loaded into the
     session, either by importing SqlServer module or loading SMO stubs.
   - QA test improved to speed up quality testing.
+  - The pipeline test stages has been split into different stages.
 - SqlAG
   - Converted unit test to Pester 5
   - DtcSupportEnabled option in Set-TargetResource and TestTargetResource
