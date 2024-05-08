@@ -510,6 +510,8 @@ stages:
             inputs:
               summaryFileLocation: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
               pathToSources: '$(Build.SourcesDirectory)/$(sourceFolderName)/'
+          - publish: $(Build.SourcesDirectory)/coveragereport
+            artifact: CoverageReports
           - script: |
               bash <(curl -s https://codecov.io/bash) -f "./$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml" -F unit
             displayName: 'Publish Code Coverage to Codecov.io'
