@@ -268,17 +268,20 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
 
                 $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                $getTargetResourceResult.Permission | Should -HaveCount 2
+                $getTargetResourceResult.Permission | Should -HaveCount 3
                 $getTargetResourceResult.Permission[0] | Should -BeOfType 'CimInstance'
                 $getTargetResourceResult.Permission[1] | Should -BeOfType 'CimInstance'
+                $getTargetResourceResult.Permission[2] | Should -BeOfType 'CimInstance'
 
                 $grantPermission = $getTargetResourceResult.Permission | Where-Object -FilterScript { $_.State -eq 'Grant' }
                 $grantPermission | Should -Not -BeNullOrEmpty
                 $grantPermission.Ensure[0] | Should -Be 'Present'
                 $grantPermission.Ensure[1] | Should -Be 'Present'
-                $grantPermission.Permission | Should -HaveCount 2
+                $grantPermission.Ensure[2] | Should -Be 'Present'
+                $grantPermission.Permission | Should -HaveCount 3
                 $grantPermission.Permission | Should -Contain @('Select')
                 $grantPermission.Permission | Should -Contain @('Update')
+                $grantPermission.Permission | Should -Contain @('Insert')
             }
         }
     }
