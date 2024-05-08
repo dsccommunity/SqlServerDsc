@@ -510,6 +510,17 @@ stages:
             inputs:
               summaryFileLocation: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
               pathToSources: '$(Build.SourcesDirectory)/$(sourceFolderName)/'
+          - task: reportgenerator@5
+            displayName: ReportGenerator
+            inputs:
+              reports: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
+              targetdir: '$(Build.SourcesDirectory)/coveragereport'
+              reporttypes: 'HtmlInline_AzurePipelines;Cobertura;Badges'
+              #assemblyfilters: '-xunit*'
+              sourcedirs: '$(Build.SourcesDirectory)/$(sourceFolderName)/'
+              verbosity: 'Verbose'
+              title: 'SqlServerDsc'
+              tag: '$(build.buildnumber)_#$(build.buildid)_$(System.JobAttempt)'
           - publish: $(Build.SourcesDirectory)/coveragereport
             artifact: CoverageReports
           - script: |
