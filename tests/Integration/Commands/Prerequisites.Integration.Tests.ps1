@@ -64,14 +64,14 @@ Describe 'Prerequisites' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'I
         }
 
         It 'Creates svc-SqlSecondary user' {
-            $user = New-LocalUser -Name 'svc-SqlSecondary' -Password $password -FullName 'svc-SqlSecondary' -Description 'Runs the SQL Server service on the second node.'
+            $user = New-LocalUser -Name 'svc-SqlSecondary' -Password $password -FullName 'svc-SqlSecondary' -Description 'Runs the SQL Server service.'
 
             $user.Name | Should -Be 'svc-SqlSecondary'
             (Get-LocalUser -Name 'svc-SqlSecondary').Name | Should -Be 'svc-SqlSecondary'
         }
 
         It 'Creates svc-SqlAgentSec user' {
-            $user = New-LocalUser -Name 'svc-SqlAgentSec' -Password $password -FullName 'svc-SqlAgentSec' -Description 'Runs the SQL Server Agent service on the second node.'
+            $user = New-LocalUser -Name 'svc-SqlAgentSec' -Password $password -FullName 'svc-SqlAgentSec' -Description 'Runs the SQL Server Agent service.'
 
             $user.Name | Should -Be 'svc-SqlAgentSec'
             (Get-LocalUser -Name 'svc-SqlAgentSec').Name | Should -Be 'svc-SqlAgentSec'
@@ -86,7 +86,7 @@ Describe 'Prerequisites' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'I
             # Verify if user is part of local administrator group
             $adminGroup = Get-LocalGroup -Name 'Administrators'
             $adminGroupMembers = Get-LocalGroupMember -Group $adminGroup
-            $adminGroupMembers.Name | Should -Contain ('{0]\SqlInstall' -f (Get-ComputerName))
+            $adminGroupMembers.Name | Should -Contain ('{0}\SqlInstall' -f (Get-ComputerName))
         }
     }
 

@@ -66,7 +66,7 @@ function Save-SqlDscSqlServerMedia
 
         [Parameter(Mandatory = $true)]
         [System.IO.FileInfo]
-        [ValidateScript({Test-Path $_ -PathType 'Container'})]
+        [ValidateScript({ Test-Path $_ -PathType 'Container' })]
         $DestinationPath,
 
         [Parameter()]
