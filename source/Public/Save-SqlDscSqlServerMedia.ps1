@@ -120,11 +120,6 @@ function Save-SqlDscSqlServerMedia
 
     Write-Verbose -Message "Downloading SQL Server media to '$destinationFilePath'"
 
-    # TODO: Add a timer to measure the time taken to download the media file.
-    $connectTimer = [System.Diagnostics.StopWatch]::StartNew()
-    $connectTimer.Elapsed.TotalSeconds
-    $connectTimer.Stop()
-
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
     $isExecutable = $false
@@ -219,8 +214,6 @@ function Save-SqlDscSqlServerMedia
         # Rename the iso file in the destination path.
         Rename-Item -Path $isoFile.FullName -NewName $FileName -Force
     }
-
-    Write-Verbose -Message "Finished downloading the SQL Server media iso at $(Get-Date -Format 'yyyy-MM-dd hh:mm:ss')"
 
     return (Get-Item -Path $destinationFilePath)
 }
