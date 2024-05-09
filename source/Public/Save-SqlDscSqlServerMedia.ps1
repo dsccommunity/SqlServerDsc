@@ -12,7 +12,7 @@
 
         The function also prints the SHA1 hash of the downloaded file.
 
-    .PARAMETER MediaUrl
+    .PARAMETER Url
         The URL of the SQL Server media to download.
 
     .PARAMETER DestinationPath
@@ -35,22 +35,22 @@
         specified destination path.
 
     .EXAMPLE
-        Save-SqlDscSqlServerMedia -MediaUrl 'https://download.microsoft.com/download/c/c/9/cc9c6797-383c-4b24-8920-dc057c1de9d3/SQL2022-SSEI-Dev.exe' -DestinationPath 'C:\path\to\destination'
+        Save-SqlDscSqlServerMedia -Url 'https://download.microsoft.com/download/c/c/9/cc9c6797-383c-4b24-8920-dc057c1de9d3/SQL2022-SSEI-Dev.exe' -DestinationPath 'C:\path\to\destination'
 
         This downloads the SQL Server 2022 media and saves it to the specified destination path.
 
     .EXAMPLE
-        Save-SqlDscSqlServerMedia -MediaUrl 'https://download.microsoft.com/download/d/a/2/da259851-b941-459d-989c-54a18a5d44dd/SQL2019-SSEI-Dev.exe' -DestinationPath 'C:\path\to\destination'
+        Save-SqlDscSqlServerMedia -Url 'https://download.microsoft.com/download/d/a/2/da259851-b941-459d-989c-54a18a5d44dd/SQL2019-SSEI-Dev.exe' -DestinationPath 'C:\path\to\destination'
 
         This downloads the SQL Server 2019 media and saves it to the specified destination path.
 
     .EXAMPLE
-        Save-SqlDscSqlServerMedia -MediaUrl 'https://download.microsoft.com/download/E/F/2/EF23C21D-7860-4F05-88CE-39AA114B014B/SQLServer2017-x64-ENU.iso' -DestinationPath 'C:\path\to\destination'
+        Save-SqlDscSqlServerMedia -Url 'https://download.microsoft.com/download/E/F/2/EF23C21D-7860-4F05-88CE-39AA114B014B/SQLServer2017-x64-ENU.iso' -DestinationPath 'C:\path\to\destination'
 
         This downloads the SQL Server 2017 media and saves it to the specified destination path.
 
     .EXAMPLE
-        Save-SqlDscSqlServerMedia -MediaUrl 'https://download.microsoft.com/download/9/0/7/907AD35F-9F9C-43A5-9789-52470555DB90/ENU/SQLServer2016SP1-FullSlipstream-x64-ENU.iso' -DestinationPath 'C:\path\to\destination'
+        Save-SqlDscSqlServerMedia -Url 'https://download.microsoft.com/download/9/0/7/907AD35F-9F9C-43A5-9789-52470555DB90/ENU/SQLServer2016SP1-FullSlipstream-x64-ENU.iso' -DestinationPath 'C:\path\to\destination'
 
         This downloads the SQL Server 2016 media and saves it to the specified destination path.
 #>
@@ -62,7 +62,7 @@ function Save-SqlDscSqlServerMedia
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $MediaUrl,
+        $Url,
 
         [Parameter(Mandatory = $true)]
         [System.IO.FileInfo]
@@ -125,7 +125,7 @@ function Save-SqlDscSqlServerMedia
 
     $isExecutable = $false
 
-    if ($MediaUrl -match '\.exe$')
+    if ($Url -match '\.exe$')
     {
         Write-Verbose -Message 'Provided URL is an executable file. Downloading the executable file.'
 
@@ -155,7 +155,7 @@ function Save-SqlDscSqlServerMedia
     }
 
     # Download the URL content.
-    Invoke-WebRequest -Uri $MediaUrl -OutFile $downloadedFilePath | Out-Null
+    Invoke-WebRequest -Uri $Url -OutFile $downloadedFilePath | Out-Null
 
     if ($Quiet.IsPresent)
     {
