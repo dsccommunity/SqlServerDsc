@@ -24,7 +24,7 @@ BeforeDiscovery {
 }
 
 Describe 'Prerequisites' {
-    Context 'Create required local Windows users' {
+    Context 'Create required local Windows users' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
         BeforeAll {
             $password = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
         }
@@ -44,7 +44,7 @@ Describe 'Prerequisites' {
         }
     }
 
-    Context 'Should create required local Windows service accounts' {
+    Context 'Should create required local Windows service accounts' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
         BeforeAll {
             $password = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
         }
@@ -78,7 +78,7 @@ Describe 'Prerequisites' {
         }
     }
 
-    Context 'Add local Windows users to local groups' {
+    Context 'Add local Windows users to local groups' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
         It 'Should add SqlInstall to local administrator group' {
             # Add user to local administrator group
             Add-LocalGroupMember -Group 'Administrators' -Member 'SqlInstall'
@@ -124,7 +124,7 @@ Describe 'Prerequisites' {
         }
     }
 
-    Context 'Mount SQL Server media' {
+    Context 'Mount SQL Server media' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
         It 'Should mount the media to a drive letter' {
             $mountedImage = Mount-DiskImage -ImagePath $script:mediaFile
             $mountedImage | Should -BeOfType 'Microsoft.Management.Infrastructure.CimInstance'
