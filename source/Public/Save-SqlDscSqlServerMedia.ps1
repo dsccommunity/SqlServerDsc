@@ -118,6 +118,7 @@ function Save-SqlDscSqlServerMedia
         Remove-Item -Path $destinationFilePath -Force
     }
 
+    # TODO: Localize all the verbose messages.
     Write-Verbose -Message "Downloading SQL Server media to '$destinationFilePath'"
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
