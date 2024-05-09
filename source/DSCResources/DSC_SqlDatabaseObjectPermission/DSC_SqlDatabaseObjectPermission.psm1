@@ -152,7 +152,7 @@ function Get-TargetResource
                 {
                     foreach ($objectPermission in $currentObjectPermissions)
                     {
-                        if ($true -in $objectPermission.PermissionType.$currentPermissionProperty)
+                        if ($true -in $objectPermission.PermissionType[0].$currentPermissionProperty)
                         {
                             $currentObjectPermissionNames += $currentPermissionProperty
                         }
