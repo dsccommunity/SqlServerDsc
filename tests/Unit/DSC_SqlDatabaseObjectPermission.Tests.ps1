@@ -609,6 +609,12 @@ Describe 'SqlDatabaseObjectPermission\Test-TargetResource' -Tag 'Test' {
                 -PermissionState 'Grant' `
                 -Ensure 'Present'
 
+            # Checking that Insert comes back as expected
+            $cimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
+                -Permission 'Insert' `
+                -PermissionState 'Grant' `
+                -Ensure 'Present'
+
             $script:mockTestTargetResourceParameters = @{
                 InstanceName = 'sql2014'
                 DatabaseName = 'AdventureWorks'
