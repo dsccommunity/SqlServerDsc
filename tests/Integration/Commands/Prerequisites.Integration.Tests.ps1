@@ -23,7 +23,7 @@ BeforeDiscovery {
     }
 }
 
-Describe 'Prerequisites' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Prerequisites' {
     Context 'Create required local Windows users' {
         BeforeAll {
             $password = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
@@ -94,7 +94,7 @@ Describe 'Prerequisites' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'I
         It 'Should download SQL Server 2016 media' -Tag @('Integration_SQL2016') {
             $url = 'https://download.microsoft.com/download/9/0/7/907AD35F-9F9C-43A5-9789-52470555DB90/ENU/SQLServer2016SP1-FullSlipstream-x64-ENU.iso'
 
-            $mediaFile = Save-SqlDscSqlServerMedia -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
+            $script:mediaFile = Save-SqlDscSqlServerMedia -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
 
             $mediaFile.Name | Should -Be 'media.iso'
         }
@@ -102,7 +102,7 @@ Describe 'Prerequisites' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'I
         It 'Should download SQL Server 2017 media' -Tag @('Integration_SQL2017') {
             $url = 'https://download.microsoft.com/download/E/F/2/EF23C21D-7860-4F05-88CE-39AA114B014B/SQLServer2017-x64-ENU.iso'
 
-            $mediaFile = Save-SqlDscSqlServerMedia -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
+            $script:mediaFile = Save-SqlDscSqlServerMedia -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
 
             $mediaFile.Name | Should -Be 'media.iso'
         }
@@ -110,7 +110,7 @@ Describe 'Prerequisites' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'I
         It 'Should download SQL Server 2019 media' -Tag @('Integration_SQL2019') {
             $url = 'https://download.microsoft.com/download/d/a/2/da259851-b941-459d-989c-54a18a5d44dd/SQL2019-SSEI-Dev.exe'
 
-            $mediaFile = Save-SqlDscSqlServerMedia -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
+            $script:mediaFile = Save-SqlDscSqlServerMedia -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
 
             $mediaFile.Name | Should -Be 'media.iso'
         }
@@ -118,9 +118,33 @@ Describe 'Prerequisites' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'I
         It 'Should download SQL Server 2022 media' -Tag @('Integration_SQL2022') {
             $url = 'https://download.microsoft.com/download/c/c/9/cc9c6797-383c-4b24-8920-dc057c1de9d3/SQL2022-SSEI-Dev.exe'
 
-            $mediaFile = Save-SqlDscSqlServerMedia -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
+            $script:mediaFile = Save-SqlDscSqlServerMedia -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
 
             $mediaFile.Name | Should -Be 'media.iso'
+        }
+    }
+
+    Context 'Mount SQL Server media' {
+        It 'Should mount the media to a drive letter' {
+            $mountedImage = Mount-DiskImage -ImagePath $script:mediaFile
+            $mountedImage | Should -BeOfType 'Microsoft.Management.Infrastructure.CimInstance'
+
+            $mountedVolume = Get-Volume -DiskImage $mountedImage
+            $mountedVolume.DriveLetter | Should -Not -BeNullOrEmpty
+
+            $env:IsoDriveLetter = $mountedVolume.DriveLetter
+            $env:IsoDriveLetter | Should -Not -BeNullOrEmpty
+
+            $env:IsoDrivePath = (Get-PSDrive -Name $env:IsoDriveLetter).Root
+            $env:IsoDrivePath | Should -Be "$env:IsoDriveLetter:\"
+        }
+
+        It 'Should have set environment variable for drive letter' {
+            $env:IsoDriveLetter | Should -Not -BeNullOrEmpty
+        }
+
+        It 'Should have set environment variable for drive path' {
+            $env:IsoDrivePath | Should -Be "$env:IsoDriveLetter:\"
         }
     }
 }

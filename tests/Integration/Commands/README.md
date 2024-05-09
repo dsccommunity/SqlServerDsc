@@ -86,8 +86,10 @@ sa | P@ssw0rd1 | sysadmin | Administrator of the Database Engine instances DSCSQ
 
 ## Image media (ISO)
 
-The path to the image media is set in the environment variable `$env:IsoImagePath`
-and the drive letter used to mount the image media is save in `$env:IsoDriveLetter`.
+The environment variable `$env:IsoDriveLetter` contains the drive letter
+(e.g. G, H, I) where the image media is mounted. The environment variable
+`$env:IsoDrivePath` contains the drive root path
+(e.g. G:\\, H:\\, I:\\) where the image media is mounted.
 
 This information can be used by integration tests that depends on
 the image media.

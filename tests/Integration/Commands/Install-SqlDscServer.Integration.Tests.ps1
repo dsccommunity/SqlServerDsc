@@ -35,7 +35,7 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                         InstanceName = 'MSSQLSERVER'
                         Features = 'SQLENGINE'
                         SqlSysAdminAccounts = @('MyAdminAccount')
-                        MediaPath = (Join-Path -Path $env:TEMP -ChildPath 'media.iso')
+                        MediaPath = $env:IsoDrivePath # Set by the prerequisites tests
                         Verbose = $true
                         ErrorAction = 'Stop'
                     }
