@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlAgDatabase
   - Remove unused help file ([issue #1745](https://github.com/dsccommunity/SqlServerDsc/issues/1745)).
 - SqlDatabaseObjectPermission
-  - Added `[0]` to $currentObjectPermissions.PermissionType `Get-TargetResource` to fix issues with INSERT permissions when it's not the only permission on the table ([issue [#2006](https://github.com/dsccommunity/SqlServerDsc/issues/2006)])
+  - Added `foreach` loop in `Get-TargetResource` to fix issues with INSERT permissions when it's not the only permission on the table ([issue [#2006](https://github.com/dsccommunity/SqlServerDsc/issues/2006)])
 
 ### Changed
 
