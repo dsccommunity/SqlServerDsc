@@ -47,6 +47,14 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                     Install-SqlDscServer @installSqlDscServerParameters
                 } | Should -Not -Throw
             }
+
+            It 'Should have installed the SQL Server database engine' {
+                # Validate the SQL Server installation
+                $sqlServerService = Get-Service -Name 'MSSQLSERVER'
+
+                $sqlServerService | Should -Not -BeNullOrEmpty
+                $sqlServerService.Status | Should -Be 'Running'
+            }
         }
     }
 }

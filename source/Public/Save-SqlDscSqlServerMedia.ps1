@@ -210,7 +210,7 @@ function Save-SqlDscSqlServerMedia
             throw 'More than one iso file found in the destination path. Cannot determine which was downloaded.'
         }
 
-        Write-Verbose -Message 'Renaming the downloaded iso file from ''{0}'' to ''{1}''' -f $isoFile.Name, $FileName
+        Write-Verbose -Message ('Renaming the downloaded iso file from ''{0}'' to ''{1}''' -f $isoFile.Name, $FileName)
 
         # Rename the iso file in the destination path.
         Rename-Item -Path $isoFile.FullName -NewName $FileName -Force
