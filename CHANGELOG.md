@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Added build tasks to generate Wiki documentation for public commands.
+  - Initial integration tests for commands.
 - SqlDatabaseMail
   - Added the parameter `UseDefaultCredentials` to control use of the DatabaseEngine
     service account for SMTP server authentication.
