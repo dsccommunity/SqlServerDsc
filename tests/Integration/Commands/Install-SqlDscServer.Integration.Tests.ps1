@@ -31,17 +31,17 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                     # TODO: Add additional properties, for example service accounts, to the splatting parameters.
                     # Set splatting parameters for Install-SqlDscServer
                     $installSqlDscServerParameters = @{
-                        Install = $true
+                        Install              = $true
                         AcceptLicensingTerms = $true
-                        InstanceName = 'MSSQLSERVER'
-                        Features = 'SQLENGINE'
-                        SqlSysAdminAccounts = @(
+                        InstanceName         = 'MSSQLSERVER'
+                        Features             = 'SQLENGINE'
+                        SqlSysAdminAccounts  = @(
                             ('{0}\SqlAdmin' -f (Get-ComputerName))
                         )
-                        MediaPath = $env:IsoDrivePath # Set by the prerequisites tests
-                        Verbose = $true
-                        ErrorAction = 'Stop'
-                        Force = $true
+                        MediaPath            = $env:IsoDrivePath # Set by the prerequisites tests
+                        Verbose              = $true
+                        ErrorAction          = 'Stop'
+                        Force                = $true
                     }
 
                     Install-SqlDscServer @installSqlDscServerParameters
