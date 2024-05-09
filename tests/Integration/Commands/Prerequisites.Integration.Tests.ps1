@@ -136,7 +136,7 @@ Describe 'Prerequisites' {
             $env:IsoDriveLetter | Should -Not -BeNullOrEmpty
 
             $env:IsoDrivePath = (Get-PSDrive -Name $env:IsoDriveLetter).Root
-            $env:IsoDrivePath | Should -Be "$env:IsoDriveLetter:\"
+            $env:IsoDrivePath | Should -Be ('{0}:\' -f $env:IsoDriveLetter)
         }
 
         It 'Should have set environment variable for drive letter' {
@@ -144,7 +144,7 @@ Describe 'Prerequisites' {
         }
 
         It 'Should have set environment variable for drive path' {
-            $env:IsoDrivePath | Should -Be "$env:IsoDriveLetter:\"
+            $env:IsoDrivePath | Should -Be ('{0}:\' -f $env:IsoDriveLetter)
         }
     }
 }
