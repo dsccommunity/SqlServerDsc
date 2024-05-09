@@ -35,12 +35,12 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                         InstanceName = 'MSSQLSERVER'
                         Features = 'SQLENGINE'
                         SqlSysAdminAccounts = @('MyAdminAccount')
-                        MediaPath = 'E:\'
+                        MediaPath = (Join-Path -Path $env:TEMP -ChildPath 'media.iso')
                         Verbose = $true
                         ErrorAction = 'Stop'
                     }
 
-                    # Install-SqlDscServer @installSqlDscServerParameters
+                    Install-SqlDscServer @installSqlDscServerParameters
                 } | Should -Not -Throw
             }
         }
