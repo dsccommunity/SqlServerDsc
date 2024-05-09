@@ -34,7 +34,9 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                         AcceptLicensingTerms = $true
                         InstanceName = 'MSSQLSERVER'
                         Features = 'SQLENGINE'
-                        SqlSysAdminAccounts = @('MyAdminAccount')
+                        SqlSysAdminAccounts = @(
+                            ('{0}\MyAdminAccount' -f (Get-ComputerName))
+                        )
                         MediaPath = $env:IsoDrivePath # Set by the prerequisites tests
                         Verbose = $true
                         ErrorAction = 'Stop'
