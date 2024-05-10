@@ -47,6 +47,8 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                         SecurityMode          = 'SQL'
                         SAPwd                 = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
                         SqlCollation          = 'Finnish_Swedish_CI_AS'
+                        InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
+                        InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
                         MediaPath             = $env:IsoDrivePath # Already set by the prerequisites tests
                         Verbose               = $true
                         ErrorAction           = 'Stop'

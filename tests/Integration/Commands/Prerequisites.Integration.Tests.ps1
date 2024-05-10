@@ -147,4 +147,16 @@ Describe 'Prerequisites' {
             $env:IsoDrivePath | Should -Be ('{0}:\' -f $env:IsoDriveLetter)
         }
     }
+
+    Context 'Install correct version of module SqlServer' {
+        It 'Should install SqlServer module version 22.2.0' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019') {
+            #Install-Module -Name 'SqlServer' -RequiredVersion '21.1.18256' -Force -ErrorAction 'Stop'
+            Install-PSResource -Name 'Sampler' -Version '21.1.18256' -Force -ErrorAction 'Stop' -Scope 'AllUsers' -TrustRepository
+        }
+
+        It 'Should install SqlServer module version 22.2.0' -Tag @('Integration_SQL2022') {
+            #Install-Module -Name 'SqlServer' -RequiredVersion '22.2.0' -Force -ErrorAction 'Stop'
+            Install-PSResource -Name 'Sampler' -Version '22.2.0' -Force -ErrorAction 'Stop' -Scope 'AllUsers' -TrustRepository
+        }
+    }
 }
