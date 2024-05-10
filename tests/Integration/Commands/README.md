@@ -5,19 +5,6 @@
 Currently there are no possible to debug the commands on the service Appveyor
 since it has not been configured in the `appveyor.yml`.
 
-## SqlServer module
-
-There is a difference what module version of [_SqlServer_](https://www.powershellgallery.com/packages/SqlServer)
-is used for what SQL Server release. The integration tests for SqlSetup_
-installs the required module version.
-
-SQL Server release | SqlServer module version
---- | ---
-SQL Server 2016 | 21.1.18256
-SQL Server 2017 | 21.1.18256
-SQL Server 2019 | 21.1.18256
-SQL Server 2022 | 22.2.0
-
 ## Depends On
 
 For it to be easier to write integration tests for a command that depends
@@ -37,18 +24,40 @@ Install-SqlDscServer | 1 | - | -
 
 ## Integration Tests
 
+### `Prerequisites`´
+
+Makes sure all dependencies are in place. This integration test always runs
+first.
+
 ### `Install-SqlDscServer`
 
 Installs all the [instances](#instances).
 
-## Instances
+## Dependencies
+
+### SqlServer module
+
+There is different module version of [_SqlServer_](https://www.powershellgallery.com/packages/SqlServer)
+used depending on SQL Server release. The integration tests installs the
+required module version according to the below table.
+
+SQL Server release | SqlServer module version
+--- | ---
+SQL Server 2016 | 21.1.18256
+SQL Server 2017 | 21.1.18256
+SQL Server 2019 | 21.1.18256
+SQL Server 2022 | 22.2.0
+
+### Instances
 
 These instances is available for integration tests.
 
+<!-- cSpell:ignore DSCSQLTEST -->
+
 Instance | Feature | State
 --- | --- | ---
-DSCSQLTEST | SQLENGINE | - | Running
-MSSQLSERVER | SQLENGINE | - | Stopped
+DSCSQLTEST | SQLENGINE |  Running
+MSSQLSERVER | SQLENGINE | Stopped
 
 All running Database Engine instances also have a SQL Server Agent that is started.
 
@@ -57,15 +66,15 @@ both Named Pipes and TCP/IP protocol enabled.
 
 > [!NOTE]
 > Some services are stopped to save memory on the build worker. See the
-> column *State*.
+> column _State_.
 
-### Instance properties
+#### Instance properties
 
 - **Collation:** Finnish\_Swedish\_CI\_AS
 - **InstallSharedDir:** C:\Program Files\Microsoft SQL Server
 - **InstallSharedWOWDir:** C:\Program Files (x86)\Microsoft SQL Server
 
-## Users
+### Users
 
 The following local users are created and can be used by integration tests.
 
@@ -81,10 +90,10 @@ User | Password | Permission | Description
 
 Login | Password | Permission | Description
 --- | --- | --- | ---
-sa | P@ssw0rd1 | sysadmin | Administrator of the Database Engine instances DSCSQLTEST. |
+sa | P@ssw0rd1 | sysadmin | Administrator of the Database Engine instances DSCSQLTEST.
 <!-- markdownlint-enable MD013 -->
 
-## Image media (ISO)
+### Image media (ISO)
 
 The environment variable `$env:IsoDriveLetter` contains the drive letter
 (e.g. G, H, I) where the image media is mounted. The environment variable
