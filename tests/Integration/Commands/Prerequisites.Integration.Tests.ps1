@@ -186,7 +186,7 @@ Describe 'Prerequisites' {
             $module.Version -eq '22.2.0' | Should -BeTrue
         }
 
-        It 'Should have SqlServer module version 22.2.0 available' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019') {
+        It 'Should have SqlServer module version 22.2.0 available' -Tag @('Integration_SQL2022') {
             $module = Get-Module -Name 'SqlServer' -ListAvailable
 
             $module | Should -HaveCount 1

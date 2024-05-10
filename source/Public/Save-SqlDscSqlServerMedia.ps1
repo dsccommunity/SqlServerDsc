@@ -118,8 +118,7 @@ function Save-SqlDscSqlServerMedia
         Remove-Item -Path $destinationFilePath -Force
     }
 
-    # TODO: Localize all the verbose messages.
-    Write-Verbose -Message "Downloading SQL Server media to '$destinationFilePath'"
+    Write-Verbose -Message ($script:localizedData.SqlServerMedia_Save_ShouldProcessVerboseDescription -f $destinationFilePath)
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -127,8 +126,6 @@ function Save-SqlDscSqlServerMedia
 
     if ($Url -match '\.exe$')
     {
-        Write-Verbose -Message 'Provided URL is an executable file. Downloading the executable file.'
-
         $isExecutable = $true
 
         # Change the file extension of the destination file path to .exe
@@ -138,8 +135,6 @@ function Save-SqlDscSqlServerMedia
     }
     else
     {
-        Write-Verbose -Message 'Provided URL is a direct link to an ISO file. Downloading the ISO file.'
-
         $downloadedFilePath = $destinationFilePath
     }
 
@@ -165,7 +160,7 @@ function Save-SqlDscSqlServerMedia
 
     if ($isExecutable)
     {
-        Write-Verbose -Message 'Provided URL was an executable file. Using executable to download the media file.'
+        Write-Verbose -Message $script:localizedData.SqlServerMedia_Save_IsExecutable
 
         $executableArguments = @(
             '/Quiet'
@@ -196,7 +191,7 @@ function Save-SqlDscSqlServerMedia
         # Download ISO media using the downloaded executable.
         Start-Process -FilePath $destinationExecutableFilePath -ArgumentList $startProcessArgumentList -Wait
 
-        Write-Verbose -Message 'Removing the downloaded executable file.'
+        Write-Verbose -Message $script:localizedData.SqlServerMedia_Save_RemovingExecutable
 
         # Remove the downloaded executable.
         Remove-Item -Path $destinationExecutableFilePath -Force
@@ -206,11 +201,17 @@ function Save-SqlDscSqlServerMedia
 
         if ($isoFile.Count -gt 1)
         {
-            # TODO: Fix to Write-Error
-            throw 'More than one iso file found in the destination path. Cannot determine which was downloaded.'
+            $writeErrorParameters = @{
+                Message      = $script:localizedData.SqlServerMedia_Save_MultipleFilesFoundAfterDownload
+                Category     = 'InvalidOperation'
+                ErrorId      = 'SSDSSM0002' # CSpell: disable-line
+                TargetObject = $ServiceType
+            }
+
+            Write-Error @writeErrorParameters
         }
 
-        Write-Verbose -Message ('Renaming the downloaded iso file from ''{0}'' to ''{1}''' -f $isoFile.Name, $FileName)
+        Write-Verbose -Message ($script:localizedData.SqlServerMedia_Save_RenamingFile -f $isoFile.Name, $FileName)
 
         # Rename the iso file in the destination path.
         Rename-Item -Path $isoFile.FullName -NewName $FileName -Force
