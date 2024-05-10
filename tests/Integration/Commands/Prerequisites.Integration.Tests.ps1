@@ -149,20 +149,46 @@ Describe 'Prerequisites' {
     }
 
     Context 'Install correct version of module SqlServer' {
+        It 'Should have the minimum required version of Microsoft.PowerShell.PSResourceGet' {
+            $module = Get-Module -Name 'Microsoft.PowerShell.PSResourceGet' -ListAvailable
+
+            $module | Should -HaveCount 1
+            $module.Version -ge '1.0.4.1' | Should -BeTrue
+        }
+
+        It 'Should have a resource repository PSGallery with correct URI' {
+            $resourceRepository = Get-PSResourceRepository -Name 'PSGallery'
+
+            $resourceRepository | Should -HaveCount 1
+            $resourceRepository.Uri | Should -Be 'https://www.powershellgallery.com/api/v2'
+        }
+
         It 'Should install SqlServer module version 21.1.18256' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019') {
             #Install-Module -Name 'SqlServer' -RequiredVersion '21.1.18256' -Force -ErrorAction 'Stop'
-            Install-PSResource -Name 'Sampler' -Version '21.1.18256' -Scope 'AllUsers' -TrustRepository -ErrorAction 'Stop' -Confirm:$false
+            $module = Install-PSResource -Name 'SqlServer' -Version '21.1.18256' -Scope 'AllUsers' -TrustRepository -ErrorAction 'Stop' -Confirm:$false -PassThru
 
+            $module | Should -HaveCount 1
+            $module.Version -eq '21.1.18256' | Should -BeTrue
+        }
+
+        It 'Should have SqlServer module version 21.1.18256 available' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019') {
             $module = Get-Module -Name 'SqlServer' -ListAvailable
+
             $module | Should -HaveCount 1
             $module.Version -eq '21.1.18256' | Should -BeTrue
         }
 
         It 'Should install SqlServer module version 22.2.0' -Tag @('Integration_SQL2022') {
             #Install-Module -Name 'SqlServer' -RequiredVersion '22.2.0' -Force -ErrorAction 'Stop'
-            Install-PSResource -Name 'Sampler' -Version '22.2.0' -Scope 'AllUsers' -TrustRepository -ErrorAction 'Stop' -Confirm:$false
+            $module = Install-PSResource -Name 'SqlServer' -Version '22.2.0' -Scope 'AllUsers' -TrustRepository -ErrorAction 'Stop' -Confirm:$false -PassThru
 
+            $module | Should -HaveCount 1
+            $module.Version -eq '22.2.0' | Should -BeTrue
+        }
+
+        It 'Should have SqlServer module version 22.2.0 available' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019') {
             $module = Get-Module -Name 'SqlServer' -ListAvailable
+
             $module | Should -HaveCount 1
             $module.Version -eq '22.2.0' | Should -BeTrue
         }
