@@ -94,7 +94,7 @@ Describe 'Prerequisites' {
         It 'Should download SQL Server 2016 media' -Tag @('Integration_SQL2016') {
             $url = 'https://download.microsoft.com/download/9/0/7/907AD35F-9F9C-43A5-9789-52470555DB90/ENU/SQLServer2016SP1-FullSlipstream-x64-ENU.iso'
 
-            $script:mediaFile = Save-SqlDscSqlServerMedia -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
+            $script:mediaFile = Save-SqlDscSqlServerMediaFile -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
 
             $mediaFile.Name | Should -Be 'media.iso'
         }
@@ -102,7 +102,7 @@ Describe 'Prerequisites' {
         It 'Should download SQL Server 2017 media' -Tag @('Integration_SQL2017') {
             $url = 'https://download.microsoft.com/download/E/F/2/EF23C21D-7860-4F05-88CE-39AA114B014B/SQLServer2017-x64-ENU.iso'
 
-            $script:mediaFile = Save-SqlDscSqlServerMedia -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
+            $script:mediaFile = Save-SqlDscSqlServerMediaFile -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
 
             $mediaFile.Name | Should -Be 'media.iso'
         }
@@ -110,7 +110,7 @@ Describe 'Prerequisites' {
         It 'Should download SQL Server 2019 media' -Tag @('Integration_SQL2019') {
             $url = 'https://download.microsoft.com/download/d/a/2/da259851-b941-459d-989c-54a18a5d44dd/SQL2019-SSEI-Dev.exe'
 
-            $script:mediaFile = Save-SqlDscSqlServerMedia -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
+            $script:mediaFile = Save-SqlDscSqlServerMediaFile -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
 
             $mediaFile.Name | Should -Be 'media.iso'
         }
@@ -118,7 +118,7 @@ Describe 'Prerequisites' {
         It 'Should download SQL Server 2022 media' -Tag @('Integration_SQL2022') {
             $url = 'https://download.microsoft.com/download/c/c/9/cc9c6797-383c-4b24-8920-dc057c1de9d3/SQL2022-SSEI-Dev.exe'
 
-            $script:mediaFile = Save-SqlDscSqlServerMedia -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
+            $script:mediaFile = Save-SqlDscSqlServerMediaFile -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
 
             $mediaFile.Name | Should -Be 'media.iso'
         }

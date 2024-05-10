@@ -4,7 +4,7 @@
         media file to the specified file path
 
     .DESCRIPTION
-        The Save-SqlDscSqlServerMedia function downloads SQL Server media from a
+        The Save-SqlDscSqlServerMediaFile function downloads SQL Server media from a
         provided URL and saves the downloaded media file to the specified file path.
 
         If the URL ends with ".exe", it is treated as an executable that downloads
@@ -35,26 +35,26 @@
         specified destination path.
 
     .EXAMPLE
-        Save-SqlDscSqlServerMedia -Url 'https://download.microsoft.com/download/c/c/9/cc9c6797-383c-4b24-8920-dc057c1de9d3/SQL2022-SSEI-Dev.exe' -DestinationPath 'C:\path\to\destination'
+        Save-SqlDscSqlServerMediaFile -Url 'https://download.microsoft.com/download/c/c/9/cc9c6797-383c-4b24-8920-dc057c1de9d3/SQL2022-SSEI-Dev.exe' -DestinationPath 'C:\path\to\destination'
 
         This downloads the SQL Server 2022 media and saves it to the specified destination path.
 
     .EXAMPLE
-        Save-SqlDscSqlServerMedia -Url 'https://download.microsoft.com/download/d/a/2/da259851-b941-459d-989c-54a18a5d44dd/SQL2019-SSEI-Dev.exe' -DestinationPath 'C:\path\to\destination'
+        Save-SqlDscSqlServerMediaFile -Url 'https://download.microsoft.com/download/d/a/2/da259851-b941-459d-989c-54a18a5d44dd/SQL2019-SSEI-Dev.exe' -DestinationPath 'C:\path\to\destination'
 
         This downloads the SQL Server 2019 media and saves it to the specified destination path.
 
     .EXAMPLE
-        Save-SqlDscSqlServerMedia -Url 'https://download.microsoft.com/download/E/F/2/EF23C21D-7860-4F05-88CE-39AA114B014B/SQLServer2017-x64-ENU.iso' -DestinationPath 'C:\path\to\destination'
+        Save-SqlDscSqlServerMediaFile -Url 'https://download.microsoft.com/download/E/F/2/EF23C21D-7860-4F05-88CE-39AA114B014B/SQLServer2017-x64-ENU.iso' -DestinationPath 'C:\path\to\destination'
 
         This downloads the SQL Server 2017 media and saves it to the specified destination path.
 
     .EXAMPLE
-        Save-SqlDscSqlServerMedia -Url 'https://download.microsoft.com/download/9/0/7/907AD35F-9F9C-43A5-9789-52470555DB90/ENU/SQLServer2016SP1-FullSlipstream-x64-ENU.iso' -DestinationPath 'C:\path\to\destination'
+        Save-SqlDscSqlServerMediaFile -Url 'https://download.microsoft.com/download/9/0/7/907AD35F-9F9C-43A5-9789-52470555DB90/ENU/SQLServer2016SP1-FullSlipstream-x64-ENU.iso' -DestinationPath 'C:\path\to\destination'
 
         This downloads the SQL Server 2016 media and saves it to the specified destination path.
 #>
-function Save-SqlDscSqlServerMedia
+function Save-SqlDscSqlServerMediaFile
 {
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType([System.IO.FileInfo])]
@@ -90,7 +90,7 @@ function Save-SqlDscSqlServerMedia
 
     if ((Get-Item -Path "$DestinationPath/*.iso" -Force).Count -gt 0)
     {
-        $auditAlreadyPresentMessage = $script:localizedData.SqlServerMedia_Save_InvalidDestinationFolder
+        $auditAlreadyPresentMessage = $script:localizedData.SqlServerMediaFile_Save_InvalidDestinationFolder
 
         $PSCmdlet.ThrowTerminatingError(
             [System.Management.Automation.ErrorRecord]::new(
@@ -106,7 +106,7 @@ function Save-SqlDscSqlServerMedia
 
     if ((Test-Path -Path $destinationFilePath) -and (-not $Force))
     {
-        $verboseDescriptionMessage = $script:localizedData.SqlServerMedia_Save_ShouldProcessVerboseDescription -f $destinationFilePath
+        $verboseDescriptionMessage = $script:localizedData.SqlServerMediaFile_Save_ShouldProcessVerboseDescription -f $destinationFilePath
         $verboseWarningMessage = $script:localizedData.qlServerMedia_Save_ShouldProcessVerboseWarning -f $destinationFilePath
         $captionMessage = $script:localizedData.qlServerMedia_Save_ShouldProcessCaption
 
@@ -118,7 +118,7 @@ function Save-SqlDscSqlServerMedia
         Remove-Item -Path $destinationFilePath -Force
     }
 
-    Write-Verbose -Message ($script:localizedData.SqlServerMedia_Save_ShouldProcessVerboseDescription -f $destinationFilePath)
+    Write-Verbose -Message ($script:localizedData.SqlServerMediaFile_Save_ShouldProcessVerboseDescription -f $destinationFilePath)
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -160,7 +160,7 @@ function Save-SqlDscSqlServerMedia
 
     if ($isExecutable)
     {
-        Write-Verbose -Message $script:localizedData.SqlServerMedia_Save_IsExecutable
+        Write-Verbose -Message $script:localizedData.SqlServerMediaFile_Save_IsExecutable
 
         $executableArguments = @(
             '/Quiet'
@@ -191,7 +191,7 @@ function Save-SqlDscSqlServerMedia
         # Download ISO media using the downloaded executable.
         Start-Process -FilePath $destinationExecutableFilePath -ArgumentList $startProcessArgumentList -Wait
 
-        Write-Verbose -Message $script:localizedData.SqlServerMedia_Save_RemovingExecutable
+        Write-Verbose -Message $script:localizedData.SqlServerMediaFile_Save_RemovingExecutable
 
         # Remove the downloaded executable.
         Remove-Item -Path $destinationExecutableFilePath -Force
@@ -202,7 +202,7 @@ function Save-SqlDscSqlServerMedia
         if ($isoFile.Count -gt 1)
         {
             $writeErrorParameters = @{
-                Message      = $script:localizedData.SqlServerMedia_Save_MultipleFilesFoundAfterDownload
+                Message      = $script:localizedData.SqlServerMediaFile_Save_MultipleFilesFoundAfterDownload
                 Category     = 'InvalidOperation'
                 ErrorId      = 'SSDSSM0002' # CSpell: disable-line
                 TargetObject = $ServiceType
@@ -211,7 +211,7 @@ function Save-SqlDscSqlServerMedia
             Write-Error @writeErrorParameters
         }
 
-        Write-Verbose -Message ($script:localizedData.SqlServerMedia_Save_RenamingFile -f $isoFile.Name, $FileName)
+        Write-Verbose -Message ($script:localizedData.SqlServerMediaFile_Save_RenamingFile -f $isoFile.Name, $FileName)
 
         # Rename the iso file in the destination path.
         Rename-Item -Path $isoFile.FullName -NewName $FileName -Force
