@@ -149,14 +149,22 @@ Describe 'Prerequisites' {
     }
 
     Context 'Install correct version of module SqlServer' {
-        It 'Should install SqlServer module version 22.2.0' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019') {
+        It 'Should install SqlServer module version 21.1.18256' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019') {
             #Install-Module -Name 'SqlServer' -RequiredVersion '21.1.18256' -Force -ErrorAction 'Stop'
-            Install-PSResource -Name 'Sampler' -Version '21.1.18256' -Force -ErrorAction 'Stop' -Scope 'AllUsers' -TrustRepository
+            Install-PSResource -Name 'Sampler' -Version '21.1.18256' -Scope 'AllUsers' -TrustRepository -ErrorAction 'Stop' -Confirm:$false
+
+            $module = Get-Module -Name 'SqlServer' -ListAvailable
+            $module | Should -HaveCount 1
+            $module.Version -eq '21.1.18256' | Should -BeTrue
         }
 
         It 'Should install SqlServer module version 22.2.0' -Tag @('Integration_SQL2022') {
             #Install-Module -Name 'SqlServer' -RequiredVersion '22.2.0' -Force -ErrorAction 'Stop'
-            Install-PSResource -Name 'Sampler' -Version '22.2.0' -Force -ErrorAction 'Stop' -Scope 'AllUsers' -TrustRepository
+            Install-PSResource -Name 'Sampler' -Version '22.2.0' -Scope 'AllUsers' -TrustRepository -ErrorAction 'Stop' -Confirm:$false
+
+            $module = Get-Module -Name 'SqlServer' -ListAvailable
+            $module | Should -HaveCount 1
+            $module.Version -eq '22.2.0' | Should -BeTrue
         }
     }
 }
