@@ -149,14 +149,14 @@ Describe 'Prerequisites' {
     }
 
     Context 'Install correct version of module SqlServer' {
-        It 'Should have the minimum required version of Microsoft.PowerShell.PSResourceGet' {
+        It 'Should have the minimum required version of Microsoft.PowerShell.PSResourceGet' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
             $module = Get-Module -Name 'Microsoft.PowerShell.PSResourceGet' -ListAvailable
 
             $module | Should -HaveCount 1
             $module.Version -ge '1.0.4.1' | Should -BeTrue
         }
 
-        It 'Should have a resource repository PSGallery with correct URI' {
+        It 'Should have a resource repository PSGallery with correct URI' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
             $resourceRepository = Get-PSResourceRepository -Name 'PSGallery'
 
             $resourceRepository | Should -HaveCount 1
