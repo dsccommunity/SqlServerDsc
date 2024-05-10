@@ -114,5 +114,5 @@ function Uninstall-SqlDscServer
         $SuppressPrivacyStatementNotice
     )
 
-    Invoke-SetupAction -Uninstall @PSBoundParameters -ErrorAction 'Stop'
+    Invoke-SetupAction -Uninstall @PSBoundParameters
 }

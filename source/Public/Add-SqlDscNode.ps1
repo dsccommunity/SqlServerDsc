@@ -252,5 +252,5 @@ function Add-SqlDscNode
         $Force
     )
 
-    Invoke-SetupAction -AddNode @PSBoundParameters -ErrorAction 'Stop'
+    Invoke-SetupAction -AddNode @PSBoundParameters
 }
