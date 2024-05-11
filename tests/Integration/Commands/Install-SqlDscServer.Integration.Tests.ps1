@@ -74,6 +74,8 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                 {
                     Write-Verbose -Message ('Running install as user ''{0}''.' -f $env:UserName) -Verbose
 
+                    $computerName = Get-ComputerName
+
                     # Set splatting parameters for Install-SqlDscServer
                     $installSqlDscServerParameters = @{
                         Install               = $true
@@ -81,12 +83,12 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                         InstanceName          = 'MSSQLSERVER'
                         Features              = 'SQLENGINE'
                         SqlSysAdminAccounts   = @(
-                            ('{0}\SqlAdmin' -f $ComputerName)
+                            ('{0}\SqlAdmin' -f $computerName)
                         )
-                        SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $ComputerName
+                        SqlSvcAccount         = '{0}\svc-SqlPrimary' -f $computerName
                         SqlSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
                         SqlSvcStartupType     = 'Automatic'
-                        AgtSvcAccount         = '{0}\svc-SqlAgentPri' -f $ComputerName
+                        AgtSvcAccount         = '{0}\svc-SqlAgentPri' -f $computerName
                         AgtSvcPassword        = ConvertTo-SecureString -String 'yig-C^Equ3' -AsPlainText -Force
                         AgtSvcStartupType     = 'Automatic'
                         BrowserSvcStartupType = 'Automatic'
@@ -95,7 +97,7 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                         SqlCollation          = 'Finnish_Swedish_CI_AS'
                         InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
                         InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
-                        MediaPath             = $IsoDrivePath
+                        MediaPath             = $env:IsoDrivePath
                         Verbose               = $true
                         ErrorAction           = 'Stop'
                         Force                 = $true
