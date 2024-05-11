@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlDatabaseMail
   - Added the parameter `UseDefaultCredentials` to control use of the DatabaseEngine
     service account for SMTP server authentication.
+- New public commands
+  - `Save-SqlDscSqlServerMediaFile` - Downloads the content on the provided URL
+    and if it is an executable it will use the executable to download the
+    ISO image media.
 
 ### Fixed
 

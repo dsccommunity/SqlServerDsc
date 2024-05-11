@@ -88,6 +88,11 @@ function Save-SqlDscSqlServerMediaFile
         $Force
     )
 
+    if ($Force.IsPresent -and -not $Confirm)
+    {
+        $ConfirmPreference = 'None'
+    }
+
     if ((Get-Item -Path "$DestinationPath/*.iso" -Force).Count -gt 0)
     {
         $auditAlreadyPresentMessage = $script:localizedData.SqlServerMediaFile_Save_InvalidDestinationFolder
@@ -104,18 +109,20 @@ function Save-SqlDscSqlServerMediaFile
 
     $destinationFilePath = Join-Path -Path $DestinationPath -ChildPath $FileName
 
-    if ((Test-Path -Path $destinationFilePath) -and (-not $Force))
+    if ((Test-Path -Path $destinationFilePath))
     {
         $verboseDescriptionMessage = $script:localizedData.SqlServerMediaFile_Save_ShouldProcessVerboseDescription -f $destinationFilePath
         $verboseWarningMessage = $script:localizedData.qlServerMedia_Save_ShouldProcessVerboseWarning -f $destinationFilePath
         $captionMessage = $script:localizedData.qlServerMedia_Save_ShouldProcessCaption
 
-        if (-not ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage)))
+        if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        {
+            Remove-Item -Path $destinationFilePath -Force
+        }
+        else
         {
             return
         }
-
-        Remove-Item -Path $destinationFilePath -Force
     }
 
     Write-Verbose -Message ($script:localizedData.SqlServerMediaFile_Save_ShouldProcessVerboseDescription -f $destinationFilePath)

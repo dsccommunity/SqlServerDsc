@@ -106,9 +106,9 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
 
     Context 'When the URL does not end with .exe' {
         It 'Should call Invoke-WebRequest to download the media file' {
-            Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Force
+            Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke Invoke-WebRequest -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
         }
     }
 
@@ -118,27 +118,61 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
         }
 
         It 'Should call Invoke-WebRequest to download the executable file' {
-            Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Force
+            Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke Invoke-WebRequest -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
         }
 
         It 'Should call Start-Process to initiate download using the downloaded executable file' {
-            Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Force
+            Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke Start-Process -Times 1 -Exactly
+            Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
         }
 
         It 'Should call Remove-Item to remove the executable file' {
-            Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Force
+            Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke Remove-Item -Times 1 -Exactly
+            Should -Invoke -CommandName Remove-Item -Exactly -Times 2 -Scope It
         }
 
         It 'Should call Rename-Item to rename the downloaded ISO file to the specified name' {
-            Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Force
+            Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke Rename-Item -Times 1 -Exactly
+            Should -Invoke -CommandName Rename-Item -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When the Force parameter is used' {
+        It 'Should force the download of the media file' {
+            Mock -CommandName Invoke-WebRequest
+            Mock -CommandName Remove-Item
+
+            Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath 'C:\Temp' -Force
+
+            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When the Quiet parameter is used' {
+        It 'Should download the media file silently' {
+            Mock -CommandName Invoke-WebRequest
+
+            Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath 'C:\Temp' -Quiet  -Confirm:$false
+
+            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When the Language parameter is used' {
+        It 'Should download the media file in the specified language' {
+            Mock -CommandName Invoke-WebRequest
+            Mock -CommandName Start-Process
+
+            Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.exe' -DestinationPath 'C:\Temp' -Language 'fr-FR'  -Confirm:$false
+
+            Should -Invoke -CommandName Invoke-WebRequest -Times 1 -Exactly
+            Should -Invoke -CommandName Start-Process -Times 1 -Exactly
         }
     }
 
@@ -156,7 +190,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
                 $script:localizedData.SqlServerMediaFile_Save_InvalidDestinationFolder
             }
 
-            { Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath } | Should -Throw $mockErrorMessage
+            { Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false } | Should -Throw $mockErrorMessage
         }
     }
 }
