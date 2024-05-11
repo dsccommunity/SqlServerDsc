@@ -208,5 +208,5 @@ Describe 'Prerequisites' {
 
             $result | Should -Be 1
         }
-
+    }
 }
