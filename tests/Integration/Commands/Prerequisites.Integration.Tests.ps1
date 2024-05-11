@@ -23,6 +23,7 @@ BeforeDiscovery {
     }
 }
 
+# CSpell: ignore Remoting
 Describe 'Prerequisites' {
     Context 'Create required local Windows users' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
         BeforeAll {
@@ -193,4 +194,19 @@ Describe 'Prerequisites' {
             $module.Version -eq '22.2.0' | Should -BeTrue
         }
     }
+
+    Context 'Enable PS Remoting in local subnet' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+        It 'Should enable PS Remoting' {
+            Enable-PSRemoting -Force -SkipNetworkProfileCheck -Verbose -ErrorAction 'Stop'
+            #Test-WSMan -ComputerName $env:COMPUTERNAME -ErrorAction 'Stop'
+            #winrm enumerate winrm/config/listener
+            #winrm enumerate winrm/config/listener | Should -Contain 'Transport = HTTP'
+            # # allows remote access from public networks from any remote location
+            # Set-NetFirewallRule -Name 'WINRM-HTTP-In-TCP' -RemoteAddress Any -Verbose -ErrorAction 'Stop'
+
+            $result = Invoke-Command -ComputerName $computername -ScriptBlock { 1 } -ErrorAction 'Stop'
+
+            $result | Should -Be 1
+        }
+
 }
