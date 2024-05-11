@@ -50,7 +50,7 @@ AfterAll {
 Describe 'Remove-SqlDscNode' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
-            MockParameterSetName = '__AllParameterSets'
+            MockParameterSetName   = '__AllParameterSets'
             # cSpell: disable-next
             MockExpectedParameters = '[-MediaPath] <string> [-InstanceName] <string> [[-Timeout] <uint>] [-ConfirmIPDependencyChange] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
@@ -61,11 +61,11 @@ Describe 'Remove-SqlDscNode' -Tag 'Public' {
             } |
             Select-Object -Property @(
                 @{
-                    Name = 'ParameterSetName'
+                    Name       = 'ParameterSetName'
                     Expression = { $_.Name }
                 },
                 @{
-                    Name = 'ParameterListAsString'
+                    Name       = 'ParameterListAsString'
                     Expression = { $_.ToString() }
                 }
             )
@@ -92,8 +92,9 @@ Describe 'Remove-SqlDscNode' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    MediaPath = '\SqlMedia'
+                    MediaPath    = '\SqlMedia'
                     InstanceName = 'INSTANCE'
+                    ErrorAction  = 'Stop'
                 }
             }
 
@@ -136,9 +137,9 @@ Describe 'Remove-SqlDscNode' -Tag 'Public' {
 
         Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
             @{
-                MockParameterName = 'ConfirmIPDependencyChange'
+                MockParameterName  = 'ConfirmIPDependencyChange'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/CONFIRMIPDEPENDENCYCHANGE=1' # cspell: disable-line
+                MockExpectedRegEx  = '\/CONFIRMIPDEPENDENCYCHANGE=1' # cspell: disable-line
             }
         ) {
             BeforeAll {
@@ -147,9 +148,10 @@ Describe 'Remove-SqlDscNode' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    MediaPath = '\SqlMedia'
+                    MediaPath    = '\SqlMedia'
                     InstanceName = 'INSTANCE'
-                    Force = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
                 }
             }
 

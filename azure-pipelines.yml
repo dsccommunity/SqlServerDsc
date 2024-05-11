@@ -235,6 +235,13 @@ stages:
               buildType: 'current'
               artifactName: $(buildArtifactName)
               targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Configure WinRM'
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
           - powershell: |
               Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
               Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
@@ -244,9 +251,10 @@ stages:
           - powershell: |
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
+                  # Group 0
+                  'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
                   # Group 1
                   'tests/Integration/Commands/Install-SqlDscServer.Integration.Tests.ps1'
-                  # Group 2
                   #'tests/Integration/Commands/Install-SqlDscReportingServices.Integration.Tests.ps1'
               )
             name: test

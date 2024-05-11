@@ -50,47 +50,47 @@ AfterAll {
 Describe 'Install-SqlDscServer' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
-            MockParameterSetName = 'Install'
+            MockParameterSetName   = 'Install'
             # cSpell: disable-next
             MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> [-SuppressPrivacyStatementNotice] [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBDMSSvcAccount <string>] [-PBDMSSvcPassword <securestring>] [-PBDMSSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <securestring>] [-AgtSvcStartupType <string>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSvcAccount <string>] [-ASSvcPassword <securestring>] [-ASSvcStartupType <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-BrowserSvcStartupType <string>] [-EnableRanU] [-InstallSqlDataDir <string>] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <securestring>] [-SqlCollation <string>] [-SqlSvcAccount <string>] [-SqlSvcPassword <securestring>] [-SqlSvcStartupType <string>] [-SqlSysAdminAccounts <string[]>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlSvcInstantFileInit] [-SqlUserDbLogDir <string>] [-SqlMaxDop <ushort>] [-UseSqlRecommendedMemoryLimits] [-SqlMinMemory <uint>] [-SqlMaxMemory <uint>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <securestring>] [-ISSvcStartupType <string>] [-NpEnabled] [-TcpEnabled] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <securestring>] [-RSSvcStartupType <string>] [-MPYCacheDirectory <string>] [-MRCacheDirectory <string>] [-SqlInstJava] [-SqlJavaDir <string>] [-AzureSubscriptionId <string>] [-AzureResourceGroup <string>] [-AzureRegion <string>] [-AzureTenantId <string>] [-AzureServicePrincipal <string>] [-AzureServicePrincipalSecret <securestring>] [-AzureArcProxy <string>] [-SkipRules <string[]>] [-ProductCoveredBySA] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'InstallRole'
+            MockParameterSetName   = 'InstallRole'
             # cSpell: disable-next
             MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> -Role <string> [-SuppressPrivacyStatementNotice] [-IAcknowledgeEntCalLimits] [-InstanceName <string>] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-Features <string[]>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBDMSSvcAccount <string>] [-PBDMSSvcPassword <securestring>] [-PBDMSSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <securestring>] [-AgtSvcStartupType <string>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSvcAccount <string>] [-ASSvcPassword <securestring>] [-ASSvcStartupType <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-FarmAccount <string>] [-FarmPassword <securestring>] [-Passphrase <securestring>] [-FarmAdminiPort <ushort>] [-BrowserSvcStartupType <string>] [-EnableRanU] [-InstallSqlDataDir <string>] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <securestring>] [-SqlCollation <string>] [-AddCurrentUserAsSqlAdmin] [-SqlSvcAccount <string>] [-SqlSvcPassword <securestring>] [-SqlSvcStartupType <string>] [-SqlSysAdminAccounts <string[]>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlSvcInstantFileInit] [-SqlUserDbLogDir <string>] [-SqlMaxDop <ushort>] [-UseSqlRecommendedMemoryLimits] [-SqlMinMemory <uint>] [-SqlMaxMemory <uint>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <securestring>] [-ISSvcStartupType <string>] [-NpEnabled] [-TcpEnabled] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <securestring>] [-RSSvcStartupType <string>] [-MPYCacheDirectory <string>] [-MRCacheDirectory <string>] [-SqlInstJava] [-SqlJavaDir <string>] [-AzureSubscriptionId <string>] [-AzureResourceGroup <string>] [-AzureRegion <string>] [-AzureTenantId <string>] [-AzureServicePrincipal <string>] [-AzureServicePrincipalSecret <securestring>] [-AzureArcProxy <string>] [-SkipRules <string[]>] [-ProductCoveredBySA] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'InstallAzureArcAgent'
+            MockParameterSetName   = 'InstallAzureArcAgent'
             # cSpell: disable-next
             MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> -AzureSubscriptionId <string> -AzureResourceGroup <string> -AzureRegion <string> -AzureTenantId <string> -AzureServicePrincipal <string> -AzureServicePrincipalSecret <securestring> [-AzureArcProxy <string>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'UsingConfigurationFile'
+            MockParameterSetName   = 'UsingConfigurationFile'
             # cSpell: disable-next
             MockExpectedParameters = '-ConfigurationFile <string> -MediaPath <string> [-AgtSvcPassword <securestring>] [-ASSvcPassword <securestring>] [-SqlSvcPassword <securestring>] [-ISSvcPassword <securestring>] [-RSSvcPassword <securestring>] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'PrepareImage'
+            MockParameterSetName   = 'PrepareImage'
             # cSpell: disable-next
             MockExpectedParameters = '-PrepareImage -AcceptLicensingTerms -MediaPath <string> -Features <string[]> -InstanceId <string> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstanceDir <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'Upgrade'
+            MockParameterSetName   = 'Upgrade'
             # cSpell: disable-next
             MockExpectedParameters = '-Upgrade -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstanceDir <string>] [-InstanceId <string>] [-ProductKey <string>] [-BrowserSvcStartupType <string>] [-FTUpgradeOption <string>] [-ISSvcAccount <string>] [-ISSvcPassword <securestring>] [-ISSvcStartupType <string>] [-AllowUpgradeForSSRSSharePointMode] [-FailoverClusterRollOwnership <ushort>] [-ProductCoveredBySA] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'EditionUpgrade'
+            MockParameterSetName   = 'EditionUpgrade'
             # cSpell: disable-next
             MockExpectedParameters = '-EditionUpgrade -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -ProductKey <string> [-SkipRules <string[]>] [-ProductCoveredBySA] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'InstallFailoverCluster'
+            MockParameterSetName   = 'InstallFailoverCluster'
             # cSpell: disable-next
             MockExpectedParameters = '-InstallFailoverCluster -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> -InstallSqlDataDir <string> -SqlSysAdminAccounts <string[]> -FailoverClusterNetworkName <string> -FailoverClusterIPAddresses <string[]> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <securestring>] [-ASBackupDir <string>] [-ASCollation <string>] [-ASConfigDir <string>] [-ASDataDir <string>] [-ASLogDir <string>] [-ASTempDir <string>] [-ASServerMode <string>] [-ASSvcAccount <string>] [-ASSvcPassword <securestring>] [-ASSvcStartupType <string>] [-ASSysAdminAccounts <string[]>] [-ASProviderMSOLAP] [-SqlBackupDir <string>] [-SecurityMode <string>] [-SAPwd <securestring>] [-SqlCollation <string>] [-SqlSvcAccount <string>] [-SqlSvcPassword <securestring>] [-SqlSvcStartupType <string>] [-SqlTempDbDir <string>] [-SqlTempDbLogDir <string>] [-SqlTempDbFileCount <ushort>] [-SqlTempDbFileSize <ushort>] [-SqlTempDbFileGrowth <ushort>] [-SqlTempDbLogFileSize <ushort>] [-SqlTempDbLogFileGrowth <ushort>] [-SqlUserDbDir <string>] [-SqlUserDbLogDir <string>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <securestring>] [-ISSvcStartupType <string>] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <securestring>] [-RSSvcStartupType <string>] [-FailoverClusterGroup <string>] [-FailoverClusterDisks <string[]>] [-SkipRules <string[]>] [-ProductCoveredBySA] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
-            MockParameterSetName = 'PrepareFailoverCluster'
+            MockParameterSetName   = 'PrepareFailoverCluster'
             # cSpell: disable-next
             MockExpectedParameters = '-PrepareFailoverCluster -AcceptLicensingTerms -MediaPath <string> -InstanceName <string> -Features <string[]> [-IAcknowledgeEntCalLimits] [-Enu] [-UpdateEnabled] [-UpdateSource <string>] [-InstallSharedDir <string>] [-InstallSharedWowDir <string>] [-InstanceDir <string>] [-InstanceId <string>] [-PBEngSvcAccount <string>] [-PBEngSvcPassword <securestring>] [-PBEngSvcStartupType <string>] [-PBStartPortRange <ushort>] [-PBEndPortRange <ushort>] [-PBScaleOut] [-ProductKey <string>] [-AgtSvcAccount <string>] [-AgtSvcPassword <securestring>] [-ASSvcAccount <string>] [-ASSvcPassword <securestring>] [-SqlSvcAccount <string>] [-SqlSvcPassword <securestring>] [-FileStreamLevel <ushort>] [-FileStreamShareName <string>] [-ISSvcAccount <string>] [-ISSvcPassword <securestring>] [-ISSvcStartupType <string>] [-RsInstallMode <string>] [-RSSvcAccount <string>] [-RSSvcPassword <securestring>] [-RSSvcStartupType <string>] [-ProductCoveredBySA] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
@@ -101,11 +101,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             } |
             Select-Object -Property @(
                 @{
-                    Name = 'ParameterSetName'
+                    Name       = 'ParameterSetName'
                     Expression = { $_.Name }
                 },
                 @{
-                    Name = 'ParameterListAsString'
+                    Name       = 'ParameterListAsString'
                     Expression = { $_.ToString() }
                 }
             )
@@ -132,13 +132,14 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    Install = $true
+                    Install              = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
+                    MediaPath            = '\SqlMedia'
+                    InstanceName         = 'INSTANCE'
                     # Intentionally using both upper- and lower-case.
-                    Features = 'SqlEngine', 'AZUREEXTENSION'
-                    SqlSysAdminAccounts = 'DOMAIN\User', 'COMPANY\SQL Administrators'
+                    Features             = 'SqlEngine', 'AZUREEXTENSION' # cspell: disable-line
+                    SqlSysAdminAccounts  = 'DOMAIN\User', 'COMPANY\SQL Administrators'
+                    ErrorAction          = 'Stop'
                 }
             }
 
@@ -150,7 +151,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                         $ArgumentList | Should -MatchExactly '\/ACTION=Install'
                         $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE,AZUREEXTENSION'
+                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE,AZUREEXTENSION' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
 
                         # Return $true if none of the above throw.
@@ -167,7 +168,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                         $ArgumentList | Should -MatchExactly '\/ACTION=Install'
                         $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE,AZUREEXTENSION'
+                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE,AZUREEXTENSION' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
 
                         # Return $true if none of the above throw.
@@ -192,16 +193,17 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $installSqlDscServerParameters = @{
-                    Install = $true
+                    Install              = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
+                    MediaPath            = '\SqlMedia'
+                    InstanceName         = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
-                    Features = 'SqlEngine'
-                    SqlSysAdminAccounts = 'DOMAIN\User'
-                    Force = $true
-                    PBStartPortRange = 16450
-                    PBEndPortRange = 16460
+                    Features             = 'SqlEngine'
+                    SqlSysAdminAccounts  = 'DOMAIN\User'
+                    Force                = $true
+                    PBStartPortRange     = 16450
+                    PBEndPortRange       = 16460
+                    ErrorAction          = 'Stop'
                 }
             }
 
@@ -219,400 +221,400 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
         Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
             @{
-                MockParameterName = 'SuppressPrivacyStatementNotice'
+                MockParameterName  = 'SuppressPrivacyStatementNotice'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/SUPPRESSPRIVACYSTATEMENTNOTICE\s*' # cspell: disable-line
+                MockExpectedRegEx  = '\/SUPPRESSPRIVACYSTATEMENTNOTICE\s*' # cspell: disable-line
             }
             @{
-                MockParameterName = 'Enu'
+                MockParameterName  = 'Enu'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/ENU\s*'
+                MockExpectedRegEx  = '\/ENU\s*'
             }
             @{
-                MockParameterName = 'UpdateEnabled'
+                MockParameterName  = 'UpdateEnabled'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/UPDATEENABLED=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/UPDATEENABLED=True' # cspell: disable-line
             }
             @{
-                MockParameterName = 'UpdateSource'
+                MockParameterName  = 'UpdateSource'
                 MockParameterValue = '\SqlMedia\Updates'
-                MockExpectedRegEx = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
+                MockExpectedRegEx  = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstallSharedDir'
+                MockParameterName  = 'InstallSharedDir'
                 # This value intentionally ends with a backslash to test so that it is removed.
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server\'
-                MockExpectedRegEx = '\/INSTALLSHAREDDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTALLSHAREDDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstallSharedWOWDir'
+                MockParameterName  = 'InstallSharedWOWDir'
                 MockParameterValue = 'C:\Program Files (x86)\Microsoft SQL Server'
-                MockExpectedRegEx = '\/INSTALLSHAREDWOWDIR="C:\\Program Files \(x86\)\\Microsoft SQL Server"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTALLSHAREDWOWDIR="C:\\Program Files \(x86\)\\Microsoft SQL Server"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstanceDir'
+                MockParameterName  = 'InstanceDir'
                 <#
                     This value intentionally has 'D:\' to validate that the backslash
                     is not removed and that the argument is passed without double-quotes.
                 #>
                 MockParameterValue = 'D:\'
-                MockExpectedRegEx = '\/INSTANCEDIR=D:\\' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTANCEDIR=D:\\' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstanceId'
+                MockParameterName  = 'InstanceId'
                 MockParameterValue = 'Instance'
-                MockExpectedRegEx = '\/INSTANCEID="Instance"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTANCEID="Instance"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBEngSvcAccount'
+                MockParameterName  = 'PBEngSvcAccount'
                 MockParameterValue = 'NT Authority\NETWORK SERVICE'
-                MockExpectedRegEx = '\/PBENGSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBEngSvcPassword'
+                MockParameterName  = 'PBEngSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBEngSvcStartupType'
+                MockParameterName  = 'PBEngSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/PBENGSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBDMSSvcAccount' # cspell: disable-line
+                MockParameterName  = 'PBDMSSvcAccount' # cspell: disable-line
                 MockParameterValue = 'NT Authority\NETWORK SERVICE'
-                MockExpectedRegEx = '\/PBDMSSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBDMSSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBDMSSvcPassword' # cspell: disable-line
+                MockParameterName  = 'PBDMSSvcPassword' # cspell: disable-line
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/PBDMSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBDMSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBDMSSvcStartupType' # cspell: disable-line
+                MockParameterName  = 'PBDMSSvcStartupType' # cspell: disable-line
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/PBDMSSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBDMSSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBScaleOut'
+                MockParameterName  = 'PBScaleOut'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/PBSCALEOUT=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBSCALEOUT=True' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ProductKey'
+                MockParameterName  = 'ProductKey'
                 MockParameterValue = '22222-00000-00000-00000-00000'
-                MockExpectedRegEx = '\/PID="22222-00000-00000-00000-00000"'
+                MockExpectedRegEx  = '\/PID="22222-00000-00000-00000-00000"'
             }
             @{
-                MockParameterName = 'AgtSvcAccount'
+                MockParameterName  = 'AgtSvcAccount'
                 MockParameterValue = 'NT Authority\NETWORK SERVICE'
-                MockExpectedRegEx = '\/AGTSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AGTSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AgtSvcPassword'
+                MockParameterName  = 'AgtSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/AGTSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AGTSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AgtSvcStartupType'
+                MockParameterName  = 'AgtSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/AGTSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AGTSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASBackupDir'
+                MockParameterName  = 'ASBackupDir'
                 MockParameterValue = 'C:\MSOLAP13.INST2016\Backup'
-                MockExpectedRegEx = '\/ASBACKUPDIR="C:\\MSOLAP13\.INST2016\\Backup"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASBACKUPDIR="C:\\MSOLAP13\.INST2016\\Backup"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASConfigDir'
+                MockParameterName  = 'ASConfigDir'
                 MockParameterValue = 'C:\MSOLAP13.INST2016\Config'
-                MockExpectedRegEx = '\/ASCONFIGDIR="C:\\MSOLAP13\.INST2016\\Config"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASCONFIGDIR="C:\\MSOLAP13\.INST2016\\Config"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASDataDir'
+                MockParameterName  = 'ASDataDir'
                 MockParameterValue = 'C:\MSOLAP13.INST2016\Data'
-                MockExpectedRegEx = '\/ASDATADIR="C:\\MSOLAP13\.INST2016\\Data"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASDATADIR="C:\\MSOLAP13\.INST2016\\Data"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASLogDir'
+                MockParameterName  = 'ASLogDir'
                 MockParameterValue = 'C:\MSOLAP13.INST2016\Log'
-                MockExpectedRegEx = '\/ASLOGDIR="C:\\MSOLAP13\.INST2016\\Log"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASLOGDIR="C:\\MSOLAP13\.INST2016\\Log"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASTempDir'
+                MockParameterName  = 'ASTempDir'
                 MockParameterValue = 'C:\MSOLAP13.INST2016\Temp'
-                MockExpectedRegEx = '\/ASTEMPDIR="C:\\MSOLAP13\.INST2016\\Temp"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASTEMPDIR="C:\\MSOLAP13\.INST2016\\Temp"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASCollation'
+                MockParameterName  = 'ASCollation'
                 MockParameterValue = 'latin1_general_100'
-                MockExpectedRegEx = '\/ASCOLLATION="latin1_general_100"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASCOLLATION="latin1_general_100"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASServerMode'
+                MockParameterName  = 'ASServerMode'
                 MockParameterValue = 'Multidimensional'
-                MockExpectedRegEx = '\/ASSERVERMODE=MULTIDIMENSIONAL' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASSERVERMODE=MULTIDIMENSIONAL' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AsSvcAccount'
+                MockParameterName  = 'AsSvcAccount'
                 MockParameterValue = 'DOMAIN\ServiceAccount$'
-                MockExpectedRegEx = '\/ASSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AsSvcPassword'
+                MockParameterName  = 'AsSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/ASSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AsSvcStartupType'
+                MockParameterName  = 'AsSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/ASSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASSysAdminAccounts'
+                MockParameterName  = 'ASSysAdminAccounts'
                 MockParameterValue = 'COMPANY\SQL Administrators', 'LocalUser'
-                MockExpectedRegEx = '\/ASSYSADMINACCOUNTS="COMPANY\\SQL Administrators" "LocalUser"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASSYSADMINACCOUNTS="COMPANY\\SQL Administrators" "LocalUser"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASProviderMSOLAP'
+                MockParameterName  = 'ASProviderMSOLAP'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/ASPROVIDERMSOLAP=1' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASPROVIDERMSOLAP=1' # cspell: disable-line
             }
             @{
-                MockParameterName = 'BrowserSvcStartupType'
+                MockParameterName  = 'BrowserSvcStartupType'
                 MockParameterValue = 'Manual'
-                MockExpectedRegEx = '\/BROWSERSVCSTARTUPTYPE="Manual"' # cspell: disable-line
+                MockExpectedRegEx  = '\/BROWSERSVCSTARTUPTYPE="Manual"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'EnableRanU'
+                MockParameterName  = 'EnableRanU'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/ENABLERANU' # cspell: disable-line
+                MockExpectedRegEx  = '\/ENABLERANU' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstallSqlDataDir'
+                MockParameterName  = 'InstallSqlDataDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
-                MockExpectedRegEx = '\/INSTALLSQLDATADIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTALLSQLDATADIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlBackupDir'
+                MockParameterName  = 'SqlBackupDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Backup'
-                MockExpectedRegEx = '\/SQLBACKUPDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Backup"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLBACKUPDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Backup"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbDir'
+                MockParameterName  = 'SqlTempDbDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
-                MockExpectedRegEx = '\/SQLTEMPDBDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbLogDir'
+                MockParameterName  = 'SqlTempDbLogDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
-                MockExpectedRegEx = '\/SQLTEMPDBLOGDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBLOGDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlUserDbDir'
+                MockParameterName  = 'SqlUserDbDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
-                MockExpectedRegEx = '\/SQLUSERDBDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLUSERDBDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlUserDbLogDir'
+                MockParameterName  = 'SqlUserDbLogDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
-                MockExpectedRegEx = '\/SQLUSERDBLOGDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLUSERDBLOGDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SecurityMode'
+                MockParameterName  = 'SecurityMode'
                 MockParameterValue = 'SQL'
-                MockExpectedRegEx = '\/SECURITYMODE="SQL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SECURITYMODE="SQL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SAPwd'
+                MockParameterName  = 'SAPwd'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/SAPWD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SAPWD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlCollation'
+                MockParameterName  = 'SqlCollation'
                 MockParameterValue = 'SQL_Latin1_General_CP1_CI_AS'
-                MockExpectedRegEx = '\/SQLCOLLATION="SQL_Latin1_General_CP1_CI_AS"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLCOLLATION="SQL_Latin1_General_CP1_CI_AS"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlSvcAccount'
+                MockParameterName  = 'SqlSvcAccount'
                 MockParameterValue = 'DOMAIN\ServiceAccount$'
-                MockExpectedRegEx = '\/SQLSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlSvcPassword'
+                MockParameterName  = 'SqlSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/SQLSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlSvcStartupType'
+                MockParameterName  = 'SqlSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/SQLSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbFileCount'
+                MockParameterName  = 'SqlTempDbFileCount'
                 MockParameterValue = 8
-                MockExpectedRegEx = '\/SQLTEMPDBFILECOUNT=8' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBFILECOUNT=8' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbFileSize'
+                MockParameterName  = 'SqlTempDbFileSize'
                 MockParameterValue = 100
-                MockExpectedRegEx = '\/SQLTEMPDBFILESIZE=100' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBFILESIZE=100' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbFileGrowth'
+                MockParameterName  = 'SqlTempDbFileGrowth'
                 MockParameterValue = 10
-                MockExpectedRegEx = '\/SQLTEMPDBFILEGROWTH=10' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBFILEGROWTH=10' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbLogFileSize'
+                MockParameterName  = 'SqlTempDbLogFileSize'
                 MockParameterValue = 100
-                MockExpectedRegEx = '\/SQLTEMPDBLOGFILESIZE=100' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBLOGFILESIZE=100' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbLogFileGrowth'
+                MockParameterName  = 'SqlTempDbLogFileGrowth'
                 MockParameterValue = 10
-                MockExpectedRegEx = '\/SQLTEMPDBLOGFILEGROWTH=10' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBLOGFILEGROWTH=10' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlSvcInstantFileInit'
+                MockParameterName  = 'SqlSvcInstantFileInit'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/SQLSVCINSTANTFILEINIT=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLSVCINSTANTFILEINIT=True' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlMaxDop'
+                MockParameterName  = 'SqlMaxDop'
                 MockParameterValue = 8
-                MockExpectedRegEx = '\/SQLMAXDOP=8' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLMAXDOP=8' # cspell: disable-line
             }
             @{
-                MockParameterName = 'UseSqlRecommendedMemoryLimits'
+                MockParameterName  = 'UseSqlRecommendedMemoryLimits'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/USESQLRECOMMENDEDMEMORYLIMITS' # cspell: disable-line
+                MockExpectedRegEx  = '\/USESQLRECOMMENDEDMEMORYLIMITS' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlMinMemory'
+                MockParameterName  = 'SqlMinMemory'
                 MockParameterValue = 1000
-                MockExpectedRegEx = '\/SQLMINMEMORY=1000' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLMINMEMORY=1000' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlMaxMemory'
+                MockParameterName  = 'SqlMaxMemory'
                 MockParameterValue = 2147483647
-                MockExpectedRegEx = '\/SQLMAXMEMORY=2147483647' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLMAXMEMORY=2147483647' # cspell: disable-line
             }
             @{
-                MockParameterName = 'FileStreamLevel'
+                MockParameterName  = 'FileStreamLevel'
                 MockParameterValue = 2
-                MockExpectedRegEx = '\/FILESTREAMLEVEL=2' # cspell: disable-line
+                MockExpectedRegEx  = '\/FILESTREAMLEVEL=2' # cspell: disable-line
             }
             @{
-                MockParameterName = 'FileStreamShareName'
+                MockParameterName  = 'FileStreamShareName'
                 MockParameterValue = 'ShareName'
-                MockExpectedRegEx = '\/FILESTREAMSHARENAME="ShareName"' # cspell: disable-line
+                MockExpectedRegEx  = '\/FILESTREAMSHARENAME="ShareName"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ISSvcAccount'
+                MockParameterName  = 'ISSvcAccount'
                 MockParameterValue = 'DOMAIN\ServiceAccount$'
-                MockExpectedRegEx = '\/ISSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ISSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ISSvcPassword'
+                MockParameterName  = 'ISSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ISSvcStartupType'
+                MockParameterName  = 'ISSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/ISSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ISSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'NpEnabled'
+                MockParameterName  = 'NpEnabled'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/NPENABLED=1' # cspell: disable-line
+                MockExpectedRegEx  = '\/NPENABLED=1' # cspell: disable-line
             }
             @{
-                MockParameterName = 'TcpEnabled'
+                MockParameterName  = 'TcpEnabled'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/TCPENABLED=1' # cspell: disable-line
+                MockExpectedRegEx  = '\/TCPENABLED=1' # cspell: disable-line
             }
             @{
-                MockParameterName = 'RsInstallMode'
+                MockParameterName  = 'RsInstallMode'
                 MockParameterValue = 'FilesOnlyMode'
-                MockExpectedRegEx = '\/RSINSTALLMODE="FilesOnlyMode"' # cspell: disable-line
+                MockExpectedRegEx  = '\/RSINSTALLMODE="FilesOnlyMode"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'RSSvcAccount'
+                MockParameterName  = 'RSSvcAccount'
                 MockParameterValue = 'DOMAIN\ServiceAccount$'
-                MockExpectedRegEx = '\/RSSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
+                MockExpectedRegEx  = '\/RSSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'RSSvcPassword'
+                MockParameterName  = 'RSSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/RSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/RSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'RSSvcStartupType'
+                MockParameterName  = 'RSSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/RSSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/RSSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
                 # Argument is reserved for future use, see SQL Server documentation.
-                MockParameterName = 'MPYCacheDirectory'
+                MockParameterName  = 'MPYCacheDirectory'
                 MockParameterValue = 'C:\Temp'
-                MockExpectedRegEx = '\/MPYCACHEDIRECTORY="C:\\Temp"' # cspell: disable-line
+                MockExpectedRegEx  = '\/MPYCACHEDIRECTORY="C:\\Temp"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'MRCacheDirectory'
+                MockParameterName  = 'MRCacheDirectory'
                 MockParameterValue = 'C:\Temp'
-                MockExpectedRegEx = '\/MRCACHEDIRECTORY="C:\\Temp"' # cspell: disable-line
+                MockExpectedRegEx  = '\/MRCACHEDIRECTORY="C:\\Temp"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlInstJava'
+                MockParameterName  = 'SqlInstJava'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/SQL_INST_JAVA' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQL_INST_JAVA' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlJavaDir'
+                MockParameterName  = 'SqlJavaDir'
                 MockParameterValue = 'C:\Java'
-                MockExpectedRegEx = '\/SQLJAVADIR="C:\\Java"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLJAVADIR="C:\\Java"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AzureSubscriptionId'
+                MockParameterName  = 'AzureSubscriptionId'
                 MockParameterValue = '5d19794a-89a4-4f0b-8d4e-58f213ea3546'
-                MockExpectedRegEx = '\/AZURESUBSCRIPTIONID="5d19794a-89a4-4f0b-8d4e-58f213ea3546"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AZURESUBSCRIPTIONID="5d19794a-89a4-4f0b-8d4e-58f213ea3546"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AzureResourceGroup'
+                MockParameterName  = 'AzureResourceGroup'
                 MockParameterValue = 'MyResourceGroup'
-                MockExpectedRegEx = '\/AZURERESOURCEGROUP="MyResourceGroup"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AZURERESOURCEGROUP="MyResourceGroup"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AzureRegion'
+                MockParameterName  = 'AzureRegion'
                 MockParameterValue = 'West-US'
-                MockExpectedRegEx = '\/AZUREREGION="West-US"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AZUREREGION="West-US"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AzureTenantId'
+                MockParameterName  = 'AzureTenantId'
                 MockParameterValue = '5d19794a-89a4-4f0b-8d4e-58f213ea3546'
-                MockExpectedRegEx = '\/AZURETENANTID="5d19794a-89a4-4f0b-8d4e-58f213ea3546"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AZURETENANTID="5d19794a-89a4-4f0b-8d4e-58f213ea3546"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AzureServicePrincipal'
+                MockParameterName  = 'AzureServicePrincipal'
                 MockParameterValue = 'MyServicePrincipal'
-                MockExpectedRegEx = '\/AZURESERVICEPRINCIPAL="MyServicePrincipal"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AZURESERVICEPRINCIPAL="MyServicePrincipal"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AzureServicePrincipalSecret'
+                MockParameterName  = 'AzureServicePrincipalSecret'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/AZURESERVICEPRINCIPALSECRET="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AZURESERVICEPRINCIPALSECRET="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AzureArcProxy'
+                MockParameterName  = 'AzureArcProxy'
                 MockParameterValue = 'proxy.company.local'
-                MockExpectedRegEx = '\/AZUREARCPROXY="proxy\.company\.local"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AZUREARCPROXY="proxy\.company\.local"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SkipRules'
+                MockParameterName  = 'SkipRules'
                 MockParameterValue = 'Cluster_VerifyForErrors'
-                MockExpectedRegEx = '\/SKIPRULES="Cluster_VerifyForErrors"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SKIPRULES="Cluster_VerifyForErrors"' # cspell: disable-line
             }
         ) {
             BeforeAll {
@@ -621,14 +623,15 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    Install = $true
+                    Install              = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
+                    MediaPath            = '\SqlMedia'
+                    InstanceName         = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
-                    Features = 'SqlEngine'
-                    SqlSysAdminAccounts = 'DOMAIN\User'
-                    Force = $true
+                    Features             = 'SqlEngine'
+                    SqlSysAdminAccounts  = 'DOMAIN\User'
+                    Force                = $true
+                    ErrorAction          = 'Stop'
                 }
             }
 
@@ -652,49 +655,49 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
         Context 'When specifying sensitive parameter <MockParameterName>' -ForEach @(
             @{
-                MockParameterName = 'PBEngSvcPassword'
+                MockParameterName  = 'PBEngSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/PBENGSVCPASSWORD="\*{8}"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCPASSWORD="\*{8}"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBDMSSvcPassword' # cspell: disable-line
+                MockParameterName  = 'PBDMSSvcPassword' # cspell: disable-line
                 MockParameterValue = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                MockExpectedRegEx = '\/PBDMSSVCPASSWORD="\*{8}"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBDMSSVCPASSWORD="\*{8}"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ProductKey' # cspell: disable-line
+                MockParameterName  = 'ProductKey' # cspell: disable-line
                 MockParameterValue = '22222-00000-00000-00000-00000'
-                MockExpectedRegEx = '\/PID="\*{8}"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PID="\*{8}"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AgtSvcPassword' # cspell: disable-line
+                MockParameterName  = 'AgtSvcPassword' # cspell: disable-line
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/AGTSVCPASSWORD="\*{8}"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AGTSVCPASSWORD="\*{8}"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SAPwd'
+                MockParameterName  = 'SAPwd'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/SAPWD="\*{8}"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SAPWD="\*{8}"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlSvcPassword'
+                MockParameterName  = 'SqlSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/SQLSVCPASSWORD="\*{8}"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLSVCPASSWORD="\*{8}"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ISSvcPassword'
+                MockParameterName  = 'ISSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/ISSVCPASSWORD="\*{8}"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ISSVCPASSWORD="\*{8}"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'RSSvcPassword'
+                MockParameterName  = 'RSSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/RSSVCPASSWORD="\*{8}"' # cspell: disable-line
+                MockExpectedRegEx  = '\/RSSVCPASSWORD="\*{8}"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AzureServicePrincipalSecret'
+                MockParameterName  = 'AzureServicePrincipalSecret'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/AZURESERVICEPRINCIPALSECRET="\*{8}"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AZURESERVICEPRINCIPALSECRET="\*{8}"' # cspell: disable-line
             }
         ) {
             BeforeAll {
@@ -704,14 +707,15 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    Install = $true
+                    Install              = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
+                    MediaPath            = '\SqlMedia'
+                    InstanceName         = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
-                    Features = 'SqlEngine'
-                    SqlSysAdminAccounts = 'DOMAIN\User'
-                    Force = $true
+                    Features             = 'SqlEngine'
+                    SqlSysAdminAccounts  = 'DOMAIN\User'
+                    Force                = $true
+                    ErrorAction          = 'Stop'
                 }
             }
 
@@ -764,10 +768,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    Upgrade = $true
+                    Upgrade              = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
+                    MediaPath            = '\SqlMedia'
+                    InstanceName         = 'INSTANCE'
+                    ErrorAction          = 'Stop'
                 }
             }
 
@@ -812,69 +817,69 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
         Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
             @{
-                MockParameterName = 'Enu'
+                MockParameterName  = 'Enu'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/ENU\s*'
+                MockExpectedRegEx  = '\/ENU\s*'
             }
             @{
-                MockParameterName = 'UpdateEnabled'
+                MockParameterName  = 'UpdateEnabled'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/UPDATEENABLED=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/UPDATEENABLED=True' # cspell: disable-line
             }
             @{
-                MockParameterName = 'UpdateSource'
+                MockParameterName  = 'UpdateSource'
                 MockParameterValue = '\SqlMedia\Updates'
-                MockExpectedRegEx = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
+                MockExpectedRegEx  = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstanceDir'
+                MockParameterName  = 'InstanceDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server'
-                MockExpectedRegEx = '\/INSTANCEDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTANCEDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstanceId'
+                MockParameterName  = 'InstanceId'
                 MockParameterValue = 'Instance'
-                MockExpectedRegEx = '\/INSTANCEID="Instance"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTANCEID="Instance"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ProductKey'
+                MockParameterName  = 'ProductKey'
                 MockParameterValue = '22222-00000-00000-00000-00000'
-                MockExpectedRegEx = '\/PID="22222-00000-00000-00000-00000"'
+                MockExpectedRegEx  = '\/PID="22222-00000-00000-00000-00000"'
             }
             @{
-                MockParameterName = 'BrowserSvcStartupType'
+                MockParameterName  = 'BrowserSvcStartupType'
                 MockParameterValue = 'Manual'
-                MockExpectedRegEx = '\/BROWSERSVCSTARTUPTYPE="Manual"' # cspell: disable-line
+                MockExpectedRegEx  = '\/BROWSERSVCSTARTUPTYPE="Manual"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'FTUpgradeOption'
+                MockParameterName  = 'FTUpgradeOption'
                 MockParameterValue = 'Reset'
-                MockExpectedRegEx = '\/FTUPGRADEOPTION="Reset"' # cspell: disable-line
+                MockExpectedRegEx  = '\/FTUPGRADEOPTION="Reset"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ISSvcAccount'
+                MockParameterName  = 'ISSvcAccount'
                 MockParameterValue = 'DOMAIN\ServiceAccount$'
-                MockExpectedRegEx = '\/ISSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ISSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ISSvcPassword'
+                MockParameterName  = 'ISSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ISSvcStartupType'
+                MockParameterName  = 'ISSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/ISSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ISSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AllowUpgradeForSSRSSharePointMode'
+                MockParameterName  = 'AllowUpgradeForSSRSSharePointMode'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/ALLOWUPGRADEFORSSRSSHAREPOINTMODE=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/ALLOWUPGRADEFORSSRSSHAREPOINTMODE=True' # cspell: disable-line
             }
             @{
-                MockParameterName = 'FailoverClusterRollOwnership'
+                MockParameterName  = 'FailoverClusterRollOwnership'
                 MockParameterValue = 2
-                MockExpectedRegEx = '\/FAILOVERCLUSTERROLLOWNERSHIP=2' # cspell: disable-line
+                MockExpectedRegEx  = '\/FAILOVERCLUSTERROLLOWNERSHIP=2' # cspell: disable-line
             }
         ) {
             BeforeAll {
@@ -883,12 +888,13 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    Upgrade = $true
+                    Upgrade              = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
+                    MediaPath            = '\SqlMedia'
+                    InstanceName         = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
-                    Force = $true
+                    Force                = $true
+                    ErrorAction          = 'Stop'
                 }
             }
 
@@ -929,14 +935,14 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    InstallFailoverCluster = $true
-                    AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
+                    InstallFailoverCluster     = $true
+                    AcceptLicensingTerms       = $true
+                    MediaPath                  = '\SqlMedia'
+                    InstanceName               = 'INSTANCE'
                     # Intentionally using both upper- and lower-case.
-                    Features = 'SqlEngine'
-                    SqlSysAdminAccounts = 'DOMAIN\User', 'COMPANY\SQL Administrators'
-                    InstallSqlDataDir = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
+                    Features                   = 'SqlEngine'
+                    SqlSysAdminAccounts        = 'DOMAIN\User', 'COMPANY\SQL Administrators'
+                    InstallSqlDataDir          = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
                     FailoverClusterNetworkName = 'TESTCLU01A' # cspell: disable-line
                     FailoverClusterIPAddresses = @(
                         'IPv4;172.16.0.0;ClusterNetwork1;172.31.255.255',
@@ -944,6 +950,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                         'IPv6;DHCP;ClusterNetwork3'
                         'IPv4;DHCP;ClusterNetwork4'
                     )
+                    ErrorAction                = 'Stop'
                 }
             }
 
@@ -1003,19 +1010,20 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $installSqlDscServerParameters = @{
-                    InstallFailoverCluster = $true
-                    AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
+                    InstallFailoverCluster     = $true
+                    AcceptLicensingTerms       = $true
+                    MediaPath                  = '\SqlMedia'
+                    InstanceName               = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
-                    Features = 'SqlEngine'
-                    SqlSysAdminAccounts = 'DOMAIN\User', 'COMPANY\SQL Administrators'
-                    InstallSqlDataDir = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
+                    Features                   = 'SqlEngine'
+                    SqlSysAdminAccounts        = 'DOMAIN\User', 'COMPANY\SQL Administrators'
+                    InstallSqlDataDir          = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
                     FailoverClusterNetworkName = 'TESTCLU01A' # cspell: disable-line
                     FailoverClusterIPAddresses = '192.168.0.46'
-                    Force = $true
-                    PBStartPortRange = 16450
-                    PBEndPortRange = 16460
+                    Force                      = $true
+                    PBStartPortRange           = 16450
+                    PBEndPortRange             = 16460
+                    ErrorAction                = 'Stop'
                 }
             }
 
@@ -1033,280 +1041,280 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
         Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
             @{
-                MockParameterName = 'Enu'
+                MockParameterName  = 'Enu'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/ENU\s*'
+                MockExpectedRegEx  = '\/ENU\s*'
             }
             @{
-                MockParameterName = 'UpdateEnabled'
+                MockParameterName  = 'UpdateEnabled'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/UPDATEENABLED=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/UPDATEENABLED=True' # cspell: disable-line
             }
             @{
-                MockParameterName = 'UpdateSource'
+                MockParameterName  = 'UpdateSource'
                 MockParameterValue = '\SqlMedia\Updates'
-                MockExpectedRegEx = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
+                MockExpectedRegEx  = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstallSharedDir'
+                MockParameterName  = 'InstallSharedDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server'
-                MockExpectedRegEx = '\/INSTALLSHAREDDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTALLSHAREDDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstallSharedWOWDir'
+                MockParameterName  = 'InstallSharedWOWDir'
                 MockParameterValue = 'C:\Program Files (x86)\Microsoft SQL Server'
-                MockExpectedRegEx = '\/INSTALLSHAREDWOWDIR="C:\\Program Files \(x86\)\\Microsoft SQL Server"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTALLSHAREDWOWDIR="C:\\Program Files \(x86\)\\Microsoft SQL Server"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstanceDir'
+                MockParameterName  = 'InstanceDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server'
-                MockExpectedRegEx = '\/INSTANCEDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTANCEDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstanceId'
+                MockParameterName  = 'InstanceId'
                 MockParameterValue = 'Instance'
-                MockExpectedRegEx = '\/INSTANCEID="Instance"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTANCEID="Instance"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBEngSvcAccount'
+                MockParameterName  = 'PBEngSvcAccount'
                 MockParameterValue = 'NT Authority\NETWORK SERVICE'
-                MockExpectedRegEx = '\/PBENGSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBEngSvcPassword'
+                MockParameterName  = 'PBEngSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBEngSvcStartupType'
+                MockParameterName  = 'PBEngSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/PBENGSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBScaleOut'
+                MockParameterName  = 'PBScaleOut'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/PBSCALEOUT=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBSCALEOUT=True' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ProductKey'
+                MockParameterName  = 'ProductKey'
                 MockParameterValue = '22222-00000-00000-00000-00000'
-                MockExpectedRegEx = '\/PID="22222-00000-00000-00000-00000"'
+                MockExpectedRegEx  = '\/PID="22222-00000-00000-00000-00000"'
             }
             @{
-                MockParameterName = 'AgtSvcAccount'
+                MockParameterName  = 'AgtSvcAccount'
                 MockParameterValue = 'NT Authority\NETWORK SERVICE'
-                MockExpectedRegEx = '\/AGTSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AGTSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AgtSvcPassword'
+                MockParameterName  = 'AgtSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/AGTSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AGTSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASBackupDir'
+                MockParameterName  = 'ASBackupDir'
                 MockParameterValue = 'C:\MSOLAP13.INST2016\Backup'
-                MockExpectedRegEx = '\/ASBACKUPDIR="C:\\MSOLAP13\.INST2016\\Backup"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASBACKUPDIR="C:\\MSOLAP13\.INST2016\\Backup"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASConfigDir'
+                MockParameterName  = 'ASConfigDir'
                 MockParameterValue = 'C:\MSOLAP13.INST2016\Config'
-                MockExpectedRegEx = '\/ASCONFIGDIR="C:\\MSOLAP13\.INST2016\\Config"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASCONFIGDIR="C:\\MSOLAP13\.INST2016\\Config"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASDataDir'
+                MockParameterName  = 'ASDataDir'
                 MockParameterValue = 'C:\MSOLAP13.INST2016\Data'
-                MockExpectedRegEx = '\/ASDATADIR="C:\\MSOLAP13\.INST2016\\Data"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASDATADIR="C:\\MSOLAP13\.INST2016\\Data"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASLogDir'
+                MockParameterName  = 'ASLogDir'
                 MockParameterValue = 'C:\MSOLAP13.INST2016\Log'
-                MockExpectedRegEx = '\/ASLOGDIR="C:\\MSOLAP13\.INST2016\\Log"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASLOGDIR="C:\\MSOLAP13\.INST2016\\Log"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASTempDir'
+                MockParameterName  = 'ASTempDir'
                 MockParameterValue = 'C:\MSOLAP13.INST2016\Temp'
-                MockExpectedRegEx = '\/ASTEMPDIR="C:\\MSOLAP13\.INST2016\\Temp"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASTEMPDIR="C:\\MSOLAP13\.INST2016\\Temp"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASCollation'
+                MockParameterName  = 'ASCollation'
                 MockParameterValue = 'latin1_general_100'
-                MockExpectedRegEx = '\/ASCOLLATION="latin1_general_100"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASCOLLATION="latin1_general_100"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASServerMode'
+                MockParameterName  = 'ASServerMode'
                 MockParameterValue = 'Multidimensional'
-                MockExpectedRegEx = '\/ASSERVERMODE=MULTIDIMENSIONAL' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASSERVERMODE=MULTIDIMENSIONAL' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AsSvcAccount'
+                MockParameterName  = 'AsSvcAccount'
                 MockParameterValue = 'DOMAIN\ServiceAccount$'
-                MockExpectedRegEx = '\/ASSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AsSvcPassword'
+                MockParameterName  = 'AsSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/ASSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AsSvcStartupType'
+                MockParameterName  = 'AsSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/ASSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASSysAdminAccounts'
+                MockParameterName  = 'ASSysAdminAccounts'
                 MockParameterValue = 'COMPANY\SQL Administrators', 'LocalUser'
-                MockExpectedRegEx = '\/ASSYSADMINACCOUNTS="COMPANY\\SQL Administrators" "LocalUser"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASSYSADMINACCOUNTS="COMPANY\\SQL Administrators" "LocalUser"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ASProviderMSOLAP'
+                MockParameterName  = 'ASProviderMSOLAP'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/ASPROVIDERMSOLAP=1' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASPROVIDERMSOLAP=1' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlBackupDir'
+                MockParameterName  = 'SqlBackupDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Backup'
-                MockExpectedRegEx = '\/SQLBACKUPDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Backup"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLBACKUPDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Backup"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbDir'
+                MockParameterName  = 'SqlTempDbDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
-                MockExpectedRegEx = '\/SQLTEMPDBDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbLogDir'
+                MockParameterName  = 'SqlTempDbLogDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
-                MockExpectedRegEx = '\/SQLTEMPDBLOGDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBLOGDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlUserDbDir'
+                MockParameterName  = 'SqlUserDbDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
-                MockExpectedRegEx = '\/SQLUSERDBDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLUSERDBDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlUserDbLogDir'
+                MockParameterName  = 'SqlUserDbLogDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
-                MockExpectedRegEx = '\/SQLUSERDBLOGDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLUSERDBLOGDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SecurityMode'
+                MockParameterName  = 'SecurityMode'
                 MockParameterValue = 'SQL'
-                MockExpectedRegEx = '\/SECURITYMODE="SQL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SECURITYMODE="SQL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SAPwd'
+                MockParameterName  = 'SAPwd'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/SAPWD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SAPWD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlCollation'
+                MockParameterName  = 'SqlCollation'
                 MockParameterValue = 'SQL_Latin1_General_CP1_CI_AS'
-                MockExpectedRegEx = '\/SQLCOLLATION="SQL_Latin1_General_CP1_CI_AS"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLCOLLATION="SQL_Latin1_General_CP1_CI_AS"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlSvcAccount'
+                MockParameterName  = 'SqlSvcAccount'
                 MockParameterValue = 'DOMAIN\ServiceAccount$'
-                MockExpectedRegEx = '\/SQLSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlSvcPassword'
+                MockParameterName  = 'SqlSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/SQLSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlSvcStartupType'
+                MockParameterName  = 'SqlSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/SQLSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbFileCount'
+                MockParameterName  = 'SqlTempDbFileCount'
                 MockParameterValue = 8
-                MockExpectedRegEx = '\/SQLTEMPDBFILECOUNT=8' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBFILECOUNT=8' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbFileSize'
+                MockParameterName  = 'SqlTempDbFileSize'
                 MockParameterValue = 100
-                MockExpectedRegEx = '\/SQLTEMPDBFILESIZE=100' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBFILESIZE=100' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbFileGrowth'
+                MockParameterName  = 'SqlTempDbFileGrowth'
                 MockParameterValue = 10
-                MockExpectedRegEx = '\/SQLTEMPDBFILEGROWTH=10' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBFILEGROWTH=10' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbLogFileSize'
+                MockParameterName  = 'SqlTempDbLogFileSize'
                 MockParameterValue = 100
-                MockExpectedRegEx = '\/SQLTEMPDBLOGFILESIZE=100' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBLOGFILESIZE=100' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbLogFileGrowth'
+                MockParameterName  = 'SqlTempDbLogFileGrowth'
                 MockParameterValue = 10
-                MockExpectedRegEx = '\/SQLTEMPDBLOGFILEGROWTH=10' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBLOGFILEGROWTH=10' # cspell: disable-line
             }
             @{
-                MockParameterName = 'FileStreamLevel'
+                MockParameterName  = 'FileStreamLevel'
                 MockParameterValue = 2
-                MockExpectedRegEx = '\/FILESTREAMLEVEL=2' # cspell: disable-line
+                MockExpectedRegEx  = '\/FILESTREAMLEVEL=2' # cspell: disable-line
             }
             @{
-                MockParameterName = 'FileStreamShareName'
+                MockParameterName  = 'FileStreamShareName'
                 MockParameterValue = 'ShareName'
-                MockExpectedRegEx = '\/FILESTREAMSHARENAME="ShareName"' # cspell: disable-line
+                MockExpectedRegEx  = '\/FILESTREAMSHARENAME="ShareName"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ISSvcAccount'
+                MockParameterName  = 'ISSvcAccount'
                 MockParameterValue = 'DOMAIN\ServiceAccount$'
-                MockExpectedRegEx = '\/ISSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ISSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ISSvcPassword'
+                MockParameterName  = 'ISSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ISSvcStartupType'
+                MockParameterName  = 'ISSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/ISSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ISSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'RsInstallMode'
+                MockParameterName  = 'RsInstallMode'
                 MockParameterValue = 'FilesOnlyMode'
-                MockExpectedRegEx = '\/RSINSTALLMODE="FilesOnlyMode"' # cspell: disable-line
+                MockExpectedRegEx  = '\/RSINSTALLMODE="FilesOnlyMode"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'RSSvcAccount'
+                MockParameterName  = 'RSSvcAccount'
                 MockParameterValue = 'DOMAIN\ServiceAccount$'
-                MockExpectedRegEx = '\/RSSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
+                MockExpectedRegEx  = '\/RSSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'RSSvcPassword'
+                MockParameterName  = 'RSSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/RSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/RSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'RSSvcStartupType'
+                MockParameterName  = 'RSSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/RSSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/RSSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SkipRules'
+                MockParameterName  = 'SkipRules'
                 MockParameterValue = 'Cluster_VerifyForErrors'
-                MockExpectedRegEx = '\/SKIPRULES="Cluster_VerifyForErrors"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SKIPRULES="Cluster_VerifyForErrors"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'FailoverClusterGroup'
+                MockParameterName  = 'FailoverClusterGroup'
                 MockParameterValue = 'TESTCLU01A' # cspell: disable-line
-                MockExpectedRegEx = '\/FAILOVERCLUSTERGROUP="TESTCLU01A"' # cspell: disable-line
+                MockExpectedRegEx  = '\/FAILOVERCLUSTERGROUP="TESTCLU01A"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'FailoverClusterDisks'
+                MockParameterName  = 'FailoverClusterDisks'
                 # This is the failover cluster resource name.
                 MockParameterValue = @(
                     'SysData'
                 )
-                MockExpectedRegEx = '\/FAILOVERCLUSTERDISKS="SysData"' # cspell: disable-line
+                MockExpectedRegEx  = '\/FAILOVERCLUSTERDISKS="SysData"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'FailoverClusterDisks'
+                MockParameterName  = 'FailoverClusterDisks'
                 # This is the failover cluster resource names.
                 MockParameterValue = @(
                     'Backup'
@@ -1316,7 +1324,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     'UserData'
                     'UserLogs'
                 )
-                MockExpectedRegEx = '\/FAILOVERCLUSTERDISKS="Backup;SysData;TempDbData;TempDbLogs;UserData;UserLogs"' # cspell: disable-line
+                MockExpectedRegEx  = '\/FAILOVERCLUSTERDISKS="Backup;SysData;TempDbData;TempDbLogs;UserData;UserLogs"' # cspell: disable-line
             }
         ) {
             BeforeAll {
@@ -1325,17 +1333,18 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    InstallFailoverCluster = $true
-                    AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
+                    InstallFailoverCluster     = $true
+                    AcceptLicensingTerms       = $true
+                    MediaPath                  = '\SqlMedia'
+                    InstanceName               = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
-                    Features = 'SqlEngine'
-                    SqlSysAdminAccounts = 'DOMAIN\User', 'COMPANY\SQL Administrators'
-                    InstallSqlDataDir = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
+                    Features                   = 'SqlEngine'
+                    SqlSysAdminAccounts        = 'DOMAIN\User', 'COMPANY\SQL Administrators'
+                    InstallSqlDataDir          = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
                     FailoverClusterNetworkName = 'TESTCLU01A' # cspell: disable-line
                     FailoverClusterIPAddresses = '192.168.0.46'
-                    Force = $true
+                    Force                      = $true
+                    ErrorAction                = 'Stop'
                 }
             }
 
@@ -1377,11 +1386,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
                 $mockDefaultParameters = @{
                     PrepareFailoverCluster = $true
-                    AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
+                    AcceptLicensingTerms   = $true
+                    MediaPath              = '\SqlMedia'
+                    InstanceName           = 'INSTANCE'
                     # Intentionally using both upper- and lower-case.
-                    Features = 'SqlEngine'
+                    Features               = 'SqlEngine'
+                    ErrorAction            = 'Stop'
                 }
             }
 
@@ -1432,14 +1442,15 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
                 $installSqlDscServerParameters = @{
                     PrepareFailoverCluster = $true
-                    AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
+                    AcceptLicensingTerms   = $true
+                    MediaPath              = '\SqlMedia'
+                    InstanceName           = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
-                    Features = 'SqlEngine'
-                    Force = $true
-                    PBStartPortRange = 16450
-                    PBEndPortRange = 16460
+                    Features               = 'SqlEngine'
+                    Force                  = $true
+                    PBStartPortRange       = 16450
+                    PBEndPortRange         = 16460
+                    ErrorAction            = 'Stop'
                 }
             }
 
@@ -1457,139 +1468,139 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
         Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
             @{
-                MockParameterName = 'Enu'
+                MockParameterName  = 'Enu'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/ENU\s*'
+                MockExpectedRegEx  = '\/ENU\s*'
             }
             @{
-                MockParameterName = 'UpdateEnabled'
+                MockParameterName  = 'UpdateEnabled'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/UPDATEENABLED=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/UPDATEENABLED=True' # cspell: disable-line
             }
             @{
-                MockParameterName = 'UpdateSource'
+                MockParameterName  = 'UpdateSource'
                 MockParameterValue = '\SqlMedia\Updates'
-                MockExpectedRegEx = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
+                MockExpectedRegEx  = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstallSharedDir'
+                MockParameterName  = 'InstallSharedDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server'
-                MockExpectedRegEx = '\/INSTALLSHAREDDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTALLSHAREDDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstallSharedWOWDir'
+                MockParameterName  = 'InstallSharedWOWDir'
                 MockParameterValue = 'C:\Program Files (x86)\Microsoft SQL Server'
-                MockExpectedRegEx = '\/INSTALLSHAREDWOWDIR="C:\\Program Files \(x86\)\\Microsoft SQL Server"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTALLSHAREDWOWDIR="C:\\Program Files \(x86\)\\Microsoft SQL Server"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstanceDir'
+                MockParameterName  = 'InstanceDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server'
-                MockExpectedRegEx = '\/INSTANCEDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTANCEDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstanceId'
+                MockParameterName  = 'InstanceId'
                 MockParameterValue = 'Instance'
-                MockExpectedRegEx = '\/INSTANCEID="Instance"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTANCEID="Instance"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBEngSvcAccount'
+                MockParameterName  = 'PBEngSvcAccount'
                 MockParameterValue = 'NT Authority\NETWORK SERVICE'
-                MockExpectedRegEx = '\/PBENGSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBEngSvcPassword'
+                MockParameterName  = 'PBEngSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBEngSvcStartupType'
+                MockParameterName  = 'PBEngSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/PBENGSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBScaleOut'
+                MockParameterName  = 'PBScaleOut'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/PBSCALEOUT=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBSCALEOUT=True' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ProductKey'
+                MockParameterName  = 'ProductKey'
                 MockParameterValue = '22222-00000-00000-00000-00000'
-                MockExpectedRegEx = '\/PID="22222-00000-00000-00000-00000"'
+                MockExpectedRegEx  = '\/PID="22222-00000-00000-00000-00000"'
             }
             @{
-                MockParameterName = 'AgtSvcAccount'
+                MockParameterName  = 'AgtSvcAccount'
                 MockParameterValue = 'NT Authority\NETWORK SERVICE'
-                MockExpectedRegEx = '\/AGTSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AGTSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AgtSvcPassword'
+                MockParameterName  = 'AgtSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/AGTSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AGTSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AsSvcAccount'
+                MockParameterName  = 'AsSvcAccount'
                 MockParameterValue = 'DOMAIN\ServiceAccount$'
-                MockExpectedRegEx = '\/ASSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AsSvcPassword'
+                MockParameterName  = 'AsSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/ASSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlSvcAccount'
+                MockParameterName  = 'SqlSvcAccount'
                 MockParameterValue = 'DOMAIN\ServiceAccount$'
-                MockExpectedRegEx = '\/SQLSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlSvcPassword'
+                MockParameterName  = 'SqlSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/SQLSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'FileStreamLevel'
+                MockParameterName  = 'FileStreamLevel'
                 MockParameterValue = 2
-                MockExpectedRegEx = '\/FILESTREAMLEVEL=2' # cspell: disable-line
+                MockExpectedRegEx  = '\/FILESTREAMLEVEL=2' # cspell: disable-line
             }
             @{
-                MockParameterName = 'FileStreamShareName'
+                MockParameterName  = 'FileStreamShareName'
                 MockParameterValue = 'ShareName'
-                MockExpectedRegEx = '\/FILESTREAMSHARENAME="ShareName"' # cspell: disable-line
+                MockExpectedRegEx  = '\/FILESTREAMSHARENAME="ShareName"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ISSvcAccount'
+                MockParameterName  = 'ISSvcAccount'
                 MockParameterValue = 'DOMAIN\ServiceAccount$'
-                MockExpectedRegEx = '\/ISSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ISSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ISSvcPassword'
+                MockParameterName  = 'ISSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ISSvcStartupType'
+                MockParameterName  = 'ISSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/ISSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ISSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'RsInstallMode'
+                MockParameterName  = 'RsInstallMode'
                 MockParameterValue = 'FilesOnlyMode'
-                MockExpectedRegEx = '\/RSINSTALLMODE="FilesOnlyMode"' # cspell: disable-line
+                MockExpectedRegEx  = '\/RSINSTALLMODE="FilesOnlyMode"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'RSSvcAccount'
+                MockParameterName  = 'RSSvcAccount'
                 MockParameterValue = 'DOMAIN\ServiceAccount$'
-                MockExpectedRegEx = '\/RSSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
+                MockExpectedRegEx  = '\/RSSVCACCOUNT="DOMAIN\\ServiceAccount\$"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'RSSvcPassword'
+                MockParameterName  = 'RSSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/RSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/RSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'RSSvcStartupType'
+                MockParameterName  = 'RSSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/RSSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/RSSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
         ) {
             BeforeAll {
@@ -1599,12 +1610,13 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
                 $mockDefaultParameters = @{
                     PrepareFailoverCluster = $true
-                    AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
+                    AcceptLicensingTerms   = $true
+                    MediaPath              = '\SqlMedia'
+                    InstanceName           = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
-                    Features = 'SqlEngine'
-                    Force = $true
+                    Features               = 'SqlEngine'
+                    Force                  = $true
+                    ErrorAction            = 'Stop'
                 }
             }
 
@@ -1653,7 +1665,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
                 $mockDefaultParameters = @{
                     ConfigurationFile = 'C:\MyConfig.ini'
-                    MediaPath = '\SqlMedia'
+                    MediaPath         = '\SqlMedia'
                 }
             }
 
@@ -1696,29 +1708,29 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
         Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
             @{
-                MockParameterName = 'AgtSvcPassword'
+                MockParameterName  = 'AgtSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/AGTSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AGTSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'AsSvcPassword'
+                MockParameterName  = 'AsSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/ASSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ASSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlSvcPassword'
+                MockParameterName  = 'SqlSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/SQLSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'ISSvcPassword'
+                MockParameterName  = 'ISSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/ISSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'RSSvcPassword'
+                MockParameterName  = 'RSSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/RSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/RSSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
         ) {
             BeforeAll {
@@ -1728,8 +1740,9 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
                 $mockDefaultParameters = @{
                     ConfigurationFile = 'C:\MyConfig.ini'
-                    MediaPath = '\SqlMedia'
-                    Force = $true
+                    MediaPath         = '\SqlMedia'
+                    Force             = $true
+                    ErrorAction       = 'Stop'
                 }
             }
 
@@ -1770,11 +1783,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    EditionUpgrade = $true
+                    EditionUpgrade       = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
-                    ProductKey = '22222-00000-00000-00000-00000'
+                    MediaPath            = '\SqlMedia'
+                    InstanceName         = 'INSTANCE'
+                    ProductKey           = '22222-00000-00000-00000-00000'
+                    ErrorAction          = 'Stop'
                 }
             }
 
@@ -1821,9 +1835,9 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
         Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
             @{
-                MockParameterName = 'SkipRules'
+                MockParameterName  = 'SkipRules'
                 MockParameterValue = 'Cluster_VerifyForErrors'
-                MockExpectedRegEx = '\/SKIPRULES="Cluster_VerifyForErrors"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SKIPRULES="Cluster_VerifyForErrors"' # cspell: disable-line
             }
         ) {
             BeforeAll {
@@ -1832,12 +1846,13 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    EditionUpgrade = $true
+                    EditionUpgrade       = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
-                    ProductKey = 22222-00000-00000-00000-00000
-                    Force = $true
+                    MediaPath            = '\SqlMedia'
+                    InstanceName         = 'INSTANCE'
+                    ProductKey           = 22222 - 00000 - 00000 - 00000 - 00000
+                    Force                = $true
+                    ErrorAction          = 'Stop'
                 }
             }
 
@@ -1878,12 +1893,13 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    PrepareImage = $true
+                    PrepareImage         = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
+                    MediaPath            = '\SqlMedia'
                     # Intentionally using both upper- and lower-case.
-                    Features = 'SqlEngine'
-                    InstanceId = 'Instance'
+                    Features             = 'SqlEngine'
+                    InstanceId           = 'Instance'
+                    ErrorAction          = 'Stop'
                 }
             }
 
@@ -1930,54 +1946,54 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
         Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
             @{
-                MockParameterName = 'Enu'
+                MockParameterName  = 'Enu'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/ENU\s*'
+                MockExpectedRegEx  = '\/ENU\s*'
             }
             @{
-                MockParameterName = 'UpdateEnabled'
+                MockParameterName  = 'UpdateEnabled'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/UPDATEENABLED=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/UPDATEENABLED=True' # cspell: disable-line
             }
             @{
-                MockParameterName = 'UpdateSource'
+                MockParameterName  = 'UpdateSource'
                 MockParameterValue = '\SqlMedia\Updates'
-                MockExpectedRegEx = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
+                MockExpectedRegEx  = '\/UPDATESOURCE="\\SqlMedia\\Updates"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstallSharedDir'
+                MockParameterName  = 'InstallSharedDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server'
-                MockExpectedRegEx = '\/INSTALLSHAREDDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTALLSHAREDDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstanceDir'
+                MockParameterName  = 'InstanceDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server'
-                MockExpectedRegEx = '\/INSTANCEDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTANCEDIR="C:\\Program Files\\Microsoft SQL Server"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'InstanceId'
+                MockParameterName  = 'InstanceId'
                 MockParameterValue = 'Instance'
-                MockExpectedRegEx = '\/INSTANCEID="Instance"' # cspell: disable-line
+                MockExpectedRegEx  = '\/INSTANCEID="Instance"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBEngSvcAccount'
+                MockParameterName  = 'PBEngSvcAccount'
                 MockParameterValue = 'NT Authority\NETWORK SERVICE'
-                MockExpectedRegEx = '\/PBENGSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBEngSvcPassword'
+                MockParameterName  = 'PBEngSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBEngSvcStartupType'
+                MockParameterName  = 'PBEngSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/PBENGSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBScaleOut'
+                MockParameterName  = 'PBScaleOut'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/PBSCALEOUT=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBSCALEOUT=True' # cspell: disable-line
             }
         ) {
             BeforeAll {
@@ -1986,13 +2002,14 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    PrepareImage = $true
+                    PrepareImage         = $true
                     AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
+                    MediaPath            = '\SqlMedia'
                     # Intentionally using both upper- and lower-case.
-                    Features = 'SqlEngine'
-                    InstanceId = 'Instance'
-                    Force = $true
+                    Features             = 'SqlEngine'
+                    InstanceId           = 'Instance'
+                    Force                = $true
+                    ErrorAction          = 'Stop'
                 }
             }
 
@@ -2033,15 +2050,16 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    Install = $true
-                    AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    AzureSubscriptionId = '5d19794a-89a4-4f0b-8d4e-58f213ea3546'
-                    AzureResourceGroup = 'MyResourceGroup'
-                    AzureRegion = 'West-US'
-                    AzureTenantId = '7e52fb9e-6aad-426c-98c4-7d2f11f7e94b'
-                    AzureServicePrincipal = 'MyServicePrincipal'
+                    Install                     = $true
+                    AcceptLicensingTerms        = $true
+                    MediaPath                   = '\SqlMedia'
+                    AzureSubscriptionId         = '5d19794a-89a4-4f0b-8d4e-58f213ea3546'
+                    AzureResourceGroup          = 'MyResourceGroup'
+                    AzureRegion                 = 'West-US'
+                    AzureTenantId               = '7e52fb9e-6aad-426c-98c4-7d2f11f7e94b'
+                    AzureServicePrincipal       = 'MyServicePrincipal'
                     AzureServicePrincipalSecret = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
+                    ErrorAction                 = 'Stop'
                 }
             }
 
@@ -2058,7 +2076,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                         $ArgumentList | Should -MatchExactly '\/AZURETENANTID="7e52fb9e-6aad-426c-98c4-7d2f11f7e94b"' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/AZURESERVICEPRINCIPAL="MyServicePrincipal"' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/AZURESERVICEPRINCIPALSECRET="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=AZUREEXTENSION'
+                        $ArgumentList | Should -MatchExactly '\/FEATURES=AZUREEXTENSION' # cspell: disable-line
 
                         # Return $true if none of the above throw.
                         $true
@@ -2079,7 +2097,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                         $ArgumentList | Should -MatchExactly '\/AZURETENANTID="7e52fb9e-6aad-426c-98c4-7d2f11f7e94b"' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/AZURESERVICEPRINCIPAL="MyServicePrincipal"' # cspell: disable-line
                         $ArgumentList | Should -MatchExactly '\/AZURESERVICEPRINCIPALSECRET="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=AZUREEXTENSION'
+                        $ArgumentList | Should -MatchExactly '\/FEATURES=AZUREEXTENSION' # cspell: disable-line
 
                         # Return $true if none of the above throw.
                         $true
@@ -2098,9 +2116,9 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
         Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
             @{
-                MockParameterName = 'AzureArcProxy'
+                MockParameterName  = 'AzureArcProxy'
                 MockParameterValue = 'proxy.company.local'
-                MockExpectedRegEx = '\/AZUREARCPROXY="proxy\.company\.local"' # cspell: disable-line
+                MockExpectedRegEx  = '\/AZUREARCPROXY="proxy\.company\.local"' # cspell: disable-line
             }
         ) {
             BeforeAll {
@@ -2109,16 +2127,17 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    Install = $true
-                    AcceptLicensingTerms = $true
-                    MediaPath = '\SqlMedia'
-                    AzureSubscriptionId = '5d19794a-89a4-4f0b-8d4e-58f213ea3546'
-                    AzureResourceGroup = 'MyResourceGroup'
-                    AzureRegion = 'West-US'
-                    AzureTenantId = '7e52fb9e-6aad-426c-98c4-7d2f11f7e94b'
-                    AzureServicePrincipal = 'MyServicePrincipal'
+                    Install                     = $true
+                    AcceptLicensingTerms        = $true
+                    MediaPath                   = '\SqlMedia'
+                    AzureSubscriptionId         = '5d19794a-89a4-4f0b-8d4e-58f213ea3546'
+                    AzureResourceGroup          = 'MyResourceGroup'
+                    AzureRegion                 = 'West-US'
+                    AzureTenantId               = '7e52fb9e-6aad-426c-98c4-7d2f11f7e94b'
+                    AzureServicePrincipal       = 'MyServicePrincipal'
                     AzureServicePrincipalSecret = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                    Force = $true
+                    Force                       = $true
+                    ErrorAction                 = 'Stop'
                 }
             }
 
@@ -2160,10 +2179,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     }
 
                     $mockDefaultParameters = @{
-                        Install = $true
+                        Install              = $true
                         AcceptLicensingTerms = $true
-                        MediaPath = '\SqlMedia'
-                        Role = 'SPI_AS_NewFarm'
+                        MediaPath            = '\SqlMedia'
+                        Role                 = 'SPI_AS_NewFarm'
+                        ErrorAction          = 'Stop'
                     }
                 }
 
@@ -2208,24 +2228,24 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
             Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
                 @{
-                    MockParameterName = 'FarmAccount'
+                    MockParameterName  = 'FarmAccount'
                     MockParameterValue = 'DOMAIN\User'
-                    MockExpectedRegEx = '\/FARMACCOUNT="DOMAIN\\User"' # cspell: disable-line
+                    MockExpectedRegEx  = '\/FARMACCOUNT="DOMAIN\\User"' # cspell: disable-line
                 }
                 @{
-                    MockParameterName = 'FarmPassword'
+                    MockParameterName  = 'FarmPassword'
                     MockParameterValue = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                    MockExpectedRegEx = '\/FARMPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                    MockExpectedRegEx  = '\/FARMPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
                 }
                 @{
-                    MockParameterName = 'Passphrase'
+                    MockParameterName  = 'Passphrase'
                     MockParameterValue = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                    MockExpectedRegEx = '\/PASSPHRASE="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                    MockExpectedRegEx  = '\/PASSPHRASE="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
                 }
                 @{
-                    MockParameterName = 'FarmAdminiPort' # cspell: disable-line
+                    MockParameterName  = 'FarmAdminiPort' # cspell: disable-line
                     MockParameterValue = '18000'
-                    MockExpectedRegEx = '\/FARMADMINIPORT=18000' # cspell: disable-line
+                    MockExpectedRegEx  = '\/FARMADMINIPORT=18000' # cspell: disable-line
                 }
             ) {
                 BeforeAll {
@@ -2234,11 +2254,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     }
 
                     $mockDefaultParameters = @{
-                        Install = $true
+                        Install              = $true
                         AcceptLicensingTerms = $true
-                        MediaPath = '\SqlMedia'
-                        Role = 'SPI_AS_NewFarm'
-                        Force = $true
+                        MediaPath            = '\SqlMedia'
+                        Role                 = 'SPI_AS_NewFarm'
+                        Force                = $true
+                        ErrorAction          = 'Stop'
                     }
                 }
 
@@ -2262,14 +2283,14 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
             Context 'When specifying sensitive parameter <MockParameterName>' -ForEach @(
                 @{
-                    MockParameterName = 'FarmPassword'
+                    MockParameterName  = 'FarmPassword'
                     MockParameterValue = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                    MockExpectedRegEx = '\/FARMPASSWORD="\*{8}"' # cspell: disable-line
+                    MockExpectedRegEx  = '\/FARMPASSWORD="\*{8}"' # cspell: disable-line
                 }
                 @{
-                    MockParameterName = 'Passphrase'
+                    MockParameterName  = 'Passphrase'
                     MockParameterValue = ('jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force) # cspell: disable-line
-                    MockExpectedRegEx = '\/PASSPHRASE="\*{8}"' # cspell: disable-line
+                    MockExpectedRegEx  = '\/PASSPHRASE="\*{8}"' # cspell: disable-line
                 }
             ) {
                 BeforeAll {
@@ -2279,11 +2300,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     }
 
                     $mockDefaultParameters = @{
-                        Install = $true
+                        Install              = $true
                         AcceptLicensingTerms = $true
-                        MediaPath = '\SqlMedia'
-                        Role = 'SPI_AS_NewFarm'
-                        Force = $true
+                        MediaPath            = '\SqlMedia'
+                        Role                 = 'SPI_AS_NewFarm'
+                        Force                = $true
+                        ErrorAction          = 'Stop'
                     }
                 }
 
@@ -2326,10 +2348,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     }
 
                     $mockDefaultParameters = @{
-                        Install = $true
+                        Install              = $true
                         AcceptLicensingTerms = $true
-                        MediaPath = '\SqlMedia'
-                        Role = 'AllFeatures_WithDefaults'
+                        MediaPath            = '\SqlMedia'
+                        Role                 = 'AllFeatures_WithDefaults'
+                        ErrorAction          = 'Stop'
                     }
                 }
 
@@ -2374,14 +2397,14 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
             Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
                 @{
-                    MockParameterName = 'Features' # cspell: disable-line
+                    MockParameterName  = 'Features' # cspell: disable-line
                     MockParameterValue = 'SqlEngine', 'RS'
-                    MockExpectedRegEx = '\/FEATURES=SQLENGINE,RS' # cspell: disable-line
+                    MockExpectedRegEx  = '\/FEATURES=SQLENGINE,RS' # cspell: disable-line
                 }
                 @{
-                    MockParameterName = 'AddCurrentUserAsSqlAdmin' # cspell: disable-line
+                    MockParameterName  = 'AddCurrentUserAsSqlAdmin' # cspell: disable-line
                     MockParameterValue = $true
-                    MockExpectedRegEx = '\/ADDCURRENTUSERASSQLADMIN=True' # cspell: disable-line
+                    MockExpectedRegEx  = '\/ADDCURRENTUSERASSQLADMIN=True' # cspell: disable-line
                 }
             ) {
                 BeforeAll {
@@ -2390,11 +2413,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     }
 
                     $mockDefaultParameters = @{
-                        Install = $true
+                        Install              = $true
                         AcceptLicensingTerms = $true
-                        MediaPath = '\SqlMedia'
-                        Role = 'AllFeatures_WithDefaults'
-                        Force = $true
+                        MediaPath            = '\SqlMedia'
+                        Role                 = 'AllFeatures_WithDefaults'
+                        Force                = $true
+                        ErrorAction          = 'Stop'
                     }
                 }
 

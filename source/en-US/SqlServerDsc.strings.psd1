@@ -150,7 +150,7 @@ ConvertFrom-StringData @'
     ## Get-SqlDscPreferredModule
     PreferredModule_ModuleVersionFound = Preferred module '{0}' with version '{1}' found.
     PreferredModule_ModuleNotFound =  No preferred PowerShell module was found.
-PreferredModule_ModuleVersionNotFound = No preferred Powershell module with version '{0}' was found.
+    PreferredModule_ModuleVersionNotFound = No preferred Powershell module with version '{0}' was found.
 
     ## Import-SqlDscPreferredModule
     PreferredModule_ImportedModule = Imported PowerShell module '{0}' with version '{1}' from path '{2}'.
@@ -182,4 +182,16 @@ PreferredModule_ModuleVersionNotFound = No preferred Powershell module with vers
 
     ## Get-SqlDscConfigurationOption
     ConfigurationOption_Get_Missing = There is no configuration option with the name '{0}'.
+
+    ## Save-SqlDscSqlServerMediaFile
+    SqlServerMediaFile_Save_ShouldProcessVerboseDescription = The existing destination file '{0}' already exists and will be replaced.
+    SqlServerMediaFile_Save_ShouldProcessVerboseWarning = Are you sure you want to replace existing file '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    SqlServerMediaFile_Save_ShouldProcessCaption = Replace existing file
+    SqlServerMediaFile_Save_InvalidDestinationFolder = Multiple files with the .iso extension was found in the destination path. Please choose another destination folder.
+    SqlServerMediaFile_Save_MultipleFilesFoundAfterDownload = Multiple files with the .iso extension was found in the destination path. Cannot determine which one of the files that was downloaded.
+    SqlServerMediaFile_Save_DownloadingInformation = Downloading the SQL Server media from '{0}'.
+    SqlServerMediaFile_Save_IsExecutable = Downloaded an executable file. Using the executable to download the media file.
+    SqlServerMediaFile_Save_RemovingExecutable = Removing the downloaded executable file.
+    SqlServerMediaFile_Save_RenamingFile = Renaming the downloaded file from '{0}' to '{1}'.
 '@

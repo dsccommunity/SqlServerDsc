@@ -9,9 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Added build tasks to generate Wiki documentation for public commands.
+  - Initial integration tests for commands.
 - SqlDatabaseMail
   - Added the parameter `UseDefaultCredentials` to control use of the DatabaseEngine
     service account for SMTP server authentication.
+- New public commands
+  - `Save-SqlDscSqlServerMediaFile` - Downloads the content on the provided URL
+    and if it is an executable it will use the executable to download the
+    ISO image media.
 
 ### Fixed
 
@@ -35,6 +40,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New method ToString() for making verbose output better.
 - SqlAgDatabase
   - Remove unused help file ([issue #1745](https://github.com/dsccommunity/SqlServerDsc/issues/1745)).
+- `Install-SqlDscServer`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Add-SqlDscNode`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Complete-SqlDscFailoverCluster`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Complete-SqlDscImage`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Initialize-SqlDscRebuildDatabase`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Remove-SqlDscNode`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Repair-SqlDscServer`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Uninstall-SqlDscServer`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- Private functions
+  - `Invoke-SetupAction` no longer throws when secure strings is passed on
+    Windows PowerShell.
 
 ### Changed
 
