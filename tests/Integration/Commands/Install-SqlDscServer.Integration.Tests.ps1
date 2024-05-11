@@ -24,6 +24,11 @@ BeforeDiscovery {
 }
 
 Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+    BeforeAll {
+        # Get the built SqlServerDsc module path.
+        $modulePath = Split-Path -Parent -Path (Get-Module -name SqlServerDsc -ListAvailable).ModuleBase
+    }
+
     Context 'When using Install parameter set' {
         Context 'When installing database engine default instance' {
             It 'Should run the command without throwing' {
@@ -37,8 +42,14 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
 
                             [Parameter(Mandatory = $true)]
                             [System.String]
-                            $ComputerName
+                            $ComputerName,
+
+                            [Parameter(Mandatory = $true)]
+                            [System.String]
+                            $ModulePath
                         )
+
+                        Import-Module -Name $ModulePath -Force -ErrorAction 'Stop'
 
                         # Set splatting parameters for Install-SqlDscServer
                         $installSqlDscServerParameters = @{
@@ -77,7 +88,8 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                     # Runs command as SqlInstall user.
                     Invoke-Command -ComputerName 'localhost' -Credential $invokeCommandCredential -ScriptBlock $installScriptBlock -ArgumentList @(
                         $env:IsoDrivePath, # Already set by the prerequisites tests
-                        (Get-ComputerName)
+                        (Get-ComputerName),
+                        $modulePath
                     )
                 } | Should -Not -Throw
             }
