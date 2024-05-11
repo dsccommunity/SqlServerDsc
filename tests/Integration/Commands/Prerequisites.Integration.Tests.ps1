@@ -196,15 +196,7 @@ Describe 'Prerequisites' {
     }
 
     Context 'Test PS Remoting to localhost' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
-        It 'Should enable PS Remoting' {
-            #winrm quickconfig -quiet
-            #Enable-PSRemoting -Force -SkipNetworkProfileCheck -Verbose -ErrorAction 'Stop'
-            #Test-WSMan -ComputerName $env:COMPUTERNAME -ErrorAction 'Stop'
-            #winrm enumerate winrm/config/listener
-            #winrm enumerate winrm/config/listener | Should -Contain 'Transport = HTTP'
-            # # allows remote access from public networks from any remote location
-            # Set-NetFirewallRule -Name 'WINRM-HTTP-In-TCP' -RemoteAddress Any -Verbose -ErrorAction 'Stop'
-
+        It 'Should successfully run a command on localhost using PS Remoting' {
             $result = Invoke-Command -ComputerName 'localhost' -ScriptBlock { 1 } -ErrorAction 'Stop'
 
             $result | Should -Be 1
