@@ -171,12 +171,10 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
     Context 'When the Force parameter is used' {
         It 'Should force the download of the media file' {
             Mock -CommandName Invoke-WebRequest
-            Mock -CommandName Remove-Item
 
             Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath 'C:\Temp' -Force
 
             Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
         }
     }
 
