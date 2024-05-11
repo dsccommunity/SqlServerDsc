@@ -115,6 +115,12 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
     Context 'When the URL ends with .exe' {
         BeforeAll {
             $Url = "$Url.exe"
+
+            Mock -CommandName Test-Path -MockWith {
+                return $false
+            } -ParameterFilter {
+                $Path -eq (Join-Path -Path $DestinationPath -ChildPath 'media.iso')
+            }
         }
 
         It 'Should call Invoke-WebRequest to download the executable file' {
@@ -132,13 +138,33 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
         It 'Should call Remove-Item to remove the executable file' {
             Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke -CommandName Remove-Item -Exactly -Times 2 -Scope It
+            Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
         }
 
         It 'Should call Rename-Item to rename the downloaded ISO file to the specified name' {
             Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
             Should -Invoke -CommandName Rename-Item -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When file is already present and should be overridden' {
+        BeforeAll {
+            Mock -CommandName Test-Path -MockWith {
+                return $true
+            } -ParameterFilter {
+                $Path -eq (Join-Path -Path $DestinationPath -ChildPath 'media.iso')
+            }
+        }
+
+        It 'Should remove the existing file' {
+            Mock -CommandName Invoke-WebRequest
+            Mock -CommandName Remove-Item
+
+            Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath 'C:\Temp' -Force
+
+            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
         }
     }
 
