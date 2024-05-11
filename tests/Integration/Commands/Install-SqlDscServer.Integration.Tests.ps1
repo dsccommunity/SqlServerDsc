@@ -23,50 +23,11 @@ BeforeDiscovery {
     }
 }
 
-BeforeAll {
-       <#
-    .SYNOPSIS
-        This function will output the Setup Bootstrap Summary.txt log file.
-
-    .DESCRIPTION
-        This function will output the Summary.txt log file, this is to be
-        able to debug any problems that potentially occurred during setup.
-        This will pick up the newest Summary.txt log file, so any
-        other log files will be ignored (AppVeyor build worker has
-        SQL Server instances installed by default).
-        This code is meant to work regardless what SQL Server
-        major version is used for the integration test.
-    #>
-    function Show-SqlBootstrapLog
-    {
-        [CmdletBinding()]
-        param
-        (
-        )
-
-        $summaryLogPath = Get-ChildItem -Path 'C:\Program Files\Microsoft SQL Server\**\Setup Bootstrap\Log\Summary.txt' |
-            Sort-Object -Property LastWriteTime -Descending |
-            Select-Object -First 1
-
-        $summaryLog = Get-Content $summaryLogPath
-
-        Write-Verbose -Message $('-' * 80) -Verbose
-        Write-Verbose -Message 'Summary.txt' -Verbose
-        Write-Verbose -Message $('-' * 80) -Verbose
-
-        $summaryLog | ForEach-Object -Process {
-            Write-Verbose $_ -Verbose
-        }
-
-        Write-Verbose -Message $('-' * 80) -Verbose
-    }
-}
-
 Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
-    BeforeAll {
-        # Get the built SqlServerDsc module path.
-        $modulePath = Split-Path -Parent -Path (Get-Module -name SqlServerDsc -ListAvailable).ModuleBase
-    }
+    # BeforeAll {
+    #     # Get the built SqlServerDsc module path.
+    #     $modulePath = Split-Path -Parent -Path (Get-Module -name SqlServerDsc -ListAvailable).ModuleBase
+    # }
 
     Context 'When using Install parameter set' {
         Context 'When installing database engine default instance' {
@@ -188,10 +149,51 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                 $sqlServerService | Should -Not -BeNullOrEmpty
                 $sqlServerService.Status | Should -Be 'Running'
             }
-
-            # It 'Should output the Summary.txt log file' {
-            #     Show-SqlBootstrapLog
-            # }
         }
+
+        # Context 'Output the Summary.txt log file' {
+        #     BeforeAll {
+        #         <#
+        #             .SYNOPSIS
+        #                 This function will output the Setup Bootstrap Summary.txt log file.
+
+        #             .DESCRIPTION
+        #                 This function will output the Summary.txt log file, this is to be
+        #                 able to debug any problems that potentially occurred during setup.
+        #                 This will pick up the newest Summary.txt log file, so any
+        #                 other log files will be ignored (AppVeyor build worker has
+        #                 SQL Server instances installed by default).
+        #                 This code is meant to work regardless what SQL Server
+        #                 major version is used for the integration test.
+        #         #>
+        #         function Show-SqlBootstrapLog
+        #         {
+        #             [CmdletBinding()]
+        #             param
+        #             (
+        #             )
+
+        #             $summaryLogPath = Get-ChildItem -Path 'C:\Program Files\Microsoft SQL Server\**\Setup Bootstrap\Log\Summary.txt' |
+        #                 Sort-Object -Property LastWriteTime -Descending |
+        #                 Select-Object -First 1
+
+        #             $summaryLog = Get-Content $summaryLogPath
+
+        #             Write-Verbose -Message $('-' * 80) -Verbose
+        #             Write-Verbose -Message 'Summary.txt' -Verbose
+        #             Write-Verbose -Message $('-' * 80) -Verbose
+
+        #             $summaryLog | ForEach-Object -Process {
+        #                 Write-Verbose $_ -Verbose
+        #             }
+
+        #             Write-Verbose -Message $('-' * 80) -Verbose
+        #         }
+        #     }
+
+        #     It 'Should output the Summary.txt log file' {
+        #         Show-SqlBootstrapLog
+        #     }
+        # }
     }
 }
