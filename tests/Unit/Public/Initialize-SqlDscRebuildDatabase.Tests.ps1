@@ -50,7 +50,7 @@ AfterAll {
 Describe 'Initialize-SqlDscRebuildDatabase' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
-            MockParameterSetName = '__AllParameterSets'
+            MockParameterSetName   = '__AllParameterSets'
             # cSpell: disable-next
             MockExpectedParameters = '[-MediaPath] <string> [-InstanceName] <string> [[-SAPwd] <securestring>] [[-SqlCollation] <string>] [-SqlSysAdminAccounts] <string[]> [[-SqlTempDbDir] <string>] [[-SqlTempDbLogDir] <string>] [[-SqlTempDbFileCount] <ushort>] [[-SqlTempDbFileSize] <ushort>] [[-SqlTempDbFileGrowth] <ushort>] [[-SqlTempDbLogFileSize] <ushort>] [[-SqlTempDbLogFileGrowth] <ushort>] [[-Timeout] <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
@@ -61,11 +61,11 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag 'Public' {
             } |
             Select-Object -Property @(
                 @{
-                    Name = 'ParameterSetName'
+                    Name       = 'ParameterSetName'
                     Expression = { $_.Name }
                 },
                 @{
-                    Name = 'ParameterListAsString'
+                    Name       = 'ParameterListAsString'
                     Expression = { $_.ToString() }
                 }
             )
@@ -92,9 +92,10 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
+                    MediaPath           = '\SqlMedia'
+                    InstanceName        = 'INSTANCE'
                     SqlSysAdminAccounts = 'DOMAIN\User', 'COMPANY\SQL Administrators'
+                    ErrorAction         = 'Stop'
                 }
             }
 
@@ -139,49 +140,49 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag 'Public' {
 
         Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
             @{
-                MockParameterName = 'SqlTempDbDir'
+                MockParameterName  = 'SqlTempDbDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
-                MockExpectedRegEx = '\/SQLTEMPDBDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbLogDir'
+                MockParameterName  = 'SqlTempDbLogDir'
                 MockParameterValue = 'C:\Program Files\Microsoft SQL Server\MSSQL13.INST2016\MSSQL\Data'
-                MockExpectedRegEx = '\/SQLTEMPDBLOGDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBLOGDIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SAPwd'
+                MockParameterName  = 'SAPwd'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/SAPWD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SAPWD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlCollation'
+                MockParameterName  = 'SqlCollation'
                 MockParameterValue = 'SQL_Latin1_General_CP1_CI_AS'
-                MockExpectedRegEx = '\/SQLCOLLATION="SQL_Latin1_General_CP1_CI_AS"' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLCOLLATION="SQL_Latin1_General_CP1_CI_AS"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbFileCount'
+                MockParameterName  = 'SqlTempDbFileCount'
                 MockParameterValue = 8
-                MockExpectedRegEx = '\/SQLTEMPDBFILECOUNT=8' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBFILECOUNT=8' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbFileSize'
+                MockParameterName  = 'SqlTempDbFileSize'
                 MockParameterValue = 100
-                MockExpectedRegEx = '\/SQLTEMPDBFILESIZE=100' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBFILESIZE=100' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbFileGrowth'
+                MockParameterName  = 'SqlTempDbFileGrowth'
                 MockParameterValue = 10
-                MockExpectedRegEx = '\/SQLTEMPDBFILEGROWTH=10' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBFILEGROWTH=10' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbLogFileSize'
+                MockParameterName  = 'SqlTempDbLogFileSize'
                 MockParameterValue = 100
-                MockExpectedRegEx = '\/SQLTEMPDBLOGFILESIZE=100' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBLOGFILESIZE=100' # cspell: disable-line
             }
             @{
-                MockParameterName = 'SqlTempDbLogFileGrowth'
+                MockParameterName  = 'SqlTempDbLogFileGrowth'
                 MockParameterValue = 10
-                MockExpectedRegEx = '\/SQLTEMPDBLOGFILEGROWTH=10' # cspell: disable-line
+                MockExpectedRegEx  = '\/SQLTEMPDBLOGFILEGROWTH=10' # cspell: disable-line
             }
         ) {
             BeforeAll {
@@ -190,10 +191,11 @@ Describe 'Initialize-SqlDscRebuildDatabase' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
+                    MediaPath           = '\SqlMedia'
+                    InstanceName        = 'INSTANCE'
                     SqlSysAdminAccounts = 'DOMAIN\User'
-                    Force = $true
+                    Force               = $true
+                    ErrorAction         = 'Stop'
                 }
             }
 

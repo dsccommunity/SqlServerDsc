@@ -465,7 +465,7 @@
 #>
 function Invoke-SetupAction
 {
-    # cSpell: ignore PBDMS Admini AZUREEXTENSION
+    # cSpell: ignore PBDMS Admini AZUREEXTENSION BSTR
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType()]
     param
@@ -1618,7 +1618,18 @@ function Invoke-SetupAction
 
             { $PSBoundParameters.$parameterName -is [System.Security.SecureString] }
             {
-                $passwordClearText = $PSBoundParameters.$parameterName | ConvertFrom-SecureString -AsPlainText
+                $secureString = $PSBoundParameters.$parameterName
+
+                if ($PSVersionTable.PSVersion -ge '6.0')
+                {
+                    $passwordClearText = $secureString | ConvertFrom-SecureString -AsPlainText
+                }
+                else
+                {
+                    # Workaround to convert SecureString to plain text in Windows PowerShell.
+                    $binaryStringPointer = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureString)
+                    $passwordClearText = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($binaryStringPointer)
+                }
 
                 $sensitiveValue += $passwordClearText
 

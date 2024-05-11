@@ -9,9 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - SqlServerDsc
   - Added build tasks to generate Wiki documentation for public commands.
+  - Initial integration tests for commands.
 - SqlDatabaseMail
   - Added the parameter `UseDefaultCredentials` to control use of the DatabaseEngine
     service account for SMTP server authentication.
+- New public commands
+  - `Save-SqlDscSqlServerMediaFile` - Downloads the content on the provided URL
+    and if it is an executable it will use the executable to download the
+    ISO image media.
 
 ### Fixed
 
@@ -36,17 +41,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlAgDatabase
   - Remove unused help file ([issue #1745](https://github.com/dsccommunity/SqlServerDsc/issues/1745)).
 - SqlDatabaseObjectPermission
-  - Added `foreach` loop in `Get-TargetResource` to fix issues with INSERT permissions when it's not the only permission on the table ([issue [#2006](https://github.com/dsccommunity/SqlServerDsc/issues/2006)])
+  - Added `foreach` loop in `Get-TargetResource` to fix issues with `INSERT`
+    permissions when it's not the only permission on the table ([issue [#2006](https://github.com/dsccommunity/SqlServerDsc/issues/2006)]).
+- `Install-SqlDscServer`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Add-SqlDscNode`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Complete-SqlDscFailoverCluster`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Complete-SqlDscImage`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Initialize-SqlDscRebuildDatabase`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Remove-SqlDscNode`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Repair-SqlDscServer`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Uninstall-SqlDscServer`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- Private functions
+  - `Invoke-SetupAction` no longer throws when secure strings is passed on
+    Windows PowerShell.
 
 ### Changed
 
-- SqlServer
+- SqlServerDsc
   - Updated pipeline files to support pre-releases with ModuleFast (when
     resolving dependencies).
-- SqlAG
-  - Converted unit test to Pester 5
-  - DtcSupportEnabled option in Set-TargetResource and TestTargetResource
-- SqlServerDsc
   - Bump PSResourceGet to v1.0.0 (used when resolving dependencies).
   - Update markdown highlights with newly supported keywords.
   - Bump GitHub Action _Stale_ to v9.
@@ -56,8 +85,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     To run the meta task `docs` the SMO assemblies must be loaded into the
     session, either by importing SqlServer module or loading SMO stubs.
   - QA test improved to speed up quality testing.
+  - The pipeline test stages has been split into different stages.
+- SqlAG
+  - Converted unit test to Pester 5
+  - DtcSupportEnabled option in Set-TargetResource and TestTargetResource
 - SqlSetup
   - Updated integration tests to use PSResourceGet to download required modules.
+- SqlRS
+  - Integration tests for SQL Server 2022 has been temporarily disabled due
+    to a unknown problem. More information in [issue #2009](https://github.com/dsccommunity/SqlServerDsc/issues/2009).
 
 ## [16.5.0] - 2023-10-05
 

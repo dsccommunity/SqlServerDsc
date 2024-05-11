@@ -569,9 +569,9 @@ function Connect-SQL
         $sqlConnectionContext.Connect()
 
         <#
-            The addition of the ConnetTimeout property to the ConnectionContext will force the
+            The addition of the ConnectTimeout property to the ConnectionContext will force the
             Connect() method to block until successful.  THe SMO object's Status property may not
-            report 'Online' immediately eventhough the Connect() was successful.  The loop is to
+            report 'Online' immediately even though the Connect() was successful.  The loop is to
             ensure the SMO's Status property was been updated.
         #>
         $sleepInSeconds = 2
