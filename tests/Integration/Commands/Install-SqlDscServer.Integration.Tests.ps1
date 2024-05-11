@@ -28,18 +28,18 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
         Context 'When installing database engine default instance' {
             It 'Should run the command without throwing' {
                 {
-                    param
-                    (
-                        [Parameter(Mandatory = $true)]
-                        [System.String]
-                        $IsoDrivePath,
-
-                        [Parameter(Mandatory = $true)]
-                        [System.String]
-                        $ComputerName
-                    )
-
                     $installScriptBlock = {
+                        param
+                        (
+                            [Parameter(Mandatory = $true)]
+                            [System.String]
+                            $IsoDrivePath,
+
+                            [Parameter(Mandatory = $true)]
+                            [System.String]
+                            $ComputerName
+                        )
+
                         # Set splatting parameters for Install-SqlDscServer
                         $installSqlDscServerParameters = @{
                             Install               = $true
@@ -75,7 +75,7 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                     $invokeCommandCredential = New-Object System.Management.Automation.PSCredential ($invokeCommandUsername, $invokeCommandPassword)
 
                     # Runs command as SqlInstall user.
-                    Invoke-Command -ComputerName localhost -Credential $invokeCommandCredential -ScriptBlock $installScriptBlock -ArgumentList @(
+                    Invoke-Command -ComputerName 'localhost' -Credential $invokeCommandCredential -ScriptBlock $installScriptBlock -ArgumentList @(
                         $env:IsoDrivePath, # Already set by the prerequisites tests
                         (Get-ComputerName)
                     )
