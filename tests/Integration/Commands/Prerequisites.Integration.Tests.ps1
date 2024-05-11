@@ -204,7 +204,7 @@ Describe 'Prerequisites' {
             # # allows remote access from public networks from any remote location
             # Set-NetFirewallRule -Name 'WINRM-HTTP-In-TCP' -RemoteAddress Any -Verbose -ErrorAction 'Stop'
 
-            $result = Invoke-Command -ComputerName $computername -ScriptBlock { 1 } -ErrorAction 'Stop'
+            $result = Invoke-Command -ComputerName (Get-ComputerName) -ScriptBlock { 1 } -ErrorAction 'Stop'
 
             $result | Should -Be 1
         }
