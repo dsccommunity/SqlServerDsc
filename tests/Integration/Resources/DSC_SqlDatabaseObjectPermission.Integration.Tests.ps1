@@ -440,7 +440,8 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
             $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Grant' })
             $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Ensure | Should -Be 'Present'
+            $grantPermission.Ensure[0] | Should -Be 'Present'
+            $grantPermission.Ensure[1] | Should -Be 'Present'
             $grantPermission.Permission | Should -HaveCount 2
             $grantPermission.Permission | Should -Contain @('Select')
             $grantPermission.Permission | Should -Contain @('Insert')
