@@ -356,6 +356,12 @@ Configuration DSC_SqlDatabaseObjectPermission_Multiple_Grant_Config
 
                 DSC_DatabaseObjectPermission
                 {
+                    State      = 'Grant'
+                    Permission = 'Insert'
+                }
+
+                DSC_DatabaseObjectPermission
+                {
                     State      = 'Deny'
                     Permission = 'Delete'
                 }
