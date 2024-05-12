@@ -40,6 +40,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New method ToString() for making verbose output better.
 - SqlAgDatabase
   - Remove unused help file ([issue #1745](https://github.com/dsccommunity/SqlServerDsc/issues/1745)).
+- SqlDatabaseObjectPermission
+  - Added `foreach` loop in `Get-TargetResource` to fix issues with `INSERT`
+    permissions when it's not the only permission on the table ([issue [#2006](https://github.com/dsccommunity/SqlServerDsc/issues/2006)]).
 - `Install-SqlDscServer`
   - No longer throws with duplicate parameter error if the parameter
     `ErrorAction` is passed to the command.

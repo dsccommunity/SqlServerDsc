@@ -183,7 +183,7 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
                                     Add-Member -MemberType NoteProperty -Name 'Delete' -Value $false -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'Execute' -Value $false -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'Impersonate' -Value $false -PassThru |
-                                    Add-Member -MemberType NoteProperty -Name 'Insert' -Value $false -PassThru |
+                                    Add-Member -MemberType NoteProperty -Name 'Insert' -Value $true -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'Receive' -Value $false -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'References' -Value $false -PassThru |
                                     Add-Member -MemberType NoteProperty -Name 'Select' -Value $true -PassThru |
@@ -224,6 +224,16 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
                     } `
                     -ClientOnly
 
+                $cimInstancePermissionCollection += New-CimInstance `
+                    -ClassName 'DSC_DatabaseObjectPermission' `
+                    -Namespace 'root/microsoft/Windows/DesiredStateConfiguration' `
+                    -Property @{
+                        State      = 'Grant'
+                        Permission = 'Insert'
+                        Ensure     = '' # Must be empty string to hit a line in the code.
+                    } `
+                    -ClientOnly
+
                 $script:mockGetTargetResourceParameters = @{
                     InstanceName = 'DSCTEST'
                     DatabaseName = 'AdventureWorks'
@@ -258,17 +268,20 @@ Describe 'SqlDatabaseObjectPermission\Get-TargetResource' -Tag 'Get' {
 
                 $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                $getTargetResourceResult.Permission | Should -HaveCount 2
+                $getTargetResourceResult.Permission | Should -HaveCount 3
                 $getTargetResourceResult.Permission[0] | Should -BeOfType 'CimInstance'
                 $getTargetResourceResult.Permission[1] | Should -BeOfType 'CimInstance'
+                $getTargetResourceResult.Permission[2] | Should -BeOfType 'CimInstance'
 
                 $grantPermission = $getTargetResourceResult.Permission | Where-Object -FilterScript { $_.State -eq 'Grant' }
                 $grantPermission | Should -Not -BeNullOrEmpty
                 $grantPermission.Ensure[0] | Should -Be 'Present'
                 $grantPermission.Ensure[1] | Should -Be 'Present'
-                $grantPermission.Permission | Should -HaveCount 2
+                $grantPermission.Ensure[2] | Should -Be 'Present'
+                $grantPermission.Permission | Should -HaveCount 3
                 $grantPermission.Permission | Should -Contain @('Select')
                 $grantPermission.Permission | Should -Contain @('Update')
+                $grantPermission.Permission | Should -Contain @('Insert')
             }
         }
     }
@@ -593,6 +606,12 @@ Describe 'SqlDatabaseObjectPermission\Test-TargetResource' -Tag 'Test' {
             # Using all lower-case on 'update' intentionally.
             $cimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
                 -Permission 'update' `
+                -PermissionState 'Grant' `
+                -Ensure 'Present'
+
+            # Checking that Insert comes back as expected
+            $cimInstancePermissionCollection += ConvertTo-CimDatabaseObjectPermission `
+                -Permission 'Insert' `
                 -PermissionState 'Grant' `
                 -Ensure 'Present'
 
