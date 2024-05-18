@@ -28,6 +28,16 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2016', 'Integrati
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 
         $computerName = Get-ComputerName
+
+        $previouslyErrorViewPreference = $ErrorView
+        $ErrorView = 'DetailedView'
+    }
+
+    AfterAll {
+        $ErrorView = $previouslyErrorViewPreference
+
+        Write-Verbose -Message ('Error count: {0}' -f $Error.Count) -Verbose
+        Write-Verbose -Message ($Error | Out-String) -Verbose
     }
 
     Context 'When connecting to the default instance impersonating a Windows user' {
@@ -41,6 +51,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2016', 'Integrati
                     Verbose     = $true
                     ErrorAction = 'Stop'
                 }
+
 
                 $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
 
