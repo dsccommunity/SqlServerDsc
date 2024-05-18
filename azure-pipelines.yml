@@ -255,6 +255,7 @@ stages:
                   'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
                   # Group 1
                   'tests/Integration/Commands/Install-SqlDscServer.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Connect-SqlDscDatabaseEngine.Integration.Tests.ps1'
                   #'tests/Integration/Commands/Install-SqlDscReportingServices.Integration.Tests.ps1'
               )
             name: test
