@@ -24,17 +24,17 @@ BeforeDiscovery {
 }
 
 Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
-    # BeforeAll {
+    BeforeAll {
+        Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
+
     #     # Get the built SqlServerDsc module path.
     #     $modulePath = Split-Path -Parent -Path (Get-Module -name SqlServerDsc -ListAvailable).ModuleBase
-    # }
+    }
 
     Context 'When using Install parameter set' {
         Context 'When installing database engine default instance' {
             It 'Should run the command without throwing' {
                 {
-                    Write-Verbose -Message ('Running install as user ''{0}''.' -f $env:UserName) -Verbose
-
                     $computerName = Get-ComputerName
 
                     # Set splatting parameters for Install-SqlDscServer
