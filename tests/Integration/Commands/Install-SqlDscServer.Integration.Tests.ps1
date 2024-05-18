@@ -58,6 +58,8 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                         SqlCollation          = 'Finnish_Swedish_CI_AS'
                         InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
                         InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
+                        NpEnabled             = $true
+                        TcpEnabled            = $true
                         MediaPath             = $env:IsoDrivePath
                         Verbose               = $true
                         ErrorAction           = 'Stop'
@@ -120,6 +122,8 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                     #         SqlCollation          = 'Finnish_Swedish_CI_AS'
                     #         InstallSharedDir      = 'C:\Program Files\Microsoft SQL Server'
                     #         InstallSharedWOWDir   = 'C:\Program Files (x86)\Microsoft SQL Server'
+                    #         NpEnabled             = $true
+                    #         TcpEnabled            = $true
                     #         MediaPath             = $IsoDrivePath
                     #         Verbose               = $true
                     #         ErrorAction           = 'Stop'
