@@ -260,13 +260,13 @@ stages:
               )
             name: test
             displayName: 'Run Integration Test'
-          # - task: PublishTestResults@2
-          #   displayName: 'Publish Test Results'
-          #   condition: succeededOrFailed()
-          #   inputs:
-          #     testResultsFormat: 'NUnit'
-          #     testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-          #     testRunTitle: 'Integration ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Integration Commands ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
   - stage: Integration_Test_Resources
     displayName: 'Integration Test Resources'
@@ -368,7 +368,7 @@ stages:
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-              testRunTitle: 'Integration ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
+              testRunTitle: 'Integration Resources ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
       - job: Test_Integration_dbatools
         displayName: 'Integration (dbatools)'
