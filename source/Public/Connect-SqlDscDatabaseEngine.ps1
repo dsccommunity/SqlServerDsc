@@ -25,7 +25,7 @@
         are 'WindowsUser' or 'SqlLogin'. Default value is 'WindowsUser'
         If set to 'WindowsUser' then the it will impersonate using the Windows
         login specified in the parameter Credential.
-        If set to 'WindowsUser' then the it will impersonate using the native SQL
+        If set to 'SqlLogin' then it will impersonate using the native SQL
         login specified in the parameter Credential.
 
     .PARAMETER StatementTimeout
