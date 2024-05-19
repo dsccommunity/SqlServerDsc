@@ -197,6 +197,8 @@ Describe 'Prerequisites' {
 
     Context 'Test PS Remoting to localhost' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
         It 'Should successfully run a command on localhost using PS Remoting' {
+            # This is a simple test to verify that PS Remoting is working.
+            # TODO: This fails on Appveyor, but works locally when debugging on AppVeyor. Investigate why.
             $result = Invoke-Command -ComputerName 'localhost' -ScriptBlock { 1 } -ErrorAction 'Stop'
 
             $result | Should -Be 1

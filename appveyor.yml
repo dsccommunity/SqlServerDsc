@@ -16,7 +16,7 @@ image:
 
 environment:
   # DEBUG: Un-comment this to get the same password for the RDP session for each build
-  APPVEYOR_RDP_PASSWORD: D5c1234!
+  #APPVEYOR_RDP_PASSWORD: D5c1234!
   # DEBUG: Un-comment these to skip installing the various instances (to speed up debug)
   #SKIP_DATABASE_ENGINE_INSTANCE: true
   #SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
@@ -25,7 +25,7 @@ environment:
   matrix:
   # DEBUG: Comment and un-comment the different SQL Server version that should be tested.
   - TEST_CONFIGURATION: Integration_SQL2016
-  #- TEST_CONFIGURATION: Integration_SQL2017
+  - TEST_CONFIGURATION: Integration_SQL2017
   #- TEST_CONFIGURATION: Integration_SQL2019
   #- TEST_CONFIGURATION: Integration_SQL2022
 
@@ -82,13 +82,13 @@ test_script:
 
         ### Run the integration tests in a specific group order.
         ## Group 1
-        #'tests/Integration/Resources/DSC_SqlSetup.Integration.Tests.ps1'
+        'tests/Integration/Resources/DSC_SqlSetup.Integration.Tests.ps1'
         # Group 2
         #'tests/Integration/Resources/DSC_SqlAgentAlert.Integration.Tests.ps1'
         #'tests/Integration/Resources/DSC_SqlLogin.Integration.Tests.ps1'
         #'tests/Integration/Resources/DSC_SqlEndpoint.Integration.Tests.ps1'
         #'tests/Integration/Resources/DSC_SqlDatabaseMail.Integration.Tests.ps1'
-        #'tests/Integration/Resources/DSC_SqlRSSetup.Integration.Tests.ps1'
+        'tests/Integration/Resources/DSC_SqlRSSetup.Integration.Tests.ps1'
         #'tests/Integration/Resources/DSC_SqlDatabaseDefaultLocation.Integration.Tests.ps1'
         #'tests/Integration/Resources/DSC_SqlDatabase.Integration.Tests.ps1'
         #'tests/Integration/Resources/DSC_SqlAlwaysOnService.Integration.Tests.ps1'
@@ -98,7 +98,7 @@ test_script:
         #'tests/Integration/Resources/DSC_SqlTraceFlag.Integration.Tests.ps1'
         ## Group 3
         #'tests/Integration/Resources/DSC_SqlRole.Integration.Tests.ps1'
-        #'tests/Integration/Resources/DSC_SqlRS.Integration.Tests.ps1'
+        'tests/Integration/Resources/DSC_SqlRS.Integration.Tests.ps1'
         #'tests/Integration/Resources/DSC_SqlDatabaseUser.Integration.Tests.ps1'
         #'tests/Integration/Resources/DSC_SqlReplication.Integration.Tests.ps1'
         #'tests/Integration/Resources/DSC_SqlAudit.Integration.Tests.ps1'
@@ -119,10 +119,10 @@ test_script:
         # Debugging Commands
         # -------------------
         ## Group 0
-        'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
+        #'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
         ## Group 1
-        'tests/Integration/Commands/Install-SqlDscServer.Integration.Tests.ps1'
-        'tests/Integration/Commands/Connect-SqlDscDatabaseEngine.Integration.Tests.ps1'
+        #'tests/Integration/Commands/Install-SqlDscServer.Integration.Tests.ps1'
+        #'tests/Integration/Commands/Connect-SqlDscDatabaseEngine.Integration.Tests.ps1'
     )
 
 deploy: off
@@ -133,5 +133,5 @@ on_finish:
 - ps: |
     if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { Write-Host -ForegroundColor 'Yellow' -Object 'Not a pull request, skipping.'; return }
 
-    $blockRdp = $true
+    #$blockRdp = $true
     iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
