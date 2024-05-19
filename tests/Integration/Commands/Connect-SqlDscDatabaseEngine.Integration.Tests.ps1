@@ -27,16 +27,17 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2016', 'Integrati
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 
-        $previouslyErrorViewPreference = $ErrorView
-        $ErrorView = 'DetailedView'
+        # $previouslyErrorViewPreference = $ErrorView
+        # $ErrorView = 'DetailedView'
+        # $Error.Clear()
     }
 
-    AfterAll {
-        $ErrorView = $previouslyErrorViewPreference
+    # AfterAll {
+    #     $ErrorView = $previouslyErrorViewPreference
 
-        Write-Verbose -Message ('Error count: {0}' -f $Error.Count) -Verbose
-        Write-Verbose -Message ($Error | Out-String) -Verbose
-    }
+    #     Write-Verbose -Message ('Error count: {0}' -f $Error.Count) -Verbose
+    #     Write-Verbose -Message ($Error | Out-String) -Verbose
+    # }
 
     Context 'When connecting to the default instance impersonating a Windows user' {
         It 'Should return the correct result' {
