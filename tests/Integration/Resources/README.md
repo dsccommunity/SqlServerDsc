@@ -20,9 +20,9 @@ for the connection. This information is at the top of each builds output
 log and can be found here: https://ci.appveyor.com/project/dsccommunity/sqlserverdsc
 
 By default the build worker is terminated once the build finishes, to keep
-the build worker online after the build finishes uncomment the line in
-`appveyor.yml`. The build worker will always be terminated after 60 minutes
-which is the run time open source projects gets.
+the build worker online after the build finishes uncomment the required line
+in the file `appveyor.yml`. The build worker will always be terminated after
+60 minutes for open source projects.
 
 ## SqlServer module
 

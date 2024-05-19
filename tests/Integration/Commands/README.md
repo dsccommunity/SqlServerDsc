@@ -2,8 +2,27 @@
 
 ## Debugging
 
-Currently there are no possible to debug the commands on the service Appveyor
-since it has not been configured in the `appveyor.yml`.
+There is a build worker that runs on the service Appveyor. Appveyor allows
+you to use RDP to access the build worker which can be helpful when debugging
+integration test.
+
+What images is used, what SQL Server version that is installed, and what
+integration tests is run is controlled by the file `appveyor.yml` in the
+project folder.
+
+For debug purpose every contributor is allowed to change the file `appveyor.yml`
+on a PR for debug purpose. But before a PR will be merged the file `appveyor.yml`
+must be reverted so that is looks like it does on the **main** branch (unless
+an issue is being fixed or a maintainer says otherwise).
+
+On each build run Appveyor outputs the IP address, account, and password
+for the connection. This information is at the top of each builds output
+log and can be found here: https://ci.appveyor.com/project/dsccommunity/sqlserverdsc
+
+By default the build worker is terminated once the build finishes, to keep
+the build worker online after the build finishes uncomment the required line
+in the file `appveyor.yml`. The build worker will always be terminated after
+60 minutes for open source projects.
 
 ## Depends On
 
