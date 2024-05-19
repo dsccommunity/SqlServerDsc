@@ -27,8 +27,6 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2016', 'Integrati
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 
-        $computerName = Get-ComputerName
-
         $previouslyErrorViewPreference = $ErrorView
         $ErrorView = 'DetailedView'
     }
@@ -43,7 +41,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2016', 'Integrati
     Context 'When connecting to the default instance impersonating a Windows user' {
         It 'Should return the correct result' {
             {
-                $sqlAdministratorUserName = '{0}\SqlAdmin' -f $computerName
+                $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
                 $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
                 $connectSqlDscDatabaseEngineParameters = @{
