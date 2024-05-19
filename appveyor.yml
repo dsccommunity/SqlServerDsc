@@ -9,13 +9,14 @@ skip_tags: true
 # See https://www.appveyor.com/docs/windows-images-software
 # DEBUG: for debug purpose, comment and un-comment images as needed.
 image:
+#- Visual Studio 2022 # Windows Server 2022
 - Visual Studio 2019 # Windows Server 2019
 #- Visual Studio 2017 # Windows Server 2016
 #- Visual Studio 2013 # Windows Server 2012 R2
 
 environment:
   # DEBUG: Un-comment this to get the same password for the RDP session for each build
-  #APPVEYOR_RDP_PASSWORD: D5c1234!
+  APPVEYOR_RDP_PASSWORD: D5c1234!
   # DEBUG: Un-comment these to skip installing the various instances (to speed up debug)
   #SKIP_DATABASE_ENGINE_INSTANCE: true
   #SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
@@ -24,9 +25,9 @@ environment:
   matrix:
   # DEBUG: Comment and un-comment the different SQL Server version that should be tested.
   - TEST_CONFIGURATION: Integration_SQL2016
-  - TEST_CONFIGURATION: Integration_SQL2017
-  - TEST_CONFIGURATION: Integration_SQL2019
-  - TEST_CONFIGURATION: Integration_SQL2022
+  #- TEST_CONFIGURATION: Integration_SQL2017
+  #- TEST_CONFIGURATION: Integration_SQL2019
+  #- TEST_CONFIGURATION: Integration_SQL2022
 
 # DEBUG: See section on_finish last in this file on how to block build to keep RDP open.
 # DEBUG: If running on own AppVeyor project, comment the line below that skips if it is not a pull request
@@ -132,5 +133,5 @@ on_finish:
 - ps: |
     if (-not $env:APPVEYOR_PULL_REQUEST_NUMBER) { Write-Host -ForegroundColor 'Yellow' -Object 'Not a pull request, skipping.'; return }
 
-    #$blockRdp = $true
+    $blockRdp = $true
     iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
