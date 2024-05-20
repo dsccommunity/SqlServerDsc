@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Connect-SqlDscDatabaseEngine`
   - Added integration test for the command.
 
+### Changed
+
+- `Connect-SqlDscDatabaseEngine`
+  - Update comment-based help with more examples.
+
 ### Fixed
 
 - `Connect-SqlDscDatabaseEngine`

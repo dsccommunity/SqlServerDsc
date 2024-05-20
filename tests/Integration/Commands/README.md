@@ -100,8 +100,8 @@ The following local users are created and can be used by integration tests.
 <!-- markdownlint-disable MD013 -->
 User | Password | Permission | Description
 --- | --- | --- | ---
-.\SqlInstall | P@ssw0rd1 | Local Windows administrator and sysadmin | Runs Setup for all instances.
-.\SqlAdmin | P@ssw0rd1 | Local Windows user and sysadmin | Administrator of all SQL Server instances.
+.\SqlInstall | P@ssw0rd1 | Local Windows administrator and sysadmin | Runs Setup for all the instances.
+.\SqlAdmin | P@ssw0rd1 | Local Windows user and sysadmin | Administrator of all the SQL Server instances.
 .\svc-SqlPrimary | yig-C^Equ3 | Local Windows user. | Runs the SQL Server service.
 .\svc-SqlAgentPri | yig-C^Equ3 | Local Windows user. | Runs the SQL Server Agent service.
 .\svc-SqlSecondary | yig-C^Equ3 | Local Windows user. | Runs the SQL Server service in multi node scenarios.
@@ -109,7 +109,7 @@ User | Password | Permission | Description
 
 Login | Password | Permission | Description
 --- | --- | --- | ---
-sa | P@ssw0rd1 | sysadmin | Administrator of the Database Engine instances DSCSQLTEST.
+sa | P@ssw0rd1 | sysadmin | Administrator of all the Database Engine instances.
 <!-- markdownlint-enable MD013 -->
 
 ### Image media (ISO)
