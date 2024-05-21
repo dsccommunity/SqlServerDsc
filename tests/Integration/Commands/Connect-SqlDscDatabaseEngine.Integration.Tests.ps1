@@ -58,4 +58,47 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2016', 'Integrati
             } | Should -Not -Throw
         }
     }
+
+    Context 'When connecting to the named instance impersonating a Windows user' {
+        It 'Should return the correct result' {
+            {
+                $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+                $connectSqlDscDatabaseEngineParameters = @{
+                    InstanceName = 'DSCSQLTEST'
+                    Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                    Verbose      = $true
+                    ErrorAction  = 'Stop'
+                }
+
+
+                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+
+                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+            } | Should -Not -Throw
+        }
+    }
+
+    Context 'When connecting to the named instance using a SQL login' {
+        It 'Should return the correct result' {
+            {
+                $sqlAdministratorUserName = 'sa'
+                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+                $connectSqlDscDatabaseEngineParameters = @{
+                    InstanceName = 'DSCSQLTEST' # cSpell: disable-line
+                    LoginType    = 'SqlLogin'
+                    Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                    Verbose      = $true
+                    ErrorAction  = 'Stop'
+                }
+
+
+                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+
+                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+            } | Should -Not -Throw
+        }
+    }
 }
