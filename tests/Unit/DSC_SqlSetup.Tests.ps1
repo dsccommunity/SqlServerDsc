@@ -449,7 +449,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     SQLUserDBDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                     SQLUserDBLogDir       = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                     SQLBackupDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\Backup"
-                    SecurityMode          = 'Windows'
+                    SecurityMode          = $null
                 }
             }
 
@@ -547,7 +547,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.AgtSvcAccountUsername | Should -Be 'COMPANY\AgentAccount'
                 $result.SqlCollation | Should -Be 'Finnish_Swedish_CI_AS'
                 $result.SQLSysAdminAccounts | Should -Be 'COMPANY\Stacy'
-                $result.SecurityMode | Should -Be 'Windows'
+                $result.SecurityMode | Should -BeNullOrEmpty
                 $result.InstallSQLDataDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL"
                 $result.SQLUserDBDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                 $result.SQLUserDBLogDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
@@ -766,7 +766,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     SqlSvcStartupType     = 'Auto'
                     AgtSvcStartupType     = 'Auto'
                     SQLCollation          = 'Finnish_Swedish_CI_AS'
-                    SecurityMode          = 'Windows'
+                    SecurityMode          = $null
                 }
             }
 
@@ -884,7 +884,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     SQLUserDBDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                     SQLUserDBLogDir       = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                     SQLBackupDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\Backup"
-                    SecurityMode          = 'Windows'
+                    SecurityMode          = $null
                 }
             }
 
@@ -1008,7 +1008,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.AgtSvcAccountUsername | Should -Be 'COMPANY\AgentAccount'
                 $result.SqlCollation | Should -Be 'Finnish_Swedish_CI_AS'
                 $result.SQLSysAdminAccounts | Should -Be 'COMPANY\Stacy'
-                $result.SecurityMode | Should -Be 'Windows'
+                $result.SecurityMode | Should -BeNullOrEmpty
                 $result.InstallSQLDataDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL"
                 $result.SQLUserDBDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                 $result.SQLUserDBLogDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
@@ -1114,7 +1114,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     SQLUserDBDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                     SQLUserDBLogDir       = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                     SQLBackupDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\Backup"
-                    SecurityMode          = 'Windows'
+                    SecurityMode          = $null
                 }
             }
 
@@ -1241,7 +1241,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.AgtSvcAccountUsername | Should -Be 'COMPANY\AgentAccount'
                 $result.SqlCollation | Should -Be 'Finnish_Swedish_CI_AS'
                 $result.SQLSysAdminAccounts | Should -Be 'COMPANY\Stacy'
-                $result.SecurityMode | Should -Be 'Windows'
+                $result.SecurityMode | Should -BeNullOrEmpty
                 $result.InstallSQLDataDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL"
                 $result.SQLUserDBDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                 $result.SQLUserDBLogDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
@@ -1428,7 +1428,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     SQLUserDBDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\DATA\"
                     SQLUserDBLogDir       = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\DATA\"
                     SQLBackupDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\Backup"
-                    SecurityMode          = 'Windows'
+                    SecurityMode          = $null
                 }
             }
 
@@ -1550,7 +1550,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.AgtSvcAccountUsername | Should -Be 'COMPANY\AgentAccount'
                 $result.SqlCollation | Should -Be 'Finnish_Swedish_CI_AS'
                 $result.SQLSysAdminAccounts | Should -Be 'COMPANY\Stacy'
-                $result.SecurityMode | Should -Be 'Windows'
+                $result.SecurityMode | Should -BeNullOrEmpty
                 $result.InstallSQLDataDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL"
                 $result.SQLUserDBDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\DATA\"
                 $result.SQLUserDBLogDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\DATA\"
@@ -4628,7 +4628,7 @@ Describe 'Get-SqlEngineProperties' -Tag 'Helper' {
                 $result.SQLUserDBDir | Should -Be 'K:\MSSQL\Data'
                 $result.SQLUserDBLogDir | Should -Be 'L:\MSSQL\Logs'
                 $result.SQLBackupDir | Should -Be 'O:\MSSQL\Backup'
-                $result.SecurityMode | Should -Be 'Windows'
+                $result.SecurityMode | Should -BeNullOrEmpty
             }
         }
 
@@ -4643,7 +4643,7 @@ Describe 'Get-SqlEngineProperties' -Tag 'Helper' {
 
                     $result = Get-SqlEngineProperties -ServerName 'localhost' -InstanceName 'MSSQLSERVER'
 
-                    $result.SecurityMode | Should -BeExactly 'Windows'
+                    $result.SecurityMode | Should -BeNullOrEmpty
                 }
             }
         }

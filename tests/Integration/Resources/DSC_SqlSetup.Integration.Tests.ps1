@@ -509,7 +509,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.RSSvcAccount               | Should -BeNullOrEmpty
             $resourceCurrentState.RSSvcAccountUsername       | Should -BeNullOrEmpty
             $resourceCurrentState.SAPwd                      | Should -BeNullOrEmpty
-            $resourceCurrentState.SecurityMode               | Should -Be 'Windows'
+            $resourceCurrentState.SecurityMode               | Should -BeNullOrEmpty
             $resourceCurrentState.SetupProcessTimeout        | Should -BeNullOrEmpty
             $resourceCurrentState.SourceCredential           | Should -BeNullOrEmpty
             $resourceCurrentState.SourcePath                 | Should -Be "$($ConfigurationData.AllNodes.DriveLetter):\"

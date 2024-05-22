@@ -23,7 +23,7 @@ class DSC_SqlSetup : OMI_BaseResource
     [Read, Description("Returns the username for the _SQL Agent_'s _Windows_ service.")] String AgtSvcAccountUsername;
     [Write, Description("Collation for _SQL Server Database Engine_.")] String SQLCollation;
     [Write, Description("An array of accounts to be made _SQL Server_ administrators.")] String SQLSysAdminAccounts[];
-    [Write, Description("Security mode to apply to the _SQL Server_ instance. The value `'SQL'` indicates mixed-mode authentication while the value `'Windows'` indicates _Windows Authentication_. Default value is `'Windows'`."), ValueMap{"SQL", "Windows"}, Values{"SQL", "Windows"}] String SecurityMode;
+    [Write, Description("Security mode to apply to the _SQL Server_ instance. The value `'SQL'` indicates mixed-mode authentication."), ValueMap{"SQL"}, Values{"SQL"}] String SecurityMode;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("Specifies the SA account's password. Only applicable if parameter **SecurityMode** is set to `'SQL'`.")] String SAPwd;
     [Write, Description("Root path for _SQL Server_ database files.")] String InstallSQLDataDir;
     [Write, Description("Path for _SQL Server_ database files.")] String SQLUserDBDir;
