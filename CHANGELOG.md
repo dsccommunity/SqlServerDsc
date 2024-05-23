@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Connect-SqlDscDatabaseEngine`
   - Update comment-based help with more examples.
+- SqlSetup
+  - The parameter `SecurityMode` now only (correctly) allows the value
+    `SQL` ([issue #1185](https://github.com/dsccommunity/SqlServerDsc/issues/1185)).
 
 ### Fixed
 
