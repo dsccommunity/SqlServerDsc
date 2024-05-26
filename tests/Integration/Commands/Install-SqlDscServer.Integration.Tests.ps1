@@ -150,6 +150,13 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                 $sqlServerService | Should -Not -BeNullOrEmpty
                 $sqlServerService.Status | Should -Be 'Running'
             }
+
+            It 'Should stop the default instance SQL Server service' {
+                # Stop the default instance SQL Server service to save memory on the build worker.
+                $stopServiceResult = Stop-Service -Name 'MSSQLSERVER' -PassThru -Verbose -ErrorAction 'Stop'
+
+                $stopServiceResult.Status | Should -Be [System.ServiceProcess.ServiceControllerStatus]::Stopped
+            }
         }
 
         Context 'When installing database engine named instance' {
@@ -273,10 +280,17 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
 
             It 'Should have installed the SQL Server database engine' {
                 # Validate the SQL Server installation
-                $sqlServerService = Get-Service -Name 'SQL Server (DSCSQLTEST)' # cSpell: disable-line
+                $sqlServerService = Get-Service -Name 'SQL Server (DSCSQLTEST)' # cSpell: ignore DSCSQLTEST
 
                 $sqlServerService | Should -Not -BeNullOrEmpty
                 $sqlServerService.Status | Should -Be 'Running'
+            }
+
+            It 'Should stop the named instance SQL Server service' {
+                # Stop the named instance SQL Server service to save memory on the build worker.
+                $stopServiceResult = Stop-Service -Name 'SQL Server (DSCSQLTEST)' -PassThru -Verbose -ErrorAction 'Stop'
+
+                $stopServiceResult.Status | Should -Be [System.ServiceProcess.ServiceControllerStatus]::Stopped
             }
         }
 
