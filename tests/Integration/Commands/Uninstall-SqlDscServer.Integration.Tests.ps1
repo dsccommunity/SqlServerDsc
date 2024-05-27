@@ -36,7 +36,7 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
     It 'Should have the named instance SQL Server service started' {
         $getServiceResult = Get-Service -Name 'SQL Server (DSCSQLTEST)' -ErrorAction 'Stop'
 
-        $getServiceResult.Status | Should -Be [System.ServiceProcess.ServiceControllerStatus]::Running
+        $getServiceResult.Status | Should -Be 'Running'
     }
 
     Context 'When uninstalling a named instance' {

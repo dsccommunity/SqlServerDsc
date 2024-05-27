@@ -153,9 +153,9 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
 
             It 'Should stop the default instance SQL Server service' {
                 # Stop the default instance SQL Server service to save memory on the build worker.
-                $stopServiceResult = Stop-Service -Name 'MSSQLSERVER' -PassThru -Verbose -ErrorAction 'Stop'
+                $stopServiceResult = Stop-Service -Name 'MSSQLSERVER' -Force -PassThru -Verbose -ErrorAction 'Stop'
 
-                $stopServiceResult.Status | Should -Be [System.ServiceProcess.ServiceControllerStatus]::Stopped
+                $stopServiceResult.Status | Should -Be 'Stopped'
             }
         }
 
@@ -288,9 +288,9 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
 
             It 'Should stop the named instance SQL Server service' {
                 # Stop the named instance SQL Server service to save memory on the build worker.
-                $stopServiceResult = Stop-Service -Name 'SQL Server (DSCSQLTEST)' -PassThru -Verbose -ErrorAction 'Stop'
+                $stopServiceResult = Stop-Service -Name 'SQL Server (DSCSQLTEST)' -Force -PassThru -Verbose -ErrorAction 'Stop'
 
-                $stopServiceResult.Status | Should -Be [System.ServiceProcess.ServiceControllerStatus]::Stopped
+                $stopServiceResult.Status | Should -Be 'Stopped'
             }
         }
 

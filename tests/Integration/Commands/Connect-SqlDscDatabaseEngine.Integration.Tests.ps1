@@ -53,7 +53,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2016', 'Integrati
         It 'Should have the default instance SQL Server service started' {
             $getServiceResult = Get-Service -Name 'MSSQLSERVER' -ErrorAction 'Stop'
 
-            $getServiceResult.Status | Should -Be [System.ServiceProcess.ServiceControllerStatus]::Running
+            $getServiceResult.Status | Should -Be 'Running'
         }
 
         Context 'When impersonating a Windows user' {
@@ -90,7 +90,7 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2016', 'Integrati
         It 'Should have the named instance SQL Server service started' {
             $getServiceResult = Get-Service -Name 'SQL Server (DSCSQLTEST)' -ErrorAction 'Stop'
 
-            $getServiceResult.Status | Should -Be [System.ServiceProcess.ServiceControllerStatus]::Running
+            $getServiceResult.Status | Should -Be 'Running'
         }
 
         Context 'When impersonating a Windows user' {
