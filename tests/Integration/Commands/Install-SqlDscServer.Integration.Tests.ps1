@@ -155,6 +155,8 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                 # Stop the default instance SQL Server service to save memory on the build worker.
                 $stopServiceResult = Stop-Service -Name 'MSSQLSERVER' -Force -PassThru -Verbose -ErrorAction 'Stop'
 
+                write-verbose -Message ($stopServiceResult | Out-String) -Verbose
+
                 $stopServiceResult.Status | Should -Be 'Stopped'
             }
         }
