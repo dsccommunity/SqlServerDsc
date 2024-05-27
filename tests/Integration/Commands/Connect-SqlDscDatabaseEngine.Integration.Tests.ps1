@@ -23,6 +23,7 @@ BeforeDiscovery {
     }
 }
 
+# cSpell: ignore DSCSQLTEST
 Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
@@ -79,16 +80,16 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2016', 'Integrati
     Context 'When connecting to a named instance' {
         BeforeAll {
             # Starting the named instance SQL Server service prior to running tests.
-            Start-Service -Name 'SQL Server (DSCSQLTEST)' -Verbose -ErrorAction 'Stop'
+            Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
         }
 
         AfterAll {
             # Stop the named instance SQL Server service to save memory on the build worker.
-            Stop-Service -Name 'SQL Server (DSCSQLTEST)' -Verbose -ErrorAction 'Stop'
+            Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
         }
 
         It 'Should have the named instance SQL Server service started' {
-            $getServiceResult = Get-Service -Name 'SQL Server (DSCSQLTEST)' -ErrorAction 'Stop'
+            $getServiceResult = Get-Service -Name 'MSSQL$DSCSQLTEST' -ErrorAction 'Stop'
 
             $getServiceResult.Status | Should -Be 'Running'
         }

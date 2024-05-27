@@ -290,7 +290,7 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
 
             It 'Should have installed the SQL Server database engine' {
                 # Validate the SQL Server installation
-                $sqlServerService = Get-Service -Name 'SQL Server (DSCSQLTEST)'
+                $sqlServerService = Get-Service -Name 'MSSQL$DSCSQLTEST'
 
                 $sqlServerService | Should -Not -BeNullOrEmpty
                 $sqlServerService.Status | Should -Be 'Running'
@@ -298,7 +298,7 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
 
             It 'Should stop the named instance SQL Server service' {
                 # Stop the named instance SQL Server service to save memory on the build worker.
-                $stopServiceResult = Stop-Service -Name 'SQL Server (DSCSQLTEST)' -Force -PassThru -Verbose -ErrorAction 'Stop'
+                $stopServiceResult = Stop-Service -Name 'MSSQL$DSCSQLTEST' -Force -PassThru -Verbose -ErrorAction 'Stop'
 
                 (
                     <#
@@ -306,7 +306,7 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                         service 'SQL Server Agent (DSCSQLTEST)'.
                     #>
                     $stopServiceResult |
-                        Where-Object -FilterScript { $_.Name -eq 'SQL Server (DSCSQLTEST)' }
+                        Where-Object -FilterScript { $_.Name -eq 'MSSQL$DSCSQLTEST' }
                 ).Status | Should -Be 'Stopped'
             }
         }
