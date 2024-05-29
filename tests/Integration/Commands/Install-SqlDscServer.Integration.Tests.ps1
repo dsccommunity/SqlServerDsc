@@ -23,6 +23,7 @@ BeforeDiscovery {
     }
 }
 
+# cSpell: ignore SQLSERVERAGENT, DSCSQLTEST
 Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
@@ -150,6 +151,22 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                 $sqlServerService | Should -Not -BeNullOrEmpty
                 $sqlServerService.Status | Should -Be 'Running'
             }
+
+            It 'Should stop the default instance SQL Server service' {
+                # Stop the default instance SQL Server service to save memory on the build worker.
+                $stopServiceResult = Stop-Service -Name 'MSSQLSERVER' -Force -PassThru -Verbose -ErrorAction 'Stop'
+
+                write-verbose -Message ($stopServiceResult | Out-String) -Verbose
+
+                (
+                    <#
+                        Filter services. This will also have stopped the dependent
+                        service 'SQLSERVERAGENT'
+                    #>
+                    $stopServiceResult |
+                        Where-Object -FilterScript { $_.Name -eq 'MSSQLSERVER'}
+                ).Status | Should -Be 'Stopped'
+            }
         }
 
         Context 'When installing database engine named instance' {
@@ -273,10 +290,24 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
 
             It 'Should have installed the SQL Server database engine' {
                 # Validate the SQL Server installation
-                $sqlServerService = Get-Service -Name 'SQL Server (DSCSQLTEST)' # cSpell: disable-line
+                $sqlServerService = Get-Service -Name 'MSSQL$DSCSQLTEST'
 
                 $sqlServerService | Should -Not -BeNullOrEmpty
                 $sqlServerService.Status | Should -Be 'Running'
+            }
+
+            It 'Should stop the named instance SQL Server service' {
+                # Stop the named instance SQL Server service to save memory on the build worker.
+                $stopServiceResult = Stop-Service -Name 'MSSQL$DSCSQLTEST' -Force -PassThru -Verbose -ErrorAction 'Stop'
+
+                (
+                    <#
+                        Filter services. This will also have stopped the dependent
+                        service 'SQL Server Agent (DSCSQLTEST)'.
+                    #>
+                    $stopServiceResult |
+                        Where-Object -FilterScript { $_.Name -eq 'MSSQL$DSCSQLTEST' }
+                ).Status | Should -Be 'Stopped'
             }
         }
 

@@ -23,6 +23,7 @@ BeforeDiscovery {
     }
 }
 
+# cSpell: ignore DSCSQLTEST
 Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
@@ -40,65 +41,98 @@ Describe 'Connect-SqlDscDatabaseEngine' -Tag @('Integration_SQL2016', 'Integrati
     # }
 
     Context 'When connecting to the default instance impersonating a Windows user' {
-        It 'Should return the correct result' {
-            {
-                $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
-                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+        BeforeAll {
+            # Starting the default instance SQL Server service prior to running tests.
+            Start-Service -Name 'MSSQLSERVER' -Verbose -ErrorAction 'Stop'
+        }
 
-                $connectSqlDscDatabaseEngineParameters = @{
-                    Credential  = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
-                    Verbose     = $true
-                    ErrorAction = 'Stop'
-                }
+        AfterAll {
+            # Stop the default instance SQL Server service to save memory on the build worker.
+            Stop-Service -Name 'MSSQLSERVER' -Verbose -ErrorAction 'Stop'
+        }
 
+        It 'Should have the default instance SQL Server service started' {
+            $getServiceResult = Get-Service -Name 'MSSQLSERVER' -ErrorAction 'Stop'
 
-                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+            $getServiceResult.Status | Should -Be 'Running'
+        }
 
-                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
-            } | Should -Not -Throw
+        Context 'When impersonating a Windows user' {
+            It 'Should return the correct result' {
+                {
+                    $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+                    $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+                    $connectSqlDscDatabaseEngineParameters = @{
+                        Credential  = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                        Verbose     = $true
+                        ErrorAction = 'Stop'
+                    }
+
+                    $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+
+                    $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                } | Should -Not -Throw
+            }
         }
     }
 
-    Context 'When connecting to the named instance impersonating a Windows user' {
-        It 'Should return the correct result' {
-            {
-                $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
-                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
-
-                $connectSqlDscDatabaseEngineParameters = @{
-                    InstanceName = 'DSCSQLTEST'
-                    Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
-                    Verbose      = $true
-                    ErrorAction  = 'Stop'
-                }
-
-
-                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
-
-                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
-            } | Should -Not -Throw
+    Context 'When connecting to a named instance' {
+        BeforeAll {
+            # Starting the named instance SQL Server service prior to running tests.
+            Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
         }
-    }
 
-    Context 'When connecting to the named instance using a SQL login' {
-        It 'Should return the correct result' {
-            {
-                $sqlAdministratorUserName = 'sa'
-                $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+        AfterAll {
+            # Stop the named instance SQL Server service to save memory on the build worker.
+            Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
+        }
 
-                $connectSqlDscDatabaseEngineParameters = @{
-                    InstanceName = 'DSCSQLTEST' # cSpell: disable-line
-                    LoginType    = 'SqlLogin'
-                    Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
-                    Verbose      = $true
-                    ErrorAction  = 'Stop'
-                }
+        It 'Should have the named instance SQL Server service started' {
+            $getServiceResult = Get-Service -Name 'MSSQL$DSCSQLTEST' -ErrorAction 'Stop'
 
+            $getServiceResult.Status | Should -Be 'Running'
+        }
 
-                $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+        Context 'When impersonating a Windows user' {
+            It 'Should return the correct result' {
+                {
+                    $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+                    $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
-                $sqlServerObject.Status.ToString() | Should -Match '^Online$'
-            } | Should -Not -Throw
+                    $connectSqlDscDatabaseEngineParameters = @{
+                        InstanceName = 'DSCSQLTEST'
+                        Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                        Verbose      = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+
+                    $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                } | Should -Not -Throw
+            }
+        }
+
+        Context 'When using a SQL login' {
+            It 'Should return the correct result' {
+                {
+                    $sqlAdministratorUserName = 'sa'
+                    $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+                    $connectSqlDscDatabaseEngineParameters = @{
+                        InstanceName = 'DSCSQLTEST' # cSpell: disable-line
+                        LoginType    = 'SqlLogin'
+                        Credential   = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+                        Verbose      = $true
+                        ErrorAction  = 'Stop'
+                    }
+
+                    $sqlServerObject = Connect-SqlDscDatabaseEngine @connectSqlDscDatabaseEngineParameters
+
+                    $sqlServerObject.Status.ToString() | Should -Match '^Online$'
+                } | Should -Not -Throw
+            }
         }
     }
 }
