@@ -17,12 +17,9 @@ BuildWorkflow:
     - Check_SqlServer_Availability
     - Generate_Conceptual_Help
     - Generate_Wiki_Content
-    - Generate_Markdown_For_Public_Commands
-    - Generate_External_Help_File_For_Public_Commands
-    - Clean_Markdown_Of_Public_Commands
     - Generate_Wiki_Sidebar
     - Clean_Markdown_Metadata
-    - Package_WikContent
+    - Package_Wiki_Content
 
   pack:
     - build
@@ -54,35 +51,6 @@ BuildWorkflow:
         {
             throw 'The SqlServer types are not available. Please install the SqlServer module or load SMO stubs types and try again.'
         }
-    }
-
-  Package_WikContent: |
-    {
-        param
-        (
-            $OutputDirectory = (property OutputDirectory (Join-Path $BuildRoot 'output')),
-            $ProjectName = (property ProjectName $(Get-SamplerProjectName -BuildRoot $BuildRoot)),
-            $BuildInfo = (property BuildInfo @{ })
-        )
-
-        "`tProject Name             = {0}" -f $ProjectName
-        "`tOutput Directory         = {0}" -f $OutputDirectory
-
-        $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath 'WikiContent'
-        $wikiArchiveSourcePath = Join-Path -Path $wikiOutputPath -ChildPath '*'
-        $wikiPackagePath = Join-Path -Path $OutputDirectory -ChildPath 'WikiContent.zip'
-
-        "`tWiki Output Path         = $wikiOutputPath"
-        "`tWiki Archive Source Path = $wikiArchiveSourcePath"
-        "`tWiki Package Path        = $wikiPackagePath"
-
-        if (-not (Test-Path -Path $wikiOutputPath))
-        {
-            throw 'The Wiki Output Path does not exist. Please run the task Generate_Wiki_Content prior to running this task.'
-        }
-
-        # Overwrites any existing archive.
-        Compress-Archive -Path $wikiArchiveSourcePath -DestinationPath $wikiPackagePath -CompressionLevel 'Optimal' -Force -ErrorAction 'Stop'
     }
 
 ####################################################
