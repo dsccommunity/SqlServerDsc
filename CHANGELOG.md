@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- SqlServerDsc
+  - Replaced inline task `Package_Wiki_Content` with the one now available
+    in the module _DscResource.DocGenerator_.
 - `Connect-SqlDscDatabaseEngine`
   - Update comment-based help with more examples.
 - SqlSetup
