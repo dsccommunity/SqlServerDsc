@@ -93,6 +93,7 @@ function Get-SqlDscPreferredModule
     $availableModule = $null
 
     $availableModules = Get-Module -Name $Name -ListAvailable |
+    	Where-Object -FilterScript { $_.Name -ne 'SqlServer' -or $_.Version.Major -le 21 -or $PSVersionTable.PSVersion.Major -ge 7 } |
         ForEach-Object -Process {
             @{
                 PSModuleInfo = $_
