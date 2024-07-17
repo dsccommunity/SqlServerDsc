@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `Get-SqlDscPreferredModule`
+  - Now loads a version of the SqlServer module appropriate for the version of
+    PowerShell being used; e.g. < 22 for PowerShell 5.1, >= 22 for PowerShell 7. 
 - `Connect-SqlDscDatabaseEngine`
   - Comment-based help for parameter `LoginType` was corrected.
   - An integration test now runs to test the command.
