@@ -298,7 +298,7 @@ Describe 'SqlAudit\Set()' -Tag 'Set' {
             }
         }
 
-        It 'Should not call method Modify()' {
+        It 'Should call method Modify()' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlAuditInstance.Set()
 
@@ -346,11 +346,17 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
                 $script:mockSqlAuditInstance |
                     # Mock method Compare() which is called by the base method Set()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return @{
-                            Name         = 'MockAuditName'
-                            InstanceName = 'NamedInstance'
-                            Path         = 'C:\WrongFolder'
-                        }
+                        <#
+                            Compare() method shall only return the properties NOT in
+                            desired state, in the format of the command Compare-DscParameterState.
+                        #>
+                        return @(
+                            @{
+                                Property      = 'Path'
+                                ExpectedValue = 'C:\Temp'
+                                ActualValue   = 'C:\WrongFolder'
+                            }
+                        )
                     } -PassThru |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
                         return

@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Connect-SqlDscDatabaseEngine`
   - Comment-based help for parameter `LoginType` was corrected.
   - An integration test now runs to test the command.
+- SqlAudit
+  - Fixed unit tests.
 
 ## [16.6.0] - 2024-05-17
 
