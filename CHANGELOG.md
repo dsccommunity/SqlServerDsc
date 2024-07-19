@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - An integration test now runs to test the command.
 - SqlAudit
   - Fixed unit tests.
+- SqlDatabaseMail
+  - Fix unit test, removing `Assert-VerifiableMock` that was left over from
+    Pester 5 conversion.
 
 ## [16.6.0] - 2024-05-17
 

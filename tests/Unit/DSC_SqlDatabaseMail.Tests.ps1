@@ -1141,6 +1141,4 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
             }
         }
     }
-
-    Assert-VerifiableMock
 }
