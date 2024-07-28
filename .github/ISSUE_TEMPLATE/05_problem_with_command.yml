@@ -67,6 +67,7 @@ body:
 
         To help with this information:
         - On a Linux distribution, please provide the distribution name, version, and release. The following command can help get this information: `cat /etc/*-release && cat /proc/version`
+        - On macOS, please provide the product version and build version. The following command can help get this information: `sw_vers`
         - On a Windows OS please provide edition, version, build, and language. The following command can help get this information: `Get-ComputerInfo -Property @('OsName','OsOperatingSystemSKU','OSArchitecture','WindowsVersion','WindowsBuildLabEx','OsLanguage','OsMuiLanguages')`
       placeholder: |
         Add operating system information here

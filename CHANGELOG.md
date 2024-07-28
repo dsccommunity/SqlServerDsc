@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- SqlServerDsc
+  - Fix issue template.
 - `Connect-SqlDscDatabaseEngine`
   - Comment-based help for parameter `LoginType` was corrected.
   - An integration test now runs to test the command.
