@@ -39,6 +39,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
         Specifies, as a string array, a `Invoke-SqlCmd` scripting variable for use in the `Invoke-SqlCmd` script, and sets a value for the variable.
         Use a Windows PowerShell array to specify multiple variables and their values. For more information how to use this,
         please go to the help documentation for [`Invoke-SqlCmd`](https://docs.microsoft.com/en-us/powershell/module/sqlserver/Invoke-SqlCmd).
+        If the script does not require variables, pass the empty array @().
 
     .PARAMETER DisableVariables
         Specifies, as a boolean, whether or not PowerShell will ignore `Invoke-SqlCmd` scripting variables that share a format such as $(variable_name).
@@ -97,7 +98,7 @@ function Get-TargetResource
         [System.UInt32]
         $QueryTimeout,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $Variable,
 
@@ -195,6 +196,7 @@ function Get-TargetResource
         Specifies, as a string array, a `Invoke-SqlCmd` scripting variable for use in the `Invoke-SqlCmd` script, and sets a value for the variable.
         Use a Windows PowerShell array to specify multiple variables and their values. For more information how to use this,
         please go to the help documentation for [`Invoke-SqlCmd`](https://docs.microsoft.com/en-us/powershell/module/sqlserver/Invoke-SqlCmd).
+        If the script does not require variables, pass the empty array @().
 
     .PARAMETER DisableVariables
         Specifies, as a boolean, whether or not PowerShell will ignore `Invoke-SqlCmd` scripting variables that share a format such as $(variable_name).
@@ -245,7 +247,7 @@ function Set-TargetResource
         [System.UInt32]
         $QueryTimeout,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $Variable,
 
@@ -325,6 +327,7 @@ function Set-TargetResource
         Specifies, as a string array, a `Invoke-SqlCmd` scripting variable for use in the `Invoke-SqlCmd` script, and sets a value for the variable.
         Use a Windows PowerShell array to specify multiple variables and their values. For more information how to use this,
         please go to the help documentation for [`Invoke-SqlCmd`](https://docs.microsoft.com/en-us/powershell/module/sqlserver/Invoke-SqlCmd).
+        If the script does not require variables, pass the empty array @().
 
     .PARAMETER DisableVariables
         Specifies, as a boolean, whether or not PowerShell will ignore `Invoke-SqlCmd` scripting variables that share a format such as $(variable_name).
@@ -376,7 +379,7 @@ function Test-TargetResource
         [System.UInt32]
         $QueryTimeout,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $Variable,
 

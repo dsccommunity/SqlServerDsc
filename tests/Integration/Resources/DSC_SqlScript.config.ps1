@@ -281,6 +281,7 @@ Configuration DSC_SqlScript_RunSqlScriptWithVariablesDisabled_Config
             GetFilePath       = $Node.GetSqlScriptPath
             TestFilePath      = $Node.TestSqlScriptPath
             SetFilePath       = $Node.SetSqlScriptPath
+            Variable          = @()
             DisableVariables  = $true
             QueryTimeout      = 30
             Encrypt           = 'Optional'

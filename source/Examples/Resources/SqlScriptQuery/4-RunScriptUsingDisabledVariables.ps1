@@ -25,6 +25,7 @@ Configuration Example
             SetQuery          = 'Set query'
             TestQuery         = 'Test query'
             GetQuery          = 'Get query'
+            Variable          = @()
             DisableVariables  = $true
         }
     }

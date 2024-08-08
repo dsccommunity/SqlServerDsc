@@ -143,6 +143,7 @@ Configuration DSC_SqlScriptQuery_RunSqlScriptQueryWithVariablesDisabled_Config
             GetQuery         = $Node.GetQuery
             TestQuery        = $Node.TestQuery
             SetQuery         = $Node.SetQuery
+            Variable         = @()
             DisableVariables = $true
             QueryTimeout     = 30
             Encrypt          = 'Optional'

@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- SqlScript
+  - BREAKING CHANGE: The parameter `Variable` is now required to allow
+    reuse of a script with different variables. If the script does not
+    require variables, pass the empty array @().
+    ([issue #596](https://github.com/dsccommunity/SqlServerDsc/issues/596)).
+- SqlScriptQuery
+  - BREAKING CHANGE: The parameter `Variable` is now required to allow
+    reuse of a script with different variables. If the script does not
+    require variables, pass the empty array @().
+    ([issue #596](https://github.com/dsccommunity/SqlServerDsc/issues/596)).
 - SqlServerDsc
   - Replaced inline task `Package_Wiki_Content` with the one now available
     in the module _DscResource.DocGenerator_.
