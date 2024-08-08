@@ -83,6 +83,7 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
                 SetFilePath  = 'set.sql'
                 GetFilePath  = 'get.sql'
                 TestFilePath = 'test.sql'
+                Variable     = @()
                 Encrypt      = 'Optional'
             }
         }
@@ -133,6 +134,7 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
                     SetFilePath  = 'set-timeout.sql'
                     GetFilePath  = 'get-timeout.sql'
                     TestFilePath = 'test-timeout.sql'
+                    Variable     = @()
                     QueryTimeout = 30
                 }
 
@@ -176,6 +178,7 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
                 SetFilePath  = 'set.sql'
                 GetFilePath  = 'get.sql'
                 TestFilePath = 'test.sql'
+                Variable     = @()
                 Encrypt      = 'Optional'
             }
         }
@@ -214,7 +217,17 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $mockTestParametersTimeout = @{
+                    ServerName   = 'localhost'
+                    InstanceName = 'MSSQLSERVER'
+                    SetFilePath  = 'set-timeout.sql'
+                    GetFilePath  = 'get-timeout.sql'
+                    TestFilePath = 'test-timeout.sql'
+                    Variable     = @()
+                    QueryTimeout = 30
+                }
+
+                { Set-TargetResource @mockTestParametersTimeout } | Should -Not -Throw
             }
         }
     }
@@ -249,6 +262,7 @@ Describe 'SqlScript\Test-TargetResource' {
                 SetFilePath  = 'set.sql'
                 GetFilePath  = 'get.sql'
                 TestFilePath = 'test.sql'
+                Variable     = @()
                 Encrypt      = 'Optional'
             }
         }
@@ -292,6 +306,7 @@ Describe 'SqlScript\Test-TargetResource' {
                         SetFilePath  = 'set-timeout.sql'
                         GetFilePath  = 'get-timeout.sql'
                         TestFilePath = 'test-timeout.sql'
+                        Variable     = @()
                         QueryTimeout = 30
                     }
 
@@ -321,6 +336,7 @@ Describe 'SqlScript\Test-TargetResource' {
                         SetFilePath  = 'set-timeout.sql'
                         GetFilePath  = 'get-timeout.sql'
                         TestFilePath = 'test-timeout.sql'
+                        Variable     = @()
                         QueryTimeout = 30
                     }
 

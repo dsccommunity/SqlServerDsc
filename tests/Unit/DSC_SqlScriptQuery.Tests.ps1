@@ -83,6 +83,7 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
                 GetQuery     = "GetQuery;"
                 TestQuery    = "TestQuery;"
                 SetQuery     = "SetQuery;"
+                Variable     = @()
                 Encrypt      = 'Optional'
             }
         }
@@ -133,6 +134,7 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
                     GetQuery     = "GetQuery;"
                     TestQuery    = "TestQuery;"
                     SetQuery     = "SetQuery;"
+                    Variable     = @()
                     QueryTimeout = 30
                 }
 
@@ -176,6 +178,7 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
                 GetQuery     = "GetQuery;"
                 TestQuery    = "TestQuery;"
                 SetQuery     = "SetQuery;"
+                Variable     = @()
                 Encrypt      = 'Optional'
             }
         }
@@ -214,7 +217,17 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $mockTestParametersTimeout = @{
+                    ServerName   = 'localhost'
+                    InstanceName = 'MSSQLSERVER'
+                    GetQuery     = "GetQuery;"
+                    TestQuery    = "TestQuery;"
+                    SetQuery     = "SetQuery;"
+                    Variable     = @()
+                    QueryTimeout = 30
+                }
+
+                { Set-TargetResource @mockTestParametersTimeout } | Should -Not -Throw
             }
         }
     }
@@ -249,6 +262,7 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
                 GetQuery     = "GetQuery;"
                 TestQuery    = "TestQuery;"
                 SetQuery     = "SetQuery;"
+                Variable     = @()
                 Encrypt      = 'Optional'
             }
         }
@@ -292,6 +306,7 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
                         GetQuery     = "GetQuery;"
                         TestQuery    = "TestQuery;"
                         SetQuery     = "SetQuery;"
+                        Variable     = @()
                         QueryTimeout = 30
                     }
 
@@ -321,6 +336,7 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
                         GetQuery     = "GetQuery;"
                         TestQuery    = "TestQuery;"
                         SetQuery     = "SetQuery;"
+                        Variable     = @()
                         QueryTimeout = 30
                     }
 
