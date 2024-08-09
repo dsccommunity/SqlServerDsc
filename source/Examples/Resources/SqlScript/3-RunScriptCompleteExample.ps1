@@ -144,6 +144,7 @@ Configuration Example
 
         SqlScript 'Integration_Test'
         {
+            Id                   = 'Integration_Test'
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
 

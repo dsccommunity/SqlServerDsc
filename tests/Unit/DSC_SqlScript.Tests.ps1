@@ -78,6 +78,7 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
             $script:mockDefaultParameters = @{
+                Id           = 'Unit_Test'
                 InstanceName = 'MSSQLSERVER'
                 ServerName   = 'localhost'
                 SetFilePath  = 'set.sql'
@@ -108,6 +109,7 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
                 $result | Should -BeOfType [System.Collections.Hashtable]
+                $result.Id | Should -Be $mockGetTargetResourceParameters.Id
                 $result.ServerInstance | Should -Be $mockGetTargetResourceParameters.ServerInstance
                 $result.SetFilePath | Should -Be $mockGetTargetResourceParameters.SetFilePath
                 $result.GetFilePath | Should -Be $mockGetTargetResourceParameters.GetFilePath
@@ -128,6 +130,7 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
                 Set-StrictMode -Version 1.0
 
                 $mockTestParametersTimeout = @{
+                    Id           = 'Unit_Test_Timeout'
                     ServerName   = 'localhost'
                     InstanceName = 'MSSQLSERVER'
                     SetFilePath  = 'set-timeout.sql'
@@ -139,6 +142,7 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
                 $result = Get-TargetResource @mockTestParametersTimeout
 
                 $result | Should -BeOfType [System.Collections.Hashtable]
+                $result.Id | Should -Be $mockTestParametersTimeout.Id
                 $result.ServerInstance | Should -Be $mockTestParametersTimeout.ServerInstance
                 $result.SetFilePath | Should -Be $mockTestParametersTimeout.SetFilePath
                 $result.GetFilePath | Should -Be $mockTestParametersTimeout.GetFilePath
@@ -171,6 +175,7 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
             $script:mockDefaultParameters = @{
+                Id           = 'Unit_Test'
                 InstanceName = 'MSSQLSERVER'
                 ServerName   = 'localhost'
                 SetFilePath  = 'set.sql'
@@ -214,7 +219,17 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $mockTestParametersTimeout = @{
+                    Id           = 'Unit_Test_Timeout'
+                    ServerName   = 'localhost'
+                    InstanceName = 'MSSQLSERVER'
+                    SetFilePath  = 'set-timeout.sql'
+                    GetFilePath  = 'get-timeout.sql'
+                    TestFilePath = 'test-timeout.sql'
+                    QueryTimeout = 30
+                }
+
+                { Set-TargetResource @mockTestParametersTimeout } | Should -Not -Throw
             }
         }
     }
@@ -244,6 +259,7 @@ Describe 'SqlScript\Test-TargetResource' {
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
             $script:mockDefaultParameters = @{
+                Id           = 'Unit_Test'
                 InstanceName = 'MSSQLSERVER'
                 ServerName   = 'localhost'
                 SetFilePath  = 'set.sql'
@@ -287,6 +303,7 @@ Describe 'SqlScript\Test-TargetResource' {
                     Set-StrictMode -Version 1.0
 
                     $mockTestParametersTimeout = @{
+                        Id           = 'Unit_Test_Timeout'
                         ServerName   = 'localhost'
                         InstanceName = 'MSSQLSERVER'
                         SetFilePath  = 'set-timeout.sql'
@@ -316,6 +333,7 @@ Describe 'SqlScript\Test-TargetResource' {
                     Set-StrictMode -Version 1.0
 
                     $mockTestParametersTimeout = @{
+                        Id           = 'Unit_Test_Timeout'
                         ServerName   = 'localhost'
                         InstanceName = 'MSSQLSERVER'
                         SetFilePath  = 'set-timeout.sql'

@@ -10,6 +10,10 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
     .SYNOPSIS
         Returns the current state of what the Get-script returns.
 
+    .PARAMETER Id
+        Unique identifier for this resource. Set this to a unique value - allowing multiple resources with only the Variable parameter changing.
+        The information entered is never used during the actual process of running the scripts.
+
     .PARAMETER InstanceName
         Specifies the name of the SQL Server Database Engine instance. For the
         default instance specify 'MSSQLSERVER'.
@@ -67,6 +71,10 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Id,
+
         [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
@@ -138,6 +146,7 @@ function Get-TargetResource
     $getResult = Out-String -InputObject $result
 
     $returnValue = @{
+        Id               = [System.String] $Id
         ServerName       = [System.String] $ServerName
         InstanceName     = [System.String] $InstanceName
         SetFilePath      = [System.String] $SetFilePath
@@ -157,6 +166,10 @@ function Get-TargetResource
 <#
     .SYNOPSIS
         Executes the Set-script.
+
+    .PARAMETER Id
+        Unique identifier for this resource. Set this to a unique value - allowing multiple resources with only the Variable parameter changing.
+        The information entered is never used during the actual process of running the scripts.
 
     .PARAMETER InstanceName
         Specifies the name of the SQL Server Database Engine instance. For the
@@ -215,6 +228,10 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Id,
+
         [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
@@ -288,6 +305,10 @@ function Set-TargetResource
     .SYNOPSIS
         Evaluates the value returned from the Test-script.
 
+    .PARAMETER Id
+        Unique identifier for this resource. Set this to a unique value - allowing multiple resources with only the Variable parameter changing.
+        The information entered is never used during the actual process of running the scripts.
+
     .PARAMETER InstanceName
         Specifies the name of the SQL Server Database Engine instance. For the
         default instance specify 'MSSQLSERVER'.
@@ -346,6 +367,10 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Id,
+
         [Parameter(Mandatory = $true)]
         [System.String]
         $InstanceName,
