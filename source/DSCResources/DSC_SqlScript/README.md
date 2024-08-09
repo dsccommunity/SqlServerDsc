@@ -10,6 +10,10 @@ Get T-SQL script, Set T-SQL script and the Test T-SQL script.
 * Target machine must be running SQL Server 2012 or later.
 * Target machine must have access to the SQLPS PowerShell module or the SqlServer
   PowerShell module.
+* Parameter `Id` is a unique identifier for this resource, allowing multiple
+  resources to be created, with only the Variable parameter changing.
+  Set this to any unique value - the information entered is never used during
+  the actual process of running the scripts.
 * Parameter `Encrypt` controls whether the connection used by `Invoke-SqlCmd`
   should enforce encryption. This parameter can only be used together with the
   module _SqlServer_ v22.x (minimum v22.0.49-preview). The parameter will be

@@ -228,6 +228,7 @@ Configuration DSC_SqlDatabaseUser_AddDatabaseUser5_Config
     {
         SqlScriptQuery 'CreateDatabaseCertificate'
         {
+            Id           = 'CreateDatabaseCertificate'
             ServerName   = $Node.ServerName
             InstanceName = $Node.InstanceName
 
@@ -294,6 +295,7 @@ Configuration DSC_SqlDatabaseUser_AddDatabaseUser6_Config
     {
         SqlScriptQuery 'CreateDatabaseAsymmetricKey'
         {
+            Id           = 'CreateDatabaseAsymmetricKey'
             ServerName   = $Node.ServerName
             InstanceName = $Node.InstanceName
 

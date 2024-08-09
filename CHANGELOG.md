@@ -14,6 +14,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- SqlScript
+  - BREAKING CHANGE: The parameter `Id` is now required to allow
+    reuse of a script with different variables. Set this to a unique value.
+    The information entered is never used to actually run the script.
+    ([issue #596](https://github.com/dsccommunity/SqlServerDsc/issues/596)).
+  - Fix unit test to fully check Set-TargetResource using timeout.
+- SqlScriptQuery
+  - BREAKING CHANGE: The parameter `Id` is now required to allow
+    reuse of a script with different variables. Set this to a unique value.
+    The information entered is never used to actually run the script.
+    ([issue #596](https://github.com/dsccommunity/SqlServerDsc/issues/596)).
+  - Fix unit test to fully check Set-TargetResource using timeout.
+
 - SqlServerDsc
   - Replaced inline task `Package_Wiki_Content` with the one now available
     in the module _DscResource.DocGenerator_.
