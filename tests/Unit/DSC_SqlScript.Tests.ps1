@@ -129,15 +129,8 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParametersTimeout = @{
-                    Id           = 'Unit_Test_Timeout'
-                    ServerName   = 'localhost'
-                    InstanceName = 'MSSQLSERVER'
-                    SetFilePath  = 'set-timeout.sql'
-                    GetFilePath  = 'get-timeout.sql'
-                    TestFilePath = 'test-timeout.sql'
-                    QueryTimeout = 30
-                }
+                $mockTestParametersTimeout = $mockDefaultParameters.Clone()
+                $mockTestParametersTimeout.QueryTimeout = 30
 
                 $result = Get-TargetResource @mockTestParametersTimeout
 
@@ -219,15 +212,8 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParametersTimeout = @{
-                    Id           = 'Unit_Test_Timeout'
-                    ServerName   = 'localhost'
-                    InstanceName = 'MSSQLSERVER'
-                    SetFilePath  = 'set-timeout.sql'
-                    GetFilePath  = 'get-timeout.sql'
-                    TestFilePath = 'test-timeout.sql'
-                    QueryTimeout = 30
-                }
+                $mockTestParametersTimeout = $mockDefaultParameters.Clone()
+                $mockTestParametersTimeout.QueryTimeout = 30
 
                 { Set-TargetResource @mockTestParametersTimeout } | Should -Not -Throw
             }
@@ -302,15 +288,8 @@ Describe 'SqlScript\Test-TargetResource' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $mockTestParametersTimeout = @{
-                        Id           = 'Unit_Test_Timeout'
-                        ServerName   = 'localhost'
-                        InstanceName = 'MSSQLSERVER'
-                        SetFilePath  = 'set-timeout.sql'
-                        GetFilePath  = 'get-timeout.sql'
-                        TestFilePath = 'test-timeout.sql'
-                        QueryTimeout = 30
-                    }
+                    $mockTestParametersTimeout = $mockDefaultParameters.Clone()
+                    $mockTestParametersTimeout.QueryTimeout = 30
 
                     $result = Test-TargetResource @mockTestParametersTimeout
 
@@ -332,15 +311,8 @@ Describe 'SqlScript\Test-TargetResource' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $mockTestParametersTimeout = @{
-                        Id           = 'Unit_Test_Timeout'
-                        ServerName   = 'localhost'
-                        InstanceName = 'MSSQLSERVER'
-                        SetFilePath  = 'set-timeout.sql'
-                        GetFilePath  = 'get-timeout.sql'
-                        TestFilePath = 'test-timeout.sql'
-                        QueryTimeout = 30
-                    }
+                    $mockTestParametersTimeout = $mockDefaultParameters.Clone()
+                    $mockTestParametersTimeout.QueryTimeout = 30
 
                     $result = Test-TargetResource @mockTestParametersTimeout
 
