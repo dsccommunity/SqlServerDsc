@@ -129,17 +129,16 @@ Describe 'SqlScript\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParametersTimeout = $mockDefaultParameters.Clone()
-                $mockTestParametersTimeout.QueryTimeout = 30
+                $mockGetTargetResourceParameters.QueryTimeout = 30
 
-                $result = Get-TargetResource @mockTestParametersTimeout
+                $result = Get-TargetResource @mockGetTargetResourceParameters
 
                 $result | Should -BeOfType [System.Collections.Hashtable]
-                $result.Id | Should -Be $mockTestParametersTimeout.Id
-                $result.ServerInstance | Should -Be $mockTestParametersTimeout.ServerInstance
-                $result.SetFilePath | Should -Be $mockTestParametersTimeout.SetFilePath
-                $result.GetFilePath | Should -Be $mockTestParametersTimeout.GetFilePath
-                $result.TestFilePath | Should -Be $mockTestParametersTimeout.TestFilePath
+                $result.Id | Should -Be $mockGetTargetResourceParameters.Id
+                $result.ServerInstance | Should -Be $mockGetTargetResourceParameters.ServerInstance
+                $result.SetFilePath | Should -Be $mockGetTargetResourceParameters.SetFilePath
+                $result.GetFilePath | Should -Be $mockGetTargetResourceParameters.GetFilePath
+                $result.TestFilePath | Should -Be $mockGetTargetResourceParameters.TestFilePath
             }
         }
     }
@@ -212,10 +211,9 @@ Describe 'SqlScript\Set-TargetResource' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParametersTimeout = $mockDefaultParameters.Clone()
-                $mockTestParametersTimeout.QueryTimeout = 30
+                $mockSetTargetResourceParameters.QueryTimeout = 30
 
-                { Set-TargetResource @mockTestParametersTimeout } | Should -Not -Throw
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
             }
         }
     }
@@ -288,10 +286,9 @@ Describe 'SqlScript\Test-TargetResource' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $mockTestParametersTimeout = $mockDefaultParameters.Clone()
-                    $mockTestParametersTimeout.QueryTimeout = 30
+                    $mockTestTargetResourceParameters.QueryTimeout = 30
 
-                    $result = Test-TargetResource @mockTestParametersTimeout
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
                     $result | Should -BeTrue
                 }
@@ -311,10 +308,9 @@ Describe 'SqlScript\Test-TargetResource' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $mockTestParametersTimeout = $mockDefaultParameters.Clone()
-                    $mockTestParametersTimeout.QueryTimeout = 30
+                    $mockTestTargetResourceParameters.QueryTimeout = 30
 
-                    $result = Test-TargetResource @mockTestParametersTimeout
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
                     $result | Should -BeFalse
                 }
