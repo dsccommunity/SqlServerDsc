@@ -18,6 +18,7 @@ Configuration Example
     {
         SqlScript 'RunAsSqlCredential'
         {
+            Id           = 'RunAsSqlCredential'
             ServerName   = 'localhost'
             InstanceName = 'SQL2016'
             Credential   = $SqlCredential

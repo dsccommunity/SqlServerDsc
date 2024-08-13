@@ -19,6 +19,7 @@ Configuration Example
     {
         SqlScriptQuery 'CreateDatabase_ScriptDatabase1'
         {
+            Id                   = 'CreateDatabase_ScriptDatabase1'
             ServerName           = $env:COMPUTERNAME
             InstanceName         = 'DSCTEST'
 

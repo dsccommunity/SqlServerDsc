@@ -66,6 +66,7 @@ Configuration DSC_SqlScriptQuery_RunSqlScriptQueryAsWindowsUser_Config
     {
         SqlScriptQuery 'Integration_Test'
         {
+            Id                   = 'Integration_Test'
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
 
@@ -97,6 +98,7 @@ Configuration DSC_SqlScriptQuery_RunSqlScriptQueryAsSqlUser_Config
     {
         SqlScriptQuery 'Integration_Test'
         {
+            Id           = 'Integration_Test'
             ServerName   = $Node.ServerName
             InstanceName = $Node.InstanceName
 
@@ -137,6 +139,7 @@ Configuration DSC_SqlScriptQuery_RunSqlScriptQueryWithVariablesDisabled_Config
     {
         SqlScriptQuery 'Integration_Test'
         {
+            Id               = 'Integration_Test'
             ServerName       = $Node.ServerName
             InstanceName     = $Node.InstanceName
 

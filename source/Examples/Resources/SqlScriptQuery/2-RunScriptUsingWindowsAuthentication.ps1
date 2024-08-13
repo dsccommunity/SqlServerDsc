@@ -20,6 +20,7 @@ Configuration Example
     {
         SqlScriptQuery 'RunAsSYSTEM'
         {
+            Id           = 'RunAsSYSTEM'
             ServerName   = 'localhost'
             InstanceName = 'SQL2016'
 
@@ -31,6 +32,7 @@ Configuration Example
 
         SqlScriptQuery 'RunAsUser'
         {
+            Id                   = 'RunAsUser'
             ServerName           = 'localhost'
             InstanceName         = 'SQL2016'
 
@@ -44,6 +46,7 @@ Configuration Example
 
         SqlScriptQuery 'RunAsUser-With30SecondTimeout'
         {
+            Id                   = 'RunAsUser-With30SecondTimeout'
             ServerName           = 'localhost'
             InstanceName         = 'SQL2016'
 

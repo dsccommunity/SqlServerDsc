@@ -78,6 +78,7 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
             $script:mockDefaultParameters = @{
+                Id           = 'Unit_Test'
                 InstanceName = 'MSSQLSERVER'
                 ServerName   = 'localhost'
                 GetQuery     = "GetQuery;"
@@ -108,6 +109,7 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
                 $result | Should -BeOfType [System.Collections.Hashtable]
+                $result.Id | Should -Be $mockGetTargetResourceParameters.Id
                 $result.ServerInstance | Should -Be $mockGetTargetResourceParameters.ServerInstance
                 $result.GetQuery | Should -Be $mockGetTargetResourceParameters.GetQuery
                 $result.SetQuery | Should -Be $mockGetTargetResourceParameters.SetQuery
@@ -127,22 +129,16 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                $mockTestParametersTimeout = @{
-                    ServerName   = 'localhost'
-                    InstanceName = 'MSSQLSERVER'
-                    GetQuery     = "GetQuery;"
-                    TestQuery    = "TestQuery;"
-                    SetQuery     = "SetQuery;"
-                    QueryTimeout = 30
-                }
+                $mockGetTargetResourceParameters.QueryTimeout = 30
 
-                $result = Get-TargetResource @mockTestParametersTimeout
+                $result = Get-TargetResource @mockGetTargetResourceParameters
 
                 $result | Should -BeOfType [System.Collections.Hashtable]
-                $result.ServerInstance | Should -Be $mockTestParametersTimeout.ServerInstance
-                $result.GetQuery | Should -Be $mockTestParametersTimeout.GetQuery
-                $result.SetQuery | Should -Be $mockTestParametersTimeout.SetQuery
-                $result.TestQuery | Should -Be $mockTestParametersTimeout.TestQuery
+                $result.Id | Should -Be $mockGetTargetResourceParameters.Id
+                $result.ServerInstance | Should -Be $mockGetTargetResourceParameters.ServerInstance
+                $result.GetQuery | Should -Be $mockGetTargetResourceParameters.GetQuery
+                $result.SetQuery | Should -Be $mockGetTargetResourceParameters.SetQuery
+                $result.TestQuery | Should -Be $mockGetTargetResourceParameters.TestQuery
             }
         }
     }
@@ -171,6 +167,7 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
             $script:mockDefaultParameters = @{
+                Id           = 'Unit_Test'
                 InstanceName = 'MSSQLSERVER'
                 ServerName   = 'localhost'
                 GetQuery     = "GetQuery;"
@@ -214,6 +211,8 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
+                $mockSetTargetResourceParameters.QueryTimeout = 30
+
                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
             }
         }
@@ -244,6 +243,7 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
         InModuleScope -ScriptBlock {
             # Default parameters that are used for the It-blocks.
             $script:mockDefaultParameters = @{
+                Id           = 'Unit_Test'
                 InstanceName = 'MSSQLSERVER'
                 ServerName   = 'localhost'
                 GetQuery     = "GetQuery;"
@@ -286,16 +286,9 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $mockTestParametersTimeout = @{
-                        ServerName   = 'localhost'
-                        InstanceName = 'MSSQLSERVER'
-                        GetQuery     = "GetQuery;"
-                        TestQuery    = "TestQuery;"
-                        SetQuery     = "SetQuery;"
-                        QueryTimeout = 30
-                    }
+                    $mockTestTargetResourceParameters.QueryTimeout = 30
 
-                    $result = Test-TargetResource @mockTestParametersTimeout
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
                     $result | Should -BeTrue
                 }
@@ -315,16 +308,9 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    $mockTestParametersTimeout = @{
-                        ServerName   = 'localhost'
-                        InstanceName = 'MSSQLSERVER'
-                        GetQuery     = "GetQuery;"
-                        TestQuery    = "TestQuery;"
-                        SetQuery     = "SetQuery;"
-                        QueryTimeout = 30
-                    }
+                    $mockTestTargetResourceParameters.QueryTimeout = 30
 
-                    $result = Test-TargetResource @mockTestParametersTimeout
+                    $result = Test-TargetResource @mockTestTargetResourceParameters
 
                     $result | Should -BeFalse
                 }
