@@ -108,7 +108,7 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
-        $SqlVersion
+        $SqlVersion,
     )
 
     if ($Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
@@ -176,6 +176,7 @@ function Get-TargetResource
         UseEnglish                 = $UseEnglish
         ServerName                 = $ServerName
         SqlVersion                 = $null
+        ProductCoveredBySA         = $null
     }
 
     <#
@@ -264,6 +265,7 @@ function Get-TargetResource
         $getTargetResourceReturnValue.SQLBackupDir = $currentSqlEngineProperties.SQLBackupDir
         $getTargetResourceReturnValue.IsClustered = $currentSqlEngineProperties.IsClustered
         $getTargetResourceReturnValue.SecurityMode = $currentSqlEngineProperties.SecurityMode
+        $getTargetResourceReturnValue.ProductCoveredBySA = $currentSqlEngineProperties.ProductCoveredBySA
 
         Write-Verbose -Message $script:localizedData.EvaluateReplicationFeature
 
@@ -703,6 +705,9 @@ function Get-TargetResource
         will not be used to evaluate version. Although, if the setup action is
         `Upgrade` then setting this parameter will throw an exception as the version
         from the install media is required.
+
+   .PARAMETER PRODUCTCOVEREDBYSA
+        Specifies the license coverage for SQL Server.
 #>
 function Set-TargetResource
 {
@@ -972,7 +977,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $SqlVersion
+        $SqlVersion,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProductCoveredBySA
     )
 
     if ($Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
@@ -1295,6 +1304,7 @@ function Set-TargetResource
         Quiet                        = $true
         IAcceptSQLServerLicenseTerms = $true
         Action                       = $Action
+        ProductCoveredBySA           = $true
     }
 
     $argumentVars = @(
@@ -1960,6 +1970,9 @@ function Set-TargetResource
         will not be used to evaluate version. Although, if the setup action is
         `Upgrade` then setting this parameter will throw an exception as the version
         from the install media is required.
+
+    .PARAMETER PRODUCTCOVEREDBYSA
+        Specifies the license coverage for SQL Server.
 #>
 function Test-TargetResource
 {
@@ -2229,7 +2242,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $SqlVersion
+        $SqlVersion,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProductCoveredBySA
     )
 
     if ($Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
