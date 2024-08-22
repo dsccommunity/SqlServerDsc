@@ -707,7 +707,9 @@ function Get-TargetResource
         from the install media is required.
 
    .PARAMETER PRODUCTCOVEREDBYSA
-        Specifies the license coverage for SQL Server.
+        Specifies the license coverage for SQL Server. True indicates it's covered under Software Assurance or SQL Server subscription.
+        False, or omitting the parameter, indicates it's covered under a SQL Server license.
+        Default value is False.
 #>
 function Set-TargetResource
 {
@@ -1299,12 +1301,24 @@ function Set-TargetResource
         $setupArguments['FailoverClusterIPAddresses'] = $clusterIPAddresses
     }
 
+    # Add Parameter ProductCoveredBySA
+    if ($PSBoundParameters.ContainsKey('ProductCoveredBySA'))
+    {
+        if ($ProductCoveredBySA)
+        {
+            $setupArguments['ProductCoveredBySA'] = $ProductCoveredBySA
+        }
+        else
+        {
+            $setupArguments['ProductCoveredBySA'] = $false
+        }
+    }
+
     # Add standard install arguments
     $setupArguments += @{
         Quiet                        = $true
         IAcceptSQLServerLicenseTerms = $true
         Action                       = $Action
-        ProductCoveredBySA           = $true
     }
 
     $argumentVars = @(
@@ -1972,7 +1986,11 @@ function Set-TargetResource
         from the install media is required.
 
     .PARAMETER PRODUCTCOVEREDBYSA
-        Specifies the license coverage for SQL Server.
+        Specifies the license coverage for SQL Server. True indicates it's covered under Software Assurance or SQL Server subscription.
+        False, or omitting the parameter, indicates it's covered under a SQL Server license.
+        Default value is False.
+
+        Not used in Test-TargetResource.
 #>
 function Test-TargetResource
 {
