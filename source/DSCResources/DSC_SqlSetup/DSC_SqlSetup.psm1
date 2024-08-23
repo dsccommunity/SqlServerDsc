@@ -265,7 +265,6 @@ function Get-TargetResource
         $getTargetResourceReturnValue.SQLBackupDir = $currentSqlEngineProperties.SQLBackupDir
         $getTargetResourceReturnValue.IsClustered = $currentSqlEngineProperties.IsClustered
         $getTargetResourceReturnValue.SecurityMode = $currentSqlEngineProperties.SecurityMode
-        $getTargetResourceReturnValue.ProductCoveredBySA = $currentSqlEngineProperties.ProductCoveredBySA
 
         Write-Verbose -Message $script:localizedData.EvaluateReplicationFeature
 
@@ -318,6 +317,13 @@ function Get-TargetResource
             $getTargetResourceReturnValue.SqlTempdbFileGrowth = $currentTempDbProperties.SqlTempdbFileGrowth
             $getTargetResourceReturnValue.SqlTempdbLogFileSize = $currentTempDbProperties.SqlTempdbLogFileSize
             $getTargetResourceReturnValue.SqlTempdbLogFileGrowth = $currentTempDbProperties.SqlTempdbLogFileGrowth
+        }
+
+        # TODO Pull the value of ProductCoveredBySA
+        if  ($SqlVersion -ge 16)
+        {
+           # Grab the value of ProductCoveredBySA from the registry based on the instance
+           $getTargetResourceReturnValue.ProductCoveredBySA = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL16.MSSQLSERVER\Setup\IsProductCoveredBySA'
         }
 
         # Get all members of the sysadmin role.
@@ -520,6 +526,11 @@ function Get-TargetResource
     .PARAMETER ProductKey
         Product key for licensed installations.
 
+   .PARAMETER PRODUCTCOVEREDBYSA
+        Specifies the license coverage for SQL Server. True indicates it's covered under Software Assurance or SQL Server subscription.
+        False, or omitting the parameter, indicates it's covered under a SQL Server license.
+        Default value is False.
+
     .PARAMETER UpdateEnabled
         Enabled updates during installation.
 
@@ -705,11 +716,6 @@ function Get-TargetResource
         will not be used to evaluate version. Although, if the setup action is
         `Upgrade` then setting this parameter will throw an exception as the version
         from the install media is required.
-
-   .PARAMETER PRODUCTCOVEREDBYSA
-        Specifies the license coverage for SQL Server. True indicates it's covered under Software Assurance or SQL Server subscription.
-        False, or omitting the parameter, indicates it's covered under a SQL Server license.
-        Default value is False.
 #>
 function Set-TargetResource
 {
@@ -754,6 +760,10 @@ function Set-TargetResource
         [Parameter()]
         [System.String]
         $ProductKey,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProductCoveredBySA,
 
         [Parameter()]
         [System.String]
@@ -979,11 +989,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $SqlVersion,
-
-        [Parameter()]
-        [System.Boolean]
-        $ProductCoveredBySA
+        $SqlVersion
     )
 
     if ($Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
@@ -1791,6 +1797,13 @@ function Set-TargetResource
     .PARAMETER ProductKey
         Product key for licensed installations.
 
+    .PARAMETER PRODUCTCOVEREDBYSA
+        Specifies the license coverage for SQL Server. True indicates it's covered under Software Assurance or SQL Server subscription.
+        False, or omitting the parameter, indicates it's covered under a SQL Server license.
+        Default value is False.
+
+        Not used in Test-TargetResource.    
+
     .PARAMETER UpdateEnabled
         Enabled updates during installation.
 
@@ -1984,13 +1997,6 @@ function Set-TargetResource
         will not be used to evaluate version. Although, if the setup action is
         `Upgrade` then setting this parameter will throw an exception as the version
         from the install media is required.
-
-    .PARAMETER PRODUCTCOVEREDBYSA
-        Specifies the license coverage for SQL Server. True indicates it's covered under Software Assurance or SQL Server subscription.
-        False, or omitting the parameter, indicates it's covered under a SQL Server license.
-        Default value is False.
-
-        Not used in Test-TargetResource.
 #>
 function Test-TargetResource
 {
@@ -2035,6 +2041,10 @@ function Test-TargetResource
         [Parameter()]
         [System.String]
         $ProductKey,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProductCoveredBySA,
 
         [Parameter()]
         [System.String]
@@ -2260,11 +2270,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $SqlVersion,
-
-        [Parameter()]
-        [System.Boolean]
-        $ProductCoveredBySA
+        $SqlVersion
     )
 
     if ($Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
