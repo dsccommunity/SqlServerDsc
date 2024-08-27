@@ -319,7 +319,6 @@ function Get-TargetResource
             $getTargetResourceReturnValue.SqlTempdbLogFileGrowth = $currentTempDbProperties.SqlTempdbLogFileGrowth
         }
 
-        # TODO Pull the value of ProductCoveredBySA
         if  ($SqlVersion -ge 16)
         {
            # Grab the value of ProductCoveredBySA from the registry based on the instance
