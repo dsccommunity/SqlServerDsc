@@ -108,7 +108,7 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
-        $SqlVersion,
+        $SqlVersion
     )
 
     if ($Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
