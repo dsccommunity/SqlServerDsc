@@ -319,7 +319,7 @@ function Get-TargetResource
             $getTargetResourceReturnValue.SqlTempdbLogFileGrowth = $currentTempDbProperties.SqlTempdbLogFileGrowth
         }
 
-        if  ($SqlVersion -ge 16)
+        if ($sqlVersion -ge 16)
         {
            # Grab the value of ProductCoveredBySA from the registry based on the instance
            $getTargetResourceReturnValue.ProductCoveredBySA = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL$($SqlVersion).$($InstanceName)\Setup\IsProductCoveredBySA"
