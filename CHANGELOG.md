@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- 'ProductCoveredbySA'
- - Added new parameter ProductCoveredbySA which in introduced in SQL 2022.
+- SqlSetup
+  - Added new parameter ProductCoveredbySA which in introduced in SQL 2022.
 
 ### Added
 
