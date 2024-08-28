@@ -1313,10 +1313,6 @@ function Set-TargetResource
         {
             $setupArguments['ProductCoveredBySA'] = $ProductCoveredBySA
         }
-        else
-        {
-            $setupArguments['ProductCoveredBySA'] = $false
-        }
     }
 
     # Add standard install arguments
