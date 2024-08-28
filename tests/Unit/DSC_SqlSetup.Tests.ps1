@@ -33,6 +33,9 @@ BeforeDiscovery {
     # Testing each supported SQL Server version
     $testProductVersion = @(
         @{
+            MockSqlMajorVersion = 16 # SQL Server 2022
+        }
+        @{
             MockSqlMajorVersion = 15 # SQL Server 2019
         }
         @{
@@ -956,7 +959,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                if ($MockSqlMajorVersion -in ('13', '14', '15'))
+                if ($MockSqlMajorVersion -in ('13', '14', '15', '16'))
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
                     $result.Features | Should -Match 'REPLICATION\b'
@@ -1189,7 +1192,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                if ($MockSqlMajorVersion -in ('13', '14', '15'))
+                if ($MockSqlMajorVersion -in ('13', '14', '15','16'))
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
                     $result.Features | Should -Match 'REPLICATION\b'
@@ -1498,7 +1501,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                if ($MockSqlMajorVersion -in ('13', '14', '15'))
+                if ($MockSqlMajorVersion -in ('13', '14', '15','16'))
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
                     $result.Features | Should -Match 'REPLICATION\b'
@@ -2311,7 +2314,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         $mockStartSqlSetupProcessExpectedArgument.RSInstallMode = 'DefaultNativeMode'
                         $mockStartSqlSetupProcessExpectedArgument.RsSvcStartupType = 'Automatic'
                     }
-                    elseif ($MockSqlMajorVersion -in ('14', '15'))
+                    elseif ($MockSqlMajorVersion -in ('14', '15','16'))
                     {
                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,CONN,BC,SDK,MDS'
                     }
@@ -2351,7 +2354,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             BrowserSvcStartupType  = 'Automatic'
                         }
 
-                        if ($MockSqlMajorVersion -in ('13', '14', '15'))
+                        if ($MockSqlMajorVersion -in ('13', '14', '15','16'))
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SSMS,ADV_SSMS', ''
                         }
@@ -2361,7 +2364,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             $mockSetTargetResourceParameters.RSInstallMode = 'DefaultNativeMode'
                             $mockSetTargetResourceParameters.RsSvcStartupType = 'Automatic'
                         }
-                        elseif ($MockSqlMajorVersion -in ('14', '15'))
+                        elseif ($MockSqlMajorVersion -in ('14', '15','16'))
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
                         }
@@ -2408,6 +2411,48 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             SourcePath          = $TestDrive
                             ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
                             NpEnabled           = $true
+                            ServerName          = 'host.company.local'
+                        }
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When installing the database engine and ProductCoveredBySA is true' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Features = ''
+                        }
+                    }
+                }
+
+                It 'Should set the system in the desired state when feature is SQLENGINE' {
+                    $mockStartSqlSetupProcessExpectedArgument = @{
+                        Quiet                        = 'True'
+                        IAcceptSQLServerLicenseTerms = 'True'
+                        Action                       = 'Install'
+                        InstanceName                 = 'MSSQLSERVER'
+                        Features                     = 'SQLENGINE'
+                        SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                        PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                        ProductCoveredBySA           = 'True'
+                    }
+
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters = @{
+                            Features            = 'SQLENGINE'
+                            SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                            InstanceName        = 'MSSQLSERVER'
+                            SourceCredential    = $null
+                            SourcePath          = $TestDrive
+                            ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                            ProductCoveredBySA  = $true
                             ServerName          = 'host.company.local'
                         }
 
@@ -2594,7 +2639,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         $mockStartSqlSetupProcessExpectedArgument.RSInstallMode = 'DefaultNativeMode'
                         $mockStartSqlSetupProcessExpectedArgument.RsSvcStartupType = 'Automatic'
                     }
-                    elseif ($MockSqlMajorVersion -in ('14', '15'))
+                    elseif ($MockSqlMajorVersion -in ('14', '15','16'))
                     {
                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,CONN,BC,SDK,MDS'
                     }
@@ -2636,7 +2681,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             SqlVersion             = ('{0}.0' -f $MockSqlMajorVersion)
                         }
 
-                        if ($MockSqlMajorVersion -in ('13', '14', '15'))
+                        if ($MockSqlMajorVersion -in ('13', '14', '15','16'))
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SSMS,ADV_SSMS', ''
                         }
@@ -2646,7 +2691,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             $mockSetTargetResourceParameters.RSInstallMode = 'DefaultNativeMode'
                             $mockSetTargetResourceParameters.RsSvcStartupType = 'Automatic'
                         }
-                        elseif ($MockSqlMajorVersion -in ('14', '15'))
+                        elseif ($MockSqlMajorVersion -in ('14', '15','16'))
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
                         }
@@ -2706,6 +2751,48 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                 Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
             }
         }
+
+        Context 'When installing the database engine and ProductCoveredBySA is true' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Features = ''
+                        }
+                    }
+                }
+
+                It 'Should set the system in the desired state when feature is SQLENGINE' {
+                    $mockStartSqlSetupProcessExpectedArgument = @{
+                        Quiet                        = 'True'
+                        IAcceptSQLServerLicenseTerms = 'True'
+                        Action                       = 'Install'
+                        InstanceName                 = 'MSSQLSERVER'
+                        Features                     = 'SQLENGINE'
+                        SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                        PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                        ProductCoveredBySA           = 'True'
+                    }
+
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters = @{
+                            Features            = 'SQLENGINE'
+                            SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                            InstanceName        = 'MSSQLSERVER'
+                            SourceCredential    = $null
+                            SourcePath          = $TestDrive
+                            ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                            ProductCoveredBySA  = $true
+                            ServerName          = 'host.company.local'
+                        }
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                }
+            }
 
         Context 'When installing the database engine and disabling the TCP protocol' {
             BeforeAll {
@@ -2964,6 +3051,9 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
     }
 
     Context 'When passing invalid features for <MockSqlMajorVersion>' -ForEach @(
+        @{
+            MockSqlMajorVersion = 16 # SQL Server 2022
+        }
         @{
             MockSqlMajorVersion = 15 # SQL Server 2019
         }
