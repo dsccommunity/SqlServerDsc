@@ -322,7 +322,7 @@ function Get-TargetResource
         if ($sqlVersion -ge 16)
         {
            # Grab the value of ProductCoveredBySA from the registry based on the instance
-           $getTargetResourceReturnValue.ProductCoveredBySA = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL$($SqlVersion).$($InstanceName)\Setup\IsProductCoveredBySA"
+           $getTargetResourceReturnValue.ProductCoveredBySA = Get-RegistryPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL$($SqlVersion).$($InstanceName)\Setup" -Name "IsProductCoveredBySA"
         }
 
         # Get all members of the sysadmin role.
