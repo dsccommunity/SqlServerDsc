@@ -818,7 +818,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                if ($MockSqlMajorVersion -in ('13', '14', '15'))
+                if ($MockSqlMajorVersion -in ('13', '14', '15', '16'))
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
                     $result.Features | Should -Match 'REPLICATION\b'
@@ -959,7 +959,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                if ($MockSqlMajorVersion -in ('13', '14', '15', '16'))
+                if ($MockSqlMajorVersion -in ('13', '14', '15'))
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
                     $result.Features | Should -Match 'REPLICATION\b'
@@ -1192,7 +1192,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                if ($MockSqlMajorVersion -in ('13', '14', '15','16'))
+                if ($MockSqlMajorVersion -in ('13', '14', '15'))
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
                     $result.Features | Should -Match 'REPLICATION\b'
@@ -1501,7 +1501,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                if ($MockSqlMajorVersion -in ('13', '14', '15','16'))
+                if ($MockSqlMajorVersion -in ('13', '14', '15'))
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
                     $result.Features | Should -Match 'REPLICATION\b'
@@ -2314,7 +2314,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         $mockStartSqlSetupProcessExpectedArgument.RSInstallMode = 'DefaultNativeMode'
                         $mockStartSqlSetupProcessExpectedArgument.RsSvcStartupType = 'Automatic'
                     }
-                    elseif ($MockSqlMajorVersion -in ('14', '15','16'))
+                    elseif ($MockSqlMajorVersion -in ('14', '15'))
                     {
                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,CONN,BC,SDK,MDS'
                     }
@@ -2639,7 +2639,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         $mockStartSqlSetupProcessExpectedArgument.RSInstallMode = 'DefaultNativeMode'
                         $mockStartSqlSetupProcessExpectedArgument.RsSvcStartupType = 'Automatic'
                     }
-                    elseif ($MockSqlMajorVersion -in ('14', '15','16'))
+                    elseif ($MockSqlMajorVersion -in ('14', '15'))
                     {
                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,CONN,BC,SDK,MDS'
                     }
