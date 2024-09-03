@@ -2412,7 +2412,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             BrowserSvcStartupType  = 'Automatic'
                         }
 
-                        if ($MockSqlMajorVersion -in ('13', '14', '15', '16'))
+                        if ($MockSqlMajorVersion -in ('13', '14', '15'))
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SSMS,ADV_SSMS', ''
                         }
@@ -2422,7 +2422,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             $mockSetTargetResourceParameters.RSInstallMode = 'DefaultNativeMode'
                             $mockSetTargetResourceParameters.RsSvcStartupType = 'Automatic'
                         }
-                        elseif ($MockSqlMajorVersion -in ('14', '15', '16'))
+                        elseif ($MockSqlMajorVersion -in ('14', '15'))
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
                         }
@@ -2743,7 +2743,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             SqlVersion             = ('{0}.0' -f $MockSqlMajorVersion)
                         }
 
-                        if ($MockSqlMajorVersion -in ('13', '14', '15', '16'))
+                        if ($MockSqlMajorVersion -in ('13', '14', '15'))
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SSMS,ADV_SSMS', ''
                         }
@@ -2753,7 +2753,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             $mockSetTargetResourceParameters.RSInstallMode = 'DefaultNativeMode'
                             $mockSetTargetResourceParameters.RsSvcStartupType = 'Automatic'
                         }
-                        elseif ($MockSqlMajorVersion -in ('14', '15', '16'))
+                        elseif ($MockSqlMajorVersion -in ('14', '15'))
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
                         }
