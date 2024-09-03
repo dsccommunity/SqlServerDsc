@@ -2426,6 +2426,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
                         }
+                        elseif ($MockSqlMajorVersion -in ('16'))
+                        {
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Conn,RS', ''
+                        }
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
                     }
@@ -2756,6 +2760,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         elseif ($MockSqlMajorVersion -in ('14', '15'))
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
+                        }
+                        elseif ($MockSqlMajorVersion -in ('16'))
+                        {
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Conn,RS', ''
                         }
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
