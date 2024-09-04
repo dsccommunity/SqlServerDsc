@@ -1948,6 +1948,10 @@ Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
                 }
 
                 Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return '16'
+                }
+
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
                     return '15'
                 }
 
