@@ -2763,7 +2763,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         }
                         elseif ($MockSqlMajorVersion -in ('16'))
                         {
-                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Conn,RS', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Conn', ''
                         }
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
