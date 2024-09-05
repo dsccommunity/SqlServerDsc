@@ -2964,6 +2964,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     return 15
                 }
 
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return 16
+                }
+
                 Mock -CommandName Get-TargetResource -MockWith {
                     return @{
                         Features = ''
@@ -3007,6 +3011,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
             BeforeAll {
                 Mock -CommandName Get-FilePathMajorVersion -MockWith {
                     return 15
+                }
+
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return 16
                 }
 
                 Mock -CommandName Get-TargetResource -MockWith {
@@ -3057,6 +3065,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
         BeforeAll {
             Mock -CommandName Get-FilePathMajorVersion -MockWith {
                 return 15
+            }
+
+            Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                return 16
             }
 
             Mock -CommandName Get-TargetResource -MockWith {
