@@ -998,7 +998,6 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'IS\b'
                     $result.Features | Should -Match 'BOL\b'
                     $result.Features | Should -Match 'MDS\b'
-                    $result.Features | Should -Match 'BC\b'
                     $result.Features | Should -Match 'SDK\b'
                 }
                 else
@@ -1245,7 +1244,6 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'IS\b'
                     $result.Features | Should -Match 'BOL\b'
                     $result.Features | Should -Match 'MDS\b'
-                    $result.Features | Should -Match 'BC\b'
                     $result.Features | Should -Match 'SDK\b'
                 }
                 else
@@ -1568,7 +1566,6 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'IS\b'
                     $result.Features | Should -Match 'BOL\b'
                     $result.Features | Should -Match 'MDS\b'
-                    $result.Features | Should -Match 'BC\b'
                     $result.Features | Should -Match 'SDK\b'
                 }
                 else
@@ -2374,7 +2371,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     }
                     elseif ($MockSqlMajorVersion -in ('16'))
                     {
-                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,BC,SDK,MDS'
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,SDK,MDS'
                     }
                     else
                     {
@@ -2708,7 +2705,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     }
                     elseif ($MockSqlMajorVersion -in ('16'))
                     {
-                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,BC,SDK,MDS'
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,SDK,MDS'
                     }
                     else
                     {
