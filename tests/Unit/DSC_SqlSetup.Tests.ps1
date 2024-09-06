@@ -998,7 +998,6 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'IS\b'
                     $result.Features | Should -Match 'BOL\b'
                     $result.Features | Should -Match 'MDS\b'
-                    $result.Features | Should -Match 'SDK\b'
                 }
                 else
                 {
@@ -1244,7 +1243,6 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'IS\b'
                     $result.Features | Should -Match 'BOL\b'
                     $result.Features | Should -Match 'MDS\b'
-                    $result.Features | Should -Match 'SDK\b'
                 }
                 else
                 {
@@ -1566,7 +1564,6 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'IS\b'
                     $result.Features | Should -Match 'BOL\b'
                     $result.Features | Should -Match 'MDS\b'
-                    $result.Features | Should -Match 'SDK\b'
                 }
                 else
                 {
@@ -2371,7 +2368,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     }
                     elseif ($MockSqlMajorVersion -in ('16'))
                     {
-                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,SDK,MDS'
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,MDS'
                     }
                     else
                     {
@@ -2428,6 +2425,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Conn', ''
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Bc', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SDK', ''
                         }
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
@@ -2706,7 +2704,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     }
                     elseif ($MockSqlMajorVersion -in ('16'))
                     {
-                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,SDK,MDS'
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,MDS'
                     }
                     else
                     {
@@ -2765,6 +2763,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Conn', ''
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Bc', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SDK', ''
                         }
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
