@@ -2822,7 +2822,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
             }
         }
 
-        Context 'When installing the database engine and ProductCoveredBySA is true' {
+        Context 'When installing the database engine and ProductcoveredBySA is true' {
                 BeforeAll {
                     Mock -CommandName Get-FilePathMajorVersion -MockWith {
                         return 16
