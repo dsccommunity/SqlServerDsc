@@ -2427,6 +2427,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Conn', ''
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Bc', ''
                         }
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
@@ -2763,6 +2764,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Conn', ''
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Bc', ''
                         }
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
@@ -2823,6 +2825,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
         Context 'When installing the database engine and ProductCoveredBySA is true' {
                 BeforeAll {
+                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                        return 16
+                    }
+
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
                             Features = ''
