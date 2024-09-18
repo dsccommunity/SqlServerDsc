@@ -322,7 +322,9 @@ function Get-TargetResource
         if ($sqlVersion -ge 16)
         {
            # Grab the value of ProductCoveredBySA from the registry based on the instance
-           $getTargetResourceReturnValue.ProductCoveredBySA = Get-RegistryPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL$($SqlVersion).$($InstanceName)\Setup" -Name "IsProductCoveredBySA"
+           $ProductCoveredBySARegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL$($SqlVersion).$($InstanceName)\Setup"
+
+           $getTargetResourceReturnValue.ProductCoveredBySA = Get-RegistryPropertyValue -Path $ProductCoveredBySARegistryPath -Name "IsProductCoveredBySA"
         }
 
         # Get all members of the sysadmin role.
@@ -1309,10 +1311,7 @@ function Set-TargetResource
     # Add Parameter ProductCoveredBySA
     if ($PSBoundParameters.ContainsKey('ProductCoveredBySA'))
     {
-        if ($ProductCoveredBySA)
-        {
-            $setupArguments['ProductCoveredBySA'] = $ProductCoveredBySA
-        }
+        $setupArguments['ProductCoveredBySA'] = $ProductCoveredBySA
     }
 
     # Add standard install arguments
