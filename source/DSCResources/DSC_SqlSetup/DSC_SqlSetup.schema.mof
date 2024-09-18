@@ -10,7 +10,7 @@ class DSC_SqlSetup : OMI_BaseResource
     [Key, Description("Specifies the name of the instance to be installed.")] String InstanceName;
     [Write, Description("_SQL Server_ instance ID (if different from parameter **InstanceName**).")] String InstanceID;
     [Write, Description("Product key for licensed installations.")] String ProductKey;
-    [Write, Description("Specifies the Software Assurance license coverage for SQL Server.")] Boolean ProductCoveredbySA;
+    [Write, Description("Specifies the Software Assurance license coverage for SQL Server instance.")] Boolean ProductCoveredbySA;
     [Write, Description("Enabled updates during installation.")] String UpdateEnabled;
     [Write, Description("Path to the source of updates to be applied during installation.")] String UpdateSource;
     [Write, Description("Enable customer experience reporting.")] String SQMReporting;
