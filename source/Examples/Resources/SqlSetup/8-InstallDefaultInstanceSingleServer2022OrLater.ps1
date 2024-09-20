@@ -40,21 +40,6 @@ Configuration Example
 
     node localhost
     {
-        #region Install prerequisites for SQL Server
-        WindowsFeature 'NetFramework35'
-        {
-            Name   = 'NET-Framework-Core'
-            Source = '\\fileserver.company.local\images$\Win2k12R2\Sources\Sxs' # Assumes built-in Everyone has read permission to the share and path.
-            Ensure = 'Present'
-        }
-
-        WindowsFeature 'NetFramework45'
-        {
-            Name   = 'NET-Framework-45-Core'
-            Ensure = 'Present'
-        }
-        #endregion Install prerequisites for SQL Server
-
         #region Install SQL Server
         SqlSetup 'InstallDefaultInstance'
         {
@@ -92,8 +77,6 @@ Configuration Example
             SqlTempdbLogFileGrowth = 64
 
             PsDscRunAsCredential = $SqlInstallCredential
-
-            DependsOn            = '[WindowsFeature]NetFramework35', '[WindowsFeature]NetFramework45'
         }
         #endregion Install SQL Server
     }
