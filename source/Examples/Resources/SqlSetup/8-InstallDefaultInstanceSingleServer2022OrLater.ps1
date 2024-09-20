@@ -2,7 +2,7 @@
     .DESCRIPTION
         This example shows how to install a default instance of SQL Server, and
         Analysis Services in Tabular mode, on a single server.
-        It contains configurations that apply to Sql Server 2022 or later only.
+        It contains configurations that apply to Sql Server version 2022 or later only.
 
     .NOTES
         SQL Server setup is run using the SYSTEM account. Even if SetupCredential is provided
