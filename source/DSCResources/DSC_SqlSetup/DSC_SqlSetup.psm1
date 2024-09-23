@@ -326,9 +326,7 @@ function Get-TargetResource
                Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL$($SqlVersion).$($InstanceName)\Setup'
                Name = 'IsProductCoveredBySA'
         }
-
            $getTargetResourceReturnValue.ProductCoveredBySA = Get-RegistryPropertyValue @getRegistryPropertyParams
-
         }
 
         # Get all members of the sysadmin role.
