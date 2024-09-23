@@ -323,7 +323,7 @@ function Get-TargetResource
         {
            # Grab the value of ProductCoveredBySA from the registry based on the instance
            $getRegistryPropertyParams = @{
-               Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL$($SqlVersion).$($InstanceName)\Setup'
+               Path = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL$($SqlVersion).$($InstanceName)\Setup"
                Name = 'IsProductCoveredBySA'
         }
            $getTargetResourceReturnValue.ProductCoveredBySA = Get-RegistryPropertyValue @getRegistryPropertyParams
