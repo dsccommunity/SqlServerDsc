@@ -3226,6 +3226,22 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     Features = ''
                 }
             }
+
+            $mockDynamicClusterSites = @(
+                @{
+                    Name    = 'SiteA'
+                    Address = '10.0.0.10' # First site IP address
+                    Mask    = '255.255.255.0'
+                }
+            )
+
+            Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterNetwork -ParameterFilter {
+                ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
+            }
+
+            Mock -CommandName Test-IPAddress -MockWith {
+                return $true
+            }
         }
 
         It 'Should pass proper parameters to setup' {
@@ -3240,6 +3256,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                 SqlSvcPassword               = 'SqlS3v!c3P@ssw0rd'
                 AsSvcAccount                 = 'COMPANY\AnalysisAccount'
                 AsSvcPassword                = 'AnalysisS3v!c3P@ssw0rd'
+                FailoverClusterIPAddresses   = 'IPv4;10.0.0.10;SiteA_Prod;255.255.255.0'
             }
 
             InModuleScope -ScriptBlock {
@@ -3255,6 +3272,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SqlSvcAccount              = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\SqlAccount', ('SqlS3v!c3P@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
                     ASSvcAccount               = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\AnalysisAccount', ('AnalysisS3v!c3P@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
                     FailoverClusterNetworkName = 'TestDefaultCluster'
+                    FailoverClusterIPAddress   = '10.0.0.10'
                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
                 }
 
