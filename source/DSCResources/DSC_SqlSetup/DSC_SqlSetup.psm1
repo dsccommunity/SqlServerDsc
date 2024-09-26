@@ -1269,7 +1269,6 @@ function Set-TargetResource
     # Determine network mapping for specific cluster installation types
     if ($Action -in @('CompleteFailoverCluster', 'InstallFailoverCluster', 'AddNode'))
     {
-        Write-Warning 'Inside the IP Address stuff'
         $clusterIPAddresses = @()
 
         # If no IP Address has been specified, use "DEFAULT"
