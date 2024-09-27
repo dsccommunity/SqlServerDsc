@@ -335,120 +335,11 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
             InModuleScope -ScriptBlock {
                 $script:mockGetTargetResourceParameters = @{
-                    InstanceName       = 'MSSQLSERVER'
-                    SourceCredential   = $null
-                    SourcePath         = $TestDrive
-                    Feature            = 'NewFeature' # Test enabling a code-feature.
-                    ServerName         = 'host.company.local'
-                }
-            }
-        }
-
-        It 'Should return the same values as passed as parameters' {
-            InModuleScope -ScriptBlock {
-                Set-StrictMode -Version 1.0
-
-                $result = Get-TargetResource @mockGetTargetResourceParameters
-
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-            }
-
-            Should -Invoke -CommandName Connect-UncPath -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Disconnect-UncPath -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-Service -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-InstanceProgramPath -Exactly -Times 0 -Scope It
-
-            Should -Invoke -CommandName Test-IsSsmsInstalled -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsSsmsAdvancedInstalled -Exactly -Times 1 -Scope It
-        }
-
-        It 'Should not return any names of installed features' {
-            InModuleScope -ScriptBlock {
-                Set-StrictMode -Version 1.0
-
-                $result = Get-TargetResource @mockGetTargetResourceParameters
-
-                $result.Features | Should -Be ''
-            }
-        }
-
-        It 'Should return the correct values in the hash table' {
-            InModuleScope -ScriptBlock {
-                Set-StrictMode -Version 1.0
-
-                $result = Get-TargetResource @mockGetTargetResourceParameters
-
-                $result.SourcePath | Should -Be $TestDrive
-                $result.InstanceName | Should -Be 'MSSQLSERVER'
-                $result.InstanceID | Should -BeNullOrEmpty
-                $result.InstallSharedDir | Should -BeNullOrEmpty
-                $result.InstallSharedWOWDir | Should -BeNullOrEmpty
-                $result.SQLSvcAccountUsername | Should -BeNullOrEmpty
-                $result.AgtSvcAccountUsername | Should -BeNullOrEmpty
-                $result.SqlCollation | Should -BeNullOrEmpty
-                $result.SQLSysAdminAccounts | Should -BeNullOrEmpty
-                $result.SecurityMode | Should -BeNullOrEmpty
-                $result.InstallSQLDataDir | Should -BeNullOrEmpty
-                $result.SQLUserDBDir | Should -BeNullOrEmpty
-                $result.SQLUserDBLogDir | Should -BeNullOrEmpty
-                $result.SQLBackupDir | Should -BeNullOrEmpty
-                $result.FTSvcAccountUsername | Should -BeNullOrEmpty
-                $result.RSSvcAccountUsername | Should -BeNullOrEmpty
-                $result.ASSvcAccountUsername | Should -BeNullOrEmpty
-                $result.ASCollation | Should -BeNullOrEmpty
-                $result.ASSysAdminAccounts | Should -BeNullOrEmpty
-                $result.ASDataDir | Should -BeNullOrEmpty
-                $result.ASLogDir | Should -BeNullOrEmpty
-                $result.ASBackupDir | Should -BeNullOrEmpty
-                $result.ASTempDir | Should -BeNullOrEmpty
-                $result.ASConfigDir | Should -BeNullOrEmpty
-                $result.ASServerMode | Should -BeNullOrEmpty
-                $result.ISSvcAccountUsername | Should -BeNullOrEmpty
-                $result.ServerName | Should -Be 'host.company.local'
-            }
-        }
-    }
-
-    Context 'When SQL Server version is <MockSqlMajorVersion> and the system is not in the desired state for default instance' -ForEach @(
-        # Only runs for SQL Server 2022.
-        @{
-            MockSqlMajorVersion = 16
-        }
-    ) {
-        BeforeAll {
-            Mock -CommandName Test-IsSsmsInstalled -MockWith {
-                return $false
-            }
-
-            Mock -CommandName Test-IsSsmsAdvancedInstalled -MockWith {
-                return $false
-            }
-
-            Mock -CommandName Connect-UncPath
-            Mock -CommandName Disconnect-UncPath
-            Mock -CommandName Get-Service -MockWith $mockGetService_NoServices
-
-            Mock -CommandName Test-IsDQComponentInstalled -MockWith {
-                return $false
-            }
-
-            Mock -CommandName Get-InstanceProgramPath -MockWith {
-                return 'C:\Program Files\Microsoft SQL Server'
-            }
-
-            Mock -CommandName Get-InstalledSharedFeatures -MockWith {
-                return @()
-            }
-
-            InModuleScope -ScriptBlock {
-                $script:mockGetTargetResourceParameters = @{
-                    InstanceName       = 'MSSQLSERVER'
-                    SourceCredential   = $null
-                    SourcePath         = $TestDrive
-                    Feature            = 'NewFeature' # Test enabling a code-feature.
-                    ServerName         = 'host.company.local'
-                    ProductCoveredBySA = 'False'                    
+                    InstanceName     = 'MSSQLSERVER'
+                    SourceCredential = $null
+                    SourcePath       = $TestDrive
+                    Feature          = 'NewFeature' # Test enabling a code-feature.
+                    ServerName       = 'host.company.local'
                 }
             }
         }
@@ -770,10 +661,10 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $script:mockSourcePathUNC = Join-Path -Path "\\localhost\$testDrive_DriveShare" -ChildPath (Split-Path -Path $TestDrive -NoQualifier)
 
                 $script:mockGetTargetResourceParameters = @{
-                    InstanceName       = 'MSSQLSERVER'
-                    SourceCredential   = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
-                    SourcePath         = $mockSourcePathUNC
-                    SqlVersion         = ('{0}.0' -f $MockSqlMajorVersion)
+                    InstanceName     = 'MSSQLSERVER'
+                    SourceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
+                    SourcePath       = $mockSourcePathUNC
+                    SqlVersion       = ('{0}.0' -f $MockSqlMajorVersion)
                 }
             }
         }
@@ -940,7 +831,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'BOL\b'
                     $result.Features | Should -Match 'MDS\b'
                 }
-                elseif ($MockSqlMajorVersion -in ('16'))
+                if ($MockSqlMajorVersion -in ('16'))
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
                     $result.Features | Should -Match 'REPLICATION\b'
@@ -1096,7 +987,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'BC\b'
                     $result.Features | Should -Match 'SDK\b'
                 }
-                elseif ($MockSqlMajorVersion -in ('16'))
+                if ($MockSqlMajorVersion -in ('16'))
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
                     $result.Features | Should -Match 'REPLICATION\b'
@@ -1341,7 +1232,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'BC\b'
                     $result.Features | Should -Match 'SDK\b'
                 }
-                elseif ($MockSqlMajorVersion -in ('16'))
+                if ($MockSqlMajorVersion -in ('16'))
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
                     $result.Features | Should -Match 'REPLICATION\b'
@@ -1662,7 +1553,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'BC\b'
                     $result.Features | Should -Match 'SDK\b'
                 }
-                elseif ($MockSqlMajorVersion -in ('16'))
+                if ($MockSqlMajorVersion -in ('16'))
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
                     $result.Features | Should -Match 'REPLICATION\b'
