@@ -397,6 +397,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.RSSvcAccountUsername | Should -BeNullOrEmpty
                 $result.ASSvcAccountUsername | Should -BeNullOrEmpty
                 $result.ASCollation | Should -BeNullOrEmpty
+                $result.ProductCoveredBySA | Should -BeFalse
                 $result.ASSysAdminAccounts | Should -BeNullOrEmpty
                 $result.ASDataDir | Should -BeNullOrEmpty
                 $result.ASLogDir | Should -BeNullOrEmpty
