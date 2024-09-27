@@ -335,11 +335,12 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
             InModuleScope -ScriptBlock {
                 $script:mockGetTargetResourceParameters = @{
-                    InstanceName     = 'MSSQLSERVER'
-                    SourceCredential = $null
-                    SourcePath       = $TestDrive
-                    Feature          = 'NewFeature' # Test enabling a code-feature.
-                    ServerName       = 'host.company.local'
+                    InstanceName       = 'MSSQLSERVER'
+                    SourceCredential   = $null
+                    SourcePath         = $TestDrive
+                    Feature            = 'NewFeature' # Test enabling a code-feature.
+                    ServerName         = 'host.company.local'
+                    ProductCoveredBySA = 'False'
                 }
             }
         }
@@ -661,10 +662,11 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $script:mockSourcePathUNC = Join-Path -Path "\\localhost\$testDrive_DriveShare" -ChildPath (Split-Path -Path $TestDrive -NoQualifier)
 
                 $script:mockGetTargetResourceParameters = @{
-                    InstanceName     = 'MSSQLSERVER'
-                    SourceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
-                    SourcePath       = $mockSourcePathUNC
-                    SqlVersion       = ('{0}.0' -f $MockSqlMajorVersion)
+                    InstanceName       = 'MSSQLSERVER'
+                    SourceCredential   = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
+                    SourcePath         = $mockSourcePathUNC
+                    SqlVersion         = ('{0}.0' -f $MockSqlMajorVersion)
+                    ProductCoveredBySA = 'False'
                 }
             }
         }
@@ -831,7 +833,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'BOL\b'
                     $result.Features | Should -Match 'MDS\b'
                 }
-                if ($MockSqlMajorVersion -in ('16'))
+                elseif ($MockSqlMajorVersion -in ('16'))
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
                     $result.Features | Should -Match 'REPLICATION\b'
@@ -987,7 +989,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'BC\b'
                     $result.Features | Should -Match 'SDK\b'
                 }
-                if ($MockSqlMajorVersion -in ('16'))
+                elseif ($MockSqlMajorVersion -in ('16'))
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
                     $result.Features | Should -Match 'REPLICATION\b'
@@ -1232,7 +1234,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'BC\b'
                     $result.Features | Should -Match 'SDK\b'
                 }
-                if ($MockSqlMajorVersion -in ('16'))
+                elseif ($MockSqlMajorVersion -in ('16'))
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
                     $result.Features | Should -Match 'REPLICATION\b'
@@ -1553,7 +1555,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'BC\b'
                     $result.Features | Should -Match 'SDK\b'
                 }
-                if ($MockSqlMajorVersion -in ('16'))
+                elseif ($MockSqlMajorVersion -in ('16'))
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
                     $result.Features | Should -Match 'REPLICATION\b'
