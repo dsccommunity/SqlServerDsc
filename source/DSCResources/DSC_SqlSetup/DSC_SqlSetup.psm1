@@ -321,12 +321,12 @@ function Get-TargetResource
 
         if ($sqlVersion -ge 16)
         {
-           # Grab the value of ProductCoveredBySA from the registry based on the instance
-           $getRegistryPropertyParams = @{
-               Path = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL$($SqlVersion).$($InstanceName)\Setup"
-               Name = 'IsProductCoveredBySA'
+            # Grab the value of ProductCoveredBySA from the registry based on the instance
+            $getRegistryPropertyParams = @{
+                Path = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL$($SqlVersion).$($InstanceName)\Setup"
+                Name = 'IsProductCoveredBySA'
         }
-           $getTargetResourceReturnValue.ProductCoveredBySA = Get-RegistryPropertyValue @getRegistryPropertyParams
+            $getTargetResourceReturnValue.ProductCoveredBySA = Get-RegistryPropertyValue @getRegistryPropertyParams
         }
 
         # Get all members of the sysadmin role.
@@ -529,7 +529,7 @@ function Get-TargetResource
     .PARAMETER ProductKey
         Product key for licensed installations.
 
-   .PARAMETER PRODUCTCOVEREDBYSA
+    .PARAMETER ProductCoveredBySA
         Specifies the license coverage for SQL Server. True indicates it's covered under Software Assurance or SQL Server subscription.
         False, or omitting the parameter, indicates it's covered under a SQL Server license.
         Default value is False.
@@ -1793,7 +1793,7 @@ function Set-TargetResource
     .PARAMETER ProductKey
         Product key for licensed installations.
 
-    .PARAMETER PRODUCTCOVEREDBYSA
+    .PARAMETER ProductCoveredBySA
         Specifies the license coverage for SQL Server. True indicates it's covered under Software Assurance or SQL Server subscription.
         False, or omitting the parameter, indicates it's covered under a SQL Server license.
         Default value is False.
