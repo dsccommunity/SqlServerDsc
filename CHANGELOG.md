@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- SqlSetup
+  - Added new parameter ProductCoveredbySA which is introduced in SQL 2022.
+
+### Added
+
 - `Connect-SqlDscDatabaseEngine`
   - Added integration test for the command.
 - `Uninstall-SqlDscServer`
