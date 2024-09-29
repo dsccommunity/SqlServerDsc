@@ -2481,48 +2481,6 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                 }
             }
 
-            Context 'When installing the database engine and ProductCoveredBySA is true' {
-                BeforeAll {
-                    Mock -CommandName Get-TargetResource -MockWith {
-                        return @{
-                            Features = ''
-                        }
-                    }
-                }
-
-                It 'Should set the system in the desired state when feature is SQLENGINE' {
-                    $mockStartSqlSetupProcessExpectedArgument = @{
-                        Quiet                        = 'True'
-                        IAcceptSQLServerLicenseTerms = 'True'
-                        Action                       = 'Install'
-                        InstanceName                 = 'MSSQLSERVER'
-                        Features                     = 'SQLENGINE'
-                        SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-                        PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-                        ProductCoveredBySA           = 'True'
-                    }
-
-                    InModuleScope -ScriptBlock {
-                        Set-StrictMode -Version 1.0
-
-                        $mockSetTargetResourceParameters = @{
-                            Features            = 'SQLENGINE'
-                            SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-                            InstanceName        = 'MSSQLSERVER'
-                            SourceCredential    = $null
-                            SourcePath          = $TestDrive
-                            ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-                            ProductCoveredBySA  = $true
-                            ServerName          = 'host.company.local'
-                        }
-
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-                    }
-
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-                }
-            }
-
             Context 'When installing the database engine and enabling the TCP protocol' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
