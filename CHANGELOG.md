@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- SqlSetup
+  - Fixed issue with AddNode where cluster IP information was not being passed to
+    setup.exe. ([issue #1171](https://github.com/dsccommunity/SqlServerDsc/issues/1171))
+
 ## [17.0.0] - 2024-09-30
 
 ### Added

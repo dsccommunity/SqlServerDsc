@@ -63,7 +63,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 #>
 function Get-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called implicitly in several function, for example Get-SqlEngineProperties')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called implicitly in several function, for example Get-SqlEngineProperties')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -722,8 +722,8 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification='Because $global:DSCMachineStatus is used to trigger a Restart, either by force or when there are pending changes.')]
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification='Because $global:DSCMachineStatus is only set, never used (by design of Desired State Configuration).')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Because $global:DSCMachineStatus is used to trigger a Restart, either by force or when there are pending changes.')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Because $global:DSCMachineStatus is only set, never used (by design of Desired State Configuration).')]
     [CmdletBinding()]
     param
     (
@@ -1265,15 +1265,16 @@ function Set-TargetResource
         $setupArguments['FailoverClusterDisks'] = ($failoverClusterDisks | Sort-Object)
     }
 
+
     # Determine network mapping for specific cluster installation types
-    if ($Action -in @('CompleteFailoverCluster', 'InstallFailoverCluster'))
+    if ($Action -in @('CompleteFailoverCluster', 'InstallFailoverCluster', 'AddNode'))
     {
         $clusterIPAddresses = @()
 
         # If no IP Address has been specified, use "DEFAULT"
         if ($FailoverClusterIPAddress.Count -eq 0)
         {
-            $clusterIPAddresses += "DEFAULT"
+            $clusterIPAddresses += 'DEFAULT'
         }
         else
         {
@@ -1525,7 +1526,7 @@ function Set-TargetResource
                 $setupArguments['ASSysAdminAccounts'] = @($PsDscContext.RunAsUser)
             }
 
-            if ($PSBoundParameters.ContainsKey("ASSysAdminAccounts"))
+            if ($PSBoundParameters.ContainsKey('ASSysAdminAccounts'))
             {
                 $setupArguments['ASSysAdminAccounts'] += $ASSysAdminAccounts
             }
@@ -1636,12 +1637,12 @@ function Set-TargetResource
 
     if ($SecurityMode -eq 'SQL')
     {
-        $log = $log.Replace($SAPwd.GetNetworkCredential().Password, "********")
+        $log = $log.Replace($SAPwd.GetNetworkCredential().Password, '********')
     }
 
-    if ($ProductKey -ne "")
+    if ($ProductKey -ne '')
     {
-        $log = $log.Replace($ProductKey, "*****-*****-*****-*****-*****")
+        $log = $log.Replace($ProductKey, '*****-*****-*****-*****-*****')
     }
 
     $logVars = @('AgtSvcAccount', 'SQLSvcAccount', 'FTSvcAccount', 'RSSvcAccount', 'ASSvcAccount', 'ISSvcAccount')
@@ -1649,7 +1650,7 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey($logVar))
         {
-            $log = $log.Replace((Get-Variable -Name $logVar).Value.GetNetworkCredential().Password, "********")
+            $log = $log.Replace((Get-Variable -Name $logVar).Value.GetNetworkCredential().Password, '********')
         }
     }
 
@@ -1996,7 +1997,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is implicitly called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is implicitly called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -2342,7 +2343,7 @@ function Test-TargetResource
         Write-Verbose -Message $script:localizedData.EvaluatingClusterParameters
 
         $variableNames = $PSBoundParameters.Keys |
-            Where-Object -FilterScript { $_ -imatch "^FailoverCluster" }
+            Where-Object -FilterScript { $_ -imatch '^FailoverCluster' }
 
         foreach ($variableName in $variableNames)
         {
