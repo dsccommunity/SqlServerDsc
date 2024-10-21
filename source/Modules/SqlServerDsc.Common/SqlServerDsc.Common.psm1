@@ -358,9 +358,7 @@ function Test-PendingRestart
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param
-    (
-    )
+    param ()
 
     $getRegistryPropertyValueParameters = @{
         Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager'
