@@ -14,6 +14,7 @@ BuildWorkflow:
     - Create_Changelog_Release_Output
 
   docs:
+    - Clean_WikiContent_Folder
     - Check_SqlServer_Availability
     - Generate_Conceptual_Help
     - Generate_Wiki_Content
@@ -46,13 +47,22 @@ BuildWorkflow:
         try
         {
             [Microsoft.SqlServer.Management.Smo.Server] -as [Type] | Out-Null
+            [Microsoft.SqlServer.Management.Smo.Wmi.Service] -as [Type] | Out-Null
         }
         catch
         {
-            throw 'The SqlServer types are not available. Please install the SqlServer module or load SMO stubs types and try again.'
+            Write-Error -Message "Both the SqlServer namespaces Microsoft.SqlServer.Management.Smo or Microsoft.SqlServer.Management.Smo.Wmi are not available. Please install the SqlServer module.`nBy using PSResourceGet: Save-PSResource -Name SqlServer -Prerelease -Repository PSGallery -TrustRepository -Path .\output\RequiredModules\" -ErrorAction 'Stop'
         }
     }
 
+  Clean_WikiContent_Folder: |
+    {
+        # Clean output/WikiContent folder
+        if (Test-Path -Path './output/WikiContent')
+        {
+            Remove-Item -Path './output/WikiContent' -Recurse -Force
+        }
+    }
 ####################################################
 #           ModuleBuilder Configuration            #
 ####################################################
@@ -188,7 +198,7 @@ DscResource.DocGenerator:
       - '\*(.+?)\*' # Match Italic (asterisk)
   Publish_GitHub_Wiki_Content:
     Debug: false
-  Generate_Wiki_Content:
+  Generate_Markdown_For_DSC_Resources:
     MofResourceMetadata:
       Type: MofResource
       Category: Resources
