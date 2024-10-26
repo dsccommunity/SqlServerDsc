@@ -36,7 +36,13 @@
     'DscResource.Common'           = 'latest'
 
     # Analyzer rules
-    'DscResource.AnalyzerRules'    = 'latest'
+    'DscResource.AnalyzerRules'     = @{
+        Version    = 'latest'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
+    }
+
     'Indented.ScriptAnalyzerRules' = 'latest'
 
     # Dependency for integration tests
