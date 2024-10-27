@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- SqlServerDsc
+  - The examples that was located in the README in the examples folder has
+    now been moved to the WikiSource folder. The examples are published to
+    the repository Wiki. The README has been updated to link to the new
+    location ([issue #2051](https://github.com/dsccommunity/SqlServerDsc/issues/2051)).
 - SqlSetup
   - Fixed issue with AddNode where cluster IP information was not being passed to
-    setup.exe. ([issue #1171](https://github.com/dsccommunity/SqlServerDsc/issues/1171))
+    setup.exe ([issue #1171](https://github.com/dsccommunity/SqlServerDsc/issues/1171)).
 
 ### Fixed
 
@@ -35,16 +40,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlScript
   - BREAKING CHANGE: The parameter `Id` is now required to allow
     reuse of a script with different variables. Set this to a unique value.
-    The information entered is never used to actually run the script.
+    The information entered is never used to actually run the script
     ([issue #596](https://github.com/dsccommunity/SqlServerDsc/issues/596)).
   - Fix unit test to fully check Set-TargetResource using timeout.
 - SqlScriptQuery
   - BREAKING CHANGE: The parameter `Id` is now required to allow
     reuse of a script with different variables. Set this to a unique value.
-    The information entered is never used to actually run the script.
+    The information entered is never used to actually run the script
     ([issue #596](https://github.com/dsccommunity/SqlServerDsc/issues/596)).
   - Fix unit test to fully check Set-TargetResource using timeout.
-
 - SqlServerDsc
   - Replaced inline task `Package_Wiki_Content` with the one now available
     in the module _DscResource.DocGenerator_.
