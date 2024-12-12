@@ -2270,6 +2270,19 @@ function Get-FilePathMajorVersion
     (Get-Item -Path $Path).VersionInfo.ProductVersion.Split('.')[0]
 }
 
+function Get-FilePathMinorVersion
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Path
+    )
+
+    (Get-Item -Path $Path).VersionInfo.ProductVersion.Split('.')[2]
+}
+
 <#
     .SYNOPSIS
         Test if the specific feature flag should be enabled.
