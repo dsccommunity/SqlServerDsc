@@ -225,10 +225,13 @@ function Get-TargetResource
 
     $getTargetResourceReturnValue.SqlVersion = $SqlVersion
 
-    if ($Action -eq 'Upgrade') {
+    if ($Action -eq 'Upgrade')
+    {
         $sqlMinorVersion = (Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop' ).ServerVersion.BuildNumber
         $getTargetResourceReturnValue.SqlMinorVersion = $sqlMinorVersion
-    } else {
+    }
+    else
+    {
         $getTargetResourceReturnValue.SqlMinorVersion = 0
     }
 
@@ -333,7 +336,7 @@ function Get-TargetResource
             $getRegistryPropertyParams = @{
                 Path = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL$($SqlVersion).$($InstanceName)\Setup"
                 Name = 'IsProductCoveredBySA'
-        }
+            }
             $getTargetResourceReturnValue.ProductCoveredBySA = Get-RegistryPropertyValue @getRegistryPropertyParams
         }
 
@@ -1672,14 +1675,18 @@ function Set-TargetResource
     $instanceSqlVersion = Get-SQLInstanceMajorVersion -InstanceName $InstanceName
     if ($installerSqlVersion -eq $instanceSqlVersion -and $Action -eq 'Upgrade')
     {
-        try {
+        try
+        {
             Connect-SQL -InstanceName $InstanceName | Update-SqlDscServer -MediaPath $UpdateSource
-        } catch
+        }
+        catch
         {
             throw $_
         }
 
-    } else {
+    }
+    else
+    {
 
         try
         {
@@ -2394,7 +2401,9 @@ function Test-TargetResource
             )
 
             $result = $false
-        } elseif ($instanceSqlVersion -eq $installerSqlVersion){
+        }
+        elseif ($instanceSqlVersion -eq $installerSqlVersion)
+        {
             $latestCU = Find-SqlDscLatestCu -MediaPath $UpdateSource -MajorVersion $installerSqlVersion
             $updateSourceLatestMinor = Get-FilePathMinorVersion -Path $latestCU
             if ($updateSourceLatestMinor -gt $sqlMinorVersion)
