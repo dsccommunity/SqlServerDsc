@@ -176,6 +176,7 @@ function Get-TargetResource
         UseEnglish                 = $UseEnglish
         ServerName                 = $ServerName
         SqlVersion                 = $null
+        SqlMinorVersion            = $null
         ProductCoveredBySA         = $null
     }
 
@@ -223,6 +224,13 @@ function Get-TargetResource
     }
 
     $getTargetResourceReturnValue.SqlVersion = $SqlVersion
+
+    if ($Action -eq 'Upgrade') {
+        $sqlMinorVersion = (Connect-SQL -ServerName $ServerName -InstanceName $InstanceName -ErrorAction 'Stop' ).ServerVersion.BuildNumber
+        $getTargetResourceReturnValue.SqlMinorVersion = $sqlMinorVersion
+    } else {
+        $getTargetResourceReturnValue.SqlMinorVersion = 0
+    }
 
     if ($SourceCredential)
     {
@@ -1660,93 +1668,108 @@ function Set-TargetResource
 
     Write-Verbose -Message ($script:localizedData.UsingPath -f $pathToSetupExecutable)
 
-    try
+    $installerSqlVersion = Get-FilePathMajorVersion -Path (Join-Path -Path $sourcePath -ChildPath 'setup.exe')
+    $instanceSqlVersion = Get-SQLInstanceMajorVersion -InstanceName $InstanceName
+    if ($installerSqlVersion -eq $instanceSqlVersion -and $Action -eq 'Upgrade')
     {
-        <#
-            This handles when PsDscRunAsCredential is set, or running as the SYSTEM account (when
-            PsDscRunAsCredential is not set).
-        #>
-
-        $startProcessParameters = @{
-            FilePath     = $pathToSetupExecutable
-            ArgumentList = $arguments
-            Timeout      = $SetupProcessTimeout
+        try {
+            Connect-SQL -InstanceName $InstanceName | Update-SqlDscServer -MediaPath $UpdateSource
+        } catch
+        {
+            throw $_
         }
 
-        $processExitCode = Start-SqlSetupProcess @startProcessParameters
+    } else {
 
-        $setupExitMessage = ($script:localizedData.SetupExitMessage -f $processExitCode)
-
-        $setupEndedInError = $false
-
-        if ($processExitCode -eq 3010 -and -not $SuppressReboot)
+        try
         {
-            $setupExitMessageRebootRequired = ('{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupSuccessfulRebootRequired))
+            <#
+                This handles when PsDscRunAsCredential is set, or running as the SYSTEM account (when
+                PsDscRunAsCredential is not set).
+            #>
 
-            Write-Verbose -Message $setupExitMessageRebootRequired
+            $startProcessParameters = @{
+                FilePath     = $pathToSetupExecutable
+                ArgumentList = $arguments
+                Timeout      = $SetupProcessTimeout
+            }
 
-            # Setup ended with error code 3010 which means reboot is required.
-            $global:DSCMachineStatus = 1
-        }
-        elseif ($processExitCode -ne 0)
-        {
-            $setupExitMessageError = ('{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupFailed))
-            Write-Warning $setupExitMessageError
+            $processExitCode = Start-SqlSetupProcess @startProcessParameters
 
-            $setupEndedInError = $true
-        }
-        else
-        {
-            $setupExitMessageSuccessful = ('{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupSuccessful))
+            $setupExitMessage = ($script:localizedData.SetupExitMessage -f $processExitCode)
 
-            Write-Verbose -Message $setupExitMessageSuccessful
-        }
+            $setupEndedInError = $false
 
-        if ($ForceReboot -or (Test-PendingRestart))
-        {
-            if (-not ($SuppressReboot))
+            if ($processExitCode -eq 3010 -and -not $SuppressReboot)
             {
-                Write-Verbose -Message $script:localizedData.Reboot
+                $setupExitMessageRebootRequired = ('{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupSuccessfulRebootRequired))
 
-                # Rebooting, so no point in refreshing the session.
-                $forceReloadPowerShellModule = $false
+                Write-Verbose -Message $setupExitMessageRebootRequired
 
+                # Setup ended with error code 3010 which means reboot is required.
                 $global:DSCMachineStatus = 1
+            }
+            elseif ($processExitCode -ne 0)
+            {
+                $setupExitMessageError = ('{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupFailed))
+                Write-Warning $setupExitMessageError
+
+                $setupEndedInError = $true
             }
             else
             {
-                Write-Verbose -Message $script:localizedData.SuppressReboot
+                $setupExitMessageSuccessful = ('{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupSuccessful))
+
+                Write-Verbose -Message $setupExitMessageSuccessful
+            }
+
+            if ($ForceReboot -or (Test-PendingRestart))
+            {
+                if (-not ($SuppressReboot))
+                {
+                    Write-Verbose -Message $script:localizedData.Reboot
+
+                    # Rebooting, so no point in refreshing the session.
+                    $forceReloadPowerShellModule = $false
+
+                    $global:DSCMachineStatus = 1
+                }
+                else
+                {
+                    Write-Verbose -Message $script:localizedData.SuppressReboot
+                    $forceReloadPowerShellModule = $true
+                }
+            }
+            else
+            {
                 $forceReloadPowerShellModule = $true
             }
+
+            if ((-not $setupEndedInError) -and $forceReloadPowerShellModule)
+            {
+                <#
+                    Force reload of SQLPS module in case a newer version of
+                    SQL Server was installed that contains a newer version
+                    of the SQLPS module, although if SqlServer module exist
+                    on the target node, that will be used regardless.
+                    This is to make sure we use the latest SQLPS module that
+                    matches the latest assemblies in GAC, mitigating for example
+                    issue #1151.
+                #>
+                Import-SqlDscPreferredModule -Force
+            }
+
+            if (-not (Test-TargetResource @PSBoundParameters))
+            {
+                $errorMessage = $script:localizedData.TestFailedAfterSet
+                New-InvalidResultException -Message $errorMessage
+            }
         }
-        else
+        catch
         {
-            $forceReloadPowerShellModule = $true
+            throw $_
         }
 
-        if ((-not $setupEndedInError) -and $forceReloadPowerShellModule)
-        {
-            <#
-                Force reload of SQLPS module in case a newer version of
-                SQL Server was installed that contains a newer version
-                of the SQLPS module, although if SqlServer module exist
-                on the target node, that will be used regardless.
-                This is to make sure we use the latest SQLPS module that
-                matches the latest assemblies in GAC, mitigating for example
-                issue #1151.
-            #>
-            Import-SqlDscPreferredModule -Force
-        }
-
-        if (-not (Test-TargetResource @PSBoundParameters))
-        {
-            $errorMessage = $script:localizedData.TestFailedAfterSet
-            New-InvalidResultException -Message $errorMessage
-        }
-    }
-    catch
-    {
-        throw $_
     }
 }
 
@@ -1799,7 +1822,7 @@ function Set-TargetResource
         False, or omitting the parameter, indicates it's covered under a SQL Server license.
         Default value is False.
 
-        Not used in Test-TargetResource.    
+        Not used in Test-TargetResource.
 
     .PARAMETER UpdateEnabled
         Enabled updates during installation.
@@ -2267,7 +2290,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $SqlVersion
+        $SqlVersion,
+
+        [Parameter()]
+        [System.String]
+        $sqlMinorVersion
     )
 
     if ($Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
@@ -2360,7 +2387,6 @@ function Test-TargetResource
     {
         $installerSqlVersion = Get-FilePathMajorVersion -Path (Join-Path -Path $sourcePath -ChildPath 'setup.exe')
         $instanceSqlVersion = Get-SQLInstanceMajorVersion -InstanceName $InstanceName
-
         if ($installerSQLVersion -gt $instanceSqlVersion)
         {
             Write-Verbose -Message (
@@ -2368,6 +2394,16 @@ function Test-TargetResource
             )
 
             $result = $false
+        } elseif ($instanceSqlVersion -eq $installerSqlVersion){
+            $latestCU = Find-SqlDscLatestCu -MediaPath $UpdateSource -MajorVersion $installerSqlVersion
+            $updateSourceLatestMinor = Get-FilePathMinorVersion -Path $latestCU
+            if ($updateSourceLatestMinor -gt $sqlMinorVersion)
+            {
+                Write-Verbose -Message (
+                    $script:localizedData.DifferentMinorVersion -f $InstanceName, $sqlMinorVersion, $updateSourceLatestMinor
+                )
+                $result = $false
+            }
         }
     }
 
@@ -2717,6 +2753,7 @@ function Get-SqlEngineProperties
     $sqlUserDatabaseDirectory = $sqlServerObject.DefaultFile
     $sqlUserDatabaseLogDirectory = $sqlServerObject.DefaultLog
     $sqlBackupDirectory = $sqlServerObject.BackupDirectory
+    $sqlMinorVersion = $sqlServerObject.ServerVersion.BuildNumber
 
     if ($sqlServerObject.LoginMode -eq 'Mixed')
     {
@@ -2739,6 +2776,7 @@ function Get-SqlEngineProperties
         SQLUserDBLogDir       = $sqlUserDatabaseLogDirectory
         SQLBackupDir          = $sqlBackupDirectory
         SecurityMode          = $securityMode
+        MinorVersion          = $sqlMinorVersion
     }
 }
 
