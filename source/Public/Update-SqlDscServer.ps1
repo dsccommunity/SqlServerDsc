@@ -25,25 +25,28 @@ function Update-SqlDscServer
     $sqlMinorVersion = $ServerObject | Get-SqlDscServerVersion | Select-Object -ExpandProperty BuildNumber
     $selectedExe = Find-SqlDscLatestCu -MediaPath $MediaPath -MajorVersion $sqlMajorVersion
 
-    if (-not $selectedExe) {
+    if (-not $selectedExe)
+    {
         Write-Error -Message "No update found for SQL Server version $sqlMajorVersion In the folder"
-        throw "Could not determine the update file to use"
+        throw 'Could not determine the update file to use'
     }
 
     $exeMinorVersion = Get-FilePathMinorVersion -Path $selectedExe
-    if ($exeMinorVersion -le $sqlMinorVersion) {
+    if ($exeMinorVersion -le $sqlMinorVersion)
+    {
         return
     }
 
     $patchSplat = @(
-        "/Action=Patch"
-        "/Quiet"
-        "/IAcceptSQLServerLicenseTerms"
+        '/Action=Patch'
+        '/Quiet'
+        '/IAcceptSQLServerLicenseTerms'
         "/InstanceId=$(($ServerObject.ServiceInstanceId -split '\.')[1])"
     )
     $process = Start-Process -FilePath $selectedExe -ArgumentList $patchSplat -NoNewWindow -Wait -PassThru
-    if ($process.ExitCode -ne 0) {
-        Write-Error "The executable encountered an error."
+    if ($process.ExitCode -ne 0)
+    {
+        Write-Error 'The executable encountered an error.'
         throw "$($selectedExe) returned an error code of $($process.ExitCode) with message: $($process.StandardOutput)"
     }
 }
