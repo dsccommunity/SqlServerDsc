@@ -1683,7 +1683,6 @@ function Set-TargetResource
         {
             throw $_
         }
-
     }
     else
     {
@@ -1776,7 +1775,6 @@ function Set-TargetResource
         {
             throw $_
         }
-
     }
 }
 
