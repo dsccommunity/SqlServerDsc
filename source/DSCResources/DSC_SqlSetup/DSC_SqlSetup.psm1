@@ -2297,11 +2297,8 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $SqlVersion,
+        $SqlVersion
 
-        [Parameter()]
-        [System.String]
-        $SqlMinorVersion
     )
 
     if ($Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
