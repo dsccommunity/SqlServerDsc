@@ -1782,7 +1782,7 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-        Tests if the SQL Server features are installed on the node.
+        Tests if the SQL Server Features are installed on the node.
 
     .PARAMETER Action
         The action to be performed. Default value is 'Install'.
@@ -2301,7 +2301,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $sqlMinorVersion
+        $SqlMinorVersion
     )
 
     if ($Action -eq 'Upgrade' -and $PSBoundParameters.ContainsKey('SqlVersion'))
@@ -2406,11 +2406,10 @@ function Test-TargetResource
         {
             $latestCU = Find-SqlDscLatestCu -MediaPath $UpdateSource -MajorVersion $installerSqlVersion
             $updateSourceLatestMinor = Get-FilePathMinorVersion -Path $latestCU
-            if ($updateSourceLatestMinor -gt $sqlMinorVersion)
+            if ($updateSourceLatestMinor -gt $getTargetResourceResult.SqlMinorVersion)
             {
                 Write-Verbose -Message (
-                    $script:localizedData.DifferentMinorVersion -f $InstanceName, $sqlMinorVersion, $updateSourceLatestMinor
-                )
+                    $script:localizedData.DifferentMinorVersion -f $InstanceName, $getTargetResourceResult.SqlMinorVersion, $updateSourceLatestMinor)
                 $result = $false
             }
         }
