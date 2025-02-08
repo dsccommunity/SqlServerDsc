@@ -65,18 +65,18 @@ Describe 'ConvertFrom-SqlDscServerPermission' -Tag 'Public' {
     It 'Should return the correct values' {
         $mockResult = ConvertFrom-SqlDscServerPermission -Permission $mockPermission
 
-        $mockResult.ConnectSql | Should -BeTrue
-        $mockResult.AlterAnyAvailabilityGroup | Should -BeTrue
-        $mockResult.AlterAnyLogin | Should -BeFalse
+        $mockResult.ConnectSql | Should-BeTrue
+        $mockResult.AlterAnyAvailabilityGroup | Should-BeTrue
+        $mockResult.AlterAnyLogin | Should-BeFalse
     }
 
     Context 'When passing ServerPermissionInfo over the pipeline' {
         It 'Should return the correct values' {
             $mockResult = $mockPermission | ConvertFrom-SqlDscServerPermission
 
-            $mockResult.ConnectSql | Should -BeTrue
-            $mockResult.AlterAnyAvailabilityGroup | Should -BeTrue
-            $mockResult.AlterAnyLogin | Should -BeFalse
+            $mockResult.ConnectSql | Should-BeTrue
+            $mockResult.AlterAnyAvailabilityGroup | Should-BeTrue
+            $mockResult.AlterAnyLogin | Should-BeFalse
         }
     }
 }

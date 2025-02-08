@@ -70,21 +70,21 @@ Describe 'SqlDatabasePermission' {
     Context 'When class is instantiated' {
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
-                { [SqlDatabasePermission]::new() } | Should -Not -Throw
+                $null = & ({ [SqlDatabasePermission]::new() })
             }
         }
 
         It 'Should have a default or empty constructor' {
             InModuleScope -ScriptBlock {
                 $instance = [SqlDatabasePermission]::new()
-                $instance | Should -Not -BeNullOrEmpty
+                $instance | Should-BeTruthy
             }
         }
 
         It 'Should be the correct type' {
             InModuleScope -ScriptBlock {
                 $instance = [SqlDatabasePermission]::new()
-                $instance.GetType().Name | Should -Be 'SqlDatabasePermission'
+                $instance.GetType().Name | Should-Be 'SqlDatabasePermission'
             }
         }
     }
@@ -148,17 +148,17 @@ Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlDatabasePermissionInstance.Get()
 
-                    $currentState.InstanceName | Should -Be 'NamedInstance'
-                    $currentState.DatabaseName | Should -Be 'MockDatabaseName'
-                    $currentState.Name | Should -Be 'MockUserName'
-                    $currentState.ServerName | Should -Be (Get-ComputerName)
-                    $currentState.Credential | Should -BeNullOrEmpty
-                    $currentState.Reasons | Should -BeNullOrEmpty
+                    $currentState.InstanceName | Should-Be 'NamedInstance'
+                    $currentState.DatabaseName | Should-Be 'MockDatabaseName'
+                    $currentState.Name | Should-Be 'MockUserName'
+                    $currentState.ServerName | Should-Be (Get-ComputerName)
+                    $currentState.Credential | Should-BeFalsy
+                    $currentState.Reasons | Should-BeFalsy
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
+                    $currentState.Permission.GetType().FullName | Should-Be 'DatabasePermission[]'
 
-                    $currentState.Permission[0].State | Should -Be 'Grant'
-                    $currentState.Permission[0].Permission | Should -Be 'Connect'
+                    $currentState.Permission[0].State | Should-Be 'Grant'
+                    $currentState.Permission[0].Permission | Should-Be 'Connect'
                 }
             }
         }
@@ -224,21 +224,21 @@ Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlDatabasePermissionInstance.Get()
 
-                    $currentState.InstanceName | Should -Be 'NamedInstance'
-                    $currentState.DatabaseName | Should -Be 'MockDatabaseName'
-                    $currentState.Name | Should -Be 'MockUserName'
-                    $currentState.ServerName | Should -Be (Get-ComputerName)
+                    $currentState.InstanceName | Should-Be 'NamedInstance'
+                    $currentState.DatabaseName | Should-Be 'MockDatabaseName'
+                    $currentState.Name | Should-Be 'MockUserName'
+                    $currentState.ServerName | Should-Be (Get-ComputerName)
 
-                    $currentState.Credential | Should -BeOfType [System.Management.Automation.PSCredential]
+                    $currentState.Credential | Should-HaveType ([System.Management.Automation.PSCredential])
 
-                    $currentState.Credential.UserName | Should -Be 'MyCredentialUserName'
+                    $currentState.Credential.UserName | Should-Be 'MyCredentialUserName'
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
+                    $currentState.Permission.GetType().FullName | Should-Be 'DatabasePermission[]'
 
-                    $currentState.Permission[0].State | Should -Be 'Grant'
-                    $currentState.Permission[0].Permission | Should -Be 'Connect'
+                    $currentState.Permission[0].State | Should-Be 'Grant'
+                    $currentState.Permission[0].Permission | Should-Be 'Connect'
 
-                    $currentState.Reasons | Should -BeNullOrEmpty
+                    $currentState.Reasons | Should-BeFalsy
                 }
             }
         }
@@ -301,21 +301,21 @@ Describe 'SqlDatabasePermission\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlDatabasePermissionInstance.Get()
 
-                    $currentState.InstanceName | Should -Be 'NamedInstance'
-                    $currentState.DatabaseName | Should -Be 'MockDatabaseName'
-                    $currentState.Name | Should -Be 'MockUserName'
-                    $currentState.ServerName | Should -Be (Get-ComputerName)
-                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.InstanceName | Should-Be 'NamedInstance'
+                    $currentState.DatabaseName | Should-Be 'MockDatabaseName'
+                    $currentState.Name | Should-Be 'MockUserName'
+                    $currentState.ServerName | Should-Be (Get-ComputerName)
+                    $currentState.Credential | Should-BeFalsy
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
+                    $currentState.Permission.GetType().FullName | Should-Be 'DatabasePermission[]'
 
-                    $currentState.Permission[0].State | Should -Be 'Grant'
-                    $currentState.Permission[0].Permission | Should -Contain 'Connect'
-                    $currentState.Permission[0].Permission | Should -Contain 'Update'
+                    $currentState.Permission[0].State | Should-Be 'Grant'
+                    $currentState.Permission[0].Permission | Should-ContainCollection 'Connect'
+                    $currentState.Permission[0].Permission | Should-ContainCollection 'Update'
 
-                    $currentState.Reasons | Should -HaveCount 1
-                    $currentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
-                    $currentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["Connect"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["Connect","Update"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
+                    $currentState.Reasons | Should-BeCollection -Count 1
+                    $currentState.Reasons[0].Code | Should-Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
+                    $currentState.Reasons[0].Phrase | Should-Be 'The property Permission should be [{"State":"Grant","Permission":["Connect"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["Connect","Update"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
                 }
             }
         }
@@ -348,28 +348,28 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                         InstanceName = 'NamedInstance'
                     })
 
-                $currentState.Credential | Should -BeNullOrEmpty
+                $currentState.Credential | Should-BeFalsy
 
-                $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
-                $currentState.Permission | Should -HaveCount 3
+                $currentState.Permission.GetType().FullName | Should-Be 'DatabasePermission[]'
+                $currentState.Permission | Should-BeCollection -Count 3
 
                 $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                $grantState | Should -Not -BeNullOrEmpty
-                $grantState.State | Should -Be 'Grant'
-                $grantState.Permission | Should -BeNullOrEmpty
+                $grantState | Should-BeTruthy
+                $grantState.State | Should-Be 'Grant'
+                $grantState.Permission | Should-BeFalsy
 
                 $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                $grantWithGrantState | Should -Not -BeNullOrEmpty
-                $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                $grantWithGrantState | Should-BeTruthy
+                $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                $grantWithGrantState.Permission | Should-BeFalsy
 
                 $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                $denyState | Should -Not -BeNullOrEmpty
-                $denyState.State | Should -Be 'Deny'
-                $denyState.Permission | Should -BeNullOrEmpty
+                $denyState | Should-BeTruthy
+                $denyState.State | Should-Be 'Deny'
+                $denyState.Permission | Should-BeFalsy
             }
         }
 
@@ -387,30 +387,30 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                             InstanceName = 'NamedInstance'
                         })
 
-                    $currentState.Credential | Should -BeOfType [System.Management.Automation.PSCredential]
+                    $currentState.Credential | Should-HaveType ([System.Management.Automation.PSCredential])
 
-                    $currentState.Credential.UserName | Should -Be 'MyCredentialUserName'
+                    $currentState.Credential.UserName | Should-Be 'MyCredentialUserName'
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
-                    $currentState.Permission | Should -HaveCount 3
+                    $currentState.Permission.GetType().FullName | Should-Be 'DatabasePermission[]'
+                    $currentState.Permission | Should-BeCollection -Count 3
 
                     $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                    $grantState | Should -Not -BeNullOrEmpty
-                    $grantState.State | Should -Be 'Grant'
-                    $grantState.Permission | Should -BeNullOrEmpty
+                    $grantState | Should-BeTruthy
+                    $grantState.State | Should-Be 'Grant'
+                    $grantState.Permission | Should-BeFalsy
 
                     $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                    $grantWithGrantState | Should -Not -BeNullOrEmpty
-                    $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                    $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                    $grantWithGrantState | Should-BeTruthy
+                    $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                    $grantWithGrantState.Permission | Should-BeFalsy
 
                     $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                    $denyState | Should -Not -BeNullOrEmpty
-                    $denyState.State | Should -Be 'Deny'
-                    $denyState.Permission | Should -BeNullOrEmpty
+                    $denyState | Should-BeTruthy
+                    $denyState.State | Should-Be 'Deny'
+                    $denyState.Permission | Should-BeFalsy
                 }
             }
         }
@@ -463,30 +463,30 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                         InstanceName = 'NamedInstance'
                     })
 
-                $currentState.Credential | Should -BeNullOrEmpty
+                $currentState.Credential | Should-BeFalsy
 
-                $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
-                $currentState.Permission | Should -HaveCount 3
+                $currentState.Permission.GetType().FullName | Should-Be 'DatabasePermission[]'
+                $currentState.Permission | Should-BeCollection -Count 3
 
                 $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                $grantState | Should -Not -BeNullOrEmpty
-                $grantState.State | Should -Be 'Grant'
-                $grantState.Permission | Should -HaveCount 2
-                $grantState.Permission | Should -Contain 'Connect'
-                $grantState.Permission | Should -Contain 'Update'
+                $grantState | Should-BeTruthy
+                $grantState.State | Should-Be 'Grant'
+                $grantState.Permission | Should-BeCollection -Count 2
+                $grantState.Permission | Should-ContainCollection 'Connect'
+                $grantState.Permission | Should-ContainCollection 'Update'
 
                 $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                $grantWithGrantState | Should -Not -BeNullOrEmpty
-                $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                $grantWithGrantState | Should-BeTruthy
+                $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                $grantWithGrantState.Permission | Should-BeFalsy
 
                 $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                $denyState | Should -Not -BeNullOrEmpty
-                $denyState.State | Should -Be 'Deny'
-                $denyState.Permission | Should -BeNullOrEmpty
+                $denyState | Should-BeTruthy
+                $denyState.State | Should-Be 'Deny'
+                $denyState.Permission | Should-BeFalsy
             }
         }
     }
@@ -539,29 +539,29 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                         InstanceName = 'NamedInstance'
                     })
 
-                $currentState.Credential | Should -BeNullOrEmpty
+                $currentState.Credential | Should-BeFalsy
 
-                $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
-                $currentState.Permission | Should -HaveCount 3
+                $currentState.Permission.GetType().FullName | Should-Be 'DatabasePermission[]'
+                $currentState.Permission | Should-BeCollection -Count 3
 
                 $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                $grantState | Should -Not -BeNullOrEmpty
-                $grantState.State | Should -Be 'Grant'
-                $grantState.Permission | Should -Contain 'Connect'
-                $grantState.Permission | Should -Contain 'Update'
+                $grantState | Should-BeTruthy
+                $grantState.State | Should-Be 'Grant'
+                $grantState.Permission | Should-ContainCollection 'Connect'
+                $grantState.Permission | Should-ContainCollection 'Update'
 
                 $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                $grantWithGrantState | Should -Not -BeNullOrEmpty
-                $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                $grantWithGrantState | Should-BeTruthy
+                $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                $grantWithGrantState.Permission | Should-BeFalsy
 
                 $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                $denyState | Should -Not -BeNullOrEmpty
-                $denyState.State | Should -Be 'Deny'
-                $denyState.Permission | Should -Contain 'Select'
+                $denyState | Should-BeTruthy
+                $denyState.State | Should-Be 'Deny'
+                $denyState.Permission | Should-ContainCollection 'Select'
             }
         }
     }
@@ -619,33 +619,33 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                             InstanceName = 'NamedInstance'
                         })
 
-                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.Credential | Should-BeFalsy
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
-                    $currentState.Permission | Should -HaveCount 3
+                    $currentState.Permission.GetType().FullName | Should-Be 'DatabasePermission[]'
+                    $currentState.Permission | Should-BeCollection -Count 3
 
                     $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                    $grantState | Should -Not -BeNullOrEmpty
-                    $grantState.State | Should -Be 'Grant'
-                    $grantState.Permission | Should -Contain 'Connect'
-                    $grantState.Permission | Should -Contain 'Update'
+                    $grantState | Should-BeTruthy
+                    $grantState.State | Should-Be 'Grant'
+                    $grantState.Permission | Should-ContainCollection 'Connect'
+                    $grantState.Permission | Should-ContainCollection 'Update'
 
                     $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                    $grantWithGrantState | Should -Not -BeNullOrEmpty
-                    $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                    $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                    $grantWithGrantState | Should-BeTruthy
+                    $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                    $grantWithGrantState.Permission | Should-BeFalsy
 
                     $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                    $denyState | Should -Not -BeNullOrEmpty
-                    $denyState.State | Should -Be 'Deny'
-                    $denyState.Permission | Should -Contain 'Select'
+                    $denyState | Should-BeTruthy
+                    $denyState.State | Should-Be 'Deny'
+                    $denyState.Permission | Should-ContainCollection 'Select'
 
-                    $currentState.PermissionToInclude | Should -HaveCount 1
-                    $currentState.PermissionToInclude[0].State | Should -Be 'Grant'
-                    $currentState.PermissionToInclude[0].Permission | Should -Be 'Update'
+                    $currentState.PermissionToInclude | Should-BeCollection -Count 1
+                    $currentState.PermissionToInclude[0].State | Should-Be 'Grant'
+                    $currentState.PermissionToInclude[0].Permission | Should-Be 'Update'
                 }
             }
         }
@@ -702,33 +702,33 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                             InstanceName = 'NamedInstance'
                         })
 
-                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.Credential | Should-BeFalsy
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
-                    $currentState.Permission | Should -HaveCount 3
+                    $currentState.Permission.GetType().FullName | Should-Be 'DatabasePermission[]'
+                    $currentState.Permission | Should-BeCollection -Count 3
 
                     $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                    $grantState | Should -Not -BeNullOrEmpty
-                    $grantState.State | Should -Be 'Grant'
-                    $grantState.Permission | Should -Contain 'Connect'
-                    $grantState.Permission | Should -Contain 'Update'
+                    $grantState | Should-BeTruthy
+                    $grantState.State | Should-Be 'Grant'
+                    $grantState.Permission | Should-ContainCollection 'Connect'
+                    $grantState.Permission | Should-ContainCollection 'Update'
 
                     $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                    $grantWithGrantState | Should -Not -BeNullOrEmpty
-                    $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                    $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                    $grantWithGrantState | Should-BeTruthy
+                    $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                    $grantWithGrantState.Permission | Should-BeFalsy
 
                     $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                    $denyState | Should -Not -BeNullOrEmpty
-                    $denyState.State | Should -Be 'Deny'
-                    $denyState.Permission | Should -Contain 'Select'
+                    $denyState | Should-BeTruthy
+                    $denyState.State | Should-Be 'Deny'
+                    $denyState.Permission | Should-ContainCollection 'Select'
 
-                    $currentState.PermissionToInclude | Should -HaveCount 1
-                    $currentState.PermissionToInclude[0].State | Should -Be 'Grant'
-                    $currentState.PermissionToInclude[0].Permission | Should -BeNullOrEmpty
+                    $currentState.PermissionToInclude | Should-BeCollection -Count 1
+                    $currentState.PermissionToInclude[0].State | Should-Be 'Grant'
+                    $currentState.PermissionToInclude[0].Permission | Should-BeFalsy
                 }
             }
         }
@@ -787,33 +787,33 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                             InstanceName = 'NamedInstance'
                         })
 
-                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.Credential | Should-BeFalsy
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
-                    $currentState.Permission | Should -HaveCount 3
+                    $currentState.Permission.GetType().FullName | Should-Be 'DatabasePermission[]'
+                    $currentState.Permission | Should-BeCollection -Count 3
 
                     $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                    $grantState | Should -Not -BeNullOrEmpty
-                    $grantState.State | Should -Be 'Grant'
-                    $grantState.Permission | Should -Contain 'Connect'
-                    $grantState.Permission | Should -Contain 'Update'
+                    $grantState | Should-BeTruthy
+                    $grantState.State | Should-Be 'Grant'
+                    $grantState.Permission | Should-ContainCollection 'Connect'
+                    $grantState.Permission | Should-ContainCollection 'Update'
 
                     $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                    $grantWithGrantState | Should -Not -BeNullOrEmpty
-                    $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                    $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                    $grantWithGrantState | Should-BeTruthy
+                    $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                    $grantWithGrantState.Permission | Should-BeFalsy
 
                     $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                    $denyState | Should -Not -BeNullOrEmpty
-                    $denyState.State | Should -Be 'Deny'
-                    $denyState.Permission | Should -Contain 'Select'
+                    $denyState | Should-BeTruthy
+                    $denyState.State | Should-Be 'Deny'
+                    $denyState.Permission | Should-ContainCollection 'Select'
 
-                    $currentState.PermissionToExclude | Should -HaveCount 1
-                    $currentState.PermissionToExclude[0].State | Should -Be 'Grant'
-                    $currentState.PermissionToExclude[0].Permission | Should -Be 'Alter'
+                    $currentState.PermissionToExclude | Should-BeCollection -Count 1
+                    $currentState.PermissionToExclude[0].State | Should-Be 'Grant'
+                    $currentState.PermissionToExclude[0].Permission | Should-Be 'Alter'
                 }
             }
         }
@@ -870,33 +870,33 @@ Describe 'SqlDatabasePermission\GetCurrentState()' -Tag 'GetCurrentState' {
                             InstanceName = 'NamedInstance'
                         })
 
-                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.Credential | Should-BeFalsy
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'DatabasePermission[]'
-                    $currentState.Permission | Should -HaveCount 3
+                    $currentState.Permission.GetType().FullName | Should-Be 'DatabasePermission[]'
+                    $currentState.Permission | Should-BeCollection -Count 3
 
                     $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                    $grantState | Should -Not -BeNullOrEmpty
-                    $grantState.State | Should -Be 'Grant'
-                    $grantState.Permission | Should -Contain 'Connect'
-                    $grantState.Permission | Should -Contain 'Update'
+                    $grantState | Should-BeTruthy
+                    $grantState.State | Should-Be 'Grant'
+                    $grantState.Permission | Should-ContainCollection 'Connect'
+                    $grantState.Permission | Should-ContainCollection 'Update'
 
                     $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                    $grantWithGrantState | Should -Not -BeNullOrEmpty
-                    $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                    $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                    $grantWithGrantState | Should-BeTruthy
+                    $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                    $grantWithGrantState.Permission | Should-BeFalsy
 
                     $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                    $denyState | Should -Not -BeNullOrEmpty
-                    $denyState.State | Should -Be 'Deny'
-                    $denyState.Permission | Should -Contain 'Select'
+                    $denyState | Should-BeTruthy
+                    $denyState.State | Should-Be 'Deny'
+                    $denyState.Permission | Should-ContainCollection 'Select'
 
-                    $currentState.PermissionToExclude | Should -HaveCount 1
-                    $currentState.PermissionToExclude[0].State | Should -Be 'Grant'
-                    $currentState.PermissionToExclude[0].Permission | Should -BeNullOrEmpty
+                    $currentState.PermissionToExclude | Should-BeCollection -Count 1
+                    $currentState.PermissionToExclude[0].State | Should-Be 'Grant'
+                    $currentState.PermissionToExclude[0].Permission | Should-BeFalsy
                 }
             }
         }
@@ -953,7 +953,7 @@ Describe 'SqlDatabasePermission\Set()' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlDatabasePermissionInstance.Set()
 
-                $script:mockMethodModifyCallCount | Should -Be 0
+                $script:mockMethodModifyCallCount | Should-Be 0
             }
         }
     }
@@ -987,7 +987,7 @@ Describe 'SqlDatabasePermission\Set()' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlDatabasePermissionInstance.Set()
 
-                $script:mockMethodModifyCallCount | Should -Be 1
+                $script:mockMethodModifyCallCount | Should-Be 1
             }
         }
     }
@@ -1031,7 +1031,7 @@ Describe 'SqlDatabasePermission\Test()' -Tag 'Test' {
 
         It 'Should return $true' {
             InModuleScope -ScriptBlock {
-                $script:mockSqlDatabasePermissionInstance.Test() | Should -BeTrue
+                $script:mockSqlDatabasePermissionInstance.Test() | Should-BeTrue
             }
         }
     }
@@ -1063,7 +1063,7 @@ Describe 'SqlDatabasePermission\Test()' -Tag 'Test' {
 
         It 'Should return $false' {
             InModuleScope -ScriptBlock {
-                $script:mockSqlDatabasePermissionInstance.Test() | Should -BeFalse
+                $script:mockSqlDatabasePermissionInstance.Test() | Should-BeFalse
             }
         }
     }
@@ -1114,7 +1114,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
                     $mockSqlDatabasePermissionInstance.Modify(@{
                             Permission = [DatabasePermission[]] @()
                         })
-                } | Should -Throw -ExpectedMessage $mockErrorRecord
+                } | Should-Throw -ExceptionMessage $mockErrorRecord
             }
         }
     }
@@ -1178,7 +1178,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
+                    $null = & ({
                         $mockSqlDatabasePermissionInstance.Modify(@{
                                 Permission = [DatabasePermission[]] @(
                                     [DatabasePermission] @{
@@ -1195,18 +1195,18 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
                                     }
                                 )
                             })
-                    } | Should -Not -Throw
+                    })
                 }
 
                 # Grants
-                Should -Invoke -CommandName Set-SqlDscDatabasePermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscDatabasePermission -Exactly -ParameterFilter {
                     $State -eq 'Grant' -and $Permission.Connect -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # GrantWithGrants
-                Should -Invoke -CommandName Set-SqlDscDatabasePermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscDatabasePermission -Exactly -ParameterFilter {
                     $State -eq 'Grant' -and $Permission.Update -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -1268,7 +1268,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
+                    $null = & ({
                         $mockSqlDatabasePermissionInstance.Modify(@{
                                 Permission = [DatabasePermission[]] @(
                                     [DatabasePermission] @{
@@ -1285,28 +1285,28 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
                                     }
                                 )
                             })
-                    } | Should -Not -Throw
+                    })
                 }
 
                 # Revoking Grants
-                Should -Invoke -CommandName Set-SqlDscDatabasePermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscDatabasePermission -Exactly -ParameterFilter {
                     $State -eq 'Revoke' -and $Permission.Alter -eq $true -and $Permission.Select -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # Revoking GrantWithGrants
-                Should -Invoke -CommandName Set-SqlDscDatabasePermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscDatabasePermission -Exactly -ParameterFilter {
                     $State -eq 'Revoke' -and $Permission.Delete -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # Revoking Denies
-                Should -Invoke -CommandName Set-SqlDscDatabasePermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscDatabasePermission -Exactly -ParameterFilter {
                     $State -eq 'Revoke' -and $Permission.CreateDatabase -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # Adding new Grant
-                Should -Invoke -CommandName Set-SqlDscDatabasePermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscDatabasePermission -Exactly -ParameterFilter {
                     $State -eq 'Grant' -and $Permission.Connect -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }
@@ -1370,7 +1370,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
+                    $null = & ({
                         $mockSqlDatabasePermissionInstance.Modify(@{
                                 PermissionToInclude = [DatabasePermission[]] @(
                                     [DatabasePermission] @{
@@ -1387,18 +1387,18 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
                                     }
                                 )
                             })
-                    } | Should -Not -Throw
+                    })
                 }
 
                 # Grants
-                Should -Invoke -CommandName Set-SqlDscDatabasePermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscDatabasePermission -Exactly -ParameterFilter {
                     $State -eq 'Grant' -and $Permission.Connect -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # GrantWithGrants
-                Should -Invoke -CommandName Set-SqlDscDatabasePermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscDatabasePermission -Exactly -ParameterFilter {
                     $State -eq 'Grant' -and $Permission.Update -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }
@@ -1462,7 +1462,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
+                    $null = & ({
                         $mockSqlDatabasePermissionInstance.Modify(@{
                                 PermissionToExclude = [DatabasePermission[]] @(
                                     [DatabasePermission] @{
@@ -1479,18 +1479,18 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
                                     }
                                 )
                             })
-                    } | Should -Not -Throw
+                    })
                 }
 
                 # Revoking Grants
-                Should -Invoke -CommandName Set-SqlDscDatabasePermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscDatabasePermission -Exactly -ParameterFilter {
                     $State -eq 'Revoke' -and $Permission.Connect -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # Revoking GrantWithGrants
-                Should -Invoke -CommandName Set-SqlDscDatabasePermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscDatabasePermission -Exactly -ParameterFilter {
                     $State -eq 'Revoke' -and $Permission.Update -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }
@@ -1584,7 +1584,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
                                     }
                                 )
                             })
-                    } | Should -Throw -ExpectedMessage $mockErrorRecord
+                    } | Should-Throw -ExceptionMessage $mockErrorRecord
                 }
             }
         }
@@ -1677,7 +1677,7 @@ Describe 'SqlDatabasePermission\Modify()' -Tag 'Modify' {
                                     }
                                 )
                             })
-                    } | Should -Throw -ExpectedMessage $mockErrorRecord
+                    } | Should-Throw -ExceptionMessage $mockErrorRecord
                 }
             }
         }
@@ -1705,7 +1705,7 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
                                 Permission          = [DatabasePermission[]] @([DatabasePermission] @{})
                                 PermissionToInclude = [DatabasePermission[]] @([DatabasePermission] @{})
                             })
-                    } | Should -Throw -ExpectedMessage '*DRC0010*'
+                    } | Should-Throw -ExceptionMessage '*DRC0010*'
                 }
             }
         }
@@ -1718,7 +1718,7 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
                                 Permission          = [DatabasePermission[]] @([DatabasePermission] @{})
                                 PermissionToExclude = [DatabasePermission[]] @([DatabasePermission] @{})
                             })
-                    } | Should -Throw -ExpectedMessage '*DRC0010*'
+                    } | Should-Throw -ExceptionMessage '*DRC0010*'
                 }
             }
         }
@@ -1733,7 +1733,7 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
             InModuleScope -ScriptBlock {
                 {
                     $mockSqlDatabasePermissionInstance.AssertProperties(@{})
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -1766,7 +1766,7 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
                                 }
                             )
                         })
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -1790,7 +1790,7 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
                                 }
                             )
                         })
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -1825,7 +1825,7 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
                                 }
                             )
                         })
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -1862,7 +1862,7 @@ Describe 'SqlDatabasePermission\AssertProperties()' -Tag 'AssertProperties' {
                                 }
                             )
                         })
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }

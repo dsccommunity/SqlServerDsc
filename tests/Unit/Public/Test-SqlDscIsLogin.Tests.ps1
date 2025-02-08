@@ -64,7 +64,7 @@ Describe 'Test-SqlDscIsLogin' -Tag 'Public' {
         It 'Should return $false' {
             $result = Test-SqlDscIsLogin -ServerObject $mockServerObject -Name 'UnknownUser'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -82,14 +82,14 @@ Describe 'Test-SqlDscIsLogin' -Tag 'Public' {
         It 'Should return $true' {
             $result = Test-SqlDscIsLogin -ServerObject $mockServerObject -Name 'DOMAIN\MyLogin'
 
-            $result | Should -BeTrue
+            $result | Should-BeTrue
         }
 
         Context 'When passing ServerObject over the pipeline' {
             It 'Should return $true' {
                 $result = $mockServerObject | Test-SqlDscIsLogin -Name 'DOMAIN\MyLogin'
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
     }

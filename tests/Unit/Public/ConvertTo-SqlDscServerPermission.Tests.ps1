@@ -58,14 +58,14 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag 'Public' {
         It 'Should return the correct values' {
             $mockResult = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $mockServerPermissionInfoCollection
 
-            $mockResult | Should -HaveCount 0
+            $mockResult | Should-BeCollection -Count 0
         }
 
         Context 'When passing ServerPermissionInfo over the pipeline' {
             It 'Should return the correct values' {
                 $mockResult = $mockServerPermissionInfoCollection | ConvertTo-SqlDscServerPermission
 
-                $mockResult | Should -HaveCount 0
+                $mockResult | Should-BeCollection -Count 0
             }
         }
     }
@@ -88,20 +88,20 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $mockServerPermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'Grant'
-                $mockResult[0].Permission | Should -Contain 'ConnectSql'
+                $mockResult[0].State | Should-Be 'Grant'
+                $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
             }
 
             Context 'When passing ServerPermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockServerPermissionInfoCollection | ConvertTo-SqlDscServerPermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'Grant'
-                    $mockResult[0].Permission | Should -Contain 'ConnectSql'
+                    $mockResult[0].State | Should-Be 'Grant'
+                    $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
                 }
             }
         }
@@ -132,22 +132,22 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $mockServerPermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'Grant'
-                $mockResult[0].Permission | Should -Contain 'ConnectSql'
-                $mockResult[0].Permission | Should -Contain 'AlterAnyAvailabilityGroup'
+                $mockResult[0].State | Should-Be 'Grant'
+                $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
+                $mockResult[0].Permission | Should-ContainCollection 'AlterAnyAvailabilityGroup'
             }
 
             Context 'When passing ServerPermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockServerPermissionInfoCollection | ConvertTo-SqlDscServerPermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'Grant'
-                    $mockResult[0].Permission | Should -Contain 'ConnectSql'
-                    $mockResult[0].Permission | Should -Contain 'AlterAnyAvailabilityGroup'
+                    $mockResult[0].State | Should-Be 'Grant'
+                    $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
+                    $mockResult[0].Permission | Should-ContainCollection 'AlterAnyAvailabilityGroup'
                 }
             }
         }
@@ -180,26 +180,26 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $mockServerPermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'Grant'
-                $mockResult[0].Permission | Should -Contain 'ConnectSql'
-                $mockResult[0].Permission | Should -Contain 'AlterAnyAvailabilityGroup'
-                $mockResult[0].Permission | Should -Contain 'ViewServerState'
-                $mockResult[0].Permission | Should -Contain 'ControlServer'
+                $mockResult[0].State | Should-Be 'Grant'
+                $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
+                $mockResult[0].Permission | Should-ContainCollection 'AlterAnyAvailabilityGroup'
+                $mockResult[0].Permission | Should-ContainCollection 'ViewServerState'
+                $mockResult[0].Permission | Should-ContainCollection 'ControlServer'
             }
 
             Context 'When passing ServerPermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockServerPermissionInfoCollection | ConvertTo-SqlDscServerPermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'Grant'
-                    $mockResult[0].Permission | Should -Contain 'ConnectSql'
-                    $mockResult[0].Permission | Should -Contain 'AlterAnyAvailabilityGroup'
-                    $mockResult[0].Permission | Should -Contain 'ViewServerState'
-                    $mockResult[0].Permission | Should -Contain 'ControlServer'
+                    $mockResult[0].State | Should-Be 'Grant'
+                    $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
+                    $mockResult[0].Permission | Should-ContainCollection 'AlterAnyAvailabilityGroup'
+                    $mockResult[0].Permission | Should-ContainCollection 'ViewServerState'
+                    $mockResult[0].Permission | Should-ContainCollection 'ControlServer'
                 }
             }
         }
@@ -223,20 +223,20 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $mockServerPermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'Deny'
-                $mockResult[0].Permission | Should -Contain 'ConnectSql'
+                $mockResult[0].State | Should-Be 'Deny'
+                $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
             }
 
             Context 'When passing ServerPermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockServerPermissionInfoCollection | ConvertTo-SqlDscServerPermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'Deny'
-                    $mockResult[0].Permission | Should -Contain 'ConnectSql'
+                    $mockResult[0].State | Should-Be 'Deny'
+                    $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
                 }
             }
         }
@@ -267,22 +267,22 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $mockServerPermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'Deny'
-                $mockResult[0].Permission | Should -Contain 'ConnectSql'
-                $mockResult[0].Permission | Should -Contain 'AlterAnyAvailabilityGroup'
+                $mockResult[0].State | Should-Be 'Deny'
+                $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
+                $mockResult[0].Permission | Should-ContainCollection 'AlterAnyAvailabilityGroup'
             }
 
             Context 'When passing ServerPermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockServerPermissionInfoCollection | ConvertTo-SqlDscServerPermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'Deny'
-                    $mockResult[0].Permission | Should -Contain 'ConnectSql'
-                    $mockResult[0].Permission | Should -Contain 'AlterAnyAvailabilityGroup'
+                    $mockResult[0].State | Should-Be 'Deny'
+                    $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
+                    $mockResult[0].Permission | Should-ContainCollection 'AlterAnyAvailabilityGroup'
                 }
             }
         }
@@ -315,26 +315,26 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $mockServerPermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'Deny'
-                $mockResult[0].Permission | Should -Contain 'ConnectSql'
-                $mockResult[0].Permission | Should -Contain 'AlterAnyAvailabilityGroup'
-                $mockResult[0].Permission | Should -Contain 'ViewServerState'
-                $mockResult[0].Permission | Should -Contain 'ControlServer'
+                $mockResult[0].State | Should-Be 'Deny'
+                $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
+                $mockResult[0].Permission | Should-ContainCollection 'AlterAnyAvailabilityGroup'
+                $mockResult[0].Permission | Should-ContainCollection 'ViewServerState'
+                $mockResult[0].Permission | Should-ContainCollection 'ControlServer'
             }
 
             Context 'When passing ServerPermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockServerPermissionInfoCollection | ConvertTo-SqlDscServerPermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'Deny'
-                    $mockResult[0].Permission | Should -Contain 'ConnectSql'
-                    $mockResult[0].Permission | Should -Contain 'AlterAnyAvailabilityGroup'
-                    $mockResult[0].Permission | Should -Contain 'ViewServerState'
-                    $mockResult[0].Permission | Should -Contain 'ControlServer'
+                    $mockResult[0].State | Should-Be 'Deny'
+                    $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
+                    $mockResult[0].Permission | Should-ContainCollection 'AlterAnyAvailabilityGroup'
+                    $mockResult[0].Permission | Should-ContainCollection 'ViewServerState'
+                    $mockResult[0].Permission | Should-ContainCollection 'ControlServer'
                 }
             }
         }
@@ -358,20 +358,20 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $mockServerPermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'GrantWithGrant'
-                $mockResult[0].Permission | Should -Contain 'ConnectSql'
+                $mockResult[0].State | Should-Be 'GrantWithGrant'
+                $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
             }
 
             Context 'When passing ServerPermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockServerPermissionInfoCollection | ConvertTo-SqlDscServerPermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'GrantWithGrant'
-                    $mockResult[0].Permission | Should -Contain 'ConnectSql'
+                    $mockResult[0].State | Should-Be 'GrantWithGrant'
+                    $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
                 }
             }
         }
@@ -402,22 +402,22 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $mockServerPermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'GrantWithGrant'
-                $mockResult[0].Permission | Should -Contain 'ConnectSql'
-                $mockResult[0].Permission | Should -Contain 'AlterAnyAvailabilityGroup'
+                $mockResult[0].State | Should-Be 'GrantWithGrant'
+                $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
+                $mockResult[0].Permission | Should-ContainCollection 'AlterAnyAvailabilityGroup'
             }
 
             Context 'When passing ServerPermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockServerPermissionInfoCollection | ConvertTo-SqlDscServerPermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'GrantWithGrant'
-                    $mockResult[0].Permission | Should -Contain 'ConnectSql'
-                    $mockResult[0].Permission | Should -Contain 'AlterAnyAvailabilityGroup'
+                    $mockResult[0].State | Should-Be 'GrantWithGrant'
+                    $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
+                    $mockResult[0].Permission | Should-ContainCollection 'AlterAnyAvailabilityGroup'
                 }
             }
         }
@@ -450,26 +450,26 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $mockServerPermissionInfoCollection
 
-                $mockResult | Should -HaveCount 1
+                $mockResult | Should-BeCollection -Count 1
 
-                $mockResult[0].State | Should -Be 'GrantWithGrant'
-                $mockResult[0].Permission | Should -Contain 'ConnectSql'
-                $mockResult[0].Permission | Should -Contain 'AlterAnyAvailabilityGroup'
-                $mockResult[0].Permission | Should -Contain 'ViewServerState'
-                $mockResult[0].Permission | Should -Contain 'ControlServer'
+                $mockResult[0].State | Should-Be 'GrantWithGrant'
+                $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
+                $mockResult[0].Permission | Should-ContainCollection 'AlterAnyAvailabilityGroup'
+                $mockResult[0].Permission | Should-ContainCollection 'ViewServerState'
+                $mockResult[0].Permission | Should-ContainCollection 'ControlServer'
             }
 
             Context 'When passing ServerPermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockServerPermissionInfoCollection | ConvertTo-SqlDscServerPermission
 
-                    $mockResult | Should -HaveCount 1
+                    $mockResult | Should-BeCollection -Count 1
 
-                    $mockResult[0].State | Should -Be 'GrantWithGrant'
-                    $mockResult[0].Permission | Should -Contain 'ConnectSql'
-                    $mockResult[0].Permission | Should -Contain 'AlterAnyAvailabilityGroup'
-                    $mockResult[0].Permission | Should -Contain 'ViewServerState'
-                    $mockResult[0].Permission | Should -Contain 'ControlServer'
+                    $mockResult[0].State | Should-Be 'GrantWithGrant'
+                    $mockResult[0].Permission | Should-ContainCollection 'ConnectSql'
+                    $mockResult[0].Permission | Should-ContainCollection 'AlterAnyAvailabilityGroup'
+                    $mockResult[0].Permission | Should-ContainCollection 'ViewServerState'
+                    $mockResult[0].Permission | Should-ContainCollection 'ControlServer'
                 }
             }
         }
@@ -514,52 +514,52 @@ Describe 'ConvertTo-SqlDscServerPermission' -Tag 'Public' {
             It 'Should return the correct values' {
                 $mockResult = ConvertTo-SqlDscServerPermission -ServerPermissionInfo $mockServerPermissionInfoCollection
 
-                $mockResult | Should -HaveCount 3
+                $mockResult | Should-BeCollection -Count 3
 
                 $grantPermission = $mockResult.Where({ $_.State -eq 'Grant' })
 
-                $grantPermission.State | Should -Be 'Grant'
-                $grantPermission.Permission | Should -Contain 'AlterAnyAvailabilityGroup'
-                $grantPermission.Permission | Should -Contain 'ControlServer'
+                $grantPermission.State | Should-Be 'Grant'
+                $grantPermission.Permission | Should-ContainCollection 'AlterAnyAvailabilityGroup'
+                $grantPermission.Permission | Should-ContainCollection 'ControlServer'
 
                 $grantWithGrantPermission = $mockResult.Where({ $_.State -eq 'GrantWithGrant' })
 
-                $grantWithGrantPermission.State | Should -Be 'GrantWithGrant'
-                $grantWithGrantPermission.Permission | Should -Contain 'ConnectSql'
-                $grantWithGrantPermission.Permission | Should -Contain 'ViewServerState'
+                $grantWithGrantPermission.State | Should-Be 'GrantWithGrant'
+                $grantWithGrantPermission.Permission | Should-ContainCollection 'ConnectSql'
+                $grantWithGrantPermission.Permission | Should-ContainCollection 'ViewServerState'
 
 
                 $denyPermission = $mockResult.Where({ $_.State -eq 'Deny' })
 
-                $denyPermission.State | Should -Be 'Deny'
-                $denyPermission.Permission | Should -Contain 'AlterAnyEndpoint'
-                $denyPermission.Permission | Should -Contain 'CreateEndpoint'
+                $denyPermission.State | Should-Be 'Deny'
+                $denyPermission.Permission | Should-ContainCollection 'AlterAnyEndpoint'
+                $denyPermission.Permission | Should-ContainCollection 'CreateEndpoint'
             }
 
             Context 'When passing ServerPermissionInfo over the pipeline' {
                 It 'Should return the correct values' {
                     $mockResult = $mockServerPermissionInfoCollection | ConvertTo-SqlDscServerPermission
 
-                    $mockResult | Should -HaveCount 3
+                    $mockResult | Should-BeCollection -Count 3
 
                     $grantPermission = $mockResult.Where({ $_.State -eq 'Grant' })
 
-                    $grantPermission.State | Should -Be 'Grant'
-                    $grantPermission.Permission | Should -Contain 'AlterAnyAvailabilityGroup'
-                    $grantPermission.Permission | Should -Contain 'ControlServer'
+                    $grantPermission.State | Should-Be 'Grant'
+                    $grantPermission.Permission | Should-ContainCollection 'AlterAnyAvailabilityGroup'
+                    $grantPermission.Permission | Should-ContainCollection 'ControlServer'
 
                     $grantWithGrantPermission = $mockResult.Where({ $_.State -eq 'GrantWithGrant' })
 
-                    $grantWithGrantPermission.State | Should -Be 'GrantWithGrant'
-                    $grantWithGrantPermission.Permission | Should -Contain 'ConnectSql'
-                    $grantWithGrantPermission.Permission | Should -Contain 'ViewServerState'
+                    $grantWithGrantPermission.State | Should-Be 'GrantWithGrant'
+                    $grantWithGrantPermission.Permission | Should-ContainCollection 'ConnectSql'
+                    $grantWithGrantPermission.Permission | Should-ContainCollection 'ViewServerState'
 
 
                     $denyPermission = $mockResult.Where({ $_.State -eq 'Deny' })
 
-                    $denyPermission.State | Should -Be 'Deny'
-                    $denyPermission.Permission | Should -Contain 'AlterAnyEndpoint'
-                    $denyPermission.Permission | Should -Contain 'CreateEndpoint'
+                    $denyPermission.State | Should-Be 'Deny'
+                    $denyPermission.Permission | Should-ContainCollection 'AlterAnyEndpoint'
+                    $denyPermission.Permission | Should-ContainCollection 'CreateEndpoint'
                 }
             }
         }

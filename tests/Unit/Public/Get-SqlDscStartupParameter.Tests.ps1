@@ -75,15 +75,15 @@ Describe 'Get-SqlDscStartupParameter' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When passing $null as ServiceObject' {
         It 'Should throw the correct error' {
             $mockErrorMessage = 'Cannot bind argument to parameter ''ServiceObject'' because it is null.'
 
-            { Get-SqlDscStartupParameter -ServiceObject $null } | Should -Throw -ExpectedMessage $mockErrorMessage
+            { Get-SqlDscStartupParameter -ServiceObject $null } | Should-Throw -ExceptionMessage $mockErrorMessage
         }
     }
 
@@ -104,7 +104,7 @@ Describe 'Get-SqlDscStartupParameter' -Tag 'Public' {
                 $mockErrorMessage = $mockErrorMessage -f 'SqlServer', 'SqlAgent'
 
                 { Get-SqlDscStartupParameter -ServiceObject $mockServiceObject -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage $mockErrorMessage
+                    Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
 
@@ -117,7 +117,7 @@ Describe 'Get-SqlDscStartupParameter' -Tag 'Public' {
                 $mockErrorMessage = $mockErrorMessage -f 'SqlServer', 'SqlAgent'
 
                 { Get-SqlDscStartupParameter -ServiceObject $mockServiceObject -ErrorAction 'SilentlyContinue' } |
-                    Should -Throw -ExpectedMessage $mockErrorMessage
+                    Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -135,9 +135,9 @@ Describe 'Get-SqlDscStartupParameter' -Tag 'Public' {
             It 'Should not throw and return an empty array' {
                 $result = Get-SqlDscStartupParameter -ServerName 'localhost' -ErrorAction 'SilentlyContinue'
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Scope It -Times 1
             }
         }
 
@@ -147,9 +147,9 @@ Describe 'Get-SqlDscStartupParameter' -Tag 'Public' {
                     $script:localizedData.TraceFlag_Get_FailedToFindServiceObject
                 }
 
-                { Get-SqlDscStartupParameter -ServerName 'localhost' -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { Get-SqlDscStartupParameter -ServerName 'localhost' -ErrorAction 'Stop' } | Should-Throw -ExceptionMessage $mockErrorMessage
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Scope It -Times 1
             }
         }
     }
@@ -173,19 +173,19 @@ Describe 'Get-SqlDscStartupParameter' -Tag 'Public' {
             It 'Should return an empty array' {
                 $result = Get-SqlDscStartupParameter
 
-                Should -ActualValue $result -BeOfType (InModuleScope -ScriptBlock { [StartupParameters] })
+                Should-HaveType (InModuleScope -ScriptBlock { [StartupParameters] }) -Actual $result
 
-                Should -ActualValue $result.TraceFlag -BeOfType 'System.UInt32[]'
-                Should -ActualValue $result.DataFilePath -BeOfType 'System.String[]'
-                Should -ActualValue $result.LogFilePath -BeOfType 'System.String[]'
-                Should -ActualValue $result.ErrorLogPath -BeOfType 'System.String[]'
+                Should-HaveType 'System.UInt32[]' -Actual $result.TraceFlag
+                Should-HaveType 'System.String[]' -Actual $result.DataFilePath
+                Should-HaveType 'System.String[]' -Actual $result.LogFilePath
+                Should-HaveType 'System.String[]' -Actual $result.ErrorLogPath
 
-                $result.DataFilePath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf'
-                $result.LogFilePath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
-                $result.ErrorLogPath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG'
-                $result.TraceFlag | Should -BeNullOrEmpty
+                $result.DataFilePath | Should-Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf'
+                $result.LogFilePath | Should-Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
+                $result.ErrorLogPath | Should-Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG'
+                $result.TraceFlag | Should-BeFalsy
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Scope It -Times 1
             }
         }
 
@@ -193,21 +193,21 @@ Describe 'Get-SqlDscStartupParameter' -Tag 'Public' {
             It 'Should return an empty array' {
                 $result = Get-SqlDscStartupParameter -ServerName 'localhost'
 
-                Should -ActualValue $result -BeOfType (InModuleScope -ScriptBlock { [StartupParameters] })
+                Should-HaveType (InModuleScope -ScriptBlock { [StartupParameters] }) -Actual $result
 
-                Should -ActualValue $result.TraceFlag -BeOfType 'System.UInt32[]'
-                Should -ActualValue $result.DataFilePath -BeOfType 'System.String[]'
-                Should -ActualValue $result.LogFilePath -BeOfType 'System.String[]'
-                Should -ActualValue $result.ErrorLogPath -BeOfType 'System.String[]'
+                Should-HaveType 'System.UInt32[]' -Actual $result.TraceFlag
+                Should-HaveType 'System.String[]' -Actual $result.DataFilePath
+                Should-HaveType 'System.String[]' -Actual $result.LogFilePath
+                Should-HaveType 'System.String[]' -Actual $result.ErrorLogPath
 
-                $result.DataFilePath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf'
-                $result.LogFilePath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
-                $result.ErrorLogPath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG'
-                $result.TraceFlag | Should -BeNullOrEmpty
+                $result.DataFilePath | Should-Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf'
+                $result.LogFilePath | Should-Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
+                $result.ErrorLogPath | Should-Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG'
+                $result.TraceFlag | Should-BeFalsy
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -ParameterFilter {
                     $ServerName -eq 'localhost'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -215,21 +215,21 @@ Describe 'Get-SqlDscStartupParameter' -Tag 'Public' {
             It 'Should return an empty array' {
                 $result = Get-SqlDscStartupParameter -InstanceName 'SQL2022'
 
-                Should -ActualValue $result -BeOfType (InModuleScope -ScriptBlock { [StartupParameters] })
+                Should-HaveType (InModuleScope -ScriptBlock { [StartupParameters] }) -Actual $result
 
-                Should -ActualValue $result.TraceFlag -BeOfType 'System.UInt32[]'
-                Should -ActualValue $result.DataFilePath -BeOfType 'System.String[]'
-                Should -ActualValue $result.LogFilePath -BeOfType 'System.String[]'
-                Should -ActualValue $result.ErrorLogPath -BeOfType 'System.String[]'
+                Should-HaveType 'System.UInt32[]' -Actual $result.TraceFlag
+                Should-HaveType 'System.String[]' -Actual $result.DataFilePath
+                Should-HaveType 'System.String[]' -Actual $result.LogFilePath
+                Should-HaveType 'System.String[]' -Actual $result.ErrorLogPath
 
-                $result.DataFilePath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf'
-                $result.LogFilePath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
-                $result.ErrorLogPath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG'
-                $result.TraceFlag | Should -BeNullOrEmpty
+                $result.DataFilePath | Should-Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf'
+                $result.LogFilePath | Should-Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
+                $result.ErrorLogPath | Should-Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG'
+                $result.TraceFlag | Should-BeFalsy
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -ParameterFilter {
+                Should-Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -ParameterFilter {
                     $InstanceName -eq 'SQL2022'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -237,19 +237,19 @@ Describe 'Get-SqlDscStartupParameter' -Tag 'Public' {
             It 'Should return an empty array' {
                 $result = Get-SqlDscStartupParameter -ServiceObject $mockServiceObject
 
-                Should -ActualValue $result -BeOfType (InModuleScope -ScriptBlock { [StartupParameters] })
+                Should-HaveType (InModuleScope -ScriptBlock { [StartupParameters] }) -Actual $result
 
-                Should -ActualValue $result.TraceFlag -BeOfType 'System.UInt32[]'
-                Should -ActualValue $result.DataFilePath -BeOfType 'System.String[]'
-                Should -ActualValue $result.LogFilePath -BeOfType 'System.String[]'
-                Should -ActualValue $result.ErrorLogPath -BeOfType 'System.String[]'
+                Should-HaveType 'System.UInt32[]' -Actual $result.TraceFlag
+                Should-HaveType 'System.String[]' -Actual $result.DataFilePath
+                Should-HaveType 'System.String[]' -Actual $result.LogFilePath
+                Should-HaveType 'System.String[]' -Actual $result.ErrorLogPath
 
-                $result.DataFilePath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf'
-                $result.LogFilePath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
-                $result.ErrorLogPath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG'
-                $result.TraceFlag | Should -BeNullOrEmpty
+                $result.DataFilePath | Should-Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf'
+                $result.LogFilePath | Should-Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
+                $result.ErrorLogPath | Should-Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG'
+                $result.TraceFlag | Should-BeFalsy
 
-                Should -Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Get-SqlDscManagedComputerService -Exactly -Scope It -Times 0
             }
         }
     }
@@ -268,18 +268,18 @@ Describe 'Get-SqlDscStartupParameter' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscStartupParameter -ServiceObject $mockServiceObject
 
-            Should -ActualValue $result -BeOfType (InModuleScope -ScriptBlock { [StartupParameters] })
+            Should-HaveType (InModuleScope -ScriptBlock { [StartupParameters] }) -Actual $result
 
-            Should -ActualValue $result.TraceFlag -BeOfType 'System.UInt32[]'
-            Should -ActualValue $result.DataFilePath -BeOfType 'System.String[]'
-            Should -ActualValue $result.LogFilePath -BeOfType 'System.String[]'
-            Should -ActualValue $result.ErrorLogPath -BeOfType 'System.String[]'
+            Should-HaveType 'System.UInt32[]' -Actual $result.TraceFlag
+            Should-HaveType 'System.String[]' -Actual $result.DataFilePath
+            Should-HaveType 'System.String[]' -Actual $result.LogFilePath
+            Should-HaveType 'System.String[]' -Actual $result.ErrorLogPath
 
-            $result.DataFilePath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf'
-            $result.LogFilePath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
-            $result.ErrorLogPath | Should -Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG'
-            $result.TraceFlag | Should -HaveCount 1
-            $result.TraceFlag | Should -Contain 4199
+            $result.DataFilePath | Should-Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\master.mdf'
+            $result.LogFilePath | Should-Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\log.ldf'
+            $result.ErrorLogPath | Should-Be 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\Log\ERRORLOG'
+            $result.TraceFlag | Should-BeCollection -Count 1
+            $result.TraceFlag | Should-ContainCollection 4199
         }
     }
 }

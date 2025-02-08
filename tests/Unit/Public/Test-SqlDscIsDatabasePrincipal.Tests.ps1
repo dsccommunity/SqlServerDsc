@@ -68,7 +68,7 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
 
         It 'Should throw the correct error' {
             { Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'MissingDatabase' -Name 'KnownUser' } |
-                Should -Throw -ExpectedMessage ($mockErrorMessage -f 'MissingDatabase')
+                Should-Throw -ExceptionMessage ($mockErrorMessage -f 'MissingDatabase')
         }
     }
 
@@ -109,7 +109,7 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
         It 'Should return $false' {
             $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'UnknownUser'
 
-            $result | Should -BeFalse
+            $result | Should-BeFalse
         }
     }
 
@@ -151,14 +151,14 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
             It 'Should return $true' {
                 $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'Zebes\SamusAran'
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
 
             Context 'When passing ServerObject over the pipeline' {
                 It 'Should return $true' {
                     $result = $mockServerObject | Test-SqlDscIsDatabasePrincipal -DatabaseName 'AdventureWorks' -Name 'Zebes\SamusAran'
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
 
@@ -166,7 +166,7 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
                 It 'Should return $false' {
                     $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'Zebes\SamusAran' -ExcludeUsers
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -208,14 +208,14 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
             It 'Should return $true' {
                 $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'MyAppRole'
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
 
             Context 'When application roles are excluded from evaluation' {
                 It 'Should return $false' {
                     $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'MyAppRole' -ExcludeApplicationRoles
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -257,14 +257,14 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
             It 'Should return $true' {
                 $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'UserDefinedRole'
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
 
             Context 'When roles are excluded from evaluation' {
                 It 'Should return $false' {
                     $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'UserDefinedRole' -ExcludeRoles
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
 
@@ -307,7 +307,7 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
                 It 'Should return $true' {
                     $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'UserDefinedRole' -ExcludeFixedRoles
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -349,14 +349,14 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
             It 'Should return $true' {
                 $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'db_datareader'
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
 
             Context 'When roles are excluded from evaluation' {
                 It 'Should return $false' {
                     $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'db_datareader' -ExcludeRoles
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
 
@@ -399,7 +399,7 @@ Describe 'Test-SqlDscIsDatabasePrincipal' -Tag 'Public' {
                 It 'Should return $false' {
                     $result = Test-SqlDscIsDatabasePrincipal -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'db_datareader' -ExcludeFixedRoles
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }

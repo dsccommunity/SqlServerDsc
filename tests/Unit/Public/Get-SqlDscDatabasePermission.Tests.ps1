@@ -67,14 +67,14 @@ Describe 'Get-SqlDscDatabasePermission' -Tag 'Public' {
 
             It 'Should throw the correct error' {
                 { Get-SqlDscDatabasePermission -ServerObject $mockServerObject -DatabaseName 'MissingDatabase' -Name 'KnownUser' -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage ($mockErrorMessage -f 'MissingDatabase')
+                    Should-Throw -ExceptionMessage ($mockErrorMessage -f 'MissingDatabase')
             }
         }
 
         Context 'When ignoring the error' {
             It 'Should not throw an exception and return $null' {
                 Get-SqlDscDatabasePermission -ServerObject $mockServerObject -DatabaseName 'MissingDatabase' -Name 'KnownUser' -ErrorAction 'SilentlyContinue' |
-                    Should -BeNullOrEmpty
+                    Should-BeFalsy
             }
         }
     }
@@ -99,14 +99,14 @@ Describe 'Get-SqlDscDatabasePermission' -Tag 'Public' {
 
             It 'Should throw the correct error' {
                 { Get-SqlDscDatabasePermission -ServerObject $mockServerObject -DatabaseName 'MissingDatabase' -Name 'KnownUser' -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage ($mockErrorMessage -f 'MissingDatabase')
+                    Should-Throw -ExceptionMessage ($mockErrorMessage -f 'MissingDatabase')
             }
         }
 
         Context 'When ignoring the error' {
             It 'Should not throw an exception and return $null' {
                 Get-SqlDscDatabasePermission -ServerObject $mockServerObject -DatabaseName 'MissingDatabase' -Name 'KnownUser' -ErrorAction 'SilentlyContinue' |
-                    Should -BeNullOrEmpty
+                    Should-BeFalsy
             }
         }
     }
@@ -135,14 +135,14 @@ Describe 'Get-SqlDscDatabasePermission' -Tag 'Public' {
 
             It 'Should throw the correct error' {
                 { Get-SqlDscDatabasePermission -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'UnknownUser' -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage ($mockErrorMessage -f 'UnknownUser', 'AdventureWorks')
+                    Should-Throw -ExceptionMessage ($mockErrorMessage -f 'UnknownUser', 'AdventureWorks')
             }
         }
 
         Context 'When ignoring the error' {
             It 'Should not throw an exception and return $null' {
                 Get-SqlDscDatabasePermission -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'UnknownUser' -ErrorAction 'SilentlyContinue' |
-                    Should -BeNullOrEmpty
+                    Should-BeFalsy
             }
         }
     }
@@ -199,30 +199,30 @@ Describe 'Get-SqlDscDatabasePermission' -Tag 'Public' {
         It 'Should return the correct values' {
             $mockResult = Get-SqlDscDatabasePermission -ServerObject $mockServerObject -DatabaseName 'AdventureWorks' -Name 'Zebes\SamusAran' -ErrorAction 'Stop'
 
-            $mockResult | Should -HaveCount 2
+            $mockResult | Should-BeCollection -Count 2
 
-            $mockResult[0].PermissionState | Should -Be 'Grant'
-            $mockResult[0].PermissionType.Connect | Should -BeTrue
-            $mockResult[0].PermissionType.Update | Should -BeFalse
+            $mockResult[0].PermissionState | Should-Be 'Grant'
+            $mockResult[0].PermissionType.Connect | Should-BeTrue
+            $mockResult[0].PermissionType.Update | Should-BeFalse
 
-            $mockResult[1].PermissionState | Should -Be 'Grant'
-            $mockResult[1].PermissionType.Connect | Should -BeFalse
-            $mockResult[1].PermissionType.Update | Should -BeTrue
+            $mockResult[1].PermissionState | Should-Be 'Grant'
+            $mockResult[1].PermissionType.Connect | Should-BeFalse
+            $mockResult[1].PermissionType.Update | Should-BeTrue
         }
 
         Context 'When passing ServerObject over the pipeline' {
             It 'Should return the correct values' {
                 $mockResult = $mockServerObject | Get-SqlDscDatabasePermission -DatabaseName 'AdventureWorks' -Name 'Zebes\SamusAran' -ErrorAction 'Stop'
 
-                $mockResult | Should -HaveCount 2
+                $mockResult | Should-BeCollection -Count 2
 
-                $mockResult[0].PermissionState | Should -Be 'Grant'
-                $mockResult[0].PermissionType.Connect | Should -BeTrue
-                $mockResult[0].PermissionType.Update | Should -BeFalse
+                $mockResult[0].PermissionState | Should-Be 'Grant'
+                $mockResult[0].PermissionType.Connect | Should-BeTrue
+                $mockResult[0].PermissionType.Update | Should-BeFalse
 
-                $mockResult[1].PermissionState | Should -Be 'Grant'
-                $mockResult[1].PermissionType.Connect | Should -BeFalse
-                $mockResult[1].PermissionType.Update | Should -BeTrue
+                $mockResult[1].PermissionState | Should-Be 'Grant'
+                $mockResult[1].PermissionType.Connect | Should-BeFalse
+                $mockResult[1].PermissionType.Update | Should-BeTrue
             }
         }
     }

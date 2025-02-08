@@ -67,10 +67,10 @@ Describe 'Assert-ManagedServiceType' -Tag 'Private' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                {
+                $null = & ({
                     $MockServiceObject |
                         Assert-ManagedServiceType -ServiceType 'DatabaseEngine' -ErrorAction 'Stop'
-                } | Should -Not -Throw
+                })
             }
         }
     }
@@ -97,7 +97,7 @@ Describe 'Assert-ManagedServiceType' -Tag 'Private' {
                     {
                         $MockServiceObject |
                             Assert-ManagedServiceType -ServiceType 'SqlServerAgent' -ErrorAction 'Stop'
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
             }
         }
@@ -114,7 +114,7 @@ Describe 'Assert-ManagedServiceType' -Tag 'Private' {
                     {
                         $MockServiceObject |
                             Assert-ManagedServiceType -ServiceType 'SqlServerAgent' -ErrorAction 'SilentlyContinue'
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
             }
         }

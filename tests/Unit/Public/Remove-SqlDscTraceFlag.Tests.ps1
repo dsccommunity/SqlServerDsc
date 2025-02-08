@@ -75,15 +75,15 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When passing $null as ServiceObject' {
         It 'Should throw the correct error' {
             $mockErrorMessage = 'Cannot bind argument to parameter ''ServiceObject'' because it is null.'
 
-            { Remove-SqlDscTraceFlag -ServiceObject $null } | Should -Throw -ExpectedMessage $mockErrorMessage
+            { Remove-SqlDscTraceFlag -ServiceObject $null } | Should-Throw -ExceptionMessage $mockErrorMessage
         }
     }
 
@@ -103,39 +103,39 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
 
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mocked method and have correct value in the object' {
-                    { Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Confirm:$false } | Should -Not -Throw
+                    $null = & ({ Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Confirm:$false })
 
-                    Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                         $TraceFlag.Count -eq 0
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
             Context 'When using parameter Force' {
                 It 'Should call the mocked method and have correct value in the object' {
-                    { Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Force } | Should -Not -Throw
+                    $null = & ({ Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Force })
 
-                    Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                         $TraceFlag.Count -eq 0
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
             Context 'When using parameter WhatIf' {
                 It 'Should not call the mocked method and should not have changed the value in the object' {
-                    { Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -WhatIf } | Should -Not -Throw
+                    $null = & ({ Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -WhatIf })
 
-                    Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Scope It -Times 0
                 }
             }
 
             Context 'When passing parameter ServerObject over the pipeline' {
                 It 'Should call the mocked method and have correct value in the object' {
-                    { $mockServiceObject | Remove-SqlDscTraceFlag -TraceFlag 4199 -Force } | Should -Not -Throw
+                    $null = & ({ $mockServiceObject | Remove-SqlDscTraceFlag -TraceFlag 4199 -Force })
 
-                    Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                         $TraceFlag.Count -eq 0
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -143,29 +143,29 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
         Context 'When removing a trace flag by default parameter set and parameters default values' {
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the mocked method and have correct value in the object' {
-                    { Remove-SqlDscTraceFlag -TraceFlag 4199 -Confirm:$false } | Should -Not -Throw
+                    $null = & ({ Remove-SqlDscTraceFlag -TraceFlag 4199 -Confirm:$false })
 
-                    Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                         $TraceFlag.Count -eq 0
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
             Context 'When using parameter Force' {
                 It 'Should call the mocked method and have correct value in the object' {
-                    { Remove-SqlDscTraceFlag -TraceFlag 4199 -Force } | Should -Not -Throw
+                    $null = & ({ Remove-SqlDscTraceFlag -TraceFlag 4199 -Force })
 
-                    Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                    Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                         $TraceFlag.Count -eq 0
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
             Context 'When using parameter WhatIf' {
                 It 'Should not call the mocked method and should not have changed the value in the object' {
-                    { Remove-SqlDscTraceFlag -TraceFlag 4199 -WhatIf } | Should -Not -Throw
+                    $null = & ({ Remove-SqlDscTraceFlag -TraceFlag 4199 -WhatIf })
 
-                    Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -181,12 +181,12 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
             }
 
             It 'Should call the mocked method and have correct value in the object' {
-                { Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226 -Force } | Should -Not -Throw
+                $null = & ({ Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226 -Force })
 
                 # Should still re-set the existing trace flag.
-                Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                     $TraceFlag -contains 4199
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }
@@ -203,9 +203,9 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
         }
 
         It 'Should call the mocked method and have correct value in the object' {
-            { Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Force } | Should -Not -Throw
+            $null = & ({ Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 4199 -Force })
 
-            Should -Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -Scope It -Times 0
         }
     }
 
@@ -221,12 +221,12 @@ Describe 'Remove-SqlDscTraceFlag' -Tag 'Public' {
         }
 
         It 'Should call the mocked method and have correct value in the object' {
-            { Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226 -Force } | Should -Not -Throw
+            $null = & ({ Remove-SqlDscTraceFlag -ServiceObject $mockServiceObject -TraceFlag 3226 -Force })
 
             # Should still re-set the existing trace flag.
-            Should -Invoke -CommandName Set-SqlDscTraceFlag -ParameterFilter {
+            Should-Invoke -CommandName Set-SqlDscTraceFlag -Exactly -ParameterFilter {
                 $TraceFlag -contains 4199
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 }

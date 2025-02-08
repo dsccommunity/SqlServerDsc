@@ -75,8 +75,8 @@ Describe 'Remove-SqlDscAudit' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When removing an audit by ServerObject' {
@@ -108,7 +108,7 @@ Describe 'Remove-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Remove-SqlDscAudit -Confirm:$false @mockDefaultParameters
 
-                $mockMethodDropIfExistsCallCount | Should -Be 1
+                $mockMethodDropIfExistsCallCount | Should-Be 1
             }
         }
 
@@ -116,7 +116,7 @@ Describe 'Remove-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Remove-SqlDscAudit -Force @mockDefaultParameters
 
-                $mockMethodDropIfExistsCallCount | Should -Be 1
+                $mockMethodDropIfExistsCallCount | Should-Be 1
             }
         }
 
@@ -124,7 +124,7 @@ Describe 'Remove-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Remove-SqlDscAudit -WhatIf @mockDefaultParameters
 
-                $mockMethodDropIfExistsCallCount | Should -Be 0
+                $mockMethodDropIfExistsCallCount | Should-Be 0
             }
         }
 
@@ -132,7 +132,7 @@ Describe 'Remove-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 $mockServerObject | Remove-SqlDscAudit -Name 'Log1' -Force
 
-                $mockMethodDropIfExistsCallCount | Should -Be 1
+                $mockMethodDropIfExistsCallCount | Should-Be 1
             }
         }
     }
@@ -163,7 +163,7 @@ Describe 'Remove-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Remove-SqlDscAudit -Confirm:$false @mockDefaultParameters
 
-                $mockMethodDropIfExistsCallCount | Should -Be 1
+                $mockMethodDropIfExistsCallCount | Should-Be 1
             }
         }
 
@@ -171,7 +171,7 @@ Describe 'Remove-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Remove-SqlDscAudit -Force @mockDefaultParameters
 
-                $mockMethodDropIfExistsCallCount | Should -Be 1
+                $mockMethodDropIfExistsCallCount | Should-Be 1
             }
         }
 
@@ -179,7 +179,7 @@ Describe 'Remove-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 Remove-SqlDscAudit -WhatIf @mockDefaultParameters
 
-                $mockMethodDropIfExistsCallCount | Should -Be 0
+                $mockMethodDropIfExistsCallCount | Should-Be 0
             }
         }
 
@@ -187,7 +187,7 @@ Describe 'Remove-SqlDscAudit' -Tag 'Public' {
             It 'Should call the mocked method and have correct values in the object' {
                 $mockAuditObject | Remove-SqlDscAudit -Force
 
-                $mockMethodDropIfExistsCallCount | Should -Be 1
+                $mockMethodDropIfExistsCallCount | Should-Be 1
             }
         }
     }

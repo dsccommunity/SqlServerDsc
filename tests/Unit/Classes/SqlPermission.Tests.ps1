@@ -70,21 +70,21 @@ Describe 'SqlPermission' {
     Context 'When class is instantiated' {
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
-                { [SqlPermission]::new() } | Should -Not -Throw
+                $null = & ({ [SqlPermission]::new() })
             }
         }
 
         It 'Should have a default or empty constructor' {
             InModuleScope -ScriptBlock {
                 $instance = [SqlPermission]::new()
-                $instance | Should -Not -BeNullOrEmpty
+                $instance | Should-BeTruthy
             }
         }
 
         It 'Should be the correct type' {
             InModuleScope -ScriptBlock {
                 $instance = [SqlPermission]::new()
-                $instance.GetType().Name | Should -Be 'SqlPermission'
+                $instance.GetType().Name | Should-Be 'SqlPermission'
             }
         }
     }
@@ -147,16 +147,16 @@ Describe 'SqlPermission\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlPermissionInstance.Get()
 
-                    $currentState.InstanceName | Should -Be 'NamedInstance'
-                    $currentState.Name | Should -Be 'MockUserName'
-                    $currentState.ServerName | Should -Be (Get-ComputerName)
-                    $currentState.Credential | Should -BeNullOrEmpty
-                    $currentState.Reasons | Should -BeNullOrEmpty
+                    $currentState.InstanceName | Should-Be 'NamedInstance'
+                    $currentState.Name | Should-Be 'MockUserName'
+                    $currentState.ServerName | Should-Be (Get-ComputerName)
+                    $currentState.Credential | Should-BeFalsy
+                    $currentState.Reasons | Should-BeFalsy
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'ServerPermission[]'
+                    $currentState.Permission.GetType().FullName | Should-Be 'ServerPermission[]'
 
-                    $currentState.Permission[0].State | Should -Be 'Grant'
-                    $currentState.Permission[0].Permission | Should -Be 'ConnectSql'
+                    $currentState.Permission[0].State | Should-Be 'Grant'
+                    $currentState.Permission[0].Permission | Should-Be 'ConnectSql'
                 }
             }
         }
@@ -221,20 +221,20 @@ Describe 'SqlPermission\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlPermissionInstance.Get()
 
-                    $currentState.InstanceName | Should -Be 'NamedInstance'
-                    $currentState.Name | Should -Be 'MockUserName'
-                    $currentState.ServerName | Should -Be (Get-ComputerName)
+                    $currentState.InstanceName | Should-Be 'NamedInstance'
+                    $currentState.Name | Should-Be 'MockUserName'
+                    $currentState.ServerName | Should-Be (Get-ComputerName)
 
-                    $currentState.Credential | Should -BeOfType [System.Management.Automation.PSCredential]
+                    $currentState.Credential | Should-HaveType ([System.Management.Automation.PSCredential])
 
-                    $currentState.Credential.UserName | Should -Be 'MyCredentialUserName'
+                    $currentState.Credential.UserName | Should-Be 'MyCredentialUserName'
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'ServerPermission[]'
+                    $currentState.Permission.GetType().FullName | Should-Be 'ServerPermission[]'
 
-                    $currentState.Permission[0].State | Should -Be 'Grant'
-                    $currentState.Permission[0].Permission | Should -Be 'ConnectSql'
+                    $currentState.Permission[0].State | Should-Be 'Grant'
+                    $currentState.Permission[0].Permission | Should-Be 'ConnectSql'
 
-                    $currentState.Reasons | Should -BeNullOrEmpty
+                    $currentState.Reasons | Should-BeFalsy
                 }
             }
         }
@@ -296,20 +296,20 @@ Describe 'SqlPermission\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlPermissionInstance.Get()
 
-                    $currentState.InstanceName | Should -Be 'NamedInstance'
-                    $currentState.Name | Should -Be 'MockUserName'
-                    $currentState.ServerName | Should -Be (Get-ComputerName)
-                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.InstanceName | Should-Be 'NamedInstance'
+                    $currentState.Name | Should-Be 'MockUserName'
+                    $currentState.ServerName | Should-Be (Get-ComputerName)
+                    $currentState.Credential | Should-BeFalsy
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'ServerPermission[]'
+                    $currentState.Permission.GetType().FullName | Should-Be 'ServerPermission[]'
 
-                    $currentState.Permission[0].State | Should -Be 'Grant'
-                    $currentState.Permission[0].Permission | Should -Contain 'ConnectSql'
-                    $currentState.Permission[0].Permission | Should -Contain 'AlterAnyEndpoint'
+                    $currentState.Permission[0].State | Should-Be 'Grant'
+                    $currentState.Permission[0].Permission | Should-ContainCollection 'ConnectSql'
+                    $currentState.Permission[0].Permission | Should-ContainCollection 'AlterAnyEndpoint'
 
-                    $currentState.Reasons | Should -HaveCount 1
-                    $currentState.Reasons[0].Code | Should -Be 'SqlPermission:SqlPermission:Permission'
-                    $currentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["ConnectSql"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["ConnectSql","AlterAnyEndpoint"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
+                    $currentState.Reasons | Should-BeCollection -Count 1
+                    $currentState.Reasons[0].Code | Should-Be 'SqlPermission:SqlPermission:Permission'
+                    $currentState.Reasons[0].Phrase | Should-Be 'The property Permission should be [{"State":"Grant","Permission":["ConnectSql"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["ConnectSql","AlterAnyEndpoint"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
                 }
             }
         }
@@ -340,28 +340,28 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
                         InstanceName = 'NamedInstance'
                     })
 
-                $currentState.Credential | Should -BeNullOrEmpty
+                $currentState.Credential | Should-BeFalsy
 
-                $currentState.Permission.GetType().FullName | Should -Be 'ServerPermission[]'
-                $currentState.Permission | Should -HaveCount 3
+                $currentState.Permission.GetType().FullName | Should-Be 'ServerPermission[]'
+                $currentState.Permission | Should-BeCollection -Count 3
 
                 $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                $grantState | Should -Not -BeNullOrEmpty
-                $grantState.State | Should -Be 'Grant'
-                $grantState.Permission | Should -BeNullOrEmpty
+                $grantState | Should-BeTruthy
+                $grantState.State | Should-Be 'Grant'
+                $grantState.Permission | Should-BeFalsy
 
                 $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                $grantWithGrantState | Should -Not -BeNullOrEmpty
-                $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                $grantWithGrantState | Should-BeTruthy
+                $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                $grantWithGrantState.Permission | Should-BeFalsy
 
                 $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                $denyState | Should -Not -BeNullOrEmpty
-                $denyState.State | Should -Be 'Deny'
-                $denyState.Permission | Should -BeNullOrEmpty
+                $denyState | Should-BeTruthy
+                $denyState.State | Should-Be 'Deny'
+                $denyState.Permission | Should-BeFalsy
             }
         }
 
@@ -378,30 +378,30 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
                             InstanceName = 'NamedInstance'
                         })
 
-                    $currentState.Credential | Should -BeOfType [System.Management.Automation.PSCredential]
+                    $currentState.Credential | Should-HaveType ([System.Management.Automation.PSCredential])
 
-                    $currentState.Credential.UserName | Should -Be 'MyCredentialUserName'
+                    $currentState.Credential.UserName | Should-Be 'MyCredentialUserName'
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'ServerPermission[]'
-                    $currentState.Permission | Should -HaveCount 3
+                    $currentState.Permission.GetType().FullName | Should-Be 'ServerPermission[]'
+                    $currentState.Permission | Should-BeCollection -Count 3
 
                     $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                    $grantState | Should -Not -BeNullOrEmpty
-                    $grantState.State | Should -Be 'Grant'
-                    $grantState.Permission | Should -BeNullOrEmpty
+                    $grantState | Should-BeTruthy
+                    $grantState.State | Should-Be 'Grant'
+                    $grantState.Permission | Should-BeFalsy
 
                     $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                    $grantWithGrantState | Should -Not -BeNullOrEmpty
-                    $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                    $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                    $grantWithGrantState | Should-BeTruthy
+                    $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                    $grantWithGrantState.Permission | Should-BeFalsy
 
                     $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                    $denyState | Should -Not -BeNullOrEmpty
-                    $denyState.State | Should -Be 'Deny'
-                    $denyState.Permission | Should -BeNullOrEmpty
+                    $denyState | Should-BeTruthy
+                    $denyState.State | Should-Be 'Deny'
+                    $denyState.Permission | Should-BeFalsy
                 }
             }
         }
@@ -452,30 +452,30 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
                         InstanceName = 'NamedInstance'
                     })
 
-                $currentState.Credential | Should -BeNullOrEmpty
+                $currentState.Credential | Should-BeFalsy
 
-                $currentState.Permission.GetType().FullName | Should -Be 'ServerPermission[]'
-                $currentState.Permission | Should -HaveCount 3
+                $currentState.Permission.GetType().FullName | Should-Be 'ServerPermission[]'
+                $currentState.Permission | Should-BeCollection -Count 3
 
                 $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                $grantState | Should -Not -BeNullOrEmpty
-                $grantState.State | Should -Be 'Grant'
-                $grantState.Permission | Should -HaveCount 2
-                $grantState.Permission | Should -Contain 'ConnectSql'
-                $grantState.Permission | Should -Contain 'AlterAnyEndpoint'
+                $grantState | Should-BeTruthy
+                $grantState.State | Should-Be 'Grant'
+                $grantState.Permission | Should-BeCollection -Count 2
+                $grantState.Permission | Should-ContainCollection 'ConnectSql'
+                $grantState.Permission | Should-ContainCollection 'AlterAnyEndpoint'
 
                 $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                $grantWithGrantState | Should -Not -BeNullOrEmpty
-                $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                $grantWithGrantState | Should-BeTruthy
+                $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                $grantWithGrantState.Permission | Should-BeFalsy
 
                 $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                $denyState | Should -Not -BeNullOrEmpty
-                $denyState.State | Should -Be 'Deny'
-                $denyState.Permission | Should -BeNullOrEmpty
+                $denyState | Should-BeTruthy
+                $denyState.State | Should-Be 'Deny'
+                $denyState.Permission | Should-BeFalsy
             }
         }
     }
@@ -526,29 +526,29 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
                         InstanceName = 'NamedInstance'
                     })
 
-                $currentState.Credential | Should -BeNullOrEmpty
+                $currentState.Credential | Should-BeFalsy
 
-                $currentState.Permission.GetType().FullName | Should -Be 'ServerPermission[]'
-                $currentState.Permission | Should -HaveCount 3
+                $currentState.Permission.GetType().FullName | Should-Be 'ServerPermission[]'
+                $currentState.Permission | Should-BeCollection -Count 3
 
                 $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                $grantState | Should -Not -BeNullOrEmpty
-                $grantState.State | Should -Be 'Grant'
-                $grantState.Permission | Should -Contain 'ConnectSql'
-                $grantState.Permission | Should -Contain 'AlterAnyEndpoint'
+                $grantState | Should-BeTruthy
+                $grantState.State | Should-Be 'Grant'
+                $grantState.Permission | Should-ContainCollection 'ConnectSql'
+                $grantState.Permission | Should-ContainCollection 'AlterAnyEndpoint'
 
                 $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                $grantWithGrantState | Should -Not -BeNullOrEmpty
-                $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                $grantWithGrantState | Should-BeTruthy
+                $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                $grantWithGrantState.Permission | Should-BeFalsy
 
                 $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                $denyState | Should -Not -BeNullOrEmpty
-                $denyState.State | Should -Be 'Deny'
-                $denyState.Permission | Should -Contain 'ViewServerState'
+                $denyState | Should-BeTruthy
+                $denyState.State | Should-Be 'Deny'
+                $denyState.Permission | Should-ContainCollection 'ViewServerState'
             }
         }
     }
@@ -604,33 +604,33 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
                             InstanceName = 'NamedInstance'
                         })
 
-                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.Credential | Should-BeFalsy
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'ServerPermission[]'
-                    $currentState.Permission | Should -HaveCount 3
+                    $currentState.Permission.GetType().FullName | Should-Be 'ServerPermission[]'
+                    $currentState.Permission | Should-BeCollection -Count 3
 
                     $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                    $grantState | Should -Not -BeNullOrEmpty
-                    $grantState.State | Should -Be 'Grant'
-                    $grantState.Permission | Should -Contain 'ConnectSql'
-                    $grantState.Permission | Should -Contain 'AlterAnyEndpoint'
+                    $grantState | Should-BeTruthy
+                    $grantState.State | Should-Be 'Grant'
+                    $grantState.Permission | Should-ContainCollection 'ConnectSql'
+                    $grantState.Permission | Should-ContainCollection 'AlterAnyEndpoint'
 
                     $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                    $grantWithGrantState | Should -Not -BeNullOrEmpty
-                    $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                    $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                    $grantWithGrantState | Should-BeTruthy
+                    $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                    $grantWithGrantState.Permission | Should-BeFalsy
 
                     $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                    $denyState | Should -Not -BeNullOrEmpty
-                    $denyState.State | Should -Be 'Deny'
-                    $denyState.Permission | Should -Contain 'ViewServerState'
+                    $denyState | Should-BeTruthy
+                    $denyState.State | Should-Be 'Deny'
+                    $denyState.Permission | Should-ContainCollection 'ViewServerState'
 
-                    $currentState.PermissionToInclude | Should -HaveCount 1
-                    $currentState.PermissionToInclude[0].State | Should -Be 'Grant'
-                    $currentState.PermissionToInclude[0].Permission | Should -Be 'AlterAnyEndpoint'
+                    $currentState.PermissionToInclude | Should-BeCollection -Count 1
+                    $currentState.PermissionToInclude[0].State | Should-Be 'Grant'
+                    $currentState.PermissionToInclude[0].Permission | Should-Be 'AlterAnyEndpoint'
                 }
             }
         }
@@ -685,33 +685,33 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
                             InstanceName = 'NamedInstance'
                         })
 
-                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.Credential | Should-BeFalsy
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'ServerPermission[]'
-                    $currentState.Permission | Should -HaveCount 3
+                    $currentState.Permission.GetType().FullName | Should-Be 'ServerPermission[]'
+                    $currentState.Permission | Should-BeCollection -Count 3
 
                     $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                    $grantState | Should -Not -BeNullOrEmpty
-                    $grantState.State | Should -Be 'Grant'
-                    $grantState.Permission | Should -Contain 'ConnectSql'
-                    $grantState.Permission | Should -Contain 'AlterAnyEndpoint'
+                    $grantState | Should-BeTruthy
+                    $grantState.State | Should-Be 'Grant'
+                    $grantState.Permission | Should-ContainCollection 'ConnectSql'
+                    $grantState.Permission | Should-ContainCollection 'AlterAnyEndpoint'
 
                     $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                    $grantWithGrantState | Should -Not -BeNullOrEmpty
-                    $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                    $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                    $grantWithGrantState | Should-BeTruthy
+                    $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                    $grantWithGrantState.Permission | Should-BeFalsy
 
                     $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                    $denyState | Should -Not -BeNullOrEmpty
-                    $denyState.State | Should -Be 'Deny'
-                    $denyState.Permission | Should -Contain 'ViewServerState'
+                    $denyState | Should-BeTruthy
+                    $denyState.State | Should-Be 'Deny'
+                    $denyState.Permission | Should-ContainCollection 'ViewServerState'
 
-                    $currentState.PermissionToInclude | Should -HaveCount 1
-                    $currentState.PermissionToInclude[0].State | Should -Be 'Grant'
-                    $currentState.PermissionToInclude[0].Permission | Should -BeNullOrEmpty
+                    $currentState.PermissionToInclude | Should-BeCollection -Count 1
+                    $currentState.PermissionToInclude[0].State | Should-Be 'Grant'
+                    $currentState.PermissionToInclude[0].Permission | Should-BeFalsy
                 }
             }
         }
@@ -768,33 +768,33 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
                             InstanceName = 'NamedInstance'
                         })
 
-                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.Credential | Should-BeFalsy
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'ServerPermission[]'
-                    $currentState.Permission | Should -HaveCount 3
+                    $currentState.Permission.GetType().FullName | Should-Be 'ServerPermission[]'
+                    $currentState.Permission | Should-BeCollection -Count 3
 
                     $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                    $grantState | Should -Not -BeNullOrEmpty
-                    $grantState.State | Should -Be 'Grant'
-                    $grantState.Permission | Should -Contain 'ConnectSql'
-                    $grantState.Permission | Should -Contain 'AlterAnyEndpoint'
+                    $grantState | Should-BeTruthy
+                    $grantState.State | Should-Be 'Grant'
+                    $grantState.Permission | Should-ContainCollection 'ConnectSql'
+                    $grantState.Permission | Should-ContainCollection 'AlterAnyEndpoint'
 
                     $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                    $grantWithGrantState | Should -Not -BeNullOrEmpty
-                    $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                    $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                    $grantWithGrantState | Should-BeTruthy
+                    $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                    $grantWithGrantState.Permission | Should-BeFalsy
 
                     $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                    $denyState | Should -Not -BeNullOrEmpty
-                    $denyState.State | Should -Be 'Deny'
-                    $denyState.Permission | Should -Contain 'ViewServerState'
+                    $denyState | Should-BeTruthy
+                    $denyState.State | Should-Be 'Deny'
+                    $denyState.Permission | Should-ContainCollection 'ViewServerState'
 
-                    $currentState.PermissionToExclude | Should -HaveCount 1
-                    $currentState.PermissionToExclude[0].State | Should -Be 'Grant'
-                    $currentState.PermissionToExclude[0].Permission | Should -Be 'AlterAnyAvailabilityGroup'
+                    $currentState.PermissionToExclude | Should-BeCollection -Count 1
+                    $currentState.PermissionToExclude[0].State | Should-Be 'Grant'
+                    $currentState.PermissionToExclude[0].Permission | Should-Be 'AlterAnyAvailabilityGroup'
                 }
             }
         }
@@ -849,33 +849,33 @@ Describe 'SqlPermission\GetCurrentState()' -Tag 'GetCurrentState' {
                             InstanceName = 'NamedInstance'
                         })
 
-                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.Credential | Should-BeFalsy
 
-                    $currentState.Permission.GetType().FullName | Should -Be 'ServerPermission[]'
-                    $currentState.Permission | Should -HaveCount 3
+                    $currentState.Permission.GetType().FullName | Should-Be 'ServerPermission[]'
+                    $currentState.Permission | Should-BeCollection -Count 3
 
                     $grantState = $currentState.Permission.Where({ $_.State -eq 'Grant' })
 
-                    $grantState | Should -Not -BeNullOrEmpty
-                    $grantState.State | Should -Be 'Grant'
-                    $grantState.Permission | Should -Contain 'ConnectSql'
-                    $grantState.Permission | Should -Contain 'AlterAnyEndpoint'
+                    $grantState | Should-BeTruthy
+                    $grantState.State | Should-Be 'Grant'
+                    $grantState.Permission | Should-ContainCollection 'ConnectSql'
+                    $grantState.Permission | Should-ContainCollection 'AlterAnyEndpoint'
 
                     $grantWithGrantState = $currentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
 
-                    $grantWithGrantState | Should -Not -BeNullOrEmpty
-                    $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                    $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                    $grantWithGrantState | Should-BeTruthy
+                    $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                    $grantWithGrantState.Permission | Should-BeFalsy
 
                     $denyState = $currentState.Permission.Where({ $_.State -eq 'Deny' })
 
-                    $denyState | Should -Not -BeNullOrEmpty
-                    $denyState.State | Should -Be 'Deny'
-                    $denyState.Permission | Should -Contain 'ViewServerState'
+                    $denyState | Should-BeTruthy
+                    $denyState.State | Should-Be 'Deny'
+                    $denyState.Permission | Should-ContainCollection 'ViewServerState'
 
-                    $currentState.PermissionToExclude | Should -HaveCount 1
-                    $currentState.PermissionToExclude[0].State | Should -Be 'Grant'
-                    $currentState.PermissionToExclude[0].Permission | Should -BeNullOrEmpty
+                    $currentState.PermissionToExclude | Should-BeCollection -Count 1
+                    $currentState.PermissionToExclude[0].State | Should-Be 'Grant'
+                    $currentState.PermissionToExclude[0].Permission | Should-BeFalsy
                 }
             }
         }
@@ -931,7 +931,7 @@ Describe 'SqlPermission\Set()' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlPermissionInstance.Set()
 
-                $script:mockMethodModifyCallCount | Should -Be 0
+                $script:mockMethodModifyCallCount | Should-Be 0
             }
         }
     }
@@ -965,7 +965,7 @@ Describe 'SqlPermission\Set()' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlPermissionInstance.Set()
 
-                $script:mockMethodModifyCallCount | Should -Be 1
+                $script:mockMethodModifyCallCount | Should-Be 1
             }
         }
     }
@@ -1008,7 +1008,7 @@ Describe 'SqlPermission\Test()' -Tag 'Test' {
 
         It 'Should return $true' {
             InModuleScope -ScriptBlock {
-                $script:mockSqlPermissionInstance.Test() | Should -BeTrue
+                $script:mockSqlPermissionInstance.Test() | Should-BeTrue
             }
         }
     }
@@ -1040,7 +1040,7 @@ Describe 'SqlPermission\Test()' -Tag 'Test' {
 
         It 'Should return $false' {
             InModuleScope -ScriptBlock {
-                $script:mockSqlPermissionInstance.Test() | Should -BeFalse
+                $script:mockSqlPermissionInstance.Test() | Should-BeFalse
             }
         }
     }
@@ -1089,7 +1089,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                     $mockSqlPermissionInstance.Modify(@{
                             Permission = [ServerPermission[]] @()
                         })
-                } | Should -Throw -ExpectedMessage $mockErrorRecord
+                } | Should-Throw -ExceptionMessage $mockErrorRecord
             }
         }
     }
@@ -1152,7 +1152,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
+                    $null = & ({
                         $mockSqlPermissionInstance.Modify(@{
                                 Permission = [ServerPermission[]] @(
                                     [ServerPermission] @{
@@ -1169,18 +1169,18 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                                     }
                                 )
                             })
-                    } | Should -Not -Throw
+                    })
                 }
 
                 # Grants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscServerPermission -Exactly -ParameterFilter {
                     $State -eq 'Grant' -and $Permission.ConnectSql -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # GrantWithGrants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscServerPermission -Exactly -ParameterFilter {
                     $State -eq 'Grant' -and $Permission.AlterAnyEndpoint -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -1241,7 +1241,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
+                    $null = & ({
                         $mockSqlPermissionInstance.Modify(@{
                                 Permission = [ServerPermission[]] @(
                                     [ServerPermission] @{
@@ -1258,28 +1258,28 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                                     }
                                 )
                             })
-                    } | Should -Not -Throw
+                    })
                 }
 
                 # Revoking Grants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscServerPermission -Exactly -ParameterFilter {
                     $State -eq 'Revoke' -and $Permission.AlterAnyAvailabilityGroup -eq $true -and $Permission.ViewServerState -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # Revoking GrantWithGrants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscServerPermission -Exactly -ParameterFilter {
                     $State -eq 'Revoke' -and $Permission.ControlServer -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # Revoking Denies
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscServerPermission -Exactly -ParameterFilter {
                     $State -eq 'Revoke' -and $Permission.CreateEndpoint -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # Adding new Grant
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscServerPermission -Exactly -ParameterFilter {
                     $State -eq 'Grant' -and $Permission.ConnectSql -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }
@@ -1342,7 +1342,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
+                    $null = & ({
                         $mockSqlPermissionInstance.Modify(@{
                                 PermissionToInclude = [ServerPermission[]] @(
                                     [ServerPermission] @{
@@ -1359,18 +1359,18 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                                     }
                                 )
                             })
-                    } | Should -Not -Throw
+                    })
                 }
 
                 # Grants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscServerPermission -Exactly -ParameterFilter {
                     $State -eq 'Grant' -and $Permission.ConnectSql -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # GrantWithGrants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscServerPermission -Exactly -ParameterFilter {
                     $State -eq 'Grant' -and $Permission.AlterAnyEndpoint -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }
@@ -1433,7 +1433,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
 
             It 'Should call the correct mock with the correct parameter values' {
                 InModuleScope -ScriptBlock {
-                    {
+                    $null = & ({
                         $mockSqlPermissionInstance.Modify(@{
                                 PermissionToExclude = [ServerPermission[]] @(
                                     [ServerPermission] @{
@@ -1450,18 +1450,18 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                                     }
                                 )
                             })
-                    } | Should -Not -Throw
+                    })
                 }
 
                 # Revoking Grants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscServerPermission -Exactly -ParameterFilter {
                     $State -eq 'Revoke' -and $Permission.ConnectSql -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
 
                 # Revoking GrantWithGrants
-                Should -Invoke -CommandName Set-SqlDscServerPermission -ParameterFilter {
+                Should-Invoke -CommandName Set-SqlDscServerPermission -Exactly -ParameterFilter {
                     $State -eq 'Revoke' -and $Permission.AlterAnyEndpoint -eq $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }
@@ -1553,7 +1553,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                                     }
                                 )
                             })
-                    } | Should -Throw -ExpectedMessage $mockErrorRecord
+                    } | Should-Throw -ExceptionMessage $mockErrorRecord
                 }
             }
         }
@@ -1644,7 +1644,7 @@ Describe 'SqlPermission\Modify()' -Tag 'Modify' {
                                     }
                                 )
                             })
-                    } | Should -Throw -ExpectedMessage $mockErrorRecord
+                    } | Should-Throw -ExceptionMessage $mockErrorRecord
                 }
             }
         }
@@ -1672,7 +1672,7 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
                                 Permission          = [ServerPermission[]] @([ServerPermission] @{})
                                 PermissionToInclude = [ServerPermission[]] @([ServerPermission] @{})
                             })
-                    } | Should -Throw -ExpectedMessage '*DRC0010*'
+                    } | Should-Throw -ExceptionMessage '*DRC0010*'
                 }
             }
         }
@@ -1685,7 +1685,7 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
                                 Permission          = [ServerPermission[]] @([ServerPermission] @{})
                                 PermissionToExclude = [ServerPermission[]] @([ServerPermission] @{})
                             })
-                    } | Should -Throw -ExpectedMessage '*DRC0010*'
+                    } | Should-Throw -ExceptionMessage '*DRC0010*'
                 }
             }
         }
@@ -1700,7 +1700,7 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
             InModuleScope -ScriptBlock {
                 {
                     $mockSqlPermissionInstance.AssertProperties(@{})
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -1733,7 +1733,7 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
                                 }
                             )
                         })
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -1757,7 +1757,7 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
                                 }
                             )
                         })
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -1792,7 +1792,7 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
                                 }
                             )
                         })
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -1829,7 +1829,7 @@ Describe 'SqlPermission\AssertProperties()' -Tag 'AssertProperties' {
                                 }
                             )
                         })
-                } | Should -Throw -ExpectedMessage $mockErrorMessage
+                } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
