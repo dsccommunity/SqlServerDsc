@@ -55,8 +55,8 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
         }
 
         It 'Should be of the correct type' {
-            $mockServerPermissionInstance | Should -Not -BeNullOrEmpty
-            $mockServerPermissionInstance.GetType().Name | Should -Be 'ServerPermission'
+            $mockServerPermissionInstance | Should-BeTruthy
+            $mockServerPermissionInstance.GetType().Name | Should-Be 'ServerPermission'
         }
     }
 
@@ -73,7 +73,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
         }
 
         It 'Should be able read the values from instance' {
-            $mockServerPermissionInstance.State | Should -Be 'Grant'
+            $mockServerPermissionInstance.State | Should-Be 'Grant'
             $mockServerPermissionInstance.Permission = 'ViewServerState'
         }
     }
@@ -93,7 +93,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                         $databasPermissionInstance2.State = 'Grant'
                         $databasPermissionInstance2.Permission = 'ViewServerState'
 
-                        $databasPermissionInstance1 -eq $databasPermissionInstance2 | Should -BeTrue
+                        $databasPermissionInstance1 -eq $databasPermissionInstance2 | Should-BeTrue
                     }
                 }
             }
@@ -111,7 +111,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                         $databasPermissionInstance2.State = 'Grant'
                         $databasPermissionInstance2.Permission = @('ViewServerState', 'AlterAnyAvailabilityGroup')
 
-                        $databasPermissionInstance1 -eq $databasPermissionInstance2 | Should -BeTrue
+                        $databasPermissionInstance1 -eq $databasPermissionInstance2 | Should-BeTrue
                     }
                 }
             }
@@ -139,7 +139,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
             }
 
             It 'Should return $false' {
-                $mockServerPermissionInstance1 -eq $mockServerPermissionInstance2 | Should -BeFalse
+                $mockServerPermissionInstance1 -eq $mockServerPermissionInstance2 | Should-BeFalse
             }
         }
 
@@ -165,7 +165,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
             }
 
             It 'Should return $false' {
-                $mockServerPermissionInstance1 -eq $mockServerPermissionInstance2 | Should -BeFalse
+                $mockServerPermissionInstance1 -eq $mockServerPermissionInstance2 | Should-BeFalse
             }
         }
     }
@@ -195,7 +195,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                 $mockErrorMessage = $mockErrorMessage -replace '\[', '`['
                 $mockErrorMessage = $mockErrorMessage -replace '\]', '`]'
 
-                { $mockServerPermissionInstance1.CompareTo('AnyValue') } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { $mockServerPermissionInstance1.CompareTo('AnyValue') } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
 
@@ -229,7 +229,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                         }
                     }
 
-                    $mockServerPermissionInstance1.CompareTo($mockServerPermissionInstance2) | Should -BeLessThan 0
+                    $mockServerPermissionInstance1.CompareTo($mockServerPermissionInstance2) | Should-BeLessThan 0
                 }
             }
         }
@@ -264,7 +264,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                         }
                     }
 
-                    $mockServerPermissionInstance1.CompareTo($mockServerPermissionInstance2) | Should -BeGreaterThan 0
+                    $mockServerPermissionInstance1.CompareTo($mockServerPermissionInstance2) | Should-BeGreaterThan 0
                 }
             }
 
@@ -277,7 +277,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                         }
                     }
 
-                    $mockServerPermissionInstance1.CompareTo($null) | Should -BeGreaterThan 0
+                    $mockServerPermissionInstance1.CompareTo($null) | Should-BeGreaterThan 0
                 }
             }
         }
@@ -312,7 +312,7 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
                         }
                     }
 
-                    $mockServerPermissionInstance1.CompareTo($mockServerPermissionInstance2) | Should -Be 0
+                    $mockServerPermissionInstance1.CompareTo($mockServerPermissionInstance2) | Should-Be 0
                 }
             }
         }
@@ -352,9 +352,9 @@ Describe 'ServerPermission' -Tag 'ServerPermission' {
 
                 $mockSortedArray = $mockServerPermissionArray | Sort-Object
 
-                $mockSortedArray[0].State | Should -Be 'Grant'
-                $mockSortedArray[1].State | Should -Be 'GrantWithGrant'
-                $mockSortedArray[2].State | Should -Be 'Deny'
+                $mockSortedArray[0].State | Should-Be 'Grant'
+                $mockSortedArray[1].State | Should-Be 'GrantWithGrant'
+                $mockSortedArray[2].State | Should-Be 'Deny'
             }
         }
     }

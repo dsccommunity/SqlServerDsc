@@ -70,21 +70,21 @@ Describe 'SqlAudit' {
     Context 'When class is instantiated' {
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
-                { [SqlAudit]::new() } | Should -Not -Throw
+                $null = & ({ [SqlAudit]::new() })
             }
         }
 
         It 'Should have a default or empty constructor' {
             InModuleScope -ScriptBlock {
                 $instance = [SqlAudit]::new()
-                $instance | Should -Not -BeNullOrEmpty
+                $instance | Should-BeTruthy
             }
         }
 
         It 'Should be the correct type' {
             InModuleScope -ScriptBlock {
                 $instance = [SqlAudit]::new()
-                $instance.GetType().Name | Should -Be 'SqlAudit'
+                $instance.GetType().Name | Should-Be 'SqlAudit'
             }
         }
     }
@@ -126,13 +126,13 @@ Describe 'SqlAudit\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlAuditInstance.Get()
 
-                    $currentState.InstanceName | Should -Be 'NamedInstance'
-                    $currentState.Name | Should -Be 'MockAuditName'
-                    $currentState.ServerName | Should -Be (Get-ComputerName)
-                    $currentState.Credential | Should -BeNullOrEmpty
-                    $currentState.Reasons | Should -BeNullOrEmpty
+                    $currentState.InstanceName | Should-Be 'NamedInstance'
+                    $currentState.Name | Should-Be 'MockAuditName'
+                    $currentState.ServerName | Should-Be (Get-ComputerName)
+                    $currentState.Credential | Should-BeFalsy
+                    $currentState.Reasons | Should-BeFalsy
 
-                    $currentState.Path | Should -Be 'C:\Temp'
+                    $currentState.Path | Should-Be 'C:\Temp'
                 }
             }
 
@@ -170,15 +170,15 @@ Describe 'SqlAudit\Get()' -Tag 'Get' {
                     InModuleScope -ScriptBlock {
                         $currentState = $script:mockSqlAuditInstance.Get()
 
-                        $currentState.InstanceName | Should -Be 'NamedInstance'
-                        $currentState.Name | Should -Be 'MockAuditName'
-                        $currentState.ServerName | Should -Be (Get-ComputerName)
-                        $currentState.Reasons | Should -BeNullOrEmpty
+                        $currentState.InstanceName | Should-Be 'NamedInstance'
+                        $currentState.Name | Should-Be 'MockAuditName'
+                        $currentState.ServerName | Should-Be (Get-ComputerName)
+                        $currentState.Reasons | Should-BeFalsy
 
-                        $currentState.Credential | Should -BeOfType [System.Management.Automation.PSCredential]
-                        $currentState.Credential.UserName | Should -Be 'MyCredentialUserName'
+                        $currentState.Credential | Should-HaveType ([System.Management.Automation.PSCredential])
+                        $currentState.Credential.UserName | Should-Be 'MyCredentialUserName'
 
-                        $currentState.Path | Should -Be 'C:\Temp'
+                        $currentState.Path | Should-Be 'C:\Temp'
                     }
                 }
             }
@@ -220,16 +220,16 @@ Describe 'SqlAudit\Get()' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $currentState = $script:mockSqlAuditInstance.Get()
 
-                    $currentState.InstanceName | Should -Be 'NamedInstance'
-                    $currentState.Name | Should -Be 'MockAuditName'
-                    $currentState.ServerName | Should -Be (Get-ComputerName)
-                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.InstanceName | Should-Be 'NamedInstance'
+                    $currentState.Name | Should-Be 'MockAuditName'
+                    $currentState.ServerName | Should-Be (Get-ComputerName)
+                    $currentState.Credential | Should-BeFalsy
 
-                    $currentState.Path | Should -Be 'C:\Temp'
+                    $currentState.Path | Should-Be 'C:\Temp'
 
-                    $currentState.Reasons | Should -HaveCount 1
-                    $currentState.Reasons[0].Code | Should -Be 'SqlAudit:SqlAudit:Path'
-                    $currentState.Reasons[0].Phrase | Should -Be 'The property Path should be "C:\NewFolder", but was "C:\Temp"'
+                    $currentState.Reasons | Should-BeCollection -Count 1
+                    $currentState.Reasons[0].Code | Should-Be 'SqlAudit:SqlAudit:Path'
+                    $currentState.Reasons[0].Phrase | Should-Be 'The property Path should be "C:\NewFolder", but was "C:\Temp"'
                 }
             }
         }
@@ -275,7 +275,7 @@ Describe 'SqlAudit\Set()' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlAuditInstance.Set()
 
-                $script:mockMethodModifyCallCount | Should -Be 0
+                $script:mockMethodModifyCallCount | Should-Be 0
             }
         }
     }
@@ -302,7 +302,7 @@ Describe 'SqlAudit\Set()' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlAuditInstance.Set()
 
-                $script:mockMethodModifyCallCount | Should -Be 1
+                $script:mockMethodModifyCallCount | Should-Be 1
             }
         }
     }
@@ -335,7 +335,7 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
 
         It 'Should return $true' {
             InModuleScope -ScriptBlock {
-                $script:mockSqlAuditInstance.Test() | Should -BeTrue
+                $script:mockSqlAuditInstance.Test() | Should-BeTrue
             }
         }
     }
@@ -366,7 +366,7 @@ Describe 'SqlAudit\Test()' -Tag 'Test' {
 
         It 'Should return $false' {
             InModuleScope -ScriptBlock {
-                $script:mockSqlAuditInstance.Test() | Should -BeFalse
+                $script:mockSqlAuditInstance.Test() | Should-BeFalse
             }
         }
     }
@@ -397,10 +397,10 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
                     }
                 )
 
-                $currentState.InstanceName | Should -Be 'NamedInstance'
-                $currentState.ServerName | Should -Be (Get-ComputerName)
-                $currentState.Force | Should -BeFalse
-                $currentState.Credential | Should -BeNullOrEmpty
+                $currentState.InstanceName | Should-Be 'NamedInstance'
+                $currentState.ServerName | Should-Be (Get-ComputerName)
+                $currentState.Force | Should-BeFalse
+                $currentState.Credential | Should-BeFalsy
             }
         }
 
@@ -419,12 +419,12 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
                         }
                     )
 
-                    $currentState.InstanceName | Should -Be 'NamedInstance'
-                    $currentState.ServerName | Should -Be (Get-ComputerName)
-                    $currentState.Force | Should -BeFalse
+                    $currentState.InstanceName | Should-Be 'NamedInstance'
+                    $currentState.ServerName | Should-Be (Get-ComputerName)
+                    $currentState.Force | Should-BeFalse
 
-                    $currentState.Credential | Should -BeOfType [System.Management.Automation.PSCredential]
-                    $currentState.Credential.UserName | Should -Be 'MyCredentialUserName'
+                    $currentState.Credential | Should-HaveType ([System.Management.Automation.PSCredential])
+                    $currentState.Credential.UserName | Should-Be 'MyCredentialUserName'
                 }
             }
         }
@@ -481,23 +481,23 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
                         }
                     )
 
-                    $currentState.InstanceName | Should -Be 'NamedInstance'
-                    $currentState.ServerName | Should -Be (Get-ComputerName)
-                    $currentState.Force | Should -BeFalse
-                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.InstanceName | Should-Be 'NamedInstance'
+                    $currentState.ServerName | Should-Be (Get-ComputerName)
+                    $currentState.Force | Should-BeFalse
+                    $currentState.Credential | Should-BeFalsy
 
-                    $currentState.LogType | Should -BeNullOrEmpty
-                    $currentState.Path | Should -Be 'C:\Temp'
-                    $currentState.AuditFilter | Should -Be '([server_principal_name] like ''%ADMINISTRATOR'')'
-                    $currentState.MaximumFiles | Should -Be 2
-                    $currentState.MaximumFileSize | Should -Be 2
-                    $currentState.MaximumFileSizeUnit | Should -Be 'Megabyte'
-                    $currentState.MaximumRolloverFiles | Should -Be 2
-                    $currentState.ReserveDiskSpace | Should -BeTrue
-                    $currentState.OnFailure | Should -Be 'Continue'
-                    $currentState.QueueDelay | Should -Be 1000
-                    $currentState.AuditGuid | Should -Be '06962963-ddd1-4a6b-86d6-0ef8d99b8e7b'
-                    $currentState.Enabled | Should -BeTrue
+                    $currentState.LogType | Should-BeFalsy
+                    $currentState.Path | Should-Be 'C:\Temp'
+                    $currentState.AuditFilter | Should-Be '([server_principal_name] like ''%ADMINISTRATOR'')'
+                    $currentState.MaximumFiles | Should-Be 2
+                    $currentState.MaximumFileSize | Should-Be 2
+                    $currentState.MaximumFileSizeUnit | Should-Be 'Megabyte'
+                    $currentState.MaximumRolloverFiles | Should-Be 2
+                    $currentState.ReserveDiskSpace | Should-BeTrue
+                    $currentState.OnFailure | Should-Be 'Continue'
+                    $currentState.QueueDelay | Should-Be 1000
+                    $currentState.AuditGuid | Should-Be '06962963-ddd1-4a6b-86d6-0ef8d99b8e7b'
+                    $currentState.Enabled | Should-BeTrue
                 }
             }
         }
@@ -546,23 +546,23 @@ Describe 'SqlAudit\GetCurrentState()' -Tag 'GetCurrentState' {
                         }
                     )
 
-                    $currentState.InstanceName | Should -Be 'NamedInstance'
-                    $currentState.ServerName | Should -Be (Get-ComputerName)
-                    $currentState.Force | Should -BeFalse
-                    $currentState.Credential | Should -BeNullOrEmpty
+                    $currentState.InstanceName | Should-Be 'NamedInstance'
+                    $currentState.ServerName | Should-Be (Get-ComputerName)
+                    $currentState.Force | Should-BeFalse
+                    $currentState.Credential | Should-BeFalsy
 
-                    $currentState.LogType | Should -Be 'SecurityLog'
-                    $currentState.Path | Should -BeNullOrEmpty
-                    $currentState.AuditFilter | Should -Be '([server_principal_name] like ''%ADMINISTRATOR'')'
-                    $currentState.MaximumFiles | Should -Be 0
-                    $currentState.MaximumFileSize | Should -Be 0
-                    $currentState.MaximumFileSizeUnit | Should -BeNullOrEmpty
-                    $currentState.MaximumRolloverFiles | Should -Be 0
-                    $currentState.ReserveDiskSpace | Should -BeNullOrEmpty
-                    $currentState.OnFailure | Should -Be 'Continue'
-                    $currentState.QueueDelay | Should -Be 1000
-                    $currentState.AuditGuid | Should -Be '06962963-ddd1-4a6b-86d6-0ef8d99b8e7b'
-                    $currentState.Enabled | Should -BeTrue
+                    $currentState.LogType | Should-Be 'SecurityLog'
+                    $currentState.Path | Should-BeFalsy
+                    $currentState.AuditFilter | Should-Be '([server_principal_name] like ''%ADMINISTRATOR'')'
+                    $currentState.MaximumFiles | Should-Be 0
+                    $currentState.MaximumFileSize | Should-Be 0
+                    $currentState.MaximumFileSizeUnit | Should-BeFalsy
+                    $currentState.MaximumRolloverFiles | Should-Be 0
+                    $currentState.ReserveDiskSpace | Should-BeFalsy
+                    $currentState.OnFailure | Should-Be 'Continue'
+                    $currentState.QueueDelay | Should-Be 1000
+                    $currentState.AuditGuid | Should-Be '06962963-ddd1-4a6b-86d6-0ef8d99b8e7b'
+                    $currentState.Enabled | Should-BeTrue
                 }
             }
         }
@@ -600,7 +600,7 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Remove-SqlDscAudit -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -639,7 +639,7 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName New-SqlDscAudit -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName New-SqlDscAudit -Exactly -Scope It -Times 1
                 }
             }
 
@@ -673,8 +673,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                             }
                         )
 
-                        Should -Invoke -CommandName New-SqlDscAudit -Exactly -Times 1 -Scope It
-                        Should -Invoke -CommandName Enable-SqlDscAudit -Exactly -Times 1 -Scope It
+                        Should-Invoke -CommandName New-SqlDscAudit -Exactly -Scope It -Times 1
+                        Should-Invoke -CommandName Enable-SqlDscAudit -Exactly -Scope It -Times 1
                     }
                 }
             }
@@ -709,8 +709,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                             }
                         )
 
-                        Should -Invoke -CommandName New-SqlDscAudit -Exactly -Times 1 -Scope It
-                        Should -Invoke -CommandName Disable-SqlDscAudit -Exactly -Times 1 -Scope It
+                        Should-Invoke -CommandName New-SqlDscAudit -Exactly -Scope It -Times 1
+                        Should-Invoke -CommandName Disable-SqlDscAudit -Exactly -Scope It -Times 1
                     }
                 }
             }
@@ -745,7 +745,7 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                                     Enabled = $false
                                 }
                             )
-                        } | Should -Throw -ExpectedMessage $mockErrorMessage
+                        } | Should-Throw -ExceptionMessage $mockErrorMessage
                     }
                 }
             }
@@ -786,8 +786,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Get-SqlDscAudit -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Enable-SqlDscAudit -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-SqlDscAudit -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Enable-SqlDscAudit -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -827,8 +827,8 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Get-SqlDscAudit -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Disable-SqlDscAudit -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-SqlDscAudit -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Disable-SqlDscAudit -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -897,10 +897,10 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Get-SqlDscAudit -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Set-SqlDscAudit -ParameterFilter {
+                    Should-Invoke -CommandName Get-SqlDscAudit -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Set-SqlDscAudit -Exactly -ParameterFilter {
                         $PesterBoundParameters.$MockPropertyName -eq $MockExpectedValue
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -941,10 +941,10 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Get-SqlDscAudit -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Set-SqlDscAudit -ParameterFilter {
+                    Should-Invoke -CommandName Get-SqlDscAudit -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Set-SqlDscAudit -Exactly -ParameterFilter {
                         $MaximumFileSize -eq 20
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -985,10 +985,10 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Get-SqlDscAudit -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Set-SqlDscAudit -ParameterFilter {
+                    Should-Invoke -CommandName Get-SqlDscAudit -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Set-SqlDscAudit -Exactly -ParameterFilter {
                         $MaximumFileSizeUnit -eq 'Megabyte'
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -1029,10 +1029,10 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Get-SqlDscAudit -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Set-SqlDscAudit -ParameterFilter {
+                    Should-Invoke -CommandName Get-SqlDscAudit -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Set-SqlDscAudit -Exactly -ParameterFilter {
                         $ReserveDiskSpace -eq $true
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -1080,7 +1080,7 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                                 MaximumFiles = 20
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
             }
         }
@@ -1134,9 +1134,9 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Remove-SqlDscAudit -Exactly -Scope It -Times 1
 
-                    $script:mockMethodCreateAuditCallCount | Should -Be 1
+                    $script:mockMethodCreateAuditCallCount | Should-Be 1
                 }
             }
         }
@@ -1190,9 +1190,9 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                         }
                     )
 
-                    Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Remove-SqlDscAudit -Exactly -Scope It -Times 1
 
-                    $script:mockMethodCreateAuditCallCount | Should -Be 1
+                    $script:mockMethodCreateAuditCallCount | Should-Be 1
                 }
             }
         }
@@ -1249,11 +1249,11 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
                                 Path = 'C:\Temp'
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should-Throw -ExceptionMessage $mockErrorMessage
 
-                    Should -Invoke -CommandName Remove-SqlDscAudit -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Remove-SqlDscAudit -Exactly -Scope It -Times 0
 
-                    $script:mockMethodCreateAuditCallCount | Should -Be 0
+                    $script:mockMethodCreateAuditCallCount | Should-Be 0
                 }
             }
         }
@@ -1282,7 +1282,7 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
 
                 $mockErrorMessage += ' (Parameter ''Path'')'
 
-                { $script:mockSqlAuditInstance.Get() } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { $script:mockSqlAuditInstance.Get() } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
 
@@ -1292,7 +1292,7 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
 
                 $mockErrorMessage += ' (Parameter ''Path'')'
 
-                { $script:mockSqlAuditInstance.Set() } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { $script:mockSqlAuditInstance.Set() } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
 
@@ -1302,7 +1302,7 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
 
                 $mockErrorMessage += ' (Parameter ''Path'')'
 
-                { $script:mockSqlAuditInstance.Test() } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { $script:mockSqlAuditInstance.Test() } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -1333,7 +1333,7 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
                                 MaximumRolloverFiles = 2
                             }
                         )
-                    } | Should -Throw -ExpectedMessage '*DRC0010*'
+                    } | Should-Throw -ExceptionMessage '*DRC0010*'
                 }
             }
         }
@@ -1376,7 +1376,7 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
                                 $MockPropertyName = 'AnyValue'
                             }
                         )
-                    } | Should -Throw -ExpectedMessage '*DRC0010*'
+                    } | Should-Throw -ExceptionMessage '*DRC0010*'
                 }
             }
         }
@@ -1411,7 +1411,7 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
                                 $MockPropertyName = 'AnyValue'
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
             }
         }
@@ -1440,7 +1440,7 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
                                 MaximumFileSizeUnit = 'Megabyte'
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
             }
         }
@@ -1481,7 +1481,7 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
                                 QueueDelay = $MockQueueDelayValue
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
             }
         }
@@ -1509,7 +1509,7 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
                                 ReserveDiskSpace = $true
                             }
                         )
-                    } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
             }
         }
