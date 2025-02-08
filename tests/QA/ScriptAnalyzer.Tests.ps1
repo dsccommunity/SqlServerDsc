@@ -101,7 +101,7 @@ Describe 'Script Analyzer Rules' {
             $report = $pssaError |
                 Format-Table -AutoSize | Out-String -Width 200
 
-            $pssaError | Should -HaveCount 0 -Because "all script analyzer rules should pass.`r`n`r`n $report`r`n"
+            $pssaError | Should-BeCollection -Because "all script analyzer rules should pass.`r`n`r`n $report`r`n" -Count 0
         }
     }
 }

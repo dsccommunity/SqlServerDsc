@@ -37,12 +37,12 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
     It 'Should have the named instance SQL Server service started' {
         $getServiceResult = Get-Service -Name 'MSSQL$DSCSQLTEST' -ErrorAction 'Stop'
 
-        $getServiceResult.Status | Should -Be 'Running'
+        $getServiceResult.Status | Should-Be 'Running'
     }
 
     Context 'When uninstalling a named instance' {
         It 'Should run the command without throwing' {
-            {
+            $null = & ({
                 # Set splatting parameters for Uninstall-SqlDscServer
                 $uninstallSqlDscServerParameters = @{
                     InstanceName          = 'DSCSQLTEST'
@@ -54,11 +54,11 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                 }
 
                 Uninstall-SqlDscServer @uninstallSqlDscServerParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should not have a named instance SQL Server service' {
-            Get-Service -Name 'SQL Server (DSCSQLTEST)' -ErrorAction 'Ignore' | Should -BeNullOrEmpty
+            Get-Service -Name 'SQL Server (DSCSQLTEST)' -ErrorAction 'Ignore' | Should-BeFalsy
         }
     }
 }

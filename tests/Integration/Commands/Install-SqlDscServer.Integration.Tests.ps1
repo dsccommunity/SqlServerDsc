@@ -34,7 +34,7 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
     Context 'When using Install parameter set' {
         Context 'When installing database engine default instance' {
             It 'Should run the command without throwing' {
-                {
+                $null = & ({
                     # Set splatting parameters for Install-SqlDscServer
                     $installSqlDscServerParameters = @{
                         Install               = $true
@@ -141,15 +141,15 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                     #     (Get-ComputerName),
                     #     $modulePath
                     # )
-                } | Should -Not -Throw
+                })
             }
 
             It 'Should have installed the SQL Server database engine' {
                 # Validate the SQL Server installation
                 $sqlServerService = Get-Service -Name 'MSSQLSERVER'
 
-                $sqlServerService | Should -Not -BeNullOrEmpty
-                $sqlServerService.Status | Should -Be 'Running'
+                $sqlServerService | Should-BeTruthy
+                $sqlServerService.Status | Should-Be 'Running'
             }
 
             It 'Should stop the default instance SQL Server service' {
@@ -165,7 +165,7 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                     #>
                     $stopServiceResult |
                         Where-Object -FilterScript { $_.Name -eq 'MSSQLSERVER'}
-                ).Status | Should -Be 'Stopped'
+                ).Status | Should-Be 'Stopped'
             }
         }
 
@@ -176,7 +176,7 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
             # }
 
             It 'Should run the command without throwing' {
-                {
+                $null = & ({
                     # Set splatting parameters for Install-SqlDscServer
                     $installSqlDscServerParameters = @{
                         Install               = $true
@@ -285,15 +285,15 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                     #         $modulePath
                     #     )
                     # } | Should -Not -Throw
-                } | Should -Not -Throw
+                })
             }
 
             It 'Should have installed the SQL Server database engine' {
                 # Validate the SQL Server installation
                 $sqlServerService = Get-Service -Name 'MSSQL$DSCSQLTEST'
 
-                $sqlServerService | Should -Not -BeNullOrEmpty
-                $sqlServerService.Status | Should -Be 'Running'
+                $sqlServerService | Should-BeTruthy
+                $sqlServerService.Status | Should-Be 'Running'
             }
 
             It 'Should stop the named instance SQL Server service' {
@@ -307,7 +307,7 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
                     #>
                     $stopServiceResult |
                         Where-Object -FilterScript { $_.Name -eq 'MSSQL$DSCSQLTEST' }
-                ).Status | Should -Be 'Stopped'
+                ).Status | Should-Be 'Stopped'
             }
         }
 
