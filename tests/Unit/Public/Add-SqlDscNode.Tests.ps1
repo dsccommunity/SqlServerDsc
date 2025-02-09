@@ -110,12 +110,9 @@ Describe 'Add-SqlDscNode' -Tag 'Public' {
                     Add-SqlDscNode -Confirm:$false @mockDefaultParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=AddNode'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
+                        $ArgumentList -match '\/ACTION=AddNode' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
                     } -Exactly -Times 1 -Scope It
                 }
             }
@@ -125,12 +122,9 @@ Describe 'Add-SqlDscNode' -Tag 'Public' {
                     Add-SqlDscNode -Force @mockDefaultParameters
 
                     Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=AddNode'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
+                        $ArgumentList -match '\/ACTION=AddNode' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
                     } -Exactly -Times 1 -Scope It
                 }
             }
@@ -170,10 +164,7 @@ Describe 'Add-SqlDscNode' -Tag 'Public' {
                 Add-SqlDscNode @addSqlDscNodeParameters
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
-
-                    # Return $true if none of the above throw.
-                    $true
+                    $ArgumentList -match 'PBPORTRANGE=16450-16460' # cspell: disable-line
                 } -Exactly -Times 1 -Scope It
             }
         }
@@ -300,10 +291,7 @@ Describe 'Add-SqlDscNode' -Tag 'Public' {
                 Add-SqlDscNode @addSqlDscNodeParameters
 
                 Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
-
-                    # Return $true if none of the above throw.
-                    $true
+                    $ArgumentList -match $MockExpectedRegEx
                 } -Exactly -Times 1 -Scope It
             }
         }
