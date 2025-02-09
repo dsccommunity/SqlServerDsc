@@ -3462,7 +3462,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                             $ArgumentList -match '\/AZURETENANTID="7e52fb9e-6aad-426c-98c4-7d2f11f7e94b"' -and # cspell: disable-line
                             $ArgumentList -match '\/AZURESERVICEPRINCIPAL="MyServicePrincipal"' -and # cspell: disable-line
                             $ArgumentList -match '\/AZURESERVICEPRINCIPALSECRET="jT7ELPbD2GGuvLmjABDL"' -and # cspell: disable-line
-                            $ArgumentList -match '\/FEATURES=AZUREEXTENSION'
+                            $ArgumentList -match '\/FEATURES=AZUREEXTENSION' # cspell: disable-line
                         } -Exactly -Times 1 -Scope It
                     }
                 }
@@ -3482,7 +3482,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                             $ArgumentList -match '\/AZURETENANTID="7e52fb9e-6aad-426c-98c4-7d2f11f7e94b"' -and # cspell: disable-line
                             $ArgumentList -match '\/AZURESERVICEPRINCIPAL="MyServicePrincipal"' -and # cspell: disable-line
                             $ArgumentList -match '\/AZURESERVICEPRINCIPALSECRET="jT7ELPbD2GGuvLmjABDL"' -and # cspell: disable-line
-                            $ArgumentList -match '\/FEATURES=AZUREEXTENSION'
+                            $ArgumentList -match '\/FEATURES=AZUREEXTENSION' # cspell: disable-line
                         } -Exactly -Times 1 -Scope It
                     }
                 }
