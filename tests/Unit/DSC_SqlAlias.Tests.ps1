@@ -133,36 +133,36 @@ Describe 'SqlAlias\Get-TargetResource' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Present'
-                        $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                        $result.ServerName | Should -Be 'SqlNode.company.local'
-                        $result.Protocol | Should -Be 'TCP'
-                        $result.TcpPort | Should -BeExactly 1433
-                        $result.UseDynamicTcpPort | Should -Be $false
-                        $result.PipeName | Should -Be ''
+                        $result.Ensure | Should-Be 'Present'
+                        $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                        $result.ServerName | Should-Be 'SqlNode.company.local'
+                        $result.Protocol | Should-Be 'TCP'
+                        $result.TcpPort | Should-BeString -CaseSensitive 1433
+                        $result.UseDynamicTcpPort | Should-Be $false
+                        $result.PipeName | Should-Be ''
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                    Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                         $ClassName -eq 'win32_OperatingSystem'
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
-                    Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                    Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                         $Path -eq $mockRegistryPath
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
                     if ($OSArchitecture -eq '64-bit')
                     {
-                        Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 1 -Scope Context
+                        } -Scope Context -Times 1
                     }
                     else
                     {
-                        Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 0 -Scope Context
+                        } -Scope Context -Times 0
                     }
                 }
             }
@@ -187,36 +187,36 @@ Describe 'SqlAlias\Get-TargetResource' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Absent'
-                        $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                        $result.ServerName | Should -BeNullOrEmpty
-                        $result.Protocol | Should -Be ''
-                        $result.TcpPort | Should -BeExactly 0
-                        $result.UseDynamicTcpPort | Should -Be $false
-                        $result.PipeName | Should -Be ''
+                        $result.Ensure | Should-Be 'Absent'
+                        $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                        $result.ServerName | Should-BeFalsy
+                        $result.Protocol | Should-Be ''
+                        $result.TcpPort | Should-BeString -CaseSensitive 0
+                        $result.UseDynamicTcpPort | Should-Be $false
+                        $result.PipeName | Should-Be ''
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                    Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                         $ClassName -eq 'win32_OperatingSystem'
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
-                    Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                    Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                         $Path -eq $mockRegistryPath
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
                     if ($OSArchitecture -eq '64-bit')
                     {
-                        Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 1 -Scope Context
+                        } -Scope Context -Times 1
                     }
                     else
                     {
-                        Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 0 -Scope Context
+                        } -Scope Context -Times 0
                     }
                 }
             }
@@ -243,36 +243,36 @@ Describe 'SqlAlias\Get-TargetResource' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Present'
-                        $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                        $result.ServerName | Should -Be 'SqlNode.company.local'
-                        $result.Protocol | Should -Be 'TCP'
-                        $result.TcpPort | Should -BeExactly 0
-                        $result.UseDynamicTcpPort | Should -Be $true
-                        $result.PipeName | Should -Be ''
+                        $result.Ensure | Should-Be 'Present'
+                        $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                        $result.ServerName | Should-Be 'SqlNode.company.local'
+                        $result.Protocol | Should-Be 'TCP'
+                        $result.TcpPort | Should-BeString -CaseSensitive 0
+                        $result.UseDynamicTcpPort | Should-Be $true
+                        $result.PipeName | Should-Be ''
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                    Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                         $ClassName -eq 'win32_OperatingSystem'
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
-                    Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                    Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                         $Path -eq $mockRegistryPath
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
                     if ($OSArchitecture -eq '64-bit')
                     {
-                        Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 1 -Scope Context
+                        } -Scope Context -Times 1
                     }
                     else
                     {
-                        Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 0 -Scope Context
+                        } -Scope Context -Times 0
                     }
                 }
             }
@@ -297,36 +297,36 @@ Describe 'SqlAlias\Get-TargetResource' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Absent'
-                        $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                        $result.ServerName | Should -BeNullOrEmpty
-                        $result.Protocol | Should -Be ''
-                        $result.TcpPort | Should -BeExactly 0
-                        $result.UseDynamicTcpPort | Should -Be $false
-                        $result.PipeName | Should -Be ''
+                        $result.Ensure | Should-Be 'Absent'
+                        $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                        $result.ServerName | Should-BeFalsy
+                        $result.Protocol | Should-Be ''
+                        $result.TcpPort | Should-BeString -CaseSensitive 0
+                        $result.UseDynamicTcpPort | Should-Be $false
+                        $result.PipeName | Should-Be ''
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                    Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                         $ClassName -eq 'win32_OperatingSystem'
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
-                    Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                    Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                         $Path -eq $mockRegistryPath
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
                     if ($OSArchitecture -eq '64-bit')
                     {
-                        Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 1 -Scope Context
+                        } -Scope Context -Times 1
                     }
                     else
                     {
-                        Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 0 -Scope Context
+                        } -Scope Context -Times 0
                     }
                 }
             }
@@ -370,36 +370,36 @@ Describe 'SqlAlias\Get-TargetResource' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Present'
-                        $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                        $result.ServerName | Should -BeNullOrEmpty
-                        $result.Protocol | Should -Be 'NP'
-                        $result.TcpPort | Should -BeExactly 0
-                        $result.UseDynamicTcpPort | Should -Be $false
-                        $result.PipeName | Should -Be '\\SqlNode\PIPE\sql\query'
+                        $result.Ensure | Should-Be 'Present'
+                        $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                        $result.ServerName | Should-BeFalsy
+                        $result.Protocol | Should-Be 'NP'
+                        $result.TcpPort | Should-BeString -CaseSensitive 0
+                        $result.UseDynamicTcpPort | Should-Be $false
+                        $result.PipeName | Should-Be '\\SqlNode\PIPE\sql\query'
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                    Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                         $ClassName -eq 'win32_OperatingSystem'
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
-                    Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                    Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                         $Path -eq $mockRegistryPath
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
                     if ($OSArchitecture -eq '64-bit')
                     {
-                        Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 1 -Scope Context
+                        } -Scope Context -Times 1
                     }
                     else
                     {
-                        Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 0 -Scope Context
+                        } -Scope Context -Times 0
                     }
                 }
             }
@@ -424,36 +424,36 @@ Describe 'SqlAlias\Get-TargetResource' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Absent'
-                        $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                        $result.ServerName | Should -BeNullOrEmpty
-                        $result.Protocol | Should -Be ''
-                        $result.TcpPort | Should -BeExactly 0
-                        $result.UseDynamicTcpPort | Should -Be $false
-                        $result.PipeName | Should -Be ''
+                        $result.Ensure | Should-Be 'Absent'
+                        $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                        $result.ServerName | Should-BeFalsy
+                        $result.Protocol | Should-Be ''
+                        $result.TcpPort | Should-BeString -CaseSensitive 0
+                        $result.UseDynamicTcpPort | Should-Be $false
+                        $result.PipeName | Should-Be ''
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                    Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                         $ClassName -eq 'win32_OperatingSystem'
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
-                    Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                    Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                         $Path -eq $mockRegistryPath
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
                     if ($OSArchitecture -eq '64-bit')
                     {
-                        Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 1 -Scope Context
+                        } -Scope Context -Times 1
                     }
                     else
                     {
-                        Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 0 -Scope Context
+                        } -Scope Context -Times 0
                     }
                 }
             }
@@ -485,28 +485,28 @@ Describe 'SqlAlias\Get-TargetResource' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Ensure | Should -Be 'Absent'
-                    $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                    $result.ServerName | Should -BeNullOrEmpty
-                    $result.Protocol | Should -Be ''
-                    $result.TcpPort | Should -BeExactly 0
-                    $result.UseDynamicTcpPort | Should -Be $false
-                    $result.PipeName | Should -Be ''
+                    $result.Ensure | Should-Be 'Absent'
+                    $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                    $result.ServerName | Should-BeFalsy
+                    $result.Protocol | Should-Be ''
+                    $result.TcpPort | Should-BeString -CaseSensitive 0
+                    $result.UseDynamicTcpPort | Should-Be $false
+                    $result.PipeName | Should-Be ''
                 }
             }
 
             It 'Should call the correct mocks' {
-                Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                     $ClassName -eq 'win32_OperatingSystem'
-                } -Exactly -Times 1 -Scope Context
+                } -Scope Context -Times 1
 
-                Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                     $Path -eq $mockRegistryPath
-                } -Exactly -Times 1 -Scope Context
+                } -Scope Context -Times 1
 
-                Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                     $Path -eq $mockRegistryPathWow6432Node
-                } -Exactly -Times 1 -Scope Context
+                } -Scope Context -Times 1
             }
         }
 
@@ -538,28 +538,28 @@ Describe 'SqlAlias\Get-TargetResource' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Ensure | Should -Be 'Absent'
-                    $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                    $result.ServerName | Should -BeNullOrEmpty
-                    $result.Protocol | Should -Be ''
-                    $result.TcpPort | Should -BeExactly 0
-                    $result.UseDynamicTcpPort | Should -Be $false
-                    $result.PipeName | Should -Be ''
+                    $result.Ensure | Should-Be 'Absent'
+                    $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                    $result.ServerName | Should-BeFalsy
+                    $result.Protocol | Should-Be ''
+                    $result.TcpPort | Should-BeString -CaseSensitive 0
+                    $result.UseDynamicTcpPort | Should-Be $false
+                    $result.PipeName | Should-Be ''
                 }
             }
 
             It 'Should call the correct mocks' {
-                Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                     $ClassName -eq 'win32_OperatingSystem'
-                } -Exactly -Times 1 -Scope Context
+                } -Scope Context -Times 1
 
-                Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                     $Path -eq $mockRegistryPath
-                } -Exactly -Times 1 -Scope Context
+                } -Scope Context -Times 1
 
-                Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                     $Path -eq $mockRegistryPathWow6432Node
-                } -Exactly -Times 1 -Scope Context
+                } -Scope Context -Times 1
             }
         }
     }
@@ -612,12 +612,12 @@ Describe 'SqlAlias\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
                 }
             }
 
@@ -647,12 +647,12 @@ Describe 'SqlAlias\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
                 }
             }
 
@@ -680,12 +680,12 @@ Describe 'SqlAlias\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
                 }
             }
         }
@@ -717,12 +717,12 @@ Describe 'SqlAlias\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
                 }
             }
         }
@@ -753,12 +753,12 @@ Describe 'SqlAlias\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
 
             It 'Should call the correct mocks' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
 
@@ -789,12 +789,12 @@ Describe 'SqlAlias\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
                 }
             }
 
@@ -810,12 +810,12 @@ Describe 'SqlAlias\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
                 }
             }
 
@@ -845,12 +845,12 @@ Describe 'SqlAlias\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
                 }
             }
 
@@ -880,12 +880,12 @@ Describe 'SqlAlias\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
                 }
             }
 
@@ -916,12 +916,12 @@ Describe 'SqlAlias\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
                 }
             }
 
@@ -952,12 +952,12 @@ Describe 'SqlAlias\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
                 }
             }
         }
@@ -989,12 +989,12 @@ Describe 'SqlAlias\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
                 }
             }
 
@@ -1023,12 +1023,12 @@ Describe 'SqlAlias\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
                 }
             }
 
@@ -1057,12 +1057,12 @@ Describe 'SqlAlias\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
                 }
             }
         }
@@ -1124,32 +1124,32 @@ Describe 'SqlAlias\Set-TargetResource' {
                         $script:mockSetTargetResourceParameters.TcpPort = 1433
                         $script:mockSetTargetResourceParameters.ServerName = 'SqlNode.company.local'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                    Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                         $ClassName -eq 'win32_OperatingSystem'
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
-                    Should -Invoke -CommandName Remove-ItemProperty -Exactly -Times 0 -Scope Context
+                    Should-Invoke -CommandName Remove-ItemProperty -Exactly -Scope Context -Times 0
 
-                    Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                    Should-Invoke -CommandName Set-ItemProperty -Exactly -ParameterFilter {
                         $Path -eq $mockRegistryPath
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
                     if ($OSArchitecture -eq '64-bit')
                     {
-                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Set-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 1 -Scope Context
+                        } -Scope Context -Times 1
                     }
                     else
                     {
-                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Set-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 0 -Scope Context
+                        } -Scope Context -Times 0
                     }
                 }
             }
@@ -1164,32 +1164,32 @@ Describe 'SqlAlias\Set-TargetResource' {
                         $script:mockSetTargetResourceParameters.UseDynamicTcpPort = $true
                         $script:mockSetTargetResourceParameters.ServerName = 'SqlNode.company.local'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                    Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                         $ClassName -eq 'win32_OperatingSystem'
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
-                    Should -Invoke -CommandName Remove-ItemProperty -Exactly -Times 0 -Scope Context
+                    Should-Invoke -CommandName Remove-ItemProperty -Exactly -Scope Context -Times 0
 
-                    Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                    Should-Invoke -CommandName Set-ItemProperty -Exactly -ParameterFilter {
                         $Path -eq $mockRegistryPath
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
                     if ($OSArchitecture -eq '64-bit')
                     {
-                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Set-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 1 -Scope Context
+                        } -Scope Context -Times 1
                     }
                     else
                     {
-                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Set-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 0 -Scope Context
+                        } -Scope Context -Times 0
                     }
                 }
             }
@@ -1203,32 +1203,32 @@ Describe 'SqlAlias\Set-TargetResource' {
                         $script:mockSetTargetResourceParameters.Protocol = 'NP'
                         $script:mockSetTargetResourceParameters.ServerName = 'SqlNode.company.local'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                    Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                         $ClassName -eq 'win32_OperatingSystem'
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
-                    Should -Invoke -CommandName Remove-ItemProperty -Exactly -Times 0 -Scope Context
+                    Should-Invoke -CommandName Remove-ItemProperty -Exactly -Scope Context -Times 0
 
-                    Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                    Should-Invoke -CommandName Set-ItemProperty -Exactly -ParameterFilter {
                         $Path -eq $mockRegistryPath
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
                     if ($OSArchitecture -eq '64-bit')
                     {
-                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Set-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 1 -Scope Context
+                        } -Scope Context -Times 1
                     }
                     else
                     {
-                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Set-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 0 -Scope Context
+                        } -Scope Context -Times 0
                     }
                 }
             }
@@ -1248,35 +1248,35 @@ Describe 'SqlAlias\Set-TargetResource' {
                         $script:mockSetTargetResourceParameters.Ensure = 'Absent'
                         $script:mockSetTargetResourceParameters.Name = 'MyAlias'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
                 }
 
                 It 'Should call the correct mocks' {
-                    Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                    Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                         $ClassName -eq 'win32_OperatingSystem'
-                    } -Exactly -Times 1 -Scope Context
+                    } -Scope Context -Times 1
 
 
-                    Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                    Should-Invoke -CommandName Set-ItemProperty -Exactly -ParameterFilter {
                         $Path -eq $mockRegistryPath
-                    } -Exactly -Times 0 -Scope Context
+                    } -Scope Context -Times 0
 
                     if ($OSArchitecture -eq '64-bit')
                     {
-                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Set-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 0 -Scope Context
+                        } -Scope Context -Times 0
 
-                        Should -Invoke -CommandName Remove-ItemProperty -Exactly -Times 2 -Scope Context
+                        Should-Invoke -CommandName Remove-ItemProperty -Exactly -Scope Context -Times 2
                     }
                     else
                     {
-                        Should -Invoke -CommandName Set-ItemProperty -ParameterFilter {
+                        Should-Invoke -CommandName Set-ItemProperty -Exactly -ParameterFilter {
                             $Path -eq $mockRegistryPathWow6432Node
-                        } -Exactly -Times 0 -Scope Context
+                        } -Scope Context -Times 0
 
-                        Should -Invoke -CommandName Remove-ItemProperty -Exactly -Times 1 -Scope Context
+                        Should-Invoke -CommandName Remove-ItemProperty -Exactly -Scope Context -Times 1
                     }
                 }
             }

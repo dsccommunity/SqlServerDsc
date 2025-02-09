@@ -121,10 +121,10 @@ Describe 'SqlDatabase\Get-TargetResource' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Ensure | Should -Be 'Absent'
+                    $result.Ensure | Should-Be 'Absent'
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
 
             It 'Should return the same values as passed as parameters' {
@@ -133,9 +133,9 @@ Describe 'SqlDatabase\Get-TargetResource' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                    $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                    $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                    $result.Name | Should-Be $mockGetTargetResourceParameters.Name
                 }
             }
 
@@ -145,10 +145,10 @@ Describe 'SqlDatabase\Get-TargetResource' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Collation | Should -BeNullOrEmpty
-                    $result.CompatibilityLevel | Should -BeNullOrEmpty
-                    $result.RecoveryModel | Should -BeNullOrEmpty
-                    $result.Owner | Should -BeNullOrEmpty
+                    $result.Collation | Should-BeFalsy
+                    $result.CompatibilityLevel | Should-BeFalsy
+                    $result.RecoveryModel | Should-BeFalsy
+                    $result.Owner | Should-BeFalsy
                 }
             }
         }
@@ -166,10 +166,10 @@ Describe 'SqlDatabase\Get-TargetResource' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Ensure | Should -Be 'Present'
+                    $result.Ensure | Should-Be 'Present'
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
 
             It 'Should return the same values as passed as parameters' {
@@ -178,9 +178,9 @@ Describe 'SqlDatabase\Get-TargetResource' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                    $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                    $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                    $result.Name | Should-Be $mockGetTargetResourceParameters.Name
                 }
             }
 
@@ -190,10 +190,10 @@ Describe 'SqlDatabase\Get-TargetResource' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Collation | Should -Be 'SQL_Latin1_General_CP1_CS_AS'
-                    $result.CompatibilityLevel | Should -Be 'Version130'
-                    $result.RecoveryModel | Should -Be 'Full'
-                    $result.OwnerName | Should -Be 'sa'
+                    $result.Collation | Should-Be 'SQL_Latin1_General_CP1_CS_AS'
+                    $result.CompatibilityLevel | Should-Be 'Version130'
+                    $result.RecoveryModel | Should-Be 'Full'
+                    $result.OwnerName | Should-Be 'sa'
                 }
             }
         }
@@ -243,10 +243,10 @@ Describe 'SqlDatabase\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -272,10 +272,10 @@ Describe 'SqlDatabase\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -320,10 +320,10 @@ Describe 'SqlDatabase\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -353,10 +353,10 @@ Describe 'SqlDatabase\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -384,10 +384,10 @@ Describe 'SqlDatabase\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -432,10 +432,10 @@ Describe 'SqlDatabase\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -592,12 +592,12 @@ Describe 'SqlDatabase\Set-TargetResource' {
                     $script:mockSetTargetResourceParameters['Ensure'] = 'Present'
                     $script:mockSetTargetResourceParameters['Name'] = 'NewDatabase'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $script:newObjectMethodCreateWasCalled | Should -Be 1
+                    $script:newObjectMethodCreateWasCalled | Should-Be 1
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
 
             Context 'When creating the database and setting property <PropertyName>' -ForEach @(
@@ -628,17 +628,17 @@ Describe 'SqlDatabase\Set-TargetResource' {
                         $script:mockSetTargetResourceParameters['Name'] = 'NewDatabase'
                         $script:mockSetTargetResourceParameters[$PropertyName] = $PropertyValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                        $script:newObjectMethodCreateWasCalled | Should -Be 1
+                        $script:newObjectMethodCreateWasCalled | Should-Be 1
 
                         if ($PropertyName -eq 'OwnerName')
                         {
-                            $script:newObjectMethodSetOwnerWasCalled | Should -Be 1
+                            $script:newObjectMethodSetOwnerWasCalled | Should-Be 1
                         }
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
 
                 It 'Should throw the correct error message when method Create() fails' {
@@ -653,7 +653,7 @@ Describe 'SqlDatabase\Set-TargetResource' {
 
                         $mockErrorMessage = $script:localizedData.FailedToCreateDatabase -f 'NewDatabase'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw ('*' + $mockErrorMessage + '*')
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw ('*' + $mockErrorMessage + '*')
                     }
 
                     $mockInvalidOperationForCreateMethod = $false
@@ -672,12 +672,12 @@ Describe 'SqlDatabase\Set-TargetResource' {
 
                     $script:mockSetTargetResourceParameters['Ensure'] = 'Absent'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $script:methodDropWasCalled | Should -Be 1
+                    $script:methodDropWasCalled | Should-Be 1
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
 
             It 'Should throw the correct error if the database cannot be dropped' {
@@ -690,10 +690,10 @@ Describe 'SqlDatabase\Set-TargetResource' {
 
                     $mockErrorMessage = $script:localizedData.FailedToDropDatabase -f 'AdventureWorks'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw ('*' + $mockErrorMessage + '*')
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw ('*' + $mockErrorMessage + '*')
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
 
                 $mockInvalidOperationForDropMethod = $false
             }
@@ -723,12 +723,12 @@ Describe 'SqlDatabase\Set-TargetResource' {
 
                     $script:mockSetTargetResourceParameters[$PropertyName] = $PropertyValue
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $script:methodAlterWasCalled | Should -Be 1
+                    $script:methodAlterWasCalled | Should-Be 1
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
 
             It 'Should throw the correct error message when method Alter() fails' {
@@ -743,7 +743,7 @@ Describe 'SqlDatabase\Set-TargetResource' {
 
                     $mockErrorMessage = $script:localizedData.FailedToUpdateDatabase -f 'AdventureWorks'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw ('*' + $mockErrorMessage + '*')
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw ('*' + $mockErrorMessage + '*')
                 }
 
                 $mockInvalidOperationForAlterMethod = $false
@@ -759,7 +759,7 @@ Describe 'SqlDatabase\Set-TargetResource' {
 
                     $mockErrorMessage = $script:localizedData.InvalidCompatibilityLevel -f $mockSetTargetResourceParameters.CompatibilityLevel, 'MSSQLSERVER'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw ('*' + $mockErrorMessage)
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -773,7 +773,7 @@ Describe 'SqlDatabase\Set-TargetResource' {
 
                     $mockErrorMessage = $script:localizedData.InvalidCollation -f $mockSetTargetResourceParameters.Collation, 'MSSQLSERVER'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw ('*' + $mockErrorMessage)
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -795,7 +795,7 @@ Describe 'SqlDatabase\Set-TargetResource' {
 
                     $mockErrorMessage = $script:localizedData.FailedToUpdateOwner -f 'NewOwner', 'AdventureWorks'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw ('*' + $mockErrorMessage + '*')
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw ('*' + $mockErrorMessage + '*')
                 }
             }
         }

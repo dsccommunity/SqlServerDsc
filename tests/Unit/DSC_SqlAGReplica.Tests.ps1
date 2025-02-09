@@ -165,25 +165,25 @@ Describe 'SqlAGReplica\Get-TargetResource' {
 
                 $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                $getTargetResourceResult.AvailabilityGroupName | Should -Be 'AbsentAG'
-                $getTargetResourceResult.AvailabilityMode | Should -BeNullOrEmpty
-                $getTargetResourceResult.BackupPriority | Should -BeNullOrEmpty
-                $getTargetResourceResult.ConnectionModeInPrimaryRole | Should -BeNullOrEmpty
-                $getTargetResourceResult.ConnectionModeInSecondaryRole | Should -BeNullOrEmpty
-                $getTargetResourceResult.EndpointUrl | Should -BeNullOrEmpty
-                $getTargetResourceResult.EndpointPort | Should -Be 5022
-                $getTargetResourceResult.Ensure | Should -Be 'Absent'
-                $getTargetResourceResult.FailoverMode | Should -BeNullOrEmpty
-                $getTargetResourceResult.Name | Should -Be 'Server1'
-                $getTargetResourceResult.ReadOnlyRoutingConnectionUrl | Should -BeNullOrEmpty
-                $getTargetResourceResult.ReadOnlyRoutingList | Should -BeNullOrEmpty
-                $getTargetResourceResult.ServerName | Should -Be 'Server1'
-                $getTargetResourceResult.InstanceName | Should -Be 'MSSQLSERVER'
-                $getTargetResourceResult.EndpointHostName | Should -Be 'Server1'
-                $getTargetResourceResult.SeedingMode | Should -BeNullOrEmpty
+                $getTargetResourceResult.AvailabilityGroupName | Should-Be 'AbsentAG'
+                $getTargetResourceResult.AvailabilityMode | Should-BeFalsy
+                $getTargetResourceResult.BackupPriority | Should-BeFalsy
+                $getTargetResourceResult.ConnectionModeInPrimaryRole | Should-BeFalsy
+                $getTargetResourceResult.ConnectionModeInSecondaryRole | Should-BeFalsy
+                $getTargetResourceResult.EndpointUrl | Should-BeFalsy
+                $getTargetResourceResult.EndpointPort | Should-Be 5022
+                $getTargetResourceResult.Ensure | Should-Be 'Absent'
+                $getTargetResourceResult.FailoverMode | Should-BeFalsy
+                $getTargetResourceResult.Name | Should-Be 'Server1'
+                $getTargetResourceResult.ReadOnlyRoutingConnectionUrl | Should-BeFalsy
+                $getTargetResourceResult.ReadOnlyRoutingList | Should-BeFalsy
+                $getTargetResourceResult.ServerName | Should-Be 'Server1'
+                $getTargetResourceResult.InstanceName | Should-Be 'MSSQLSERVER'
+                $getTargetResourceResult.EndpointHostName | Should-Be 'Server1'
+                $getTargetResourceResult.SeedingMode | Should-BeFalsy
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -199,25 +199,25 @@ Describe 'SqlAGReplica\Get-TargetResource' {
 
                 $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                $getTargetResourceResult.AvailabilityGroupName | Should -Be 'AG_AllServers'
-                $getTargetResourceResult.AvailabilityMode | Should -Be 'AsynchronousCommit'
-                $getTargetResourceResult.BackupPriority | Should -Be 50
-                $getTargetResourceResult.ConnectionModeInPrimaryRole | Should -Be 'AllowAllConnections'
-                $getTargetResourceResult.ConnectionModeInSecondaryRole | Should -Be 'AllowNoConnections'
-                $getTargetResourceResult.EndpointUrl | Should -Be 'TCP://Server1:5022'
-                $getTargetResourceResult.EndpointPort | Should -Be 5022
-                $getTargetResourceResult.Ensure | Should -Be 'Present'
-                $getTargetResourceResult.FailoverMode | Should -Be 'Manual'
-                $getTargetResourceResult.Name | Should -Be 'Server1'
-                $getTargetResourceResult.ReadOnlyRoutingConnectionUrl | Should -Be 'TCP://Server1.domain.com:1433'
-                $getTargetResourceResult.ReadOnlyRoutingList | Should -Be @('Server1', 'Server2')
-                $getTargetResourceResult.ServerName | Should -Be 'Server1'
-                $getTargetResourceResult.InstanceName | Should -Be 'MSSQLSERVER'
-                $getTargetResourceResult.EndpointHostName | Should -Be 'Server1'
-                $getTargetResourceResult.SeedingMode | Should -Be 'Manual'
+                $getTargetResourceResult.AvailabilityGroupName | Should-Be 'AG_AllServers'
+                $getTargetResourceResult.AvailabilityMode | Should-Be 'AsynchronousCommit'
+                $getTargetResourceResult.BackupPriority | Should-Be 50
+                $getTargetResourceResult.ConnectionModeInPrimaryRole | Should-Be 'AllowAllConnections'
+                $getTargetResourceResult.ConnectionModeInSecondaryRole | Should-Be 'AllowNoConnections'
+                $getTargetResourceResult.EndpointUrl | Should-Be 'TCP://Server1:5022'
+                $getTargetResourceResult.EndpointPort | Should-Be 5022
+                $getTargetResourceResult.Ensure | Should-Be 'Present'
+                $getTargetResourceResult.FailoverMode | Should-Be 'Manual'
+                $getTargetResourceResult.Name | Should-Be 'Server1'
+                $getTargetResourceResult.ReadOnlyRoutingConnectionUrl | Should-Be 'TCP://Server1.domain.com:1433'
+                $getTargetResourceResult.ReadOnlyRoutingList | Should-Be @('Server1', 'Server2')
+                $getTargetResourceResult.ServerName | Should-Be 'Server1'
+                $getTargetResourceResult.InstanceName | Should-Be 'MSSQLSERVER'
+                $getTargetResourceResult.EndpointHostName | Should-Be 'Server1'
+                $getTargetResourceResult.SeedingMode | Should-Be 'Manual'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 }
@@ -520,39 +520,39 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         Ensure                = 'Absent'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server3'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-                }
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Test-ClusterPermissions -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
+                Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Remove-SqlAvailabilityReplica -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 0
             }
         }
 
@@ -577,39 +577,40 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $mockErrorMessage = Get-InvalidOperationRecord -Message (
                         ($script:localizedData.FailedRemoveAvailabilityGroupReplica -f $setTargetResourceParameters.Name, $setTargetResourceParameters.AvailabilityGroupName, $setTargetResourceParameters.InstanceName) + "*"
                     )
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+
+                    { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server3'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-                }
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Test-ClusterPermissions -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
+                Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Remove-SqlAvailabilityReplica -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 0
             }
         }
     }
@@ -642,14 +643,14 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $script:localizedData.HadrNotEnabled # cSpell: disable-line
                 )
 
-                { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorRecord
+                { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorRecord
             }
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+            Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                 $ServerName -eq 'ServerNotEnabled'
-            } -Times 1 -Exactly
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
         }
     }
 
@@ -681,14 +682,14 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     $script:localizedData.DatabaseMirroringEndpointNotFound -f 'ServerWithoutEndpoint\MSSQLSERVER'
                 )
 
-                { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorRecord
+                { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorRecord
             }
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+            Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                 $ServerName -eq 'ServerWithoutEndpoint'
-            } -Times 1 -Exactly
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
         }
     }
 
@@ -719,39 +720,39 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                     SeedingMode                   = 'Manual'
                 }
 
-                { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @setTargetResourceParameters })
             }
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+            Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                 $ServerName -eq 'Server1'
-            } -Times 1 -Exactly
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+            Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                 $ServerName -eq 'Server2'
-            } -Times 1 -Exactly
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+            Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                 $ServerName -eq 'Server3'
-            } -Times 0 -Exactly
+            } -Scope It -Times 0
 
-            Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                 $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-            }
+            } -Scope It -Times 0
 
-            Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                 $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-            }
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                 $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
-            }
+            } -Scope It -Times 0
 
-            Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-            Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
+            Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Remove-SqlAvailabilityReplica -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 0
         }
 
         Context 'When the endpoint hostname is not defined' {
@@ -776,39 +777,39 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         SeedingMode                   = 'Manual'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server3'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-                }
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
+                Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Remove-SqlAvailabilityReplica -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 0
             }
         }
 
@@ -834,39 +835,39 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         SeedingMode                   = 'Manual'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server3'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-                }
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
+                Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Remove-SqlAvailabilityReplica -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 0
             }
         }
 
@@ -903,39 +904,39 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         ($script:localizedData.FailedCreateAvailabilityGroupReplica -f 'Server1', 'AG_PrimaryOnServer2', 'MSSQLSERVER') + '*'
                     )
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorRecord
+                    { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorRecord
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server3'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-                }
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
+                Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Remove-SqlAvailabilityReplica -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 0
             }
         }
 
@@ -972,39 +973,39 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         ($script:localizedData.FailedJoinAvailabilityGroup -f 'Server1', 'AG_PrimaryOnServer2', 'MSSQLSERVER') + '*'
                     )
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorRecord
+                    { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorRecord
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server3'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-                }
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
+                Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Remove-SqlAvailabilityReplica -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 0
             }
         }
 
@@ -1035,39 +1036,39 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         ($script:localizedData.AvailabilityGroupNotFound -f 'DoesNotExist', 'MSSQLSERVER') + '*'
                     )
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorRecord
+                    { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorRecord
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server3'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Scope It -Times 0 -Exactly
+                Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Remove-SqlAvailabilityReplica -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 0
             }
         }
     }
@@ -1100,37 +1101,37 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         ($script:localizedData.ReplicaNotFound -f 'ReplicaNotFound', 'AG_AllServers', 'MSSQLSERVER') + '*'
                     )
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorRecord
+                    { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorRecord
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server3'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-                }
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 1
             }
         }
 
@@ -1200,39 +1201,39 @@ Describe 'SqlAGReplica\Set-TargetResource' {
 
                     $setTargetResourceParameters.$MockPropertyName = $MockPropertyValue
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server3'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-                }
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server3'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Join-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Remove-SqlAvailabilityReplica -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -ParameterFilter {
+                Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Join-SqlAvailabilityGroup -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Remove-SqlAvailabilityReplica -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -ParameterFilter {
                     switch ($MockPropertyName)
                     {
                         # ReadOnlyRoutingList is an array, so we have to evaluate it differently.
@@ -1260,7 +1261,7 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                             $AvailabilityGroupReplica.$MockPropertyName -eq $MockPropertyValue
                         }
                     }
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -1290,10 +1291,10 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         SeedingMode                   = 'Manual'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 1
             }
         }
 
@@ -1323,10 +1324,10 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         SeedingMode                   = 'Manual'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 1
             }
         }
 
@@ -1382,10 +1383,10 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         EndpointHostName      = 'Server10'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 1
             }
         }
 
@@ -1441,10 +1442,10 @@ Describe 'SqlAGReplica\Set-TargetResource' {
                         EndpointHostName      = 'Server10'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 1
             }
         }
     }
@@ -1475,10 +1476,10 @@ Describe 'SqlAGReplica\Test-TargetResource' {
                         InstanceName          = 'MSSQLSERVER'
                     }
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
+                    Test-TargetResource @mockTestTargetResourceParameters | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -1506,10 +1507,10 @@ Describe 'SqlAGReplica\Test-TargetResource' {
                         InstanceName          = 'MSSQLSERVER'
                     }
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
+                    Test-TargetResource @mockTestTargetResourceParameters | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -1540,10 +1541,10 @@ Describe 'SqlAGReplica\Test-TargetResource' {
                         InstanceName          = 'MSSQLSERVER'
                     }
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
+                    Test-TargetResource @mockTestTargetResourceParameters | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -1569,10 +1570,10 @@ Describe 'SqlAGReplica\Test-TargetResource' {
                         InstanceName          = 'MSSQLSERVER'
                     }
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
+                    Test-TargetResource @mockTestTargetResourceParameters | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -1603,10 +1604,10 @@ Describe 'SqlAGReplica\Test-TargetResource' {
                         ProcessOnlyOnActiveNode = $true
                     }
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
+                    Test-TargetResource @mockTestTargetResourceParameters | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -1688,10 +1689,10 @@ Describe 'SqlAGReplica\Test-TargetResource' {
 
                     $mockTestTargetResourceParameters.$MockPropertyName = $MockPropertyValue
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
+                    Test-TargetResource @mockTestTargetResourceParameters | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -1723,10 +1724,10 @@ Describe 'SqlAGReplica\Test-TargetResource' {
                         ProcessOnlyOnActiveNode = $true
                     }
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
+                    Test-TargetResource @mockTestTargetResourceParameters | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -1758,10 +1759,10 @@ Describe 'SqlAGReplica\Test-TargetResource' {
                         ProcessOnlyOnActiveNode = $true
                     }
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeFalse
+                    Test-TargetResource @mockTestTargetResourceParameters | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }

@@ -247,26 +247,26 @@ Describe 'SqlAG\Get-TargetResource' {
 
                 $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                $getTargetResourceResult.Name | Should -Be 'AbsentAG'
-                $getTargetResourceResult.ServerName | Should -Be 'Server1'
-                $getTargetResourceResult.InstanceName | Should -Be 'MSSQLSERVER'
-                $getTargetResourceResult.Ensure | Should -Be 'Absent'
-                $getTargetResourceResult.IsActiveNode | Should -BeTrue
-                $getTargetResourceResult.AutomatedBackupPreference | Should -BeNullOrEmpty
-                $getTargetResourceResultAvailabilityMode | Should -BeNullOrEmpty
-                $getTargetResourceResultBackupPriority | Should -BeNullOrEmpty
-                $getTargetResourceResultConnectionModeInPrimaryRole | Should -BeNullOrEmpty
-                $getTargetResourceResultConnectionModeInSecondaryRole | Should -BeNullOrEmpty
-                $getTargetResourceResultFailureConditionLevel | Should -BeNullOrEmpty
-                $getTargetResourceResultFailoverMode | Should -BeNullOrEmpty
-                $getTargetResourceResultHealthCheckTimeout | Should -BeNullOrEmpty
-                $getTargetResourceResultEndpointURL | Should -BeNullOrEmpty
-                $getTargetResourceResultEndpointPort | Should -BeNullOrEmpty
-                $getTargetResourceResultEndpointHostName | Should -BeNullOrEmpty
-                $getTargetResourceResultVersion | Should -BeNullOrEmpty
+                $getTargetResourceResult.Name | Should-Be 'AbsentAG'
+                $getTargetResourceResult.ServerName | Should-Be 'Server1'
+                $getTargetResourceResult.InstanceName | Should-Be 'MSSQLSERVER'
+                $getTargetResourceResult.Ensure | Should-Be 'Absent'
+                $getTargetResourceResult.IsActiveNode | Should-BeTrue
+                $getTargetResourceResult.AutomatedBackupPreference | Should-BeFalsy
+                $getTargetResourceResultAvailabilityMode | Should-BeFalsy
+                $getTargetResourceResultBackupPriority | Should-BeFalsy
+                $getTargetResourceResultConnectionModeInPrimaryRole | Should-BeFalsy
+                $getTargetResourceResultConnectionModeInSecondaryRole | Should-BeFalsy
+                $getTargetResourceResultFailureConditionLevel | Should-BeFalsy
+                $getTargetResourceResultFailoverMode | Should-BeFalsy
+                $getTargetResourceResultHealthCheckTimeout | Should-BeFalsy
+                $getTargetResourceResultEndpointURL | Should-BeFalsy
+                $getTargetResourceResultEndpointPort | Should-BeFalsy
+                $getTargetResourceResultEndpointHostName | Should-BeFalsy
+                $getTargetResourceResultVersion | Should-BeFalsy
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -282,28 +282,29 @@ Describe 'SqlAG\Get-TargetResource' {
 
                     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                    $getTargetResourceResult.Name | Should -Be 'AG_AllServers'
-                    $getTargetResourceResult.ServerName | Should -Be 'Server1'
-                    $getTargetResourceResult.InstanceName | Should -Be 'MSSQLSERVER'
-                    $getTargetResourceResult.Ensure | Should -Be 'Present'
-                    $getTargetResourceResult.IsActiveNode | Should -Be  'True'
-                    $getTargetResourceResult.AutomatedBackupPreference | Should -Be 'Secondary'
-                    $getTargetResourceResult.AvailabilityMode | Should -Be 'AsynchronousCommit'
-                    $getTargetResourceResult.BackupPriority | Should -Be 50
-                    $getTargetResourceResult.ConnectionModeInPrimaryRole | Should -Be 'AllowAllConnections'
-                    $getTargetResourceResult.ConnectionModeInSecondaryRole | Should -Be 'AllowNoConnections'
-                    $getTargetResourceResult.FailureConditionLevel | Should -Be 'OnCriticalServerError'
-                    $getTargetResourceResult.FailoverMode | Should -Be 'Manual'
-                    $getTargetResourceResult.HealthCheckTimeout | Should -BeNullOrEmpty
-                    $getTargetResourceResult.EndpointURL | Should -Be 'TCP://Server1:5022'
-                    $getTargetResourceResult.EndpointPort | Should -Be 5022
-                    $getTargetResourceResult.EndpointHostName | Should -Be 'Server1'
-                    $getTargetResourceResult.BasicAvailabilityGroup | Should -Be 'True'
-                    $getTargetResourceResult.DatabaseHealthTrigger | Should -Be 'True'
-                    $getTargetResourceResult.DtcSupportEnabled | Should -Be 'True'
-                    $getTargetResourceResult.Version | Should -Be 13
+                    $getTargetResourceResult.Name | Should-Be 'AG_AllServers'
+                    $getTargetResourceResult.ServerName | Should-Be 'Server1'
+                    $getTargetResourceResult.InstanceName | Should-Be 'MSSQLSERVER'
+                    $getTargetResourceResult.Ensure | Should-Be 'Present'
+                    $getTargetResourceResult.IsActiveNode | Should-Be 'True'
+                    $getTargetResourceResult.AutomatedBackupPreference | Should-Be 'Secondary'
+                    $getTargetResourceResult.AvailabilityMode | Should-Be 'AsynchronousCommit'
+                    $getTargetResourceResult.BackupPriority | Should-Be 50
+                    $getTargetResourceResult.ConnectionModeInPrimaryRole | Should-Be 'AllowAllConnections'
+                    $getTargetResourceResult.ConnectionModeInSecondaryRole | Should-Be 'AllowNoConnections'
+                    $getTargetResourceResult.FailureConditionLevel | Should-Be 'OnCriticalServerError'
+                    $getTargetResourceResult.FailoverMode | Should-Be 'Manual'
+                    $getTargetResourceResult.HealthCheckTimeout | Should-BeFalsy
+                    $getTargetResourceResult.EndpointURL | Should-Be 'TCP://Server1:5022'
+                    $getTargetResourceResult.EndpointPort | Should-Be 5022
+                    $getTargetResourceResult.EndpointHostName | Should-Be 'Server1'
+                    $getTargetResourceResult.BasicAvailabilityGroup | Should-Be 'True'
+                    $getTargetResourceResult.DatabaseHealthTrigger | Should-Be 'True'
+                    $getTargetResourceResult.DtcSupportEnabled | Should-Be 'True'
+                    $getTargetResourceResult.Version | Should-Be 13
                 }
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
         Context 'When SQL server version is 12' {
@@ -317,28 +318,29 @@ Describe 'SqlAG\Get-TargetResource' {
 
                     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
 
-                    $getTargetResourceResult.Name | Should -Be 'AG_AllServers'
-                    $getTargetResourceResult.ServerName | Should -Be 'Server2'
-                    $getTargetResourceResult.InstanceName | Should -Be 'MSSQLSERVER'
-                    $getTargetResourceResult.Ensure | Should -Be 'Present'
-                    $getTargetResourceResult.IsActiveNode | Should -Be  'True'
-                    $getTargetResourceResult.AutomatedBackupPreference | Should -Be 'Secondary'
-                    $getTargetResourceResult.AvailabilityMode | Should -Be 'AsynchronousCommit'
-                    $getTargetResourceResult.BackupPriority | Should -Be 50
-                    $getTargetResourceResult.ConnectionModeInPrimaryRole | Should -Be 'AllowAllConnections'
-                    $getTargetResourceResult.ConnectionModeInSecondaryRole | Should -Be 'AllowNoConnections'
-                    $getTargetResourceResult.FailureConditionLevel | Should -Be 'OnCriticalServerError'
-                    $getTargetResourceResult.FailoverMode | Should -Be 'Manual'
-                    $getTargetResourceResult.HealthCheckTimeout | Should -BeNullOrEmpty
-                    $getTargetResourceResult.EndpointURL | Should -Be 'TCP://Server2:5022'
-                    $getTargetResourceResult.EndpointPort | Should -Be 5022
-                    $getTargetResourceResult.EndpointHostName | Should -Be 'Server2'
-                    $getTargetResourceResult.BasicAvailabilityGroup | Should -BeNullOrEmpty
-                    $getTargetResourceResult.DatabaseHealthTrigger | Should -BeNullOrEmpty
-                    $getTargetResourceResult.DtcSupportEnabled | Should -BeNullOrEmpty
-                    $getTargetResourceResult.Version | Should -Be 12
+                    $getTargetResourceResult.Name | Should-Be 'AG_AllServers'
+                    $getTargetResourceResult.ServerName | Should-Be 'Server2'
+                    $getTargetResourceResult.InstanceName | Should-Be 'MSSQLSERVER'
+                    $getTargetResourceResult.Ensure | Should-Be 'Present'
+                    $getTargetResourceResult.IsActiveNode | Should-Be 'True'
+                    $getTargetResourceResult.AutomatedBackupPreference | Should-Be 'Secondary'
+                    $getTargetResourceResult.AvailabilityMode | Should-Be 'AsynchronousCommit'
+                    $getTargetResourceResult.BackupPriority | Should-Be 50
+                    $getTargetResourceResult.ConnectionModeInPrimaryRole | Should-Be 'AllowAllConnections'
+                    $getTargetResourceResult.ConnectionModeInSecondaryRole | Should-Be 'AllowNoConnections'
+                    $getTargetResourceResult.FailureConditionLevel | Should-Be 'OnCriticalServerError'
+                    $getTargetResourceResult.FailoverMode | Should-Be 'Manual'
+                    $getTargetResourceResult.HealthCheckTimeout | Should-BeFalsy
+                    $getTargetResourceResult.EndpointURL | Should-Be 'TCP://Server2:5022'
+                    $getTargetResourceResult.EndpointPort | Should-Be 5022
+                    $getTargetResourceResult.EndpointHostName | Should-Be 'Server2'
+                    $getTargetResourceResult.BasicAvailabilityGroup | Should-BeFalsy
+                    $getTargetResourceResult.DatabaseHealthTrigger | Should-BeFalsy
+                    $getTargetResourceResult.DtcSupportEnabled | Should-BeFalsy
+                    $getTargetResourceResult.Version | Should-Be 12
                 }
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
     }
@@ -529,18 +531,18 @@ Describe 'SqlAG\Set-TargetResource' {
                         Ensure       = 'Absent'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Remove-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Remove-SqlAvailabilityGroup -Exactly -Scope It -Times 1
             }
         }
 
@@ -556,18 +558,18 @@ Describe 'SqlAG\Set-TargetResource' {
 
                     $mockErrorMessage = Get-InvalidOperationRecord -Message ($script:localizedData.NotPrimaryReplica -f $setTargetResourceParameters.ServerName, $setTargetResourceParameters.Name, 'Server2')
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Remove-SqlAvailabilityGroup -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Remove-SqlAvailabilityGroup -Exactly -Scope It -Times 0
             }
 
         }
@@ -593,18 +595,18 @@ Describe 'SqlAG\Set-TargetResource' {
                     ($script:localizedData.FailedRemoveAvailabilityGroup -f $setTargetResourceParameters.Name, $setTargetResourceParameters.InstanceName) + '*'
                     )
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Remove-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Remove-SqlAvailabilityGroup -Exactly -Scope It -Times 1
             }
         }
     }
@@ -636,12 +638,12 @@ Describe 'SqlAG\Set-TargetResource' {
                     $script:localizedData.HadrNotEnabled # cSpell: disable-line
                 )
 
-                { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorRecord
+                { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorRecord
             }
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+            Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                 $ServerName -eq 'ServerNotEnabled'
-            } -Times 1 -Exactly
+            } -Scope It -Times 1
 
         }
     }
@@ -673,12 +675,12 @@ Describe 'SqlAG\Set-TargetResource' {
                     $script:localizedData.DatabaseMirroringEndpointNotFound -f 'ServerWithoutEndpoint\MSSQLSERVER'
                 )
 
-                { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorRecord
+                { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorRecord
             }
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+            Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                 $ServerName -eq 'ServerWithoutEndpoint'
-            } -Times 1 -Exactly
+            } -Scope It -Times 1
 
         }
     }
@@ -722,30 +724,30 @@ Describe 'SqlAG\Set-TargetResource' {
                     SeedingMode                   = 'Manual'
                 }
 
-                { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @setTargetResourceParameters })
             }
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+            Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                 $ServerName -eq 'Server1'
-            } -Times 1 -Exactly
+            } -Scope It -Times 1
 
-            Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+            Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                 $ServerName -eq 'Server2'
-            } -Times 0 -Exactly
+            } -Scope It -Times 0
 
-            Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                 $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-            }
+            } -Scope It -Times 0
 
-            Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+            Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                 $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-            }
+            } -Scope It -Times 0
 
-            Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Remove-SqlAvailabilityGroup -Scope It -Times 0 -Exactly
-            Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
+            Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Remove-SqlAvailabilityGroup -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Update-AvailabilityGroup -Exactly -Scope It -Times 0
         }
 
         Context 'When the endpoint hostname is not defined' {
@@ -765,30 +767,30 @@ Describe 'SqlAG\Set-TargetResource' {
                         SeedingMode                   = 'Manual'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Remove-SqlAvailabilityGRoup -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
+                Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Remove-SqlAvailabilityGRoup -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Update-AvailabilityGroup -Exactly -Scope It -Times 0
             }
         }
 
@@ -820,30 +822,30 @@ Describe 'SqlAG\Set-TargetResource' {
                         ($script:localizedData.FailedCreateAvailabilityGroupReplica -f $setTargetResourceParameters.ServerName, $setTargetResourceParameters.InstanceName) + '*'
                     )
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorRecord
+                    { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorRecord
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Remove-SqlAvailabilityGRoup -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
+                Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Remove-SqlAvailabilityGRoup -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Update-AvailabilityGroup -Exactly -Scope It -Times 0
             }
         }
 
@@ -875,30 +877,30 @@ Describe 'SqlAG\Set-TargetResource' {
                         ($script:localizedData.FailedCreateAvailabilityGroup -f $setTargetResourceParameters.Name, $setTargetResourceParameters.InstanceName) + '*'
                     )
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorRecord
+                    { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorRecord
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Remove-SqlAvailabilityGRoup -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Update-AvailabilityGroup -Scope It -Times 0 -Exactly
+                Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Remove-SqlAvailabilityGRoup -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Update-AvailabilityGroup -Exactly -Scope It -Times 0
             }
         }
     }
@@ -956,32 +958,32 @@ Describe 'SqlAG\Set-TargetResource' {
 
                     $setTargetResourceParameters.$MockPropertyName = $MockPropertyValue
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-                }
+                } -Scope It -Times 1
 
 
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Remove-SqlAvailabilityGRoup -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Update-AvailabilityGroup -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Remove-SqlAvailabilityGRoup -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Update-AvailabilityGroup -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 0
             }
         }
 
@@ -1041,32 +1043,32 @@ Describe 'SqlAG\Set-TargetResource' {
 
                     $setTargetResourceParameters.$MockPropertyName = $MockPropertyValue
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server1'
-                } -Times 1 -Exactly
+                } -Scope It -Times 1
 
-                Should -Invoke -CommandName Connect-SQL -Scope It -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -ParameterFilter {
                     $ServerName -eq 'Server2'
-                } -Times 0 -Exactly
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 0 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1'
-                }
+                } -Scope It -Times 0
 
-                Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Scope It -Time 1 -Exactly -ParameterFilter {
+                Should-Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -ParameterFilter {
                     $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2'
-                }
+                } -Scope It -Times 1
 
 
-                Should -Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Remove-SqlAvailabilityGRoup -Scope It -Times 0 -Exactly
-                Should -Invoke -CommandName Test-ClusterPermissions -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Update-AvailabilityGroup -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName New-SqlAvailabilityReplica -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName New-SqlAvailabilityGroup -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Remove-SqlAvailabilityGRoup -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Test-ClusterPermissions -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Update-AvailabilityGroup -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 1
             }
         }
 
@@ -1122,10 +1124,10 @@ Describe 'SqlAG\Set-TargetResource' {
                         EndpointHostName = 'Server10'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 1
             }
         }
 
@@ -1181,10 +1183,10 @@ Describe 'SqlAG\Set-TargetResource' {
                         EndpointHostName = 'Server10'
                     }
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Update-AvailabilityGroupReplica -Exactly -Scope It -Times 1
             }
         }
     }
@@ -1359,9 +1361,11 @@ Describe 'SqlAG\Test-TargetResource' {
                         InstanceName = 'MSSQLSERVER'
                         Ensure       = 'Absent'
                     }
-                    Test-TargetResource @testTargetResourceParameters | Should -BeTrue
+
+                    Test-TargetResource @testTargetResourceParameters | Should-BeTrue
                 }
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1
+
+                Should-Invoke -CommandName Connect-SQL -Exactly -Times 1
             }
         }
         Context 'When the Availability Group should be present' {
@@ -1373,9 +1377,11 @@ Describe 'SqlAG\Test-TargetResource' {
                         InstanceName = 'MSSQLSERVER'
                         Ensure       = 'Present'
                     }
-                    Test-TargetResource @testTargetResourceParameters | Should -BeTrue
+
+                    Test-TargetResource @testTargetResourceParameters | Should-BeTrue
                 }
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1
+
+                Should-Invoke -CommandName Connect-SQL -Exactly -Times 1
             }
         }
     }
@@ -1390,9 +1396,11 @@ Describe 'SqlAG\Test-TargetResource' {
                         InstanceName = 'MSSQLSERVER'
                         Ensure       = 'Absent'
                     }
-                    Test-TargetResource @testTargetResourceParameters | Should -BeFalse
+
+                    Test-TargetResource @testTargetResourceParameters | Should-BeFalse
                 }
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1
+
+                Should-Invoke -CommandName Connect-SQL -Exactly -Times 1
             }
         }
         Context 'When the Availability Group should be present' {
@@ -1403,9 +1411,11 @@ Describe 'SqlAG\Test-TargetResource' {
                         ServerName   = 'Server1'
                         InstanceName = 'MSSQLSERVER'
                     }
-                    Test-TargetResource @testTargetResourceParameters | Should -BeFalse
+
+                    Test-TargetResource @testTargetResourceParameters | Should-BeFalse
                 }
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1
+
+                Should-Invoke -CommandName Connect-SQL -Exactly -Times 1
             }
         }
     }
@@ -1435,10 +1445,10 @@ Describe 'SqlAG\Test-TargetResource' {
                     ProcessOnlyOnActiveNode = $true
                 }
 
-                Test-TargetResource @testTargetResourceParameters | Should -BeTrue
+                Test-TargetResource @testTargetResourceParameters | Should-BeTrue
             }
 
-            Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
         }
     }
 
@@ -1507,10 +1517,10 @@ Describe 'SqlAG\Test-TargetResource' {
 
                 $testTargetResourceParameters.$MockPropertyName = $MockPropertyValue
 
-                Test-TargetResource @testTargetResourceParameters | Should -BeFalse
+                Test-TargetResource @testTargetResourceParameters | Should-BeFalse
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1
+            Should-Invoke -CommandName Connect-SQL -Exactly -Times 1
         }
     }
     Context 'When endpoint port differ from the endpoint URL port' {
@@ -1539,10 +1549,10 @@ Describe 'SqlAG\Test-TargetResource' {
                     ProcessOnlyOnActiveNode = $true
                 }
 
-                Test-TargetResource @testTargetResourceParameters | Should -BeFalse
+                Test-TargetResource @testTargetResourceParameters | Should-BeFalse
             }
 
-            Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
         }
     }
 
@@ -1572,10 +1582,10 @@ Describe 'SqlAG\Test-TargetResource' {
                     ProcessOnlyOnActiveNode = $true
                 }
 
-                Test-TargetResource @testTargetResourceParameters | Should -BeFalse
+                Test-TargetResource @testTargetResourceParameters | Should-BeFalse
             }
 
-            Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
         }
     }
 }

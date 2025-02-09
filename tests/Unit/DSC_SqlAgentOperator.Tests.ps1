@@ -113,10 +113,10 @@ Describe 'DSC_SqlAgentOperator\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @testParameters
 
-                $result.Ensure | Should -Be 'Absent'
+                $result.Ensure | Should-Be 'Absent'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the same values as passed as parameters' {
@@ -130,11 +130,11 @@ Describe 'DSC_SqlAgentOperator\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @testParameters
 
-                $result.ServerName | Should -Be $testParameters.ServerName
-                $result.InstanceName | Should -Be $testParameters.InstanceName
+                $result.ServerName | Should-Be $testParameters.ServerName
+                $result.InstanceName | Should-Be $testParameters.InstanceName
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -150,10 +150,10 @@ Describe 'DSC_SqlAgentOperator\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @testParameters
 
-                $result.Ensure | Should -Be 'Present'
+                $result.Ensure | Should-Be 'Present'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the same values as passed as parameters' {
@@ -167,12 +167,12 @@ Describe 'DSC_SqlAgentOperator\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @testParameters
 
-                $result.ServerName | Should -Be $testParameters.ServerName
-                $result.InstanceName | Should -Be $testParameters.InstanceName
-                $result.Name | Should -Be $testParameters.Name
+                $result.ServerName | Should-Be $testParameters.ServerName
+                $result.InstanceName | Should-Be $testParameters.InstanceName
+                $result.Name | Should-Be $testParameters.Name
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -194,7 +194,7 @@ Describe 'DSC_SqlAgentOperator\Get-TargetResource' -Tag 'Get' {
 
                 $errorMessage = $script:localizedData.ConnectServerFailed -f $mockServerName, $mockInstanceName
 
-                { Get-TargetResource @testParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+                { Get-TargetResource @testParameters } | Should-Throw -ExceptionMessage ('*' + $errorMessage)
             }
         }
     }
@@ -244,10 +244,10 @@ Describe 'DSC_SqlAgentOperator\Test-TargetResource' -Tag 'Test' {
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -276,10 +276,10 @@ Describe 'DSC_SqlAgentOperator\Test-TargetResource' -Tag 'Test' {
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -307,10 +307,10 @@ Describe 'DSC_SqlAgentOperator\Test-TargetResource' -Tag 'Test' {
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -340,10 +340,10 @@ Describe 'DSC_SqlAgentOperator\Test-TargetResource' -Tag 'Test' {
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -372,10 +372,10 @@ Describe 'DSC_SqlAgentOperator\Test-TargetResource' -Tag 'Test' {
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -403,10 +403,10 @@ Describe 'DSC_SqlAgentOperator\Test-TargetResource' -Tag 'Test' {
                     }
 
                     $result = Test-TargetResource @testParameters
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -512,13 +512,13 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                         Ensure = 'Present'
                     }
 
-                    { Set-TargetResource @setParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName New-Object -Exactly -ParameterFilter {
                     $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Operator'
-                } -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -546,7 +546,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                         Ensure = 'Present'
                     }
 
-                    { Set-TargetResource @setParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setParameters })
                 }
             }
         }
@@ -563,10 +563,10 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                         EmailAddress = 'newemail@contoso.com'
                     }
 
-                    { Set-TargetResource @setParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
 
@@ -585,10 +585,10 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                         Ensure = 'Absent'
                     }
 
-                    { Set-TargetResource @setParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
 
@@ -614,7 +614,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                         the mocked exception message on top of the original message.
                     #>
                     { Set-TargetResource @setParameters } |
-                        Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
+                        Should-Throw -ExceptionMessage ($mockErrorRecord.Exception.Message + '*')
                 }
 
                 $mockInvalidOperationForCreateMethod = $false
@@ -644,7 +644,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                         the mocked exception message on top of the original message.
                     #>
                     { Set-TargetResource @setParameters } |
-                        Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
+                        Should-Throw -ExceptionMessage ($mockErrorRecord.Exception.Message + '*')
                 }
 
                 $mockInvalidOperationForAlterMethod = $false
@@ -673,7 +673,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
                         the mocked exception message on top of the original message.
                     #>
                     { Set-TargetResource @setParameters } |
-                        Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
+                        Should-Throw -ExceptionMessage ($mockErrorRecord.Exception.Message + '*')
                 }
 
                 $mockInvalidOperationForDropMethod = $false
@@ -698,7 +698,7 @@ Describe 'DSC_SqlAgentOperator\Set-TargetResource' -Tag 'Set' {
 
                     $errorMessage = $script:localizedData.ConnectServerFailed -f $mockServerName, $mockInstanceName
 
-                    { Set-TargetResource @setParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+                    { Set-TargetResource @setParameters } | Should-Throw -ExceptionMessage ('*' + $errorMessage)
                 }
             }
         }

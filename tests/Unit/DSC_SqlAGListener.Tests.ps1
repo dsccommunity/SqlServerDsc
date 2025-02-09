@@ -113,7 +113,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Ensure | Should -Be 'Absent'
+                    $result.Ensure | Should-Be 'Absent'
                 }
             }
 
@@ -121,10 +121,10 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                    $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                    $result.AvailabilityGroup | Should -Be $mockGetTargetResourceParameters.AvailabilityGroup
+                    $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                    $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                    $result.AvailabilityGroup | Should-Be $mockGetTargetResourceParameters.AvailabilityGroup
                 }
             }
 
@@ -132,7 +132,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.IpAddress | Should -BeNullOrEmpty
+                    $result.IpAddress | Should-BeFalsy
                 }
             }
 
@@ -140,7 +140,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Port | Should -Be 0
+                    $result.Port | Should-Be 0
                 }
             }
 
@@ -148,16 +148,16 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.DHCP | Should -BeFalse
+                    $result.DHCP | Should-BeFalse
                 }
             }
 
             It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
                 InModuleScope -ScriptBlock {
-                    { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Get-TargetResource @mockGetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Scope It -Times 1
             }
         }
 
@@ -187,7 +187,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Ensure | Should -Be 'Present'
+                    $result.Ensure | Should-Be 'Present'
                 }
             }
 
@@ -195,10 +195,10 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                    $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                    $result.AvailabilityGroup | Should -Be $mockGetTargetResourceParameters.AvailabilityGroup
+                    $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                    $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                    $result.AvailabilityGroup | Should-Be $mockGetTargetResourceParameters.AvailabilityGroup
                 }
             }
 
@@ -206,7 +206,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.IpAddress | Should -Be '192.168.0.1/255.255.255.0'
+                    $result.IpAddress | Should-Be '192.168.0.1/255.255.255.0'
                 }
             }
 
@@ -214,7 +214,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Port | Should -Be 5031
+                    $result.Port | Should-Be 5031
                 }
             }
 
@@ -224,7 +224,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.DHCP | Should -BeFalse
+                    $result.DHCP | Should-BeFalse
                 }
             }
 
@@ -234,17 +234,17 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.ProcessOnlyOnActiveNode | Should -BeTrue
-                    $result.IsActiveNode | Should -BeFalse
+                    $result.ProcessOnlyOnActiveNode | Should-BeTrue
+                    $result.IsActiveNode | Should-BeFalse
                 }
             }
 
             It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
                 InModuleScope -ScriptBlock {
-                    { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Get-TargetResource @mockGetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Scope It -Times 1
             }
         }
 
@@ -274,7 +274,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Ensure | Should -Be 'Present'
+                    $result.Ensure | Should-Be 'Present'
                 }
             }
 
@@ -282,10 +282,10 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                    $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                    $result.AvailabilityGroup | Should -Be $mockGetTargetResourceParameters.AvailabilityGroup
+                    $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                    $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                    $result.AvailabilityGroup | Should-Be $mockGetTargetResourceParameters.AvailabilityGroup
                 }
             }
 
@@ -293,7 +293,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.IpAddress | Should -Be '192.168.0.1/255.255.255.0'
+                    $result.IpAddress | Should-Be '192.168.0.1/255.255.255.0'
                 }
             }
 
@@ -301,7 +301,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Port | Should -Be 5031
+                    $result.Port | Should-Be 5031
                 }
             }
 
@@ -309,16 +309,16 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.DHCP | Should -BeTrue
+                    $result.DHCP | Should-BeTrue
                 }
             }
 
             It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
                 InModuleScope -ScriptBlock {
-                    { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Get-TargetResource @mockGetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Scope It -Times 1
             }
         }
 
@@ -348,7 +348,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Ensure | Should -Be 'Present'
+                    $result.Ensure | Should-Be 'Present'
                 }
             }
 
@@ -356,10 +356,10 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                    $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                    $result.AvailabilityGroup | Should -Be $mockGetTargetResourceParameters.AvailabilityGroup
+                    $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                    $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                    $result.AvailabilityGroup | Should-Be $mockGetTargetResourceParameters.AvailabilityGroup
                 }
             }
 
@@ -367,7 +367,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.IpAddress | Should -Be '192.168.0.1'
+                    $result.IpAddress | Should-Be '192.168.0.1'
                 }
             }
 
@@ -375,7 +375,7 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Port | Should -Be 5031
+                    $result.Port | Should-Be 5031
                 }
             }
 
@@ -383,16 +383,16 @@ Describe 'SqlAGListener\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.DHCP | Should -BeFalse
+                    $result.DHCP | Should-BeFalse
                 }
             }
 
             It 'Should call the mock function Get-SQLAlwaysOnAvailabilityGroupListener' {
                 InModuleScope -ScriptBlock {
-                    { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Get-TargetResource @mockGetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-SQLAlwaysOnAvailabilityGroupListener -Exactly -Scope It -Times 1
             }
         }
     }
@@ -433,10 +433,10 @@ Describe 'SqlAGListener\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -453,10 +453,10 @@ Describe 'SqlAGListener\Test-TargetResource' {
                 InModuleScope -ScriptBlock {
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -497,10 +497,10 @@ Describe 'SqlAGListener\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -519,10 +519,10 @@ Describe 'SqlAGListener\Test-TargetResource' {
                 InModuleScope -ScriptBlock {
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -541,10 +541,10 @@ Describe 'SqlAGListener\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -581,10 +581,10 @@ Describe 'SqlAGListener\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -606,10 +606,10 @@ Describe 'SqlAGListener\Test-TargetResource' {
 
                             $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                            $result | Should -BeFalse
+                            $result | Should-BeFalse
                         }
 
-                        Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                        Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                     }
                 }
 
@@ -621,10 +621,10 @@ Describe 'SqlAGListener\Test-TargetResource' {
 
                             $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                            $result | Should -BeFalse
+                            $result | Should-BeFalse
                         }
 
-                        Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                        Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                     }
                 }
             }
@@ -653,10 +653,10 @@ Describe 'SqlAGListener\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -677,10 +677,10 @@ Describe 'SqlAGListener\Test-TargetResource' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -702,10 +702,10 @@ Describe 'SqlAGListener\Test-TargetResource' {
                     $mockTestTargetResourceParameters.DHCP = $true
                     $mockTestTargetResourceParameters.ProcessOnlyOnActiveNode = $true
 
-                    Test-TargetResource @mockTestTargetResourceParameters | Should -BeTrue
+                    Test-TargetResource @mockTestTargetResourceParameters | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -744,10 +744,10 @@ Describe 'SqlAGListener\Set-TargetResource' {
                 InModuleScope -ScriptBlock {
                     $mockSetTargetResourceParameters.Ensure = 'Absent'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -791,11 +791,11 @@ Describe 'SqlAGListener\Set-TargetResource' {
 
             It 'Should not throw and call the correct mocks' {
                 InModuleScope -ScriptBlock {
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
 
@@ -868,11 +868,11 @@ Describe 'SqlAGListener\Set-TargetResource' {
                 InModuleScope -Parameters $_ -ScriptBlock {
                     $mockSetTargetResourceParameters.$MockPropertyName = $MockExpectedValue
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
     }
@@ -905,11 +905,11 @@ Describe 'SqlAGListener\Set-TargetResource' {
 
                         $mockErrorMessage = $script:localizedData.AvailabilityGroupNotFound -f 'UnknownAG', 'MSSQLSERVER'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
 
@@ -939,11 +939,11 @@ Describe 'SqlAGListener\Set-TargetResource' {
 
                         $mockErrorMessage = $script:localizedData.AvailabilityGroupNotFound -f 'UnknownAG', 'MSSQLSERVER'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
 
@@ -974,11 +974,11 @@ Describe 'SqlAGListener\Set-TargetResource' {
 
                         $mockErrorMessage = $script:localizedData.AvailabilityGroupNotFound -f 'UnknownAG', 'MSSQLSERVER'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -1017,11 +1017,11 @@ Describe 'SqlAGListener\Set-TargetResource' {
 
                         $mockErrorMessage = $script:localizedData.AvailabilityGroupListenerNotFound -f 'UnknownListener', 'AG01'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1059,11 +1059,11 @@ Describe 'SqlAGListener\Set-TargetResource' {
 
                         $mockErrorMessage = $script:localizedData.AvailabilityGroupListenerNotFound -f 'UnknownListener', 'AG01'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -1099,12 +1099,12 @@ Describe 'SqlAGListener\Set-TargetResource' {
 
                 It 'Should not throw and call the correct mocks' {
                     InModuleScope -ScriptBlock {
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1134,14 +1134,14 @@ Describe 'SqlAGListener\Set-TargetResource' {
                         $mockSetTargetResourceParameters.DHCP = $true
                         $mockSetTargetResourceParameters.IpAddress = '192.168.10.45/255.255.252.0'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-SqlAvailabilityGroupListener -ParameterFilter {
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -ParameterFilter {
                         $DhcpSubnet -eq '192.168.10.45/255.255.252.0'
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -1170,14 +1170,14 @@ Describe 'SqlAGListener\Set-TargetResource' {
                     InModuleScope -ScriptBlock {
                         $mockSetTargetResourceParameters.Port = 5031
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-SqlAvailabilityGroupListener -ParameterFilter {
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -ParameterFilter {
                         $Port -eq 5031
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -1206,14 +1206,14 @@ Describe 'SqlAGListener\Set-TargetResource' {
                     InModuleScope -ScriptBlock {
                         $mockSetTargetResourceParameters.IpAddress = '192.168.10.45/255.255.252.0'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-SqlAvailabilityGroupListener -ParameterFilter {
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName New-SqlAvailabilityGroupListener -Exactly -ParameterFilter {
                         $StaticIp -eq '192.168.10.45/255.255.252.0'
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -1259,13 +1259,13 @@ Describe 'SqlAGListener\Set-TargetResource' {
                 InModuleScope -ScriptBlock {
                     $mockSetTargetResourceParameters.Ensure = 'Absent'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $mockMethodDropWasRunCount | Should -Be 1
+                    $mockMethodDropWasRunCount | Should-Be 1
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
 
@@ -1303,12 +1303,12 @@ Describe 'SqlAGListener\Set-TargetResource' {
                 InModuleScope -ScriptBlock {
                     $mockSetTargetResourceParameters.Port = 5030
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Set-SqlAvailabilityGroupListener -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Set-SqlAvailabilityGroupListener -Exactly -Scope It -Times 1
             }
         }
 
@@ -1329,10 +1329,10 @@ Describe 'SqlAGListener\Set-TargetResource' {
 
                         $mockErrorMessage = $script:localizedData.AvailabilityGroupListenerIPChangeError -f '192.168.10.45/255.255.255.0', '192.168.0.1/255.255.252.0'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1384,12 +1384,12 @@ Describe 'SqlAGListener\Set-TargetResource' {
                             '192.168.0.1/255.255.252.0'
                         )
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Add-SqlAvailabilityGroupListenerStaticIp -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -1410,10 +1410,10 @@ Describe 'SqlAGListener\Set-TargetResource' {
 
                     $mockErrorMessage = $script:localizedData.AvailabilityGroupListenerDHCPChangeError -f $true, $false
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -1463,10 +1463,10 @@ Describe 'SqlAGListener\Get-SQLAlwaysOnAvailabilityGroupListener' -Skip:($IsLinu
 
                 $result = Get-SQLAlwaysOnAvailabilityGroupListener @mockGetSQLAlwaysOnAvailabilityGroupListenerParameters
 
-                $result.PortNumber | Should -Be 5031
-                $result.AvailabilityGroupListenerIPAddresses.IsDHCP | Should -BeTrue
-                $result.AvailabilityGroupListenerIPAddresses.IPAddress | Should -Be '192.168.0.1'
-                $result.AvailabilityGroupListenerIPAddresses.SubnetMask | Should -Be '255.255.255.0'
+                $result.PortNumber | Should-Be 5031
+                $result.AvailabilityGroupListenerIPAddresses.IsDHCP | Should-BeTrue
+                $result.AvailabilityGroupListenerIPAddresses.IPAddress | Should-Be '192.168.0.1'
+                $result.AvailabilityGroupListenerIPAddresses.SubnetMask | Should-Be '255.255.255.0'
             }
         }
     }
@@ -1483,7 +1483,7 @@ Describe 'SqlAGListener\Get-SQLAlwaysOnAvailabilityGroupListener' -Skip:($IsLinu
 
                 $result = Get-SQLAlwaysOnAvailabilityGroupListener @mockGetSQLAlwaysOnAvailabilityGroupListenerParameters
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
         }
     }
@@ -1500,7 +1500,7 @@ Describe 'SqlAGListener\Get-SQLAlwaysOnAvailabilityGroupListener' -Skip:($IsLinu
 
                 $mockErrorMessage = $script:localizedData.AvailabilityGroupNotFound -f 'UnknownAG', 'MSSQLSERVER'
 
-                { $result = Get-SQLAlwaysOnAvailabilityGroupListener @mockGetSQLAlwaysOnAvailabilityGroupListenerParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                { $result = Get-SQLAlwaysOnAvailabilityGroupListener @mockGetSQLAlwaysOnAvailabilityGroupListenerParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
         }
     }
