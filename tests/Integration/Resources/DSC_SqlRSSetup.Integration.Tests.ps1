@@ -133,7 +133,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath                       = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -152,13 +152,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
+            $null = & ({
                 $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -167,29 +167,29 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
                     -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.InstallFolder | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services'
-            $resourceCurrentState.ServiceName | Should -Be 'SQLServerReportingServices'
-            $resourceCurrentState.ErrorDumpDirectory | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles'
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.InstallFolder | Should-Be 'C:\Program Files\Microsoft SQL Server Reporting Services'
+            $resourceCurrentState.ServiceName | Should-Be 'SQLServerReportingServices'
+            $resourceCurrentState.ErrorDumpDirectory | Should-Be 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles'
 
             if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
             {
-                $resourceCurrentState.CurrentVersion | Should -BeGreaterThan ([System.Version] '14.0.0.0')
+                $resourceCurrentState.CurrentVersion | Should-BeGreaterThan ([System.Version] '14.0.0.0')
             }
 
             if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
             {
-                $resourceCurrentState.CurrentVersion | Should -BeGreaterThan ([System.Version] '15.0.0.0')
+                $resourceCurrentState.CurrentVersion | Should-BeGreaterThan ([System.Version] '15.0.0.0')
             }
 
             if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022')
             {
-                $resourceCurrentState.CurrentVersion | Should -BeGreaterThan ([System.Version] '16.0.0.0')
+                $resourceCurrentState.CurrentVersion | Should-BeGreaterThan ([System.Version] '16.0.0.0')
             }
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose | Should-Be 'True'
         }
     }
 
@@ -205,7 +205,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath        = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -224,7 +224,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
     }
 }

@@ -68,7 +68,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath           = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -87,13 +87,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
+            $null = & ({
                 $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -102,23 +102,23 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-            $resourceCurrentState.Permission | Should -HaveCount 3
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+            $resourceCurrentState.Permission | Should-BeCollection -Count 3
 
             $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
 
-            $grantState.State | Should -Be 'Grant'
-            $grantState.Permission | Should -HaveCount 3
-            $grantState.Permission | Should -Contain 'Connect'
-            $grantState.Permission | Should -Contain 'Select'
-            $grantState.Permission | Should -Contain 'CreateTable'
+            $grantState.State | Should-Be 'Grant'
+            $grantState.Permission | Should-BeCollection -Count 3
+            $grantState.Permission | Should-ContainCollection 'Connect'
+            $grantState.Permission | Should-ContainCollection 'Select'
+            $grantState.Permission | Should-ContainCollection 'CreateTable'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose | Should-Be 'True'
         }
     }
 
@@ -134,7 +134,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath           = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -153,13 +153,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
+            $null = & ({
                 $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -168,23 +168,23 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-            $resourceCurrentState.Permission | Should -HaveCount 3
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+            $resourceCurrentState.Permission | Should-BeCollection -Count 3
 
             $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
 
-            $grantState.State | Should -Be 'Grant'
-            $grantState.Permission | Should -HaveCount 1
-            $grantState.Permission | Should -Contain 'Connect'
-            $grantState.Permission | Should -Not -Contain 'Select'
-            $grantState.Permission | Should -Not -Contain 'CreateTable'
+            $grantState.State | Should-Be 'Grant'
+            $grantState.Permission | Should-BeCollection -Count 1
+            $grantState.Permission | Should-ContainCollection 'Connect'
+            $grantState.Permission | Should-NotContainCollection 'Select'
+            $grantState.Permission | Should-NotContainCollection 'CreateTable'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose | Should-Be 'True'
         }
     }
 
@@ -200,7 +200,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath           = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -219,13 +219,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
+            $null = & ({
                 $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -234,28 +234,28 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-            $resourceCurrentState.Permission | Should -HaveCount 3
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+            $resourceCurrentState.Permission | Should-BeCollection -Count 3
 
             $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
 
-            $grantState.State | Should -Be 'Grant'
-            $grantState.Permission | Should -HaveCount 1
-            $grantState.Permission | Should -Contain 'Connect'
+            $grantState.State | Should-Be 'Grant'
+            $grantState.Permission | Should-BeCollection -Count 1
+            $grantState.Permission | Should-ContainCollection 'Connect'
 
             $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
 
-            $denyState.State | Should -Be 'Deny'
-            $denyState.Permission | Should -HaveCount 2
-            $denyState.Permission | Should -Contain 'Select'
-            $denyState.Permission | Should -Contain 'CreateTable'
+            $denyState.State | Should-Be 'Deny'
+            $denyState.Permission | Should-BeCollection -Count 2
+            $denyState.Permission | Should-ContainCollection 'Select'
+            $denyState.Permission | Should-ContainCollection 'CreateTable'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose | Should-Be 'True'
         }
     }
 
@@ -271,7 +271,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath           = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -290,13 +290,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
+            $null = & ({
                 $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -305,32 +305,32 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-            $resourceCurrentState.Permission | Should -HaveCount 3
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+            $resourceCurrentState.Permission | Should-BeCollection -Count 3
 
             $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
 
-            $grantState.State | Should -Be 'Grant'
-            $grantState.Permission | Should -HaveCount 1
-            $grantState.Permission | Should -Contain 'Connect'
+            $grantState.State | Should-Be 'Grant'
+            $grantState.Permission | Should-BeCollection -Count 1
+            $grantState.Permission | Should-ContainCollection 'Connect'
 
             $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
 
-            $denyState.State | Should -Be 'Deny'
+            $denyState.State | Should-Be 'Deny'
             <#
                 Using '-HaveCount 0' does not work as it returns the error
                 'Expected an empty collection, but got collection with size 1 @($null).'
                 even though the array is empty (does not contain oen item that is $null).
                 Probably due to issue: https://github.com/pester/Pester/issues/1000
             #>
-            $denyState.Permission | Should -BeNullOrEmpty
+            $denyState.Permission | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose | Should-Be 'True'
         }
     }
 
@@ -346,7 +346,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath           = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -365,13 +365,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
+            $null = & ({
                 $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -380,22 +380,22 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be 'guest'
-            $resourceCurrentState.Permission | Should -HaveCount 3
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be 'guest'
+            $resourceCurrentState.Permission | Should-BeCollection -Count 3
 
             $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
 
-            $grantState.State | Should -Be 'Grant'
-            $grantState.Permission | Should -HaveCount 2
-            $grantState.Permission | Should -Contain 'Connect'
-            $grantState.Permission | Should -Contain 'Select'
+            $grantState.State | Should-Be 'Grant'
+            $grantState.Permission | Should-BeCollection -Count 2
+            $grantState.Permission | Should-ContainCollection 'Connect'
+            $grantState.Permission | Should-ContainCollection 'Select'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose | Should-Be 'True'
         }
     }
 
@@ -411,7 +411,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath           = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -430,13 +430,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
+            $null = & ({
                 $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -445,22 +445,22 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be 'guest'
-            $resourceCurrentState.Permission | Should -HaveCount 3
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be 'guest'
+            $resourceCurrentState.Permission | Should-BeCollection -Count 3
 
             $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
 
-            $grantState.State | Should -Be 'Grant'
-            $grantState.Permission | Should -HaveCount 1
-            $grantState.Permission | Should -Contain 'Connect'
-            $grantState.Permission | Should -Not -Contain 'Select'
+            $grantState.State | Should-Be 'Grant'
+            $grantState.Permission | Should-BeCollection -Count 1
+            $grantState.Permission | Should-ContainCollection 'Connect'
+            $grantState.Permission | Should-NotContainCollection 'Select'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose | Should-Be 'True'
         }
     }
 
@@ -476,7 +476,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath           = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -495,13 +495,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
+            $null = & ({
                 $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -510,22 +510,22 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be 'public'
-            $resourceCurrentState.Permission | Should -HaveCount 3
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be 'public'
+            $resourceCurrentState.Permission | Should-BeCollection -Count 3
 
             $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
 
-            $grantState.State | Should -Be 'Grant'
-            $grantState.Permission | Should -HaveCount 2
-            $grantState.Permission | Should -Contain 'Connect'
-            $grantState.Permission | Should -Contain 'Select'
+            $grantState.State | Should-Be 'Grant'
+            $grantState.Permission | Should-BeCollection -Count 2
+            $grantState.Permission | Should-ContainCollection 'Connect'
+            $grantState.Permission | Should-ContainCollection 'Select'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose | Should-Be 'True'
         }
     }
 
@@ -541,7 +541,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath           = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -560,13 +560,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
+            $null = & ({
                 $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -575,22 +575,22 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-            $resourceCurrentState.Name | Should -Be 'public'
-            $resourceCurrentState.Permission | Should -HaveCount 3
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+            $resourceCurrentState.Name | Should-Be 'public'
+            $resourceCurrentState.Permission | Should-BeCollection -Count 3
 
             $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
 
-            $grantState.State | Should -Be 'Grant'
-            $grantState.Permission | Should -HaveCount 1
-            $grantState.Permission | Should -Contain 'Connect'
-            $grantState.Permission | Should -Not -Contain 'Select'
+            $grantState.State | Should-Be 'Grant'
+            $grantState.Permission | Should-BeCollection -Count 1
+            $grantState.Permission | Should-ContainCollection 'Connect'
+            $grantState.Permission | Should-NotContainCollection 'Select'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose | Should-Be 'True'
         }
     }
 
@@ -692,116 +692,116 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is not in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Get'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-                        $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                        $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                        $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-                        $resourceCurrentState.Permission | Should -HaveCount 3
-                        $resourceCurrentState.PermissionToInclude | Should -BeNullOrEmpty
-                        $resourceCurrentState.PermissionToExclude | Should -BeNullOrEmpty
+                        $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+                        $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+                        $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+                        $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+                        $resourceCurrentState.Permission | Should-BeCollection -Count 3
+                        $resourceCurrentState.PermissionToInclude | Should-BeFalsy
+                        $resourceCurrentState.PermissionToExclude | Should-BeFalsy
 
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -HaveCount 1
-                        $grantState.Permission | Should -Contain 'Connect'
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeCollection -Count 1
+                        $grantState.Permission | Should-ContainCollection 'Connect'
 
                         $grantWithGrantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeFalsy
 
                         $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -BeNullOrEmpty
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeFalsy
 
-                        $resourceCurrentState.Reasons | Should -HaveCount 1
-                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
-                        $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["connect","update","alter"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["Connect"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
+                        $resourceCurrentState.Reasons | Should-BeCollection -Count 1
+                        $resourceCurrentState.Reasons[0].Code | Should-Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
+                        $resourceCurrentState.Reasons[0].Phrase | Should-Be 'The property Permission should be [{"State":"Grant","Permission":["connect","update","alter"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["Connect"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
                     }
 
                     It 'Should run method Test() and return the state as $false' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Test'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.InDesiredState | Should -BeFalse
+                        $resourceCurrentState.InDesiredState | Should-BeFalse
                     }
 
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Set'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.RebootRequired | Should -BeFalse
+                        $resourceCurrentState.RebootRequired | Should-BeFalse
                     }
                 }
 
                 Context 'When the system is in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Get'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-                        $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                        $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                        $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-                        $resourceCurrentState.Permission | Should -HaveCount 3
-                        $resourceCurrentState.PermissionToInclude | Should -BeNullOrEmpty
-                        $resourceCurrentState.PermissionToExclude | Should -BeNullOrEmpty
+                        $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+                        $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+                        $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+                        $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+                        $resourceCurrentState.Permission | Should-BeCollection -Count 3
+                        $resourceCurrentState.PermissionToInclude | Should-BeFalsy
+                        $resourceCurrentState.PermissionToExclude | Should-BeFalsy
 
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -HaveCount 3
-                        $grantState.Permission | Should -Contain 'Connect'
-                        $grantState.Permission | Should -Contain 'Update'
-                        $grantState.Permission | Should -Contain 'Alter'
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeCollection -Count 3
+                        $grantState.Permission | Should-ContainCollection 'Connect'
+                        $grantState.Permission | Should-ContainCollection 'Update'
+                        $grantState.Permission | Should-ContainCollection 'Alter'
 
                         $grantWithGrantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeFalsy
 
                         $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -BeNullOrEmpty
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeFalsy
 
-                        $resourceCurrentState.Reasons | Should -BeNullOrEmpty
+                        $resourceCurrentState.Reasons | Should-BeFalsy
                     }
 
                     It 'Should run method Test() and return the state as $true' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Test'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.InDesiredState | Should -BeTrue
+                        $resourceCurrentState.InDesiredState | Should-BeTrue
                     }
 
                     <#
@@ -818,16 +818,16 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         all properties are in desired state.
                     #>
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Set'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.RebootRequired | Should -BeFalse
+                        $resourceCurrentState.RebootRequired | Should-BeFalse
                     }
                 }
             }
@@ -866,118 +866,118 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is not in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Get'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-                        $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                        $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                        $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-                        $resourceCurrentState.Permission | Should -HaveCount 3
-                        $resourceCurrentState.PermissionToInclude | Should -BeNullOrEmpty
-                        $resourceCurrentState.PermissionToExclude | Should -BeNullOrEmpty
+                        $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+                        $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+                        $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+                        $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+                        $resourceCurrentState.Permission | Should-BeCollection -Count 3
+                        $resourceCurrentState.PermissionToInclude | Should-BeFalsy
+                        $resourceCurrentState.PermissionToExclude | Should-BeFalsy
 
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -HaveCount 3
-                        $grantState.Permission | Should -Contain 'Connect'
-                        $grantState.Permission | Should -Contain 'Update'
-                        $grantState.Permission | Should -Contain 'Alter'
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeCollection -Count 3
+                        $grantState.Permission | Should-ContainCollection 'Connect'
+                        $grantState.Permission | Should-ContainCollection 'Update'
+                        $grantState.Permission | Should-ContainCollection 'Alter'
 
                         $grantWithGrantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeFalsy
 
                         $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -BeNullOrEmpty
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeFalsy
 
-                        $resourceCurrentState.Reasons | Should -HaveCount 1
-                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
-                        $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["connect"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":["delete","update"]}], but was [{"State":"Grant","Permission":["alter","connect","update"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
+                        $resourceCurrentState.Reasons | Should-BeCollection -Count 1
+                        $resourceCurrentState.Reasons[0].Code | Should-Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
+                        $resourceCurrentState.Reasons[0].Phrase | Should-Be 'The property Permission should be [{"State":"Grant","Permission":["connect"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":["delete","update"]}], but was [{"State":"Grant","Permission":["alter","connect","update"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
                     }
 
                     It 'Should run method Test() and return the state as $false' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Test'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.InDesiredState | Should -BeFalse
+                        $resourceCurrentState.InDesiredState | Should-BeFalse
                     }
 
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Set'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.RebootRequired | Should -BeFalse
+                        $resourceCurrentState.RebootRequired | Should-BeFalse
                     }
                 }
 
                 Context 'When the system is in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Get'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-                        $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                        $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                        $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-                        $resourceCurrentState.Permission | Should -HaveCount 3
-                        $resourceCurrentState.PermissionToInclude | Should -BeNullOrEmpty
-                        $resourceCurrentState.PermissionToExclude | Should -BeNullOrEmpty
+                        $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+                        $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+                        $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+                        $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+                        $resourceCurrentState.Permission | Should-BeCollection -Count 3
+                        $resourceCurrentState.PermissionToInclude | Should-BeFalsy
+                        $resourceCurrentState.PermissionToExclude | Should-BeFalsy
 
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -HaveCount 1
-                        $grantState.Permission | Should -Contain 'Connect'
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeCollection -Count 1
+                        $grantState.Permission | Should-ContainCollection 'Connect'
 
                         $grantWithGrantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeFalsy
 
                         $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -HaveCount 2
-                        $denyState.Permission | Should -Contain 'Delete'
-                        $denyState.Permission | Should -Contain 'Update'
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeCollection -Count 2
+                        $denyState.Permission | Should-ContainCollection 'Delete'
+                        $denyState.Permission | Should-ContainCollection 'Update'
 
-                        $resourceCurrentState.Reasons | Should -BeNullOrEmpty
+                        $resourceCurrentState.Reasons | Should-BeFalsy
                     }
 
                     It 'Should run method Test() and return the state as $true' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Test'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.InDesiredState | Should -BeTrue
+                        $resourceCurrentState.InDesiredState | Should-BeTrue
                     }
 
                     <#
@@ -994,16 +994,16 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         all properties are in desired state.
                     #>
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Set'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.RebootRequired | Should -BeFalse
+                        $resourceCurrentState.RebootRequired | Should-BeFalse
                     }
                 }
             }
@@ -1040,117 +1040,117 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is not in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Get'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-                        $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                        $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                        $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-                        $resourceCurrentState.Permission | Should -HaveCount 3
-                        $resourceCurrentState.PermissionToInclude | Should -BeNullOrEmpty
-                        $resourceCurrentState.PermissionToExclude | Should -BeNullOrEmpty
+                        $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+                        $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+                        $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+                        $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+                        $resourceCurrentState.Permission | Should-BeCollection -Count 3
+                        $resourceCurrentState.PermissionToInclude | Should-BeFalsy
+                        $resourceCurrentState.PermissionToExclude | Should-BeFalsy
 
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -HaveCount 1
-                        $grantState.Permission | Should -Contain 'Connect'
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeCollection -Count 1
+                        $grantState.Permission | Should-ContainCollection 'Connect'
 
                         $grantWithGrantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeFalsy
 
                         $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -HaveCount 2
-                        $denyState.Permission | Should -Contain 'Delete'
-                        $denyState.Permission | Should -Contain 'Update'
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeCollection -Count 2
+                        $denyState.Permission | Should-ContainCollection 'Delete'
+                        $denyState.Permission | Should-ContainCollection 'Update'
 
-                        $resourceCurrentState.Reasons | Should -HaveCount 1
-                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
-                        $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["connect"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["connect"]},{"State":"Deny","Permission":["delete","update"]},{"State":"GrantWithGrant","Permission":[]}]'
+                        $resourceCurrentState.Reasons | Should-BeCollection -Count 1
+                        $resourceCurrentState.Reasons[0].Code | Should-Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
+                        $resourceCurrentState.Reasons[0].Phrase | Should-Be 'The property Permission should be [{"State":"Grant","Permission":["connect"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["connect"]},{"State":"Deny","Permission":["delete","update"]},{"State":"GrantWithGrant","Permission":[]}]'
                     }
 
                     It 'Should run method Test() and return the state as $false' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Test'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.InDesiredState | Should -BeFalse
+                        $resourceCurrentState.InDesiredState | Should-BeFalse
                     }
 
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Set'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.RebootRequired | Should -BeFalse
+                        $resourceCurrentState.RebootRequired | Should-BeFalse
                     }
                 }
 
                 Context 'When the system is in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Get'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-                        $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                        $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                        $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-                        $resourceCurrentState.Permission | Should -HaveCount 3
-                        $resourceCurrentState.PermissionToInclude | Should -BeNullOrEmpty
-                        $resourceCurrentState.PermissionToExclude | Should -BeNullOrEmpty
+                        $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+                        $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+                        $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+                        $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+                        $resourceCurrentState.Permission | Should-BeCollection -Count 3
+                        $resourceCurrentState.PermissionToInclude | Should-BeFalsy
+                        $resourceCurrentState.PermissionToExclude | Should-BeFalsy
 
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -HaveCount 1
-                        $grantState.Permission | Should -Contain 'Connect'
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeCollection -Count 1
+                        $grantState.Permission | Should-ContainCollection 'Connect'
 
                         $grantWithGrantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -HaveCount 1
-                        $grantWithGrantState.Permission | Should -Contain 'Select'
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeCollection -Count 1
+                        $grantWithGrantState.Permission | Should-ContainCollection 'Select'
 
                         $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -BeNullOrEmpty
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeFalsy
 
-                        $resourceCurrentState.Reasons | Should -BeNullOrEmpty
+                        $resourceCurrentState.Reasons | Should-BeFalsy
                     }
 
                     It 'Should run method Test() and return the state as $true' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Test'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.InDesiredState | Should -BeTrue
+                        $resourceCurrentState.InDesiredState | Should-BeTrue
                     }
 
                     <#
@@ -1167,16 +1167,16 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         all properties are in desired state.
                     #>
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Set'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.RebootRequired | Should -BeFalse
+                        $resourceCurrentState.RebootRequired | Should-BeFalse
                     }
                 }
             }
@@ -1209,115 +1209,115 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is not in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Get'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-                        $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                        $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                        $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-                        $resourceCurrentState.Permission | Should -HaveCount 3
-                        $resourceCurrentState.PermissionToInclude | Should -BeNullOrEmpty
-                        $resourceCurrentState.PermissionToExclude | Should -BeNullOrEmpty
+                        $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+                        $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+                        $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+                        $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+                        $resourceCurrentState.Permission | Should-BeCollection -Count 3
+                        $resourceCurrentState.PermissionToInclude | Should-BeFalsy
+                        $resourceCurrentState.PermissionToExclude | Should-BeFalsy
 
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -HaveCount 1
-                        $grantState.Permission | Should -Contain 'Connect'
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeCollection -Count 1
+                        $grantState.Permission | Should-ContainCollection 'Connect'
 
                         $grantWithGrantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -HaveCount 1
-                        $grantWithGrantState.Permission | Should -Contain 'Select'
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeCollection -Count 1
+                        $grantWithGrantState.Permission | Should-ContainCollection 'Select'
 
                         $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -BeNullOrEmpty
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeFalsy
 
-                        $resourceCurrentState.Reasons | Should -HaveCount 1
-                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
-                        $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property Permission should be [{"State":"Grant","Permission":["connect"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["connect"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":[]}]'
+                        $resourceCurrentState.Reasons | Should-BeCollection -Count 1
+                        $resourceCurrentState.Reasons[0].Code | Should-Be 'SqlDatabasePermission:SqlDatabasePermission:Permission'
+                        $resourceCurrentState.Reasons[0].Phrase | Should-Be 'The property Permission should be [{"State":"Grant","Permission":["connect"]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}], but was [{"State":"Grant","Permission":["connect"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":[]}]'
                     }
 
                     It 'Should run method Test() and return the state as $false' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Test'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.InDesiredState | Should -BeFalse
+                        $resourceCurrentState.InDesiredState | Should-BeFalse
                     }
 
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Set'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.RebootRequired | Should -BeFalse
+                        $resourceCurrentState.RebootRequired | Should-BeFalse
                     }
                 }
 
                 Context 'When the system is in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Get'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-                        $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                        $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                        $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-                        $resourceCurrentState.Permission | Should -HaveCount 3
-                        $resourceCurrentState.PermissionToInclude | Should -BeNullOrEmpty
-                        $resourceCurrentState.PermissionToExclude | Should -BeNullOrEmpty
+                        $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+                        $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+                        $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+                        $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+                        $resourceCurrentState.Permission | Should-BeCollection -Count 3
+                        $resourceCurrentState.PermissionToInclude | Should-BeFalsy
+                        $resourceCurrentState.PermissionToExclude | Should-BeFalsy
 
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -HaveCount 1
-                        $grantState.Permission | Should -Contain 'Connect'
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeCollection -Count 1
+                        $grantState.Permission | Should-ContainCollection 'Connect'
 
                         $grantWithGrantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeFalsy
 
                         $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -BeNullOrEmpty
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeFalsy
 
-                        $resourceCurrentState.Reasons | Should -BeNullOrEmpty
+                        $resourceCurrentState.Reasons | Should-BeFalsy
                     }
 
                     It 'Should run method Test() and return the state as $true' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Test'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.InDesiredState | Should -BeTrue
+                        $resourceCurrentState.InDesiredState | Should-BeTrue
                     }
 
                     <#
@@ -1334,16 +1334,16 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         all properties are in desired state.
                     #>
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Set'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.RebootRequired | Should -BeFalse
+                        $resourceCurrentState.RebootRequired | Should-BeFalse
                     }
                 }
             }
@@ -1391,148 +1391,148 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is not in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Get'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-                        $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                        $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                        $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-                        $resourceCurrentState.Permission | Should -HaveCount 3
-                        $resourceCurrentState.PermissionToExclude | Should -BeNullOrEmpty
+                        $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+                        $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+                        $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+                        $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+                        $resourceCurrentState.Permission | Should-BeCollection -Count 3
+                        $resourceCurrentState.PermissionToExclude | Should-BeFalsy
 
                         # Property Permission
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -HaveCount 1
-                        $grantState.Permission | Should -Contain 'Connect'
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeCollection -Count 1
+                        $grantState.Permission | Should-ContainCollection 'Connect'
 
                         $grantWithGrantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeFalsy
 
                         $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -BeNullOrEmpty
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeFalsy
 
                         # Property PermissionToInclude
                         $grantState = $resourceCurrentState.PermissionToInclude.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -BeNullOrEmpty
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeFalsy
 
                         $grantWithGrantState = $resourceCurrentState.PermissionToInclude.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeFalsy
 
                         $denyState = $resourceCurrentState.PermissionToInclude.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -BeNullOrEmpty
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeFalsy
 
                         # Property Reasons
-                        $resourceCurrentState.Reasons | Should -HaveCount 1
-                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:PermissionToInclude'
-                        $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property PermissionToInclude should be [{"State":"Grant","Permission":["update"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":["delete"]}], but was [{"State":"Grant","Permission":[]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
+                        $resourceCurrentState.Reasons | Should-BeCollection -Count 1
+                        $resourceCurrentState.Reasons[0].Code | Should-Be 'SqlDatabasePermission:SqlDatabasePermission:PermissionToInclude'
+                        $resourceCurrentState.Reasons[0].Phrase | Should-Be 'The property PermissionToInclude should be [{"State":"Grant","Permission":["update"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":["delete"]}], but was [{"State":"Grant","Permission":[]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
                     }
 
                     It 'Should run method Test() and return the state as $false' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Test'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.InDesiredState | Should -BeFalse
+                        $resourceCurrentState.InDesiredState | Should-BeFalse
                     }
 
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Set'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.RebootRequired | Should -BeFalse
+                        $resourceCurrentState.RebootRequired | Should-BeFalse
                     }
                 }
 
                 Context 'When the system is in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Get'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-                        $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                        $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                        $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-                        $resourceCurrentState.Permission | Should -HaveCount 3
-                        $resourceCurrentState.PermissionToExclude | Should -BeNullOrEmpty
+                        $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+                        $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+                        $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+                        $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+                        $resourceCurrentState.Permission | Should-BeCollection -Count 3
+                        $resourceCurrentState.PermissionToExclude | Should-BeFalsy
 
                         # Property Permission
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -HaveCount 2
-                        $grantState.Permission | Should -Contain 'Connect'
-                        $grantState.Permission | Should -Contain 'Update'
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeCollection -Count 2
+                        $grantState.Permission | Should-ContainCollection 'Connect'
+                        $grantState.Permission | Should-ContainCollection 'Update'
 
                         $grantWithGrantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -HaveCount 1
-                        $grantWithGrantState.Permission | Should -Contain 'Select'
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeCollection -Count 1
+                        $grantWithGrantState.Permission | Should-ContainCollection 'Select'
 
                         $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -HaveCount 1
-                        $denyState.Permission | Should -Contain 'Delete'
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeCollection -Count 1
+                        $denyState.Permission | Should-ContainCollection 'Delete'
 
                         # Property PermissionToInclude
                         $grantState = $resourceCurrentState.PermissionToInclude.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -HaveCount 1
-                        $grantState.Permission | Should -Contain 'Update'
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeCollection -Count 1
+                        $grantState.Permission | Should-ContainCollection 'Update'
 
                         $grantWithGrantState = $resourceCurrentState.PermissionToInclude.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -HaveCount 1
-                        $grantWithGrantState.Permission | Should -Contain 'Select'
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeCollection -Count 1
+                        $grantWithGrantState.Permission | Should-ContainCollection 'Select'
 
                         $denyState = $resourceCurrentState.PermissionToInclude.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -HaveCount 1
-                        $denyState.Permission | Should -Contain 'Delete'
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeCollection -Count 1
+                        $denyState.Permission | Should-ContainCollection 'Delete'
 
                         # Property Reasons
-                        $resourceCurrentState.Reasons | Should -BeNullOrEmpty
+                        $resourceCurrentState.Reasons | Should-BeFalsy
                     }
 
                     It 'Should run method Test() and return the state as $true' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Test'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.InDesiredState | Should -BeTrue
+                        $resourceCurrentState.InDesiredState | Should-BeTrue
                     }
 
                     <#
@@ -1549,16 +1549,16 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         all properties are in desired state.
                     #>
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Set'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.RebootRequired | Should -BeFalse
+                        $resourceCurrentState.RebootRequired | Should-BeFalse
                     }
                 }
             }
@@ -1603,148 +1603,148 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
 
                 Context 'When the system is not in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Get'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-                        $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                        $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                        $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-                        $resourceCurrentState.Permission | Should -HaveCount 3
-                        $resourceCurrentState.PermissionToInclude | Should -BeNullOrEmpty
+                        $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+                        $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+                        $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+                        $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+                        $resourceCurrentState.Permission | Should-BeCollection -Count 3
+                        $resourceCurrentState.PermissionToInclude | Should-BeFalsy
 
                         # Property Permission
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -HaveCount 2
-                        $grantState.Permission | Should -Contain 'Connect'
-                        $grantState.Permission | Should -Contain 'Update'
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeCollection -Count 2
+                        $grantState.Permission | Should-ContainCollection 'Connect'
+                        $grantState.Permission | Should-ContainCollection 'Update'
 
                         $grantWithGrantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -HaveCount 1
-                        $grantWithGrantState.Permission | Should -Contain 'Select'
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeCollection -Count 1
+                        $grantWithGrantState.Permission | Should-ContainCollection 'Select'
 
                         $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -HaveCount 1
-                        $denyState.Permission | Should -Contain 'Delete'
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeCollection -Count 1
+                        $denyState.Permission | Should-ContainCollection 'Delete'
 
                         # Property PermissionToExclude
                         $grantState = $resourceCurrentState.PermissionToExclude.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -BeNullOrEmpty
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeFalsy
 
                         $grantWithGrantState = $resourceCurrentState.PermissionToExclude.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeFalsy
 
                         $denyState = $resourceCurrentState.PermissionToExclude.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -BeNullOrEmpty
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeFalsy
 
                         # Property Reasons
-                        $resourceCurrentState.Reasons | Should -HaveCount 1
-                        $resourceCurrentState.Reasons[0].Code | Should -Be 'SqlDatabasePermission:SqlDatabasePermission:PermissionToExclude'
-                        $resourceCurrentState.Reasons[0].Phrase | Should -Be 'The property PermissionToExclude should be [{"State":"Grant","Permission":["update"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":["delete"]}], but was [{"State":"Grant","Permission":[]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
+                        $resourceCurrentState.Reasons | Should-BeCollection -Count 1
+                        $resourceCurrentState.Reasons[0].Code | Should-Be 'SqlDatabasePermission:SqlDatabasePermission:PermissionToExclude'
+                        $resourceCurrentState.Reasons[0].Phrase | Should-Be 'The property PermissionToExclude should be [{"State":"Grant","Permission":["update"]},{"State":"GrantWithGrant","Permission":["select"]},{"State":"Deny","Permission":["delete"]}], but was [{"State":"Grant","Permission":[]},{"State":"GrantWithGrant","Permission":[]},{"State":"Deny","Permission":[]}]'
                     }
 
                     It 'Should run method Test() and return the state as $false' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Test'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.InDesiredState | Should -BeFalse
+                        $resourceCurrentState.InDesiredState | Should-BeFalse
                     }
 
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Set'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.RebootRequired | Should -BeFalse
+                        $resourceCurrentState.RebootRequired | Should-BeFalse
                     }
                 }
 
                 Context 'When the system is in the desired state' {
                     It 'Should run method Get() and return the correct values' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Get'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-                        $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-                        $resourceCurrentState.DatabaseName | Should -Be $ConfigurationData.AllNodes.DatabaseName
-                        $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
-                        $resourceCurrentState.Permission | Should -HaveCount 3
-                        $resourceCurrentState.PermissionToInclude | Should -BeNullOrEmpty
+                        $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+                        $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+                        $resourceCurrentState.DatabaseName | Should-Be $ConfigurationData.AllNodes.DatabaseName
+                        $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.User1_Name
+                        $resourceCurrentState.Permission | Should-BeCollection -Count 3
+                        $resourceCurrentState.PermissionToInclude | Should-BeFalsy
 
                         # Property Permission
                         $grantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -HaveCount 1
-                        $grantState.Permission | Should -Contain 'Connect'
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeCollection -Count 1
+                        $grantState.Permission | Should-ContainCollection 'Connect'
 
                         $grantWithGrantState = $resourceCurrentState.Permission.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -BeNullOrEmpty
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeFalsy
 
                         $denyState = $resourceCurrentState.Permission.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -BeNullOrEmpty
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeFalsy
 
                         # Property PermissionToExclude
                         $grantState = $resourceCurrentState.PermissionToExclude.Where({ $_.State -eq 'Grant' })
-                        $grantState.State | Should -Be 'Grant'
-                        $grantState.Permission | Should -HaveCount 1
-                        $grantState.Permission | Should -Contain 'Update'
+                        $grantState.State | Should-Be 'Grant'
+                        $grantState.Permission | Should-BeCollection -Count 1
+                        $grantState.Permission | Should-ContainCollection 'Update'
 
                         $grantWithGrantState = $resourceCurrentState.PermissionToExclude.Where({ $_.State -eq 'GrantWithGrant' })
-                        $grantWithGrantState.State | Should -Be 'GrantWithGrant'
-                        $grantWithGrantState.Permission | Should -HaveCount 1
-                        $grantWithGrantState.Permission | Should -Contain 'Select'
+                        $grantWithGrantState.State | Should-Be 'GrantWithGrant'
+                        $grantWithGrantState.Permission | Should-BeCollection -Count 1
+                        $grantWithGrantState.Permission | Should-ContainCollection 'Select'
 
                         $denyState = $resourceCurrentState.PermissionToExclude.Where({ $_.State -eq 'Deny' })
-                        $denyState.State | Should -Be 'Deny'
-                        $denyState.Permission | Should -HaveCount 1
-                        $denyState.Permission | Should -Contain 'Delete'
+                        $denyState.State | Should-Be 'Deny'
+                        $denyState.Permission | Should-BeCollection -Count 1
+                        $denyState.Permission | Should-ContainCollection 'Delete'
 
                         # Property Reasons
-                        $resourceCurrentState.Reasons | Should -BeNullOrEmpty
+                        $resourceCurrentState.Reasons | Should-BeFalsy
                     }
 
                     It 'Should run method Test() and return the state as $true' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Test'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.InDesiredState | Should -BeTrue
+                        $resourceCurrentState.InDesiredState | Should-BeTrue
                     }
 
                     <#
@@ -1761,16 +1761,16 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                         all properties are in desired state.
                     #>
                     It 'Should run method Set() without throwing and not require reboot' {
-                        {
+                        $null = & ({
                             $mockInvokeDscResourceParameters = $mockDefaultInvokeDscResourceParameters.Clone()
 
                             $mockInvokeDscResourceParameters.Method = 'Set'
                             $mockInvokeDscResourceParameters.Property = $mockInvokeDscResourceProperty
 
                             $script:resourceCurrentState = Invoke-DscResource @mockInvokeDscResourceParameters
-                        } | Should -Not -Throw
+                        })
 
-                        $resourceCurrentState.RebootRequired | Should -BeFalse
+                        $resourceCurrentState.RebootRequired | Should-BeFalse
                     }
                 }
             }
