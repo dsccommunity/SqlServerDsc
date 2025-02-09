@@ -146,8 +146,8 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     }
                 )
 
-            $result.ParameterSetName | Should -Be $MockParameterSetName
-            $result.ParameterListAsString | Should -Be $MockExpectedParameters
+            $result.ParameterSetName | Should-Be $MockParameterSetName
+            $result.ParameterListAsString | Should-Be $MockExpectedParameters
         }
     }
 
@@ -186,14 +186,14 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/QUIET' -and
                             $ArgumentList -match '\/ACTION=Install' -and
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cSpell: disable-line
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' -and # cSpell: disable-line
                             $ArgumentList -match '\/FEATURES=SQLENGINE,AZUREEXTENSION' -and # cSpell: disable-line
                             $ArgumentList -match '/SQLSYSADMINACCOUNTS="DOMAIN\\User"\ "COMPANY\\SQL\ Administrators"' # cSpell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -203,13 +203,13 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=Install' -and
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                             $ArgumentList -match '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' -and # cspell: disable-line
                             $ArgumentList -match '\/FEATURES=SQLENGINE,AZUREEXTENSION' -and # cspell: disable-line
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -219,7 +219,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -251,9 +251,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -ScriptBlock {
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match 'PBPORTRANGE=16450-16460' # cspell: disable-line
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -687,9 +687,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match $MockExpectedRegEx
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -776,10 +776,10 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     $mockVerboseMessage = $script:localizedData.Server_SetupArguments
 
-                    Should -Invoke -CommandName Write-Verbose -ParameterFilter {
+                    Should-Invoke -CommandName Write-Verbose -Exactly -ParameterFilter {
                         # Only test the verbose message that output the string that should be tested.
                         $Message -match $mockVerboseMessage -and $Message -match $MockExpectedRegEx
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -817,11 +817,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=Upgrade' -and
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -831,11 +831,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=Upgrade' -and
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -845,7 +845,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -947,9 +947,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match $MockExpectedRegEx
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -998,7 +998,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=InstallFailoverCluster' -and
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                             $ArgumentList -match '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' -and # cspell: disable-line
@@ -1007,7 +1007,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' -and # cspell: disable-line
                             $ArgumentList -match '\/FAILOVERCLUSTERNETWORKNAME="TESTCLU01A"' -and # cspell: disable-line
                             $ArgumentList -match ([System.Text.RegularExpressions.Regex]::Escape('/FAILOVERCLUSTERIPADDRESSES="IPv4;172.16.0.0;ClusterNetwork1;172.31.255.255" "IPv6;2001:db8:23:1002:20f:1fff:feff:b3a3;ClusterNetwork2" "IPv6;DHCP;ClusterNetwork3" "IPv4;DHCP;ClusterNetwork4"')) # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -1017,7 +1017,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=InstallFailoverCluster' -and
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                             $ArgumentList -match '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' -and # cspell: disable-line
@@ -1026,7 +1026,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' -and # cspell: disable-line
                             $ArgumentList -match '\/FAILOVERCLUSTERNETWORKNAME="TESTCLU01A"' -and # cspell: disable-line
                             $ArgumentList -match ([System.Text.RegularExpressions.Regex]::Escape('/FAILOVERCLUSTERIPADDRESSES="IPv4;172.16.0.0;ClusterNetwork1;172.31.255.255" "IPv6;2001:db8:23:1002:20f:1fff:feff:b3a3;ClusterNetwork2" "IPv6;DHCP;ClusterNetwork3" "IPv4;DHCP;ClusterNetwork4"')) # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -1036,7 +1036,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -1071,9 +1071,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -ScriptBlock {
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match 'PBPORTRANGE=16450-16460' # cspell: disable-line
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -1400,9 +1400,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match $MockExpectedRegEx
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -1442,11 +1442,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=PrepareFailoverCluster' -and
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -1456,11 +1456,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=PrepareFailoverCluster' -and
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -1470,7 +1470,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -1501,9 +1501,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -ScriptBlock {
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match 'PBPORTRANGE=16450-16460' # cspell: disable-line
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -1675,9 +1675,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match $MockExpectedRegEx
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -1723,14 +1723,14 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=CompleteFailoverCluster' -and
                             $ArgumentList -match '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' -and # cspell: disable-line
                             $ArgumentList -match '\/INSTALLSQLDATADIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' -and # cspell: disable-line
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' -and # cspell: disable-line
                             $ArgumentList -match '\/FAILOVERCLUSTERNETWORKNAME="TESTCLU01A"' -and # cspell: disable-line
                             $ArgumentList -match ([System.Text.RegularExpressions.Regex]::Escape('/FAILOVERCLUSTERIPADDRESSES="IPv4;172.16.0.0;ClusterNetwork1;172.31.255.255" "IPv6;2001:db8:23:1002:20f:1fff:feff:b3a3;ClusterNetwork2" "IPv6;DHCP;ClusterNetwork3" "IPv4;DHCP;ClusterNetwork4"')) # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -1740,14 +1740,14 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=CompleteFailoverCluster' -and
                             $ArgumentList -match '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' -and # cspell: disable-line
                             $ArgumentList -match '\/INSTALLSQLDATADIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' -and # cspell: disable-line
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' -and # cspell: disable-line
                             $ArgumentList -match '\/FAILOVERCLUSTERNETWORKNAME="TESTCLU01A"' -and # cspell: disable-line
                             $ArgumentList -match ([System.Text.RegularExpressions.Regex]::Escape('/FAILOVERCLUSTERIPADDRESSES="IPv4;172.16.0.0;ClusterNetwork1;172.31.255.255" "IPv6;2001:db8:23:1002:20f:1fff:feff:b3a3;ClusterNetwork2" "IPv6;DHCP;ClusterNetwork3" "IPv4;DHCP;ClusterNetwork4"')) # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -1757,7 +1757,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -1962,9 +1962,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match $MockExpectedRegEx
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -2008,11 +2008,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=AddNode' -and
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -2022,11 +2022,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=AddNode' -and
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS'  -and # cspell: disable-line
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -2036,7 +2036,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -2071,9 +2071,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -ScriptBlock {
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match 'PBPORTRANGE=16450-16460' # cspell: disable-line
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -2204,9 +2204,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match $MockExpectedRegEx
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -2243,10 +2243,10 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=RemoveNode' -and
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -2256,10 +2256,10 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=RemoveNode' -and
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -2269,7 +2269,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -2309,9 +2309,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match $MockExpectedRegEx
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -2354,10 +2354,10 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             # cspell: disable-next
                             $ArgumentList -match '\/CONFIGURATIONFILE="C:\\MyConfig\.ini"'
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -2367,10 +2367,10 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             # cspell: disable-next
                             $ArgumentList -match '\/CONFIGURATIONFILE="C:\\MyConfig\.ini"'
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -2380,7 +2380,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -2439,9 +2439,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match $MockExpectedRegEx
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -2479,11 +2479,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=RebuildDatabase' -and
                             $ArgumentList -match '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' -and # cspell: disable-line
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -2493,11 +2493,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=RebuildDatabase' -and
                             $ArgumentList -match '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' -and # cspell: disable-line
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -2507,7 +2507,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -2588,9 +2588,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match $MockExpectedRegEx
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -2629,12 +2629,12 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=EditionUpgrade' -and
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' -and # cspell: disable-line
                             $ArgumentList -match '\/PID="22222-00000-00000-00000-00000"'
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -2644,12 +2644,12 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=EditionUpgrade'
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
                             $ArgumentList -match '\/PID="22222-00000-00000-00000-00000"'
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -2659,7 +2659,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -2701,9 +2701,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match $MockExpectedRegEx
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -2742,11 +2742,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=Repair' -and
                             $ArgumentList -match '\/FEATURES=SQLENGINE' -and
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -2756,11 +2756,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=Repair' -and
                             $ArgumentList -match '\/FEATURES=SQLENGINE' -and
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -2770,7 +2770,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -2800,9 +2800,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -ScriptBlock {
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match 'PBPORTRANGE=16450-16460' # cspell: disable-line
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -2863,9 +2863,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match $MockExpectedRegEx
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -2905,12 +2905,12 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=PrepareImage' -and
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                             $ArgumentList -match '\/FEATURES=SQLENGINE' -and
                             $ArgumentList -match '\/INSTANCEID="Instance"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -2920,12 +2920,12 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=PrepareImage' -and
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                             $ArgumentList -match '\/FEATURES=SQLENGINE' -and
                             $ArgumentList -match '\/INSTANCEID="Instance"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -2935,7 +2935,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -3023,9 +3023,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match $MockExpectedRegEx
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -3062,9 +3062,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=CompleteImage'
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -3074,9 +3074,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=CompleteImage'
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -3086,7 +3086,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -3114,9 +3114,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                 InModuleScope -ScriptBlock {
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match 'PBPORTRANGE=16450-16460' # cspell: disable-line
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -3340,9 +3340,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match $MockExpectedRegEx
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -3381,11 +3381,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=Uninstall' -and
                             $ArgumentList -match '\/FEATURES=SQLENGINE' -and
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -3395,11 +3395,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=Uninstall' -and
                             $ArgumentList -match '\/FEATURES=SQLENGINE' -and
                             $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -3409,7 +3409,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -3453,7 +3453,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=Install' -and
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                             $ArgumentList -match '\/AZURESUBSCRIPTIONID="5d19794a-89a4-4f0b-8d4e-58f213ea3546"' -and # cspell: disable-line
@@ -3463,7 +3463,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                             $ArgumentList -match '\/AZURESERVICEPRINCIPAL="MyServicePrincipal"' -and # cspell: disable-line
                             $ArgumentList -match '\/AZURESERVICEPRINCIPALSECRET="jT7ELPbD2GGuvLmjABDL"' -and # cspell: disable-line
                             $ArgumentList -match '\/FEATURES=AZUREEXTENSION' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -3473,7 +3473,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match '\/ACTION=Install' -and
                             $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                             $ArgumentList -match '\/AZURESUBSCRIPTIONID="5d19794a-89a4-4f0b-8d4e-58f213ea3546"' -and # cspell: disable-line
@@ -3483,7 +3483,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                             $ArgumentList -match '\/AZURESERVICEPRINCIPAL="MyServicePrincipal"' -and # cspell: disable-line
                             $ArgumentList -match '\/AZURESERVICEPRINCIPALSECRET="jT7ELPbD2GGuvLmjABDL"' -and # cspell: disable-line
                             $ArgumentList -match '\/FEATURES=AZUREEXTENSION' # cspell: disable-line
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -3493,7 +3493,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     InModuleScope -ScriptBlock {
                         Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -3539,9 +3539,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     Invoke-SetupAction @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $ArgumentList -match $MockExpectedRegEx
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -3580,11 +3580,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                         InModuleScope -ScriptBlock {
                             Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                            Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                                 $ArgumentList -match '\/ACTION=Install' -and
                                 $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                                 $ArgumentList -match '\/ROLE=SPI_AS_NEWFARM' # cspell: disable-line
-                            } -Exactly -Times 1 -Scope It
+                            } -Scope It -Times 1
                         }
                     }
                 }
@@ -3594,11 +3594,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                         InModuleScope -ScriptBlock {
                             Invoke-SetupAction -Force @mockDefaultParameters
 
-                            Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                                 $ArgumentList -match '\/ACTION=Install' -and
                                 $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                                 $ArgumentList -match '\/ROLE=SPI_AS_NEWFARM' # cspell: disable-line
-                            } -Exactly -Times 1 -Scope It
+                            } -Scope It -Times 1
                         }
                     }
                 }
@@ -3608,7 +3608,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                         InModuleScope -ScriptBlock {
                             Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                            Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                            Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                         }
                     }
                 }
@@ -3664,9 +3664,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                         Invoke-SetupAction @installSqlDscServerParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match $MockExpectedRegEx
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -3715,7 +3715,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                         $mockVerboseMessage = $script:localizedData.Server_SetupArguments
 
-                        Should -Invoke -CommandName Write-Verbose -ParameterFilter {
+                        Should-Invoke -CommandName Write-Verbose -Exactly -ParameterFilter {
                             # Only test the command that output the string that should be tested.
                             $correctMessage = $Message -match $mockVerboseMessage
 
@@ -3727,7 +3727,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                             # Return wether the correct command was called or not.
                             $correctMessage
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1s 1 -Scope It
                     }
                 }
             }
@@ -3755,11 +3755,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                         InModuleScope -ScriptBlock {
                             Invoke-SetupAction -Confirm:$false @mockDefaultParameters
 
-                            Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                                 $ArgumentList -match '\/ACTION=Install' -and
                                 $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                                 $ArgumentList -match '\/ROLE=ALLFEATURES_WITHDEFAULTS' # cspell: disable-line
-                            } -Exactly -Times 1 -Scope It
+                            } -Scope It -Times 1
                         }
                     }
                 }
@@ -3769,11 +3769,11 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                         InModuleScope -ScriptBlock {
                             Invoke-SetupAction -Force @mockDefaultParameters
 
-                            Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                            Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                                 $ArgumentList -match '\/ACTION=Install' -and
                                 $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
                                 $ArgumentList -match '\/ROLE=ALLFEATURES_WITHDEFAULTS' # cspell: disable-line
-                            } -Exactly -Times 1 -Scope It
+                            } -Scope It -Times 1
                         }
                     }
                 }
@@ -3783,7 +3783,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                         InModuleScope -ScriptBlock {
                             Invoke-SetupAction -WhatIf @mockDefaultParameters
 
-                            Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                            Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                         }
                     }
                 }
@@ -3829,9 +3829,9 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                         Invoke-SetupAction @installSqlDscServerParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                             $ArgumentList -match $MockExpectedRegEx
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
