@@ -759,6 +759,10 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                         Force = $true
                     }
                 }
+
+                $mockVerboseMessage = InModuleScope -ScriptBlock {
+                    $script:localizedData.Server_SetupArguments
+                }
             }
 
             BeforeEach {
@@ -773,8 +777,6 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
 
                     # Redirect all verbose stream to $null to ge no output from ShouldProcess.
                     Invoke-SetupAction @installSqlDscServerParameters -Verbose 4> $null
-
-                    $mockVerboseMessage = $script:localizedData.Server_SetupArguments
 
                     Should-Invoke -CommandName Write-Verbose -Exactly -ParameterFilter {
                         # Only test the verbose message that output the string that should be tested.
