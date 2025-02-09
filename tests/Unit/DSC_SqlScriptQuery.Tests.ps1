@@ -108,12 +108,12 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result | Should -BeOfType [System.Collections.Hashtable]
-                $result.Id | Should -Be $mockGetTargetResourceParameters.Id
-                $result.ServerInstance | Should -Be $mockGetTargetResourceParameters.ServerInstance
-                $result.GetQuery | Should -Be $mockGetTargetResourceParameters.GetQuery
-                $result.SetQuery | Should -Be $mockGetTargetResourceParameters.SetQuery
-                $result.TestQuery | Should -Be $mockGetTargetResourceParameters.TestQuery
+                $result | Should-HaveType ([System.Collections.Hashtable])
+                $result.Id | Should-Be $mockGetTargetResourceParameters.Id
+                $result.ServerInstance | Should-Be $mockGetTargetResourceParameters.ServerInstance
+                $result.GetQuery | Should-Be $mockGetTargetResourceParameters.GetQuery
+                $result.SetQuery | Should-Be $mockGetTargetResourceParameters.SetQuery
+                $result.TestQuery | Should-Be $mockGetTargetResourceParameters.TestQuery
             }
         }
     }
@@ -133,12 +133,12 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result | Should -BeOfType [System.Collections.Hashtable]
-                $result.Id | Should -Be $mockGetTargetResourceParameters.Id
-                $result.ServerInstance | Should -Be $mockGetTargetResourceParameters.ServerInstance
-                $result.GetQuery | Should -Be $mockGetTargetResourceParameters.GetQuery
-                $result.SetQuery | Should -Be $mockGetTargetResourceParameters.SetQuery
-                $result.TestQuery | Should -Be $mockGetTargetResourceParameters.TestQuery
+                $result | Should-HaveType ([System.Collections.Hashtable])
+                $result.Id | Should-Be $mockGetTargetResourceParameters.Id
+                $result.ServerInstance | Should-Be $mockGetTargetResourceParameters.ServerInstance
+                $result.GetQuery | Should-Be $mockGetTargetResourceParameters.GetQuery
+                $result.SetQuery | Should-Be $mockGetTargetResourceParameters.SetQuery
+                $result.TestQuery | Should-Be $mockGetTargetResourceParameters.TestQuery
             }
         }
     }
@@ -156,7 +156,7 @@ Describe 'SqlScriptQuery\Get-TargetResource' -Tag 'Get' {
 
                 $mockErrorMessage = 'Failed to run SQL Script'
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -195,7 +195,7 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
             }
         }
     }
@@ -213,7 +213,7 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
 
                 $mockSetTargetResourceParameters.QueryTimeout = 30
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
             }
         }
     }
@@ -232,7 +232,7 @@ Describe 'SqlScriptQuery\Set-TargetResource' -Tag 'Set' {
 
                 $mockErrorMessage = 'Failed to run SQL Script'
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -272,7 +272,7 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -290,7 +290,7 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -312,7 +312,7 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -330,7 +330,7 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -348,7 +348,7 @@ Describe 'SqlScriptQuery\Test-TargetResource' {
 
                     $mockErrorMessage = 'Failed to run SQL Script'
 
-                    { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                    { Test-TargetResource @mockTestTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
                 }
             }
         }

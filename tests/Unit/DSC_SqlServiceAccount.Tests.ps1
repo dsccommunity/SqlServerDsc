@@ -110,14 +110,14 @@ Describe 'SqlServerServiceAccount\Get-TargetResource' -Tag 'Get' {
                 $testServiceInformation = Get-TargetResource @defaultGetTargetResourceParameters
 
                 # Validate the hashtable returned
-                $testServiceInformation.ServerName | Should -Be 'TestServer'
-                $testServiceInformation.InstanceName | Should -Be 'MSSQLSERVER'
-                $testServiceInformation.ServiceType | Should -Be 'DatabaseEngine'
-                $testServiceInformation.ServiceAccountName | Should -Be 'NT SERVICE\MSSQLSERVER'
+                $testServiceInformation.ServerName | Should-Be 'TestServer'
+                $testServiceInformation.InstanceName | Should-Be 'MSSQLSERVER'
+                $testServiceInformation.ServiceType | Should-Be 'DatabaseEngine'
+                $testServiceInformation.ServiceAccountName | Should-Be 'NT SERVICE\MSSQLSERVER'
             }
 
             # Ensure mocks were properly used
-            Should -Invoke -CommandName Get-ServiceObject -Scope It -Exactly -Times 1
+            Should-Invoke -CommandName Get-ServiceObject -Exactly -Scope It -Times 1
         }
 
         It 'Should throw the correct exception when an invalid ServiceType and InstanceName are specified' {
@@ -133,11 +133,11 @@ Describe 'SqlServerServiceAccount\Get-TargetResource' -Tag 'Get' {
 
                 $mockErrorMessage = $script:localizedData.ServiceNotFound -f 'SQLServerAgent', 'TestServer', 'MSSQLSERVER'
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
 
             # Ensure mocks were properly used
-            Should -Invoke -CommandName Get-ServiceObject -Scope It -Exactly -Times 1
+            Should-Invoke -CommandName Get-ServiceObject -Exactly -Scope It -Times 1
         }
     }
 
@@ -175,14 +175,14 @@ Describe 'SqlServerServiceAccount\Get-TargetResource' -Tag 'Get' {
                 $testServiceInformation = Get-TargetResource @mockGetTargetResourceParameters
 
                 # Validate the hashtable returned
-                $testServiceInformation.ServerName | Should -Be 'TestServer'
-                $testServiceInformation.InstanceName | Should -Be 'TestInstance'
-                $testServiceInformation.ServiceType | Should -Be 'DatabaseEngine'
-                $testServiceInformation.ServiceAccountName | Should -Be 'CONTOSO\sql.service'
+                $testServiceInformation.ServerName | Should-Be 'TestServer'
+                $testServiceInformation.InstanceName | Should-Be 'TestInstance'
+                $testServiceInformation.ServiceType | Should-Be 'DatabaseEngine'
+                $testServiceInformation.ServiceAccountName | Should-Be 'CONTOSO\sql.service'
             }
 
             # Ensure mocks were properly used
-            Should -Invoke -CommandName Get-ServiceObject -Scope It -Exactly -Times 1
+            Should-Invoke -CommandName Get-ServiceObject -Exactly -Scope It -Times 1
         }
 
         It 'Should throw the correct exception when an invalid ServiceType and InstanceName are specified' {
@@ -198,11 +198,11 @@ Describe 'SqlServerServiceAccount\Get-TargetResource' -Tag 'Get' {
 
                 $mockErrorMessage = $script:localizedData.ServiceNotFound -f 'SQLServerAgent', 'TestServer', 'TestInstance'
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
 
             # Ensure mocks were properly used
-            Should -Invoke -CommandName Get-ServiceObject -Scope It -Exactly -Times 1
+            Should-Invoke -CommandName Get-ServiceObject -Exactly -Scope It -Times 1
         }
     }
 
@@ -231,11 +231,11 @@ Describe 'SqlServerServiceAccount\Get-TargetResource' -Tag 'Get' {
                 $currentState = Get-TargetResource @mockGetTargetResourceParameters
 
                 # Validate the service account
-                $currentState.ServiceAccountName | Should -Be 'TestServer\SqlService'
+                $currentState.ServiceAccountName | Should-Be 'TestServer\SqlService'
             }
 
             # Ensure mocks were properly used
-            Should -Invoke -CommandName Get-ServiceObject -Scope It -Exactly -Times 1
+            Should-Invoke -CommandName Get-ServiceObject -Exactly -Scope It -Times 1
         }
     }
 
@@ -264,11 +264,11 @@ Describe 'SqlServerServiceAccount\Get-TargetResource' -Tag 'Get' {
                 $currentState = Get-TargetResource @mockGetTargetResourceParameters
 
                 # Validate the managed service account
-                $currentState.ServiceAccountName | Should -Be 'CONTOSO\sqlservice$'
+                $currentState.ServiceAccountName | Should-Be 'CONTOSO\sqlservice$'
             }
 
             # Ensure the mocks were properly used
-            Should -Invoke -CommandName Get-ServiceObject -Scope It -Exactly -Times 1
+            Should-Invoke -CommandName Get-ServiceObject -Exactly -Scope It -Times 1
         }
     }
 }
@@ -298,11 +298,11 @@ Describe 'SqlServerServiceAccount\Test-TargetResource' -Tag 'Test' {
                         ServiceAccount = (New-Object -TypeName System.Management.Automation.PSCredential 'CONTOSO\sql.service', (New-Object -TypeName System.Security.SecureString))
                     }
 
-                    Test-TargetResource @testTargetResourceParameters | Should -BeFalse
+                    Test-TargetResource @testTargetResourceParameters | Should-BeFalse
                 }
 
                 # Ensure mocks are properly used
-                Should -Invoke -CommandName Get-TargetResource -Scope It -Exactly -Times 1
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -329,11 +329,11 @@ Describe 'SqlServerServiceAccount\Test-TargetResource' -Tag 'Test' {
                         ServiceAccount = (New-Object -TypeName System.Management.Automation.PSCredential 'NT SERVICE\MSSQLSERVER', (New-Object -TypeName System.Security.SecureString))
                     }
 
-                    Test-TargetResource @testTargetResourceParameters | Should -BeFalse
+                    Test-TargetResource @testTargetResourceParameters | Should-BeFalse
                 }
 
                 # Ensure mocks are properly used
-                Should -Invoke -CommandName Get-TargetResource -Scope It -Exactly -Times 1
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -362,11 +362,11 @@ Describe 'SqlServerServiceAccount\Test-TargetResource' -Tag 'Test' {
                         ServiceAccount = (New-Object -TypeName System.Management.Automation.PSCredential 'NT SERVICE\MSSQLSERVER', (New-Object -TypeName System.Security.SecureString))
                     }
 
-                    Test-TargetResource @testTargetResourceParameters | Should -BeTrue
+                    Test-TargetResource @testTargetResourceParameters | Should-BeTrue
                 }
 
                 # Ensure mocks are properly used
-                Should -Invoke -CommandName Get-TargetResource -Scope It -Exactly -Times 1
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
 
             Context 'When the parameter Force is specified for default instance' {
@@ -393,7 +393,7 @@ Describe 'SqlServerServiceAccount\Test-TargetResource' -Tag 'Test' {
                             Force          = $true
                         }
 
-                        Test-TargetResource @testTargetResourceParameters | Should -BeFalse
+                        Test-TargetResource @testTargetResourceParameters | Should-BeFalse
                     }
                 }
             }
@@ -422,11 +422,11 @@ Describe 'SqlServerServiceAccount\Test-TargetResource' -Tag 'Test' {
                         ServiceAccount = (New-Object -TypeName System.Management.Automation.PSCredential 'CONTOSO\sql.service', (New-Object -TypeName System.Security.SecureString))
                     }
 
-                    Test-TargetResource @testTargetResourceParameters | Should -BeTrue
+                    Test-TargetResource @testTargetResourceParameters | Should-BeTrue
                 }
 
                 # Ensure mocks are properly used
-                Should -Invoke -CommandName Get-TargetResource -Scope It -Exactly -Times 1
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
 
             Context 'When the parameter Force is specified for named instance' {
@@ -454,7 +454,7 @@ Describe 'SqlServerServiceAccount\Test-TargetResource' -Tag 'Test' {
                         }
 
                         # Validate the return  value
-                        Test-TargetResource @testTargetResourceParameters | Should -BeFalse
+                        Test-TargetResource @testTargetResourceParameters | Should-BeFalse
                     }
                 }
             }
@@ -543,14 +543,14 @@ Describe 'SqlServerServiceAccount\Set-TargetResource' -Tag 'Set' {
                 Set-TargetResource @setTargetResourceParameters
 
                 # Validate that the correct information was passed through and updated
-                $testServiceAccountUpdated.Processed | Should -BeTrue
-                $testServiceAccountUpdated.NewUserAccount | Should -Be $setTargetResourceParameters.ServiceAccount.Username
-                $testServiceAccountUpdated.NewPassword | Should -Be $setTargetResourceParameters.ServiceAccount.GetNetworkCredential().Password
+                $testServiceAccountUpdated.Processed | Should-BeTrue
+                $testServiceAccountUpdated.NewUserAccount | Should-Be $setTargetResourceParameters.ServiceAccount.Username
+                $testServiceAccountUpdated.NewPassword | Should-Be $setTargetResourceParameters.ServiceAccount.GetNetworkCredential().Password
             }
 
             # Ensure mocks are used properly
-            Should -Invoke -CommandName Get-ServiceObject -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Restart-SqlService -Scope It -Exactly -Times 0
+            Should-Invoke -CommandName Get-ServiceObject -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 0
         }
 
         It 'Should throw the correct exception when an invalid service name and type is provided' {
@@ -564,12 +564,12 @@ Describe 'SqlServerServiceAccount\Set-TargetResource' -Tag 'Set' {
                 $mockCorrectErrorMessage = $script:localizedData.ServiceNotFound -f $setTargetResourceParameters.ServiceType, $setTargetResourceParameters.ServerName, $setTargetResourceParameters.InstanceName
 
                 # Attempt to update the service account
-                { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockCorrectErrorMessage)
+                { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockCorrectErrorMessage)
             }
 
             # Ensure mocks are used properly
-            Should -Invoke -CommandName Get-ServiceObject -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Restart-SqlService -Scope It -Exactly -Times 0
+            Should-Invoke -CommandName Get-ServiceObject -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 0
         }
 
         It 'Should restart the service if requested' {
@@ -585,8 +585,8 @@ Describe 'SqlServerServiceAccount\Set-TargetResource' -Tag 'Set' {
             }
 
             # Ensure mocks are used properly
-            Should -Invoke -CommandName Get-ServiceObject -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Restart-SqlService -Scope It -Exactly -Times 1
+            Should-Invoke -CommandName Get-ServiceObject -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
         }
     }
 
@@ -659,14 +659,14 @@ Describe 'SqlServerServiceAccount\Set-TargetResource' -Tag 'Set' {
                 Set-TargetResource @setTargetResourceParameters
 
                 # Validate that the correct information was passed through and updated
-                $testServiceAccountUpdated.Processed | Should -BeTrue
-                $testServiceAccountUpdated.NewUserAccount | Should -Be $setTargetResourceParameters.ServiceAccount.Username
-                $testServiceAccountUpdated.NewPassword | Should -Be $setTargetResourceParameters.ServiceAccount.GetNetworkCredential().Password
+                $testServiceAccountUpdated.Processed | Should-BeTrue
+                $testServiceAccountUpdated.NewUserAccount | Should-Be $setTargetResourceParameters.ServiceAccount.Username
+                $testServiceAccountUpdated.NewPassword | Should-Be $setTargetResourceParameters.ServiceAccount.GetNetworkCredential().Password
             }
 
             # Ensure mocks are used properly
-            Should -Invoke -CommandName Get-ServiceObject -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Restart-SqlService -Scope It -Exactly -Times 0
+            Should-Invoke -CommandName Get-ServiceObject -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 0
         }
 
         It 'Should throw the correct exception when an invalid service name and type is provided' {
@@ -680,12 +680,12 @@ Describe 'SqlServerServiceAccount\Set-TargetResource' -Tag 'Set' {
                 $mockCorrectErrorMessage = $script:localizedData.ServiceNotFound -f $setTargetResourceParameters.ServiceType, $setTargetResourceParameters.ServerName, $setTargetResourceParameters.InstanceName
 
                 # Attempt to update the service account
-                { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockCorrectErrorMessage)
+                { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockCorrectErrorMessage)
             }
 
             # Ensure mocks are used properly
-            Should -Invoke -CommandName Get-ServiceObject -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Restart-SqlService -Scope It -Exactly -Times 0
+            Should-Invoke -CommandName Get-ServiceObject -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 0
         }
 
         It 'Should restart the service if requested' {
@@ -701,8 +701,8 @@ Describe 'SqlServerServiceAccount\Set-TargetResource' -Tag 'Set' {
             }
 
             # Ensure mocks are used properly
-            Should -Invoke -CommandName Get-ServiceObject -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName Restart-SqlService -Scope It -Exactly -Times 1
+            Should-Invoke -CommandName Get-ServiceObject -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
         }
     }
 
@@ -729,11 +729,11 @@ Describe 'SqlServerServiceAccount\Set-TargetResource' -Tag 'Set' {
                 $mockCorrectErrorMessage = $script:localizedData.SetServiceAccountFailed -f $setTargetResourceParameters.ServerName, $setTargetResourceParameters.InstanceName, ''
 
                 # Attempt to update the service account
-                { Set-TargetResource @setTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockCorrectErrorMessage + '*Mock SetServiceAccount*')
+                { Set-TargetResource @setTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockCorrectErrorMessage + '*Mock SetServiceAccount*')
             }
 
             # Ensure mocks are used properly
-            Should -Invoke -CommandName Get-ServiceObject -Scope It -Exactly -Times 1
+            Should-Invoke -CommandName Get-ServiceObject -Exactly -Scope It -Times 1
         }
     }
 }
@@ -791,8 +791,8 @@ Describe 'SqlServerServiceAccount\ConvertTo-ManagedServiceType' -Tag 'Helper' {
                 # Get the ManagedServiceType
                 $managedServiceType = ConvertTo-ManagedServiceType -ServiceType $MockServiceType
 
-                $managedServiceType | Should -BeOfType Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType
-                $managedServiceType | Should -Be $MockExpectedType
+                $managedServiceType | Should-HaveType ([Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType])
+                $managedServiceType | Should-Be $MockExpectedType
             }
         }
     }
@@ -856,8 +856,8 @@ Describe 'SqlServerServiceAccount\ConvertTo-ResourceServiceType' -Tag 'Helper' {
                 # Get the ManagedServiceType
                 $managedServiceType = ConvertTo-ResourceServiceType -ServiceType $MockServiceType
 
-                $managedServiceType | Should -BeOfType [System.String]
-                $managedServiceType | Should -Be $MockExpectedType
+                $managedServiceType | Should-HaveType ([System.String])
+                $managedServiceType | Should-Be $MockExpectedType
             }
         }
     }
@@ -1017,14 +1017,14 @@ Describe 'SqlServerServiceAccount\Get-SqlServiceName' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 # Get the service name
-                Get-SqlServiceName -InstanceName 'MSSQLSERVER' -ServiceType $MockServiceType | Should -Be $MockExpectedServiceName
+                Get-SqlServiceName -InstanceName 'MSSQLSERVER' -ServiceType $MockServiceType | Should-Be $MockExpectedServiceName
             }
 
             # Ensure the mock is utilized
-            Should -Invoke -CommandName Get-ChildItem -ParameterFilter {
+            Should-Invoke -CommandName Get-ChildItem -Exactly -ParameterFilter {
                 # Registry key used to index service type mappings
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Services'
-            } -Scope It -Exactly -Times 1
+            } -Scope It -Times 1
         }
     }
 
@@ -1099,14 +1099,14 @@ Describe 'SqlServerServiceAccount\Get-SqlServiceName' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 # Get the service name
-                Get-SqlServiceName -InstanceName 'TestInstance' -ServiceType $MockServiceType | Should -Be $MockExpectedServiceName
+                Get-SqlServiceName -InstanceName 'TestInstance' -ServiceType $MockServiceType | Should-Be $MockExpectedServiceName
             }
 
             # Ensure the mock is utilized
-            Should -Invoke -CommandName Get-ChildItem -ParameterFilter {
+            Should-Invoke -CommandName Get-ChildItem -Exactly -ParameterFilter {
                 # Registry key used to index service type mappings
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Services'
-            } -Scope It -Exactly -Times 1
+            } -Scope It -Times 1
         }
 
         It 'Should throw an error for <MockServiceType> which is not instance-aware' -ForEach $notInstanceAwareTestCases {
@@ -1117,7 +1117,7 @@ Describe 'SqlServerServiceAccount\Get-SqlServiceName' -Tag 'Helper' {
                 $mockErrorMessage = $script:localizedData.NotInstanceAware -f $MockServiceType
 
                 # An exception should be raised
-                { Get-SqlServiceName -InstanceName 'TestInstance' -ServiceType $MockServiceType } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                { Get-SqlServiceName -InstanceName 'TestInstance' -ServiceType $MockServiceType } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
         }
     }
@@ -1138,11 +1138,11 @@ Describe 'SqlServerServiceAccount\Get-SqlServiceName' -Tag 'Helper' {
 
                 $mockErrorMessage = '{0} (Parameter ''ServiceType'')' -f ($script:localizedData.UnknownServiceType -f 'DatabaseEngine')
 
-                { Get-SqlServiceName -InstanceName 'TestInstance' -ServiceType DatabaseEngine } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { Get-SqlServiceName -InstanceName 'TestInstance' -ServiceType DatabaseEngine } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
 
             # Ensure the mock was called
-            Should -Invoke -CommandName Get-ChildItem -Times 1 -Exactly -Scope It
+            Should-Invoke -CommandName Get-ChildItem -Exactly -Scope It -Times 1
         }
     }
 }
@@ -1191,12 +1191,12 @@ Describe 'SqlServerServiceAccount\Get-ServiceObject' -Tag 'Helper' {
 
                 $serviceObject = Get-ServiceObject @mockGetServiceObjectParameters
 
-                $serviceObject.Type | Should -Be 'SqlServer'
+                $serviceObject.Type | Should-Be 'SqlServer'
             }
 
             # Ensure mocks are properly used
-            Should -Invoke -CommandName Import-SqlDscPreferredModule -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName New-Object -Scope It -Exactly -Times 1
+            Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 1
         }
     }
 
@@ -1237,12 +1237,12 @@ Describe 'SqlServerServiceAccount\Get-ServiceObject' -Tag 'Helper' {
 
                 $serviceObject = Get-ServiceObject @mockGetServiceObjectParameters
 
-                $serviceObject.Type | Should -Be 'SqlServer'
+                $serviceObject.Type | Should-Be 'SqlServer'
             }
 
             # Ensure mocks are properly used
-            Should -Invoke -CommandName Import-SqlDscPreferredModule -Scope It -Exactly -Times 1
-            Should -Invoke -CommandName New-Object -Scope It -Exactly -Times 1
+            Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 1
         }
     }
 
@@ -1292,7 +1292,7 @@ Describe 'SqlServerServiceAccount\Get-ServiceObject' -Tag 'Helper' {
 
                 $testErrorMessage = '{0} (Parameter ''VersionNumber'')' -f ($script:localizedData.MissingParameter -f 'IntegrationServices')
 
-                { Get-ServiceObject @mockGetServiceObjectParameters } | Should -Throw $testErrorMessage
+                { Get-ServiceObject @mockGetServiceObjectParameters } | Should-Throw $testErrorMessage
             }
         }
 
@@ -1307,10 +1307,10 @@ Describe 'SqlServerServiceAccount\Get-ServiceObject' -Tag 'Helper' {
 
                 $mockGetServiceObject = Get-ServiceObject @mockGetServiceObjectParameters
 
-                $mockGetServiceObject | Should -HaveCount 1
-                $mockGetServiceObject.Type | Should -Be 'IntegrationServices'
-                $mockGetServiceObject.ServiceAccount | Should -Be 'NT SERVICE\MSSQLSERVER'
-                $mockGetServiceObject.Name | Should -Be 'MsDtsServer130'
+                $mockGetServiceObject | Should-BeCollection -Count 1
+                $mockGetServiceObject.Type | Should-Be 'IntegrationServices'
+                $mockGetServiceObject.ServiceAccount | Should-Be 'NT SERVICE\MSSQLSERVER'
+                $mockGetServiceObject.Name | Should-Be 'MsDtsServer130'
             }
         }
     }

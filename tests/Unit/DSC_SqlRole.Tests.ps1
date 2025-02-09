@@ -240,30 +240,30 @@ Describe "DSC_SqlRole\Get-TargetResource" -Tag 'Get' {
 
         It 'Should return the state as absent when the role does not exist' {
             InModuleScope -ScriptBlock {
-                $result.Ensure | Should -Be 'Absent'
+                $result.Ensure | Should-Be 'Absent'
             }
         }
 
         It 'Should return the members as null' {
             InModuleScope -ScriptBlock {
-                $result.membersInRole | Should -BeNullOrEmpty
+                $result.membersInRole | Should-BeFalsy
             }
         }
 
         It 'Should return the same values as passed as parameters' {
             InModuleScope -ScriptBlock {
-                $result.ServerName | Should -Be $mockTestParameters.ServerName
-                $result.InstanceName | Should -Be $mockTestParameters.InstanceName
-                $result.ServerRoleName | Should -Be $mockTestParameters.ServerRoleName
+                $result.ServerName | Should-Be $mockTestParameters.ServerName
+                $result.InstanceName | Should-Be $mockTestParameters.InstanceName
+                $result.ServerRoleName | Should-Be $mockTestParameters.ServerRoleName
             }
         }
 
         It 'Should be executed once' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
-    Context 'When the system is not in the desired state and ensure is set to Absent' {
+    Context 'When the system is not in the desired state and ensure is set to default value' {
         BeforeEach {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
@@ -276,33 +276,33 @@ Describe "DSC_SqlRole\Get-TargetResource" -Tag 'Get' {
 
         It 'Should not return the state as absent when the role exist' {
             InModuleScope -ScriptBlock {
-                $result.Ensure | Should -Not -Be 'Absent'
+                $result.Ensure | Should-NotBe 'Absent'
             }
         }
 
         It 'Should return the members as not null' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should -Not -BeNullOrEmpty
+                $result.Members | Should-BeTruthy
             }
         }
 
         # Regression test for issue #790
         It 'Should return the members as string array' {
             InModuleScope -ScriptBlock {
-                ($result.Members -is [System.String[]]) | Should -BeTrue
+                ($result.Members -is [System.String[]]) | Should-BeTrue
             }
         }
 
         It 'Should return the same values as passed as parameters' {
             InModuleScope -ScriptBlock {
-                $result.ServerName | Should -Be $mockTestParameters.ServerName
-                $result.InstanceName | Should -Be $mockTestParameters.InstanceName
-                $result.ServerRoleName | Should -Be $mockTestParameters.ServerRoleName
+                $result.ServerName | Should-Be $mockTestParameters.ServerName
+                $result.InstanceName | Should-Be $mockTestParameters.InstanceName
+                $result.ServerRoleName | Should-Be $mockTestParameters.ServerRoleName
             }
         }
 
         It 'Should be executed once' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -323,12 +323,12 @@ Describe "DSC_SqlRole\Get-TargetResource" -Tag 'Get' {
                     'AdminSqlForBI'
                 )
 
-                { Get-TargetResource @mockTestParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { Get-TargetResource @mockTestParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
             }
         }
 
         It 'Should call the mock function Connect-SQL' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope Context -Times 1
         }
     }
 }
@@ -368,12 +368,12 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
 
         It 'Should return false when desired server role exist' {
             InModuleScope -ScriptBlock {
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
 
         It 'Should be executed once' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -391,12 +391,12 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
 
         It 'Should return true when desired server role does not exist' {
             InModuleScope -ScriptBlock {
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
 
         It 'Should be executed once' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -414,16 +414,16 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
 
         It 'Should return true when desired server role exist' {
             InModuleScope -ScriptBlock {
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
 
         It 'Should be executed once' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
-    Context 'When the system is not in the desired state and ensure is set to Present' {
+    Context 'When the system is not in the desired state and ensure is set to Present, single role' {
         BeforeEach {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
@@ -437,16 +437,16 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
 
         It 'Should return false when desired server role does not exist' {
             InModuleScope -ScriptBlock {
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
 
         It 'Should be executed once' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
-    Context 'When the system is not in the desired state and ensure is set to Present' {
+    Context 'When the system is not in the desired state and ensure is set to Present, multiple roles' {
         BeforeEach {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
@@ -461,12 +461,12 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
 
         It 'Should return false when desired members are not in desired server role' {
             InModuleScope -ScriptBlock {
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
 
         It 'Should be executed once' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -482,16 +482,16 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
 
                 $mockErrorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
 
-                { Test-TargetResource @mockTestParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                { Test-TargetResource @mockTestParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
         }
 
         It 'Should not be executed' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 0
         }
     }
 
-    Context 'When parameter MembersToInclude is assigned a value, parameter Members is not assigned a value, and ensure is set to Present' {
+    Context 'When parameter MembersToInclude is assigned a member that exist, parameter Members is not assigned a value, and ensure is set to Present' {
         BeforeEach {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
@@ -506,16 +506,16 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
 
         It 'Should return true when desired server role exist' {
             InModuleScope -ScriptBlock {
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
 
         It 'Should be executed once' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
-    Context 'When parameter MembersToInclude is assigned a value, parameter Members is not assigned a value, and ensure is set to Present' {
+    Context 'When parameter MembersToInclude is assigned a member that does not exist, parameter Members is not assigned a value, and ensure is set to Present' {
         BeforeEach {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
@@ -530,12 +530,12 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
 
         It 'Should return false when desired server role does not exist' {
             InModuleScope -ScriptBlock {
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
 
         It 'Should be executed once' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -566,12 +566,12 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
 
         It 'Should return false when desired server role does not exist' {
             InModuleScope -ScriptBlock {
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
 
         It 'Should be executed once' {
-            Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
         }
     }
 
@@ -587,16 +587,16 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
 
                 $mockErrorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
 
-                { Test-TargetResource @mockTestParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                { Test-TargetResource @mockTestParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
         }
 
         It 'Should not be executed' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 0
         }
     }
 
-    Context 'When parameter MembersToExclude is assigned a value, parameter Members is not assigned a value, and ensure is set to Present' {
+    Context 'When parameter MembersToExclude is assigned a member that does not exist, parameter Members is not assigned a value, and ensure is set to Present' {
         BeforeEach {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
@@ -611,16 +611,16 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
 
         It 'Should return true when desired server role does not exist' {
             InModuleScope -ScriptBlock {
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
 
         It 'Should be executed once' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
-    Context 'When parameter MembersToExclude is assigned a value, parameter Members is not assigned a value, and ensure is set to Present' {
+    Context 'When parameter MembersToExclude is assigned a member that exist, parameter Members is not assigned a value, and ensure is set to Present' {
         BeforeEach {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
@@ -635,12 +635,12 @@ Describe "DSC_SqlRole\Test-TargetResource" -Tag 'Test' {
 
         It 'Should return false when desired server role exist' {
             InModuleScope -ScriptBlock {
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
 
         It 'Should be executed once' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 }
@@ -703,7 +703,7 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
         }
     }
 
-    Context 'When the system is not in the desired state and ensure is set to Absent' {
+    Context 'When the system is not in the desired state and ensure is set to Absent for Set-TargetResource' {
         It 'Should not throw when calling the drop method' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
@@ -714,16 +714,16 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockTestParameters.Ensure = 'Absent'
                 $mockTestParameters.ServerRoleName = $mockSqlServerRole
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockTestParameters })
             }
         }
 
         It 'Should be executed once' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope Context
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope Context -Times 1
         }
     }
 
-    Context 'When the system is not in the desired state and ensure is set to Absent' {
+    Context 'When the system is not in the desired state and ensure is set to Absent and role is missing' {
         It 'Should throw the correct error when calling the drop method' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
@@ -737,14 +737,14 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockErrorMessage = $script:localizedData.DropServerRoleSetError `
                     -f 'localhost', 'MSSQLSERVER', 'AdminSqlForBI'
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { Set-TargetResource @mockTestParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
-    Context 'When the system is not in the desired state and ensure is set to Present' {
+    Context 'When the system is not in the desired state and ensure is set to Present, single role' {
         It 'Should not throw when calling the create method' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
@@ -755,20 +755,20 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockTestParameters.Ensure         = 'Present'
                 $mockTestParameters.ServerRoleName = $mockSqlServerRoleAdd
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockTestParameters })
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.ServerRole' {
-            Should -Invoke -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
+            Should-Invoke -CommandName New-Object -Exactly -ParameterFilter {
                 $TypeName -eq 'Microsoft.SqlServer.Management.Smo.ServerRole'
-            } -Scope Context
+            } -Scope Context -Times 1
         }
     }
 
-    Context 'When the system is not in the desired state and ensure is set to Present' {
+    Context 'When the system is not in the desired state and ensure is set to Present and role cannot be created' {
         BeforeAll {
             $mockInvalidOperationForCreateMethod = $true
         }
@@ -786,16 +786,16 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockErrorMessage = $script:localizedData.CreateServerRoleSetError `
                     -f 'localhost', 'MSSQLSERVER', $mockSqlServerRoleAdd
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { Set-TargetResource @mockTestParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should call the mock function New-Object with TypeName equal to Microsoft.SqlServer.Management.Smo.ServerRole' {
-            Should -Invoke -CommandName New-Object -Exactly -Times 1 -ParameterFilter {
+            Should-Invoke -CommandName New-Object -Exactly -ParameterFilter {
                 $TypeName -eq 'Microsoft.SqlServer.Management.Smo.ServerRole'
-            } -Scope Context
+            } -Scope Context -Times 1
         }
     }
 
@@ -809,12 +809,12 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockTestParameters.Members          = @('CONTOSO\John', 'CONTOSO\Kelly')
                 $mockTestParameters.MembersToInclude = 'CONTOSO\Lucy'
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw -ExpectedMessage '*(DRC0010)*'
+                { Set-TargetResource @mockTestParameters } | Should-Throw -ExceptionMessage '*(DRC0010)*'
             }
         }
 
         It 'Should should not call Connect-SQL' {
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 0 -Scope Context
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope Context -Times 0
         }
     }
 
@@ -830,10 +830,10 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
 
                 $errorMessage = $script:localizedData.MembersToIncludeAndExcludeParamMustBeNull
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw -ExpectedMessage '*(DRC0010)*'
+                { Set-TargetResource @mockTestParameters } | Should-Throw -ExceptionMessage '*(DRC0010)*'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 0
         }
     }
 
@@ -850,14 +850,14 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
                 $mockTestParameters.MembersToInclude = 'CONTOSO\Lucy'
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockTestParameters })
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
-    Context 'When parameter MembersToInclude is assigned a value, parameter Members is not assigned a value, and ensure is set to Present' {
+    Context 'When parameter MembersToInclude is assigned a member that cannot be added, parameter Members is not assigned a value, and ensure is set to Present' {
         BeforeAll {
             $mockInvalidOperationForAddMemberMethod = $true
             $mockExpectedMemberToAdd = 'CONTOSO\Lucy'
@@ -874,14 +874,14 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockErrorMessage = $script:localizedData.AddMemberServerRoleSetError `
                     -f 'localhost', 'MSSQLSERVER', 'AdminSqlForBI', 'CONTOSO\Lucy'
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { Set-TargetResource @mockTestParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
-    Context 'When parameter MembersToInclude is assigned a value, parameter Members is not assigned a value, and ensure is set to Present' {
+    Context 'When parameter MembersToInclude is assigned a member that is missing login, parameter Members is not assigned a value, and ensure is set to Present' {
         BeforeAll {
             $mockExpectedMemberToAdd = 'CONTOSO\Lucy'
         }
@@ -901,10 +901,10 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     'KingJulian'
                 )
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { Set-TargetResource @mockTestParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -923,14 +923,14 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockTestParameters.ServerRoleName   = 'AdminSqlForBI'
                 $mockTestParameters.MembersToExclude = 'CONTOSO\Kelly'
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockTestParameters })
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
-    Context 'When parameter MembersToExclude is assigned a value, parameter Members is not assigned a value, and ensure is set to Present' {
+    Context 'When parameter MembersToExclude is assigned a member that cannot be dropped, parameter Members is not assigned a value, and ensure is set to Present' {
         BeforeAll {
             $mockInvalidOperationForDropMemberMethod = $true
             $mockExpectedMemberToDrop = 'CONTOSO\Kelly'
@@ -947,14 +947,14 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockErrorMessage = $script:localizedData.DropMemberServerRoleSetError `
                     -f 'localhost', 'MSSQLSERVER', 'AdminSqlForBI', 'CONTOSO\Kelly'
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { Set-TargetResource @mockTestParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
-    Context 'When parameter MembersToExclude is assigned a value, parameter Members is not assigned a value, and ensure is set to Present' {
+    Context 'When parameter MembersToExclude is assigned a member without a login, parameter Members is not assigned a value, and ensure is set to Present' {
         BeforeAll {
             $mockEnumMemberNames = @('KingJulian', 'CONTOSO\John', 'CONTOSO\Kelly')
             $mockExpectedMemberToAdd = 'CONTOSO\Lucy'
@@ -975,10 +975,10 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     'KingJulian'
                 )
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { Set-TargetResource @mockTestParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -1002,10 +1002,10 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     'KingJulian'
                 )
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { Set-TargetResource @mockTestParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -1023,10 +1023,10 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                 $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                 $mockTestParameters.Members        = @('CONTOSO\John', 'CONTOSO\Lucy')
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockTestParameters })
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -1044,10 +1044,10 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                     $mockTestParameters.Members = @('CONTOSO\John', 'CONTOSO\Kelly', 'TestChildRole')
 
-                    { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockTestParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
 
@@ -1064,10 +1064,10 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                     $mockTestParameters.MembersToInclude = @('TestChildRole')
 
-                    { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockTestParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
 
@@ -1084,10 +1084,10 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     $mockTestParameters.ServerRoleName = 'AdminSqlForBI'
                     $mockTestParameters.MembersToExclude = @('TestChildRole')
 
-                    { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockTestParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
     }
@@ -1104,10 +1104,10 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     $mockTestParameters.Ensure = 'Present'
                     $mockTestParameters.Members = 'CONTOSO\John'.ToUpper()
 
-                    { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockTestParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
 
             It 'Should not attempt to add an explicit member that already exists in the role' {
@@ -1120,10 +1120,10 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     $mockTestParameters.Ensure = 'Present'
                     $mockTestParameters.Members = @('CONTOSO\John'.ToUpper(), 'CONTOSO\Kelly')
 
-                    { Set-TargetResource @mockTestParameters } | Should -Not -Throw
-
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    $null = & ({ Set-TargetResource @mockTestParameters })
                 }
+
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
 
@@ -1138,10 +1138,10 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     $mockTestParameters.Ensure = 'Present'
                     $mockTestParameters.MembersToInclude = @('CONTOSO\John'.ToUpper())
 
-                    { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockTestParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
 
             It 'Should attempt to remove a member that is to be excluded' {
@@ -1154,10 +1154,10 @@ Describe "DSC_SqlRole\Set-TargetResource" -Tag 'Set' {
                     $mockTestParameters.Ensure = 'Present'
                     $mockTestParameters.MembersToExclude = @('CONTOSO\John'.ToUpper())
 
-                    { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockTestParameters })
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
     }
@@ -1195,7 +1195,7 @@ Describe 'DSC_SqlRole\Test-SqlSecurityPrincipal' -Tag 'Helper' {
                     'localhost\MSSQLSERVER'
                 )
 
-                { Test-SqlSecurityPrincipal @mockTestParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                { Test-SqlSecurityPrincipal @mockTestParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
         }
     }
@@ -1210,7 +1210,7 @@ Describe 'DSC_SqlRole\Test-SqlSecurityPrincipal' -Tag 'Helper' {
                     SecurityPrincipal = 'CONTOSO\John'
                 }
 
-                Test-SqlSecurityPrincipal @mockTestParameters | Should -BeTrue
+                Test-SqlSecurityPrincipal @mockTestParameters | Should-BeTrue
             }
         }
 
@@ -1223,7 +1223,7 @@ Describe 'DSC_SqlRole\Test-SqlSecurityPrincipal' -Tag 'Helper' {
                     SecurityPrincipal = 'CONTOSO\John'.ToUpper()
                 }
 
-                Test-SqlSecurityPrincipal @mockTestParameters | Should -BeTrue
+                Test-SqlSecurityPrincipal @mockTestParameters | Should-BeTrue
             }
         }
 
@@ -1236,7 +1236,7 @@ Describe 'DSC_SqlRole\Test-SqlSecurityPrincipal' -Tag 'Helper' {
                     SecurityPrincipal = 'AdminSqlForBI'
                 }
 
-                Test-SqlSecurityPrincipal @mockTestParameters | Should -BeTrue
+                Test-SqlSecurityPrincipal @mockTestParameters | Should-BeTrue
             }
         }
 
@@ -1249,7 +1249,7 @@ Describe 'DSC_SqlRole\Test-SqlSecurityPrincipal' -Tag 'Helper' {
                     SecurityPrincipal = 'AdminSqlForBI'.ToUpper()
                 }
 
-                Test-SqlSecurityPrincipal @mockTestParameters | Should -BeTrue
+                Test-SqlSecurityPrincipal @mockTestParameters | Should-BeTrue
             }
         }
     }
@@ -1275,13 +1275,13 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return an array with 2 elements' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should -HaveCount 2
+                $result.Members | Should-BeCollection -Count 2
             }
         }
 
         It 'Should return the same elements' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should -Be @(
+                $result.Members | Should-Be @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly'
                 )
@@ -1290,8 +1290,8 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should not return extra values' {
             InModuleScope -ScriptBlock {
-                $result.MembersToInclude | Should -BeNullOrEmpty
-                $result.MembersToExclude | Should -BeNullOrEmpty
+                $result.MembersToInclude | Should-BeFalsy
+                $result.MembersToExclude | Should-BeFalsy
             }
         }
     }
@@ -1316,13 +1316,13 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return an array with 3 elements' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should -HaveCount 3
+                $result.Members | Should-BeCollection -Count 3
             }
         }
 
         It 'Should return the same elements' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should -Be @(
+                $result.Members | Should-Be @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly',
                     'SA'
@@ -1332,8 +1332,8 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should not return extra values' {
             InModuleScope -ScriptBlock {
-                $result.MembersToInclude | Should -BeNullOrEmpty
-                $result.MembersToExclude | Should -BeNullOrEmpty
+                $result.MembersToInclude | Should-BeFalsy
+                $result.MembersToExclude | Should-BeFalsy
             }
         }
     }
@@ -1357,20 +1357,20 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return an array with 3 elements' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should -HaveCount 3
+                $result.Members | Should-BeCollection -Count 3
             }
         }
 
         It 'Should have SA in Members' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should -Contain 'SA'
+                $result.Members | Should-ContainCollection 'SA'
             }
         }
 
         It 'Should not return extra values' {
             InModuleScope -ScriptBlock {
-                $result.MembersToInclude | Should -BeNullOrEmpty
-                $result.MembersToExclude | Should -BeNullOrEmpty
+                $result.MembersToInclude | Should-BeFalsy
+                $result.MembersToExclude | Should-BeFalsy
             }
         }
     }
@@ -1395,13 +1395,13 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return an array with 3 elements' {
             InModuleScope -ScriptBlock {
-                $result.MembersToInclude | Should -HaveCount 3
+                $result.MembersToInclude | Should-BeCollection -Count 3
             }
         }
 
         It 'Should return the elements from Members' {
             InModuleScope -ScriptBlock {
-                $result.MembersToInclude | Should -Be @(
+                $result.MembersToInclude | Should-Be @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly',
                     'SA'
@@ -1411,8 +1411,8 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should not return extra values' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should -BeNullOrEmpty
-                $result.MembersToExclude | Should -BeNullOrEmpty
+                $result.Members | Should-BeFalsy
+                $result.MembersToExclude | Should-BeFalsy
             }
         }
     }
@@ -1436,13 +1436,13 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return an array with 2 elements' {
             InModuleScope -ScriptBlock {
-                $result.MembersToInclude | Should -HaveCount 2
+                $result.MembersToInclude | Should-BeCollection -Count 2
             }
         }
 
         It 'Should return the elements from Members' {
             InModuleScope -ScriptBlock {
-                $result.MembersToInclude | Should -Be  @(
+                $result.MembersToInclude | Should-Be @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly'
                 )
@@ -1451,8 +1451,8 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should not return extra values' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should -BeNullOrEmpty
-                $result.MembersToExclude | Should -BeNullOrEmpty
+                $result.Members | Should-BeFalsy
+                $result.MembersToExclude | Should-BeFalsy
             }
         }
     }
@@ -1476,13 +1476,13 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return an array with 2 elements' {
             InModuleScope -ScriptBlock {
-                $result.MembersToInclude | Should -HaveCount 2
+                $result.MembersToInclude | Should-BeCollection -Count 2
             }
         }
 
         It 'Should return the elements from Members' {
             InModuleScope -ScriptBlock {
-                $result.MembersToInclude | Should -Be @(
+                $result.MembersToInclude | Should-Be @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly'
                 )
@@ -1491,8 +1491,8 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should not return extra values' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should -BeNullOrEmpty
-                $result.MembersToExclude | Should -BeNullOrEmpty
+                $result.Members | Should-BeFalsy
+                $result.MembersToExclude | Should-BeFalsy
             }
         }
     }
@@ -1517,13 +1517,13 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return an array with 3 elements' {
             InModuleScope -ScriptBlock {
-                $result.MembersToInclude | Should -HaveCount 3
+                $result.MembersToInclude | Should-BeCollection -Count 3
             }
         }
 
         It 'Should return the elements from Members' {
             InModuleScope -ScriptBlock {
-                $result.MembersToInclude | Should -Be @(
+                $result.MembersToInclude | Should-Be @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly',
                     'SA'
@@ -1533,8 +1533,8 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should not return extra values' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should -BeNullOrEmpty
-                $result.MembersToExclude | Should -BeNullOrEmpty
+                $result.Members | Should-BeFalsy
+                $result.MembersToExclude | Should-BeFalsy
             }
         }
     }
@@ -1559,13 +1559,13 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return an array with 3 elements' {
             InModuleScope -ScriptBlock {
-                $result.MembersToExclude | Should -HaveCount 3
+                $result.MembersToExclude | Should-BeCollection -Count 3
             }
         }
 
         It 'Should return the elements from Members' {
             InModuleScope -ScriptBlock {
-                $result.MembersToExclude | Should -Be @(
+                $result.MembersToExclude | Should-Be @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly',
                     'SA'
@@ -1575,8 +1575,8 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should not return extra values' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should -BeNullOrEmpty
-                $result.MembersToInclude | Should -BeNullOrEmpty
+                $result.Members | Should-BeFalsy
+                $result.MembersToInclude | Should-BeFalsy
             }
         }
     }
@@ -1600,13 +1600,13 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return an array with 2 elements' {
             InModuleScope -ScriptBlock {
-                $result.MembersToExclude | Should -HaveCount 2
+                $result.MembersToExclude | Should-BeCollection -Count 2
             }
         }
 
         It 'Should return the elements from Members' {
             InModuleScope -ScriptBlock {
-                $result.MembersToExclude | Should -Be @(
+                $result.MembersToExclude | Should-Be @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly'
                 )
@@ -1615,8 +1615,8 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should not return extra values' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should -BeNullOrEmpty
-                $result.MembersToInclude | Should -BeNullOrEmpty
+                $result.Members | Should-BeFalsy
+                $result.MembersToInclude | Should-BeFalsy
             }
         }
     }
@@ -1640,13 +1640,13 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return an array with 2 elements' {
             InModuleScope -ScriptBlock {
-                $result.MembersToExclude | Should -HaveCount 2
+                $result.MembersToExclude | Should-BeCollection -Count 2
             }
         }
 
         It 'Should return the elements from Members' {
             InModuleScope -ScriptBlock {
-                $result.MembersToExclude | Should -Be @(
+                $result.MembersToExclude | Should-Be @(
                     'CONTOSO\John',
                     'CONTOSO\Kelly'
                 )
@@ -1655,8 +1655,8 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should not return extra values' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should -BeNullOrEmpty
-                $result.MembersToInclude | Should -BeNullOrEmpty
+                $result.Members | Should-BeFalsy
+                $result.MembersToInclude | Should-BeFalsy
             }
         }
     }
@@ -1681,20 +1681,20 @@ Describe 'DSC_SqlRole\Get-CorrectedMemberParameters' -Tag 'Helper' {
 
         It 'Should return an array with 2 elements' {
             InModuleScope -ScriptBlock {
-                $result.MembersToExclude | Should -HaveCount 2
+                $result.MembersToExclude | Should-BeCollection -Count 2
             }
         }
 
         It 'Should return the elements from Members' {
             InModuleScope -ScriptBlock {
-                $result.MembersToExclude | Should -Not -Contain 'SA'
+                $result.MembersToExclude | Should-NotContainCollection 'SA'
             }
         }
 
         It 'Should not return extra values' {
             InModuleScope -ScriptBlock {
-                $result.Members | Should -BeNullOrEmpty
-                $result.MembersToInclude | Should -BeNullOrEmpty
+                $result.Members | Should-BeFalsy
+                $result.MembersToInclude | Should-BeFalsy
             }
         }
     }

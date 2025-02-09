@@ -90,10 +90,10 @@ Describe 'DSC_SqlRSSetup\Get-TargetResource' -Tag 'Get' {
                     Set-StrictMode -Version 1.0
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
-                    $result.InstanceName | Should -BeNullOrEmpty
+                    $result.InstanceName | Should-BeFalsy
                 }
 
-                Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope 'It'
+                Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -Scope 'It' -Times 1
             }
 
             It 'Should return the same values as passed as parameters' {
@@ -102,11 +102,11 @@ Describe 'DSC_SqlRSSetup\Get-TargetResource' -Tag 'Get' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.IAcceptLicenseTerms | Should -Be $mockGetTargetResourceParameters.IAcceptLicenseTerms
-                    $result.SourcePath | Should -Be $mockGetTargetResourceParameters.SourcePath
+                    $result.IAcceptLicenseTerms | Should-Be $mockGetTargetResourceParameters.IAcceptLicenseTerms
+                    $result.SourcePath | Should-Be $mockGetTargetResourceParameters.SourcePath
                 }
 
-                Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope 'It'
+                Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -Scope 'It' -Times 1
             }
 
             It 'Should return $null or $false for the rest of the properties' {
@@ -115,20 +115,20 @@ Describe 'DSC_SqlRSSetup\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.Action | Should -BeNullOrEmpty
-                    $getTargetResourceResult.SourceCredential | Should -BeNullOrEmpty
-                    $getTargetResourceResult.ProductKey | Should -BeNullOrEmpty
-                    $getTargetResourceResult.ForceRestart | Should -BeFalse
-                    $getTargetResourceResult.EditionUpgrade | Should -BeFalse
-                    $getTargetResourceResult.Edition | Should -BeNullOrEmpty
-                    $getTargetResourceResult.LogPath | Should -BeNullOrEmpty
-                    $getTargetResourceResult.InstallFolder | Should -BeNullOrEmpty
-                    $getTargetResourceResult.ErrorDumpDirectory | Should -BeNullOrEmpty
-                    $getTargetResourceResult.CurrentVersion | Should -BeNullOrEmpty
-                    $getTargetResourceResult.ServiceName | Should -BeNullOrEmpty
+                    $getTargetResourceResult.Action | Should-BeFalsy
+                    $getTargetResourceResult.SourceCredential | Should-BeFalsy
+                    $getTargetResourceResult.ProductKey | Should-BeFalsy
+                    $getTargetResourceResult.ForceRestart | Should-BeFalse
+                    $getTargetResourceResult.EditionUpgrade | Should-BeFalse
+                    $getTargetResourceResult.Edition | Should-BeFalsy
+                    $getTargetResourceResult.LogPath | Should-BeFalsy
+                    $getTargetResourceResult.InstallFolder | Should-BeFalsy
+                    $getTargetResourceResult.ErrorDumpDirectory | Should-BeFalsy
+                    $getTargetResourceResult.CurrentVersion | Should-BeFalsy
+                    $getTargetResourceResult.ServiceName | Should-BeFalsy
                 }
 
-                Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope 'It'
+                Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -Scope 'It' -Times 1
             }
         }
 
@@ -215,12 +215,10 @@ Describe 'DSC_SqlRSSetup\Get-TargetResource' -Tag 'Get' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                    $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                 }
 
-                Should -Invoke -CommandName Get-RegistryPropertyValue `
-                    -ParameterFilter $mockGetRegistryPropertyValue_InstanceName_ParameterFilter `
-                    -Exactly -Times 1 -Scope 'It'
+                Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter $mockGetRegistryPropertyValue_InstanceName_ParameterFilter -Scope 'It' -Times 1
             }
 
             It 'Should return the same values as passed as parameters' {
@@ -229,8 +227,8 @@ Describe 'DSC_SqlRSSetup\Get-TargetResource' -Tag 'Get' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.IAcceptLicenseTerms | Should -Be $mockGetTargetResourceParameters.IAcceptLicenseTerms
-                    $result.SourcePath | Should -Be $mockGetTargetResourceParameters.SourcePath
+                    $result.IAcceptLicenseTerms | Should-Be $mockGetTargetResourceParameters.IAcceptLicenseTerms
+                    $result.SourcePath | Should-Be $mockGetTargetResourceParameters.SourcePath
                 }
             }
 
@@ -240,32 +238,26 @@ Describe 'DSC_SqlRSSetup\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.Action | Should -BeNullOrEmpty
-                    $getTargetResourceResult.SourceCredential | Should -BeNullOrEmpty
-                    $getTargetResourceResult.ProductKey | Should -BeNullOrEmpty
-                    $getTargetResourceResult.ForceRestart | Should -BeFalse
-                    $getTargetResourceResult.EditionUpgrade | Should -BeFalse
-                    $getTargetResourceResult.Edition | Should -BeNullOrEmpty
-                    $getTargetResourceResult.LogPath | Should -BeNullOrEmpty
-                    $getTargetResourceResult.InstallFolder | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services'
-                    $getTargetResourceResult.ErrorDumpDirectory | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles'
-                    $getTargetResourceResult.CurrentVersion | Should -Be '14.0.6514.11481'
-                    $getTargetResourceResult.ServiceName | Should -Be 'SQLServerReportingServices'
+                    $getTargetResourceResult.Action | Should-BeFalsy
+                    $getTargetResourceResult.SourceCredential | Should-BeFalsy
+                    $getTargetResourceResult.ProductKey | Should-BeFalsy
+                    $getTargetResourceResult.ForceRestart | Should-BeFalse
+                    $getTargetResourceResult.EditionUpgrade | Should-BeFalse
+                    $getTargetResourceResult.Edition | Should-BeFalsy
+                    $getTargetResourceResult.LogPath | Should-BeFalsy
+                    $getTargetResourceResult.InstallFolder | Should-Be 'C:\Program Files\Microsoft SQL Server Reporting Services'
+                    $getTargetResourceResult.ErrorDumpDirectory | Should-Be 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles'
+                    $getTargetResourceResult.CurrentVersion | Should-Be '14.0.6514.11481'
+                    $getTargetResourceResult.ServiceName | Should-Be 'SQLServerReportingServices'
                 }
 
-                Should -Invoke -CommandName Get-RegistryPropertyValue `
-                    -ParameterFilter $mockGetRegistryPropertyValue_InstallRootDirectory_ParameterFilter `
-                    -Exactly -Times 1 -Scope 'It'
+                Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter $mockGetRegistryPropertyValue_InstallRootDirectory_ParameterFilter -Scope 'It' -Times 1
 
-                Should -Invoke -CommandName Get-RegistryPropertyValue `
-                    -ParameterFilter $mockGetRegistryPropertyValue_ServiceName_ParameterFilter `
-                    -Exactly -Times 1 -Scope 'It'
+                Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter $mockGetRegistryPropertyValue_ServiceName_ParameterFilter -Scope 'It' -Times 1
 
-                Should -Invoke -CommandName Get-RegistryPropertyValue `
-                    -ParameterFilter $mockGetRegistryPropertyValue_ErrorDumpDir_ParameterFilter `
-                    -Exactly -Times 1 -Scope 'It'
+                Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter $mockGetRegistryPropertyValue_ErrorDumpDir_ParameterFilter -Scope 'It' -Times 1
 
-                Should -Invoke -CommandName Get-Package -Exactly -Times 1 -Scope 'It'
+                Should-Invoke -CommandName Get-Package -Exactly -Scope 'It' -Times 1
             }
 
             Context 'When there is an installed Reporting Services, but no installed package is found to determine version' {
@@ -280,10 +272,10 @@ Describe 'DSC_SqlRSSetup\Get-TargetResource' -Tag 'Get' {
 
                         $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $getTargetResourceResult.CurrentVersion | Should -BeNullOrEmpty
+                        $getTargetResourceResult.CurrentVersion | Should-BeFalsy
                     }
 
-                    Should -Invoke -CommandName Write-Warning -Exactly -Times 1 -Scope 'It'
+                    Should-Invoke -CommandName Write-Warning -Exactly -Scope 'It' -Times 1
                 }
             }
         }
@@ -326,10 +318,10 @@ Describe 'DSC_SqlRSSetup\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope 'It' -Times 1
             }
         }
 
@@ -353,11 +345,11 @@ Describe 'DSC_SqlRSSetup\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
-                Should -Invoke -CommandName Get-FileProductVersion -Exactly -Times 1 -Scope 'It'
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope 'It' -Times 1
+                Should-Invoke -CommandName Get-FileProductVersion -Exactly -Scope 'It' -Times 1
             }
         }
 
@@ -382,11 +374,11 @@ Describe 'DSC_SqlRSSetup\Test-TargetResource' -Tag 'Test' {
                     # This is called without the parameter 'VersionUpgrade'.
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
-                Should -Invoke -CommandName Get-FileProductVersion -Exactly -Times 1 -Scope 'It'
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope 'It' -Times 1
+                Should-Invoke -CommandName Get-FileProductVersion -Exactly -Scope 'It' -Times 1
             }
         }
     }
@@ -409,10 +401,10 @@ Describe 'DSC_SqlRSSetup\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope 'It' -Times 1
             }
         }
 
@@ -435,10 +427,10 @@ Describe 'DSC_SqlRSSetup\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters -Verbose
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope 'It' -Times 1
             }
         }
 
@@ -464,11 +456,11 @@ Describe 'DSC_SqlRSSetup\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters -Verbose
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope 'It'
-                Should -Invoke -CommandName Get-FileProductVersion -Exactly -Times 1 -Scope 'It'
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope 'It' -Times 1
+                Should-Invoke -CommandName Get-FileProductVersion -Exactly -Scope 'It' -Times 1
             }
         }
     }
@@ -533,8 +525,7 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
             }
 
             # Start by checking whether we have the same number of parameters
-            $actualValues.Count | Should -Be $ExpectedArgument.Count `
-                -Because ('the expected arguments was: {0}' -f ($ExpectedArgument.Keys -join ','))
+            $actualValues.Count | Should-Be $ExpectedArgument.Count -Because ('the expected arguments was: {0}' -f ($ExpectedArgument.Keys -join ','))
 
             Write-Verbose -Message 'Verified actual setup argument values against expected setup argument values' -Verbose
 
@@ -547,8 +538,8 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
 
                 $argumentValue = $actualValues.$argumentKey
 
-                $argumentKeyName | Should -Be $argumentKey
-                $argumentValue | Should -Be $ExpectedArgument.$argumentKey
+                $argumentKeyName | Should-Be $argumentKey
+                $argumentValue | Should-Be $ExpectedArgument.$argumentKey
             }
         }
 
@@ -590,7 +581,7 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
                 $errorMessage = $script:localizedData.SourcePathNotFound -f $script:mockSetTargetResourceParameters.SourcePath
 
                 { Set-TargetResource @mockSetTargetResourceParameters } |
-                    Should -Throw -ExpectedMessage ('*' + $errorMessage + " (Parameter 'SourcePath')")
+                    Should-Throw -ExceptionMessage ('*' + $errorMessage + " (Parameter 'SourcePath')")
             }
         }
     }
@@ -617,7 +608,7 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
                 $errorMessage = $script:localizedData.SourcePathNotFound -f $script:mockSetTargetResourceParameters.SourcePath
 
                 { Set-TargetResource @mockSetTargetResourceParameters } |
-                    Should -Throw -ExpectedMessage ('*' + $errorMessage + " (Parameter 'SourcePath')")
+                    Should-Throw -ExceptionMessage ('*' + $errorMessage + " (Parameter 'SourcePath')")
             }
         }
     }
@@ -631,7 +622,7 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
                 $script:mockSetTargetResourceParameters['ProductKey'] = $script:mockProductKey
 
                 { Set-TargetResource @mockSetTargetResourceParameters } |
-                    Should -Throw -ExpectedMessage ('*' + $script:localizedData.EditionInvalidParameter + " (Parameter 'Edition, ProductKey')")
+                    Should-Throw -ExceptionMessage ('*' + $script:localizedData.EditionInvalidParameter + " (Parameter 'Edition, ProductKey')")
             }
         }
     }
@@ -642,7 +633,7 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
                 Set-StrictMode -Version 1.0
 
                 { Set-TargetResource @mockSetTargetResourceParameters } |
-                    Should -Throw -ExpectedMessage ('*' + $script:localizedData.EditionMissingParameter + " (Parameter 'Edition, ProductKey')")
+                    Should-Throw -ExceptionMessage ('*' + $script:localizedData.EditionMissingParameter + " (Parameter 'Edition, ProductKey')")
             }
         }
     }
@@ -681,12 +672,12 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
 
                     $script:mockSetTargetResourceParameters['ProductKey'] = $script:mockProductKey
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $FilePath -eq (InModuleScope -ScriptBlock { $script:mockSetTargetResourceParameters.SourcePath })
-                } -Exactly -Times 1 -Scope 'It'
+                } -Scope 'It' -Times 1
             }
         }
 
@@ -710,12 +701,12 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
 
                     $script:mockSetTargetResourceParameters['Action'] = 'Uninstall'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $FilePath -eq (InModuleScope -ScriptBlock { $script:mockSetTargetResourceParameters.SourcePath })
-                } -Exactly -Times 1 -Scope 'It'
+                } -Scope 'It' -Times 1
             }
         }
 
@@ -740,12 +731,12 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
 
                     $script:mockSetTargetResourceParameters['Edition'] = 'Development'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $FilePath -eq (InModuleScope -ScriptBlock { $script:mockSetTargetResourceParameters.SourcePath })
-                } -Exactly -Times 1 -Scope 'It'
+                } -Scope 'It' -Times 1
             }
         }
 
@@ -778,12 +769,12 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
                     $script:mockSetTargetResourceParameters['EditionUpgrade'] = $true
                     $script:mockSetTargetResourceParameters['InstallFolder'] = 'C:\Temp'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $FilePath -eq (InModuleScope -ScriptBlock { $script:mockSetTargetResourceParameters.SourcePath })
-                } -Exactly -Times 1 -Scope 'It'
+                } -Scope 'It' -Times 1
             }
         }
 
@@ -809,12 +800,12 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
                     $script:mockSetTargetResourceParameters['ProductKey'] = $script:mockProductKey
                     $script:mockSetTargetResourceParameters['SuppressRestart'] = $false
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $FilePath -eq (InModuleScope -ScriptBlock { $script:mockSetTargetResourceParameters.SourcePath })
-                } -Exactly -Times 1 -Scope 'It'
+                } -Scope 'It' -Times 1
             }
         }
 
@@ -840,12 +831,12 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
                     $script:mockSetTargetResourceParameters['ProductKey'] = $script:mockProductKey
                     $script:mockSetTargetResourceParameters['EditionUpgrade'] = $false
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $FilePath -eq (InModuleScope -ScriptBlock { $script:mockSetTargetResourceParameters.SourcePath })
-                } -Exactly -Times 1 -Scope 'It'
+                } -Scope 'It' -Times 1
             }
         }
 
@@ -882,14 +873,14 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
                     $script:mockSetTargetResourceParameters['ProductKey'] = $script:mockProductKey
                     $script:mockSetTargetResourceParameters['SourceCredential'] = $mockShareCredential
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Invoke-InstallationMediaCopy -Exactly -Times 1 -Scope 'It'
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Invoke-InstallationMediaCopy -Exactly -Scope 'It' -Times 1
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     # Have to build the correct path (local path + executable).
                     $FilePath -eq (Join-Path -Path $mockLocalPath -ChildPath (Split-Path -Path (InModuleScope -ScriptBlock { $script:mockSetTargetResourceParameters.SourcePath }) -Leaf))
-                } -Exactly -Times 1 -Scope 'It'
+                } -Scope 'It' -Times 1
             }
         }
 
@@ -914,15 +905,15 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
 
                     $script:mockSetTargetResourceParameters['Edition'] = 'Development'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $FilePath -eq (InModuleScope -ScriptBlock { $script:mockSetTargetResourceParameters.SourcePath })
-                } -Exactly -Times 1 -Scope 'It'
+                } -Scope 'It' -Times 1
 
                 # Should set the global DSCMachineStatus variable.
-                $global:DSCMachineStatus | Should -Be 1
+                $global:DSCMachineStatus | Should-Be 1
             }
 
             Context 'When the Reporting Services installation is successful with exit code 3010, and called with parameter SuppressRestart' {
@@ -937,15 +928,15 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
                         $script:mockSetTargetResourceParameters['Edition'] = 'Development'
                         $script:mockSetTargetResourceParameters['SuppressRestart'] = $true
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $FilePath -eq (InModuleScope -ScriptBlock { $script:mockSetTargetResourceParameters.SourcePath })
-                    } -Exactly -Times 1 -Scope 'It'
+                    } -Scope 'It' -Times 1
 
                     # Should not set the global DSCMachineStatus variable.
-                    $global:DSCMachineStatus | Should -Be 0
+                    $global:DSCMachineStatus | Should-Be 0
                 }
             }
         }
@@ -973,16 +964,16 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
                     $script:mockSetTargetResourceParameters['Edition'] = 'Development'
                     $script:mockSetTargetResourceParameters['ForceRestart'] = $true
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
                 # Should set the global DSCMachineStatus variable.
-                $global:DSCMachineStatus | Should -Be 1
+                $global:DSCMachineStatus | Should-Be 1
 
-                Should -Invoke -CommandName Test-PendingRestart -Exactly -Times 0 -Scope 'It'
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Test-PendingRestart -Exactly -Scope 'It' -Times 0
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $FilePath -eq (InModuleScope -ScriptBlock { $script:mockSetTargetResourceParameters.SourcePath })
-                } -Exactly -Times 1 -Scope 'It'
+                } -Scope 'It' -Times 1
             }
         }
 
@@ -1011,16 +1002,16 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
 
                     $script:mockSetTargetResourceParameters['Edition'] = 'Development'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
                 # Should set the global DSCMachineStatus variable.
-                $global:DSCMachineStatus | Should -Be 1
+                $global:DSCMachineStatus | Should-Be 1
 
-                Should -Invoke -CommandName Test-PendingRestart -Exactly -Times 1 -Scope 'It'
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Test-PendingRestart -Exactly -Scope 'It' -Times 1
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $FilePath -eq (InModuleScope -ScriptBlock { $script:mockSetTargetResourceParameters.SourcePath })
-                } -Exactly -Times 1 -Scope 'It'
+                } -Scope 'It' -Times 1
             }
         }
 
@@ -1045,15 +1036,15 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
 
                     $script:mockSetTargetResourceParameters['Edition'] = 'Development'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $script:localizedData.SetupFailed)
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $script:localizedData.SetupFailed)
                 }
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                     $FilePath -eq (InModuleScope -ScriptBlock { $script:mockSetTargetResourceParameters.SourcePath })
-                } -Exactly -Times 1 -Scope 'It'
+                } -Scope 'It' -Times 1
 
                 # Should not set the global DSCMachineStatus variable.
-                $global:DSCMachineStatus | Should -Be 0
+                $global:DSCMachineStatus | Should-Be 0
             }
 
             Context 'When the Reporting Services installation fails, and called with parameter LogPath' {
@@ -1075,15 +1066,15 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
 
                         $errorMessage = $script:localizedData.SetupFailedWithLog -f $script:mockSetTargetResourceParameters.LogPath
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $errorMessage)
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $errorMessage)
                     }
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         $FilePath -eq (InModuleScope -ScriptBlock { $script:mockSetTargetResourceParameters.SourcePath })
-                    } -Exactly -Times 1 -Scope 'It'
+                    } -Scope 'It' -Times 1
 
                     # Should not set the global DSCMachineStatus variable.
-                    $global:DSCMachineStatus | Should -Be 0
+                    $global:DSCMachineStatus | Should-Be 0
                 }
             }
         }
@@ -1128,7 +1119,7 @@ Describe "DSC_SqlRSSetup\Convert-EditionName" -Tag 'Helper' {
             } -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                Convert-EditionName -Name $InputName | Should -Be $OutputName
+                Convert-EditionName -Name $InputName | Should-Be $OutputName
             }
         }
     }
@@ -1150,7 +1141,7 @@ Describe "DSC_SqlRSSetup\Get-FileProductVersion" -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                Get-FileProductVersion -Path 'TestDrive:\MockExecutable.exe' | Should -Be '14.0.0.0'
+                Get-FileProductVersion -Path 'TestDrive:\MockExecutable.exe' | Should-Be '14.0.0.0'
             }
         }
     }

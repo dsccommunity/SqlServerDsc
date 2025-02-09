@@ -85,7 +85,7 @@ Describe 'Helper functions' {
                 #>
                 $mockComputerName = Get-ComputerName
 
-                Get-SqlLocalServerName -InstanceName MSSQLSERVER | Should -Be $mockComputerName
+                Get-SqlLocalServerName -InstanceName MSSQLSERVER | Should-Be $mockComputerName
             }
         }
 
@@ -97,7 +97,7 @@ Describe 'Helper functions' {
                 #>
                 $mockComputerName = Get-ComputerName
 
-                Get-SqlLocalServerName -InstanceName InstanceName | Should -Be "$($mockComputerName)\InstanceName"
+                Get-SqlLocalServerName -InstanceName InstanceName | Should-Be "$($mockComputerName)\InstanceName"
             }
         }
     }
@@ -150,78 +150,74 @@ Describe 'The system is not in the desired state given Local distribution mode' 
             }
 
             It 'Get method calls Get-SqlInstanceMajorVersion with InstanceName = MSSQLSERVER' {
-                Should -Invoke -CommandName Get-SqlInstanceMajorVersion -Times 1 `
-                    -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+                Should-Invoke -CommandName Get-SqlInstanceMajorVersion -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
             }
 
             It 'Get method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
-                Should -Invoke -CommandName Get-SqlLocalServerName -Times 1 `
-                    -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+                Should-Invoke -CommandName Get-SqlLocalServerName -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
             }
 
             It 'Get method calls New-ServerConnection with $SqlServerName = SERVERNAME' {
-                Should -Invoke -CommandName New-ServerConnection -Times 1 `
-                    -ParameterFilter { $SqlServerName -eq 'SERVERNAME' }
+                Should-Invoke -CommandName New-ServerConnection -ParameterFilter { $SqlServerName -eq 'SERVERNAME' } -Times 1
             }
 
             It 'Get method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME' {
-                Should -Invoke -CommandName New-ReplicationServer -Times 1 `
-                    -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
+                Should-Invoke -CommandName New-ReplicationServer -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' } -Times 1
             }
 
             It 'Get method does not call New-DistributionDatabase' {
-                Should -Invoke -CommandName New-DistributionDatabase -Times 0
+                Should-Invoke -CommandName New-DistributionDatabase -Times 0
             }
 
             It 'Get method does not call Install-LocalDistributor' {
-                Should -Invoke -CommandName Install-LocalDistributor -Times 0
+                Should-Invoke -CommandName Install-LocalDistributor -Times 0
             }
 
             It 'Get method does not call Install-RemoteDistributor' {
-                Should -Invoke -CommandName Install-RemoteDistributor -Times 0
+                Should-Invoke -CommandName Install-RemoteDistributor -Times 0
             }
 
             It 'Ger method does not call Register-DistributorPublisher' {
-                Should -Invoke -CommandName Register-DistributorPublisher -Times 0
+                Should-Invoke -CommandName Register-DistributorPublisher -Times 0
             }
 
             It 'Ger method does not call Uninstall-Distributor' {
-                Should -Invoke -CommandName Uninstall-Distributor -Times 0
+                Should-Invoke -CommandName Uninstall-Distributor -Times 0
             }
 
             It 'Get method returns Ensure = Absent' {
                 InModuleScope -ScriptBlock {
-                    $result.Ensure | Should -Be 'Absent'
+                    $result.Ensure | Should-Be 'Absent'
                 }
             }
 
             It 'Get method returns InstanceName = ''MSSQLSERVER''' {
                 InModuleScope -ScriptBlock {
-                    $result.InstanceName | Should -Be $mockTestParameters.InstanceName
+                    $result.InstanceName | Should-Be $mockTestParameters.InstanceName
                 }
             }
 
             It 'Get method returns DistributorMode as $null' {
                 InModuleScope -ScriptBlock {
-                    $result.DistributorMode | Should -BeNullOrEmpty
+                    $result.DistributorMode | Should-BeFalsy
                 }
             }
 
             It 'Get method returns DistributionDBName as $null' {
                 InModuleScope -ScriptBlock {
-                    $result.DistributionDBName | Should -BeNullOrEmpty
+                    $result.DistributionDBName | Should-BeFalsy
                 }
             }
 
             It 'Get method returns RemoteDistributor as $null' {
                 InModuleScope -ScriptBlock {
-                    $result.RemoteDistributor | Should -BeNullOrEmpty
+                    $result.RemoteDistributor | Should-BeFalsy
                 }
             }
 
             It 'Get method returns WorkingDirectory as $null' {
                 InModuleScope -ScriptBlock {
-                    $result.WorkingDirectory | Should -BeNullOrEmpty
+                    $result.WorkingDirectory | Should-BeFalsy
                 }
             }
         }
@@ -230,7 +226,7 @@ Describe 'The system is not in the desired state given Local distribution mode' 
     Context 'Test method' {
         It 'Test method returns false' {
             InModuleScope -ScriptBlock {
-                Test-TargetResource @mockTestParameters | Should -BeFalse
+                Test-TargetResource @mockTestParameters | Should-BeFalse
             }
         }
     }
@@ -243,46 +239,39 @@ Describe 'The system is not in the desired state given Local distribution mode' 
         }
 
         It 'Set method calls Get-SqlInstanceMajorVersion with $InstanceName = MSSQLSERVER' {
-            Should -Invoke -CommandName Get-SqlInstanceMajorVersion -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+            Should-Invoke -CommandName Get-SqlInstanceMajorVersion -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
         }
 
         It 'Set method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
-            Should -Invoke -CommandName Get-SqlLocalServerName -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+            Should-Invoke -CommandName Get-SqlLocalServerName -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
         }
 
         It 'Set method calls New-ServerConnection with $SqlServerName = SERVERNAME' {
-            Should -Invoke -CommandName New-ServerConnection -Times 1 `
-                -ParameterFilter { $SqlServerName -eq 'SERVERNAME' }
+            Should-Invoke -CommandName New-ServerConnection -ParameterFilter { $SqlServerName -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Set method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME' {
-            Should -Invoke -CommandName New-ReplicationServer -Times 1 `
-                -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
+            Should-Invoke -CommandName New-ReplicationServer -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Set method calls New-DistributionDatabase with $DistributionDBName = distribution' {
-            Should -Invoke -CommandName New-DistributionDatabase -Times 1 `
-                -ParameterFilter { $DistributionDBName -eq 'distribution' }
+            Should-Invoke -CommandName New-DistributionDatabase -ParameterFilter { $DistributionDBName -eq 'distribution' } -Times 1
         }
 
         It 'Set method calls Install-LocalDistributor' {
-            Should -Invoke -CommandName Install-LocalDistributor -Times 1 `
-                -ParameterFilter { $ReplicationServer.DistributionServer -eq 'SERVERNAME' }
+            Should-Invoke -CommandName Install-LocalDistributor -ParameterFilter { $ReplicationServer.DistributionServer -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Set method calls Register-DistributorPublisher' {
-            Should -Invoke -CommandName Register-DistributorPublisher -Times 1 `
-                -ParameterFilter { $PublisherName -eq 'SERVERNAME' }
+            Should-Invoke -CommandName Register-DistributorPublisher -ParameterFilter { $PublisherName -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Set method does not call Install-RemoteDistributor' {
-            Should -Invoke -CommandName Install-RemoteDistributor -Times 0
+            Should-Invoke -CommandName Install-RemoteDistributor -Times 0
         }
 
         It 'Set method does not call Uninstall-Distributor' {
-            Should -Invoke -CommandName Uninstall-Distributor -Times 0
+            Should-Invoke -CommandName Uninstall-Distributor -Times 0
         }
     }
 }
@@ -336,78 +325,74 @@ Describe 'The system is not in the desired state given Remote distribution mode'
             }
 
             It 'Get method calls Get-SqlInstanceMajorVersion with $InstanceName = INSTANCENAME' {
-                Should -Invoke -CommandName Get-SqlInstanceMajorVersion -Times 1 `
-                    -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+                Should-Invoke -CommandName Get-SqlInstanceMajorVersion -ParameterFilter { $InstanceName -eq 'INSTANCENAME' } -Times 1
             }
 
             It 'Get method calls Get-SqlLocalServerName with $InstanceName = INSTANCENAME' {
-                Should -Invoke -CommandName Get-SqlLocalServerName -Times 1 `
-                    -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+                Should-Invoke -CommandName Get-SqlLocalServerName -ParameterFilter { $InstanceName -eq 'INSTANCENAME' } -Times 1
             }
 
             It 'Get method calls New-ServerConnection with $SqlServerName = SERVERNAME\INSTANCENAME' {
-                Should -Invoke -CommandName New-ServerConnection -Times 1 `
-                    -ParameterFilter { $SqlServerName -eq 'SERVERNAME\INSTANCENAME' }
+                Should-Invoke -CommandName New-ServerConnection -ParameterFilter { $SqlServerName -eq 'SERVERNAME\INSTANCENAME' } -Times 1
             }
 
             It 'Get method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME\INSTANCENAME' {
-                Should -Invoke -CommandName New-ReplicationServer -Times 1 `
-                    -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' }
+                Should-Invoke -CommandName New-ReplicationServer -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' } -Times 1
             }
 
             It 'Get method does not call New-DistributionDatabase' {
-                Should -Invoke -CommandName New-DistributionDatabase -Times 0
+                Should-Invoke -CommandName New-DistributionDatabase -Times 0
             }
 
             It 'Get method does not call Install-LocalDistributor' {
-                Should -Invoke -CommandName Install-LocalDistributor -Times 0
+                Should-Invoke -CommandName Install-LocalDistributor -Times 0
             }
 
             It 'Get method does not call Install-RemoteDistributor' {
-                Should -Invoke -CommandName Install-RemoteDistributor -Times 0
+                Should-Invoke -CommandName Install-RemoteDistributor -Times 0
             }
 
             It 'Ger method does not call Register-DistributorPublisher' {
-                Should -Invoke -CommandName Register-DistributorPublisher -Times 0
+                Should-Invoke -CommandName Register-DistributorPublisher -Times 0
             }
 
             It 'Ger method does not call Uninstall-Distributor' {
-                Should -Invoke -CommandName Uninstall-Distributor -Times 0
+                Should-Invoke -CommandName Uninstall-Distributor -Times 0
             }
 
             It 'Get method returns Ensure = Absent' {
                 InModuleScope -ScriptBlock {
-                    $result.Ensure | Should -Be 'Absent'
+                    $result.Ensure | Should-Be 'Absent'
                 }
             }
 
             It 'Get method returns InstanceName = ''INSTANCENAME''' {
                 InModuleScope -ScriptBlock {
-                    $result.InstanceName | Should -Be $mockTestParameters.InstanceName
+                    $result.InstanceName | Should-Be $mockTestParameters.InstanceName
                 }
             }
 
             It 'Get method returns DistributorMode as $null' {
                 InModuleScope -ScriptBlock {
-                    $result.DistributorMode | Should -BeNullOrEmpty
+                    $result.DistributorMode | Should-BeFalsy
                 }
             }
 
             It 'Get method returns DistributionDBName as $null' {
                 InModuleScope -ScriptBlock {
-                    $result.DistributionDBName | Should -BeNullOrEmpty
+                    $result.DistributionDBName | Should-BeFalsy
                 }
             }
 
             It 'Get method returns RemoteDistributor as $null' {
                 InModuleScope -ScriptBlock {
-                    $result.RemoteDistributor | Should -BeNullOrEmpty
+                    $result.RemoteDistributor | Should-BeFalsy
                 }
             }
 
             It 'Get method returns WorkingDirectory as $null' {
                 InModuleScope -ScriptBlock {
-                    $result.WorkingDirectory | Should -BeNullOrEmpty
+                    $result.WorkingDirectory | Should-BeFalsy
                 }
             }
         }
@@ -416,7 +401,7 @@ Describe 'The system is not in the desired state given Remote distribution mode'
     Context 'Test method' {
         It 'Test method returns false' {
             InModuleScope -ScriptBlock {
-                Test-TargetResource @mockTestParameters | Should -BeFalse
+                Test-TargetResource @mockTestParameters | Should-BeFalse
             }
         }
     }
@@ -429,49 +414,42 @@ Describe 'The system is not in the desired state given Remote distribution mode'
         }
 
         It 'Set method calls Get-SqlInstanceMajorVersion with $InstanceName = INSTANCENAME' {
-            Should -Invoke -CommandName Get-SqlInstanceMajorVersion -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+            Should-Invoke -CommandName Get-SqlInstanceMajorVersion -ParameterFilter { $InstanceName -eq 'INSTANCENAME' } -Times 1
         }
 
         It 'Set method calls Get-SqlLocalServerName with $InstanceName = INSTANCENAME' {
-            Should -Invoke -CommandName Get-SqlLocalServerName -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+            Should-Invoke -CommandName Get-SqlLocalServerName -ParameterFilter { $InstanceName -eq 'INSTANCENAME' } -Times 1
         }
 
         It 'Set method calls New-ServerConnection with $SqlServerName = SERVERNAME\INSTANCENAME' {
-            Should -Invoke -CommandName New-ServerConnection -Times 1 `
-                -ParameterFilter { $SqlServerName -eq 'SERVERNAME\INSTANCENAME' }
+            Should-Invoke -CommandName New-ServerConnection -ParameterFilter { $SqlServerName -eq 'SERVERNAME\INSTANCENAME' } -Times 1
         }
 
         It 'Set method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME\INSTANCENAME' {
-            Should -Invoke -CommandName New-ReplicationServer -Times 1 `
-                -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' }
+            Should-Invoke -CommandName New-ReplicationServer -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' } -Times 1
         }
 
         It 'Set method calls New-ServerConnection with $SqlServerName = ''REMOTESERVER''' {
-            Should -Invoke -CommandName New-ServerConnection -Times 1 `
-                -ParameterFilter { $SqlServerName -eq 'REMOTESERVER' }
+            Should-Invoke -CommandName New-ServerConnection -ParameterFilter { $SqlServerName -eq 'REMOTESERVER' } -Times 1
         }
 
         It 'Set method calls Register-DistributorPublisher with RemoteDistributor connection' {
-            Should -Invoke -CommandName Register-DistributorPublisher -Times 1 `
-                -ParameterFilter {
+            Should-Invoke -CommandName Register-DistributorPublisher -ParameterFilter {
                     $PublisherName -eq 'SERVERNAME\INSTANCENAME' `
                     -and $ServerConnection.ServerInstance -eq 'REMOTESERVER'
-                }
+                } -Times 1
         }
 
         It 'Set method calls Install-RemoteDistributor' {
-            Should -Invoke -CommandName Install-RemoteDistributor -Times 1 `
-                -ParameterFilter { $RemoteDistributor -eq 'REMOTESERVER' }
+            Should-Invoke -CommandName Install-RemoteDistributor -ParameterFilter { $RemoteDistributor -eq 'REMOTESERVER' } -Times 1
         }
 
         It 'Set method does not call Install-LocalDistributor' {
-            Should -Invoke -CommandName Install-LocalDistributor -Times 0
+            Should-Invoke -CommandName Install-LocalDistributor -Times 0
         }
 
         It 'Set method does not call Uninstall-Distributor' {
-            Should -Invoke -CommandName Uninstall-Distributor -Times 0
+            Should-Invoke -CommandName Uninstall-Distributor -Times 0
         }
     }
 
@@ -486,7 +464,7 @@ Describe 'The system is not in the desired state given Remote distribution mode'
             InModuleScope -ScriptBlock {
                 $mockErrorMessage = '{0} (Parameter ''RemoteDistributor'')' -f $script:localizedData.NoRemoteDistributor
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                { Set-TargetResource @mockTestParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
         }
     }
@@ -539,78 +517,74 @@ Describe 'The system is in sync given Local distribution mode' {
         }
 
         It 'Get method calls Get-SqlInstanceMajorVersion with InstanceName = MSSQLSERVER' {
-            Should -Invoke -CommandName Get-SqlInstanceMajorVersion -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+            Should-Invoke -CommandName Get-SqlInstanceMajorVersion -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
         }
 
         It 'Get method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
-            Should -Invoke -CommandName Get-SqlLocalServerName -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+            Should-Invoke -CommandName Get-SqlLocalServerName -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
         }
 
         It 'Get method calls New-ServerConnection with $SqlServerName = SERVERNAME' {
-            Should -Invoke -CommandName New-ServerConnection -Times 1 `
-                -ParameterFilter { $SqlServerName -eq 'SERVERNAME' }
+            Should-Invoke -CommandName New-ServerConnection -ParameterFilter { $SqlServerName -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Get method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME' {
-            Should -Invoke -CommandName New-ReplicationServer -Times 1 `
-                -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
+            Should-Invoke -CommandName New-ReplicationServer -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Get method does not call New-DistributionDatabase' {
-            Should -Invoke -CommandName New-DistributionDatabase -Times 0
+            Should-Invoke -CommandName New-DistributionDatabase -Times 0
         }
 
         It 'Get method does not call Install-LocalDistributor' {
-            Should -Invoke -CommandName Install-LocalDistributor -Times 0
+            Should-Invoke -CommandName Install-LocalDistributor -Times 0
         }
 
         It 'Get method does not call Install-RemoteDistributor' {
-            Should -Invoke -CommandName Install-RemoteDistributor -Times 0
+            Should-Invoke -CommandName Install-RemoteDistributor -Times 0
         }
 
         It 'Ger method does not call Register-DistributorPublisher' {
-            Should -Invoke -CommandName Register-DistributorPublisher -Times 0
+            Should-Invoke -CommandName Register-DistributorPublisher -Times 0
         }
 
         It 'Ger method does not call Uninstall-Distributor' {
-            Should -Invoke -CommandName Uninstall-Distributor -Times 0
+            Should-Invoke -CommandName Uninstall-Distributor -Times 0
         }
 
         It 'Get method returns Ensure = Present' {
             InModuleScope -ScriptBlock {
-                $result.Ensure | Should -Be 'Present'
+                $result.Ensure | Should-Be 'Present'
             }
         }
 
         It 'Get method returns InstanceName = ''MSSQLSERVER''' {
             InModuleScope -ScriptBlock {
-                $result.InstanceName | Should -Be $mockTestParameters.InstanceName
+                $result.InstanceName | Should-Be $mockTestParameters.InstanceName
             }
         }
 
         It 'Get method returns DistributorMode = ''Local''' {
             InModuleScope -ScriptBlock {
-                $result.DistributorMode | Should -Be $mockTestParameters.DistributorMode
+                $result.DistributorMode | Should-Be $mockTestParameters.DistributorMode
             }
         }
 
         It 'Get method returns DistributionDBName = ''distribution''' {
             InModuleScope -ScriptBlock {
-                $result.DistributionDBName | Should -Be 'distribution'
+                $result.DistributionDBName | Should-Be 'distribution'
             }
         }
 
         It 'Get method returns RemoteDistributor = ''SERVERNAME''' {
             InModuleScope -ScriptBlock {
-                $result.RemoteDistributor | Should -Be 'SERVERNAME'
+                $result.RemoteDistributor | Should-Be 'SERVERNAME'
             }
         }
 
         It 'Get method returns WorkingDirectory = ''C:\temp''' {
             InModuleScope -ScriptBlock {
-                $result.WorkingDirectory | Should -Be 'C:\temp'
+                $result.WorkingDirectory | Should-Be 'C:\temp'
             }
         }
     }
@@ -618,7 +592,7 @@ Describe 'The system is in sync given Local distribution mode' {
     Context 'Test method' {
         It 'Test method returns true' {
             InModuleScope -ScriptBlock {
-                Test-TargetResource @mockTestParameters | Should -BeTrue
+                Test-TargetResource @mockTestParameters | Should-BeTrue
             }
         }
     }
@@ -631,43 +605,39 @@ Describe 'The system is in sync given Local distribution mode' {
         }
 
         It 'Set method calls Get-SqlInstanceMajorVersion with $InstanceName = MSSQLSERVER' {
-            Should -Invoke -CommandName Get-SqlInstanceMajorVersion -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+            Should-Invoke -CommandName Get-SqlInstanceMajorVersion -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
         }
 
         It 'Set method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
-            Should -Invoke -CommandName Get-SqlLocalServerName -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+            Should-Invoke -CommandName Get-SqlLocalServerName -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
         }
 
         It 'Set method calls New-ServerConnection with $SqlServerName = SERVERNAME' {
-            Should -Invoke -CommandName New-ServerConnection -Times 1 `
-                -ParameterFilter { $SqlServerName -eq 'SERVERNAME' }
+            Should-Invoke -CommandName New-ServerConnection -ParameterFilter { $SqlServerName -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Set method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME' {
-            Should -Invoke -CommandName New-ReplicationServer -Times 1 `
-                -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
+            Should-Invoke -CommandName New-ReplicationServer -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Set method does not call New-DistributionDatabase with $DistributionDBName = distribution' {
-            Should -Invoke -CommandName New-DistributionDatabase -Times 0
+            Should-Invoke -CommandName New-DistributionDatabase -Times 0
         }
 
         It 'Set method does not call Install-LocalDistributor' {
-            Should -Invoke -CommandName Install-LocalDistributor -Times 0
+            Should-Invoke -CommandName Install-LocalDistributor -Times 0
         }
 
         It 'Set method does not call Install-RemoteDistributor' {
-            Should -Invoke -CommandName Install-RemoteDistributor -Times 0
+            Should-Invoke -CommandName Install-RemoteDistributor -Times 0
         }
 
         It 'Set method does not call Register-DistributorPublisher' {
-            Should -Invoke -CommandName Register-DistributorPublisher -Times 0
+            Should-Invoke -CommandName Register-DistributorPublisher -Times 0
         }
 
         It 'Set method does not call Uninstall-Distributor' {
-            Should -Invoke -CommandName Uninstall-Distributor -Times 0
+            Should-Invoke -CommandName Uninstall-Distributor -Times 0
         }
     }
 }
@@ -720,78 +690,74 @@ Describe 'The system is in sync given Remote distribution mode' {
         }
 
         It 'Get method calls Get-SqlInstanceMajorVersion with $InstanceName = INSTANCENAME' {
-            Should -Invoke -CommandName Get-SqlInstanceMajorVersion -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+            Should-Invoke -CommandName Get-SqlInstanceMajorVersion -ParameterFilter { $InstanceName -eq 'INSTANCENAME' } -Times 1
         }
 
         It 'Get method calls Get-SqlLocalServerName with $InstanceName = INSTANCENAME' {
-            Should -Invoke -CommandName Get-SqlLocalServerName -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+            Should-Invoke -CommandName Get-SqlLocalServerName -ParameterFilter { $InstanceName -eq 'INSTANCENAME' } -Times 1
         }
 
         It 'Get method calls New-ServerConnection with $SqlServerName = SERVERNAME\INSTANCENAME' {
-            Should -Invoke -CommandName New-ServerConnection -Times 1 `
-                -ParameterFilter { $SqlServerName -eq 'SERVERNAME\INSTANCENAME' }
+            Should-Invoke -CommandName New-ServerConnection -ParameterFilter { $SqlServerName -eq 'SERVERNAME\INSTANCENAME' } -Times 1
         }
 
         It 'Get method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME\INSTANCENAME' {
-            Should -Invoke -CommandName New-ReplicationServer -Times 1 `
-                -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' }
+            Should-Invoke -CommandName New-ReplicationServer -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' } -Times 1
         }
 
         It 'Get method does not call New-DistributionDatabase' {
-            Should -Invoke -CommandName New-DistributionDatabase -Times 0
+            Should-Invoke -CommandName New-DistributionDatabase -Times 0
         }
 
         It 'Get method does not call Install-LocalDistributor' {
-            Should -Invoke -CommandName Install-LocalDistributor -Times 0
+            Should-Invoke -CommandName Install-LocalDistributor -Times 0
         }
 
         It 'Get method does not call Install-RemoteDistributor' {
-            Should -Invoke -CommandName Install-RemoteDistributor -Times 0
+            Should-Invoke -CommandName Install-RemoteDistributor -Times 0
         }
 
         It 'Ger method does not call Register-DistributorPublisher' {
-            Should -Invoke -CommandName Register-DistributorPublisher -Times 0
+            Should-Invoke -CommandName Register-DistributorPublisher -Times 0
         }
 
         It 'Ger method does not call Uninstall-Distributor' {
-            Should -Invoke -CommandName Uninstall-Distributor -Times 0
+            Should-Invoke -CommandName Uninstall-Distributor -Times 0
         }
 
         It 'Get method returns Ensure = Present' {
             InModuleScope -ScriptBlock {
-                $result.Ensure | Should -Be 'Present'
+                $result.Ensure | Should-Be 'Present'
             }
         }
 
         It 'Get method returns InstanceName = ''INSTANCENAME''' {
             InModuleScope -ScriptBlock {
-                $result.InstanceName | Should -Be $mockTestParameters.InstanceName
+                $result.InstanceName | Should-Be $mockTestParameters.InstanceName
             }
         }
 
         It 'Get method returns DistributorMode = ''Remote''' {
             InModuleScope -ScriptBlock {
-                $result.DistributorMode | Should -Be $mockTestParameters.DistributorMode
+                $result.DistributorMode | Should-Be $mockTestParameters.DistributorMode
             }
         }
 
         It 'Get method returns DistributionDBName = distribution' {
             InModuleScope -ScriptBlock {
-                $result.DistributionDBName | Should -Be 'distribution'
+                $result.DistributionDBName | Should-Be 'distribution'
             }
         }
 
         It 'Get method returns RemoteDistributor = ''REMOTESERVER''' {
             InModuleScope -ScriptBlock {
-                $result.RemoteDistributor | Should -Be $mockTestParameters.RemoteDistributor
+                $result.RemoteDistributor | Should-Be $mockTestParameters.RemoteDistributor
             }
         }
 
         It 'Get method returns WorkingDirectory = C:\temp' {
             InModuleScope -ScriptBlock {
-                $result.WorkingDirectory | Should -Be 'C:\temp'
+                $result.WorkingDirectory | Should-Be 'C:\temp'
             }
         }
     }
@@ -799,7 +765,7 @@ Describe 'The system is in sync given Remote distribution mode' {
     Context 'Test method' {
         It 'Test method returns true' {
             InModuleScope -ScriptBlock {
-                Test-TargetResource @mockTestParameters | Should -BeTrue
+                Test-TargetResource @mockTestParameters | Should-BeTrue
             }
         }
     }
@@ -812,43 +778,39 @@ Describe 'The system is in sync given Remote distribution mode' {
         }
 
         It 'Set method calls Get-SqlInstanceMajorVersion with $InstanceName = INSTANCENAME' {
-            Should -Invoke -CommandName Get-SqlInstanceMajorVersion -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+            Should-Invoke -CommandName Get-SqlInstanceMajorVersion -ParameterFilter { $InstanceName -eq 'INSTANCENAME' } -Times 1
         }
 
         It 'Set method calls Get-SqlLocalServerName with $InstanceName = INSTANCENAME' {
-            Should -Invoke -CommandName Get-SqlLocalServerName -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+            Should-Invoke -CommandName Get-SqlLocalServerName -ParameterFilter { $InstanceName -eq 'INSTANCENAME' } -Times 1
         }
 
         It 'Set method calls New-ServerConnection with $SqlServerName = SERVERNAME\INSTANCENAME' {
-            Should -Invoke -CommandName New-ServerConnection -Times 1 `
-                -ParameterFilter { $SqlServerName -eq 'SERVERNAME\INSTANCENAME' }
+            Should-Invoke -CommandName New-ServerConnection -ParameterFilter { $SqlServerName -eq 'SERVERNAME\INSTANCENAME' } -Times 1
         }
 
         It 'Set method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME\INSTANCENAME' {
-            Should -Invoke -CommandName New-ReplicationServer -Times 1 `
-                -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' }
+            Should-Invoke -CommandName New-ReplicationServer -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' } -Times 1
         }
 
         It 'Set method does not call New-DistributionDatabase' {
-            Should -Invoke -CommandName New-DistributionDatabase -Times 0
+            Should-Invoke -CommandName New-DistributionDatabase -Times 0
         }
 
         It 'Set method does not call Install-LocalDistributor' {
-            Should -Invoke -CommandName Install-LocalDistributor -Times 0
+            Should-Invoke -CommandName Install-LocalDistributor -Times 0
         }
 
         It 'Set method does not call Install-RemoteDistributor' {
-            Should -Invoke -CommandName Install-RemoteDistributor -Times 0
+            Should-Invoke -CommandName Install-RemoteDistributor -Times 0
         }
 
         It 'Set method does not call Register-DistributorPublisher' {
-            Should -Invoke -CommandName Register-DistributorPublisher -Times 0
+            Should-Invoke -CommandName Register-DistributorPublisher -Times 0
         }
 
         It 'Set method does not call Uninstall-Distributor' {
-            Should -Invoke -CommandName Uninstall-Distributor -Times 0
+            Should-Invoke -CommandName Uninstall-Distributor -Times 0
         }
     }
 }
@@ -899,78 +861,74 @@ Describe 'The system is not in desired state given Local distribution, but shoul
             }
         }
         It 'Get method calls Get-SqlInstanceMajorVersion with InstanceName = MSSQLSERVER' {
-            Should -Invoke -CommandName Get-SqlInstanceMajorVersion -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+            Should-Invoke -CommandName Get-SqlInstanceMajorVersion -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
         }
 
         It 'Get method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
-            Should -Invoke -CommandName Get-SqlLocalServerName -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+            Should-Invoke -CommandName Get-SqlLocalServerName -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
         }
 
         It 'Get method calls New-ServerConnection with $SqlServerName = SERVERNAME' {
-            Should -Invoke -CommandName New-ServerConnection -Times 1 `
-                -ParameterFilter { $SqlServerName -eq 'SERVERNAME' }
+            Should-Invoke -CommandName New-ServerConnection -ParameterFilter { $SqlServerName -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Get method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME' {
-            Should -Invoke -CommandName New-ReplicationServer -Times 1 `
-                -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
+            Should-Invoke -CommandName New-ReplicationServer -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Get method does not call New-DistributionDatabase' {
-            Should -Invoke -CommandName New-DistributionDatabase -Times 0
+            Should-Invoke -CommandName New-DistributionDatabase -Times 0
         }
 
         It 'Get method does not call Install-LocalDistributor' {
-            Should -Invoke -CommandName Install-LocalDistributor -Times 0
+            Should-Invoke -CommandName Install-LocalDistributor -Times 0
         }
 
         It 'Get method does not call Install-RemoteDistributor' {
-            Should -Invoke -CommandName Install-RemoteDistributor -Times 0
+            Should-Invoke -CommandName Install-RemoteDistributor -Times 0
         }
 
         It 'Ger method does not call Register-DistributorPublisher' {
-            Should -Invoke -CommandName Register-DistributorPublisher -Times 0
+            Should-Invoke -CommandName Register-DistributorPublisher -Times 0
         }
 
         It 'Ger method does not call Uninstall-Distributor' {
-            Should -Invoke -CommandName Uninstall-Distributor -Times 0
+            Should-Invoke -CommandName Uninstall-Distributor -Times 0
         }
 
         It 'Get method returns Ensure = Present' {
             InModuleScope -ScriptBlock {
-                $result.Ensure | Should -Be 'Present'
+                $result.Ensure | Should-Be 'Present'
             }
         }
 
         It 'Get method returns InstanceName = ''MSSQLSERVER''' {
             InModuleScope -ScriptBlock {
-                $result.InstanceName | Should -Be $mockTestParameters.InstanceName
+                $result.InstanceName | Should-Be $mockTestParameters.InstanceName
             }
         }
 
         It 'Get method returns DistributorMode = ''Local''' {
             InModuleScope -ScriptBlock {
-                $result.DistributorMode | Should -Be $mockTestParameters.DistributorMode
+                $result.DistributorMode | Should-Be $mockTestParameters.DistributorMode
             }
         }
 
         It 'Get method returns DistributionDBName = distribution' {
             InModuleScope -ScriptBlock {
-                $result.DistributionDBName | Should -Be 'distribution'
+                $result.DistributionDBName | Should-Be 'distribution'
             }
         }
 
         It 'Get method returns RemoteDistributor is empty' {
             InModuleScope -ScriptBlock {
-                $result.RemoteDistributor | Should -Be 'SERVERNAME'
+                $result.RemoteDistributor | Should-Be 'SERVERNAME'
             }
         }
 
         It 'Get method returns WorkingDirectory = C:\temp' {
             InModuleScope -ScriptBlock {
-                $result.WorkingDirectory | Should -Be 'C:\temp'
+                $result.WorkingDirectory | Should-Be 'C:\temp'
             }
         }
     }
@@ -978,7 +936,7 @@ Describe 'The system is not in desired state given Local distribution, but shoul
     Context 'Test method' {
         It 'Test method returns false' {
             InModuleScope -ScriptBlock {
-                Test-TargetResource @mockTestParameters | Should -BeFalse
+                Test-TargetResource @mockTestParameters | Should-BeFalse
             }
         }
     }
@@ -991,44 +949,39 @@ Describe 'The system is not in desired state given Local distribution, but shoul
         }
 
         It 'Set method calls Get-SqlInstanceMajorVersion with $InstanceName = MSSQLSERVER' {
-            Should -Invoke -CommandName Get-SqlInstanceMajorVersion -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+            Should-Invoke -CommandName Get-SqlInstanceMajorVersion -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
         }
 
         It 'Set method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
-            Should -Invoke -CommandName Get-SqlLocalServerName -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+            Should-Invoke -CommandName Get-SqlLocalServerName -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
         }
 
         It 'Set method calls New-ServerConnection with $SqlServerName = SERVERNAME' {
-            Should -Invoke -CommandName New-ServerConnection -Times 1 `
-                -ParameterFilter { $SqlServerName -eq 'SERVERNAME' }
+            Should-Invoke -CommandName New-ServerConnection -ParameterFilter { $SqlServerName -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Set method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME' {
-            Should -Invoke -CommandName New-ReplicationServer -Times 1 `
-                -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
+            Should-Invoke -CommandName New-ReplicationServer -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Set method calls Uninstall-Distributor with $ReplicationServer.DistributionServer = SERVERNAME' {
-            Should -Invoke -CommandName Uninstall-Distributor -Times 1 `
-                -ParameterFilter { $ReplicationServer.DistributionServer -eq 'SERVERNAME' }
+            Should-Invoke -CommandName Uninstall-Distributor -ParameterFilter { $ReplicationServer.DistributionServer -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Set method does not call New-DistributionDatabase' {
-            Should -Invoke -CommandName New-DistributionDatabase -Times 0
+            Should-Invoke -CommandName New-DistributionDatabase -Times 0
         }
 
         It 'Set method does not call Install-LocalDistributor' {
-            Should -Invoke -CommandName Install-LocalDistributor -Times 0
+            Should-Invoke -CommandName Install-LocalDistributor -Times 0
         }
 
         It 'Set method does not call Install-RemoteDistributor' {
-            Should -Invoke -CommandName Install-RemoteDistributor -Times 0
+            Should-Invoke -CommandName Install-RemoteDistributor -Times 0
         }
 
         It 'Set method does not call Register-DistributorPublisher' {
-            Should -Invoke -CommandName Register-DistributorPublisher -Times 0
+            Should-Invoke -CommandName Register-DistributorPublisher -Times 0
         }
     }
 }
@@ -1081,78 +1034,74 @@ Describe 'The system is not in desired state given Remote distribution, but shou
         }
 
         It 'Get method calls Get-SqlInstanceMajorVersion with $InstanceName = INSTANCENAME' {
-            Should -Invoke -CommandName Get-SqlInstanceMajorVersion -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+            Should-Invoke -CommandName Get-SqlInstanceMajorVersion -ParameterFilter { $InstanceName -eq 'INSTANCENAME' } -Times 1
         }
 
         It 'Get method calls Get-SqlLocalServerName with $InstanceName = INSTANCENAME' {
-            Should -Invoke -CommandName Get-SqlLocalServerName -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+            Should-Invoke -CommandName Get-SqlLocalServerName -ParameterFilter { $InstanceName -eq 'INSTANCENAME' } -Times 1
         }
 
         It 'Get method calls New-ServerConnection with $SqlServerName = SERVERNAME\INSTANCENAME' {
-            Should -Invoke -CommandName New-ServerConnection -Times 1 `
-                -ParameterFilter { $SqlServerName -eq 'SERVERNAME\INSTANCENAME' }
+            Should-Invoke -CommandName New-ServerConnection -ParameterFilter { $SqlServerName -eq 'SERVERNAME\INSTANCENAME' } -Times 1
         }
 
         It 'Get method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME\INSTANCENAME' {
-            Should -Invoke -CommandName New-ReplicationServer -Times 1 `
-                -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' }
+            Should-Invoke -CommandName New-ReplicationServer -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' } -Times 1
         }
 
         It 'Get method does not call New-DistributionDatabase' {
-            Should -Invoke -CommandName New-DistributionDatabase -Times 0
+            Should-Invoke -CommandName New-DistributionDatabase -Times 0
         }
 
         It 'Get method does not call Install-LocalDistributor' {
-            Should -Invoke -CommandName Install-LocalDistributor -Times 0
+            Should-Invoke -CommandName Install-LocalDistributor -Times 0
         }
 
         It 'Get method does not call Install-RemoteDistributor' {
-            Should -Invoke -CommandName Install-RemoteDistributor -Times 0
+            Should-Invoke -CommandName Install-RemoteDistributor -Times 0
         }
 
         It 'Ger method does not call Register-DistributorPublisher' {
-            Should -Invoke -CommandName Register-DistributorPublisher -Times 0
+            Should-Invoke -CommandName Register-DistributorPublisher -Times 0
         }
 
         It 'Ger method does not call Uninstall-Distributor' {
-            Should -Invoke -CommandName Uninstall-Distributor -Times 0
+            Should-Invoke -CommandName Uninstall-Distributor -Times 0
         }
 
         It 'Get method returns Ensure = Present' {
             InModuleScope -ScriptBlock {
-                $result.Ensure | Should -Be 'Present'
+                $result.Ensure | Should-Be 'Present'
             }
         }
 
         It 'Get method returns InstanceName = ''INSTANCENAME''' {
             InModuleScope -ScriptBlock {
-                $result.InstanceName | Should -Be $mockTestParameters.InstanceName
+                $result.InstanceName | Should-Be $mockTestParameters.InstanceName
             }
         }
 
         It 'Get method returns DistributorMode = ''Remote''' {
             InModuleScope -ScriptBlock {
-                $result.DistributorMode | Should -Be $mockTestParameters.DistributorMode
+                $result.DistributorMode | Should-Be $mockTestParameters.DistributorMode
             }
         }
 
         It 'Get method returns DistributionDBName = distribution' {
             InModuleScope -ScriptBlock {
-                $result.DistributionDBName | Should -Be 'distribution'
+                $result.DistributionDBName | Should-Be 'distribution'
             }
         }
 
         It 'Get method returns RemoteDistributor = ''REMOTESERVER''' {
             InModuleScope -ScriptBlock {
-                $result.RemoteDistributor | Should -Be $mockTestParameters.RemoteDistributor
+                $result.RemoteDistributor | Should-Be $mockTestParameters.RemoteDistributor
             }
         }
 
         It 'Get method returns WorkingDirectory = C:\temp' {
             InModuleScope -ScriptBlock {
-                $result.WorkingDirectory | Should -Be 'C:\temp'
+                $result.WorkingDirectory | Should-Be 'C:\temp'
             }
         }
     }
@@ -1160,7 +1109,7 @@ Describe 'The system is not in desired state given Remote distribution, but shou
     Context 'Test method' {
         It 'Test method returns false' {
             InModuleScope -ScriptBlock {
-                Test-TargetResource @mockTestParameters | Should -BeFalse
+                Test-TargetResource @mockTestParameters | Should-BeFalse
             }
         }
     }
@@ -1173,44 +1122,39 @@ Describe 'The system is not in desired state given Remote distribution, but shou
         }
 
         It 'Set method calls Get-SqlInstanceMajorVersion with $InstanceName = INSTANCENAME' {
-            Should -Invoke -CommandName Get-SqlInstanceMajorVersion -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+            Should-Invoke -CommandName Get-SqlInstanceMajorVersion -ParameterFilter { $InstanceName -eq 'INSTANCENAME' } -Times 1
         }
 
         It 'Set method calls Get-SqlLocalServerName with $InstanceName = INSTANCENAME' {
-            Should -Invoke -CommandName Get-SqlLocalServerName -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'INSTANCENAME' }
+            Should-Invoke -CommandName Get-SqlLocalServerName -ParameterFilter { $InstanceName -eq 'INSTANCENAME' } -Times 1
         }
 
         It 'Set method calls New-ServerConnection with $SqlServerName = SERVERNAME\INSTANCENAME' {
-            Should -Invoke -CommandName New-ServerConnection -Times 1 `
-                -ParameterFilter { $SqlServerName -eq 'SERVERNAME\INSTANCENAME' }
+            Should-Invoke -CommandName New-ServerConnection -ParameterFilter { $SqlServerName -eq 'SERVERNAME\INSTANCENAME' } -Times 1
         }
 
         It 'Set method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME\INSTANCENAME' {
-            Should -Invoke -CommandName New-ReplicationServer -Times 1 `
-                -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' }
+            Should-Invoke -CommandName New-ReplicationServer -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME\INSTANCENAME' } -Times 1
         }
 
         It 'Set method calls Uninstall-Distributor with $ReplicationServer.DistributionServer = REMOTESERVER' {
-            Should -Invoke -CommandName Uninstall-Distributor -Times 1 `
-                -ParameterFilter { $ReplicationServer.DistributionServer -eq 'REMOTESERVER' }
+            Should-Invoke -CommandName Uninstall-Distributor -ParameterFilter { $ReplicationServer.DistributionServer -eq 'REMOTESERVER' } -Times 1
         }
 
         It 'Set method does not call New-DistributionDatabase' {
-            Should -Invoke -CommandName New-DistributionDatabase -Times 0
+            Should-Invoke -CommandName New-DistributionDatabase -Times 0
         }
 
         It 'Set method does not call Install-LocalDistributor' {
-            Should -Invoke -CommandName Install-LocalDistributor -Times 0
+            Should-Invoke -CommandName Install-LocalDistributor -Times 0
         }
 
         It 'Set method does not call Install-RemoteDistributor' {
-            Should -Invoke -CommandName Install-RemoteDistributor -Times 0
+            Should-Invoke -CommandName Install-RemoteDistributor -Times 0
         }
 
         It 'Set method does not call Register-DistributorPublisher' {
-            Should -Invoke -CommandName Register-DistributorPublisher -Times 0
+            Should-Invoke -CommandName Register-DistributorPublisher -Times 0
         }
     }
 }
@@ -1262,78 +1206,74 @@ Describe 'The system is in sync when Absent' {
         }
 
         It 'Get method calls Get-SqlInstanceMajorVersion with InstanceName = MSSQLSERVER' {
-            Should -Invoke -CommandName Get-SqlInstanceMajorVersion -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+            Should-Invoke -CommandName Get-SqlInstanceMajorVersion -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
         }
 
         It 'Get method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
-            Should -Invoke -CommandName Get-SqlLocalServerName -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+            Should-Invoke -CommandName Get-SqlLocalServerName -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
         }
 
         It 'Get method calls New-ServerConnection with $SqlServerName = SERVERNAME' {
-            Should -Invoke -CommandName New-ServerConnection -Times 1 `
-                -ParameterFilter { $SqlServerName -eq 'SERVERNAME' }
+            Should-Invoke -CommandName New-ServerConnection -ParameterFilter { $SqlServerName -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Get method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME' {
-            Should -Invoke -CommandName New-ReplicationServer -Times 1 `
-                -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
+            Should-Invoke -CommandName New-ReplicationServer -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Get method does not call New-DistributionDatabase' {
-            Should -Invoke -CommandName New-DistributionDatabase -Times 0
+            Should-Invoke -CommandName New-DistributionDatabase -Times 0
         }
 
         It 'Get method does not call Install-LocalDistributor' {
-            Should -Invoke -CommandName Install-LocalDistributor -Times 0
+            Should-Invoke -CommandName Install-LocalDistributor -Times 0
         }
 
         It 'Get method does not call Install-RemoteDistributor' {
-            Should -Invoke -CommandName Install-RemoteDistributor -Times 0
+            Should-Invoke -CommandName Install-RemoteDistributor -Times 0
         }
 
         It 'Ger method does not call Register-DistributorPublisher' {
-            Should -Invoke -CommandName Register-DistributorPublisher -Times 0
+            Should-Invoke -CommandName Register-DistributorPublisher -Times 0
         }
 
         It 'Ger method does not call Uninstall-Distributor' {
-            Should -Invoke -CommandName Uninstall-Distributor -Times 0
+            Should-Invoke -CommandName Uninstall-Distributor -Times 0
         }
 
         It 'Get method returns Ensure = Absent' {
             InModuleScope -ScriptBlock {
-                $result.Ensure | Should -Be 'Absent'
+                $result.Ensure | Should-Be 'Absent'
             }
         }
 
         It 'Get method returns InstanceName = ''MSSQLSERVER''' {
             InModuleScope -ScriptBlock {
-                $result.InstanceName | Should -Be $mockTestParameters.InstanceName
+                $result.InstanceName | Should-Be $mockTestParameters.InstanceName
             }
         }
 
         It 'Get method returns DistributorMode as $null' {
             InModuleScope -ScriptBlock {
-                $result.DistributorMode | Should -BeNullOrEmpty
+                $result.DistributorMode | Should-BeFalsy
             }
         }
 
         It 'Get method returns DistributionDBName as $null' {
             InModuleScope -ScriptBlock {
-                $result.DistributionDBName | Should -BeNullOrEmpty
+                $result.DistributionDBName | Should-BeFalsy
             }
         }
 
         It 'Get method returns RemoteDistributor as $null' {
             InModuleScope -ScriptBlock {
-                $result.RemoteDistributor | Should -BeNullOrEmpty
+                $result.RemoteDistributor | Should-BeFalsy
             }
         }
 
         It 'Get method returns WorkingDirectory as $null' {
             InModuleScope -ScriptBlock {
-                $result.WorkingDirectory | Should -BeNullOrEmpty
+                $result.WorkingDirectory | Should-BeFalsy
             }
         }
     }
@@ -1341,7 +1281,7 @@ Describe 'The system is in sync when Absent' {
     Context 'Test method' {
         It 'Test method returns true' {
             InModuleScope -ScriptBlock {
-                Test-TargetResource @mockTestParameters | Should -BeTrue
+                Test-TargetResource @mockTestParameters | Should-BeTrue
             }
         }
     }
@@ -1354,43 +1294,39 @@ Describe 'The system is in sync when Absent' {
         }
 
         It 'Set method calls Get-SqlInstanceMajorVersion with $InstanceName = MSSQLSERVER' {
-            Should -Invoke -CommandName Get-SqlInstanceMajorVersion -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+            Should-Invoke -CommandName Get-SqlInstanceMajorVersion -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
         }
 
         It 'Set method calls Get-SqlLocalServerName with $InstanceName = MSSQLSERVER' {
-            Should -Invoke -CommandName Get-SqlLocalServerName -Times 1 `
-                -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' }
+            Should-Invoke -CommandName Get-SqlLocalServerName -ParameterFilter { $InstanceName -eq 'MSSQLSERVER' } -Times 1
         }
 
         It 'Set method calls New-ServerConnection with $SqlServerName = SERVERNAME' {
-            Should -Invoke -CommandName New-ServerConnection -Times 1 `
-                -ParameterFilter { $SqlServerName -eq 'SERVERNAME' }
+            Should-Invoke -CommandName New-ServerConnection -ParameterFilter { $SqlServerName -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Set method calls New-ReplicationServer with $ServerConnection.ServerInstance = SERVERNAME' {
-            Should -Invoke -CommandName New-ReplicationServer -Times 1 `
-                -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' }
+            Should-Invoke -CommandName New-ReplicationServer -ParameterFilter { $ServerConnection.ServerInstance -eq 'SERVERNAME' } -Times 1
         }
 
         It 'Set method does not call New-DistributionDatabase with $DistributionDBName = distribution' {
-            Should -Invoke -CommandName New-DistributionDatabase -Times 0
+            Should-Invoke -CommandName New-DistributionDatabase -Times 0
         }
 
         It 'Set method does not call Install-LocalDistributor' {
-            Should -Invoke -CommandName Install-LocalDistributor -Times 0
+            Should-Invoke -CommandName Install-LocalDistributor -Times 0
         }
 
         It 'Set method does not call Install-RemoteDistributor' {
-            Should -Invoke -CommandName Install-RemoteDistributor -Times 0
+            Should-Invoke -CommandName Install-RemoteDistributor -Times 0
         }
 
         It 'Set method does not call Register-DistributorPublisher' {
-            Should -Invoke -CommandName Register-DistributorPublisher -Times 0
+            Should-Invoke -CommandName Register-DistributorPublisher -Times 0
         }
 
         It 'Set method does not call Uninstall-Distributor' {
-            Should -Invoke -CommandName Uninstall-Distributor -Times 0
+            Should-Invoke -CommandName Uninstall-Distributor -Times 0
         }
     }
 }
@@ -1409,7 +1345,7 @@ Describe 'New-ServerConnection' {
             InModuleScope -ScriptBlock {
                 $result = New-ServerConnection -SqlMajorVersion 16 -SqlServerName 'localhost\SqlInstance'
 
-                $result | Should -Be 'Mocked server connection object for localhost\SqlInstance'
+                $result | Should-Be 'Mocked server connection object for localhost\SqlInstance'
             }
         }
     }
@@ -1443,7 +1379,7 @@ Describe 'New-ServerConnection' {
                     New-Object call the string will be filled with the value passed
                     as ArgumentList.
                 #>
-                $result | Should -Be 'localhost\SqlInstance'
+                $result | Should-Be 'localhost\SqlInstance'
             }
         }
     }

@@ -138,19 +138,19 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Present'
-                        $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                        $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                        $result.LoginType | Should -Be $MockLoginType
-                        $result.Disabled | Should -BeTrue
-                        $result.DefaultDatabase | Should -Be 'master'
+                        $result.Ensure | Should-Be 'Present'
+                        $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                        $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                        $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                        $result.LoginType | Should-Be $MockLoginType
+                        $result.Disabled | Should-BeTrue
+                        $result.DefaultDatabase | Should-Be 'master'
 
                         if ($MockLoginType -eq 'SqlLogin')
                         {
-                            $result.LoginMustChangePassword | Should -BeTrue
-                            $result.LoginPasswordExpirationEnabled | Should -BeTrue
-                            $result.LoginPasswordPolicyEnforced | Should -BeTrue
+                            $result.LoginMustChangePassword | Should-BeTrue
+                            $result.LoginPasswordExpirationEnabled | Should-BeTrue
+                            $result.LoginPasswordPolicyEnforced | Should-BeTrue
                         }
                         else
                         {
@@ -159,9 +159,9 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                                 in the hashtable. This is put here so the tests wil be fixed
                                 when the code is fixed.
                             #>
-                            $result | Should -Not -Contain 'LoginMustChangePassword'
-                            $result | Should -Not -Contain 'LoginPasswordExpirationEnabled'
-                            $result | Should -Not -Contain 'LoginPasswordPolicyEnforced'
+                            $result | Should-NotContainCollection 'LoginMustChangePassword'
+                            $result | Should-NotContainCollection 'LoginPasswordExpirationEnabled'
+                            $result | Should-NotContainCollection 'LoginPasswordPolicyEnforced'
                         }
                     }
                 }
@@ -219,19 +219,19 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Absent'
-                        $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                        $result.Name | Should -Be $mockGetTargetResourceParameters.Name
-                        $result.LoginType | Should -BeNullOrEmpty
-                        $result.Disabled | Should -BeFalse
-                        $result.DefaultDatabase | Should -BeNullOrEmpty
+                        $result.Ensure | Should-Be 'Absent'
+                        $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                        $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                        $result.Name | Should-Be $mockGetTargetResourceParameters.Name
+                        $result.LoginType | Should-BeFalsy
+                        $result.Disabled | Should-BeFalse
+                        $result.DefaultDatabase | Should-BeFalsy
 
                         if ($MockLoginType -eq 'SqlLogin')
                         {
-                            $result.LoginMustChangePassword | Should -BeFalse
-                            $result.LoginPasswordExpirationEnabled | Should -BeFalse
-                            $result.LoginPasswordPolicyEnforced | Should -BeFalse
+                            $result.LoginMustChangePassword | Should-BeFalse
+                            $result.LoginPasswordExpirationEnabled | Should-BeFalse
+                            $result.LoginPasswordPolicyEnforced | Should-BeFalse
                         }
                         else
                         {
@@ -240,9 +240,9 @@ Describe 'SqlLogin\Get-TargetResource' -Tag 'Get' {
                                 in the hashtable. This is put here so the tests wil be fixed
                                 when the code is fixed.
                             #>
-                            $result | Should -Not -Contain 'LoginMustChangePassword'
-                            $result | Should -Not -Contain 'LoginPasswordExpirationEnabled'
-                            $result | Should -Not -Contain 'LoginPasswordPolicyEnforced'
+                            $result | Should-NotContainCollection 'LoginMustChangePassword'
+                            $result | Should-NotContainCollection 'LoginPasswordExpirationEnabled'
+                            $result | Should-NotContainCollection 'LoginPasswordPolicyEnforced'
                         }
                     }
                 }
@@ -286,10 +286,10 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -311,10 +311,10 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -342,10 +342,10 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -380,10 +380,10 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -407,10 +407,10 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -432,10 +432,10 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -482,10 +482,10 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -531,10 +531,10 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -570,10 +570,10 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -607,10 +607,10 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -645,10 +645,10 @@ Describe 'SqlLogin\Test-TargetResource' -Tag 'Test' {
 
                         $mockErrorMessage = $script:localizedData.PasswordValidationError
 
-                        { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                        { Test-TargetResource @mockTestTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -705,21 +705,21 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.Name = $MockLoginName
                         $mockSetTargetResourceParameters.LoginType = $MockLoginType
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName New-SQLServerLogin -Exactly -ParameterFilter {
                         $Login.Name -eq $MockLoginName
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
 
-                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                    Should-Invoke -CommandName New-SQLServerLogin -Exactly -ParameterFilter {
                         -not $PesterBoundParameters.ContainsKey('LoginCreateOptions')
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
 
-                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                    Should-Invoke -CommandName New-SQLServerLogin -Exactly -ParameterFilter {
                         -not $PesterBoundParameters.ContainsKey('LoginCreateOptions')
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -746,13 +746,13 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'WindowsUser'
                         $mockSetTargetResourceParameters.DefaultDatabase = 'NewDatabase'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName New-SQLServerLogin -Exactly -ParameterFilter {
                         $Login.Name -eq 'Windows\Login1' -and $Login.DefaultDatabase -eq 'NewDatabase'
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -800,16 +800,16 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'WindowsUser'
                         $mockSetTargetResourceParameters.Disabled = $true
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                        $script:mockMethodDisableWasRun | Should -Be 1
+                        $script:mockMethodDisableWasRun | Should-Be 1
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName New-SQLServerLogin -Exactly -ParameterFilter {
                         $Login.Name -eq 'Windows\Login1'
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -839,25 +839,25 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginMustChangePassword = $true
                         $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName New-SQLServerLogin -Exactly -ParameterFilter {
                         $Login.Name -eq 'SqlLogin1'
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
 
                     <#
                         When a SqlLogin is created there are additional parameters used.
                         This make sure the mock is called with the correct parameters.
                     #>
-                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                    Should-Invoke -CommandName New-SQLServerLogin -Exactly -ParameterFilter {
                         $PesterBoundParameters.ContainsKey('LoginCreateOptions') -and $LoginCreateOptions -eq [Microsoft.SqlServer.Management.Smo.LoginCreateOptions]::MustChange
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
 
-                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                    Should-Invoke -CommandName New-SQLServerLogin -Exactly -ParameterFilter {
                         $PesterBoundParameters.ContainsKey('SecureString')
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -887,21 +887,21 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginMustChangePassword = $false
                         $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName New-SQLServerLogin -Exactly -ParameterFilter {
                         $Login.Name -eq 'SqlLogin1'
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
 
                     <#
                         When a SqlLogin is created there are additional parameters used.
                         This make sure the mock is called with the correct parameters.
                     #>
-                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                    Should-Invoke -CommandName New-SQLServerLogin -Exactly -ParameterFilter {
                         $PesterBoundParameters.ContainsKey('LoginCreateOptions') -and $LoginCreateOptions -eq [Microsoft.SqlServer.Management.Smo.LoginCreateOptions]::None
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -931,13 +931,13 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.DefaultDatabase = 'NewDatabase'
                         $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName New-SQLServerLogin -Exactly -ParameterFilter {
                         $Login.Name -eq 'SqlLogin1' -and $Login.DefaultDatabase -eq 'NewDatabase'
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -988,16 +988,16 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.Disabled = $true
                         $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                        $script:mockMethodDisableWasRun | Should -Be 1
+                        $script:mockMethodDisableWasRun | Should-Be 1
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName New-SQLServerLogin -ParameterFilter {
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName New-SQLServerLogin -Exactly -ParameterFilter {
                         $Login.Name -eq 'SqlLogin1'
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -1027,10 +1027,10 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
 
                         $mockErrorMessage = $script:localizedData.IncorrectLoginMode -f 'localhost', 'MSSQLSERVER', 'Integrated'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1057,10 +1057,10 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
 
                         $mockErrorMessage = $script:localizedData.LoginCredentialNotFound -f 'SqlLogin1'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1103,10 +1103,10 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.Name = $MockLoginName
                         $mockSetTargetResourceParameters.LoginType = $MockLoginType
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + ($script:localizedData.LoginTypeNotImplemented -f $MockLoginType))
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + ($script:localizedData.LoginTypeNotImplemented -f $MockLoginType))
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -1136,11 +1136,11 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.Ensure = 'Absent'
                         $mockSetTargetResourceParameters.Name = 'SqlLogin1'
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Remove-SQLServerLogin -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Remove-SQLServerLogin -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -1195,21 +1195,21 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'WindowsUser'
                         $mockSetTargetResourceParameters.Disabled = $MockPropertyValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
                         if ($MockPropertyValue)
                         {
-                            $script:mockMethodDisableWasRun | Should -Be 1
-                            $script:mockMethodEnableWasRun | Should -Be 0
+                            $script:mockMethodDisableWasRun | Should-Be 1
+                            $script:mockMethodEnableWasRun | Should-Be 0
                         }
                         else
                         {
-                            $script:mockMethodDisableWasRun | Should -Be 0
-                            $script:mockMethodEnableWasRun | Should -Be 1
+                            $script:mockMethodDisableWasRun | Should-Be 0
+                            $script:mockMethodEnableWasRun | Should-Be 1
                         }
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1245,13 +1245,13 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'WindowsUser'
                         $mockSetTargetResourceParameters.$MockPropertyName = $MockPropertyValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Update-SQLServerLogin -ParameterFilter {
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Update-SQLServerLogin -Exactly -ParameterFilter {
                         $Login.$MockPropertyName -eq $MockPropertyValue
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -1305,12 +1305,12 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
                         $mockSetTargetResourceParameters.$MockPropertyName = $MockPropertyValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Update-SQLServerLogin -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Update-SQLServerLogin -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1363,21 +1363,21 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
                         $mockSetTargetResourceParameters.Disabled = $MockPropertyValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
                         if ($MockPropertyValue)
                         {
-                            $script:mockMethodDisableWasRun | Should -Be 1
-                            $script:mockMethodEnableWasRun | Should -Be 0
+                            $script:mockMethodDisableWasRun | Should-Be 1
+                            $script:mockMethodEnableWasRun | Should-Be 0
                         }
                         else
                         {
-                            $script:mockMethodDisableWasRun | Should -Be 0
-                            $script:mockMethodEnableWasRun | Should -Be 1
+                            $script:mockMethodDisableWasRun | Should-Be 0
+                            $script:mockMethodEnableWasRun | Should-Be 1
                         }
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1414,13 +1414,13 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
                         $mockSetTargetResourceParameters.$MockPropertyName = $MockPropertyValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Update-SQLServerLogin -ParameterFilter {
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Update-SQLServerLogin -Exactly -ParameterFilter {
                         $Login.$MockPropertyName -eq $MockPropertyValue
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -1453,10 +1453,10 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
 
                         $mockErrorMessage = $script:localizedData.MustChangePasswordCannotBeChanged
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1489,11 +1489,11 @@ Describe 'SqlLogin\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.LoginType = 'SqlLogin'
                         $mockSetTargetResourceParameters.LoginCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @($mockTestTargetResourceParameters.Name, $mockPassword)
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Set-SQLServerLoginPassword -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Set-SQLServerLoginPassword -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -1520,9 +1520,9 @@ Describe 'SqlLogin\Update-SQLServerLogin' {
 
                 $mockLogin.LoginType = 'WindowsUser'
 
-                { Update-SQLServerLogin -Login $mockLogin } | Should -Not -Throw
+                $null = & ({ Update-SQLServerLogin -Login $mockLogin })
 
-                $script:mockMethodAlterWasRun | Should -Be 1
+                $script:mockMethodAlterWasRun | Should-Be 1
             }
         }
 
@@ -1541,9 +1541,9 @@ Describe 'SqlLogin\Update-SQLServerLogin' {
 
                 $mockErrorMessage = $script:localizedData.AlterLoginFailed -f $mockLogin.Name
 
-                { Update-SQLServerLogin -Login $mockLogin } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { Update-SQLServerLogin -Login $mockLogin } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
 
-                $script:mockMethodAlterWasRun | Should -Be 1
+                $script:mockMethodAlterWasRun | Should-Be 1
             }
         }
     }
@@ -1569,9 +1569,9 @@ Describe 'SqlLogin\New-SQLServerLogin' {
 
                 $mockLogin.LoginType = 'WindowsUser'
 
-                { New-SQLServerLogin -Login $mockLogin } | Should -Not -Throw
+                $null = & ({ New-SQLServerLogin -Login $mockLogin })
 
-                $script:mockMethodCreateWasRun | Should -Be 1
+                $script:mockMethodCreateWasRun | Should-Be 1
             }
         }
 
@@ -1593,9 +1593,9 @@ Describe 'SqlLogin\New-SQLServerLogin' {
                     LoginCreateOptions = 'None'
                 }
 
-                { New-SQLServerLogin @createLoginParameters } | Should -Not -Throw
+                $null = & ({ New-SQLServerLogin @createLoginParameters })
 
-                $script:mockMethodCreateWasRun | Should -Be 1
+                $script:mockMethodCreateWasRun | Should-Be 1
             }
         }
 
@@ -1615,9 +1615,9 @@ Describe 'SqlLogin\New-SQLServerLogin' {
 
                 $mockErrorMessage = $script:localizedData.CreateLoginFailed -f $mockLogin.Name
 
-                { New-SQLServerLogin -Login $mockLogin } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { New-SQLServerLogin -Login $mockLogin } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
 
-                $script:mockMethodCreateWasRun | Should -Be 1
+                $script:mockMethodCreateWasRun | Should-Be 1
             }
         }
 
@@ -1642,7 +1642,7 @@ Describe 'SqlLogin\New-SQLServerLogin' {
 
                 $mockErrorMessage = $script:localizedData.CreateLoginFailedOnPassword -f $mockLogin.Name
 
-                { New-SQLServerLogin @createLoginParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { New-SQLServerLogin @createLoginParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
             }
         }
 
@@ -1668,9 +1668,9 @@ Describe 'SqlLogin\New-SQLServerLogin' {
 
                 $mockErrorMessage = $script:localizedData.CreateLoginFailed -f $mockLogin.Name
 
-                { New-SQLServerLogin @createLoginParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { New-SQLServerLogin @createLoginParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
 
-                $script:mockMethodCreateWasRun | Should -Be 1
+                $script:mockMethodCreateWasRun | Should-Be 1
             }
         }
 
@@ -1696,7 +1696,7 @@ Describe 'SqlLogin\New-SQLServerLogin' {
 
                 $mockErrorMessage = $script:localizedData.CreateLoginFailed -f $mockLogin.Name
 
-                { New-SQLServerLogin @createLoginParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { New-SQLServerLogin @createLoginParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
             }
         }
     }
@@ -1722,9 +1722,9 @@ Describe 'SqlLogin\Remove-SQLServerLogin' {
 
                 $mockLogin.LoginType = 'WindowsUser'
 
-                { Remove-SQLServerLogin -Login $mockLogin } | Should -Not -Throw
+                $null = & ({ Remove-SQLServerLogin -Login $mockLogin })
 
-                $script:mockMethodDropWasRun | Should -Be 1
+                $script:mockMethodDropWasRun | Should-Be 1
             }
         }
 
@@ -1744,9 +1744,9 @@ Describe 'SqlLogin\Remove-SQLServerLogin' {
 
                 $mockErrorMessage = $script:localizedData.DropLoginFailed -f $mockLogin.Name
 
-                { Remove-SQLServerLogin -Login $mockLogin } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { Remove-SQLServerLogin -Login $mockLogin } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
 
-                $script:mockMethodDropWasRun | Should -Be 1
+                $script:mockMethodDropWasRun | Should-Be 1
             }
         }
     }
@@ -1775,9 +1775,9 @@ Describe 'SqlLogin\Set-SQLServerLoginPassword' {
                     SecureString = ConvertTo-SecureString -String 'P@ssw0rd-12P@ssw0rd-12' -AsPlainText -Force
                 }
 
-                { Set-SQLServerLoginPassword @setPasswordParameters } | Should -Not -Throw
+                $null = & ({ Set-SQLServerLoginPassword @setPasswordParameters })
 
-                $mockMethodChangePasswordWasRun | Should -Be 1
+                $mockMethodChangePasswordWasRun | Should-Be 1
             }
         }
 
@@ -1797,7 +1797,7 @@ Describe 'SqlLogin\Set-SQLServerLoginPassword' {
 
                 $mockErrorMessage = $script:localizedData.SetPasswordValidationFailed -f $setPasswordParameters.Login.Name
 
-                { Set-SQLServerLoginPassword @setPasswordParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { Set-SQLServerLoginPassword @setPasswordParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
             }
         }
 
@@ -1806,7 +1806,7 @@ Describe 'SqlLogin\Set-SQLServerLoginPassword' {
             that is mocked in the stub file SMO.cs. It uses the code in the mocked method
             ChangePassword() to throw the correct exception.
         #>
-        It 'Should throw the correct error when changing the password fails' {
+        It 'Should throw the correct error when changing to the previous password fails' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
@@ -1817,7 +1817,7 @@ Describe 'SqlLogin\Set-SQLServerLoginPassword' {
 
                 $mockErrorMessage = $script:localizedData.SetPasswordFailed -f $setPasswordParameters.Login.Name
 
-                { Set-SQLServerLoginPassword @setPasswordParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { Set-SQLServerLoginPassword @setPasswordParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
             }
         }
 
@@ -1837,14 +1837,8 @@ Describe 'SqlLogin\Set-SQLServerLoginPassword' {
 
                 $mockErrorMessage = $script:localizedData.SetPasswordFailed -f $setPasswordParameters.Login.Name
 
-                { Set-SQLServerLoginPassword @setPasswordParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                { Set-SQLServerLoginPassword @setPasswordParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
             }
         }
     }
 }
-
-# }
-# finally
-# {
-#     Invoke-TestCleanup
-# }

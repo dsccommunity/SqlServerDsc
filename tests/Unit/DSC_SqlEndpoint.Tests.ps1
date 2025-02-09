@@ -153,7 +153,7 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Absent'
+                        $result.Ensure | Should-Be 'Absent'
                     }
                 }
 
@@ -163,9 +163,9 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                        $result.EndpointType | Should -Be $mockGetTargetResourceParameters.EndpointType
+                        $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                        $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                        $result.EndpointType | Should-Be $mockGetTargetResourceParameters.EndpointType
                     }
                 }
 
@@ -175,13 +175,13 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.EndpointName | Should -Be ''
-                        $result.Port | Should -Be ''
-                        $result.IpAddress | Should -Be ''
-                        $result.Owner | Should -Be ''
-                        $result.State | Should -BeNullOrEmpty
-                        $result.IsMessageForwardingEnabled | Should -BeNullOrEmpty
-                        $result.MessageForwardingSize | Should -BeNullOrEmpty
+                        $result.EndpointName | Should-Be ''
+                        $result.Port | Should-Be ''
+                        $result.IpAddress | Should-Be ''
+                        $result.Owner | Should-Be ''
+                        $result.State | Should-BeFalsy
+                        $result.IsMessageForwardingEnabled | Should-BeFalsy
+                        $result.MessageForwardingSize | Should-BeFalsy
                     }
                 }
 
@@ -189,10 +189,10 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Get-TargetResource @mockGetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
 
@@ -210,7 +210,7 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Present'
+                        $result.Ensure | Should-Be 'Present'
                     }
                 }
 
@@ -220,9 +220,9 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                        $result.EndpointType | Should -Be $mockGetTargetResourceParameters.EndpointType
+                        $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                        $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                        $result.EndpointType | Should-Be $mockGetTargetResourceParameters.EndpointType
                     }
                 }
 
@@ -232,13 +232,13 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.EndpointName | Should -Be 'DefaultEndpointMirror'
-                        $result.Port | Should -Be 5022
-                        $result.IpAddress | Should -Be '0.0.0.0'
-                        $result.Owner | Should -Be 'sa'
-                        $result.State | Should -Be 'Started'
-                        $result.IsMessageForwardingEnabled | Should -BeNullOrEmpty
-                        $result.MessageForwardingSize | Should -BeNullOrEmpty
+                        $result.EndpointName | Should-Be 'DefaultEndpointMirror'
+                        $result.Port | Should-Be 5022
+                        $result.IpAddress | Should-Be '0.0.0.0'
+                        $result.Owner | Should-Be 'sa'
+                        $result.State | Should-Be 'Started'
+                        $result.IsMessageForwardingEnabled | Should-BeFalsy
+                        $result.MessageForwardingSize | Should-BeFalsy
                     }
                 }
 
@@ -246,10 +246,10 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Get-TargetResource @mockGetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
 
@@ -267,7 +267,7 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
 
                         $mockErrorMessage = $script:localizedData.EndpointFoundButWrongType -f $mockGetTargetResourceParameters.EndpointName, 'DatabaseMirroring', 'ServiceBroker'
 
-                        { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                        { Get-TargetResource @mockGetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                     }
                 }
             }
@@ -336,7 +336,7 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Absent'
+                        $result.Ensure | Should-Be 'Absent'
                     }
                 }
 
@@ -346,9 +346,9 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                        $result.EndpointType | Should -Be $mockGetTargetResourceParameters.EndpointType
+                        $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                        $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                        $result.EndpointType | Should-Be $mockGetTargetResourceParameters.EndpointType
                     }
                 }
 
@@ -358,13 +358,13 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.EndpointName | Should -Be ''
-                        $result.Port | Should -Be ''
-                        $result.IpAddress | Should -Be ''
-                        $result.Owner | Should -Be ''
-                        $result.State | Should -BeNullOrEmpty
-                        $result.IsMessageForwardingEnabled | Should -BeNullOrEmpty
-                        $result.MessageForwardingSize | Should -BeNullOrEmpty
+                        $result.EndpointName | Should-Be ''
+                        $result.Port | Should-Be ''
+                        $result.IpAddress | Should-Be ''
+                        $result.Owner | Should-Be ''
+                        $result.State | Should-BeFalsy
+                        $result.IsMessageForwardingEnabled | Should-BeFalsy
+                        $result.MessageForwardingSize | Should-BeFalsy
                     }
                 }
 
@@ -372,10 +372,10 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Get-TargetResource @mockGetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
 
@@ -393,7 +393,7 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Present'
+                        $result.Ensure | Should-Be 'Present'
                     }
                 }
 
@@ -403,9 +403,9 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                        $result.EndpointType | Should -Be $mockGetTargetResourceParameters.EndpointType
+                        $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                        $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                        $result.EndpointType | Should-Be $mockGetTargetResourceParameters.EndpointType
                     }
                 }
 
@@ -415,13 +415,13 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.EndpointName | Should -Be 'SSBR'
-                        $result.Port | Should -Be 5023
-                        $result.IpAddress | Should -Be '192.168.0.20'
-                        $result.Owner | Should -Be 'COMPANY\OtherAcct'
-                        $result.State | Should -Be 'Started'
-                        $result.IsMessageForwardingEnabled | Should -BeTrue
-                        $result.MessageForwardingSize | Should -Be 2
+                        $result.EndpointName | Should-Be 'SSBR'
+                        $result.Port | Should-Be 5023
+                        $result.IpAddress | Should-Be '192.168.0.20'
+                        $result.Owner | Should-Be 'COMPANY\OtherAcct'
+                        $result.State | Should-Be 'Started'
+                        $result.IsMessageForwardingEnabled | Should-BeTrue
+                        $result.MessageForwardingSize | Should-Be 2
                     }
                 }
 
@@ -429,10 +429,10 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Get-TargetResource @mockGetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
 
@@ -450,7 +450,7 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
 
                         $mockErrorMessage = $script:localizedData.EndpointFoundButWrongType -f $mockGetTargetResourceParameters.EndpointName, 'ServiceBroker', 'DatabaseMirroring'
 
-                        { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                        { Get-TargetResource @mockGetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                     }
                 }
             }
@@ -477,7 +477,7 @@ Describe 'SqlEndpoint\Get-TargetResource' -Tag 'Get' {
 
                 $mockErrorMessage = $script:localizedData.NotConnectedToInstance -f $mockGetTargetResourceParameters.ServerName, $mockGetTargetResourceParameters.InstanceName
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
         }
     }
@@ -531,7 +531,7 @@ Describe 'DSC_SqlEndpoint\Test-TargetResource' -Tag 'Test' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
                 }
             }
@@ -564,7 +564,7 @@ Describe 'DSC_SqlEndpoint\Test-TargetResource' -Tag 'Test' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
                 }
             }
@@ -600,7 +600,7 @@ Describe 'DSC_SqlEndpoint\Test-TargetResource' -Tag 'Test' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
                 }
             }
@@ -633,7 +633,7 @@ Describe 'DSC_SqlEndpoint\Test-TargetResource' -Tag 'Test' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
                 }
             }
@@ -691,7 +691,7 @@ Describe 'DSC_SqlEndpoint\Test-TargetResource' -Tag 'Test' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
                 }
             }
@@ -743,7 +743,7 @@ Describe 'DSC_SqlEndpoint\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -780,7 +780,7 @@ Describe 'DSC_SqlEndpoint\Test-TargetResource' -Tag 'Test' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
             }
@@ -813,7 +813,7 @@ Describe 'DSC_SqlEndpoint\Test-TargetResource' -Tag 'Test' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
             }
@@ -849,7 +849,7 @@ Describe 'DSC_SqlEndpoint\Test-TargetResource' -Tag 'Test' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
             }
@@ -882,7 +882,7 @@ Describe 'DSC_SqlEndpoint\Test-TargetResource' -Tag 'Test' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
             }
@@ -936,7 +936,7 @@ Describe 'DSC_SqlEndpoint\Test-TargetResource' -Tag 'Test' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
             }
@@ -988,7 +988,7 @@ Describe 'DSC_SqlEndpoint\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -1166,14 +1166,14 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.EndpointName = 'NewEndpoint'
                         $mockSetTargetResourceParameters.EndpointType = $MockEndpointType
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                        $script:mockMethodCreateWasRun | Should -Be 1
-                        $script:mockMethodStartWasRun | Should -Be 1
-                        $script:mockMethodStopWasRun | Should -Be 0
-                        $script:mockMethodAlterWasRun | Should -Be 0
-                        $script:mockMethodDropWasRun | Should -Be 0
-                        $script:mockMethodDisableWasRun | Should -Be 0
+                        $script:mockMethodCreateWasRun | Should-Be 1
+                        $script:mockMethodStartWasRun | Should-Be 1
+                        $script:mockMethodStopWasRun | Should-Be 0
+                        $script:mockMethodAlterWasRun | Should-Be 0
+                        $script:mockMethodDropWasRun | Should-Be 0
+                        $script:mockMethodDisableWasRun | Should-Be 0
                     }
                 }
             }
@@ -1197,33 +1197,33 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.EndpointType = 'DatabaseMirroring'
                         $mockSetTargetResourceParameters.State = $MockState
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                        $script:mockMethodCreateWasRun | Should -Be 1
-                        $script:mockMethodAlterWasRun | Should -Be 0
-                        $script:mockMethodDropWasRun | Should -Be 0
+                        $script:mockMethodCreateWasRun | Should-Be 1
+                        $script:mockMethodAlterWasRun | Should-Be 0
+                        $script:mockMethodDropWasRun | Should-Be 0
 
                         switch ($MockState)
                         {
                             'Disabled'
                             {
-                                $script:mockMethodDisableWasRun | Should -Be 1
-                                $script:mockMethodStartWasRun | Should -Be 0
-                                $script:mockMethodStopWasRun | Should -Be 0
+                                $script:mockMethodDisableWasRun | Should-Be 1
+                                $script:mockMethodStartWasRun | Should-Be 0
+                                $script:mockMethodStopWasRun | Should-Be 0
                             }
 
                             'Started'
                             {
-                                $script:mockMethodStartWasRun | Should -Be 1
-                                $script:mockMethodDisableWasRun | Should -Be 0
-                                $script:mockMethodStopWasRun | Should -Be 0
+                                $script:mockMethodStartWasRun | Should-Be 1
+                                $script:mockMethodDisableWasRun | Should-Be 0
+                                $script:mockMethodStopWasRun | Should-Be 0
                             }
 
                             'Stopped'
                             {
-                                $script:mockMethodStopWasRun | Should -Be 1
-                                $script:mockMethodStartWasRun | Should -Be 0
-                                $script:mockMethodDisableWasRun | Should -Be 0
+                                $script:mockMethodStopWasRun | Should-Be 1
+                                $script:mockMethodStartWasRun | Should-Be 0
+                                $script:mockMethodDisableWasRun | Should-Be 0
                             }
                         }
                     }
@@ -1260,21 +1260,21 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.EndpointType = 'DatabaseMirroring'
                         $mockSetTargetResourceParameters.$MockParameterName = $MockParameterValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                        $script:mockMethodCreateWasRun | Should -Be 1
-                        $script:mockMethodStartWasRun | Should -Be 1
-                        $script:mockMethodDropWasRun | Should -Be 0
-                        $script:mockMethodDisableWasRun | Should -Be 0
-                        $script:mockMethodStopWasRun | Should -Be 0
+                        $script:mockMethodCreateWasRun | Should-Be 1
+                        $script:mockMethodStartWasRun | Should-Be 1
+                        $script:mockMethodDropWasRun | Should-Be 0
+                        $script:mockMethodDisableWasRun | Should-Be 0
+                        $script:mockMethodStopWasRun | Should-Be 0
 
                         if ($MockParameterName -eq 'Owner')
                         {
-                            $script:mockMethodAlterWasRun | Should -Be 0
+                            $script:mockMethodAlterWasRun | Should-Be 0
                         }
                         else
                         {
-                            $script:mockMethodAlterWasRun | Should -Be 1
+                            $script:mockMethodAlterWasRun | Should-Be 1
                         }
                     }
                 }
@@ -1318,21 +1318,21 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.EndpointType = 'ServiceBroker'
                         $mockSetTargetResourceParameters.$MockParameterName = $MockParameterValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                        $script:mockMethodCreateWasRun | Should -Be 1
-                        $script:mockMethodStartWasRun | Should -Be 1
-                        $script:mockMethodDropWasRun | Should -Be 0
-                        $script:mockMethodDisableWasRun | Should -Be 0
-                        $script:mockMethodStopWasRun | Should -Be 0
+                        $script:mockMethodCreateWasRun | Should-Be 1
+                        $script:mockMethodStartWasRun | Should-Be 1
+                        $script:mockMethodDropWasRun | Should-Be 0
+                        $script:mockMethodDisableWasRun | Should-Be 0
+                        $script:mockMethodStopWasRun | Should-Be 0
 
                         if ($MockParameterName -eq 'Owner')
                         {
-                            $script:mockMethodAlterWasRun | Should -Be 0
+                            $script:mockMethodAlterWasRun | Should-Be 0
                         }
                         else
                         {
-                            $script:mockMethodAlterWasRun | Should -Be 1
+                            $script:mockMethodAlterWasRun | Should-Be 1
                         }
                     }
                 }
@@ -1390,10 +1390,10 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.EndpointType = 'DatabaseMirroring'
                         $mockSetTargetResourceParameters.$MockParameterName = $MockParameterValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                        $script:mockMethodCreateWasRun | Should -Be 0
-                        $script:mockMethodDropWasRun | Should -Be 0
+                        $script:mockMethodCreateWasRun | Should-Be 0
+                        $script:mockMethodDropWasRun | Should-Be 0
 
                         if ($MockParameterName -eq 'State')
                         {
@@ -1401,29 +1401,29 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                             {
                                 'Disabled'
                                 {
-                                    $script:mockMethodDisableWasRun | Should -Be 1
-                                    $script:mockMethodStartWasRun | Should -Be 0
-                                    $script:mockMethodStopWasRun | Should -Be 0
+                                    $script:mockMethodDisableWasRun | Should-Be 1
+                                    $script:mockMethodStartWasRun | Should-Be 0
+                                    $script:mockMethodStopWasRun | Should-Be 0
                                 }
 
                                 'Started'
                                 {
-                                    $script:mockMethodStartWasRun | Should -Be 1
-                                    $script:mockMethodDisableWasRun | Should -Be 0
-                                    $script:mockMethodStopWasRun | Should -Be 0
+                                    $script:mockMethodStartWasRun | Should-Be 1
+                                    $script:mockMethodDisableWasRun | Should-Be 0
+                                    $script:mockMethodStopWasRun | Should-Be 0
                                 }
 
                                 'Stopped'
                                 {
-                                    $script:mockMethodStopWasRun | Should -Be 1
-                                    $script:mockMethodStartWasRun | Should -Be 0
-                                    $script:mockMethodDisableWasRun | Should -Be 0
+                                    $script:mockMethodStopWasRun | Should-Be 1
+                                    $script:mockMethodStartWasRun | Should-Be 0
+                                    $script:mockMethodDisableWasRun | Should-Be 0
                                 }
                             }
                         }
                         else
                         {
-                            $script:mockMethodAlterWasRun | Should -Be 1
+                            $script:mockMethodAlterWasRun | Should-Be 1
                         }
                     }
                 }
@@ -1479,10 +1479,10 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                         $mockSetTargetResourceParameters.EndpointType = 'ServiceBroker'
                         $mockSetTargetResourceParameters.$MockParameterName = $MockParameterValue
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                        $script:mockMethodCreateWasRun | Should -Be 0
-                        $script:mockMethodDropWasRun | Should -Be 0
+                        $script:mockMethodCreateWasRun | Should-Be 0
+                        $script:mockMethodDropWasRun | Should-Be 0
 
                         if ($MockParameterName -eq 'State')
                         {
@@ -1490,29 +1490,29 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                             {
                                 'Disabled'
                                 {
-                                    $script:mockMethodDisableWasRun | Should -Be 1
-                                    $script:mockMethodStartWasRun | Should -Be 0
-                                    $script:mockMethodStopWasRun | Should -Be 0
+                                    $script:mockMethodDisableWasRun | Should-Be 1
+                                    $script:mockMethodStartWasRun | Should-Be 0
+                                    $script:mockMethodStopWasRun | Should-Be 0
                                 }
 
                                 'Started'
                                 {
-                                    $script:mockMethodStartWasRun | Should -Be 1
-                                    $script:mockMethodDisableWasRun | Should -Be 0
-                                    $script:mockMethodStopWasRun | Should -Be 0
+                                    $script:mockMethodStartWasRun | Should-Be 1
+                                    $script:mockMethodDisableWasRun | Should-Be 0
+                                    $script:mockMethodStopWasRun | Should-Be 0
                                 }
 
                                 'Stopped'
                                 {
-                                    $script:mockMethodStopWasRun | Should -Be 1
-                                    $script:mockMethodStartWasRun | Should -Be 0
-                                    $script:mockMethodDisableWasRun | Should -Be 0
+                                    $script:mockMethodStopWasRun | Should-Be 1
+                                    $script:mockMethodStartWasRun | Should-Be 0
+                                    $script:mockMethodDisableWasRun | Should-Be 0
                                 }
                             }
                         }
                         else
                         {
-                            $script:mockMethodAlterWasRun | Should -Be 1
+                            $script:mockMethodAlterWasRun | Should-Be 1
                         }
                     }
                 }
@@ -1527,14 +1527,14 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
 
                     $mockErrorMessage = $script:localizedData.EndpointNotFound -f 'UnknownEndpointMirror'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
 
-                    $script:mockMethodDropWasRun | Should -Be 0
-                    $script:mockMethodCreateWasRun | Should -Be 0
-                    $script:mockMethodDisableWasRun | Should -Be 0
-                    $script:mockMethodStartWasRun | Should -Be 0
-                    $script:mockMethodStopWasRun | Should -Be 0
-                    $script:mockMethodAlterWasRun | Should -Be 0
+                    $script:mockMethodDropWasRun | Should-Be 0
+                    $script:mockMethodCreateWasRun | Should-Be 0
+                    $script:mockMethodDisableWasRun | Should-Be 0
+                    $script:mockMethodStartWasRun | Should-Be 0
+                    $script:mockMethodStopWasRun | Should-Be 0
+                    $script:mockMethodAlterWasRun | Should-Be 0
                 }
             }
         }
@@ -1557,14 +1557,14 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
                     $mockSetTargetResourceParameters.EndpointName = 'DefaultEndpointMirror'
                     $mockSetTargetResourceParameters.EndpointType = 'DatabaseMirroring'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $script:mockMethodDropWasRun | Should -Be 1
-                    $script:mockMethodCreateWasRun | Should -Be 0
-                    $script:mockMethodDisableWasRun | Should -Be 0
-                    $script:mockMethodStartWasRun | Should -Be 0
-                    $script:mockMethodStopWasRun | Should -Be 0
-                    $script:mockMethodAlterWasRun | Should -Be 0
+                    $script:mockMethodDropWasRun | Should-Be 1
+                    $script:mockMethodCreateWasRun | Should-Be 0
+                    $script:mockMethodDisableWasRun | Should-Be 0
+                    $script:mockMethodStartWasRun | Should-Be 0
+                    $script:mockMethodStopWasRun | Should-Be 0
+                    $script:mockMethodAlterWasRun | Should-Be 0
                 }
             }
 
@@ -1579,14 +1579,14 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
 
                     $mockErrorMessage = $script:localizedData.EndpointNotFound -f 'UnknownEndpointMirror'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
 
-                    $script:mockMethodDropWasRun | Should -Be 0
-                    $script:mockMethodCreateWasRun | Should -Be 0
-                    $script:mockMethodDisableWasRun | Should -Be 0
-                    $script:mockMethodStartWasRun | Should -Be 0
-                    $script:mockMethodStopWasRun | Should -Be 0
-                    $script:mockMethodAlterWasRun | Should -Be 0
+                    $script:mockMethodDropWasRun | Should-Be 0
+                    $script:mockMethodCreateWasRun | Should-Be 0
+                    $script:mockMethodDisableWasRun | Should-Be 0
+                    $script:mockMethodStartWasRun | Should-Be 0
+                    $script:mockMethodStopWasRun | Should-Be 0
+                    $script:mockMethodAlterWasRun | Should-Be 0
                 }
             }
         }
@@ -1614,7 +1614,7 @@ Describe 'SqlEndpoint\Set-TargetResource' -Tag 'Set' {
 
                 $mockErrorMessage = $script:localizedData.NotConnectedToInstance -f 'localhost', 'MSSQLSERVER'
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
         }
     }

@@ -129,18 +129,18 @@ Describe 'SqlMaxDop\Get-TargetResource' -Tag 'Get' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Ensure | Should -BeNullOrEmpty
-                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                    $result.MaxDop | Should -Be 4
-                    $result.IsActiveNode | Should -BeFalse
-                    $result.ProcessOnlyOnActiveNode | Should -BeNullOrEmpty
-                    $result.DynamicAlloc | Should -BeNullOrEmpty
+                    $result.Ensure | Should-BeFalsy
+                    $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                    $result.MaxDop | Should-Be 4
+                    $result.IsActiveNode | Should-BeFalse
+                    $result.ProcessOnlyOnActiveNode | Should-BeFalsy
+                    $result.DynamicAlloc | Should-BeFalsy
                 }
             }
         }
 
-        Context 'When getting the current state of max degree of parallelism' {
+        Context 'When getting the current state of max degree of parallelism without existing instance' {
             BeforeEach {
                 Mock -CommandName Connect-SQL -MockWith {
                     return $null
@@ -157,13 +157,13 @@ Describe 'SqlMaxDop\Get-TargetResource' -Tag 'Get' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.Ensure | Should -BeNullOrEmpty
-                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                    $result.MaxDop | Should -BeNullOrEmpty
-                    $result.IsActiveNode | Should -BeNullOrEmpty
-                    $result.ProcessOnlyOnActiveNode | Should -BeNullOrEmpty
-                    $result.DynamicAlloc | Should -BeNullOrEmpty
+                    $result.Ensure | Should-BeFalsy
+                    $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                    $result.MaxDop | Should-BeFalsy
+                    $result.IsActiveNode | Should-BeFalsy
+                    $result.ProcessOnlyOnActiveNode | Should-BeFalsy
+                    $result.DynamicAlloc | Should-BeFalsy
                 }
             }
         }
@@ -206,7 +206,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -229,7 +229,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -256,7 +256,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -279,7 +279,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $mockErrorMessage = '{0} (Parameter ''MaxDop'')' -f $script:localizedData.MaxDopParamMustBeNull
 
-                    { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    { Test-TargetResource @mockTestTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -305,7 +305,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -328,7 +328,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -355,7 +355,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -378,7 +378,7 @@ Describe 'SqlMaxDop\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -419,7 +419,7 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                 $mockErrorMessage = '{0} (Parameter ''MaxDop'')' -f $script:localizedData.MaxDopParamMustBeNull
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
         }
     }
@@ -469,9 +469,9 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockErrorMessage = $script:localizedData.MaxDopSetError
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*Mock Alter Method was called with invalid operation.*')
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*Mock Alter Method was called with invalid operation.*')
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
             }
         }
@@ -524,9 +524,9 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.Ensure = 'Absent'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
             }
         }
@@ -579,9 +579,9 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.MaxDop = 4
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
             }
         }
@@ -638,9 +638,9 @@ Describe 'SqlMaxDop\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.DynamicAlloc = $true
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $mockMethodAlterWasRun | Should -Be 1
+                    $mockMethodAlterWasRun | Should-Be 1
                 }
             }
         }
@@ -682,7 +682,7 @@ Describe 'Get-SqlDscDynamicMaxDop' -Tag 'Helper' {
 
                     $result = Get-SqlDscDynamicMaxDop
 
-                    $result | Should -Be 1
+                    $result | Should-Be 1
                 }
             }
         }
@@ -708,7 +708,7 @@ Describe 'Get-SqlDscDynamicMaxDop' -Tag 'Helper' {
 
                     $result = Get-SqlDscDynamicMaxDop
 
-                    $result | Should -Be 2
+                    $result | Should-Be 2
                 }
             }
         }
@@ -740,7 +740,7 @@ Describe 'Get-SqlDscDynamicMaxDop' -Tag 'Helper' {
 
                 $result = Get-SqlDscDynamicMaxDop
 
-                $result | Should -Be 4
+                $result | Should-Be 4
             }
         }
     }
@@ -771,7 +771,7 @@ Describe 'Get-SqlDscDynamicMaxDop' -Tag 'Helper' {
 
                 $result = Get-SqlDscDynamicMaxDop
 
-                $result | Should -Be 8
+                $result | Should-Be 8
             }
         }
     }
@@ -802,7 +802,7 @@ Describe 'Get-SqlDscDynamicMaxDop' -Tag 'Helper' {
 
                 $result = Get-SqlDscDynamicMaxDop
 
-                $result | Should -Be 8
+                $result | Should-Be 8
             }
         }
     }
