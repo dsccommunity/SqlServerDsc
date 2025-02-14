@@ -146,15 +146,15 @@ Describe 'SqlWaitForAG\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.ServerName | Should -Be 'localhost'
-                $result.InstanceName | Should -Be 'MSSQLSERVER'
-                $result.Name | Should -Be 'AGTest'
-                $result.RetryIntervalSec | Should -Be 1
-                $result.RetryCount | Should -Be 2
+                $result.ServerName | Should-Be 'localhost'
+                $result.InstanceName | Should-Be 'MSSQLSERVER'
+                $result.Name | Should-Be 'AGTest'
+                $result.RetryIntervalSec | Should-Be 1
+                $result.RetryCount | Should-Be 2
             }
 
-            Should -Invoke -CommandName Get-ClusterGroup -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-ClusterGroup -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return that the group exist' {
@@ -163,11 +163,11 @@ Describe 'SqlWaitForAG\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.GroupExist | Should -BeTrue
+                $result.GroupExist | Should-BeTrue
             }
 
-            Should -Invoke -CommandName Get-ClusterGroup -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-ClusterGroup -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
     }
 
@@ -185,14 +185,14 @@ Describe 'SqlWaitForAG\Get-TargetResource' -Tag 'Get' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.ServerName | Should -Be 'localhost'
-                    $result.InstanceName | Should -Be 'MSSQLSERVER'
-                    $result.Name | Should -Be 'AGTest'
-                    $result.RetryIntervalSec | Should -Be 1
-                    $result.RetryCount | Should -Be 2
+                    $result.ServerName | Should-Be 'localhost'
+                    $result.InstanceName | Should-Be 'MSSQLSERVER'
+                    $result.Name | Should-Be 'AGTest'
+                    $result.RetryIntervalSec | Should-Be 1
+                    $result.RetryCount | Should-Be 2
                 }
 
-                Should -Invoke -CommandName Get-ClusterGroup -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-ClusterGroup -Exactly -Scope It -Times 1
             }
 
             It 'Should return that the group does not exist' {
@@ -201,9 +201,9 @@ Describe 'SqlWaitForAG\Get-TargetResource' -Tag 'Get' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.GroupExist | Should -BeFalse
+                    $result.GroupExist | Should-BeFalse
 
-                    Should -Invoke -CommandName Get-ClusterGroup -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-ClusterGroup -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -239,14 +239,14 @@ Describe 'SqlWaitForAG\Get-TargetResource' -Tag 'Get' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.ServerName | Should -Be 'localhost'
-                    $result.InstanceName | Should -Be 'MSSQLSERVER'
-                    $result.Name | Should -Be 'AGTest'
-                    $result.RetryIntervalSec | Should -Be 1
-                    $result.RetryCount | Should -Be 2
+                    $result.ServerName | Should-Be 'localhost'
+                    $result.InstanceName | Should-Be 'MSSQLSERVER'
+                    $result.Name | Should-Be 'AGTest'
+                    $result.RetryIntervalSec | Should-Be 1
+                    $result.RetryCount | Should-Be 2
                 }
 
-                Should -Invoke -CommandName Get-ClusterGroup -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-ClusterGroup -Exactly -Scope It -Times 1
             }
 
             It 'Should return that the group does not exist' {
@@ -255,7 +255,7 @@ Describe 'SqlWaitForAG\Get-TargetResource' -Tag 'Get' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.GroupExist | Should -BeFalse
+                    $result.GroupExist | Should-BeFalse
                 }
             }
         }
@@ -291,14 +291,14 @@ Describe 'SqlWaitForAG\Get-TargetResource' -Tag 'Get' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.ServerName | Should -Be 'localhost'
-                    $result.InstanceName | Should -Be 'MSSQLSERVER'
-                    $result.Name | Should -Be 'AGTest'
-                    $result.RetryIntervalSec | Should -Be 1
-                    $result.RetryCount | Should -Be 2
+                    $result.ServerName | Should-Be 'localhost'
+                    $result.InstanceName | Should-Be 'MSSQLSERVER'
+                    $result.Name | Should-Be 'AGTest'
+                    $result.RetryIntervalSec | Should-Be 1
+                    $result.RetryCount | Should-Be 2
                 }
 
-                Should -Invoke -CommandName Get-ClusterGroup -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-ClusterGroup -Exactly -Scope It -Times 1
             }
 
             It 'Should return that the group does not exist' {
@@ -307,7 +307,7 @@ Describe 'SqlWaitForAG\Get-TargetResource' -Tag 'Get' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.GroupExist | Should -BeFalse
+                    $result.GroupExist | Should-BeFalse
                 }
             }
         }
@@ -349,10 +349,10 @@ Describe 'SqlWaitForAG\Test-TargetResource' -Tag 'Test' {
 
                 $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
 
-            Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
         }
     }
 
@@ -371,10 +371,10 @@ Describe 'SqlWaitForAG\Test-TargetResource' -Tag 'Test' {
 
                 $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
 
-            Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
         }
     }
 }
@@ -414,11 +414,11 @@ Describe 'SqlWaitForAG\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Start-Sleep -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Start-Sleep -Exactly -Scope It -Times 1
             }
         }
 
@@ -452,12 +452,12 @@ Describe 'SqlWaitForAG\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
                 # Looping twice so these mocks are called twice.
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 2 -Scope It
-                Should -Invoke -CommandName Start-Sleep -Exactly -Times 2 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 2
+                Should-Invoke -CommandName Start-Sleep -Exactly -Scope It -Times 2
             }
         }
 
@@ -477,12 +477,12 @@ Describe 'SqlWaitForAG\Set-TargetResource' -Tag 'Set' {
 
                     $mockErrorMessage = $script:localizedData.FailedMessage -f 'AGTest'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
 
                 # Looping twice so these mocks are called twice.
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 2 -Scope It
-                Should -Invoke -CommandName Start-Sleep -Exactly -Times 2 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 2
+                Should-Invoke -CommandName Start-Sleep -Exactly -Scope It -Times 2
             }
         }
     }

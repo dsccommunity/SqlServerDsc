@@ -302,7 +302,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     SqlVersion       = '14.0'
                 }
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -350,17 +350,17 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
             }
 
-            Should -Invoke -CommandName Connect-UncPath -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Disconnect-UncPath -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-Service -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-InstanceProgramPath -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Connect-UncPath -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Disconnect-UncPath -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Get-PSDrive -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-Service -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-InstanceProgramPath -Exactly -Scope It -Times 0
 
-            Should -Invoke -CommandName Test-IsSsmsInstalled -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsSsmsAdvancedInstalled -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Test-IsSsmsInstalled -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-IsSsmsAdvancedInstalled -Exactly -Scope It -Times 1
         }
 
         It 'Should not return any names of installed features' {
@@ -369,7 +369,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.Features | Should -Be ''
+                $result.Features | Should-Be ''
             }
         }
 
@@ -379,34 +379,34 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.SourcePath | Should -Be $TestDrive
-                $result.InstanceName | Should -Be 'MSSQLSERVER'
-                $result.InstanceID | Should -BeNullOrEmpty
-                $result.InstallSharedDir | Should -BeNullOrEmpty
-                $result.InstallSharedWOWDir | Should -BeNullOrEmpty
-                $result.SQLSvcAccountUsername | Should -BeNullOrEmpty
-                $result.AgtSvcAccountUsername | Should -BeNullOrEmpty
-                $result.SqlCollation | Should -BeNullOrEmpty
-                $result.SQLSysAdminAccounts | Should -BeNullOrEmpty
-                $result.SecurityMode | Should -BeNullOrEmpty
-                $result.InstallSQLDataDir | Should -BeNullOrEmpty
-                $result.SQLUserDBDir | Should -BeNullOrEmpty
-                $result.SQLUserDBLogDir | Should -BeNullOrEmpty
-                $result.SQLBackupDir | Should -BeNullOrEmpty
-                $result.FTSvcAccountUsername | Should -BeNullOrEmpty
-                $result.RSSvcAccountUsername | Should -BeNullOrEmpty
-                $result.ASSvcAccountUsername | Should -BeNullOrEmpty
-                $result.ASCollation | Should -BeNullOrEmpty
-                $result.ProductCoveredBySA | Should -BeFalse
-                $result.ASSysAdminAccounts | Should -BeNullOrEmpty
-                $result.ASDataDir | Should -BeNullOrEmpty
-                $result.ASLogDir | Should -BeNullOrEmpty
-                $result.ASBackupDir | Should -BeNullOrEmpty
-                $result.ASTempDir | Should -BeNullOrEmpty
-                $result.ASConfigDir | Should -BeNullOrEmpty
-                $result.ASServerMode | Should -BeNullOrEmpty
-                $result.ISSvcAccountUsername | Should -BeNullOrEmpty
-                $result.ServerName | Should -Be 'host.company.local'
+                $result.SourcePath | Should-Be $TestDrive
+                $result.InstanceName | Should-Be 'MSSQLSERVER'
+                $result.InstanceID | Should-BeFalsy
+                $result.InstallSharedDir | Should-BeFalsy
+                $result.InstallSharedWOWDir | Should-BeFalsy
+                $result.SQLSvcAccountUsername | Should-BeFalsy
+                $result.AgtSvcAccountUsername | Should-BeFalsy
+                $result.SqlCollation | Should-BeFalsy
+                $result.SQLSysAdminAccounts | Should-BeFalsy
+                $result.SecurityMode | Should-BeFalsy
+                $result.InstallSQLDataDir | Should-BeFalsy
+                $result.SQLUserDBDir | Should-BeFalsy
+                $result.SQLUserDBLogDir | Should-BeFalsy
+                $result.SQLBackupDir | Should-BeFalsy
+                $result.FTSvcAccountUsername | Should-BeFalsy
+                $result.RSSvcAccountUsername | Should-BeFalsy
+                $result.ASSvcAccountUsername | Should-BeFalsy
+                $result.ASCollation | Should-BeFalsy
+                $result.ProductCoveredBySA | Should-BeFalse
+                $result.ASSysAdminAccounts | Should-BeFalsy
+                $result.ASDataDir | Should-BeFalsy
+                $result.ASLogDir | Should-BeFalsy
+                $result.ASBackupDir | Should-BeFalsy
+                $result.ASTempDir | Should-BeFalsy
+                $result.ASConfigDir | Should-BeFalsy
+                $result.ASServerMode | Should-BeFalsy
+                $result.ISSvcAccountUsername | Should-BeFalsy
+                $result.ServerName | Should-Be 'host.company.local'
             }
         }
     }
@@ -513,17 +513,17 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
             }
 
-            Should -Invoke -CommandName Connect-UncPath -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Disconnect-UncPath -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-Service -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsReplicationFeatureInstalled -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-InstanceProgramPath -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsSsmsInstalled -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsSsmsAdvancedInstalled -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-UncPath -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Disconnect-UncPath -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Get-PSDrive -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-Service -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-IsReplicationFeatureInstalled -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-InstanceProgramPath -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-IsSsmsInstalled -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-IsSsmsAdvancedInstalled -Exactly -Scope It -Times 1
         }
 
         It 'Should return correct names of installed features' {
@@ -532,7 +532,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.Features | Should -Be 'SQLENGINE,REPLICATION,DQ,FULLTEXT,RS,AS,IS,DQC,BOL,CONN,BC,SDK,MDS'
+                $result.Features | Should-Be 'SQLENGINE,REPLICATION,DQ,FULLTEXT,RS,AS,IS,DQC,BOL,CONN,BC,SDK,MDS'
             }
         }
 
@@ -542,38 +542,38 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.SourcePath | Should -Be $TestDrive
-                $result.InstanceName | Should -Be 'MSSQLSERVER'
-                $result.InstanceID | Should -Be 'MSSQLSERVER'
-                $result.InstallSharedDir | Should -Be 'C:\Program Files\Microsoft SQL Server'
-                $result.InstallSharedWOWDir | Should -Be 'C:\Program Files (x86)\Microsoft SQL Server'
-                $result.SQLSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.AgtSvcAccountUsername | Should -Be 'COMPANY\AgentAccount'
-                $result.SqlCollation | Should -Be 'Finnish_Swedish_CI_AS'
-                $result.SQLSysAdminAccounts | Should -Be 'COMPANY\Stacy'
-                $result.SecurityMode | Should -BeNullOrEmpty
-                $result.InstallSQLDataDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL"
-                $result.SQLUserDBDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
-                $result.SQLUserDBLogDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
-                $result.SQLBackupDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\Backup"
-                $result.FTSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.RSSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.ASSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.ASCollation | Should -Be 'Finnish_Swedish_CI_AS'
-                $result.ASSysAdminAccounts | Should -Be @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
-                $result.ASDataDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Data'
-                $result.ASLogDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Log'
-                $result.ASBackupDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Backup'
-                $result.ASTempDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Temp'
-                $result.ASConfigDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Config'
-                $result.ASServerMode | Should -Be 'MULTIDIMENSIONAL'
-                $result.ISSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.SQLTempDBDir | Should -Be 'M:\MSSQL\TempDb\Data'
-                $result.SqlTempdbFileCount | Should -Be 1
-                $result.SqlTempdbFileSize | Should -Be 200
-                $result.SqlTempdbFileGrowth | Should -Be 10
-                $result.SqlTempdbLogFileSize | Should -Be 20
-                $result.SqlTempdbLogFileGrowth | Should -Be 10
+                $result.SourcePath | Should-Be $TestDrive
+                $result.InstanceName | Should-Be 'MSSQLSERVER'
+                $result.InstanceID | Should-Be 'MSSQLSERVER'
+                $result.InstallSharedDir | Should-Be 'C:\Program Files\Microsoft SQL Server'
+                $result.InstallSharedWOWDir | Should-Be 'C:\Program Files (x86)\Microsoft SQL Server'
+                $result.SQLSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.AgtSvcAccountUsername | Should-Be 'COMPANY\AgentAccount'
+                $result.SqlCollation | Should-Be 'Finnish_Swedish_CI_AS'
+                $result.SQLSysAdminAccounts | Should-Be 'COMPANY\Stacy'
+                $result.SecurityMode | Should-BeFalsy
+                $result.InstallSQLDataDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL"
+                $result.SQLUserDBDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
+                $result.SQLUserDBLogDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
+                $result.SQLBackupDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\Backup"
+                $result.FTSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.RSSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.ASSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.ASCollation | Should-Be 'Finnish_Swedish_CI_AS'
+                $result.ASSysAdminAccounts | Should-Be @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
+                $result.ASDataDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Data'
+                $result.ASLogDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Log'
+                $result.ASBackupDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Backup'
+                $result.ASTempDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Temp'
+                $result.ASConfigDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Config'
+                $result.ASServerMode | Should-Be 'MULTIDIMENSIONAL'
+                $result.ISSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.SQLTempDBDir | Should-Be 'M:\MSSQL\TempDb\Data'
+                $result.SqlTempdbFileCount | Should-Be 1
+                $result.SqlTempdbFileSize | Should-Be 200
+                $result.SqlTempdbFileGrowth | Should-Be 10
+                $result.SqlTempdbLogFileSize | Should-Be 20
+                $result.SqlTempdbLogFileGrowth | Should-Be 10
             }
         }
 
@@ -585,7 +585,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.ASServerMode | Should -Be 'POWERPIVOT'
+                $result.ASServerMode | Should-Be 'POWERPIVOT'
             }
         }
 
@@ -597,7 +597,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.ASServerMode | Should -Be 'TABULAR'
+                $result.ASServerMode | Should-Be 'TABULAR'
             }
 
             # Return the state to the default for all other tests.
@@ -616,8 +616,8 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                Write-Output -InputObject $result.ASSysAdminAccounts -NoEnumerate | Should -BeOfType [System.String[]]
-                $result.ASSysAdminAccounts | Should -Be 'COMPANY\AnalysisAdmin'
+                Write-Output -InputObject $result.ASSysAdminAccounts -NoEnumerate | Should-HaveType ([System.String[]])
+                $result.ASSysAdminAccounts | Should-Be 'COMPANY\AnalysisAdmin'
             }
 
             # Setting back the default administrators for mock Connect-SQLAnalysis.
@@ -676,16 +676,16 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
             }
 
-            Should -Invoke -CommandName Connect-UncPath -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Disconnect-UncPath -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-Service -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-InstanceProgramPath -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Test-IsSsmsInstalled -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsSsmsAdvancedInstalled -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-UncPath -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Disconnect-UncPath -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-PSDrive -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-Service -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-InstanceProgramPath -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Test-IsSsmsInstalled -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-IsSsmsAdvancedInstalled -Exactly -Scope It -Times 1
         }
 
         It 'Should not return any names of installed features' {
@@ -694,7 +694,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.Features | Should -Be ''
+                $result.Features | Should-Be ''
             }
         }
 
@@ -704,32 +704,32 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.SourcePath | Should -Be $mockSourcePathUNC
-                $result.InstanceName | Should -Be 'MSSQLSERVER'
-                $result.InstanceID | Should -BeNullOrEmpty
-                $result.InstallSharedDir | Should -BeNullOrEmpty
-                $result.InstallSharedWOWDir | Should -BeNullOrEmpty
-                $result.SQLSvcAccountUsername | Should -BeNullOrEmpty
-                $result.AgtSvcAccountUsername | Should -BeNullOrEmpty
-                $result.SqlCollation | Should -BeNullOrEmpty
-                $result.SQLSysAdminAccounts | Should -BeNullOrEmpty
-                $result.SecurityMode | Should -BeNullOrEmpty
-                $result.InstallSQLDataDir | Should -BeNullOrEmpty
-                $result.SQLUserDBDir | Should -BeNullOrEmpty
-                $result.SQLUserDBLogDir | Should -BeNullOrEmpty
-                $result.SQLBackupDir | Should -BeNullOrEmpty
-                $result.FTSvcAccountUsername | Should -BeNullOrEmpty
-                $result.RSSvcAccountUsername | Should -BeNullOrEmpty
-                $result.ASSvcAccountUsername | Should -BeNullOrEmpty
-                $result.ASCollation | Should -BeNullOrEmpty
-                $result.ASSysAdminAccounts | Should -BeNullOrEmpty
-                $result.ASDataDir | Should -BeNullOrEmpty
-                $result.ASLogDir | Should -BeNullOrEmpty
-                $result.ASBackupDir | Should -BeNullOrEmpty
-                $result.ASTempDir | Should -BeNullOrEmpty
-                $result.ASConfigDir | Should -BeNullOrEmpty
-                $result.ISSvcAccountUsername | Should -BeNullOrEmpty
-                $result.SqlVersion | Should -Be $MockSqlMajorVersion
+                $result.SourcePath | Should-Be $mockSourcePathUNC
+                $result.InstanceName | Should-Be 'MSSQLSERVER'
+                $result.InstanceID | Should-BeFalsy
+                $result.InstallSharedDir | Should-BeFalsy
+                $result.InstallSharedWOWDir | Should-BeFalsy
+                $result.SQLSvcAccountUsername | Should-BeFalsy
+                $result.AgtSvcAccountUsername | Should-BeFalsy
+                $result.SqlCollation | Should-BeFalsy
+                $result.SQLSysAdminAccounts | Should-BeFalsy
+                $result.SecurityMode | Should-BeFalsy
+                $result.InstallSQLDataDir | Should-BeFalsy
+                $result.SQLUserDBDir | Should-BeFalsy
+                $result.SQLUserDBLogDir | Should-BeFalsy
+                $result.SQLBackupDir | Should-BeFalsy
+                $result.FTSvcAccountUsername | Should-BeFalsy
+                $result.RSSvcAccountUsername | Should-BeFalsy
+                $result.ASSvcAccountUsername | Should-BeFalsy
+                $result.ASCollation | Should-BeFalsy
+                $result.ASSysAdminAccounts | Should-BeFalsy
+                $result.ASDataDir | Should-BeFalsy
+                $result.ASLogDir | Should-BeFalsy
+                $result.ASBackupDir | Should-BeFalsy
+                $result.ASTempDir | Should-BeFalsy
+                $result.ASConfigDir | Should-BeFalsy
+                $result.ISSvcAccountUsername | Should-BeFalsy
+                $result.SqlVersion | Should-Be $MockSqlMajorVersion
             }
         }
     }
@@ -821,43 +821,43 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 if ($MockSqlMajorVersion -in ('13', '14', '15'))
                 {
-                    $result.Features | Should -Match 'SQLENGINE\b'
-                    $result.Features | Should -Match 'REPLICATION\b'
-                    $result.Features | Should -Match 'DQ\b'
-                    $result.Features | Should -Match 'DQC\b'
-                    $result.Features | Should -Match 'FULLTEXT\b'
-                    $result.Features | Should -Match 'RS\b'
-                    $result.Features | Should -Match 'AS\b'
-                    $result.Features | Should -Match 'IS\b'
-                    $result.Features | Should -Match 'BOL\b'
-                    $result.Features | Should -Match 'MDS\b'
+                    $result.Features | Should-MatchString 'SQLENGINE\b'
+                    $result.Features | Should-MatchString 'REPLICATION\b'
+                    $result.Features | Should-MatchString 'DQ\b'
+                    $result.Features | Should-MatchString 'DQC\b'
+                    $result.Features | Should-MatchString 'FULLTEXT\b'
+                    $result.Features | Should-MatchString 'RS\b'
+                    $result.Features | Should-MatchString 'AS\b'
+                    $result.Features | Should-MatchString 'IS\b'
+                    $result.Features | Should-MatchString 'BOL\b'
+                    $result.Features | Should-MatchString 'MDS\b'
                 }
                 elseif ($MockSqlMajorVersion -in ('16'))
                 {
-                    $result.Features | Should -Match 'SQLENGINE\b'
-                    $result.Features | Should -Match 'REPLICATION\b'
-                    $result.Features | Should -Match 'DQ\b'
-                    $result.Features | Should -Match 'DQC\b'
-                    $result.Features | Should -Match 'FULLTEXT\b'
-                    $result.Features | Should -Match 'AS\b'
-                    $result.Features | Should -Match 'IS\b'
-                    $result.Features | Should -Match 'BOL\b'
-                    $result.Features | Should -Match 'MDS\b'
+                    $result.Features | Should-MatchString 'SQLENGINE\b'
+                    $result.Features | Should-MatchString 'REPLICATION\b'
+                    $result.Features | Should-MatchString 'DQ\b'
+                    $result.Features | Should-MatchString 'DQC\b'
+                    $result.Features | Should-MatchString 'FULLTEXT\b'
+                    $result.Features | Should-MatchString 'AS\b'
+                    $result.Features | Should-MatchString 'IS\b'
+                    $result.Features | Should-MatchString 'BOL\b'
+                    $result.Features | Should-MatchString 'MDS\b'
                 }
                 else
                 {
-                    $result.Features | Should -Match 'SQLENGINE\b'
-                    $result.Features | Should -Match 'REPLICATION\b'
-                    $result.Features | Should -Match 'DQ\b'
-                    $result.Features | Should -Match 'DQC\b'
-                    $result.Features | Should -Match 'FULLTEXT\b'
-                    $result.Features | Should -Match 'RS\b'
-                    $result.Features | Should -Match 'AS\b'
-                    $result.Features | Should -Match 'IS\b'
-                    $result.Features | Should -Match 'BOL\b'
-                    $result.Features | Should -Match 'MDS\b'
-                    $result.Features | Should -Match 'SSMS\b'
-                    $result.Features | Should -Match 'ADV_SSMS\b'
+                    $result.Features | Should-MatchString 'SQLENGINE\b'
+                    $result.Features | Should-MatchString 'REPLICATION\b'
+                    $result.Features | Should-MatchString 'DQ\b'
+                    $result.Features | Should-MatchString 'DQC\b'
+                    $result.Features | Should-MatchString 'FULLTEXT\b'
+                    $result.Features | Should-MatchString 'RS\b'
+                    $result.Features | Should-MatchString 'AS\b'
+                    $result.Features | Should-MatchString 'IS\b'
+                    $result.Features | Should-MatchString 'BOL\b'
+                    $result.Features | Should-MatchString 'MDS\b'
+                    $result.Features | Should-MatchString 'SSMS\b'
+                    $result.Features | Should-MatchString 'ADV_SSMS\b'
                 }
             }
         }
@@ -953,17 +953,17 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
             }
 
-            Should -Invoke -CommandName Connect-UncPath -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Disconnect-UncPath -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-Service -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsReplicationFeatureInstalled -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-InstanceProgramPath -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsSsmsInstalled -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsSsmsAdvancedInstalled -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-UncPath -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Disconnect-UncPath -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Get-PSDrive -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-Service -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-IsReplicationFeatureInstalled -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-InstanceProgramPath -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-IsSsmsInstalled -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-IsSsmsAdvancedInstalled -Exactly -Scope It -Times 1
         }
 
         It 'Should return correct names of installed features' {
@@ -974,49 +974,49 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 if ($MockSqlMajorVersion -in ('13', '14', '15'))
                 {
-                    $result.Features | Should -Match 'SQLENGINE\b'
-                    $result.Features | Should -Match 'REPLICATION\b'
-                    $result.Features | Should -Match 'DQ\b'
-                    $result.Features | Should -Match 'DQC\b'
-                    $result.Features | Should -Match 'FULLTEXT\b'
-                    $result.Features | Should -Match 'RS\b'
-                    $result.Features | Should -Match 'AS\b'
-                    $result.Features | Should -Match 'IS\b'
-                    $result.Features | Should -Match 'BOL\b'
-                    $result.Features | Should -Match 'MDS\b'
-                    $result.Features | Should -Match 'CONN\b'
-                    $result.Features | Should -Match 'BC\b'
-                    $result.Features | Should -Match 'SDK\b'
+                    $result.Features | Should-MatchString 'SQLENGINE\b'
+                    $result.Features | Should-MatchString 'REPLICATION\b'
+                    $result.Features | Should-MatchString 'DQ\b'
+                    $result.Features | Should-MatchString 'DQC\b'
+                    $result.Features | Should-MatchString 'FULLTEXT\b'
+                    $result.Features | Should-MatchString 'RS\b'
+                    $result.Features | Should-MatchString 'AS\b'
+                    $result.Features | Should-MatchString 'IS\b'
+                    $result.Features | Should-MatchString 'BOL\b'
+                    $result.Features | Should-MatchString 'MDS\b'
+                    $result.Features | Should-MatchString 'CONN\b'
+                    $result.Features | Should-MatchString 'BC\b'
+                    $result.Features | Should-MatchString 'SDK\b'
                 }
                 elseif ($MockSqlMajorVersion -in ('16'))
                 {
-                    $result.Features | Should -Match 'SQLENGINE\b'
-                    $result.Features | Should -Match 'REPLICATION\b'
-                    $result.Features | Should -Match 'DQ\b'
-                    $result.Features | Should -Match 'DQC\b'
-                    $result.Features | Should -Match 'FULLTEXT\b'
-                    $result.Features | Should -Match 'AS\b'
-                    $result.Features | Should -Match 'IS\b'
-                    $result.Features | Should -Match 'BOL\b'
-                    $result.Features | Should -Match 'MDS\b'
+                    $result.Features | Should-MatchString 'SQLENGINE\b'
+                    $result.Features | Should-MatchString 'REPLICATION\b'
+                    $result.Features | Should-MatchString 'DQ\b'
+                    $result.Features | Should-MatchString 'DQC\b'
+                    $result.Features | Should-MatchString 'FULLTEXT\b'
+                    $result.Features | Should-MatchString 'AS\b'
+                    $result.Features | Should-MatchString 'IS\b'
+                    $result.Features | Should-MatchString 'BOL\b'
+                    $result.Features | Should-MatchString 'MDS\b'
                 }
                 else
                 {
-                    $result.Features | Should -Match 'SQLENGINE\b'
-                    $result.Features | Should -Match 'REPLICATION\b'
-                    $result.Features | Should -Match 'DQ\b'
-                    $result.Features | Should -Match 'DQC\b'
-                    $result.Features | Should -Match 'FULLTEXT\b'
-                    $result.Features | Should -Match 'RS\b'
-                    $result.Features | Should -Match 'AS\b'
-                    $result.Features | Should -Match 'IS\b'
-                    $result.Features | Should -Match 'BOL\b'
-                    $result.Features | Should -Match 'MDS\b'
-                    $result.Features | Should -Match 'CONN\b'
-                    $result.Features | Should -Match 'BC\b'
-                    $result.Features | Should -Match 'SDK\b'
-                    $result.Features | Should -Match 'SSMS\b'
-                    $result.Features | Should -Match 'ADV_SSMS\b'
+                    $result.Features | Should-MatchString 'SQLENGINE\b'
+                    $result.Features | Should-MatchString 'REPLICATION\b'
+                    $result.Features | Should-MatchString 'DQ\b'
+                    $result.Features | Should-MatchString 'DQC\b'
+                    $result.Features | Should-MatchString 'FULLTEXT\b'
+                    $result.Features | Should-MatchString 'RS\b'
+                    $result.Features | Should-MatchString 'AS\b'
+                    $result.Features | Should-MatchString 'IS\b'
+                    $result.Features | Should-MatchString 'BOL\b'
+                    $result.Features | Should-MatchString 'MDS\b'
+                    $result.Features | Should-MatchString 'CONN\b'
+                    $result.Features | Should-MatchString 'BC\b'
+                    $result.Features | Should-MatchString 'SDK\b'
+                    $result.Features | Should-MatchString 'SSMS\b'
+                    $result.Features | Should-MatchString 'ADV_SSMS\b'
                 }
             }
         }
@@ -1027,32 +1027,32 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.SourcePath | Should -Be $TestDrive
-                $result.InstanceName | Should -Be 'MSSQLSERVER'
-                $result.InstanceID | Should -Be 'MSSQLSERVER'
-                $result.InstallSharedDir | Should -Be 'C:\Program Files\Microsoft SQL Server'
-                $result.InstallSharedWOWDir | Should -Be 'C:\Program Files (x86)\Microsoft SQL Server'
-                $result.SQLSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.AgtSvcAccountUsername | Should -Be 'COMPANY\AgentAccount'
-                $result.SqlCollation | Should -Be 'Finnish_Swedish_CI_AS'
-                $result.SQLSysAdminAccounts | Should -Be 'COMPANY\Stacy'
-                $result.SecurityMode | Should -BeNullOrEmpty
-                $result.InstallSQLDataDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL"
-                $result.SQLUserDBDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
-                $result.SQLUserDBLogDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
-                $result.SQLBackupDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\Backup"
-                $result.FTSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.RSSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.ASSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.ASCollation | Should -Be 'Finnish_Swedish_CI_AS'
-                $result.ASSysAdminAccounts | Should -Be @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
-                $result.ASDataDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Data'
-                $result.ASLogDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Log'
-                $result.ASBackupDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Backup'
-                $result.ASTempDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Temp'
-                $result.ASConfigDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Config'
-                $result.ASServerMode | Should -Be 'MULTIDIMENSIONAL'
-                $result.ISSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
+                $result.SourcePath | Should-Be $TestDrive
+                $result.InstanceName | Should-Be 'MSSQLSERVER'
+                $result.InstanceID | Should-Be 'MSSQLSERVER'
+                $result.InstallSharedDir | Should-Be 'C:\Program Files\Microsoft SQL Server'
+                $result.InstallSharedWOWDir | Should-Be 'C:\Program Files (x86)\Microsoft SQL Server'
+                $result.SQLSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.AgtSvcAccountUsername | Should-Be 'COMPANY\AgentAccount'
+                $result.SqlCollation | Should-Be 'Finnish_Swedish_CI_AS'
+                $result.SQLSysAdminAccounts | Should-Be 'COMPANY\Stacy'
+                $result.SecurityMode | Should-BeFalsy
+                $result.InstallSQLDataDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL"
+                $result.SQLUserDBDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
+                $result.SQLUserDBLogDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
+                $result.SQLBackupDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\Backup"
+                $result.FTSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.RSSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.ASSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.ASCollation | Should-Be 'Finnish_Swedish_CI_AS'
+                $result.ASSysAdminAccounts | Should-Be @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
+                $result.ASDataDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Data'
+                $result.ASLogDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Log'
+                $result.ASBackupDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Backup'
+                $result.ASTempDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Temp'
+                $result.ASConfigDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Config'
+                $result.ASServerMode | Should-Be 'MULTIDIMENSIONAL'
+                $result.ISSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
             }
         }
 
@@ -1064,7 +1064,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.ASServerMode | Should -Be 'POWERPIVOT'
+                $result.ASServerMode | Should-Be 'POWERPIVOT'
             }
         }
 
@@ -1076,7 +1076,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.ASServerMode | Should -Be 'TABULAR'
+                $result.ASServerMode | Should-Be 'TABULAR'
             }
 
             # Return the state to the default for all other tests.
@@ -1096,8 +1096,8 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                Write-Output -NoEnumerate $result.ASSysAdminAccounts | Should -BeOfType [System.String[]]
-                $result.ASSysAdminAccounts | Should -Be 'COMPANY\AnalysisAdmin'
+                Write-Output -NoEnumerate $result.ASSysAdminAccounts | Should-HaveType ([System.String[]])
+                $result.ASSysAdminAccounts | Should-Be 'COMPANY\AnalysisAdmin'
             }
 
             # Setting back the default administrators for mock Connect-SQLAnalysis.
@@ -1198,17 +1198,17 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
             }
 
-            Should -Invoke -CommandName Connect-UncPath -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Disconnect-UncPath -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-Service -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsReplicationFeatureInstalled -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-InstanceProgramPath -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsSsmsInstalled -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsSsmsAdvancedInstalled -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-UncPath -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Disconnect-UncPath -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-PSDrive -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-Service -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-IsReplicationFeatureInstalled -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-InstanceProgramPath -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-IsSsmsInstalled -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-IsSsmsAdvancedInstalled -Exactly -Scope It -Times 1
         }
 
         It 'Should return correct names of installed features' {
@@ -1219,49 +1219,49 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 if ($MockSqlMajorVersion -in ('13', '14', '15'))
                 {
-                    $result.Features | Should -Match 'SQLENGINE\b'
-                    $result.Features | Should -Match 'REPLICATION\b'
-                    $result.Features | Should -Match 'DQ\b'
-                    $result.Features | Should -Match 'DQC\b'
-                    $result.Features | Should -Match 'FULLTEXT\b'
-                    $result.Features | Should -Match 'RS\b'
-                    $result.Features | Should -Match 'AS\b'
-                    $result.Features | Should -Match 'IS\b'
-                    $result.Features | Should -Match 'BOL\b'
-                    $result.Features | Should -Match 'MDS\b'
-                    $result.Features | Should -Match 'CONN\b'
-                    $result.Features | Should -Match 'BC\b'
-                    $result.Features | Should -Match 'SDK\b'
+                    $result.Features | Should-MatchString 'SQLENGINE\b'
+                    $result.Features | Should-MatchString 'REPLICATION\b'
+                    $result.Features | Should-MatchString 'DQ\b'
+                    $result.Features | Should-MatchString 'DQC\b'
+                    $result.Features | Should-MatchString 'FULLTEXT\b'
+                    $result.Features | Should-MatchString 'RS\b'
+                    $result.Features | Should-MatchString 'AS\b'
+                    $result.Features | Should-MatchString 'IS\b'
+                    $result.Features | Should-MatchString 'BOL\b'
+                    $result.Features | Should-MatchString 'MDS\b'
+                    $result.Features | Should-MatchString 'CONN\b'
+                    $result.Features | Should-MatchString 'BC\b'
+                    $result.Features | Should-MatchString 'SDK\b'
                 }
                 elseif ($MockSqlMajorVersion -in ('16'))
                 {
-                    $result.Features | Should -Match 'SQLENGINE\b'
-                    $result.Features | Should -Match 'REPLICATION\b'
-                    $result.Features | Should -Match 'DQ\b'
-                    $result.Features | Should -Match 'DQC\b'
-                    $result.Features | Should -Match 'FULLTEXT\b'
-                    $result.Features | Should -Match 'AS\b'
-                    $result.Features | Should -Match 'IS\b'
-                    $result.Features | Should -Match 'BOL\b'
-                    $result.Features | Should -Match 'MDS\b'
+                    $result.Features | Should-MatchString 'SQLENGINE\b'
+                    $result.Features | Should-MatchString 'REPLICATION\b'
+                    $result.Features | Should-MatchString 'DQ\b'
+                    $result.Features | Should-MatchString 'DQC\b'
+                    $result.Features | Should-MatchString 'FULLTEXT\b'
+                    $result.Features | Should-MatchString 'AS\b'
+                    $result.Features | Should-MatchString 'IS\b'
+                    $result.Features | Should-MatchString 'BOL\b'
+                    $result.Features | Should-MatchString 'MDS\b'
                 }
                 else
                 {
-                    $result.Features | Should -Match 'SQLENGINE\b'
-                    $result.Features | Should -Match 'REPLICATION\b'
-                    $result.Features | Should -Match 'DQ\b'
-                    $result.Features | Should -Match 'DQC\b'
-                    $result.Features | Should -Match 'FULLTEXT\b'
-                    $result.Features | Should -Match 'RS\b'
-                    $result.Features | Should -Match 'AS\b'
-                    $result.Features | Should -Match 'IS\b'
-                    $result.Features | Should -Match 'BOL\b'
-                    $result.Features | Should -Match 'MDS\b'
-                    $result.Features | Should -Match 'CONN\b'
-                    $result.Features | Should -Match 'BC\b'
-                    $result.Features | Should -Match 'SDK\b'
-                    $result.Features | Should -Match 'SSMS\b'
-                    $result.Features | Should -Match 'ADV_SSMS\b'
+                    $result.Features | Should-MatchString 'SQLENGINE\b'
+                    $result.Features | Should-MatchString 'REPLICATION\b'
+                    $result.Features | Should-MatchString 'DQ\b'
+                    $result.Features | Should-MatchString 'DQC\b'
+                    $result.Features | Should-MatchString 'FULLTEXT\b'
+                    $result.Features | Should-MatchString 'RS\b'
+                    $result.Features | Should-MatchString 'AS\b'
+                    $result.Features | Should-MatchString 'IS\b'
+                    $result.Features | Should-MatchString 'BOL\b'
+                    $result.Features | Should-MatchString 'MDS\b'
+                    $result.Features | Should-MatchString 'CONN\b'
+                    $result.Features | Should-MatchString 'BC\b'
+                    $result.Features | Should-MatchString 'SDK\b'
+                    $result.Features | Should-MatchString 'SSMS\b'
+                    $result.Features | Should-MatchString 'ADV_SSMS\b'
                 }
             }
         }
@@ -1272,31 +1272,31 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.SourcePath | Should -Be $mockSourcePathUNC
-                $result.InstanceName | Should -Be 'MSSQLSERVER'
-                $result.InstanceID | Should -Be 'MSSQLSERVER'
-                $result.InstallSharedDir | Should -Be 'C:\Program Files\Microsoft SQL Server'
-                $result.InstallSharedWOWDir | Should -Be 'C:\Program Files (x86)\Microsoft SQL Server'
-                $result.SQLSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.AgtSvcAccountUsername | Should -Be 'COMPANY\AgentAccount'
-                $result.SqlCollation | Should -Be 'Finnish_Swedish_CI_AS'
-                $result.SQLSysAdminAccounts | Should -Be 'COMPANY\Stacy'
-                $result.SecurityMode | Should -BeNullOrEmpty
-                $result.InstallSQLDataDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL"
-                $result.SQLUserDBDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
-                $result.SQLUserDBLogDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
-                $result.SQLBackupDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\Backup"
-                $result.FTSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.RSSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.ASSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.ASCollation | Should -Be 'Finnish_Swedish_CI_AS'
-                $result.ASSysAdminAccounts | Should -Be @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
-                $result.ASDataDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Data'
-                $result.ASLogDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Log'
-                $result.ASBackupDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Backup'
-                $result.ASTempDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Temp'
-                $result.ASConfigDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Config'
-                $result.ISSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
+                $result.SourcePath | Should-Be $mockSourcePathUNC
+                $result.InstanceName | Should-Be 'MSSQLSERVER'
+                $result.InstanceID | Should-Be 'MSSQLSERVER'
+                $result.InstallSharedDir | Should-Be 'C:\Program Files\Microsoft SQL Server'
+                $result.InstallSharedWOWDir | Should-Be 'C:\Program Files (x86)\Microsoft SQL Server'
+                $result.SQLSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.AgtSvcAccountUsername | Should-Be 'COMPANY\AgentAccount'
+                $result.SqlCollation | Should-Be 'Finnish_Swedish_CI_AS'
+                $result.SQLSysAdminAccounts | Should-Be 'COMPANY\Stacy'
+                $result.SecurityMode | Should-BeFalsy
+                $result.InstallSQLDataDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL"
+                $result.SQLUserDBDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
+                $result.SQLUserDBLogDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
+                $result.SQLBackupDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\Backup"
+                $result.FTSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.RSSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.ASSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.ASCollation | Should-Be 'Finnish_Swedish_CI_AS'
+                $result.ASSysAdminAccounts | Should-Be @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
+                $result.ASDataDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Data'
+                $result.ASLogDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Log'
+                $result.ASBackupDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Backup'
+                $result.ASTempDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Temp'
+                $result.ASConfigDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Config'
+                $result.ISSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
             }
         }
     }
@@ -1339,14 +1339,14 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
             }
 
-            Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-Service -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-InstanceProgramPath -Exactly -Times 0 -Scope It
-            Should -Invoke -CommandName Test-IsSsmsInstalled -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsSsmsAdvancedInstalled -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-PSDrive -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-Service -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-InstanceProgramPath -Exactly -Scope It -Times 0
+            Should-Invoke -CommandName Test-IsSsmsInstalled -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-IsSsmsAdvancedInstalled -Exactly -Scope It -Times 1
         }
 
         It 'Should not return any names of installed features' {
@@ -1355,7 +1355,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.Features | Should -Be ''
+                $result.Features | Should-Be ''
             }
         }
 
@@ -1365,31 +1365,31 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.SourcePath | Should -Be $TestDrive
-                $result.InstanceName | Should -Be 'TEST'
-                $result.InstanceID | Should -BeNullOrEmpty
-                $result.InstallSharedDir | Should -BeNullOrEmpty
-                $result.InstallSharedWOWDir | Should -BeNullOrEmpty
-                $result.SQLSvcAccountUsername | Should -BeNullOrEmpty
-                $result.AgtSvcAccountUsername | Should -BeNullOrEmpty
-                $result.SqlCollation | Should -BeNullOrEmpty
-                $result.SQLSysAdminAccounts | Should -BeNullOrEmpty
-                $result.SecurityMode | Should -BeNullOrEmpty
-                $result.InstallSQLDataDir | Should -BeNullOrEmpty
-                $result.SQLUserDBDir | Should -BeNullOrEmpty
-                $result.SQLUserDBLogDir | Should -BeNullOrEmpty
-                $result.SQLBackupDir | Should -BeNullOrEmpty
-                $result.FTSvcAccountUsername | Should -BeNullOrEmpty
-                $result.RSSvcAccountUsername | Should -BeNullOrEmpty
-                $result.ASSvcAccountUsername | Should -BeNullOrEmpty
-                $result.ASCollation | Should -BeNullOrEmpty
-                $result.ASSysAdminAccounts | Should -BeNullOrEmpty
-                $result.ASDataDir | Should -BeNullOrEmpty
-                $result.ASLogDir | Should -BeNullOrEmpty
-                $result.ASBackupDir | Should -BeNullOrEmpty
-                $result.ASTempDir | Should -BeNullOrEmpty
-                $result.ASConfigDir | Should -BeNullOrEmpty
-                $result.ISSvcAccountUsername | Should -BeNullOrEmpty
+                $result.SourcePath | Should-Be $TestDrive
+                $result.InstanceName | Should-Be 'TEST'
+                $result.InstanceID | Should-BeFalsy
+                $result.InstallSharedDir | Should-BeFalsy
+                $result.InstallSharedWOWDir | Should-BeFalsy
+                $result.SQLSvcAccountUsername | Should-BeFalsy
+                $result.AgtSvcAccountUsername | Should-BeFalsy
+                $result.SqlCollation | Should-BeFalsy
+                $result.SQLSysAdminAccounts | Should-BeFalsy
+                $result.SecurityMode | Should-BeFalsy
+                $result.InstallSQLDataDir | Should-BeFalsy
+                $result.SQLUserDBDir | Should-BeFalsy
+                $result.SQLUserDBLogDir | Should-BeFalsy
+                $result.SQLBackupDir | Should-BeFalsy
+                $result.FTSvcAccountUsername | Should-BeFalsy
+                $result.RSSvcAccountUsername | Should-BeFalsy
+                $result.ASSvcAccountUsername | Should-BeFalsy
+                $result.ASCollation | Should-BeFalsy
+                $result.ASSysAdminAccounts | Should-BeFalsy
+                $result.ASDataDir | Should-BeFalsy
+                $result.ASLogDir | Should-BeFalsy
+                $result.ASBackupDir | Should-BeFalsy
+                $result.ASTempDir | Should-BeFalsy
+                $result.ASConfigDir | Should-BeFalsy
+                $result.ISSvcAccountUsername | Should-BeFalsy
             }
         }
     }
@@ -1521,15 +1521,15 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
             }
 
-            Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-Service -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsReplicationFeatureInstalled -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Get-InstanceProgramPath -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsSsmsInstalled -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-IsSsmsAdvancedInstalled -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-PSDrive -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-Service -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-IsReplicationFeatureInstalled -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Get-InstanceProgramPath -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-IsSsmsInstalled -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-IsSsmsAdvancedInstalled -Exactly -Scope It -Times 1
         }
 
         It 'Should return correct names of installed features' {
@@ -1540,49 +1540,49 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 if ($MockSqlMajorVersion -in ('13', '14', '15'))
                 {
-                    $result.Features | Should -Match 'SQLENGINE\b'
-                    $result.Features | Should -Match 'REPLICATION\b'
-                    $result.Features | Should -Match 'DQ\b'
-                    $result.Features | Should -Match 'DQC\b'
-                    $result.Features | Should -Match 'FULLTEXT\b'
-                    $result.Features | Should -Match 'RS\b'
-                    $result.Features | Should -Match 'AS\b'
-                    $result.Features | Should -Match 'IS\b'
-                    $result.Features | Should -Match 'BOL\b'
-                    $result.Features | Should -Match 'MDS\b'
-                    $result.Features | Should -Match 'CONN\b'
-                    $result.Features | Should -Match 'BC\b'
-                    $result.Features | Should -Match 'SDK\b'
+                    $result.Features | Should-MatchString 'SQLENGINE\b'
+                    $result.Features | Should-MatchString 'REPLICATION\b'
+                    $result.Features | Should-MatchString 'DQ\b'
+                    $result.Features | Should-MatchString 'DQC\b'
+                    $result.Features | Should-MatchString 'FULLTEXT\b'
+                    $result.Features | Should-MatchString 'RS\b'
+                    $result.Features | Should-MatchString 'AS\b'
+                    $result.Features | Should-MatchString 'IS\b'
+                    $result.Features | Should-MatchString 'BOL\b'
+                    $result.Features | Should-MatchString 'MDS\b'
+                    $result.Features | Should-MatchString 'CONN\b'
+                    $result.Features | Should-MatchString 'BC\b'
+                    $result.Features | Should-MatchString 'SDK\b'
                 }
                 elseif ($MockSqlMajorVersion -in ('16'))
                 {
-                    $result.Features | Should -Match 'SQLENGINE\b'
-                    $result.Features | Should -Match 'REPLICATION\b'
-                    $result.Features | Should -Match 'DQ\b'
-                    $result.Features | Should -Match 'DQC\b'
-                    $result.Features | Should -Match 'FULLTEXT\b'
-                    $result.Features | Should -Match 'AS\b'
-                    $result.Features | Should -Match 'IS\b'
-                    $result.Features | Should -Match 'BOL\b'
-                    $result.Features | Should -Match 'MDS\b'
+                    $result.Features | Should-MatchString 'SQLENGINE\b'
+                    $result.Features | Should-MatchString 'REPLICATION\b'
+                    $result.Features | Should-MatchString 'DQ\b'
+                    $result.Features | Should-MatchString 'DQC\b'
+                    $result.Features | Should-MatchString 'FULLTEXT\b'
+                    $result.Features | Should-MatchString 'AS\b'
+                    $result.Features | Should-MatchString 'IS\b'
+                    $result.Features | Should-MatchString 'BOL\b'
+                    $result.Features | Should-MatchString 'MDS\b'
                 }
                 else
                 {
-                    $result.Features | Should -Match 'SQLENGINE\b'
-                    $result.Features | Should -Match 'REPLICATION\b'
-                    $result.Features | Should -Match 'DQ\b'
-                    $result.Features | Should -Match 'DQC\b'
-                    $result.Features | Should -Match 'FULLTEXT\b'
-                    $result.Features | Should -Match 'RS\b'
-                    $result.Features | Should -Match 'AS\b'
-                    $result.Features | Should -Match 'IS\b'
-                    $result.Features | Should -Match 'BOL\b'
-                    $result.Features | Should -Match 'MDS\b'
-                    $result.Features | Should -Match 'CONN\b'
-                    $result.Features | Should -Match 'BC\b'
-                    $result.Features | Should -Match 'SDK\b'
-                    $result.Features | Should -Match 'SSMS\b'
-                    $result.Features | Should -Match 'ADV_SSMS\b'
+                    $result.Features | Should-MatchString 'SQLENGINE\b'
+                    $result.Features | Should-MatchString 'REPLICATION\b'
+                    $result.Features | Should-MatchString 'DQ\b'
+                    $result.Features | Should-MatchString 'DQC\b'
+                    $result.Features | Should-MatchString 'FULLTEXT\b'
+                    $result.Features | Should-MatchString 'RS\b'
+                    $result.Features | Should-MatchString 'AS\b'
+                    $result.Features | Should-MatchString 'IS\b'
+                    $result.Features | Should-MatchString 'BOL\b'
+                    $result.Features | Should-MatchString 'MDS\b'
+                    $result.Features | Should-MatchString 'CONN\b'
+                    $result.Features | Should-MatchString 'BC\b'
+                    $result.Features | Should-MatchString 'SDK\b'
+                    $result.Features | Should-MatchString 'SSMS\b'
+                    $result.Features | Should-MatchString 'ADV_SSMS\b'
                 }
             }
         }
@@ -1593,31 +1593,31 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.SourcePath | Should -Be $TestDrive
-                $result.InstanceName | Should -Be 'TEST'
-                $result.InstanceID | Should -Be 'TEST'
-                $result.InstallSharedDir | Should -Be 'C:\Program Files\Microsoft SQL Server'
-                $result.InstallSharedWOWDir | Should -Be 'C:\Program Files (x86)\Microsoft SQL Server'
-                $result.SQLSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.AgtSvcAccountUsername | Should -Be 'COMPANY\AgentAccount'
-                $result.SqlCollation | Should -Be 'Finnish_Swedish_CI_AS'
-                $result.SQLSysAdminAccounts | Should -Be 'COMPANY\Stacy'
-                $result.SecurityMode | Should -BeNullOrEmpty
-                $result.InstallSQLDataDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL"
-                $result.SQLUserDBDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\DATA\"
-                $result.SQLUserDBLogDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\DATA\"
-                $result.SQLBackupDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\Backup"
-                $result.FTSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.RSSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.ASSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.ASCollation | Should -Be 'Finnish_Swedish_CI_AS'
-                $result.ASSysAdminAccounts | Should -Be @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
-                $result.ASDataDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Data'
-                $result.ASLogDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Log'
-                $result.ASBackupDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Backup'
-                $result.ASTempDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Temp'
-                $result.ASConfigDir | Should -Be 'C:\Program Files\Microsoft SQL Server\OLAP\Config'
-                $result.ISSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
+                $result.SourcePath | Should-Be $TestDrive
+                $result.InstanceName | Should-Be 'TEST'
+                $result.InstanceID | Should-Be 'TEST'
+                $result.InstallSharedDir | Should-Be 'C:\Program Files\Microsoft SQL Server'
+                $result.InstallSharedWOWDir | Should-Be 'C:\Program Files (x86)\Microsoft SQL Server'
+                $result.SQLSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.AgtSvcAccountUsername | Should-Be 'COMPANY\AgentAccount'
+                $result.SqlCollation | Should-Be 'Finnish_Swedish_CI_AS'
+                $result.SQLSysAdminAccounts | Should-Be 'COMPANY\Stacy'
+                $result.SecurityMode | Should-BeFalsy
+                $result.InstallSQLDataDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL"
+                $result.SQLUserDBDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\DATA\"
+                $result.SQLUserDBLogDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\DATA\"
+                $result.SQLBackupDir | Should-Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\Backup"
+                $result.FTSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.RSSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.ASSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.ASCollation | Should-Be 'Finnish_Swedish_CI_AS'
+                $result.ASSysAdminAccounts | Should-Be @('COMPANY\Stacy', 'COMPANY\SSAS Administrators')
+                $result.ASDataDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Data'
+                $result.ASLogDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Log'
+                $result.ASBackupDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Backup'
+                $result.ASTempDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Temp'
+                $result.ASConfigDir | Should-Be 'C:\Program Files\Microsoft SQL Server\OLAP\Config'
+                $result.ISSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
             }
         }
     }
@@ -1673,9 +1673,9 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $currentState = Get-TargetResource @mockGetTargetResourceParameters
 
-                $currentState.FailoverClusterGroupName | Should -BeNullOrEmpty
-                $currentState.FailoverClusterNetworkName | Should -BeNullOrEmpty
-                $currentState.FailoverClusterIPAddress | Should -BeNullOrEmpty
+                $currentState.FailoverClusterGroupName | Should-BeFalsy
+                $currentState.FailoverClusterNetworkName | Should-BeFalsy
+                $currentState.FailoverClusterIPAddress | Should-BeFalsy
             }
         }
     }
@@ -1769,10 +1769,10 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
                 $currentState = Get-TargetResource @mockGetTargetResourceParameters
 
-                $currentState.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                $currentState.FailoverClusterGroupName | Should -Be 'SQL Server (MSSQLSERVER)'
-                $currentState.FailoverClusterIPAddress | Should -Be '10.0.0.10'
-                $currentSTate.FailoverClusterNetworkName | Should -Be 'TestDefaultCluster'
+                $currentState.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                $currentState.FailoverClusterGroupName | Should-Be 'SQL Server (MSSQLSERVER)'
+                $currentState.FailoverClusterIPAddress | Should-Be '10.0.0.10'
+                $currentSTate.FailoverClusterNetworkName | Should-Be 'TestDefaultCluster'
             }
         }
     }
@@ -1814,7 +1814,7 @@ Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
                     $script:localizedData.ParameterSqlVersionNotAllowedForSetupActionUpgrade
                 )
 
-                { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { Test-TargetResource @mockTestTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
 
         }
@@ -1841,10 +1841,10 @@ Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
 
             Context 'When using parameter SqlVersion' {
@@ -1860,10 +1860,10 @@ Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
 
                         $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -1893,10 +1893,10 @@ Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -1927,10 +1927,10 @@ Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -1962,10 +1962,10 @@ Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -1990,10 +1990,10 @@ Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -2026,10 +2026,10 @@ Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
 
             # Regression test when the variables were detected differently.
@@ -2053,10 +2053,10 @@ Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -2087,10 +2087,10 @@ Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -2311,7 +2311,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SqlVersion       = '14.0'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
@@ -2429,13 +2429,13 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SDK', ''
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-PSDrive -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Test-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 1
                 }
             }
 
@@ -2474,10 +2474,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             ServerName          = 'host.company.local'
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 1
                 }
             }
 
@@ -2515,10 +2515,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             TcpEnabled          = $true
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 1
                 }
             }
 
@@ -2557,13 +2557,13 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             SourcePath          = $mockSourcePathUNC
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Invoke-InstallationMediaCopy -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-PSDrive -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Invoke-InstallationMediaCopy -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Test-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -2601,13 +2601,13 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             SuppressReboot      = $true
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Invoke-InstallationMediaCopy -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-PSDrive -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Invoke-InstallationMediaCopy -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Test-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -2725,13 +2725,13 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SDK', ''
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Get-PSDrive -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Test-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -2774,10 +2774,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         NpEnabled           = $false
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 1
             }
         }
 
@@ -2820,10 +2820,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             ServerName          = 'host.company.local'
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 1
                 }
             }
 
@@ -2865,10 +2865,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         TcpEnabled          = $false
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 1
             }
         }
 
@@ -2910,10 +2910,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         UseEnglish          = $true
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 1
             }
         }
 
@@ -2955,10 +2955,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SkipRule            = 'Cluster_VerifyForErrors'
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 1
             }
         }
 
@@ -3004,10 +3004,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         )
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 1
             }
         }
     }
@@ -3048,9 +3048,9 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SourcePath       = $TestDrive
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $global:DSCMachineStatus | Should -Be 1
+                    $global:DSCMachineStatus | Should-Be 1
                 }
             }
         }
@@ -3074,11 +3074,11 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SourcePath       = $TestDrive
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Write-Warning -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Write-Warning -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Scope It -Times 0
             }
         }
     }
@@ -3118,7 +3118,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SourcePath       = $TestDrive
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "*'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw "*'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
             }
         }
 
@@ -3135,7 +3135,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SourcePath       = $TestDrive
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage "*'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage "*'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
             }
         }
     }
@@ -3178,12 +3178,12 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SourcePath       = $TestDrive
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
             }
 
-            Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-PSDrive -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-TargetResource -Exactly -Scope It -Times 1
         }
 
         It 'Should set the system in the desired state when feature is ADV_SSMS' {
@@ -3205,12 +3205,12 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SourcePath       = $TestDrive
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
             }
 
-            Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-PSDrive -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-TargetResource -Exactly -Scope It -Times 1
         }
     }
 
@@ -3276,7 +3276,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
             }
         }
     }
@@ -3385,7 +3385,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLBackupDir               = 'O:\MSSQL\Backup'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
             }
         }
 
@@ -3424,7 +3424,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     InstallSQLDataDir          = 'E:\MSSQL\Data'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
             }
         }
 
@@ -3467,7 +3467,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLUserDBLogDir            = 'E:\SQLData\UserDbLogs'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
             }
         }
 
@@ -3499,7 +3499,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLUserDBDir               = 'C:\MSSQL\' # Pass in a bad path
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; SysData; TempDbData; TempDbLogs; UserLogs.'
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage '*Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; SysData; TempDbData; TempDbLogs; UserLogs.'
             }
         }
 
@@ -3547,7 +3547,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLBackupDir               = 'O:\MSSQL\Backup'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
             }
         }
 
@@ -3591,7 +3591,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SQLBackupDir               = 'O:\MSSQL\Backup'
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
                 }
             }
         }
@@ -3639,7 +3639,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SQLBackupDir               = 'O:\MSSQL\Backup'
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
                 }
             }
         }
@@ -3728,7 +3728,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SQLBackupDir               = 'O:\MSSQL\Backup'
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
                 # Reverting the mock to return a single site.
@@ -3862,7 +3862,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SQLBackupDir               = 'C:\ClusterStorage\SQLBackup'
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
             }
 
@@ -3912,7 +3912,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             SQLBackupDir               = 'C:\ClusterStorage\SQLBackup\Backup'
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
                 }
             }
@@ -3975,32 +3975,32 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     Action       = 'PrepareFailoverCluster'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
             }
 
-            Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-PSDrive -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Test-TargetResource -Exactly -Scope It -Times 1
 
-            Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+            Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                 ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_ResourceGroup') -and ($Filter -eq "Name = 'Available Storage'")
-            } -Exactly -Times 0 -Scope It
+            } -Scope It -Times 0
 
-            Should -Invoke -CommandName Get-CimAssociatedInstance -ParameterFilter {
+            Should-Invoke -CommandName Get-CimAssociatedInstance -Exactly -ParameterFilter {
                 ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
-            } -Exactly -Times 0 -Scope It
+            } -Scope It -Times 0
 
-            Should -Invoke -CommandName Get-CimAssociatedInstance -ParameterFilter {
+            Should-Invoke -CommandName Get-CimAssociatedInstance -Exactly -ParameterFilter {
                 $Association -eq 'MSCluster_ResourceToPossibleOwner'
-            } -Exactly -Times 0 -Scope It
+            } -Scope It -Times 0
 
-            Should -Invoke -CommandName Get-CimAssociatedInstance -ParameterFilter {
+            Should-Invoke -CommandName Get-CimAssociatedInstance -Exactly -ParameterFilter {
                 $ResultClass -eq 'MSCluster_DiskPartition'
-            } -Exactly -Times 0 -Scope It
+            } -Scope It -Times 0
 
-            Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+            Should-Invoke -CommandName Get-CimInstance -Exactly -ParameterFilter {
                 ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
-            } -Exactly -Times 0 -Scope It
+            } -Scope It -Times 0
         }
     }
 
@@ -4108,7 +4108,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLBackupDir               = 'O:\MSSQL\Backup'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
             }
         }
 
@@ -4147,7 +4147,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     InstallSQLDataDir          = 'E:\MSSQL\Data'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
             }
         }
 
@@ -4190,7 +4190,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLUserDBLogDir            = 'E:\SQLData\UserDbLogs'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
             }
         }
 
@@ -4222,7 +4222,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLUserDBDir               = 'C:\MSSQL\' # Pass in a bad path
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; SysData; TempDbData; TempDbLogs; UserLogs.'
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage '*Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; SysData; TempDbData; TempDbLogs; UserLogs.'
             }
         }
 
@@ -4270,7 +4270,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SQLBackupDir               = 'O:\MSSQL\Backup'
                 }
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
             }
         }
 
@@ -4314,7 +4314,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SQLBackupDir               = 'O:\MSSQL\Backup'
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
                 }
             }
         }
@@ -4362,7 +4362,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SQLBackupDir               = 'O:\MSSQL\Backup'
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
                 }
             }
         }
@@ -4451,7 +4451,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         SQLBackupDir               = 'O:\MSSQL\Backup'
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
                 # Reverting the mock to return a single site.
@@ -4522,8 +4522,8 @@ Describe 'Get-ServiceAccountParameters' -Tag 'Helper' {
 
                 $result = Get-ServiceAccountParameters -ServiceAccount $mockSystemServiceAccount -ServiceType $MockServiceType
 
-                $result.$mockAccountArgumentName | Should -BeExactly $mockSystemServiceAccount.UserName
-                $result.ContainsKey($mockPasswordArgumentName) | Should -BeFalse
+                $result.$mockAccountArgumentName | Should-BeString -CaseSensitive $mockSystemServiceAccount.UserName
+                $result.ContainsKey($mockPasswordArgumentName) | Should-BeFalse
             }
         }
 
@@ -4533,8 +4533,8 @@ Describe 'Get-ServiceAccountParameters' -Tag 'Helper' {
 
                 $result = Get-ServiceAccountParameters -ServiceAccount $mockVirtualServiceAccount -ServiceType $MockServiceType
 
-                $result.$mockAccountArgumentName | Should -BeExactly $mockVirtualServiceAccount.UserName
-                $result.ContainsKey($mockPasswordArgumentName) | Should -BeFalse
+                $result.$mockAccountArgumentName | Should-BeString -CaseSensitive $mockVirtualServiceAccount.UserName
+                $result.ContainsKey($mockPasswordArgumentName) | Should-BeFalse
             }
         }
 
@@ -4544,8 +4544,8 @@ Describe 'Get-ServiceAccountParameters' -Tag 'Helper' {
 
                 $result = Get-ServiceAccountParameters -ServiceAccount $mockManagedServiceAccount -ServiceType $MockServiceType
 
-                $result.$mockAccountArgumentName | Should -BeExactly $mockManagedServiceAccount.UserName
-                $result.ContainsKey($mockPasswordArgumentName) | Should -BeFalse
+                $result.$mockAccountArgumentName | Should-BeString -CaseSensitive $mockManagedServiceAccount.UserName
+                $result.ContainsKey($mockPasswordArgumentName) | Should-BeFalse
             }
         }
 
@@ -4555,8 +4555,8 @@ Describe 'Get-ServiceAccountParameters' -Tag 'Helper' {
 
                 $result = Get-ServiceAccountParameters -ServiceAccount $mockDomainServiceAccount -ServiceType $MockServiceType
 
-                $result.$mockAccountArgumentName | Should -BeExactly $mockDomainServiceAccount.UserName
-                $result.$mockPasswordArgumentName | Should -BeExactly $mockDomainServiceAccount.GetNetworkCredential().Password
+                $result.$mockAccountArgumentName | Should-BeString -CaseSensitive $mockDomainServiceAccount.UserName
+                $result.$mockPasswordArgumentName | Should-BeString -CaseSensitive $mockDomainServiceAccount.GetNetworkCredential().Password
             }
         }
 
@@ -4567,8 +4567,8 @@ Describe 'Get-ServiceAccountParameters' -Tag 'Helper' {
 
                 $result = Get-ServiceAccountParameters -ServiceAccount $mockDomainServiceAccountContainingDollarSign -ServiceType $MockServiceType
 
-                $result.$mockAccountArgumentName | Should -BeExactly $mockDomainServiceAccountContainingDollarSign.UserName
-                $result.$mockPasswordArgumentName | Should -BeExactly $mockDomainServiceAccountContainingDollarSign.GetNetworkCredential().Password
+                $result.$mockAccountArgumentName | Should-BeString -CaseSensitive $mockDomainServiceAccountContainingDollarSign.UserName
+                $result.$mockPasswordArgumentName | Should-BeString -CaseSensitive $mockDomainServiceAccountContainingDollarSign.GetNetworkCredential().Password
             }
         }
     }
@@ -4595,7 +4595,7 @@ Describe 'Get-InstalledSharedFeatures' -Tag 'Helper' {
 
                 $getInstalledSharedFeaturesResult = Get-InstalledSharedFeatures -SqlServerMajorVersion 14
 
-                $getInstalledSharedFeaturesResult | Should -HaveCount 0
+                $getInstalledSharedFeaturesResult | Should-BeCollection -Count 0
             }
         }
     }
@@ -4625,13 +4625,13 @@ Describe 'Get-InstalledSharedFeatures' -Tag 'Helper' {
 
                 $getInstalledSharedFeaturesResult = Get-InstalledSharedFeatures -SqlServerMajorVersion 14
 
-                $getInstalledSharedFeaturesResult | Should -HaveCount 6
-                $getInstalledSharedFeaturesResult | Should -Contain 'DQC'
-                $getInstalledSharedFeaturesResult | Should -Contain 'BOL'
-                $getInstalledSharedFeaturesResult | Should -Contain 'CONN'
-                $getInstalledSharedFeaturesResult | Should -Contain 'BC'
-                $getInstalledSharedFeaturesResult | Should -Contain 'SDK'
-                $getInstalledSharedFeaturesResult | Should -Contain 'MDS'
+                $getInstalledSharedFeaturesResult | Should-BeCollection -Count 6
+                $getInstalledSharedFeaturesResult | Should-ContainCollection 'DQC'
+                $getInstalledSharedFeaturesResult | Should-ContainCollection 'BOL'
+                $getInstalledSharedFeaturesResult | Should-ContainCollection 'CONN'
+                $getInstalledSharedFeaturesResult | Should-ContainCollection 'BC'
+                $getInstalledSharedFeaturesResult | Should-ContainCollection 'SDK'
+                $getInstalledSharedFeaturesResult | Should-ContainCollection 'MDS'
             }
         }
     }
@@ -4643,7 +4643,7 @@ Describe 'Test-FeatureFlag' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                Test-FeatureFlag -FeatureFlag $null -TestFlag 'MyFlag' | Should -BeFalse
+                Test-FeatureFlag -FeatureFlag $null -TestFlag 'MyFlag' | Should-BeFalse
             }
         }
     }
@@ -4653,7 +4653,7 @@ Describe 'Test-FeatureFlag' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                Test-FeatureFlag -FeatureFlag @('FirstFlag', 'SecondFlag') -TestFlag 'SecondFlag' | Should -BeTrue
+                Test-FeatureFlag -FeatureFlag @('FirstFlag', 'SecondFlag') -TestFlag 'SecondFlag' | Should-BeTrue
             }
         }
     }
@@ -4663,7 +4663,7 @@ Describe 'Test-FeatureFlag' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                Test-FeatureFlag -FeatureFlag @('MyFlag2') -TestFlag 'MyFlag' | Should -BeFalse
+                Test-FeatureFlag -FeatureFlag @('MyFlag2') -TestFlag 'MyFlag' | Should-BeFalse
             }
         }
     }
@@ -4683,13 +4683,13 @@ Describe 'Get-FullInstanceId' -Tag 'Helper' {
 
                 $result = Get-FullInstanceId -InstanceName 'MSSQLSERVER'
 
-                $result | Should -Be 'MSSQL14.MSSQLSERVER'
+                $result | Should-Be 'MSSQL14.MSSQLSERVER'
             }
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+            Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter {
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' `
                     -and $Name -eq 'MSSQLSERVER'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 
@@ -4706,13 +4706,13 @@ Describe 'Get-FullInstanceId' -Tag 'Helper' {
 
                 $result = Get-FullInstanceId -InstanceName 'NAMED'
 
-                $result | Should -Be 'MSSQL14.NAMED'
+                $result | Should-Be 'MSSQL14.NAMED'
             }
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
+            Should-Invoke -CommandName Get-RegistryPropertyValue -Exactly -ParameterFilter {
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' `
                     -and $Name -eq 'NAMED'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
     }
 }
@@ -4759,17 +4759,17 @@ Describe 'Get-SqlEngineProperties' -Tag 'Helper' {
 
                 $result = Get-SqlEngineProperties -ServerName 'localhost' -InstanceName 'MSSQLSERVER'
 
-                $result.SQLSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.AgtSvcAccountUsername | Should -Be 'COMPANY\AgentAccount'
-                $result.SqlSvcStartupType | Should -Be 'Automatic'
-                $result.AgtSvcStartupType | Should -Be 'Automatic'
-                $result.SQLCollation | Should -Be 'Finnish_Swedish_CI_AS'
-                $result.IsClustered | Should -BeTrue
-                $result.InstallSQLDataDir | Should -Be 'E:\MSSQL\Data'
-                $result.SQLUserDBDir | Should -Be 'K:\MSSQL\Data'
-                $result.SQLUserDBLogDir | Should -Be 'L:\MSSQL\Logs'
-                $result.SQLBackupDir | Should -Be 'O:\MSSQL\Backup'
-                $result.SecurityMode | Should -BeNullOrEmpty
+                $result.SQLSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.AgtSvcAccountUsername | Should-Be 'COMPANY\AgentAccount'
+                $result.SqlSvcStartupType | Should-Be 'Automatic'
+                $result.AgtSvcStartupType | Should-Be 'Automatic'
+                $result.SQLCollation | Should-Be 'Finnish_Swedish_CI_AS'
+                $result.IsClustered | Should-BeTrue
+                $result.InstallSQLDataDir | Should-Be 'E:\MSSQL\Data'
+                $result.SQLUserDBDir | Should-Be 'K:\MSSQL\Data'
+                $result.SQLUserDBLogDir | Should-Be 'L:\MSSQL\Logs'
+                $result.SQLBackupDir | Should-Be 'O:\MSSQL\Backup'
+                $result.SecurityMode | Should-BeFalsy
             }
         }
 
@@ -4784,7 +4784,7 @@ Describe 'Get-SqlEngineProperties' -Tag 'Helper' {
 
                     $result = Get-SqlEngineProperties -ServerName 'localhost' -InstanceName 'MSSQLSERVER'
 
-                    $result.SecurityMode | Should -BeNullOrEmpty
+                    $result.SecurityMode | Should-BeFalsy
                 }
             }
         }
@@ -4800,7 +4800,7 @@ Describe 'Get-SqlEngineProperties' -Tag 'Helper' {
 
                     $result = Get-SqlEngineProperties -ServerName 'localhost' -InstanceName 'MSSQLSERVER'
 
-                    $result.SecurityMode | Should -BeExactly 'SQL'
+                    $result.SecurityMode | Should-BeString -CaseSensitive 'SQL'
                 }
             }
         }
@@ -4839,10 +4839,10 @@ Describe 'Get-SqlEngineProperties' -Tag 'Helper' {
 
                 $result = Get-SqlEngineProperties -ServerName 'localhost' -InstanceName 'TEST'
 
-                $result.SQLSvcAccountUsername | Should -Be 'COMPANY\SqlAccount'
-                $result.AgtSvcAccountUsername | Should -Be 'COMPANY\AgentAccount'
-                $result.SqlSvcStartupType | Should -Be 'Automatic'
-                $result.AgtSvcStartupType | Should -Be 'Automatic'
+                $result.SQLSvcAccountUsername | Should-Be 'COMPANY\SqlAccount'
+                $result.AgtSvcAccountUsername | Should-Be 'COMPANY\AgentAccount'
+                $result.SqlSvcStartupType | Should-Be 'Automatic'
+                $result.AgtSvcStartupType | Should-Be 'Automatic'
             }
         }
     }
@@ -4861,7 +4861,7 @@ Describe 'Test-IsReplicationFeatureInstalled' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 Test-IsReplicationFeatureInstalled -InstanceName 'MSSQLSERVER' |
-                    Should -BeTrue
+                    Should-BeTrue
             }
         }
     }
@@ -4878,7 +4878,7 @@ Describe 'Test-IsReplicationFeatureInstalled' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 Test-IsReplicationFeatureInstalled -InstanceName 'MSSQLSERVER' |
-                    Should -BeFalse
+                    Should-BeFalse
             }
         }
     }
@@ -4904,7 +4904,7 @@ Describe 'Test-IsDQComponentInstalled' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 Test-IsDQComponentInstalled -InstanceName 'MSSQLSERVER' -SqlServerMajorVersion '14' |
-                    Should -BeTrue
+                    Should-BeTrue
             }
         }
     }
@@ -4919,7 +4919,7 @@ Describe 'Test-IsDQComponentInstalled' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 Test-IsDQComponentInstalled -InstanceName 'MSSQLSERVER' -SqlServerMajorVersion '14' |
-                    Should -BeFalse
+                    Should-BeFalse
             }
         }
     }
@@ -4937,7 +4937,7 @@ Describe 'Get-InstanceProgramPath' -Tag 'Helper' {
         InModuleScope -ScriptBlock {
             Set-StrictMode -Version 1.0
 
-            Get-InstanceProgramPath -InstanceName 'MSSQLSERVER' | Should -Be 'C:\Program Files\Microsoft SQL Server'
+            Get-InstanceProgramPath -InstanceName 'MSSQLSERVER' | Should-Be 'C:\Program Files\Microsoft SQL Server'
         }
     }
 }
@@ -4950,12 +4950,12 @@ Describe 'Get-ServiceNamesForInstance' -Tag 'Helper' {
 
                 $result = Get-ServiceNamesForInstance -InstanceName 'MSSQLSERVER' -SqlServerMajorVersion 14
 
-                $result.DatabaseService | Should -Be 'MSSQLSERVER'
-                $result.AgentService | Should -Be 'SQLSERVERAGENT'
-                $result.FullTextService | Should -Be 'MSSQLFDLauncher'
-                $result.ReportService | Should -Be 'ReportServer'
-                $result.AnalysisService | Should -Be 'MSSQLServerOLAPService'
-                $result.IntegrationService | Should -Be 'MsDtsServer140'
+                $result.DatabaseService | Should-Be 'MSSQLSERVER'
+                $result.AgentService | Should-Be 'SQLSERVERAGENT'
+                $result.FullTextService | Should-Be 'MSSQLFDLauncher'
+                $result.ReportService | Should-Be 'ReportServer'
+                $result.AnalysisService | Should-Be 'MSSQLServerOLAPService'
+                $result.IntegrationService | Should-Be 'MsDtsServer140'
             }
         }
     }
@@ -4967,11 +4967,11 @@ Describe 'Get-ServiceNamesForInstance' -Tag 'Helper' {
 
                 $result = Get-ServiceNamesForInstance -InstanceName 'TEST'
 
-                $result.DatabaseService | Should -Be 'MSSQL$TEST'
-                $result.AgentService | Should -Be 'SQLAgent$TEST'
-                $result.FullTextService | Should -Be 'MSSQLFDLauncher$TEST'
-                $result.ReportService | Should -Be 'ReportServer$TEST'
-                $result.AnalysisService | Should -Be 'MSOLAP$TEST'
+                $result.DatabaseService | Should-Be 'MSSQL$TEST'
+                $result.AgentService | Should-Be 'SQLAgent$TEST'
+                $result.FullTextService | Should-Be 'MSSQLFDLauncher$TEST'
+                $result.ReportService | Should-Be 'ReportServer$TEST'
+                $result.AnalysisService | Should-Be 'MSOLAP$TEST'
             }
         }
     }
@@ -4983,7 +4983,7 @@ Describe 'Get-ServiceNamesForInstance' -Tag 'Helper' {
 
                 $result = Get-ServiceNamesForInstance -InstanceName 'MSSQLSERVER'
 
-                $result.IntegrationService | Should -BeNullOrEmpty
+                $result.IntegrationService | Should-BeFalsy
             }
         }
     }
@@ -5050,12 +5050,12 @@ Describe 'Get-TempDbProperties' -Tag 'Helper' {
 
                 $result = Get-TempDbProperties -ServerName 'localhost' -InstanceName 'INSTANCE'
 
-                $result.SQLTempDBDir | Should -Be 'H:\MSSQL\Temp'
-                $result.SqlTempdbFileCount | Should -Be 1
-                $result.SqlTempdbFileSize | Should -Be 8
-                $result.SqlTempdbFileGrowth | Should -Be 10
-                $result.SqlTempdbLogFileSize | Should -Be 8
-                $result.SqlTempdbLogFileGrowth | Should -Be 10
+                $result.SQLTempDBDir | Should-Be 'H:\MSSQL\Temp'
+                $result.SqlTempdbFileCount | Should-Be 1
+                $result.SqlTempdbFileSize | Should-Be 8
+                $result.SqlTempdbFileGrowth | Should-Be 10
+                $result.SqlTempdbLogFileSize | Should-Be 8
+                $result.SqlTempdbLogFileGrowth | Should-Be 10
             }
         }
     }
@@ -5083,12 +5083,12 @@ Describe 'Get-TempDbProperties' -Tag 'Helper' {
 
                 $result = Get-TempDbProperties -ServerName 'localhost' -InstanceName 'INSTANCE'
 
-                $result.SQLTempDBDir | Should -Be 'H:\MSSQL\Temp'
-                $result.SqlTempdbFileCount | Should -Be 1
-                $result.SqlTempdbFileSize | Should -Be 8
-                $result.SqlTempdbFileGrowth | Should -Be 100
-                $result.SqlTempdbLogFileSize | Should -Be 0.75
-                $result.SqlTempdbLogFileGrowth | Should -Be 100
+                $result.SQLTempDBDir | Should-Be 'H:\MSSQL\Temp'
+                $result.SqlTempdbFileCount | Should-Be 1
+                $result.SqlTempdbFileSize | Should-Be 8
+                $result.SqlTempdbFileGrowth | Should-Be 100
+                $result.SqlTempdbLogFileSize | Should-Be 0.75
+                $result.SqlTempdbLogFileGrowth | Should-Be 100
             }
         }
     }
@@ -5126,12 +5126,12 @@ Describe 'Get-TempDbProperties' -Tag 'Helper' {
 
                 $result = Get-TempDbProperties -ServerName 'localhost' -InstanceName 'INSTANCE'
 
-                $result.SQLTempDBDir | Should -Be 'H:\MSSQL\Temp'
-                $result.SqlTempdbFileCount | Should -Be 2
-                $result.SqlTempdbFileSize | Should -Be 8
-                $result.SqlTempdbFileGrowth | Should -Be 10
-                $result.SqlTempdbLogFileSize | Should -Be 0.75
-                $result.SqlTempdbLogFileGrowth | Should -Be 10
+                $result.SQLTempDBDir | Should-Be 'H:\MSSQL\Temp'
+                $result.SqlTempdbFileCount | Should-Be 2
+                $result.SqlTempdbFileSize | Should-Be 8
+                $result.SqlTempdbFileGrowth | Should-Be 10
+                $result.SqlTempdbLogFileSize | Should-Be 0.75
+                $result.SqlTempdbLogFileGrowth | Should-Be 10
             }
         }
     }
@@ -5169,12 +5169,12 @@ Describe 'Get-TempDbProperties' -Tag 'Helper' {
 
                 $result = Get-TempDbProperties -ServerName 'localhost' -InstanceName 'INSTANCE'
 
-                $result.SQLTempDBDir | Should -Be 'H:\MSSQL\Temp'
-                $result.SqlTempdbFileCount | Should -Be 2
-                $result.SqlTempdbFileSize | Should -Be 8
-                $result.SqlTempdbFileGrowth | Should -Be 100
-                $result.SqlTempdbLogFileSize | Should -Be 0.75
-                $result.SqlTempdbLogFileGrowth | Should -Be 100
+                $result.SQLTempDBDir | Should-Be 'H:\MSSQL\Temp'
+                $result.SqlTempdbFileCount | Should-Be 2
+                $result.SqlTempdbFileSize | Should-Be 8
+                $result.SqlTempdbFileGrowth | Should-Be 100
+                $result.SqlTempdbLogFileSize | Should-Be 0.75
+                $result.SqlTempdbLogFileGrowth | Should-Be 100
             }
         }
     }
@@ -5212,12 +5212,12 @@ Describe 'Get-TempDbProperties' -Tag 'Helper' {
 
                 $result = Get-TempDbProperties -ServerName 'localhost' -InstanceName 'INSTANCE'
 
-                $result.SQLTempDBDir | Should -Be 'H:\MSSQL\Temp'
-                $result.SqlTempdbFileCount | Should -Be 2
-                $result.SqlTempdbFileSize | Should -Be 20
-                $result.SqlTempdbFileGrowth | Should -Be 17.5
-                $result.SqlTempdbLogFileSize | Should -Be 0.875
-                $result.SqlTempdbLogFileGrowth | Should -Be 17.5
+                $result.SQLTempDBDir | Should-Be 'H:\MSSQL\Temp'
+                $result.SqlTempdbFileCount | Should-Be 2
+                $result.SqlTempdbFileSize | Should-Be 20
+                $result.SqlTempdbFileGrowth | Should-Be 17.5
+                $result.SqlTempdbLogFileSize | Should-Be 0.875
+                $result.SqlTempdbLogFileGrowth | Should-Be 17.5
             }
         }
     }
@@ -5255,12 +5255,12 @@ Describe 'Get-TempDbProperties' -Tag 'Helper' {
 
                 $result = Get-TempDbProperties -ServerName 'localhost' -InstanceName 'INSTANCE'
 
-                $result.SQLTempDBDir | Should -Be 'H:\MSSQL\Temp'
-                $result.SqlTempdbFileCount | Should -Be 2
-                $result.SqlTempdbFileSize | Should -Be 20
-                $result.SqlTempdbFileGrowth | Should -Be 1.5
-                $result.SqlTempdbLogFileSize | Should -Be 0.875
-                $result.SqlTempdbLogFileGrowth | Should -Be 1.5
+                $result.SQLTempDBDir | Should-Be 'H:\MSSQL\Temp'
+                $result.SqlTempdbFileCount | Should-Be 2
+                $result.SqlTempdbFileSize | Should-Be 20
+                $result.SqlTempdbFileGrowth | Should-Be 1.5
+                $result.SqlTempdbLogFileSize | Should-Be 0.875
+                $result.SqlTempdbLogFileGrowth | Should-Be 1.5
             }
         }
     }
@@ -5298,12 +5298,12 @@ Describe 'Get-TempDbProperties' -Tag 'Helper' {
 
                 $result = Get-TempDbProperties -ServerName 'localhost' -InstanceName 'INSTANCE'
 
-                $result.SQLTempDBDir | Should -Be 'H:\MSSQL\Temp'
-                $result.SqlTempdbFileCount | Should -Be 2
-                $result.SqlTempdbFileSize | Should -Be 20
-                $result.SqlTempdbFileGrowth | Should -Be 110
-                $result.SqlTempdbLogFileSize | Should -Be 0.875
-                $result.SqlTempdbLogFileGrowth | Should -Be 12
+                $result.SQLTempDBDir | Should-Be 'H:\MSSQL\Temp'
+                $result.SqlTempdbFileCount | Should-Be 2
+                $result.SqlTempdbFileSize | Should-Be 20
+                $result.SqlTempdbFileGrowth | Should-Be 110
+                $result.SqlTempdbLogFileSize | Should-Be 0.875
+                $result.SqlTempdbLogFileGrowth | Should-Be 12
             }
         }
     }
@@ -5347,9 +5347,9 @@ Describe 'Get-SqlRoleMembers' -Tag 'Helper' {
 
                 $result = Get-SqlRoleMembers @getTempDbPropertiesParameters
 
-                $result -is [System.Object[]] | Should -BeTrue
-                $result | Should -HaveCount 1
-                $result[0] | Should -Be 'sa'
+                $result -is [System.Object[]] | Should-BeTrue
+                $result | Should-BeCollection -Count 1
+                $result[0] | Should-Be 'sa'
             }
         }
     }
@@ -5374,10 +5374,10 @@ Describe 'Get-SqlRoleMembers' -Tag 'Helper' {
 
                 $result = Get-SqlRoleMembers @getTempDbPropertiesParameters
 
-                $result -is [System.Object[]] | Should -BeTrue
-                $result | Should -HaveCount 2
-                $result[0] | Should -Be 'sa'
-                $result[1] | Should -Be 'COMPUTER\SqlInstall'
+                $result -is [System.Object[]] | Should-BeTrue
+                $result | Should-BeCollection -Count 2
+                $result[0] | Should-Be 'sa'
+                $result[1] | Should-Be 'COMPUTER\SqlInstall'
             }
         }
     }
@@ -5440,9 +5440,9 @@ Describe 'Get-SqlClusterProperties' -Tag 'Helper' {
 
             $result = Get-SqlClusterProperties -InstanceName 'TEST'
 
-            $result.FailoverClusterNetworkName | Should -Be 'TESTCLU01A'
-            $result.FailoverClusterGroupName | Should -Be 'TESTCLU01A'
-            $result.FailoverClusterIPAddress | Should -Be '10.0.0.10'
+            $result.FailoverClusterNetworkName | Should-Be 'TESTCLU01A'
+            $result.FailoverClusterGroupName | Should-Be 'TESTCLU01A'
+            $result.FailoverClusterIPAddress | Should-Be '10.0.0.10'
         }
     }
 
@@ -5452,7 +5452,7 @@ Describe 'Get-SqlClusterProperties' -Tag 'Helper' {
 
             $mockErrorMessage = $script:localizedData.FailoverClusterResourceNotFound -f 'MSSQLSERVER'
 
-            { Get-SqlClusterProperties -InstanceName 'MSSQLSERVER' } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+            { Get-SqlClusterProperties -InstanceName 'MSSQLSERVER' } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
         }
     }
 }
@@ -5479,8 +5479,8 @@ Describe 'Get-ServiceProperties' -Tag 'Helper' {
 
             $result = Get-ServiceProperties -ServiceName 'MSSQL$SQL2014'
 
-            $result.UserName | Should -Be 'COMPANY\SqlAccount'
-            $result.StartupType | Should -Be 'Automatic'
+            $result.UserName | Should-Be 'COMPANY\SqlAccount'
+            $result.StartupType | Should-Be 'Automatic'
         }
     }
 }
@@ -5495,10 +5495,10 @@ Describe 'Test-IsSsmsInstalled' -Tag 'Helper' {
             Set-StrictMode -Version 1.0
 
             InModuleScope -ScriptBlock {
-                Test-IsSsmsInstalled -SqlServerMajorVersion 99 | Should -BeFalse
+                Test-IsSsmsInstalled -SqlServerMajorVersion 99 | Should-BeFalse
             }
 
-            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Get-ItemProperty -Exactly -Scope It -Times 0
         }
     }
 
@@ -5511,10 +5511,10 @@ Describe 'Test-IsSsmsInstalled' -Tag 'Helper' {
             Set-StrictMode -Version 1.0
 
             InModuleScope -ScriptBlock {
-                Test-IsSsmsInstalled -SqlServerMajorVersion 10 | Should -BeFalse
+                Test-IsSsmsInstalled -SqlServerMajorVersion 10 | Should-BeFalse
             }
 
-            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-ItemProperty -Exactly -Scope It -Times 1
         }
     }
 
@@ -5541,12 +5541,12 @@ Describe 'Test-IsSsmsInstalled' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 InModuleScope -ScriptBlock {
-                    Test-IsSsmsInstalled -SqlServerMajorVersion 10 | Should -BeTrue
+                    Test-IsSsmsInstalled -SqlServerMajorVersion 10 | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                     $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2008R2_ProductIdentifyingNumber)
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -5564,12 +5564,12 @@ Describe 'Test-IsSsmsInstalled' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 InModuleScope -ScriptBlock {
-                    Test-IsSsmsInstalled -SqlServerMajorVersion 11 | Should -BeTrue
+                    Test-IsSsmsInstalled -SqlServerMajorVersion 11 | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                     $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2012_ProductIdentifyingNumber)
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -5587,12 +5587,12 @@ Describe 'Test-IsSsmsInstalled' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 InModuleScope -ScriptBlock {
-                    Test-IsSsmsInstalled -SqlServerMajorVersion 12 | Should -BeTrue
+                    Test-IsSsmsInstalled -SqlServerMajorVersion 12 | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                     $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudio2014_ProductIdentifyingNumber)
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }
@@ -5608,10 +5608,10 @@ Describe 'Test-IsSsmsAdvancedInstalled' -Tag 'Helper' {
             Set-StrictMode -Version 1.0
 
             InModuleScope -ScriptBlock {
-                Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion 99 | Should -BeFalse
+                Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion 99 | Should-BeFalse
             }
 
-            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 0 -Scope It
+            Should-Invoke -CommandName Get-ItemProperty -Exactly -Scope It -Times 0
         }
     }
 
@@ -5624,10 +5624,10 @@ Describe 'Test-IsSsmsAdvancedInstalled' -Tag 'Helper' {
             Set-StrictMode -Version 1.0
 
             InModuleScope -ScriptBlock {
-                Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion 10 | Should -BeFalse
+                Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion 10 | Should-BeFalse
             }
 
-            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Get-ItemProperty -Exactly -Scope It -Times 1
         }
     }
 
@@ -5654,12 +5654,12 @@ Describe 'Test-IsSsmsAdvancedInstalled' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 InModuleScope -ScriptBlock {
-                    Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion 10 | Should -BeTrue
+                    Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion 10 | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                     $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2008R2_ProductIdentifyingNumber)
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -5677,12 +5677,12 @@ Describe 'Test-IsSsmsAdvancedInstalled' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 InModuleScope -ScriptBlock {
-                    Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion 11 | Should -BeTrue
+                    Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion 11 | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                     $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2012_ProductIdentifyingNumber)
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -5700,12 +5700,12 @@ Describe 'Test-IsSsmsAdvancedInstalled' -Tag 'Helper' {
                 Set-StrictMode -Version 1.0
 
                 InModuleScope -ScriptBlock {
-                    Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion 12 | Should -BeTrue
+                    Test-IsSsmsAdvancedInstalled -SqlServerMajorVersion 12 | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-ItemProperty -ParameterFilter {
+                Should-Invoke -CommandName Get-ItemProperty -Exactly -ParameterFilter {
                     $Path -eq (Join-Path -Path $mockRegistryUninstallProductsPath -ChildPath $mockSqlServerManagementStudioAdvanced2014_ProductIdentifyingNumber)
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
     }
@@ -5755,8 +5755,8 @@ Describe 'Get-SqlSharedPaths' -Tag 'Helper' {
 
             $result = Get-SqlSharedPaths -SqlServerMajorVersion $MockSqlServerMajorVersion
 
-            $result.InstallSharedDir | Should -Be 'C:\Program Files\Microsoft SQL Server'
-            $result.InstallSharedWOWDir | Should -Be 'C:\Program Files (x86)\Microsoft SQL Server'
+            $result.InstallSharedDir | Should-Be 'C:\Program Files\Microsoft SQL Server'
+            $result.InstallSharedWOWDir | Should-Be 'C:\Program Files (x86)\Microsoft SQL Server'
         }
     }
 }
@@ -5792,7 +5792,7 @@ Describe 'Get-FirstPathValueFromRegistryPath' -Tag 'Helper' {
 
             $result = Get-FirstPathValueFromRegistryPath -Path $mockRegistryPath
 
-            $result | Should -Be 'C:\Program Files\Microsoft SQL Server'
+            $result | Should-Be 'C:\Program Files\Microsoft SQL Server'
         }
     }
 }
@@ -5804,8 +5804,8 @@ Describe 'ConvertTo-Decimal' -Tag 'Helper' {
 
             $result = ConvertTo-Decimal '192.168.10.0'
 
-            $result | Should -BeOfType [System.UInt32]
-            $result | Should -Be 3232238080
+            $result | Should-HaveType ([System.UInt32])
+            $result | Should-Be 3232238080
         }
     }
 }
@@ -5818,7 +5818,7 @@ Describe 'Test-IPAddress' -Tag 'Helper' {
 
                 $result = Test-IPAddress -IPaddress '192.168.10.4' -NetworkID '192.168.10.0' -SubnetMask '255.255.255.0'
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
     }
@@ -5830,7 +5830,7 @@ Describe 'Test-IPAddress' -Tag 'Helper' {
 
                 $result = Test-IPAddress -IPaddress '192.168.10.240' -NetworkID '192.168.10.0' -SubnetMask '255.255.255.128'
 
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
     }
