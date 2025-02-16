@@ -3718,17 +3718,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                         $mockVerboseMessage = $script:localizedData.Server_SetupArguments
 
                         Should-Invoke -CommandName Write-Verbose -Exactly -ParameterFilter {
-                            # Only test the command that output the string that should be tested.
-                            $correctMessage = $Message -match $mockVerboseMessage
-
-                            # Only test string if it is the correct verbose command
-                            if ($correctMessage)
-                            {
-                                $Message | Should -MatchExactly $MockExpectedRegEx
-                            }
-
-                            # Return wether the correct command was called or not.
-                            $correctMessage
+                            $Message -match $mockVerboseMessage -and $Message -match $MockExpectedRegEx
                         } -Scope It -Times 1s 1 -Scope It
                     }
                 }
