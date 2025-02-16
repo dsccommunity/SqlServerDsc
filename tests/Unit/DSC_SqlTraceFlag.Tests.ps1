@@ -178,10 +178,10 @@ Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.ServerName | Should -Be 'TestServer' -Because 'ServerName must be correct'
-                $result.InstanceName | Should -Be 'MSSQLSERVER' -Because 'InstanceName must be correct'
-                $result.TraceFlags | Should -Be @('3226', '1802') -Because 'TraceFlags must be correct'
-                $result.TraceFlags.Count | Should -Be 2 -Because 'number of TraceFlags must be correct'
+                $result.ServerName | Should-Be 'TestServer' -Because 'ServerName must be correct'
+                $result.InstanceName | Should-Be 'MSSQLSERVER' -Because 'InstanceName must be correct'
+                $result.TraceFlags | Should-Be @('3226', '1802') -Because 'TraceFlags must be correct'
+                $result.TraceFlags.Count | Should-Be 2 -Because 'number of TraceFlags must be correct'
             }
         }
 
@@ -189,7 +189,7 @@ Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Get-TargetResource @mockGetTargetResourceParameters })
             }
         }
     }
@@ -203,10 +203,10 @@ Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.ServerName | Should -Be 'TestServer' -Because 'ServerName must be correct'
-                $result.InstanceName | Should -Be 'INST00' -Because 'InstanceName must be correct'
-                $result.TraceFlags | Should -BeNullOrEmpty -Because 'TraceFlags must be correct'
-                $result.TraceFlags.Count | Should -Be 0 -Because 'number of TraceFlags must be correct'
+                $result.ServerName | Should-Be 'TestServer' -Because 'ServerName must be correct'
+                $result.InstanceName | Should-Be 'INST00' -Because 'InstanceName must be correct'
+                $result.TraceFlags | Should-BeFalsy -Because 'TraceFlags must be correct'
+                $result.TraceFlags.Count | Should-Be 0 -Because 'number of TraceFlags must be correct'
             }
         }
 
@@ -214,7 +214,7 @@ Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                $null = & ({ Get-TargetResource @mockGetTargetResourceParameters })
             }
         }
     }
@@ -229,7 +229,7 @@ Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
                 $mockErrorMessage = $script:localizedData.NotConnectedToWMI -f 'INST01', 'TestServer'
 
                 { Get-TargetResource @mockGetTargetResourceParameters } |
-                    Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
         }
     }
@@ -253,7 +253,7 @@ Describe 'DSC_SqlTraceFlag\Get-TargetResource' -Tag 'Get' {
                 $mockErrorMessage = $script:localizedData.NotConnectedToComputerManagement -f 'FakeServer'
 
                 { Get-TargetResource @mockGetTargetResourceParameters } |
-                    Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)            }
+                    Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)            }
         }
     }
 }
@@ -295,12 +295,12 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue -Because 'it should return that the trace flags are in the desired state'
+                    $result | Should-BeTrue -Because 'it should return that the trace flags are in the desired state'
                 }
             }
 
             It 'Should call the correct mock' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
 
@@ -327,12 +327,12 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue -Because 'it should return that the trace flags are in the desired state'
+                    $result | Should-BeTrue -Because 'it should return that the trace flags are in the desired state'
                 }
             }
 
             It 'Should call the correct mock' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
 
@@ -355,12 +355,12 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue -Because 'it should return that the trace flags are in the desired state'
+                    $result | Should-BeTrue -Because 'it should return that the trace flags are in the desired state'
                 }
             }
 
             It 'Should call the correct mock' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
 
@@ -383,12 +383,12 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue -Because 'it should return that the trace flags are in the desired state'
+                    $result | Should-BeTrue -Because 'it should return that the trace flags are in the desired state'
                 }
             }
 
             It 'Should call the correct mock' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
 
@@ -411,12 +411,12 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue -Because 'it should return that the trace flags are in the desired state'
+                    $result | Should-BeTrue -Because 'it should return that the trace flags are in the desired state'
                 }
             }
 
             It 'Should call the correct mock' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
 
@@ -440,12 +440,12 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue -Because 'it should return that the trace flags are in the desired state'
+                    $result | Should-BeTrue -Because 'it should return that the trace flags are in the desired state'
                 }
             }
 
             It 'Should call the correct mock' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
     }
@@ -470,12 +470,12 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                    $result | Should-BeFalse -Because 'it should return that the trace flags are not in the desired state'
                 }
             }
 
             It 'Should call the correct mock' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
 
@@ -498,12 +498,12 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                    $result | Should-BeFalse -Because 'it should return that the trace flags are not in the desired state'
                 }
             }
 
             It 'Should call the correct mock' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
 
@@ -526,12 +526,12 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                    $result | Should-BeFalse -Because 'it should return that the trace flags are not in the desired state'
                 }
             }
 
             It 'Should call the correct mock' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
 
@@ -554,12 +554,12 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                    $result | Should-BeFalse -Because 'it should return that the trace flags are not in the desired state'
                 }
             }
 
             It 'Should call the correct mock' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
 
@@ -582,12 +582,12 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                    $result | Should-BeFalse -Because 'it should return that the trace flags are not in the desired state'
                 }
             }
 
             It 'Should call the correct mock' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
 
@@ -610,12 +610,12 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                    $result | Should-BeFalse -Because 'it should return that the trace flags are not in the desired state'
                 }
             }
 
             It 'Should call the correct mock' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
 
@@ -638,12 +638,12 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                    $result | Should-BeFalse -Because 'it should return that the trace flags are not in the desired state'
                 }
             }
 
             It 'Should call the correct mock' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
 
@@ -666,12 +666,12 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                    $result | Should-BeFalse -Because 'it should return that the trace flags are not in the desired state'
                 }
             }
 
             It 'Should call the correct mock' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
 
@@ -695,12 +695,12 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse -Because 'it should return that the trace flags are not in the desired state'
+                    $result | Should-BeFalse -Because 'it should return that the trace flags are not in the desired state'
                 }
             }
 
             It 'Should call the correct mock' {
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope Context
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope Context -Times 1
             }
         }
     }
@@ -713,7 +713,7 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
                 $mockTestTargetResourceParameters.TraceFlags = '3226'
                 $mockTestTargetResourceParameters.TraceFlagsToInclude = '3226'
 
-                { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage '*(DRC0010)*'
+                { Test-TargetResource @mockTestTargetResourceParameters } | Should-Throw -ExceptionMessage '*(DRC0010)*'
             }
         }
     }
@@ -726,7 +726,7 @@ Describe 'DSC_SqlTraceFlag\Test-TargetResource' -Tag 'Test' {
                 $mockTestTargetResourceParameters.TraceFlags = '3226'
                 $mockTestTargetResourceParameters.TraceFlagsToExclude = '3226'
 
-                { Test-TargetResource @mockTestTargetResourceParameters } | Should -Throw -ExpectedMessage '*(DRC0010)*'
+                { Test-TargetResource @mockTestTargetResourceParameters } | Should-Throw -ExceptionMessage '*(DRC0010)*'
             }
         }
     }
@@ -846,12 +846,12 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $script:mockMethodAlterRan | Should -BeFalse -Because 'no TraceFlag parameter was set'
+                    $script:mockMethodAlterRan | Should-BeFalse -Because 'no TraceFlag parameter was set'
                 }
 
-                Should -Invoke -CommandName New-Object -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 0
             }
         }
 
@@ -862,18 +862,18 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
                     $mockSetTargetResourceParameters.ClearAllTraceFlags = $true
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
+                    $script:mockMethodAlterRan | Should-BeTrue -Because 'method Alter() should run'
 
-                    $script:mockMethodAlterValue | Should -Be @"
+                    $script:mockMethodAlterValue | Should-Be @"
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 "@ -Because 'Alter must change the value correct'
                 }
 
-                Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 1
             }
         }
 
@@ -884,18 +884,18 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
 
                     $mockSetTargetResourceParameters.TraceFlags = '3228'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
+                    $script:mockMethodAlterRan | Should-BeTrue -Because 'method Alter() should run'
 
-                    $script:mockMethodAlterValue | Should -Be @"
+                    $script:mockMethodAlterValue | Should-Be @"
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
 "@ -Because 'Alter must change the value correct'
                 }
 
-                Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 1
             }
         }
 
@@ -907,11 +907,11 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
                     $mockSetTargetResourceParameters.InstanceName = 'INST00'
                     $mockSetTargetResourceParameters.TraceFlagsToInclude = '3228'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
+                    $script:mockMethodAlterRan | Should-BeTrue -Because 'method Alter() should run'
 
-                    $script:mockMethodAlterValue | Should -Be @"
+                    $script:mockMethodAlterValue | Should-Be @"
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
@@ -919,7 +919,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
                 }
 
                 # New-Object is also called in Get-TargetResource since there is no mock for Get-TargetResource.
-                Should -Invoke -CommandName New-Object -Exactly -Times 2 -Scope It
+                Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 2
             }
         }
 
@@ -930,11 +930,11 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3228
 
                     $mockSetTargetResourceParameters.TraceFlagsToInclude = '3228'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
+                    $script:mockMethodAlterRan | Should-BeTrue -Because 'method Alter() should run'
 
-                    $script:mockMethodAlterValue | Should -Be @"
+                    $script:mockMethodAlterValue | Should-Be @"
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802;-T3228
@@ -942,7 +942,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802;-T3228
                 }
 
                 # New-Object is also called in Get-TargetResource since there is no mock for Get-TargetResource.
-                Should -Invoke -CommandName New-Object -Exactly -Times 2 -Scope It
+                Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 2
             }
         }
 
@@ -953,11 +953,11 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226;-T1802;-T3228
 
                     $mockSetTargetResourceParameters.TraceFlagsToExclude = '1802'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
+                    $script:mockMethodAlterRan | Should-BeTrue -Because 'method Alter() should run'
 
-                    $script:mockMethodAlterValue | Should -Be @"
+                    $script:mockMethodAlterValue | Should-Be @"
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226
@@ -965,7 +965,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226
                 }
 
                 # New-Object is also called in Get-TargetResource since there is no mock for Get-TargetResource.
-                Should -Invoke -CommandName New-Object -Exactly -Times 2 -Scope It
+                Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 2
             }
         }
 
@@ -976,11 +976,11 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T3226
 
                     $mockSetTargetResourceParameters.TraceFlagsToExclude = '1802', '3226'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
+                    $script:mockMethodAlterRan | Should-BeTrue -Because 'method Alter() should run'
 
-                    $script:mockMethodAlterValue | Should -Be @"
+                    $script:mockMethodAlterValue | Should-Be @"
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
@@ -988,7 +988,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                 }
 
                 # New-Object is also called in Get-TargetResource since there is no mock for Get-TargetResource.
-                Should -Invoke -CommandName New-Object -Exactly -Times 2 -Scope It
+                Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 2
             }
         }
 
@@ -1000,11 +1000,11 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf
                     $mockSetTargetResourceParameters.TraceFlags = '4199'
                     $mockSetTargetResourceParameters.RestartService = $true
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $script:mockMethodAlterRan | Should -BeTrue -Because 'method Alter() should run'
+                    $script:mockMethodAlterRan | Should-BeTrue -Because 'method Alter() should run'
 
-                    $script:mockMethodAlterValue | Should -Be @"
+                    $script:mockMethodAlterValue | Should-Be @"
 -dC:\Program Files\Microsoft SQL Server\MSSQL15.INST00\MSSQL\DATA\master.mdf;-eC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\Log\ERRORLOG;-lC:\Program Files\Microsoft SQL
 Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T4199
@@ -1012,8 +1012,8 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T4199
                 }
 
                 # New-Object is also called in Get-TargetResource since there is no mock for Get-TargetResource.
-                Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
             }
         }
     }
@@ -1026,12 +1026,12 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T4199
                 $mockSetTargetResourceParameters.TraceFlags = '4199'
                 $mockSetTargetResourceParameters.TraceFlagsToInclude = '4037'
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*(DRC0010)*'
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage '*(DRC0010)*'
             }
         }
 
         It 'Should not call mock New-Object' {
-            Should -Invoke -CommandName New-Object -Exactly -Times 0 -Scope Context
+            Should-Invoke -CommandName New-Object -Exactly -Scope Context -Times 0
         }
     }
 
@@ -1043,12 +1043,12 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T4199
                 $mockSetTargetResourceParameters.TraceFlags = '4199'
                 $mockSetTargetResourceParameters.TraceFlagsToExclude = '4037'
 
-                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*(DRC0010)*'
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage '*(DRC0010)*'
             }
         }
 
         It 'Should not call mock New-Object' {
-            Should -Invoke -CommandName New-Object -Exactly -Times 0 -Scope Context
+            Should-Invoke -CommandName New-Object -Exactly -Scope Context -Times 0
         }
     }
 
@@ -1062,7 +1062,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T4199
                 $mockErrorMessage = $script:localizedData.NotConnectedToWMI -f 'INST01', 'TestServer'
 
                 { Test-TargetResource @mockSetTargetResourceParameters } |
-                    Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
         }
     }
@@ -1086,7 +1086,7 @@ Server\MSSQL15.INST00\MSSQL\DATA\mastlog.ldf;-T4199
                 $mockErrorMessage = $script:localizedData.NotConnectedToComputerManagement -f 'FakeServer'
 
                 { Test-TargetResource @mockSetTargetResourceParameters } |
-                    Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)            }
+                    Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)            }
         }
     }
 }

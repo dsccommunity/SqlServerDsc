@@ -102,17 +102,17 @@ Describe 'SqlConfiguration\Get-TargetResource' {
 
                 $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                $result.OptionName | Should -Be $mockGetTargetResourceParameters.OptionName
-                $result.OptionValue | Should -Be $mockGetTargetResourceParameters.OptionValue
-                $result.RestartService | Should -Be $mockGetTargetResourceParameters.RestartService
-                $result.RestartTimeout | Should -Be $mockGetTargetResourceParameters.RestartTimeout
+                $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                $result.OptionName | Should-Be $mockGetTargetResourceParameters.OptionName
+                $result.OptionValue | Should-Be $mockGetTargetResourceParameters.OptionValue
+                $result.RestartService | Should-Be $mockGetTargetResourceParameters.RestartService
+                $result.RestartTimeout | Should-Be $mockGetTargetResourceParameters.RestartTimeout
             }
         }
 
         It 'Should call Connect-SQL mock when getting the current state' {
-            Should -Invoke -CommandName Connect-SQL -Scope Context -Times 1
+            Should-Invoke -CommandName Connect-SQL -Scope Context -Times 1
         }
     }
 
@@ -132,7 +132,7 @@ Describe 'SqlConfiguration\Get-TargetResource' {
 
                 $errorMessage = ($script:localizedData.ConfigurationOptionNotFound -f $mockGetTargetResourceParameters.OptionName) + " (Parameter 'OptionName')"
 
-                { Get-TargetResource @mockGetTargetResourceParameters } | Should -Throw -ExpectedMessage $errorMessage
+                { Get-TargetResource @mockGetTargetResourceParameters } | Should-Throw -ExceptionMessage $errorMessage
             }
         }
     }
@@ -168,10 +168,10 @@ Describe 'SqlConfiguration\Test-TargetResource' {
 
                 $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
 
-            Should -Invoke -CommandName Get-TargetResource -Scope It -Times 1
+            Should-Invoke -CommandName Get-TargetResource -Scope It -Times 1
         }
     }
 
@@ -191,10 +191,10 @@ Describe 'SqlConfiguration\Test-TargetResource' {
 
                 $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
 
-            Should -Invoke -CommandName Get-TargetResource -Scope It -Times 1
+            Should-Invoke -CommandName Get-TargetResource -Scope It -Times 1
         }
     }
 }
@@ -258,20 +258,20 @@ Describe 'SqlConfiguration\Set-TargetResource' {
                         RestartTimeout = 120
                     }
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                    $script:mockAlterMethodCallCount | Should -Be 1
+                    $script:mockAlterMethodCallCount | Should-Be 1
                 }
 
-                Should -Invoke -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 0
 
                 if ($IsDynamic)
                 {
-                    Should -Invoke -CommandName Write-Warning -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Write-Warning -Exactly -Scope It -Times 0
                 }
                 else
                 {
-                    Should -Invoke -CommandName Write-Warning -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Write-Warning -Exactly -Scope It -Times 1
                 }
             }
 
@@ -289,18 +289,18 @@ Describe 'SqlConfiguration\Set-TargetResource' {
                             RestartTimeout = 120
                         }
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
                     if ($IsDynamic)
                     {
-                        Should -Invoke -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
-                        Should -Invoke -CommandName Write-Warning -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 0
+                        Should-Invoke -CommandName Write-Warning -Exactly -Scope It -Times 0
                     }
                     else
                     {
-                        Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
-                        Should -Invoke -CommandName Write-Warning -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
+                        Should-Invoke -CommandName Write-Warning -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -343,7 +343,7 @@ Describe 'SqlConfiguration\Set-TargetResource' {
 
                     $errorMessage = ($script:localizedData.ConfigurationOptionNotFound -f 'InvalidOptionName') + " (Parameter 'OptionName')"
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage $errorMessage
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage $errorMessage
                 }
             }
         }

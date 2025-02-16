@@ -110,8 +110,8 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When setup action is ''Install''' {
@@ -147,16 +147,13 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=Install'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE,AZUREEXTENSION' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=Install' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                        $ArgumentList -match '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' -and # cspell: disable-line
+                        $ArgumentList -match '\/FEATURES=SQLENGINE,AZUREEXTENSION' -and # cspell: disable-line
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -164,16 +161,13 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=Install'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE,AZUREEXTENSION' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=Install' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                        $ArgumentList -match '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' -and # cspell: disable-line
+                        $ArgumentList -match '\/FEATURES=SQLENGINE,AZUREEXTENSION' -and # cspell: disable-line
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -181,7 +175,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -210,12 +204,9 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             It 'Should call the mock with the correct argument string' {
                 Install-SqlDscServer @installSqlDscServerParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
-
-                    # Return $true if none of the above throw.
-                    $true
-                } -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList -match 'PBPORTRANGE=16450-16460' # cspell: disable-line
+                } -Scope It -Times 1
             }
         }
 
@@ -644,12 +635,9 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
                 Install-SqlDscServer @installSqlDscServerParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
-
-                    # Return $true if none of the above throw.
-                    $true
-                } -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList -match $MockExpectedRegEx
+                } -Scope It -Times 1
             }
         }
 
@@ -717,6 +705,10 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     Force                = $true
                     ErrorAction          = 'Stop'
                 }
+
+                $mockVerboseMessage = InModuleScope -ScriptBlock {
+                    $script:localizedData.Server_SetupArguments
+                }
             }
 
             BeforeEach {
@@ -729,23 +721,10 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 # Redirect all verbose stream to $null to ge no output from ShouldProcess.
                 Install-SqlDscServer @installSqlDscServerParameters -Verbose 4> $null
 
-                $mockVerboseMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.Server_SetupArguments
-                }
-
-                Should -Invoke -CommandName Write-Verbose -ParameterFilter {
-                    # Only test the command that output the string that should be tested.
-                    $correctMessage = $Message -match $mockVerboseMessage
-
-                    # Only test string if it is the correct verbose command
-                    if ($correctMessage)
-                    {
-                        $Message | Should -MatchExactly $MockExpectedRegEx
-                    }
-
-                    # Return wether the correct command was called or not.
-                    $correctMessage
-                } -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Write-Verbose -Exactly -ParameterFilter {
+                    # Only test the verbose message that output the string that should be tested.
+                    $Message -match $mockVerboseMessage -and $Message -match $MockExpectedRegEx
+                } -Scope It -Times 1
             }
         }
     }
@@ -780,14 +759,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=Upgrade'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=Upgrade' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -795,14 +771,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=Upgrade'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=Upgrade' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -810,7 +783,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -907,12 +880,9 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
                 Install-SqlDscServer @installSqlDscServerParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
-
-                    # Return $true if none of the above throw.
-                    $true
-                } -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList -match $MockExpectedRegEx
+                } -Scope It -Times 1
             }
         }
     }
@@ -958,19 +928,16 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=InstallFailoverCluster'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/INSTALLSQLDATADIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FAILOVERCLUSTERNETWORKNAME="TESTCLU01A"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly ([System.Text.RegularExpressions.Regex]::Escape('/FAILOVERCLUSTERIPADDRESSES="IPv4;172.16.0.0;ClusterNetwork1;172.31.255.255" "IPv6;2001:db8:23:1002:20f:1fff:feff:b3a3;ClusterNetwork2" "IPv6;DHCP;ClusterNetwork3" "IPv4;DHCP;ClusterNetwork4"')) # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=InstallFailoverCluster' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                        $ArgumentList -match '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' -and # cspell: disable-line
+                        $ArgumentList -match '\/INSTALLSQLDATADIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' -and # cspell: disable-line
+                        $ArgumentList -match '\/FEATURES=SQLENGINE' -and
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' -and # cspell: disable-line
+                        $ArgumentList -match '\/FAILOVERCLUSTERNETWORKNAME="TESTCLU01A"' -and # cspell: disable-line
+                        $ArgumentList -match ([System.Text.RegularExpressions.Regex]::Escape('/FAILOVERCLUSTERIPADDRESSES="IPv4;172.16.0.0;ClusterNetwork1;172.31.255.255" "IPv6;2001:db8:23:1002:20f:1fff:feff:b3a3;ClusterNetwork2" "IPv6;DHCP;ClusterNetwork3" "IPv4;DHCP;ClusterNetwork4"')) # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -978,19 +945,16 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=InstallFailoverCluster'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/INSTALLSQLDATADIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FAILOVERCLUSTERNETWORKNAME="TESTCLU01A"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly ([System.Text.RegularExpressions.Regex]::Escape('/FAILOVERCLUSTERIPADDRESSES="IPv4;172.16.0.0;ClusterNetwork1;172.31.255.255" "IPv6;2001:db8:23:1002:20f:1fff:feff:b3a3;ClusterNetwork2" "IPv6;DHCP;ClusterNetwork3" "IPv4;DHCP;ClusterNetwork4"')) # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=InstallFailoverCluster' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
+                        $ArgumentList -match '\/SQLSYSADMINACCOUNTS="DOMAIN\\User" "COMPANY\\SQL Administrators"' -and # cspell: disable-line
+                        $ArgumentList -match '\/INSTALLSQLDATADIR="C:\\Program Files\\Microsoft SQL Server\\MSSQL13.INST2016\\MSSQL\\Data"' -and # cspell: disable-line
+                        $ArgumentList -match '\/FEATURES=SQLENGINE' -and
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' -and # cspell: disable-line
+                        $ArgumentList -match '\/FAILOVERCLUSTERNETWORKNAME="TESTCLU01A"' -and # cspell: disable-line
+                        $ArgumentList -match ([System.Text.RegularExpressions.Regex]::Escape('/FAILOVERCLUSTERIPADDRESSES="IPv4;172.16.0.0;ClusterNetwork1;172.31.255.255" "IPv6;2001:db8:23:1002:20f:1fff:feff:b3a3;ClusterNetwork2" "IPv6;DHCP;ClusterNetwork3" "IPv4;DHCP;ClusterNetwork4"')) # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -998,7 +962,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -1030,12 +994,9 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             It 'Should call the mock with the correct argument string' {
                 Install-SqlDscServer @installSqlDscServerParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
-
-                    # Return $true if none of the above throw.
-                    $true
-                } -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList -match 'PBPORTRANGE=16450-16460' # cspell: disable-line
+                } -Scope It -Times 1
             }
         }
 
@@ -1357,12 +1318,9 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
                 Install-SqlDscServer @installSqlDscServerParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
-
-                    # Return $true if none of the above throw.
-                    $true
-                } -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList -match $MockExpectedRegEx
+                } -Scope It -Times 1
             }
         }
     }
@@ -1399,14 +1357,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=PrepareFailoverCluster'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=PrepareFailoverCluster' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -1414,14 +1369,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=PrepareFailoverCluster'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=PrepareFailoverCluster' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -1429,7 +1381,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -1457,12 +1409,10 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
             It 'Should call the mock with the correct argument string' {
                 Install-SqlDscServer @installSqlDscServerParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly 'PBPORTRANGE=16450-16460' # cspell: disable-line
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList -match 'PBPORTRANGE=16450-16460' # cspell: disable-line
 
-                    # Return $true if none of the above throw.
-                    $true
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -1629,12 +1579,9 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
                 Install-SqlDscServer @installSqlDscServerParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
-
-                    # Return $true if none of the above throw.
-                    $true
-                } -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList -match $MockExpectedRegEx
+                } -Scope It -Times 1
             }
         }
     }
@@ -1673,13 +1620,10 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         # cspell: disable-next
-                        $ArgumentList | Should -MatchExactly '\/CONFIGURATIONFILE="C:\\MyConfig\.ini"'
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                        $ArgumentList -match '\/CONFIGURATIONFILE="C:\\MyConfig\.ini"'
+                    } -Scope It -Times 1
                 }
             }
 
@@ -1687,13 +1631,10 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
                         # cspell: disable-next
-                        $ArgumentList | Should -MatchExactly '\/CONFIGURATIONFILE="C:\\MyConfig\.ini"'
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                        $ArgumentList -match '\/CONFIGURATIONFILE="C:\\MyConfig\.ini"'
+                    } -Scope It -Times 1
                 }
             }
 
@@ -1701,7 +1642,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -1755,12 +1696,9 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
                 Install-SqlDscServer @installSqlDscServerParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
-
-                    # Return $true if none of the above throw.
-                    $true
-                } -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList -match $MockExpectedRegEx
+                } -Scope It -Times 1
             }
         }
     }
@@ -1796,15 +1734,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=EditionUpgrade'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/PID="22222-00000-00000-00000-00000"'
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=EditionUpgrade' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' -and # cspell: disable-line
+                        $ArgumentList -match '\/PID="22222-00000-00000-00000-00000"'
+                    } -Scope It -Times 1
                 }
             }
 
@@ -1812,15 +1747,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=EditionUpgrade'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/PID="22222-00000-00000-00000-00000"'
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=EditionUpgrade' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' -and # cspell: disable-line
+                        $ArgumentList -match '\/PID="22222-00000-00000-00000-00000"'
+                    } -Scope It -Times 1
                 }
             }
 
@@ -1828,7 +1760,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -1865,12 +1797,9 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
                 Install-SqlDscServer @installSqlDscServerParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
-
-                    # Return $true if none of the above throw.
-                    $true
-                } -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList -match $MockExpectedRegEx
+                } -Scope It -Times 1
             }
         }
     }
@@ -1907,15 +1836,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=PrepareImage'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCEID="Instance"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=PrepareImage' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                        $ArgumentList -match '\/FEATURES=SQLENGINE' -and
+                        $ArgumentList -match '\/INSTANCEID="Instance"' # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -1923,15 +1849,12 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=PrepareImage'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCEID="Instance"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=PrepareImage' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                        $ArgumentList -match '\/FEATURES=SQLENGINE' -and
+                        $ArgumentList -match '\/INSTANCEID="Instance"' # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -1939,7 +1862,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -2022,12 +1945,9 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
                 Install-SqlDscServer @installSqlDscServerParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
-
-                    # Return $true if none of the above throw.
-                    $true
-                } -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList -match $MockExpectedRegEx
+                } -Scope It -Times 1
             }
         }
     }
@@ -2067,20 +1987,17 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=Install'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/AZURESUBSCRIPTIONID="5d19794a-89a4-4f0b-8d4e-58f213ea3546"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/AZURERESOURCEGROUP="MyResourceGroup"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/AZUREREGION="West-US"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/AZURETENANTID="7e52fb9e-6aad-426c-98c4-7d2f11f7e94b"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/AZURESERVICEPRINCIPAL="MyServicePrincipal"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/AZURESERVICEPRINCIPALSECRET="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=AZUREEXTENSION' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=Install' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                        $ArgumentList -match '\/AZURESUBSCRIPTIONID="5d19794a-89a4-4f0b-8d4e-58f213ea3546"' -and # cspell: disable-line
+                        $ArgumentList -match '\/AZURERESOURCEGROUP="MyResourceGroup"' -and # cspell: disable-line
+                        $ArgumentList -match '\/AZUREREGION="West-US"' -and # cspell: disable-line
+                        $ArgumentList -match '\/AZURETENANTID="7e52fb9e-6aad-426c-98c4-7d2f11f7e94b"' -and # cspell: disable-line
+                        $ArgumentList -match '\/AZURESERVICEPRINCIPAL="MyServicePrincipal"' -and # cspell: disable-line
+                        $ArgumentList -match '\/AZURESERVICEPRINCIPALSECRET="jT7ELPbD2GGuvLmjABDL"' -and # cspell: disable-line
+                        $ArgumentList -match '\/FEATURES=AZUREEXTENSION' # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -2088,20 +2005,17 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=Install'
-                        $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/AZURESUBSCRIPTIONID="5d19794a-89a4-4f0b-8d4e-58f213ea3546"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/AZURERESOURCEGROUP="MyResourceGroup"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/AZUREREGION="West-US"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/AZURETENANTID="7e52fb9e-6aad-426c-98c4-7d2f11f7e94b"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/AZURESERVICEPRINCIPAL="MyServicePrincipal"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/AZURESERVICEPRINCIPALSECRET="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=AZUREEXTENSION' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=Install' -and
+                        $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                        $ArgumentList -match '\/AZURESUBSCRIPTIONID="5d19794a-89a4-4f0b-8d4e-58f213ea3546"' -and # cspell: disable-line
+                        $ArgumentList -match '\/AZURERESOURCEGROUP="MyResourceGroup"' -and # cspell: disable-line
+                        $ArgumentList -match '\/AZUREREGION="West-US"' -and # cspell: disable-line
+                        $ArgumentList -match '\/AZURETENANTID="7e52fb9e-6aad-426c-98c4-7d2f11f7e94b"' -and # cspell: disable-line
+                        $ArgumentList -match '\/AZURESERVICEPRINCIPAL="MyServicePrincipal"' -and # cspell: disable-line
+                        $ArgumentList -match '\/AZURESERVICEPRINCIPALSECRET="jT7ELPbD2GGuvLmjABDL"' -and # cspell: disable-line
+                        $ArgumentList -match '\/FEATURES=AZUREEXTENSION' # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -2109,7 +2023,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Install-SqlDscServer -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -2150,12 +2064,9 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
                 Install-SqlDscServer @installSqlDscServerParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
-
-                    # Return $true if none of the above throw.
-                    $true
-                } -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList -match $MockExpectedRegEx
+                } -Scope It -Times 1
             }
         }
     }
@@ -2191,14 +2102,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     It 'Should call the mock with the correct argument string' {
                         Install-SqlDscServer -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                            $ArgumentList | Should -MatchExactly '\/ACTION=Install'
-                            $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                            $ArgumentList | Should -MatchExactly '\/ROLE=SPI_AS_NEWFARM' # cspell: disable-line
-
-                            # Return $true if none of the above throw.
-                            $true
-                        } -Exactly -Times 1 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                            $ArgumentList -match '\/ACTION=Install' -and
+                            $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                            $ArgumentList -match '\/ROLE=SPI_AS_NEWFARM' # cspell: disable-line
+                        } -Scope It -Times 1
                     }
                 }
 
@@ -2206,14 +2114,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     It 'Should call the mock with the correct argument string' {
                         Install-SqlDscServer -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                            $ArgumentList | Should -MatchExactly '\/ACTION=Install'
-                            $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                            $ArgumentList | Should -MatchExactly '\/ROLE=SPI_AS_NEWFARM' # cspell: disable-line
-
-                            # Return $true if none of the above throw.
-                            $true
-                        } -Exactly -Times 1 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                            $ArgumentList -match '\/ACTION=Install' -and
+                            $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                            $ArgumentList -match '\/ROLE=SPI_AS_NEWFARM' # cspell: disable-line
+                        } -Scope It -Times 1
                     }
                 }
 
@@ -2221,7 +2126,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     It 'Should call the mock with the correct argument string' {
                         Install-SqlDscServer -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -2272,12 +2177,9 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
                     Install-SqlDscServer @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly $MockExpectedRegEx
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match $MockExpectedRegEx
+                    } -Scope It -Times 1
                 }
             }
 
@@ -2307,6 +2209,10 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                         Force                = $true
                         ErrorAction          = 'Stop'
                     }
+
+                    $mockVerboseMessage = InModuleScope -ScriptBlock {
+                        $script:localizedData.Server_SetupArguments
+                    }
                 }
 
                 BeforeEach {
@@ -2319,23 +2225,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     # Redirect all verbose stream to $null to ge no output from ShouldProcess.
                     Install-SqlDscServer @installSqlDscServerParameters -Verbose 4> $null
 
-                    $mockVerboseMessage = InModuleScope -ScriptBlock {
-                        $script:localizedData.Server_SetupArguments
-                    }
 
-                    Should -Invoke -CommandName Write-Verbose -ParameterFilter {
-                        # Only test the command that output the string that should be tested.
-                        $correctMessage = $Message -match $mockVerboseMessage
-
-                        # Only test string if it is the correct verbose command
-                        if ($correctMessage)
-                        {
-                            $Message | Should -MatchExactly $MockExpectedRegEx
-                        }
-
-                        # Return wether the correct command was called or not.
-                        $correctMessage
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Write-Verbose -Exactly -ParameterFilter {
+                        # Only test the verbose message that output the string that should be tested.
+                        $Message -match $mockVerboseMessage -and $Message -match $MockExpectedRegEx
+                    } -Scope It -Times 1
                 }
             }
         }
@@ -2360,14 +2254,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     It 'Should call the mock with the correct argument string' {
                         Install-SqlDscServer -Confirm:$false @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                            $ArgumentList | Should -MatchExactly '\/ACTION=Install'
-                            $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                            $ArgumentList | Should -MatchExactly '\/ROLE=ALLFEATURES_WITHDEFAULTS' # cspell: disable-line
-
-                            # Return $true if none of the above throw.
-                            $true
-                        } -Exactly -Times 1 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                            $ArgumentList -match '\/ACTION=Install' -and
+                            $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                            $ArgumentList -match '\/ROLE=ALLFEATURES_WITHDEFAULTS' # cspell: disable-line
+                        } -Scope It -Times 1
                     }
                 }
 
@@ -2375,14 +2266,11 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     It 'Should call the mock with the correct argument string' {
                         Install-SqlDscServer -Force @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                            $ArgumentList | Should -MatchExactly '\/ACTION=Install'
-                            $ArgumentList | Should -MatchExactly '\/IACCEPTSQLSERVERLICENSETERMS' # cspell: disable-line
-                            $ArgumentList | Should -MatchExactly '\/ROLE=ALLFEATURES_WITHDEFAULTS' # cspell: disable-line
-
-                            # Return $true if none of the above throw.
-                            $true
-                        } -Exactly -Times 1 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                            $ArgumentList -match '\/ACTION=Install' -and
+                            $ArgumentList -match '\/IACCEPTSQLSERVERLICENSETERMS' -and # cspell: disable-line
+                            $ArgumentList -match '\/ROLE=ALLFEATURES_WITHDEFAULTS' # cspell: disable-line
+                        } -Scope It -Times 1
                     }
                 }
 
@@ -2390,7 +2278,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     It 'Should call the mock with the correct argument string' {
                         Install-SqlDscServer -WhatIf @mockDefaultParameters
 
-                        Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -2431,12 +2319,9 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
 
                     Install-SqlDscServer @installSqlDscServerParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly $MockExpectedRegEx
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match $MockExpectedRegEx
+                    } -Scope It -Times 1
                 }
             }
         }

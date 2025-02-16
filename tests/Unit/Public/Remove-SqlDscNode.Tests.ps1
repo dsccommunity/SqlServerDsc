@@ -70,8 +70,8 @@ Describe 'Remove-SqlDscNode' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When setup action is ''RemoveNode''' {
@@ -102,13 +102,10 @@ Describe 'Remove-SqlDscNode' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Remove-SqlDscNode -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=RemoveNode'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=RemoveNode' -and
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -116,13 +113,10 @@ Describe 'Remove-SqlDscNode' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Remove-SqlDscNode -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=RemoveNode'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=RemoveNode' -and
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -130,7 +124,7 @@ Describe 'Remove-SqlDscNode' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Remove-SqlDscNode -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -164,12 +158,9 @@ Describe 'Remove-SqlDscNode' -Tag 'Public' {
 
                 Remove-SqlDscNode @removeSqlDscNodeParameters
 
-                Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                    $ArgumentList | Should -MatchExactly $MockExpectedRegEx
-
-                    # Return $true if none of the above throw.
-                    $true
-                } -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                    $ArgumentList -match $MockExpectedRegEx
+                } -Scope It -Times 1
             }
         }
     }

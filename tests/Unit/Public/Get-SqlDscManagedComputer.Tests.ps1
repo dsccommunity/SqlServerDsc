@@ -62,9 +62,9 @@ Describe 'Get-SqlDscManagedComputer' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscManagedComputer
 
-            $result | Should -Be 'MockManagedComputer'
+            $result | Should-Be 'MockManagedComputer'
 
-            Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 1
         }
     }
 
@@ -81,9 +81,9 @@ Describe 'Get-SqlDscManagedComputer' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscManagedComputer -ServerName 'localhost'
 
-            $result | Should -Be 'MockManagedComputer'
+            $result | Should-Be 'MockManagedComputer'
 
-            Should -Invoke -CommandName New-Object -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName New-Object -Exactly -Scope It -Times 1
         }
     }
 }

@@ -172,40 +172,40 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.Ensure | Should -Be 'Absent'
+                    $getTargetResourceResult.Ensure | Should-Be 'Absent'
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
 
             It 'Should return the same values as passed as parameters' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                    $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
 
             It 'Should return $null for the rest of the properties' {
                 InModuleScope -ScriptBlock {
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.AccountName | Should -BeNullOrEmpty
-                    $getTargetResourceResult.EmailAddress | Should -BeNullOrEmpty
-                    $getTargetResourceResult.MailServerName | Should -BeNullOrEmpty
-                    $getTargetResourceResult.LoggingLevel | Should -BeNullOrEmpty
-                    $getTargetResourceResult.ProfileName | Should -BeNullOrEmpty
-                    $getTargetResourceResult.DisplayName | Should -BeNullOrEmpty
-                    $getTargetResourceResult.ReplyToAddress | Should -BeNullOrEmpty
-                    $getTargetResourceResult.Description | Should -BeNullOrEmpty
-                    $getTargetResourceResult.TcpPort | Should -BeNullOrEmpty
-                    $getTargetResourceResult.UseDefaultCredentials | Should -BeNullOrEmpty
+                    $getTargetResourceResult.AccountName | Should-BeFalsy
+                    $getTargetResourceResult.EmailAddress | Should-BeFalsy
+                    $getTargetResourceResult.MailServerName | Should-BeFalsy
+                    $getTargetResourceResult.LoggingLevel | Should-BeFalsy
+                    $getTargetResourceResult.ProfileName | Should-BeFalsy
+                    $getTargetResourceResult.DisplayName | Should-BeFalsy
+                    $getTargetResourceResult.ReplyToAddress | Should-BeFalsy
+                    $getTargetResourceResult.Description | Should-BeFalsy
+                    $getTargetResourceResult.TcpPort | Should-BeFalsy
+                    $getTargetResourceResult.UseDefaultCredentials | Should-BeFalsy
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
 
             It 'Should call all verifiable mocks' {
@@ -241,21 +241,21 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.Ensure | Should -Be 'Present'
+                    $getTargetResourceResult.Ensure | Should-Be 'Present'
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
 
             It 'Should return the same values as passed as parameters' {
                 InModuleScope -ScriptBlock {
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                    $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
 
             It 'Should return the correct values for the rest of the properties' {
@@ -275,19 +275,19 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.AccountName | Should -Be $MockAccountName
-                    $getTargetResourceResult.EmailAddress | Should -Be $MockEmailAddress
-                    $getTargetResourceResult.MailServerName | Should -Be $MockMailServerName
-                    $getTargetResourceResult.LoggingLevel | Should -Be $MockLoggingLevel
-                    $getTargetResourceResult.ProfileName | Should -Be $MockProfileName
-                    $getTargetResourceResult.DisplayName | Should -Be $MockDisplayName
-                    $getTargetResourceResult.ReplyToAddress | Should -Be $MockReplyToAddress
-                    $getTargetResourceResult.Description | Should -Be $MockDescription
-                    $getTargetResourceResult.TcpPort | Should -Be $MockTcpPort
-                    $getTargetResourceResult.UseDefaultCredentials | Should -Be $MockUseDefaultCredentials
+                    $getTargetResourceResult.AccountName | Should-Be $MockAccountName
+                    $getTargetResourceResult.EmailAddress | Should-Be $MockEmailAddress
+                    $getTargetResourceResult.MailServerName | Should-Be $MockMailServerName
+                    $getTargetResourceResult.LoggingLevel | Should-Be $MockLoggingLevel
+                    $getTargetResourceResult.ProfileName | Should-Be $MockProfileName
+                    $getTargetResourceResult.DisplayName | Should-Be $MockDisplayName
+                    $getTargetResourceResult.ReplyToAddress | Should-Be $MockReplyToAddress
+                    $getTargetResourceResult.Description | Should-Be $MockDescription
+                    $getTargetResourceResult.TcpPort | Should-Be $MockTcpPort
+                    $getTargetResourceResult.UseDefaultCredentials | Should-Be $MockUseDefaultCredentials
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
 
@@ -335,7 +335,7 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -Parameters $inModuleScopeParameters -ScriptBlock {
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.LoggingLevel | Should -Be $MockLoggingLevel
+                    $getTargetResourceResult.LoggingLevel | Should-Be $MockLoggingLevel
                 }
             }
         }
@@ -351,7 +351,7 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.Description | Should -BeNullOrEmpty
+                    $getTargetResourceResult.Description | Should-BeFalsy
                 }
             }
         }
@@ -367,8 +367,8 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
                 InModuleScope -ScriptBlock {
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.Ensure | Should -Be 'Absent'
-                    $getTargetResourceResult.AccountName | Should -BeNullOrEmpty
+                    $getTargetResourceResult.Ensure | Should-Be 'Absent'
+                    $getTargetResourceResult.AccountName | Should-BeFalsy
                 }
             }
         }
@@ -399,7 +399,7 @@ Describe 'DSC_SqlDatabaseMail\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                $getTargetResourceResult.Ensure | Should -Be 'Absent'
+                $getTargetResourceResult.Ensure | Should-Be 'Absent'
             }
         }
     }
@@ -449,10 +449,10 @@ Describe 'DSC_SqlDatabaseMail\Test-TargetResource' -Tag 'Test' {
 
                     $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
 
-                    $testTargetResourceResult | Should -BeTrue
+                    $testTargetResourceResult | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -498,10 +498,10 @@ Describe 'DSC_SqlDatabaseMail\Test-TargetResource' -Tag 'Test' {
 
                     $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
 
-                    $testTargetResourceResult | Should -BeTrue
+                    $testTargetResourceResult | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -522,10 +522,10 @@ Describe 'DSC_SqlDatabaseMail\Test-TargetResource' -Tag 'Test' {
                     $testTargetResourceParameters.Ensure = 'Absent'
 
                     $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
-                    $testTargetResourceResult | Should -BeFalse
+                    $testTargetResourceResult | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -607,10 +607,10 @@ Describe 'DSC_SqlDatabaseMail\Test-TargetResource' -Tag 'Test' {
                     $testTargetResourceParameters.$Property = $PropertyValue
 
                     $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
-                    $testTargetResourceResult | Should -BeFalse
+                    $testTargetResourceResult | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
 
             It 'Should return the state as $false when <Property> is wrong' -ForEach $testCase {
@@ -624,10 +624,10 @@ Describe 'DSC_SqlDatabaseMail\Test-TargetResource' -Tag 'Test' {
                     $testTargetResourceParameters.$Property = $PropertyValue
 
                     $testTargetResourceResult = Test-TargetResource @testTargetResourceParameters
-                    $testTargetResourceResult | Should -BeFalse
+                    $testTargetResourceResult | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -861,23 +861,23 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                     $setTargetResourceParameters.AccountName = 'MissingAccount'
                     $setTargetResourceParameters.ProfileName = 'MissingProfile'
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
 
-                    $script:MailAccountCreateMethodCallCount | Should -Be 0
-                    $script:MailServerRenameMethodCallCount | Should -Be 0
-                    $script:MailServerAlterMethodCallCount | Should -Be 0
-                    $script:MailAccountAlterMethodCallCount | Should -Be 0
-                    $script:MailProfileCreateMethodCallCount | Should -Be 0
-                    $script:MailProfileAlterMethodCallCount | Should -Be 0
-                    $script:MailProfileAddPrincipalMethodCallCount | Should -Be 0
-                    $script:MailProfileAddAccountMethodCallCount | Should -Be 0
-                    $script:JobServerAlterMethodCallCount | Should -Be 0
-                    $script:LoggingLevelAlterMethodCallCount | Should -Be 0
-                    $script:MailProfileDropMethodCallCount | Should -Be 0
-                    $script:MailAccountDropMethodCallCount | Should -Be 0
+                    $script:MailAccountCreateMethodCallCount | Should-Be 0
+                    $script:MailServerRenameMethodCallCount | Should-Be 0
+                    $script:MailServerAlterMethodCallCount | Should-Be 0
+                    $script:MailAccountAlterMethodCallCount | Should-Be 0
+                    $script:MailProfileCreateMethodCallCount | Should-Be 0
+                    $script:MailProfileAlterMethodCallCount | Should-Be 0
+                    $script:MailProfileAddPrincipalMethodCallCount | Should-Be 0
+                    $script:MailProfileAddAccountMethodCallCount | Should-Be 0
+                    $script:JobServerAlterMethodCallCount | Should-Be 0
+                    $script:LoggingLevelAlterMethodCallCount | Should-Be 0
+                    $script:MailProfileDropMethodCallCount | Should-Be 0
+                    $script:MailAccountDropMethodCallCount | Should-Be 0
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
 
@@ -905,23 +905,23 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                     $setTargetResourceParameters['TcpPort'] = $MockTcpPort
                     $setTargetResourceParameters['UseDefaultCredentials'] = $MockUseDefaultCredentials
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
 
-                    $script:MailAccountCreateMethodCallCount | Should -Be 0
-                    $script:MailServerRenameMethodCallCount | Should -Be 0
-                    $script:MailServerAlterMethodCallCount | Should -Be 0
-                    $script:MailAccountAlterMethodCallCount | Should -Be 0
-                    $script:MailProfileCreateMethodCallCount | Should -Be 0
-                    $script:MailProfileAlterMethodCallCount | Should -Be 0
-                    $script:MailProfileAddPrincipalMethodCallCount | Should -Be 0
-                    $script:MailProfileAddAccountMethodCallCount | Should -Be 0
-                    $script:JobServerAlterMethodCallCount | Should -Be 0
-                    $script:LoggingLevelAlterMethodCallCount | Should -Be 0
-                    $script:MailProfileDropMethodCallCount | Should -Be 0
-                    $script:MailAccountDropMethodCallCount | Should -Be 0
+                    $script:MailAccountCreateMethodCallCount | Should-Be 0
+                    $script:MailServerRenameMethodCallCount | Should-Be 0
+                    $script:MailServerAlterMethodCallCount | Should-Be 0
+                    $script:MailAccountAlterMethodCallCount | Should-Be 0
+                    $script:MailProfileCreateMethodCallCount | Should-Be 0
+                    $script:MailProfileAlterMethodCallCount | Should-Be 0
+                    $script:MailProfileAddPrincipalMethodCallCount | Should-Be 0
+                    $script:MailProfileAddAccountMethodCallCount | Should-Be 0
+                    $script:JobServerAlterMethodCallCount | Should-Be 0
+                    $script:LoggingLevelAlterMethodCallCount | Should-Be 0
+                    $script:MailProfileDropMethodCallCount | Should-Be 0
+                    $script:MailAccountDropMethodCallCount | Should-Be 0
                 }
 
-                Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
             }
         }
     }
@@ -937,11 +937,11 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                     $setTargetResourceParameters = $mockDefaultParameters.Clone()
                     $setTargetResourceParameters.Ensure = 'Absent'
 
-                    { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @setTargetResourceParameters })
 
-                    $script:JobServerAlterMethodCallCount | Should -Be 1
-                    $script:MailProfileDropMethodCallCount | Should -Be 1
-                    $script:MailAccountDropMethodCallCount | Should -Be 1
+                    $script:JobServerAlterMethodCallCount | Should-Be 1
+                    $script:MailProfileDropMethodCallCount | Should-Be 1
+                    $script:MailAccountDropMethodCallCount | Should-Be 1
                 }
             }
         }
@@ -966,10 +966,10 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                             $setTargetResourceParameters = $mockDefaultParameters.Clone()
 
                             Set-TargetResource @setTargetResourceParameters
-                        } | Should -Throw $mockErrorRecord.Exception.Message
+                        } | Should-Throw $mockErrorRecord.Exception.Message
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
 
@@ -995,21 +995,21 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
                         $setTargetResourceParameters['TcpPort'] = 2525
                         $setTargetResourceParameters['UseDefaultCredentials'] = $true
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @setTargetResourceParameters })
 
-                        $script:MailAccountCreateMethodCallCount | Should -Be 1
-                        $script:MailServerRenameMethodCallCount | Should -Be 1
-                        $script:MailServerAlterMethodCallCount | Should -Be 1
-                        $script:MailAccountAlterMethodCallCount | Should -Be 0
-                        $script:MailProfileCreateMethodCallCount | Should -Be 1
-                        $script:MailProfileAlterMethodCallCount | Should -Be 1
-                        $script:MailProfileAddPrincipalMethodCallCount | Should -Be 1
-                        $script:MailProfileAddAccountMethodCallCount | Should -Be 1
-                        $script:JobServerAlterMethodCallCount | Should -Be 1
-                        $script:LoggingLevelAlterMethodCallCount | Should -Be 0
+                        $script:MailAccountCreateMethodCallCount | Should-Be 1
+                        $script:MailServerRenameMethodCallCount | Should-Be 1
+                        $script:MailServerAlterMethodCallCount | Should-Be 1
+                        $script:MailAccountAlterMethodCallCount | Should-Be 0
+                        $script:MailProfileCreateMethodCallCount | Should-Be 1
+                        $script:MailProfileAlterMethodCallCount | Should-Be 1
+                        $script:MailProfileAddPrincipalMethodCallCount | Should-Be 1
+                        $script:MailProfileAddAccountMethodCallCount | Should-Be 1
+                        $script:JobServerAlterMethodCallCount | Should-Be 1
+                        $script:LoggingLevelAlterMethodCallCount | Should-Be 0
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
 
@@ -1070,73 +1070,73 @@ Describe 'DSC_SqlDatabaseMail\Set-TargetResource' -Tag 'Set' {
 
                         $setTargetResourceParameters.$Property = $PropertyValue
 
-                        { Set-TargetResource @setTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @setTargetResourceParameters })
 
-                        $script:MailAccountCreateMethodCallCount | Should -Be 0
+                        $script:MailAccountCreateMethodCallCount | Should-Be 0
 
                         if ($Property -eq 'MailServerName')
                         {
-                            $script:MailServerRenameMethodCallCount | Should -Be 1
-                            $script:MailServerAlterMethodCallCount | Should -Be 1
-                            $script:MailAccountAlterMethodCallCount | Should -Be 0
-                            $script:MailProfileCreateMethodCallCount | Should -Be 0
-                            $script:MailProfileAlterMethodCallCount | Should -Be 0
-                            $script:MailProfileAddPrincipalMethodCallCount | Should -Be 0
-                            $script:MailProfileAddAccountMethodCallCount | Should -Be 0
-                            $script:JobServerAlterMethodCallCount | Should -Be 0
-                            $script:LoggingLevelAlterMethodCallCount | Should -Be 0
+                            $script:MailServerRenameMethodCallCount | Should-Be 1
+                            $script:MailServerAlterMethodCallCount | Should-Be 1
+                            $script:MailAccountAlterMethodCallCount | Should-Be 0
+                            $script:MailProfileCreateMethodCallCount | Should-Be 0
+                            $script:MailProfileAlterMethodCallCount | Should-Be 0
+                            $script:MailProfileAddPrincipalMethodCallCount | Should-Be 0
+                            $script:MailProfileAddAccountMethodCallCount | Should-Be 0
+                            $script:JobServerAlterMethodCallCount | Should-Be 0
+                            $script:LoggingLevelAlterMethodCallCount | Should-Be 0
                         }
                         elseif ($Property -eq 'TcpPort')
                         {
-                            $script:MailServerRenameMethodCallCount | Should -Be 0
-                            $script:MailServerAlterMethodCallCount | Should -Be 1
-                            $script:MailAccountAlterMethodCallCount | Should -Be 0
-                            $script:MailProfileCreateMethodCallCount | Should -Be 0
-                            $script:MailProfileAlterMethodCallCount | Should -Be 0
-                            $script:MailProfileAddPrincipalMethodCallCount | Should -Be 0
-                            $script:MailProfileAddAccountMethodCallCount | Should -Be 0
-                            $script:JobServerAlterMethodCallCount | Should -Be 0
-                            $script:LoggingLevelAlterMethodCallCount | Should -Be 0
+                            $script:MailServerRenameMethodCallCount | Should-Be 0
+                            $script:MailServerAlterMethodCallCount | Should-Be 1
+                            $script:MailAccountAlterMethodCallCount | Should-Be 0
+                            $script:MailProfileCreateMethodCallCount | Should-Be 0
+                            $script:MailProfileAlterMethodCallCount | Should-Be 0
+                            $script:MailProfileAddPrincipalMethodCallCount | Should-Be 0
+                            $script:MailProfileAddAccountMethodCallCount | Should-Be 0
+                            $script:JobServerAlterMethodCallCount | Should-Be 0
+                            $script:LoggingLevelAlterMethodCallCount | Should-Be 0
                         }
                         elseif ($Property -eq 'UseDefaultCredentials')
                         {
-                            $script:MailServerRenameMethodCallCount | Should -Be 0
-                            $script:MailServerAlterMethodCallCount | Should -Be 1
-                            $script:MailAccountAlterMethodCallCount | Should -Be 0
-                            $script:MailProfileCreateMethodCallCount | Should -Be 0
-                            $script:MailProfileAlterMethodCallCount | Should -Be 0
-                            $script:MailProfileAddPrincipalMethodCallCount | Should -Be 0
-                            $script:MailProfileAddAccountMethodCallCount | Should -Be 0
-                            $script:JobServerAlterMethodCallCount | Should -Be 0
-                            $script:LoggingLevelAlterMethodCallCount | Should -Be 0
+                            $script:MailServerRenameMethodCallCount | Should-Be 0
+                            $script:MailServerAlterMethodCallCount | Should-Be 1
+                            $script:MailAccountAlterMethodCallCount | Should-Be 0
+                            $script:MailProfileCreateMethodCallCount | Should-Be 0
+                            $script:MailProfileAlterMethodCallCount | Should-Be 0
+                            $script:MailProfileAddPrincipalMethodCallCount | Should-Be 0
+                            $script:MailProfileAddAccountMethodCallCount | Should-Be 0
+                            $script:JobServerAlterMethodCallCount | Should-Be 0
+                            $script:LoggingLevelAlterMethodCallCount | Should-Be 0
                         }
                         elseif ($Property -eq 'LoggingLevel')
                         {
-                            $script:MailServerRenameMethodCallCount | Should -Be 0
-                            $script:MailServerAlterMethodCallCount | Should -Be 0
-                            $script:MailAccountAlterMethodCallCount | Should -Be 0
-                            $script:MailProfileCreateMethodCallCount | Should -Be 0
-                            $script:MailProfileAlterMethodCallCount | Should -Be 0
-                            $script:MailProfileAddPrincipalMethodCallCount | Should -Be 0
-                            $script:MailProfileAddAccountMethodCallCount | Should -Be 0
-                            $script:JobServerAlterMethodCallCount | Should -Be 0
-                            $script:LoggingLevelAlterMethodCallCount | Should -Be 1
+                            $script:MailServerRenameMethodCallCount | Should-Be 0
+                            $script:MailServerAlterMethodCallCount | Should-Be 0
+                            $script:MailAccountAlterMethodCallCount | Should-Be 0
+                            $script:MailProfileCreateMethodCallCount | Should-Be 0
+                            $script:MailProfileAlterMethodCallCount | Should-Be 0
+                            $script:MailProfileAddPrincipalMethodCallCount | Should-Be 0
+                            $script:MailProfileAddAccountMethodCallCount | Should-Be 0
+                            $script:JobServerAlterMethodCallCount | Should-Be 0
+                            $script:LoggingLevelAlterMethodCallCount | Should-Be 1
                         }
                         else
                         {
-                            $script:MailServerRenameMethodCallCount | Should -Be 0
-                            $script:MailServerAlterMethodCallCount | Should -Be 0
-                            $script:MailAccountAlterMethodCallCount | Should -Be 1
-                            $script:MailProfileCreateMethodCallCount | Should -Be 0
-                            $script:MailProfileAlterMethodCallCount | Should -Be 0
-                            $script:MailProfileAddPrincipalMethodCallCount | Should -Be 0
-                            $script:MailProfileAddAccountMethodCallCount | Should -Be 0
-                            $script:JobServerAlterMethodCallCount | Should -Be 0
-                            $script:LoggingLevelAlterMethodCallCount | Should -Be 0
+                            $script:MailServerRenameMethodCallCount | Should-Be 0
+                            $script:MailServerAlterMethodCallCount | Should-Be 0
+                            $script:MailAccountAlterMethodCallCount | Should-Be 1
+                            $script:MailProfileCreateMethodCallCount | Should-Be 0
+                            $script:MailProfileAlterMethodCallCount | Should-Be 0
+                            $script:MailProfileAddPrincipalMethodCallCount | Should-Be 0
+                            $script:MailProfileAddAccountMethodCallCount | Should-Be 0
+                            $script:JobServerAlterMethodCallCount | Should-Be 0
+                            $script:LoggingLevelAlterMethodCallCount | Should-Be 0
                         }
                     }
 
-                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
                 }
             }
         }

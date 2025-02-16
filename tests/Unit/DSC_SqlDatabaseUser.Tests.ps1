@@ -122,7 +122,7 @@ Describe 'SqlDatabaseUser\Get-TargetResource' -Tag 'Get' {
     }
 
     AfterEach {
-        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+        Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
     }
 
     Context 'When the system is in the desired state' {
@@ -139,7 +139,7 @@ Describe 'SqlDatabaseUser\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.Ensure | Should -Be 'Absent'
+                    $getTargetResourceResult.Ensure | Should-Be 'Absent'
                 }
             }
 
@@ -149,10 +149,10 @@ Describe 'SqlDatabaseUser\Get-TargetResource' -Tag 'Get' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                    $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
-                    $result.Name | Should -Be 'MissingUser1'
+                    $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                    $result.DatabaseName | Should-Be $mockGetTargetResourceParameters.DatabaseName
+                    $result.Name | Should-Be 'MissingUser1'
                 }
             }
 
@@ -162,12 +162,12 @@ Describe 'SqlDatabaseUser\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.LoginName | Should -BeNullOrEmpty
-                    $getTargetResourceResult.AsymmetricKeyName | Should -BeNullOrEmpty
-                    $getTargetResourceResult.CertificateName | Should -BeNullOrEmpty
-                    $getTargetResourceResult.AuthenticationType | Should -BeNullOrEmpty
-                    $getTargetResourceResult.LoginType | Should -BeNullOrEmpty
-                    $getTargetResourceResult.UserType | Should -BeNullOrEmpty
+                    $getTargetResourceResult.LoginName | Should-BeFalsy
+                    $getTargetResourceResult.AsymmetricKeyName | Should-BeFalsy
+                    $getTargetResourceResult.CertificateName | Should-BeFalsy
+                    $getTargetResourceResult.AuthenticationType | Should-BeFalsy
+                    $getTargetResourceResult.LoginType | Should-BeFalsy
+                    $getTargetResourceResult.UserType | Should-BeFalsy
                 }
             }
 
@@ -177,7 +177,7 @@ Describe 'SqlDatabaseUser\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.DatabaseIsUpdateable | Should -BeTrue
+                    $getTargetResourceResult.DatabaseIsUpdateable | Should-BeTrue
                 }
             }
         }
@@ -189,7 +189,7 @@ Describe 'SqlDatabaseUser\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.Ensure | Should -Be 'Present'
+                    $getTargetResourceResult.Ensure | Should-Be 'Present'
                 }
             }
 
@@ -199,10 +199,10 @@ Describe 'SqlDatabaseUser\Get-TargetResource' -Tag 'Get' {
 
                     $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $result.ServerName | Should -Be $mockGetTargetResourceParameters.ServerName
-                    $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
-                    $result.DatabaseName | Should -Be $mockGetTargetResourceParameters.DatabaseName
-                    $result.Name | Should -Be $mockGetTargetResourceParameters.Name
+                    $result.ServerName | Should-Be $mockGetTargetResourceParameters.ServerName
+                    $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
+                    $result.DatabaseName | Should-Be $mockGetTargetResourceParameters.DatabaseName
+                    $result.Name | Should-Be $mockGetTargetResourceParameters.Name
                 }
             }
 
@@ -212,12 +212,12 @@ Describe 'SqlDatabaseUser\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.LoginName | Should -Be 'CONTOSO\Login1'
-                    $getTargetResourceResult.AsymmetricKeyName | Should -Be 'AsymmetricKey1'
-                    $getTargetResourceResult.CertificateName | Should -Be 'Certificate1'
-                    $getTargetResourceResult.AuthenticationType | Should -Be 'Windows'
-                    $getTargetResourceResult.LoginType | Should -Be 'WindowsUser'
-                    $getTargetResourceResult.UserType | Should -Be 'Login'
+                    $getTargetResourceResult.LoginName | Should-Be 'CONTOSO\Login1'
+                    $getTargetResourceResult.AsymmetricKeyName | Should-Be 'AsymmetricKey1'
+                    $getTargetResourceResult.CertificateName | Should-Be 'Certificate1'
+                    $getTargetResourceResult.AuthenticationType | Should-Be 'Windows'
+                    $getTargetResourceResult.LoginType | Should-Be 'WindowsUser'
+                    $getTargetResourceResult.UserType | Should-Be 'Login'
                 }
             }
 
@@ -227,7 +227,7 @@ Describe 'SqlDatabaseUser\Get-TargetResource' -Tag 'Get' {
 
                     $getTargetResourceResult = Get-TargetResource @mockGetTargetResourceParameters
 
-                    $getTargetResourceResult.DatabaseIsUpdateable | Should -BeTrue
+                    $getTargetResourceResult.DatabaseIsUpdateable | Should-BeTrue
                 }
             }
         }
@@ -250,7 +250,7 @@ Describe 'SqlDatabaseUser\Get-TargetResource' -Tag 'Get' {
 
                     {
                         Get-TargetResource @mockGetTargetResourceParameters
-                    } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -308,10 +308,10 @@ Describe 'SqlDatabaseUser\Test-TargetResource' -Tag 'Test' {
 
                     $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $testTargetResourceResult | Should -BeTrue
+                    $testTargetResourceResult | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -347,10 +347,10 @@ Describe 'SqlDatabaseUser\Test-TargetResource' -Tag 'Test' {
 
                     $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $testTargetResourceResult | Should -BeTrue
+                    $testTargetResourceResult | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -387,10 +387,10 @@ Describe 'SqlDatabaseUser\Test-TargetResource' -Tag 'Test' {
 
                     $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $testTargetResourceResult | Should -BeTrue
+                    $testTargetResourceResult | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
     }
@@ -417,10 +417,10 @@ Describe 'SqlDatabaseUser\Test-TargetResource' -Tag 'Test' {
 
                     $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $testTargetResourceResult | Should -BeFalse
+                    $testTargetResourceResult | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -451,10 +451,10 @@ Describe 'SqlDatabaseUser\Test-TargetResource' -Tag 'Test' {
 
                         $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $testTargetResourceResult | Should -BeFalse
+                        $testTargetResourceResult | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -483,10 +483,10 @@ Describe 'SqlDatabaseUser\Test-TargetResource' -Tag 'Test' {
                         Set-StrictMode -Version 1.0
 
                         $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
-                        $testTargetResourceResult | Should -BeFalse
+                        $testTargetResourceResult | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -516,10 +516,10 @@ Describe 'SqlDatabaseUser\Test-TargetResource' -Tag 'Test' {
 
                         $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $testTargetResourceResult | Should -BeFalse
+                        $testTargetResourceResult | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -549,10 +549,10 @@ Describe 'SqlDatabaseUser\Test-TargetResource' -Tag 'Test' {
 
                         $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $testTargetResourceResult | Should -BeFalse
+                        $testTargetResourceResult | Should-BeFalse
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
 
@@ -583,10 +583,10 @@ Describe 'SqlDatabaseUser\Test-TargetResource' -Tag 'Test' {
 
                         $testTargetResourceResult = Test-TargetResource @mockTestTargetResourceParameters
 
-                        $testTargetResourceResult | Should -BeTrue
+                        $testTargetResourceResult | Should-BeTrue
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -647,11 +647,11 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 0
             }
         }
 
@@ -685,11 +685,11 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 0
             }
         }
     }
@@ -724,13 +724,13 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                     $Query -eq ('DROP USER [{0}];' -f 'DatabaseUser1')
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
 
             Context 'When trying to drop a database user but Invoke-SqlDscQuery fails' {
@@ -753,11 +753,11 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                         $mockErrorMessage = $script:localizedData.FailedDropDatabaseUser -f 'DatabaseUser1', 'TestDB'
                         {
                             Set-TargetResource @mockSetTargetResourceParameters
-                        } | Should -Throw ('*' + $mockErrorMessage + '*')
+                        } | Should-Throw ('*' + $mockErrorMessage + '*')
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -800,17 +800,17 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                         }
 
-                        Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                        Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                        Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                        Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                             $Query -eq ('CREATE USER [{0}] FOR LOGIN [{1}];' -f 'DatabaseUser1', 'CONTOSO\Login1')
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
 
-                        Should -Invoke -CommandName Assert-SqlLogin -ParameterFilter {
+                        Should-Invoke -CommandName Assert-SqlLogin -Exactly -ParameterFilter {
                             $ServerName -eq (Get-ComputerName)
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
 
@@ -832,17 +832,17 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                         }
 
-                        Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                        Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                        Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                        Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                             $Query -eq ('CREATE USER [{0}] FOR LOGIN [{1}];' -f 'DatabaseUser1', 'CONTOSO\Login1')
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
 
-                        Should -Invoke -CommandName Assert-SqlLogin -ParameterFilter {
+                        Should-Invoke -CommandName Assert-SqlLogin -Exactly -ParameterFilter {
                             $ServerName -eq 'host.company.local'
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
             }
@@ -858,13 +858,13 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                         $Query -eq ('CREATE USER [{0}] WITHOUT LOGIN;' -f 'DatabaseUser1')
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -880,13 +880,13 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                         $Query -eq ('CREATE USER [{0}] FOR CERTIFICATE [{1}];' -f 'DatabaseUser1', 'Certificate1')
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -902,13 +902,13 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                         $Query -eq ('CREATE USER [{0}] FOR ASYMMETRIC KEY [{1}];' -f 'DatabaseUser1', 'AsymmetricKey1')
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -933,11 +933,11 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
 
                         {
                             Set-TargetResource @mockSetTargetResourceParameters
-                        } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                        } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -980,17 +980,17 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                         }
 
-                        Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                        Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                        Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                        Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                             $Query -eq ('ALTER USER [{0}] WITH NAME = [{1}], LOGIN = [{2}];' -f 'DatabaseUser1', 'DatabaseUser1', 'OtherLogin1')
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
 
-                        Should -Invoke -CommandName Assert-SqlLogin -ParameterFilter {
+                        Should-Invoke -CommandName Assert-SqlLogin -Exactly -ParameterFilter {
                             $ServerName -eq (Get-ComputerName)
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
 
@@ -1012,17 +1012,17 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                         }
 
-                        Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                        Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                        Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                        Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                             $Query -eq ('ALTER USER [{0}] WITH NAME = [{1}], LOGIN = [{2}];' -f 'DatabaseUser1', 'DatabaseUser1', 'OtherLogin1')
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
 
-                        Should -Invoke -CommandName Assert-SqlLogin -ParameterFilter {
+                        Should-Invoke -CommandName Assert-SqlLogin -Exactly -ParameterFilter {
                             $ServerName -eq 'host.company.local'
-                        } -Exactly -Times 1 -Scope It
+                        } -Scope It -Times 1
                     }
                 }
 
@@ -1047,11 +1047,11 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                             $mockErrorMessage = $script:localizedData.FailedUpdateDatabaseUser -f 'DatabaseUser1', 'TestDB', 'Login'
                             {
                                 Set-TargetResource @mockSetTargetResourceParameters
-                            } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + '*')
+                            } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + '*')
                         }
 
-                        Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 1 -Scope It
+                        Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                        Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 1
                     }
                 }
             }
@@ -1087,18 +1087,18 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
 
-                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                         $Query -eq ('DROP USER [{0}];' -f 'DatabaseUser1')
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
 
-                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                         $Query -eq ('CREATE USER [{0}] FOR ASYMMETRIC KEY [{1}];' -f 'DatabaseUser1', 'OtherAsymmetricKey1')
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -1133,22 +1133,22 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
 
-                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                         $Query -eq ('DROP USER [{0}];' -f 'DatabaseUser1')
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
 
-                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                         $Query -eq ('CREATE USER [{0}] FOR CERTIFICATE [{1}];' -f 'DatabaseUser1', 'OtherCertificate1')
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
-            Context 'When the database user has the wrong certificate name' {
+            Context 'When the database user has the wrong certificate name for login' {
                 BeforeAll {
                     Mock -CommandName Get-TargetResource -MockWith {
                         return @{
@@ -1179,18 +1179,18 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
 
-                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                         $Query -eq ('DROP USER [{0}];' -f 'DatabaseUser1')
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
 
-                    Should -Invoke -CommandName Invoke-SqlDscQuery -ParameterFilter {
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -ParameterFilter {
                         $Query -eq ('CREATE USER [{0}] FOR LOGIN [{1}];' -f 'DatabaseUser1', 'OtherLogin1')
-                    } -Exactly -Times 1 -Scope It
+                    } -Scope It -Times 1
                 }
             }
 
@@ -1226,11 +1226,11 @@ Describe 'DSC_SqlDatabaseUser\Set-TargetResource' -Tag 'Set' {
 
                         $mockErrorMessage = $script:localizedData.ForceNotEnabled
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                     }
 
-                    Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Invoke-SqlDscQuery -Exactly -Scope It -Times 0
                 }
             }
         }
@@ -1247,7 +1247,7 @@ Describe 'Assert-Parameters' -Tag 'Helper' {
 
                 {
                     Assert-Parameters -LoginName 'AnyValue' -UserType 'NoLogin'
-                } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + " (Parameter 'Action')")
+                } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + " (Parameter 'Action')")
             }
         }
     }
@@ -1261,7 +1261,7 @@ Describe 'Assert-Parameters' -Tag 'Helper' {
 
                 {
                     Assert-Parameters -CertificateName 'AnyValue' -UserType 'NoLogin'
-                } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + " (Parameter 'Action')")
+                } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + " (Parameter 'Action')")
             }
         }
     }
@@ -1275,7 +1275,7 @@ Describe 'Assert-Parameters' -Tag 'Helper' {
 
                 {
                     Assert-Parameters -AsymmetricKeyName 'AnyValue' -UserType 'NoLogin'
-                } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + " (Parameter 'Action')")
+                } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + " (Parameter 'Action')")
             }
         }
     }
@@ -1289,7 +1289,7 @@ Describe 'Assert-Parameters' -Tag 'Helper' {
 
                 {
                     Assert-Parameters -UserType 'Login'
-                } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + " (Parameter 'Action')")
+                } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + " (Parameter 'Action')")
             }
         }
     }
@@ -1303,7 +1303,7 @@ Describe 'Assert-Parameters' -Tag 'Helper' {
 
                 {
                     Assert-Parameters -UserType 'AsymmetricKey'
-                } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + " (Parameter 'Action')")
+                } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + " (Parameter 'Action')")
             }
         }
     }
@@ -1317,7 +1317,7 @@ Describe 'Assert-Parameters' -Tag 'Helper' {
 
                 {
                     Assert-Parameters -UserType 'Certificate'
-                } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage + " (Parameter 'Action')")
+                } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage + " (Parameter 'Action')")
             }
         }
     }
@@ -1362,7 +1362,7 @@ Describe 'ConvertTo-UserType' -Tag 'Helper' {
 
                 $convertToUserTypeResult = ConvertTo-UserType -AuthenticationType $AuthenticationType -LoginType $LoginType
 
-                $convertToUserTypeResult | Should -Be $ExpectedResult
+                $convertToUserTypeResult | Should-Be $ExpectedResult
             }
         }
 
@@ -1374,7 +1374,7 @@ Describe 'ConvertTo-UserType' -Tag 'Helper' {
                     $mockErrorMessage = $script:localizedData.UnknownAuthenticationType -f 'UnsupportedValue', 'SqlLogin'
                     {
                         ConvertTo-UserType -AuthenticationType 'UnsupportedValue' -LoginType 'SqlLogin'
-                    } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -1410,7 +1410,7 @@ Describe 'Assert-SqlLogin' -Tag 'Helper' {
                     Verbose      = $true
                 }
 
-                { Assert-SqlLogin @assertSqlLoginParameters } | Should -Not -Throw
+                $null = & ({ Assert-SqlLogin @assertSqlLoginParameters })
             }
         }
     }
@@ -1430,7 +1430,7 @@ Describe 'Assert-SqlLogin' -Tag 'Helper' {
                 $mockErrorMessage = $script:localizedData.SqlLoginNotFound -f 'AnyValue'
                 {
                     Assert-SqlLogin @assertSqlLoginParameters
-                } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
         }
     }
@@ -1482,7 +1482,7 @@ Describe 'Assert-DatabaseCertificate' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Assert-DatabaseCertificate @assertDatabaseCertificateParameters } | Should -Not -Throw
+                $null = & ({ Assert-DatabaseCertificate @assertDatabaseCertificateParameters })
             }
         }
     }
@@ -1502,7 +1502,7 @@ Describe 'Assert-DatabaseCertificate' -Tag 'Helper' {
                 $mockErrorMessage = ($script:localizedData.CertificateNotFound -f 'AnyValue', 'TestDB')
                 {
                     Assert-DatabaseCertificate @assertDatabaseCertificateParameters
-                } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
         }
     }
@@ -1554,7 +1554,7 @@ Describe 'Assert-DatabaseAsymmetricKey' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Assert-DatabaseAsymmetricKey @assertDatabaseAsymmetricKeyParameters } | Should -Not -Throw
+                $null = & ({ Assert-DatabaseAsymmetricKey @assertDatabaseAsymmetricKeyParameters })
             }
         }
     }
@@ -1575,7 +1575,7 @@ Describe 'Assert-DatabaseAsymmetricKey' -Tag 'Helper' {
 
                 {
                     Assert-DatabaseAsymmetricKey @assertDatabaseAsymmetricKeyParameters
-                } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
             }
         }
     }

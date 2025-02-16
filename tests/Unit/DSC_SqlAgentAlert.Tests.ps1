@@ -127,7 +127,7 @@ Describe 'DSC_SqlAgentAlert\Get-TargetResource' -Tag 'Get' {
                 )
 
                 { Get-TargetResource @mockTestParameters } |
-                    Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
+                    Should-Throw -ExceptionMessage $mockErrorRecord.Exception.Message
             }
         }
     }
@@ -148,10 +148,10 @@ Describe 'DSC_SqlAgentAlert\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockTestParameters
 
-                $result.Ensure | Should -Be 'Absent'
+                $result.Ensure | Should-Be 'Absent'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the same values as passed as parameters' {
@@ -160,8 +160,8 @@ Describe 'DSC_SqlAgentAlert\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockTestParameters
 
-                $result.ServerName | Should -Be $mockTestParameters.ServerName
-                $result.InstanceName | Should -Be $mockTestParameters.InstanceName
+                $result.ServerName | Should-Be $mockTestParameters.ServerName
+                $result.InstanceName | Should-Be $mockTestParameters.InstanceName
             }
         }
 
@@ -169,10 +169,10 @@ Describe 'DSC_SqlAgentAlert\Get-TargetResource' -Tag 'Get' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Get-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = & ({ Get-TargetResource @mockTestParameters })
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should call all verifiable mocks' {
@@ -196,10 +196,10 @@ Describe 'DSC_SqlAgentAlert\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockTestParameters
 
-                $result.Ensure | Should -Be 'Present'
+                $result.Ensure | Should-Be 'Present'
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should return the same values as passed as parameters' {
@@ -208,11 +208,11 @@ Describe 'DSC_SqlAgentAlert\Get-TargetResource' -Tag 'Get' {
 
                 $result = Get-TargetResource @mockTestParameters
 
-                $result.ServerName | Should -Be $mockTestParameters.ServerName
-                $result.InstanceName | Should -Be $mockTestParameters.InstanceName
-                $result.Name | Should -Be $mockTestParameters.Name
-                $result.Severity | Should -Be '17'
-                $result.MessageId | Should -Be 0
+                $result.ServerName | Should-Be $mockTestParameters.ServerName
+                $result.InstanceName | Should-Be $mockTestParameters.InstanceName
+                $result.Name | Should-Be $mockTestParameters.Name
+                $result.Severity | Should-Be '17'
+                $result.MessageId | Should-Be 0
             }
         }
 
@@ -264,10 +264,10 @@ Describe 'DSC_SqlAgentAlert\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -297,10 +297,10 @@ Describe 'DSC_SqlAgentAlert\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
         }
 
@@ -331,7 +331,7 @@ Describe 'DSC_SqlAgentAlert\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
 
@@ -348,7 +348,7 @@ Describe 'DSC_SqlAgentAlert\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -381,7 +381,7 @@ Describe 'DSC_SqlAgentAlert\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -412,10 +412,10 @@ Describe 'DSC_SqlAgentAlert\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
 
-                Should -Invoke -CommandName Get-TargetResource -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Get-TargetResource -Exactly -Scope It -Times 1
             }
 
             It 'Should return the state as true when desired sql agent alert exists and has the correct severity' {
@@ -431,7 +431,7 @@ Describe 'DSC_SqlAgentAlert\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -463,7 +463,7 @@ Describe 'DSC_SqlAgentAlert\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -616,7 +616,7 @@ Describe 'DSC_SqlAgentAlert\Set-TargetResource' -Tag 'Set' {
                 )
 
                 { Set-TargetResource @mockTestParameters } |
-                    Should -Throw -ExpectedMessage $mockErrorRecord.Exception.Message
+                    Should-Throw -ExceptionMessage $mockErrorRecord.Exception.Message
             }
         }
     }
@@ -640,13 +640,13 @@ Describe 'DSC_SqlAgentAlert\Set-TargetResource' -Tag 'Set' {
                     Severity  = '16'
                 }
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockTestParameters })
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName New-Object -ParameterFilter {
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName New-Object -Exactly -ParameterFilter {
                 $TypeName -eq 'Microsoft.SqlServer.Management.Smo.Agent.Alert'
-            } -Exactly -Times 1 -Scope It
+            } -Scope It -Times 1
         }
 
         It 'Should not throw when changing the severity' {
@@ -660,7 +660,7 @@ Describe 'DSC_SqlAgentAlert\Set-TargetResource' -Tag 'Set' {
                     Severity  = '17'
                 }
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockTestParameters })
             }
         }
 
@@ -675,7 +675,7 @@ Describe 'DSC_SqlAgentAlert\Set-TargetResource' -Tag 'Set' {
                     MessageId  = '825'
                 }
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockTestParameters })
             }
         }
 
@@ -691,7 +691,7 @@ Describe 'DSC_SqlAgentAlert\Set-TargetResource' -Tag 'Set' {
                     MessageId  = '825'
                 }
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw
+                { Set-TargetResource @mockTestParameters } | Should-Throw
             }
         }
 
@@ -706,7 +706,7 @@ Describe 'DSC_SqlAgentAlert\Set-TargetResource' -Tag 'Set' {
                     MessageId  = '7'
                 }
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw
+                { Set-TargetResource @mockTestParameters } | Should-Throw
             }
         }
 
@@ -721,7 +721,7 @@ Describe 'DSC_SqlAgentAlert\Set-TargetResource' -Tag 'Set' {
                     Severity   = '999'
                 }
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw
+                { Set-TargetResource @mockTestParameters } | Should-Throw
             }
         }
 
@@ -736,7 +736,7 @@ Describe 'DSC_SqlAgentAlert\Set-TargetResource' -Tag 'Set' {
                     MessageId  = '7'
                 }
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw
+                { Set-TargetResource @mockTestParameters } | Should-Throw
             }
         }
 
@@ -751,7 +751,7 @@ Describe 'DSC_SqlAgentAlert\Set-TargetResource' -Tag 'Set' {
                     Severity   = '999'
                 }
 
-                { Set-TargetResource @mockTestParameters } | Should -Throw
+                { Set-TargetResource @mockTestParameters } | Should-Throw
             }
         }
 
@@ -776,7 +776,7 @@ Describe 'DSC_SqlAgentAlert\Set-TargetResource' -Tag 'Set' {
                     the mocked exception message on top of the original message.
                 #>
                 { Set-TargetResource @mockTestParameters } |
-                    Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
+                    Should-Throw -ExceptionMessage ($mockErrorRecord.Exception.Message + '*')
             }
 
             $mockInvalidOperationForCreateMethod = $false
@@ -802,10 +802,10 @@ Describe 'DSC_SqlAgentAlert\Set-TargetResource' -Tag 'Set' {
                     Ensure = 'Absent'
                 }
 
-                { Set-TargetResource @mockTestParameters } | Should -Not -Throw
+                $null = & ({ Set-TargetResource @mockTestParameters })
             }
 
-            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Connect-SQL -Exactly -Scope It -Times 1
         }
 
         It 'Should throw the correct error when Drop() method was called with invalid operation' {
@@ -829,7 +829,7 @@ Describe 'DSC_SqlAgentAlert\Set-TargetResource' -Tag 'Set' {
                     the mocked exception message on top of the original message.
                 #>
                 { Set-TargetResource @mockTestParameters } |
-                    Should -Throw -ExpectedMessage ($mockErrorRecord.Exception.Message + '*')
+                    Should-Throw -ExceptionMessage ($mockErrorRecord.Exception.Message + '*')
             }
 
             $mockInvalidOperationForDropMethod = $false

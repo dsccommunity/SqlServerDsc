@@ -69,14 +69,14 @@ Describe 'Get-SqlDscServerPermission' -Tag 'Public' {
 
             It 'Should throw the correct error' {
                 { Get-SqlDscServerPermission -ServerObject $mockServerObject -Name 'UnknownUser' -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage ($mockErrorMessage -f 'UnknownUser', 'MockInstance')
+                    Should-Throw -ExceptionMessage ($mockErrorMessage -f 'UnknownUser', 'MockInstance')
             }
         }
 
         Context 'When ignoring the error' {
             It 'Should not throw an exception and return $null' {
                 Get-SqlDscServerPermission -ServerObject $mockServerObject -Name 'UnknownUser' -ErrorAction 'SilentlyContinue' |
-                    Should -BeNullOrEmpty
+                    Should-BeFalsy
             }
         }
     }
@@ -119,30 +119,30 @@ Describe 'Get-SqlDscServerPermission' -Tag 'Public' {
         It 'Should return the correct values' {
             $mockResult = Get-SqlDscServerPermission -ServerObject $mockServerObject -Name 'Zebes\SamusAran' -ErrorAction 'Stop'
 
-            $mockResult | Should -HaveCount 2
+            $mockResult | Should-BeCollection -Count 2
 
-            $mockResult[0].PermissionState | Should -Be 'Grant'
-            $mockResult[0].PermissionType.ConnectSql | Should -BeTrue
-            $mockResult[0].PermissionType.AlterAnyAvailabilityGroup | Should -BeFalse
+            $mockResult[0].PermissionState | Should-Be 'Grant'
+            $mockResult[0].PermissionType.ConnectSql | Should-BeTrue
+            $mockResult[0].PermissionType.AlterAnyAvailabilityGroup | Should-BeFalse
 
-            $mockResult[1].PermissionState | Should -Be 'Grant'
-            $mockResult[1].PermissionType.ConnectSql | Should -BeFalse
-            $mockResult[1].PermissionType.AlterAnyAvailabilityGroup | Should -BeTrue
+            $mockResult[1].PermissionState | Should-Be 'Grant'
+            $mockResult[1].PermissionType.ConnectSql | Should-BeFalse
+            $mockResult[1].PermissionType.AlterAnyAvailabilityGroup | Should-BeTrue
         }
 
         Context 'When passing ServerObject over the pipeline' {
             It 'Should return the correct values' {
                 $mockResult = $mockServerObject | Get-SqlDscServerPermission -Name 'Zebes\SamusAran' -ErrorAction 'Stop'
 
-                $mockResult | Should -HaveCount 2
+                $mockResult | Should-BeCollection -Count 2
 
-                $mockResult[0].PermissionState | Should -Be 'Grant'
-                $mockResult[0].PermissionType.ConnectSql | Should -BeTrue
-                $mockResult[0].PermissionType.AlterAnyAvailabilityGroup | Should -BeFalse
+                $mockResult[0].PermissionState | Should-Be 'Grant'
+                $mockResult[0].PermissionType.ConnectSql | Should-BeTrue
+                $mockResult[0].PermissionType.AlterAnyAvailabilityGroup | Should-BeFalse
 
-                $mockResult[1].PermissionState | Should -Be 'Grant'
-                $mockResult[1].PermissionType.ConnectSql | Should -BeFalse
-                $mockResult[1].PermissionType.AlterAnyAvailabilityGroup | Should -BeTrue
+                $mockResult[1].PermissionState | Should-Be 'Grant'
+                $mockResult[1].PermissionType.ConnectSql | Should-BeFalse
+                $mockResult[1].PermissionType.AlterAnyAvailabilityGroup | Should-BeTrue
             }
         }
     }

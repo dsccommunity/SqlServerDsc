@@ -67,7 +67,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath           = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -86,7 +86,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
     }
 
@@ -102,7 +102,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath           = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -121,13 +121,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
+            $null = & ({
                 $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -136,18 +136,18 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName1
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.Path | Should -Be $ConfigurationData.AllNodes.Path1
-            $resourceCurrentState.MaximumFileSize | Should -Be $ConfigurationData.AllNodes.MaximumFileSize1
-            $resourceCurrentState.MaximumFileSizeUnit | Should -Be $ConfigurationData.AllNodes.MaximumFileSizeUnit1
-            $resourceCurrentState.MaximumRolloverFiles | Should -Be $ConfigurationData.AllNodes.MaximumRolloverFiles1
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.AuditName1
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.Path | Should-Be $ConfigurationData.AllNodes.Path1
+            $resourceCurrentState.MaximumFileSize | Should-Be $ConfigurationData.AllNodes.MaximumFileSize1
+            $resourceCurrentState.MaximumFileSizeUnit | Should-Be $ConfigurationData.AllNodes.MaximumFileSizeUnit1
+            $resourceCurrentState.MaximumRolloverFiles | Should-Be $ConfigurationData.AllNodes.MaximumRolloverFiles1
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose | Should-Be 'True'
         }
     }
 
@@ -163,7 +163,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath           = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -182,13 +182,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
+            $null = & ({
                 $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -197,16 +197,16 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName2
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.LogType | Should -Be $ConfigurationData.AllNodes.LogType2
-            $resourceCurrentState.AuditFilter | Should -Be $ConfigurationData.AllNodes.AuditFilter2
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.AuditName2
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.LogType | Should-Be $ConfigurationData.AllNodes.LogType2
+            $resourceCurrentState.AuditFilter | Should-Be $ConfigurationData.AllNodes.AuditFilter2
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose | Should-Be 'True'
         }
     }
 
@@ -222,7 +222,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath           = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -241,13 +241,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
+            $null = & ({
                 $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -256,16 +256,16 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName2
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.LogType | Should -Be $ConfigurationData.AllNodes.LogType2
-            $resourceCurrentState.AuditFilter | Should -BeNullOrEmpty
+            $resourceCurrentState.Ensure | Should-Be 'Present'
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.AuditName2
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.LogType | Should-Be $ConfigurationData.AllNodes.LogType2
+            $resourceCurrentState.AuditFilter | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose | Should-Be 'True'
         }
     }
 
@@ -281,7 +281,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath           = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -300,13 +300,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
+            $null = & ({
                 $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -315,18 +315,18 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Absent'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName1
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.Path | Should -BeNullOrEmpty
-            $resourceCurrentState.MaximumFileSize | Should -BeNullOrEmpty
-            $resourceCurrentState.MaximumFileSizeUnit | Should -BeNullOrEmpty
-            $resourceCurrentState.MaximumRolloverFiles | Should -BeNullOrEmpty
+            $resourceCurrentState.Ensure | Should-Be 'Absent'
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.AuditName1
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.Path | Should-BeFalsy
+            $resourceCurrentState.MaximumFileSize | Should-BeFalsy
+            $resourceCurrentState.MaximumFileSizeUnit | Should-BeFalsy
+            $resourceCurrentState.MaximumRolloverFiles | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose | Should-Be 'True'
         }
     }
 
@@ -342,7 +342,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath           = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -361,13 +361,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
+            $null = & ({
                 $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -376,16 +376,16 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Absent'
-            $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.AuditName2
-            $resourceCurrentState.ServerName | Should -Be $ConfigurationData.AllNodes.ServerName
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.LogType | Should -BeNullOrEmpty
-            $resourceCurrentState.AuditFilter | Should -BeNullOrEmpty
+            $resourceCurrentState.Ensure | Should-Be 'Absent'
+            $resourceCurrentState.Name | Should-Be $ConfigurationData.AllNodes.AuditName2
+            $resourceCurrentState.ServerName | Should-Be $ConfigurationData.AllNodes.ServerName
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.LogType | Should-BeFalsy
+            $resourceCurrentState.AuditFilter | Should-BeFalsy
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose | Should-Be 'True'
         }
     }
 }

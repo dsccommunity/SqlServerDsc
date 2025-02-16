@@ -70,8 +70,8 @@ Describe 'Uninstall-SqlDscServer' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When setup action is ''Uninstall''' {
@@ -104,14 +104,11 @@ Describe 'Uninstall-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Uninstall-SqlDscServer -Confirm:$false @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=Uninstall'
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=Uninstall' -and
+                        $ArgumentList -match '\/FEATURES=SQLENGINE' -and
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -119,14 +116,11 @@ Describe 'Uninstall-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Uninstall-SqlDscServer -Force @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -ParameterFilter {
-                        $ArgumentList | Should -MatchExactly '\/ACTION=Uninstall'
-                        $ArgumentList | Should -MatchExactly '\/FEATURES=SQLENGINE'
-                        $ArgumentList | Should -MatchExactly '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
-
-                        # Return $true if none of the above throw.
-                        $true
-                    } -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -ParameterFilter {
+                        $ArgumentList -match '\/ACTION=Uninstall' -and
+                        $ArgumentList -match '\/FEATURES=SQLENGINE' -and
+                        $ArgumentList -match '\/INSTANCENAME="INSTANCE"' # cspell: disable-line
+                    } -Scope It -Times 1
                 }
             }
 
@@ -134,7 +128,7 @@ Describe 'Uninstall-SqlDscServer' -Tag 'Public' {
                 It 'Should call the mock with the correct argument string' {
                     Uninstall-SqlDscServer -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 0 -Scope It
+                    Should-Invoke -CommandName Start-SqlSetupProcess -Exactly -Scope It -Times 0
                 }
             }
         }

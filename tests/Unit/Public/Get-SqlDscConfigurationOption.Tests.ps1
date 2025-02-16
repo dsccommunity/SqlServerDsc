@@ -71,8 +71,8 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     Context 'When the specified configuration option exist' {
@@ -99,14 +99,14 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
 
             It 'Should throw the correct error' {
                 { Get-SqlDscConfigurationOption @mockDefaultParameters -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage ($mockErrorMessage -f 'Unknown Option Name')
+                    Should-Throw -ExceptionMessage ($mockErrorMessage -f 'Unknown Option Name')
             }
         }
 
         Context 'When ignoring the error' {
             It 'Should not throw an exception and return $null' {
                 Get-SqlDscConfigurationOption @mockDefaultParameters -ErrorAction 'SilentlyContinue' |
-                    Should -BeNullOrEmpty
+                    Should-BeFalsy
             }
         }
     }
@@ -132,18 +132,18 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
 
             $result = Get-SqlDscConfigurationOption @mockDefaultParameters
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
 
-            $result.DisplayName | Should -Be 'blocked process threshold (s)'
+            $result.DisplayName | Should-Be 'blocked process threshold (s)'
         }
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should return the correct values' {
                 $result = $mockServerObject | Get-SqlDscConfigurationOption -Name 'blocked process threshold (s)'
 
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
+                $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
 
-                $result.DisplayName | Should -Be 'blocked process threshold (s)'
+                $result.DisplayName | Should-Be 'blocked process threshold (s)'
             }
         }
     }
@@ -167,20 +167,20 @@ Describe 'Get-SqlDscConfigurationOption' -Tag 'Public' {
         It 'Should return the correct values' {
             $result = Get-SqlDscConfigurationOption -ServerObject $mockServerObject
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
+            $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
 
-            $result.DisplayName | Should -Contain 'show advanced options'
-            $result.DisplayName | Should -Contain 'blocked process threshold (s)'
+            $result.DisplayName | Should-ContainCollection 'show advanced options'
+            $result.DisplayName | Should-ContainCollection 'blocked process threshold (s)'
         }
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should return the correct values' {
                 $result = $mockServerObject | Get-SqlDscConfigurationOption
 
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
+                $result | Should-HaveType 'Microsoft.SqlServer.Management.Smo.ConfigProperty'
 
-                $result.DisplayName | Should -Contain 'show advanced options'
-                $result.DisplayName | Should -Contain 'blocked process threshold (s)'
+                $result.DisplayName | Should-ContainCollection 'show advanced options'
+                $result.DisplayName | Should-ContainCollection 'blocked process threshold (s)'
             }
         }
     }

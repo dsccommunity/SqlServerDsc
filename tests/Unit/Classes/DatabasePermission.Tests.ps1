@@ -55,8 +55,8 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
         }
 
         It 'Should be of the correct type' {
-            $mockDatabasePermissionInstance | Should -Not -BeNullOrEmpty
-            $mockDatabasePermissionInstance.GetType().Name | Should -Be 'DatabasePermission'
+            $mockDatabasePermissionInstance | Should-BeTruthy
+            $mockDatabasePermissionInstance.GetType().Name | Should-Be 'DatabasePermission'
         }
     }
 
@@ -73,7 +73,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
         }
 
         It 'Should be able read the values from instance' {
-            $mockDatabasePermissionInstance.State | Should -Be 'Grant'
+            $mockDatabasePermissionInstance.State | Should-Be 'Grant'
             $mockDatabasePermissionInstance.Permission = 'select'
         }
     }
@@ -93,7 +93,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
                         $databasPermissionInstance2.State = 'Grant'
                         $databasPermissionInstance2.Permission = 'select'
 
-                        $databasPermissionInstance1 -eq $databasPermissionInstance2 | Should -BeTrue
+                        $databasPermissionInstance1 -eq $databasPermissionInstance2 | Should-BeTrue
                     }
                 }
             }
@@ -111,7 +111,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
                         $databasPermissionInstance2.State = 'Grant'
                         $databasPermissionInstance2.Permission = @('select', 'update')
 
-                        $databasPermissionInstance1 -eq $databasPermissionInstance2 | Should -BeTrue
+                        $databasPermissionInstance1 -eq $databasPermissionInstance2 | Should-BeTrue
                     }
                 }
             }
@@ -139,7 +139,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
             }
 
             It 'Should return $false' {
-                $mockDatabasePermissionInstance1 -eq $mockDatabasePermissionInstance2 | Should -BeFalse
+                $mockDatabasePermissionInstance1 -eq $mockDatabasePermissionInstance2 | Should-BeFalse
             }
         }
 
@@ -165,7 +165,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
             }
 
             It 'Should return $false' {
-                $mockDatabasePermissionInstance1 -eq $mockDatabasePermissionInstance2 | Should -BeFalse
+                $mockDatabasePermissionInstance1 -eq $mockDatabasePermissionInstance2 | Should-BeFalse
             }
         }
     }
@@ -195,7 +195,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
                 $mockErrorMessage = $mockErrorMessage -replace '\[', '`['
                 $mockErrorMessage = $mockErrorMessage -replace '\]', '`]'
 
-                { $mockDatabasePermissionInstance1.CompareTo('AnyValue') } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { $mockDatabasePermissionInstance1.CompareTo('AnyValue') } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
 
@@ -229,7 +229,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
                         }
                     }
 
-                    $mockDatabasePermissionInstance1.CompareTo($mockDatabasePermissionInstance2) | Should -BeLessThan 0
+                    $mockDatabasePermissionInstance1.CompareTo($mockDatabasePermissionInstance2) | Should-BeLessThan 0
                 }
             }
         }
@@ -264,7 +264,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
                         }
                     }
 
-                    $mockDatabasePermissionInstance1.CompareTo($mockDatabasePermissionInstance2) | Should -BeGreaterThan 0
+                    $mockDatabasePermissionInstance1.CompareTo($mockDatabasePermissionInstance2) | Should-BeGreaterThan 0
                 }
             }
 
@@ -277,7 +277,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
                         }
                     }
 
-                    $mockDatabasePermissionInstance1.CompareTo($null) | Should -BeGreaterThan 0
+                    $mockDatabasePermissionInstance1.CompareTo($null) | Should-BeGreaterThan 0
                 }
             }
         }
@@ -312,7 +312,7 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
                         }
                     }
 
-                    $mockDatabasePermissionInstance1.CompareTo($mockDatabasePermissionInstance2) | Should -Be 0
+                    $mockDatabasePermissionInstance1.CompareTo($mockDatabasePermissionInstance2) | Should-Be 0
                 }
             }
         }
@@ -352,9 +352,9 @@ Describe 'DatabasePermission' -Tag 'DatabasePermission' {
 
                 $mockSortedArray = $mockDatabasePermissionArray | Sort-Object
 
-                $mockSortedArray[0].State | Should -Be 'Grant'
-                $mockSortedArray[1].State | Should -Be 'GrantWithGrant'
-                $mockSortedArray[2].State | Should -Be 'Deny'
+                $mockSortedArray[0].State | Should-Be 'Grant'
+                $mockSortedArray[1].State | Should-Be 'GrantWithGrant'
+                $mockSortedArray[2].State | Should-Be 'Deny'
             }
         }
     }

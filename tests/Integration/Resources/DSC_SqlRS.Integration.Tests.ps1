@@ -96,7 +96,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath                         = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -115,7 +115,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
     }
 
@@ -131,7 +131,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath                         = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -150,13 +150,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
-            {
+            $null = & ({
                 $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
-            } | Should -Not -Throw
+            })
         }
 
         It 'Should have set the resource and all the parameters should match' {
@@ -165,16 +165,16 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.DatabaseServerName | Should -Be $ConfigurationData.AllNodes.DatabaseServerName
-            $resourceCurrentState.DatabaseInstanceName | Should -Be $ConfigurationData.AllNodes.DatabaseInstanceName
-            $resourceCurrentState.IsInitialized | Should -Be $true
-            $resourceCurrentState.UseSsl | Should -Be $false
-            $resourceCurrentState.ReportServerReservedUrl | Should -Contain 'http://+:80'
+            $resourceCurrentState.InstanceName | Should-Be $ConfigurationData.AllNodes.InstanceName
+            $resourceCurrentState.DatabaseServerName | Should-Be $ConfigurationData.AllNodes.DatabaseServerName
+            $resourceCurrentState.DatabaseInstanceName | Should-Be $ConfigurationData.AllNodes.DatabaseInstanceName
+            $resourceCurrentState.IsInitialized | Should-BeTrue
+            $resourceCurrentState.UseSsl | Should-BeFalse
+            $resourceCurrentState.ReportServerReservedUrl | Should-ContainCollection 'http://+:80'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose | Should-Be 'True'
         }
 
         It 'Should be able to access the ReportServer site without any error' {
@@ -207,7 +207,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
             }
 
-            $webRequestStatusCode | Should -BeExactly 200
+            $webRequestStatusCode | Should-BeString -CaseSensitive 200
         }
 
         It 'Should be able to access the Reports site without any error' {
@@ -237,7 +237,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 $webRequestStatusCode = $webRequestResponse.StatusCode -as [int]
             }
 
-            $webRequestStatusCode | Should -BeExactly 200
+            $webRequestStatusCode | Should-BeString -CaseSensitive 200
         }
     }
 
@@ -253,7 +253,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
         }
 
         It 'Should compile and apply the MOF without throwing' {
-            {
+            $null = & ({
                 $configurationParameters = @{
                     OutputPath        = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
@@ -272,7 +272,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
+            })
         }
     }
 }

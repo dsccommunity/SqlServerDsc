@@ -99,11 +99,11 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
     ) {
         It 'Should not throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
+                $null = & ({
                     Assert-SetupActionProperties -Property @{
                         ValidProperty = 'Value'
                     } -SetupAction $MockSetupAction
-                } | Should -Not -Throw
+                })
             }
         }
     }
@@ -122,7 +122,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                     Assert-SetupActionProperties -Property @{
                         $MockParameterName = 'Value'
                     } -SetupAction 'NotUsed'
-                } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
             }
         }
     }
@@ -167,7 +167,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                     $MockParameters.Role = 'SPI_AS_NewFarm'
 
                     Assert-SetupActionProperties -Property $MockParameters -SetupAction 'NotUsed'
-                } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
             }
         }
     }
@@ -179,7 +179,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                     Assert-SetupActionProperties -Property @{
                         SecurityMode = 'SQL'
                     } -SetupAction 'NotUsed'
-                } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
             }
         }
     }
@@ -189,11 +189,11 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
             InModuleScope -Parameters @{
                 MockFileStreamLevel = $_
             } -ScriptBlock {
-                {
+                $null = & ({
                     Assert-SetupActionProperties -Property @{
                         FileStreamLevel = $MockFileStreamLevel
                     } -SetupAction 'NotUsed'
-                } | Should -Not -Throw
+                })
             }
         }
     }
@@ -207,7 +207,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                     Assert-SetupActionProperties -Property @{
                         FileStreamLevel = $MockFileStreamLevel
                     } -SetupAction 'NotUsed'
-                } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
             }
         }
     }
@@ -244,7 +244,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                     Assert-SetupActionProperties -Property @{
                         $MockParameterName = 'AccountName'
                     } -SetupAction 'NotUsed'
-                } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
             }
         }
     }
@@ -277,12 +277,12 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
      ) {
         It 'Should not throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
+                $null = & ({
                     Assert-SetupActionProperties -Property @{
                         $MockParameterName = 'AccountName'
                         ($MockParameterName -replace 'Account', 'Password') = 'Password'
                     } -SetupAction 'NotUsed'
-                } | Should -Not -Throw
+                })
             }
         }
     }
@@ -321,11 +321,11 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
 
         It 'Should not throw an exception' {
             InModuleScope -Parameters $_ -ScriptBlock {
-                {
+                $null = & ({
                     Assert-SetupActionProperties -Property @{
                         $MockParameterName = 'myMSA$'
                     } -SetupAction 'NotUsed'
-                } | Should -Not -Throw
+                })
             }
         }
     }
@@ -414,7 +414,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                     )
 
                     Assert-SetupActionProperties -Property $MockParameters -SetupAction 'NotUsed'
-                } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
             }
         }
     }
@@ -529,7 +529,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                         MediaPath = $TestDrive
                         Features = $MockFeature
                     } -SetupAction $MockSetupAction
-                } | Should -Throw -ErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ARCP0001,Assert-RequiredCommandParameter' # cSpell: disable-line
             }
         }
     }
@@ -548,7 +548,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                     Assert-SetupActionProperties -Property @{
                         ASServerMode = 'PowerPivot'
                     } -SetupAction $MockSetupAction
-                } | Should -Throw -ErrorId 'ASAP0001,Assert-SetupActionProperties' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ASAP0001,Assert-SetupActionProperties' # cSpell: disable-line
             }
         }
     }
@@ -564,7 +564,7 @@ Describe 'Assert-SetupActionProperties' -Tag 'Private' {
                     Assert-SetupActionProperties -Property @{
                         RsInstallMode = 'DefaultNativeMode'
                     } -SetupAction $MockSetupAction
-                } | Should -Throw -ErrorId 'ASAP0002,Assert-SetupActionProperties' # cSpell: disable-line
+                } | Should-Throw -FullyQualifiedErrorId 'ASAP0002,Assert-SetupActionProperties' # cSpell: disable-line
             }
         }
     }

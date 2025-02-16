@@ -70,8 +70,8 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
                 }
             )
 
-        $result.ParameterSetName | Should -Be $MockParameterSetName
-        $result.ParameterListAsString | Should -Be $MockExpectedParameters
+        $result.ParameterSetName | Should-Be $MockParameterSetName
+        $result.ParameterListAsString | Should-Be $MockExpectedParameters
     }
 
     BeforeAll {
@@ -108,7 +108,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
         It 'Should call Invoke-WebRequest to download the media file' {
             Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Invoke-WebRequest -Exactly -Scope It -Times 1
         }
     }
 
@@ -126,25 +126,25 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
         It 'Should call Invoke-WebRequest to download the executable file' {
             Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Invoke-WebRequest -Exactly -Scope It -Times 1
         }
 
         It 'Should call Start-Process to initiate download using the downloaded executable file' {
             Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke -CommandName Start-Process -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Start-Process -Exactly -Scope It -Times 1
         }
 
         It 'Should call Remove-Item to remove the executable file' {
             Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Remove-Item -Exactly -Scope It -Times 1
         }
 
         It 'Should call Rename-Item to rename the downloaded ISO file to the specified name' {
             Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false
 
-            Should -Invoke -CommandName Rename-Item -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Rename-Item -Exactly -Scope It -Times 1
         }
     }
 
@@ -163,8 +163,8 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
 
             Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath 'C:\Temp' -Force
 
-            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
-            Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Invoke-WebRequest -Exactly -Scope It -Times 1
+            Should-Invoke -CommandName Remove-Item -Exactly -Scope It -Times 1
         }
     }
 
@@ -174,7 +174,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
 
             Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath 'C:\Temp' -Force
 
-            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Invoke-WebRequest -Exactly -Scope It -Times 1
         }
     }
 
@@ -184,7 +184,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
 
             Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath 'C:\Temp' -Quiet  -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
+            Should-Invoke -CommandName Invoke-WebRequest -Exactly -Scope It -Times 1
         }
     }
 
@@ -195,8 +195,8 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
 
             Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.exe' -DestinationPath 'C:\Temp' -Language 'fr-FR'  -Confirm:$false
 
-            Should -Invoke -CommandName Invoke-WebRequest -Times 1 -Exactly
-            Should -Invoke -CommandName Start-Process -Times 1 -Exactly
+            Should-Invoke -CommandName Invoke-WebRequest -Exactly -Times 1
+            Should-Invoke -CommandName Start-Process -Exactly -Times 1
         }
     }
 
@@ -214,7 +214,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
                 $script:localizedData.SqlServerMediaFile_Save_InvalidDestinationFolder
             }
 
-            { Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false } | Should -Throw $mockErrorMessage
+            { Save-SqlDscSqlServerMediaFile -Url $Url -DestinationPath $DestinationPath -Confirm:$false } | Should-Throw $mockErrorMessage
         }
     }
 }

@@ -69,7 +69,7 @@ Describe 'Get-FileVersionInformation' -Tag 'Private' {
 
                     $result = Get-FileVersionInformation -FilePath $mockFilePath
 
-                    $result.ProductVersion | Should -Be '16.0.1000.6'
+                    $result.ProductVersion | Should-Be '16.0.1000.6'
                 }
             }
         }
@@ -81,7 +81,7 @@ Describe 'Get-FileVersionInformation' -Tag 'Private' {
 
                     $result = $mockFilePath | Get-FileVersionInformation
 
-                    $result.ProductVersion | Should -Be '16.0.1000.6'
+                    $result.ProductVersion | Should-Be '16.0.1000.6'
                 }
             }
         }
@@ -109,7 +109,7 @@ Describe 'Get-FileVersionInformation' -Tag 'Private' {
 
                     $result = Get-FileVersionInformation -FilePath $mockFilePath
 
-                    $result.ProductVersion | Should -Be '16.0.1000.6'
+                    $result.ProductVersion | Should-Be '16.0.1000.6'
                 }
             }
         }
@@ -121,7 +121,7 @@ Describe 'Get-FileVersionInformation' -Tag 'Private' {
 
                     $result = $mockFilePath | Get-FileVersionInformation
 
-                    $result.ProductVersion | Should -Be '16.0.1000.6'
+                    $result.ProductVersion | Should-Be '16.0.1000.6'
                 }
             }
         }
@@ -133,7 +133,7 @@ Describe 'Get-FileVersionInformation' -Tag 'Private' {
                 Set-StrictMode -Version 1.0
 
                 { [System.IO.FileInfo] $TestDrive | Get-FileVersionInformation } |
-                    Should -Throw -ExpectedMessage $script:localizedData.FileVersionInformation_Get_FilePathIsNotFile
+                    Should-Throw -ExceptionMessage $script:localizedData.FileVersionInformation_Get_FilePathIsNotFile
             }
         }
     }
@@ -144,7 +144,7 @@ Describe 'Get-FileVersionInformation' -Tag 'Private' {
                 Set-StrictMode -Version 1.0
 
                 { Get-Item -Path $TestDrive | Get-FileVersionInformation -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage 'The input object cannot be bound to any parameters for the command*'
+                    Should-Throw -ExceptionMessage 'The input object cannot be bound to any parameters for the command*'
             }
         }
     }

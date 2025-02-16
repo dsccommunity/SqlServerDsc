@@ -152,7 +152,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                        $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                     }
                 }
 
@@ -162,11 +162,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
-                        $result.BrowserFirewall | Should -BeNullOrEmpty
-                        $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                        $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                        $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                        $result.DatabaseEngineFirewall | Should-BeFalsy
+                        $result.BrowserFirewall | Should-BeFalsy
+                        $result.ReportingServicesFirewall | Should-BeFalsy
+                        $result.AnalysisServicesFirewall | Should-BeFalsy
+                        $result.IntegrationServicesFirewall | Should-BeFalsy
                     }
                 }
 
@@ -176,7 +176,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Features | Should -BeNullOrEmpty
+                        $result.Features | Should-BeFalsy
                     }
                 }
 
@@ -186,7 +186,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Absent'
+                        $result.Ensure | Should-Be 'Absent'
                     }
                 }
             }
@@ -247,7 +247,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -257,11 +257,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.DatabaseEngineFirewall | Should -BeTrue
-                            $result.BrowserFirewall | Should -BeTrue
-                            $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                            $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                            $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                            $result.DatabaseEngineFirewall | Should-BeTrue
+                            $result.BrowserFirewall | Should-BeTrue
+                            $result.ReportingServicesFirewall | Should-BeFalsy
+                            $result.AnalysisServicesFirewall | Should-BeFalsy
+                            $result.IntegrationServicesFirewall | Should-BeFalsy
                         }
                     }
 
@@ -271,7 +271,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'SQLENGINE'
+                            $result.Features | Should-Be 'SQLENGINE'
                         }
                     }
 
@@ -281,7 +281,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Present'
+                            $result.Ensure | Should-Be 'Present'
                         }
                     }
                 }
@@ -307,7 +307,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -317,11 +317,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.DatabaseEngineFirewall | Should -BeFalse
-                            $result.BrowserFirewall | Should -BeTrue
-                            $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                            $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                            $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                            $result.DatabaseEngineFirewall | Should-BeFalse
+                            $result.BrowserFirewall | Should-BeTrue
+                            $result.ReportingServicesFirewall | Should-BeFalsy
+                            $result.AnalysisServicesFirewall | Should-BeFalsy
+                            $result.IntegrationServicesFirewall | Should-BeFalsy
                         }
                     }
 
@@ -331,7 +331,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'SQLENGINE'
+                            $result.Features | Should-Be 'SQLENGINE'
                         }
                     }
 
@@ -341,7 +341,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Absent'
+                            $result.Ensure | Should-Be 'Absent'
                         }
                     }
                 }
@@ -367,7 +367,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -377,11 +377,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.DatabaseEngineFirewall | Should -BeTrue
-                            $result.BrowserFirewall | Should -BeFalse
-                            $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                            $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                            $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                            $result.DatabaseEngineFirewall | Should-BeTrue
+                            $result.BrowserFirewall | Should-BeFalse
+                            $result.ReportingServicesFirewall | Should-BeFalsy
+                            $result.AnalysisServicesFirewall | Should-BeFalsy
+                            $result.IntegrationServicesFirewall | Should-BeFalsy
                         }
                     }
 
@@ -391,7 +391,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'SQLENGINE'
+                            $result.Features | Should-Be 'SQLENGINE'
                         }
                     }
 
@@ -401,7 +401,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Absent'
+                            $result.Ensure | Should-Be 'Absent'
                         }
                     }
                 }
@@ -427,7 +427,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -437,11 +437,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.DatabaseEngineFirewall | Should -BeFalse
-                            $result.BrowserFirewall | Should -BeFalse
-                            $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                            $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                            $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                            $result.DatabaseEngineFirewall | Should-BeFalse
+                            $result.BrowserFirewall | Should-BeFalse
+                            $result.ReportingServicesFirewall | Should-BeFalsy
+                            $result.AnalysisServicesFirewall | Should-BeFalsy
+                            $result.IntegrationServicesFirewall | Should-BeFalsy
                         }
                     }
 
@@ -451,7 +451,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'SQLENGINE'
+                            $result.Features | Should-Be 'SQLENGINE'
                         }
                     }
 
@@ -461,7 +461,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Absent'
+                            $result.Ensure | Should-Be 'Absent'
                         }
                     }
                 }
@@ -507,7 +507,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                        $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                     }
                 }
 
@@ -517,11 +517,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
-                        $result.BrowserFirewall | Should -BeNullOrEmpty
-                        $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                        $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                        $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                        $result.DatabaseEngineFirewall | Should-BeFalsy
+                        $result.BrowserFirewall | Should-BeFalsy
+                        $result.ReportingServicesFirewall | Should-BeFalsy
+                        $result.AnalysisServicesFirewall | Should-BeFalsy
+                        $result.IntegrationServicesFirewall | Should-BeFalsy
                     }
                 }
 
@@ -531,7 +531,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Features | Should -BeNullOrEmpty
+                        $result.Features | Should-BeFalsy
                     }
                 }
 
@@ -541,7 +541,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Absent'
+                        $result.Ensure | Should-Be 'Absent'
                     }
                 }
             }
@@ -602,7 +602,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -612,11 +612,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.AnalysisServicesFirewall | Should -BeTrue
-                            $result.BrowserFirewall | Should -BeTrue
-                            $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
-                            $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                            $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                            $result.AnalysisServicesFirewall | Should-BeTrue
+                            $result.BrowserFirewall | Should-BeTrue
+                            $result.DatabaseEngineFirewall | Should-BeFalsy
+                            $result.ReportingServicesFirewall | Should-BeFalsy
+                            $result.IntegrationServicesFirewall | Should-BeFalsy
                         }
                     }
 
@@ -626,7 +626,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'AS'
+                            $result.Features | Should-Be 'AS'
                         }
                     }
 
@@ -636,7 +636,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Present'
+                            $result.Ensure | Should-Be 'Present'
                         }
                     }
                 }
@@ -662,7 +662,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -672,11 +672,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.AnalysisServicesFirewall | Should -BeFalse
-                            $result.BrowserFirewall | Should -BeTrue
-                            $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
-                            $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                            $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                            $result.AnalysisServicesFirewall | Should-BeFalse
+                            $result.BrowserFirewall | Should-BeTrue
+                            $result.DatabaseEngineFirewall | Should-BeFalsy
+                            $result.ReportingServicesFirewall | Should-BeFalsy
+                            $result.IntegrationServicesFirewall | Should-BeFalsy
                         }
                     }
 
@@ -686,7 +686,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'AS'
+                            $result.Features | Should-Be 'AS'
                         }
                     }
 
@@ -696,7 +696,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Absent'
+                            $result.Ensure | Should-Be 'Absent'
                         }
                     }
                 }
@@ -722,7 +722,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -732,11 +732,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.AnalysisServicesFirewall | Should -BeTrue
-                            $result.BrowserFirewall | Should -BeFalse
-                            $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
-                            $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                            $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                            $result.AnalysisServicesFirewall | Should-BeTrue
+                            $result.BrowserFirewall | Should-BeFalse
+                            $result.DatabaseEngineFirewall | Should-BeFalsy
+                            $result.ReportingServicesFirewall | Should-BeFalsy
+                            $result.IntegrationServicesFirewall | Should-BeFalsy
                         }
                     }
 
@@ -746,7 +746,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'AS'
+                            $result.Features | Should-Be 'AS'
                         }
                     }
 
@@ -756,7 +756,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Absent'
+                            $result.Ensure | Should-Be 'Absent'
                         }
                     }
                 }
@@ -782,7 +782,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -792,11 +792,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.AnalysisServicesFirewall | Should -BeFalse
-                            $result.BrowserFirewall | Should -BeFalse
-                            $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
-                            $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                            $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                            $result.AnalysisServicesFirewall | Should-BeFalse
+                            $result.BrowserFirewall | Should-BeFalse
+                            $result.DatabaseEngineFirewall | Should-BeFalsy
+                            $result.ReportingServicesFirewall | Should-BeFalsy
+                            $result.IntegrationServicesFirewall | Should-BeFalsy
                         }
                     }
 
@@ -806,7 +806,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'AS'
+                            $result.Features | Should-Be 'AS'
                         }
                     }
 
@@ -816,7 +816,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Absent'
+                            $result.Ensure | Should-Be 'Absent'
                         }
                     }
                 }
@@ -862,7 +862,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                        $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                     }
                 }
 
@@ -872,11 +872,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
-                        $result.BrowserFirewall | Should -BeNullOrEmpty
-                        $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                        $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                        $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                        $result.DatabaseEngineFirewall | Should-BeFalsy
+                        $result.BrowserFirewall | Should-BeFalsy
+                        $result.ReportingServicesFirewall | Should-BeFalsy
+                        $result.AnalysisServicesFirewall | Should-BeFalsy
+                        $result.IntegrationServicesFirewall | Should-BeFalsy
                     }
                 }
 
@@ -886,7 +886,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Features | Should -BeNullOrEmpty
+                        $result.Features | Should-BeFalsy
                     }
                 }
 
@@ -896,7 +896,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Absent'
+                        $result.Ensure | Should-Be 'Absent'
                     }
                 }
             }
@@ -957,7 +957,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -967,11 +967,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.ReportingServicesFirewall | Should -BeTrue
-                            $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                            $result.BrowserFirewall | Should -BeNullOrEmpty
-                            $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
-                            $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                            $result.ReportingServicesFirewall | Should-BeTrue
+                            $result.AnalysisServicesFirewall | Should-BeFalsy
+                            $result.BrowserFirewall | Should-BeFalsy
+                            $result.DatabaseEngineFirewall | Should-BeFalsy
+                            $result.IntegrationServicesFirewall | Should-BeFalsy
                         }
                     }
 
@@ -981,7 +981,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'RS'
+                            $result.Features | Should-Be 'RS'
                         }
                     }
 
@@ -991,7 +991,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Present'
+                            $result.Ensure | Should-Be 'Present'
                         }
                     }
                 }
@@ -1017,7 +1017,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -1027,11 +1027,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.ReportingServicesFirewall | Should -BeFalse
-                            $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                            $result.BrowserFirewall | Should -BeNullOrEmpty
-                            $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
-                            $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                            $result.ReportingServicesFirewall | Should-BeFalse
+                            $result.AnalysisServicesFirewall | Should-BeFalsy
+                            $result.BrowserFirewall | Should-BeFalsy
+                            $result.DatabaseEngineFirewall | Should-BeFalsy
+                            $result.IntegrationServicesFirewall | Should-BeFalsy
                         }
                     }
 
@@ -1041,7 +1041,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'RS'
+                            $result.Features | Should-Be 'RS'
                         }
                     }
 
@@ -1051,7 +1051,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Absent'
+                            $result.Ensure | Should-Be 'Absent'
                         }
                     }
                 }
@@ -1077,7 +1077,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -1087,11 +1087,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.ReportingServicesFirewall | Should -BeFalse
-                            $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                            $result.BrowserFirewall | Should -BeNullOrEmpty
-                            $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
-                            $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                            $result.ReportingServicesFirewall | Should-BeFalse
+                            $result.AnalysisServicesFirewall | Should-BeFalsy
+                            $result.BrowserFirewall | Should-BeFalsy
+                            $result.DatabaseEngineFirewall | Should-BeFalsy
+                            $result.IntegrationServicesFirewall | Should-BeFalsy
                         }
                     }
 
@@ -1101,7 +1101,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'RS'
+                            $result.Features | Should-Be 'RS'
                         }
                     }
 
@@ -1111,7 +1111,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Absent'
+                            $result.Ensure | Should-Be 'Absent'
                         }
                     }
                 }
@@ -1137,7 +1137,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -1147,11 +1147,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.ReportingServicesFirewall | Should -BeFalse
-                            $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                            $result.BrowserFirewall | Should -BeNullOrEmpty
-                            $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
-                            $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                            $result.ReportingServicesFirewall | Should-BeFalse
+                            $result.AnalysisServicesFirewall | Should-BeFalsy
+                            $result.BrowserFirewall | Should-BeFalsy
+                            $result.DatabaseEngineFirewall | Should-BeFalsy
+                            $result.IntegrationServicesFirewall | Should-BeFalsy
                         }
                     }
 
@@ -1161,7 +1161,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'RS'
+                            $result.Features | Should-Be 'RS'
                         }
                     }
 
@@ -1171,7 +1171,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Absent'
+                            $result.Ensure | Should-Be 'Absent'
                         }
                     }
                 }
@@ -1217,7 +1217,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                        $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                     }
                 }
 
@@ -1227,11 +1227,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
-                        $result.BrowserFirewall | Should -BeNullOrEmpty
-                        $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                        $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                        $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                        $result.DatabaseEngineFirewall | Should-BeFalsy
+                        $result.BrowserFirewall | Should-BeFalsy
+                        $result.ReportingServicesFirewall | Should-BeFalsy
+                        $result.AnalysisServicesFirewall | Should-BeFalsy
+                        $result.IntegrationServicesFirewall | Should-BeFalsy
                     }
                 }
 
@@ -1241,7 +1241,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Features | Should -BeNullOrEmpty
+                        $result.Features | Should-BeFalsy
                     }
                 }
 
@@ -1251,7 +1251,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Absent'
+                        $result.Ensure | Should-Be 'Absent'
                     }
                 }
             }
@@ -1305,7 +1305,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -1315,11 +1315,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.IntegrationServicesFirewall | Should -BeTrue
-                            $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                            $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                            $result.BrowserFirewall | Should -BeNullOrEmpty
-                            $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
+                            $result.IntegrationServicesFirewall | Should-BeTrue
+                            $result.ReportingServicesFirewall | Should-BeFalsy
+                            $result.AnalysisServicesFirewall | Should-BeFalsy
+                            $result.BrowserFirewall | Should-BeFalsy
+                            $result.DatabaseEngineFirewall | Should-BeFalsy
                         }
                     }
 
@@ -1329,7 +1329,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'IS'
+                            $result.Features | Should-Be 'IS'
                         }
                     }
 
@@ -1339,7 +1339,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Present'
+                            $result.Ensure | Should-Be 'Present'
                         }
                     }
                 }
@@ -1365,7 +1365,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -1375,11 +1375,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.IntegrationServicesFirewall | Should -BeFalse
-                            $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                            $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                            $result.BrowserFirewall | Should -BeNullOrEmpty
-                            $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
+                            $result.IntegrationServicesFirewall | Should-BeFalse
+                            $result.ReportingServicesFirewall | Should-BeFalsy
+                            $result.AnalysisServicesFirewall | Should-BeFalsy
+                            $result.BrowserFirewall | Should-BeFalsy
+                            $result.DatabaseEngineFirewall | Should-BeFalsy
                         }
                     }
 
@@ -1389,7 +1389,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'IS'
+                            $result.Features | Should-Be 'IS'
                         }
                     }
 
@@ -1399,7 +1399,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Absent'
+                            $result.Ensure | Should-Be 'Absent'
                         }
                     }
                 }
@@ -1425,7 +1425,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -1435,11 +1435,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.IntegrationServicesFirewall | Should -BeFalse
-                            $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                            $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                            $result.BrowserFirewall | Should -BeNullOrEmpty
-                            $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
+                            $result.IntegrationServicesFirewall | Should-BeFalse
+                            $result.ReportingServicesFirewall | Should-BeFalsy
+                            $result.AnalysisServicesFirewall | Should-BeFalsy
+                            $result.BrowserFirewall | Should-BeFalsy
+                            $result.DatabaseEngineFirewall | Should-BeFalsy
                         }
                     }
 
@@ -1449,7 +1449,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'IS'
+                            $result.Features | Should-Be 'IS'
                         }
                     }
 
@@ -1459,7 +1459,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Absent'
+                            $result.Ensure | Should-Be 'Absent'
                         }
                     }
                 }
@@ -1484,7 +1484,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -1494,11 +1494,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.IntegrationServicesFirewall | Should -BeFalse
-                            $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                            $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                            $result.BrowserFirewall | Should -BeNullOrEmpty
-                            $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
+                            $result.IntegrationServicesFirewall | Should-BeFalse
+                            $result.ReportingServicesFirewall | Should-BeFalsy
+                            $result.AnalysisServicesFirewall | Should-BeFalsy
+                            $result.BrowserFirewall | Should-BeFalsy
+                            $result.DatabaseEngineFirewall | Should-BeFalsy
                         }
                     }
 
@@ -1508,7 +1508,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'IS'
+                            $result.Features | Should-Be 'IS'
                         }
                     }
 
@@ -1518,7 +1518,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Absent'
+                            $result.Ensure | Should-Be 'Absent'
                         }
                     }
                 }
@@ -1564,7 +1564,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                        $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                     }
                 }
 
@@ -1574,11 +1574,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.DatabaseEngineFirewall | Should -BeNullOrEmpty
-                        $result.BrowserFirewall | Should -BeNullOrEmpty
-                        $result.ReportingServicesFirewall | Should -BeNullOrEmpty
-                        $result.AnalysisServicesFirewall | Should -BeNullOrEmpty
-                        $result.IntegrationServicesFirewall | Should -BeNullOrEmpty
+                        $result.DatabaseEngineFirewall | Should-BeFalsy
+                        $result.BrowserFirewall | Should-BeFalsy
+                        $result.ReportingServicesFirewall | Should-BeFalsy
+                        $result.AnalysisServicesFirewall | Should-BeFalsy
+                        $result.IntegrationServicesFirewall | Should-BeFalsy
                     }
                 }
 
@@ -1588,7 +1588,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Features | Should -BeNullOrEmpty
+                        $result.Features | Should-BeFalsy
                     }
                 }
 
@@ -1598,7 +1598,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                         $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $result.Ensure | Should -Be 'Absent'
+                        $result.Ensure | Should-Be 'Absent'
                     }
                 }
             }
@@ -1669,7 +1669,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
+                            $result.InstanceName | Should-Be $mockGetTargetResourceParameters.InstanceName
                         }
                     }
 
@@ -1679,11 +1679,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.IntegrationServicesFirewall | Should -BeTrue
-                            $result.ReportingServicesFirewall | Should -BeTrue
-                            $result.AnalysisServicesFirewall | Should -BeTrue
-                            $result.BrowserFirewall | Should -BeTrue
-                            $result.DatabaseEngineFirewall | Should -BeTrue
+                            $result.IntegrationServicesFirewall | Should-BeTrue
+                            $result.ReportingServicesFirewall | Should-BeTrue
+                            $result.AnalysisServicesFirewall | Should-BeTrue
+                            $result.BrowserFirewall | Should-BeTrue
+                            $result.DatabaseEngineFirewall | Should-BeTrue
                         }
                     }
 
@@ -1693,7 +1693,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Features | Should -Be 'SQLENGINE,RS,AS,IS'
+                            $result.Features | Should-Be 'SQLENGINE,RS,AS,IS'
                         }
                     }
 
@@ -1703,7 +1703,7 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
 
                             $result = Get-TargetResource @mockGetTargetResourceParameters
 
-                            $result.Ensure | Should -Be 'Present'
+                            $result.Ensure | Should-Be 'Present'
                         }
                     }
                 }
@@ -1740,11 +1740,11 @@ Describe 'SqlWindowsFirewall\Get-TargetResource' -Tag 'Get' {
                         ('dummyPassword' | ConvertTo-SecureString -AsPlainText -Force)
                     )
 
-                    { Get-TargetResource @mockGetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Get-TargetResource @mockGetTargetResourceParameters })
                 }
 
-                Should -Invoke New-SmbMapping -Exactly -Times 1 -Scope It
-                Should -Invoke Remove-SmbMapping -Exactly -Times 1 -Scope It
+                Should-Invoke New-SmbMapping -Exactly -Scope It -Times 1
+                Should-Invoke Remove-SmbMapping -Exactly -Scope It -Times 1
             }
         }
     }
@@ -1783,7 +1783,7 @@ Describe 'SqlWindowsFirewall\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -1805,7 +1805,7 @@ Describe 'SqlWindowsFirewall\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeTrue
+                    $result | Should-BeTrue
                 }
             }
         }
@@ -1827,7 +1827,7 @@ Describe 'SqlWindowsFirewall\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -1847,7 +1847,7 @@ Describe 'SqlWindowsFirewall\Test-TargetResource' -Tag 'Test' {
 
                     $result = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -1940,10 +1940,10 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                        Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
-                        Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName Set-NetFirewallRule -Exactly -Scope It -Times 0
+                        Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -1976,10 +1976,10 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                            Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
-                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                            Should-Invoke -CommandName Set-NetFirewallRule -Exactly -Scope It -Times 0
+                            Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 0
                         }
                     }
                 }
@@ -2012,10 +2012,10 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                                Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 1 -Scope It
-                                Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                                Should-Invoke -CommandName Set-NetFirewallRule -Exactly -Scope It -Times 1
+                                Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 0
                             }
                         }
                     }
@@ -2029,10 +2029,10 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                                Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
-                                Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
+                                Should-Invoke -CommandName Set-NetFirewallRule -Exactly -Scope It -Times 0
+                                Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 1
                             }
                         }
                     }
@@ -2054,10 +2054,10 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                                Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It
-                                Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
+                                Should-Invoke -CommandName Set-NetFirewallRule -Exactly -Scope It -Times 0
+                                Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 1
                             }
                         }
                     }
@@ -2091,10 +2091,10 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                                Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 1 -Scope It #-Because 'the rule already exist for the Database Engine'
-                                Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It #-Because 'no rule exist for the SQL Browser'
+                                Should-Invoke -CommandName Set-NetFirewallRule -Exactly -Scope It -Times 1 #-Because 'the rule already exist for the Database Engine'
+                                Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 1 #-Because 'no rule exist for the SQL Browser'
                             }
                         }
                     }
@@ -2108,10 +2108,10 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                                Should -Invoke -CommandName Set-NetFirewallRule -Exactly -Times 0 -Scope It #-Because 'no rules exist to change'
-                                Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It #-Because 'no rule exist for either the Database Engine or SQL Browser'
+                                Should-Invoke -CommandName Set-NetFirewallRule -Exactly -Scope It -Times 0 #-Because 'no rules exist to change'
+                                Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 2 #-Because 'no rule exist for either the Database Engine or SQL Browser'
                             }
                         }
                     }
@@ -2158,9 +2158,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                        Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -2193,9 +2193,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                            Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 0
                         }
                     }
                 }
@@ -2215,9 +2215,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
+                            Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 1
                         }
                     }
                 }
@@ -2238,9 +2238,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                             InModuleScope -ScriptBlock {
                                 Set-StrictMode -Version 1.0
 
-                                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                                $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                                Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 1 -Scope It
+                                Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 1
                             }
                         }
                     }
@@ -2261,9 +2261,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It #-Because 'no rule exist for either Analysis Services or SQL Browser'
+                            Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 2 #-Because 'no rule exist for either Analysis Services or SQL Browser'
                         }
                     }
                 }
@@ -2309,9 +2309,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                        Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -2343,9 +2343,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                            Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 0
                         }
                     }
                 }
@@ -2364,9 +2364,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It
+                            Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 2
                         }
                     }
                 }
@@ -2413,9 +2413,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                     InModuleScope -ScriptBlock {
                         Set-StrictMode -Version 1.0
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                        $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                        Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                        Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 0
                     }
                 }
             }
@@ -2447,9 +2447,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 0 -Scope It
+                            Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 0
                         }
                     }
                 }
@@ -2472,9 +2472,9 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         InModuleScope -ScriptBlock {
                             Set-StrictMode -Version 1.0
 
-                            { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                            $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
 
-                            Should -Invoke -CommandName New-NetFirewallRule -Exactly -Times 2 -Scope It
+                            Should-Invoke -CommandName New-NetFirewallRule -Exactly -Scope It -Times 2
                         }
                     }
                 }
@@ -2513,11 +2513,11 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
                         ('dummyPassword' | ConvertTo-SecureString -AsPlainText -Force)
                     )
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke New-SmbMapping -Exactly -Times 1 -Scope It
-                Should -Invoke Remove-SmbMapping -Exactly -Times 1 -Scope It
+                Should-Invoke New-SmbMapping -Exactly -Scope It -Times 1
+                Should-Invoke Remove-SmbMapping -Exactly -Scope It -Times 1
             }
         }
 
@@ -2552,7 +2552,7 @@ Describe 'SqlWindowsFirewall\Set-TargetResource' -Tag 'Set' {
 
                     $mockErrorMessage = $script:localizedData.TestFailedAfterSet
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage ('*' + $mockErrorMessage)
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should-Throw -ExceptionMessage ('*' + $mockErrorMessage)
                 }
             }
         }
@@ -2618,7 +2618,7 @@ Describe 'SqlWindowsFirewall/Get-SqlRootPath' -Tag 'Helper' {
             InModuleScope -Parameters $_ -ScriptBlock {
                 $result = Get-SQLPath -Feature $MockFeature -InstanceName 'MSSQLSERVER' -SQLVersion $MockSqlMajorVersion
 
-                $result | Should -Be 'C:\Mocked\Path'
+                $result | Should-Be 'C:\Mocked\Path'
             }
         }
     }
@@ -2636,7 +2636,7 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 $result = Test-IsFirewallRuleInDesiredState -DisplayName 'RuleName' -Enabled $true -Profile 'Any' -Direction 'Inbound'
 
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
     }
@@ -2660,7 +2660,7 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                 InModuleScope -ScriptBlock {
                     $result = Test-IsFirewallRuleInDesiredState -DisplayName 'RuleName' -Enabled 'False' -Profile 'Any' -Direction 'Inbound'
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -2670,7 +2670,7 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                 InModuleScope -ScriptBlock {
                     $result = Test-IsFirewallRuleInDesiredState -DisplayName 'RuleName' -Enabled 'True' -Profile 'Domain' -Direction 'Inbound'
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -2680,7 +2680,7 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                 InModuleScope -ScriptBlock {
                     $result = Test-IsFirewallRuleInDesiredState -DisplayName 'RuleName' -Enabled 'True' -Profile 'Any' -Direction 'Outbound'
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -2690,7 +2690,7 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                 InModuleScope -ScriptBlock {
                     $result = Test-IsFirewallRuleInDesiredState -DisplayName 'RuleName' -Enabled 'True' -Profile 'Any' -Direction 'Inbound'
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -2724,7 +2724,7 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                     InModuleScope -ScriptBlock {
                         $result = Test-IsFirewallRuleInDesiredState -DisplayName 'RuleName' -Enabled 'True' -Profile 'Any' -Direction 'Inbound' -Program 'WrongProgramName'
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
             }
@@ -2734,7 +2734,7 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                     InModuleScope -ScriptBlock {
                         $result = Test-IsFirewallRuleInDesiredState -DisplayName 'RuleName' -Enabled 'True' -Profile 'Any' -Direction 'Inbound' -Program 'ProgramName'
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
                 }
             }
@@ -2769,7 +2769,7 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                     InModuleScope -ScriptBlock {
                         $result = Test-IsFirewallRuleInDesiredState -DisplayName 'RuleName' -Enabled 'True' -Profile 'Any' -Direction 'Inbound' -Service 'WrongServiceName'
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
             }
@@ -2779,7 +2779,7 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                     InModuleScope -ScriptBlock {
                         $result = Test-IsFirewallRuleInDesiredState -DisplayName 'RuleName' -Enabled 'True' -Profile 'Any' -Direction 'Inbound' -Service 'ServiceName'
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
                 }
             }
@@ -2790,7 +2790,7 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                 InModuleScope -ScriptBlock {
                     $result = Test-IsFirewallRuleInDesiredState -DisplayName 'RuleName' -Enabled 'True' -Profile 'Any' -Direction 'Inbound' -Protocol 'TCP'
 
-                    $result | Should -BeFalse
+                    $result | Should-BeFalse
                 }
             }
         }
@@ -2825,7 +2825,7 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                     InModuleScope -ScriptBlock {
                         $result = Test-IsFirewallRuleInDesiredState -DisplayName 'RuleName' -Enabled 'True' -Profile 'Any' -Direction 'Inbound' -Protocol 'TCP' -LocalPort '1434'
 
-                        $result | Should -BeFalse
+                        $result | Should-BeFalse
                     }
                 }
             }
@@ -2835,7 +2835,7 @@ Describe 'SqlWindowsFirewall/Test-IsFirewallRuleInDesiredState' -Tag 'Helper' {
                     InModuleScope -ScriptBlock {
                         $result = Test-IsFirewallRuleInDesiredState -DisplayName 'RuleName' -Enabled 'True' -Profile 'Any' -Direction 'Inbound' -Protocol 'TCP' -LocalPort '1433'
 
-                        $result | Should -BeTrue
+                        $result | Should-BeTrue
                     }
                 }
             }

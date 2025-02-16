@@ -103,8 +103,8 @@ Describe 'ConvertFrom-ManagedServiceType' -Tag 'Private' {
                 # Get the ManagedServiceType
                 $managedServiceType = ConvertFrom-ManagedServiceType -ServiceType $MockServiceType
 
-                $managedServiceType | Should -BeOfType [System.String]
-                $managedServiceType | Should -Be $MockExpectedType
+                $managedServiceType | Should-HaveType ([System.String])
+                $managedServiceType | Should-Be $MockExpectedType
             }
         }
     }
@@ -116,7 +116,7 @@ Describe 'ConvertFrom-ManagedServiceType' -Tag 'Private' {
 
                 $mockErrorMessage = '*Unable to match the identifier name UnknownType to a valid enumerator name*'
 
-                { ConvertFrom-ManagedServiceType -ServiceType 'UnknownType' -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { ConvertFrom-ManagedServiceType -ServiceType 'UnknownType' -ErrorAction 'Stop' } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }

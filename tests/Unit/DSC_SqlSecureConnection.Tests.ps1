@@ -121,16 +121,16 @@ Describe 'SqlSecureConnection\Get-TargetResource' -Tag 'Get' {
 
                         $resultGetTargetResource = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $resultGetTargetResource.InstanceName | Should -Be 'INSTANCE'
-                        $resultGetTargetResource.Thumbprint | Should -BeExactly '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
-                        $resultGetTargetResource.ServiceAccount | Should -Be 'SqlSvc'
-                        $resultGetTargetResource.ForceEncryption | Should -BeTrue
-                        $resultGetTargetResource.Ensure | Should -Be 'Present'
-                        $resultGetTargetResource.ServerName | Should -Be 'MyHostName'
+                        $resultGetTargetResource.InstanceName | Should-Be 'INSTANCE'
+                        $resultGetTargetResource.Thumbprint | Should-BeString -CaseSensitive '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
+                        $resultGetTargetResource.ServiceAccount | Should-Be 'SqlSvc'
+                        $resultGetTargetResource.ForceEncryption | Should-BeTrue
+                        $resultGetTargetResource.Ensure | Should-Be 'Present'
+                        $resultGetTargetResource.ServerName | Should-Be 'MyHostName'
                     }
 
-                    Should -Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
-                    Should -Invoke -CommandName Test-CertificatePermission -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToLower() }
+                    Should-Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Scope It -Times 1
+                    Should-Invoke -CommandName Test-CertificatePermission -Exactly -ParameterFilter { $Thumbprint -ceq '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToLower() } -Scope It -Times 1
                 }
             }
         }
@@ -162,15 +162,15 @@ Describe 'SqlSecureConnection\Get-TargetResource' -Tag 'Get' {
 
                         $resultGetTargetResource = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $resultGetTargetResource.InstanceName | Should -Be 'INSTANCE'
-                        $resultGetTargetResource.Thumbprint | Should -Be 'Empty'
-                        $resultGetTargetResource.ServiceAccount | Should -Be 'SqlSvc'
-                        $resultGetTargetResource.ForceEncryption | Should -BeFalse
-                        $resultGetTargetResource.Ensure | Should -Be 'Absent'
-                        $resultGetTargetResource.ServerName | Should -Be 'localhost'
+                        $resultGetTargetResource.InstanceName | Should-Be 'INSTANCE'
+                        $resultGetTargetResource.Thumbprint | Should-Be 'Empty'
+                        $resultGetTargetResource.ServiceAccount | Should-Be 'SqlSvc'
+                        $resultGetTargetResource.ForceEncryption | Should-BeFalse
+                        $resultGetTargetResource.Ensure | Should-Be 'Absent'
+                        $resultGetTargetResource.ServerName | Should-Be 'localhost'
                     }
 
-                    Should -Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -204,14 +204,14 @@ Describe 'SqlSecureConnection\Get-TargetResource' -Tag 'Get' {
 
                         $resultGetTargetResource = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $resultGetTargetResource.InstanceName | Should -Be 'INSTANCE'
-                        $resultGetTargetResource.Thumbprint | Should -Be '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
-                        $resultGetTargetResource.ServiceAccount | Should -Be 'SqlSvc'
-                        $resultGetTargetResource.ForceEncryption | Should -BeFalse
-                        $resultGetTargetResource.Ensure | Should -Be 'Absent'
+                        $resultGetTargetResource.InstanceName | Should-Be 'INSTANCE'
+                        $resultGetTargetResource.Thumbprint | Should-Be '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
+                        $resultGetTargetResource.ServiceAccount | Should-Be 'SqlSvc'
+                        $resultGetTargetResource.ForceEncryption | Should-BeFalse
+                        $resultGetTargetResource.Ensure | Should-Be 'Absent'
                     }
 
-                    Should -Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Scope It -Times 1
                 }
             }
 
@@ -235,14 +235,14 @@ Describe 'SqlSecureConnection\Get-TargetResource' -Tag 'Get' {
 
                         $resultGetTargetResource = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $resultGetTargetResource.InstanceName | Should -Be 'INSTANCE'
-                        $resultGetTargetResource.Thumbprint | Should -Not -Be '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
-                        $resultGetTargetResource.ServiceAccount | Should -Be 'SqlSvc'
-                        $resultGetTargetResource.ForceEncryption | Should -BeTrue
-                        $resultGetTargetResource.Ensure | Should -Be 'Absent'
+                        $resultGetTargetResource.InstanceName | Should-Be 'INSTANCE'
+                        $resultGetTargetResource.Thumbprint | Should-NotBe '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
+                        $resultGetTargetResource.ServiceAccount | Should-Be 'SqlSvc'
+                        $resultGetTargetResource.ForceEncryption | Should-BeTrue
+                        $resultGetTargetResource.Ensure | Should-Be 'Absent'
                     }
 
-                    Should -Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Scope It -Times 1
                 }
             }
 
@@ -266,14 +266,14 @@ Describe 'SqlSecureConnection\Get-TargetResource' -Tag 'Get' {
 
                         $resultGetTargetResource = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $resultGetTargetResource.InstanceName | Should -Be 'INSTANCE'
-                        $resultGetTargetResource.Thumbprint | Should -Be '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
-                        $resultGetTargetResource.ServiceAccount | Should -Be 'SqlSvc'
-                        $resultGetTargetResource.ForceEncryption | Should -BeTrue
-                        $resultGetTargetResource.Ensure | Should -Be 'Absent'
+                        $resultGetTargetResource.InstanceName | Should-Be 'INSTANCE'
+                        $resultGetTargetResource.Thumbprint | Should-Be '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
+                        $resultGetTargetResource.ServiceAccount | Should-Be 'SqlSvc'
+                        $resultGetTargetResource.ForceEncryption | Should-BeTrue
+                        $resultGetTargetResource.Ensure | Should-Be 'Absent'
                     }
 
-                    Should -Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -301,14 +301,14 @@ Describe 'SqlSecureConnection\Get-TargetResource' -Tag 'Get' {
 
                         $resultGetTargetResource = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $resultGetTargetResource.InstanceName | Should -Be 'INSTANCE'
-                        $resultGetTargetResource.Thumbprint | Should -Be 'Empty'
-                        $resultGetTargetResource.ServiceAccount | Should -Be 'SqlSvc'
-                        $resultGetTargetResource.ForceEncryption | Should -BeTrue
-                        $resultGetTargetResource.Ensure | Should -Be 'Present'
+                        $resultGetTargetResource.InstanceName | Should-Be 'INSTANCE'
+                        $resultGetTargetResource.Thumbprint | Should-Be 'Empty'
+                        $resultGetTargetResource.ServiceAccount | Should-Be 'SqlSvc'
+                        $resultGetTargetResource.ForceEncryption | Should-BeTrue
+                        $resultGetTargetResource.Ensure | Should-Be 'Present'
                     }
 
-                    Should -Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Scope It -Times 1
                 }
             }
 
@@ -328,14 +328,14 @@ Describe 'SqlSecureConnection\Get-TargetResource' -Tag 'Get' {
 
                         $resultGetTargetResource = Get-TargetResource @mockGetTargetResourceParameters
 
-                        $resultGetTargetResource.InstanceName | Should -Be 'INSTANCE'
-                        $resultGetTargetResource.Thumbprint | Should -Be '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
-                        $resultGetTargetResource.ServiceAccount | Should -Be 'SqlSvc'
-                        $resultGetTargetResource.ForceEncryption | Should -BeFalse
-                        $resultGetTargetResource.Ensure | Should -Be 'Present'
+                        $resultGetTargetResource.InstanceName | Should-Be 'INSTANCE'
+                        $resultGetTargetResource.Thumbprint | Should-Be '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'
+                        $resultGetTargetResource.ServiceAccount | Should-Be 'SqlSvc'
+                        $resultGetTargetResource.ForceEncryption | Should-BeFalse
+                        $resultGetTargetResource.Ensure | Should-Be 'Present'
                     }
 
-                    Should -Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
+                    Should-Invoke -CommandName Get-EncryptedConnectionSetting -Exactly -Scope It -Times 1
                 }
             }
         }
@@ -384,14 +384,14 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToLower() }
-                Should -Invoke -CommandName Set-CertificatePermission -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToLower() }
-                Should -Invoke -CommandName Restart-SqlService -ParameterFilter {
+                Should-Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -ParameterFilter { $Thumbprint -ceq '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToLower() } -Scope It -Times 1
+                Should-Invoke -CommandName Set-CertificatePermission -Exactly -ParameterFilter { $Thumbprint -ceq '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToLower() } -Scope It -Times 1
+                Should-Invoke -CommandName Restart-SqlService -Exactly -ParameterFilter {
                     $ServerName -eq 'localhost'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -411,12 +411,12 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.SuppressRestart = $true
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToLower() }
-                Should -Invoke -CommandName Set-CertificatePermission -Exactly -Times 1 -Scope It -ParameterFilter { $Thumbprint -ceq '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToLower() }
-                Should -Invoke -CommandName Restart-SqlService -Exactly -Times 0 -Scope It
+                Should-Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -ParameterFilter { $Thumbprint -ceq '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToLower() } -Scope It -Times 1
+                Should-Invoke -CommandName Set-CertificatePermission -Exactly -ParameterFilter { $Thumbprint -ceq '2A11AB1AB1A11111A1111AB111111AB11ABCDEFB'.ToLower() } -Scope It -Times 1
+                Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 0
             }
         }
 
@@ -441,14 +441,14 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters -ServerName 'MyHostName'} | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters -ServerName 'MyHostName'})
                 }
 
-                Should -Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Set-CertificatePermission -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Restart-SqlService -ParameterFilter {
+                Should-Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Set-CertificatePermission -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Restart-SqlService -Exactly -ParameterFilter {
                     $ServerName -eq 'MyHostName'
-                } -Exactly -Times 1 -Scope It
+                } -Scope It -Times 1
             }
         }
 
@@ -473,12 +473,12 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Set-CertificatePermission -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Set-CertificatePermission -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
             }
         }
 
@@ -503,12 +503,12 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
                 InModuleScope -ScriptBlock {
                     Set-StrictMode -Version 1.0
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Set-CertificatePermission -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Set-CertificatePermission -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
             }
         }
 
@@ -535,12 +535,12 @@ Describe 'SqlSecureConnection\Set-TargetResource' -Tag 'Set' {
 
                     $mockSetTargetResourceParameters.Ensure = 'Absent'
 
-                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    $null = & ({ Set-TargetResource @mockSetTargetResourceParameters })
                 }
 
-                Should -Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Times 1 -Scope It
-                Should -Invoke -CommandName Set-CertificatePermission -Exactly -Times 0 -Scope It
-                Should -Invoke -CommandName Restart-SqlService -Exactly -Times 1 -Scope It
+                Should-Invoke -CommandName Set-EncryptedConnectionSetting -Exactly -Scope It -Times 1
+                Should-Invoke -CommandName Set-CertificatePermission -Exactly -Scope It -Times 0
+                Should-Invoke -CommandName Restart-SqlService -Exactly -Scope It -Times 1
             }
         }
     }
@@ -587,7 +587,7 @@ Describe 'SqlSecureConnection\Test-TargetResource' -Tag 'Test' {
 
                     $resultTestTargetResource = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $resultTestTargetResource | Should -BeFalse
+                    $resultTestTargetResource | Should-BeFalse
                 }
             }
         }
@@ -611,7 +611,7 @@ Describe 'SqlSecureConnection\Test-TargetResource' -Tag 'Test' {
 
                     $resultTestTargetResource = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $resultTestTargetResource | Should -BeFalse
+                    $resultTestTargetResource | Should-BeFalse
                 }
             }
         }
@@ -639,7 +639,7 @@ Describe 'SqlSecureConnection\Test-TargetResource' -Tag 'Test' {
 
                     $resultTestTargetResource = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $resultTestTargetResource | Should -BeFalse
+                    $resultTestTargetResource | Should-BeFalse
                 }
             }
         }
@@ -663,7 +663,7 @@ Describe 'SqlSecureConnection\Test-TargetResource' -Tag 'Test' {
 
                     $resultTestTargetResource = Test-TargetResource @mockTestTargetResourceParameters
 
-                    $resultTestTargetResource | Should -BeFalse
+                    $resultTestTargetResource | Should-BeFalse
                 }
             }
         }
@@ -692,7 +692,7 @@ Describe 'SqlSecureConnection\Test-TargetResource' -Tag 'Test' {
 
                 $resultTestTargetResource = Test-TargetResource @mockTestTargetResourceParameters
 
-                $resultTestTargetResource | Should -BeTrue
+                $resultTestTargetResource | Should-BeTrue
             }
         }
     }
@@ -763,9 +763,9 @@ Describe 'SqlSecureConnection\Get-EncryptedConnectionSetting' -Tag 'Helper' {
 
                 $result = Get-EncryptedConnectionSetting -InstanceName 'NamedInstance'
 
-                $result.Certificate | Should -Be '12345678'
-                $result.ForceEncryption | Should -Be 1
-                $result | Should -BeOfType [Hashtable]
+                $result.Certificate | Should-Be '12345678'
+                $result.ForceEncryption | Should-Be 1
+                $result | Should-HaveType ([Hashtable])
             }
         }
     }
@@ -783,7 +783,7 @@ Describe 'SqlSecureConnection\Get-EncryptedConnectionSetting' -Tag 'Helper' {
 
                 $result = Get-EncryptedConnectionSetting -InstanceName 'NamedInstance'
 
-                $result | Should -BeNullOrEmpty
+                $result | Should-BeFalsy
             }
         }
     }
@@ -834,7 +834,7 @@ Describe 'SqlSecureConnection\Set-EncryptedConnectionSetting' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Set-EncryptedConnectionSetting -InstanceName 'NamedInstance' -Thumbprint '12345678' -ForceEncryption $true } | Should -Not -Throw
+                $null = & ({ Set-EncryptedConnectionSetting -InstanceName 'NamedInstance' -Thumbprint '12345678' -ForceEncryption $true })
             }
         }
     }
@@ -851,9 +851,9 @@ Describe 'SqlSecureConnection\Set-EncryptedConnectionSetting' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Set-EncryptedConnectionSetting -InstanceName 'NamedInstance' -Thumbprint '12345678' -ForceEncryption $true } | Should -Throw
+                { Set-EncryptedConnectionSetting -InstanceName 'NamedInstance' -Thumbprint '12345678' -ForceEncryption $true } | Should-Throw
 
-                Should -Invoke -CommandName 'Set-ItemProperty' -Times 0
+                Should-Invoke -CommandName 'Set-ItemProperty' -Times 0
             }
         }
     }
@@ -907,7 +907,7 @@ Describe 'SqlSecureConnection\Test-CertificatePermission' -Tag 'Helper' {
 
                 $result = Test-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone'
 
-                $result | Should -BeTrue
+                $result | Should-BeTrue
             }
         }
     }
@@ -927,7 +927,7 @@ Describe 'SqlSecureConnection\Test-CertificatePermission' -Tag 'Helper' {
 
                 $result = Test-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone'
 
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
     }
@@ -947,7 +947,7 @@ Describe 'SqlSecureConnection\Test-CertificatePermission' -Tag 'Helper' {
 
                 $result = Test-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone'
 
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
     }
@@ -965,7 +965,7 @@ Describe 'SqlSecureConnection\Test-CertificatePermission' -Tag 'Helper' {
 
                 $result = Test-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone'
 
-                $result | Should -BeFalse
+                $result | Should-BeFalse
             }
         }
     }
@@ -1016,7 +1016,7 @@ Describe 'SqlSecureConnection\Set-CertificatePermission' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Set-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone' } | Should -Not -Throw
+                $null = & ({ Set-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone' })
             }
         }
     }
@@ -1036,7 +1036,7 @@ Describe 'SqlSecureConnection\Set-CertificatePermission' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Set-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone' } | Should -Throw
+                { Set-CertificatePermission -Thumbprint '12345678' -ServiceAccount 'Everyone' } | Should-Throw
             }
         }
     }
@@ -1090,7 +1090,7 @@ Describe 'SqlSecureConnection\Get-CertificateAcl' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Get-CertificateAcl -Thumbprint '12345678' } | Should -Not -Throw
+                $null = & ({ Get-CertificateAcl -Thumbprint '12345678' })
             }
         }
     }
@@ -1146,7 +1146,7 @@ Describe 'SqlSecureConnection\Get-SqlEncryptionValue' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Get-SqlEncryptionValue -InstanceName 'INSTANCE' } | Should -Not -Throw
+                $null = & ({ Get-SqlEncryptionValue -InstanceName 'INSTANCE' })
             }
         }
     }
@@ -1166,7 +1166,7 @@ Describe 'SqlSecureConnection\Get-SqlEncryptionValue' -Tag 'Helper' {
             InModuleScope -ScriptBlock {
                 Set-StrictMode -Version 1.0
 
-                { Get-SqlEncryptionValue -InstanceName 'INSTANCE' } | Should -Throw -ExpectedMessage 'SQL instance ''INSTANCE'' not found on SQL Server.'
+                { Get-SqlEncryptionValue -InstanceName 'INSTANCE' } | Should-Throw -ExceptionMessage 'SQL instance ''INSTANCE'' not found on SQL Server.'
             }
         }
     }

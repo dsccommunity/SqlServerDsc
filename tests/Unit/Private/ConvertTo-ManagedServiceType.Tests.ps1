@@ -103,8 +103,8 @@ Describe 'ConvertTo-ManagedServiceType' -Tag 'Private' {
                 # Get the ManagedServiceType
                 $managedServiceType = ConvertTo-ManagedServiceType -ServiceType $MockServiceType
 
-                $managedServiceType | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType'
-                $managedServiceType | Should -Be $MockExpectedType
+                $managedServiceType | Should-HaveType 'Microsoft.SqlServer.Management.Smo.Wmi.ManagedServiceType'
+                $managedServiceType | Should-Be $MockExpectedType
             }
         }
     }
@@ -116,7 +116,7 @@ Describe 'ConvertTo-ManagedServiceType' -Tag 'Private' {
 
                 $mockErrorMessage = 'Cannot validate argument on parameter ''ServiceType''. The argument "UnknownType" does not belong to the set "DatabaseEngine,SQLServerAgent,Search,IntegrationServices,AnalysisServices,ReportingServices,SQLServerBrowser,NotificationServices" specified by the ValidateSet attribute. Supply an argument that is in the set and then try the command again.'
 
-                { ConvertTo-ManagedServiceType -ServiceType 'UnknownType' -ErrorAction 'Stop' } | Should -Throw -ExpectedMessage $mockErrorMessage
+                { ConvertTo-ManagedServiceType -ServiceType 'UnknownType' -ErrorAction 'Stop' } | Should-Throw -ExceptionMessage $mockErrorMessage
             }
         }
     }
