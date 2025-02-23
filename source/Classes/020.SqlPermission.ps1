@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
         The `SqlPermission` DSC resource is used to grant, deny or revoke
-        server permissions for a login.
+        server permissions for a server principal.
 
     .DESCRIPTION
         The `SqlPermission` DSC resource is used to grant, deny or revoke
-        Server permissions for a login. For more information about permissions,
+        Server permissions for a server principal. For more information about permissions,
         please read the article [Permissions (Database Engine)](https://docs.microsoft.com/en-us/sql/relational-databases/security/permissions-database-engine).
 
         > [!CAUTION]
@@ -61,7 +61,7 @@
         ```
 
     .PARAMETER Name
-        The name of the user that should be granted or denied the permission.
+        The name of the server principal that should be granted or denied the permission.
 
     .PARAMETER Permission
         An array of server permissions to enforce. Any permission that is not
@@ -353,15 +353,16 @@ class SqlPermission : SqlResourceBase
     {
         $serverObject = $this.GetServerObject()
 
-        $testSqlDscIsLoginParameters = @{
+        $testSqlDscIsPrincipalParameters = @{
             ServerObject      = $serverObject
             Name              = $this.Name
         }
 
         # This will test wether the principal exist.
-        $isLogin = Test-SqlDscIsLogin @testSqlDscIsLoginParameters
+        $isLogin = Test-SqlDscIsLogin @testSqlDscIsPrincipalParameters
+        $isRole = Test-SqlDscIsRole @testSqlDscIsPrincipalParameters
 
-        if (-not $isLogin)
+        if (-not $isLogin -and -not $isRole)
         {
             $missingPrincipalMessage = $this.localizedData.NameIsMissing -f @(
                 $this.Name,

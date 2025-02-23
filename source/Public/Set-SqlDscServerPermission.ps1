@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-        Set permission for a login.
+        Set permission for a server principal.
 
     .DESCRIPTION
-        This command sets the permissions for a existing login on a SQL Server
+        This command sets the permissions for a existing principal on a SQL Server
         Database Engine instance.
 
     .PARAMETER ServerObject
@@ -100,72 +100,9 @@ function Set-SqlDscServerPermission
         }
 
         $isLogin = Test-SqlDscIsLogin @testSqlDscIsLoginParameters
+        $isRole = Test-SqlDscIsRole @testSqlDscIsLoginParameters
 
-        if ($isLogin)
-        {
-            # Get the permissions names that are set to $true in the ServerPermissionSet.
-            $permissionName = $Permission |
-                Get-Member -MemberType 'Property' |
-                Select-Object -ExpandProperty 'Name' |
-                Where-Object -FilterScript {
-                    $Permission.$_
-                }
-
-            $verboseDescriptionMessage = $script:localizedData.ServerPermission_ChangePermissionShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
-            $verboseWarningMessage = $script:localizedData.ServerPermission_ChangePermissionShouldProcessVerboseWarning -f $Name
-            $captionMessage = $script:localizedData.ServerPermission_ChangePermissionShouldProcessCaption
-
-            if (-not $PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
-            {
-                # Return without doing anything if the user did not want to continue processing.
-                return
-            }
-
-            switch ($State)
-            {
-                'Grant'
-                {
-                    Write-Verbose -Message (
-                        $script:localizedData.ServerPermission_GrantPermission -f ($permissionName -join ','), $Name
-                    )
-
-                    if ($WithGrant.IsPresent)
-                    {
-                        $ServerObject.Grant($Permission, $Name, $true)
-                    }
-                    else
-                    {
-                        $ServerObject.Grant($Permission, $Name)
-                    }
-                }
-
-                'Deny'
-                {
-                    Write-Verbose -Message (
-                        $script:localizedData.ServerPermission_DenyPermission -f ($permissionName -join ','), $Name
-                    )
-
-                    $ServerObject.Deny($Permission, $Name)
-                }
-
-                'Revoke'
-                {
-                    Write-Verbose -Message (
-                        $script:localizedData.ServerPermission_RevokePermission -f ($permissionName -join ','), $Name
-                    )
-
-                    if ($WithGrant.IsPresent)
-                    {
-                        $ServerObject.Revoke($Permission, $Name, $false, $true)
-                    }
-                    else
-                    {
-                        $ServerObject.Revoke($Permission, $Name)
-                    }
-                }
-            }
-        }
-        else
+        if (-not $isLogin -and -not $isRole)
         {
             $missingPrincipalMessage = $script:localizedData.ServerPermission_MissingPrincipal -f $Name, $ServerObject.InstanceName
 
@@ -177,6 +114,70 @@ function Set-SqlDscServerPermission
                     $Name
                 )
             )
+            return
         }
+
+        # Get the permissions names that are set to $true in the ServerPermissionSet.
+        $permissionName = $Permission |
+            Get-Member -MemberType 'Property' |
+            Select-Object -ExpandProperty 'Name' |
+            Where-Object -FilterScript {
+                $Permission.$_
+            }
+
+        $verboseDescriptionMessage = $script:localizedData.ServerPermission_ChangePermissionShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
+        $verboseWarningMessage = $script:localizedData.ServerPermission_ChangePermissionShouldProcessVerboseWarning -f $Name
+        $captionMessage = $script:localizedData.ServerPermission_ChangePermissionShouldProcessCaption
+
+        if (-not $PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+        {
+            # Return without doing anything if the user did not want to continue processing.
+            return
+        }
+
+        switch ($State)
+        {
+            'Grant'
+            {
+                Write-Verbose -Message (
+                    $script:localizedData.ServerPermission_GrantPermission -f ($permissionName -join ','), $Name
+                )
+
+                if ($WithGrant.IsPresent)
+                {
+                    $ServerObject.Grant($Permission, $Name, $true)
+                }
+                else
+                {
+                    $ServerObject.Grant($Permission, $Name)
+                }
+            }
+
+            'Deny'
+            {
+                Write-Verbose -Message (
+                    $script:localizedData.ServerPermission_DenyPermission -f ($permissionName -join ','), $Name
+                )
+
+                $ServerObject.Deny($Permission, $Name)
+            }
+
+            'Revoke'
+            {
+                Write-Verbose -Message (
+                    $script:localizedData.ServerPermission_RevokePermission -f ($permissionName -join ','), $Name
+                )
+
+                if ($WithGrant.IsPresent)
+                {
+                    $ServerObject.Revoke($Permission, $Name, $false, $true)
+                }
+                else
+                {
+                    $ServerObject.Revoke($Permission, $Name)
+                }
+            }
+        }
+
     }
 }

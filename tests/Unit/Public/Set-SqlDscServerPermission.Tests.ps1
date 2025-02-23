@@ -59,6 +59,10 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
                 return $false
             }
 
+            Mock -CommandName Test-SqlDscIsRole -MockWith {
+                return $false
+            }
+
             $script:mockDefaultParameters = @{
                 Name         = 'UnknownUser'
                 State        = 'Grant'
@@ -86,6 +90,10 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
 
                 Mock -CommandName Test-SqlDscIsLogin -MockWith {
                     return $true
+                }
+
+                Mock -CommandName Test-SqlDscIsRole -MockWith {
+                    return $false
                 }
 
                 $script:mockDefaultParameters = @{
@@ -122,6 +130,10 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
                     return $true
                 }
 
+                Mock -CommandName Test-SqlDscIsRole -MockWith {
+                    return $false
+                }
+
                 $script:mockDefaultParameters = @{
                     Force        = $true
                     Name         = 'DOMAIN\MyLogin'
@@ -156,6 +168,10 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
                     return $true
                 }
 
+                Mock -CommandName Test-SqlDscIsRole -MockWith {
+                    return $false
+                }
+
                 $script:mockDefaultParameters = @{
                     WhatIf       = $true
                     Name         = 'DOMAIN\MyLogin'
@@ -187,6 +203,10 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
 
                 Mock -CommandName Test-SqlDscIsLogin -MockWith {
                     return $true
+                }
+
+                Mock -CommandName Test-SqlDscIsRole -MockWith {
+                    return $false
                 }
 
                 $script:mockDefaultParameters = @{
@@ -247,6 +267,10 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
                     return $true
                 }
 
+                Mock -CommandName Test-SqlDscIsRole -MockWith {
+                    return $false
+                }
+
                 $script:mockDefaultParameters = @{
                     Confirm      = $false
                     Name         = 'DOMAIN\MyLogin'
@@ -288,6 +312,10 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
 
                 Mock -CommandName Test-SqlDscIsLogin -MockWith {
                     return $true
+                }
+
+                Mock -CommandName Test-SqlDscIsRole -MockWith {
+                    return $false
                 }
 
                 $script:mockDefaultParameters = @{
@@ -350,6 +378,10 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
                     return $true
                 }
 
+                Mock -CommandName Test-SqlDscIsRole -MockWith {
+                    return $false
+                }
+
                 $script:mockDefaultParameters = @{
                     Confirm      = $false
                     Name         = 'DOMAIN\MyLogin'
@@ -391,6 +423,10 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
 
                 Mock -CommandName Test-SqlDscIsLogin -MockWith {
                     return $true
+                }
+
+                Mock -CommandName Test-SqlDscIsRole -MockWith {
+                    return $false
                 }
 
                 $script:mockDefaultParameters = @{
