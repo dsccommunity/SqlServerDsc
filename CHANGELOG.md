@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix localization strings in `Assert` method.
 - `Save-SqlDscSqlServerMediaFile`
   - Fix localizations strings that used wrong keys.
+- `SqlConfiguration`
+  - Change the alias command to real command name, to pass HQRM tests.
 
 ## [17.0.0] - 2024-09-30
 
