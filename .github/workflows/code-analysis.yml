@@ -7,7 +7,7 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-# cSpell: ignore potatoqualitee codeql SARIF
+# cSpell: ignore codeql SARIF
 jobs:
   pssa:
     name: PSScriptAnalyzer
@@ -34,6 +34,14 @@ jobs:
         run: |
           Write-Information -MessageData 'Module is being built so that examples can be scanned.' -InformationAction 'Continue'
           .\build.ps1 -ResolveDependency -Tasks 'build'
+      # This is a workaround for the issue: https://github.com/PoshCode/ModuleBuilder/pull/136
+      - name: Patch ModuleBuilder
+        shell: powershell
+        run: |
+          Write-Information -MessageData 'Patching ModuleBuilder v3.1.7.' -InformationAction 'Continue'
+          .\build.ps1 -Tasks 'noop'
+          Install-PSResource -Name 'Viscalyx.Common' -Repository 'PSGallery' -TrustRepository -Quiet -Confirm:$false
+          Install-ModulePatch -Uri https://raw.githubusercontent.com/viscalyx/Viscalyx.Common/refs/heads/main/patches/ModuleBuilder_3.1.7_patch.json -Force
       - name: Run PSScriptAnalyzer
         shell: powershell
         run: |

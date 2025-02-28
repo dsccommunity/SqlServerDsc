@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fixed workaround for the GitHub Actions to support building module in Windows
+  PowerShell.
 - SqlServerDsc
   - Fix localization tests.
 - `SqlAudit`
