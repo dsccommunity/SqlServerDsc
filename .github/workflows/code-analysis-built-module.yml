@@ -29,11 +29,11 @@ jobs:
         shell: powershell
         run: |
           dotnet-gitversion | ConvertFrom-Json
-      - name: Build Module
+      - name: Resolve dependencies
         shell: powershell
         run: |
-          Write-Information -MessageData 'Module is being built.' -InformationAction 'Continue'
-          .\build.ps1 -ResolveDependency -Tasks 'build'
+          Write-Information -MessageData 'Resolving dependencies.' -InformationAction 'Continue'
+          .\build.ps1 -ResolveDependency -Tasks 'noop'
       # This is a workaround for the issue: https://github.com/PoshCode/ModuleBuilder/pull/136
       - name: Patch ModuleBuilder
         shell: powershell
@@ -42,6 +42,11 @@ jobs:
           .\build.ps1 -Tasks 'noop'
           Install-PSResource -Name 'Viscalyx.Common' -Repository 'PSGallery' -TrustRepository -Quiet -Confirm:$false
           Install-ModulePatch -Uri https://raw.githubusercontent.com/viscalyx/Viscalyx.Common/refs/heads/main/patches/ModuleBuilder_3.1.7_patch.json -Force
+      - name: Build Module
+        shell: powershell
+        run: |
+          Write-Information -MessageData 'Module is being built.' -InformationAction 'Continue'
+          .\build.ps1 -Tasks 'build'
       - name: Run PSScriptAnalyzer
         shell: powershell
         run: |
