@@ -26,6 +26,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix localizations strings that used wrong keys.
 - `SqlConfiguration`
   - Change the alias command to real command name, to pass HQRM tests.
+- `SqlDatabaseUser`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlMaxDop`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlMemory`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlReplication`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlRSSetup`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlServiceAccount`
+  - Change the alias command to real command name, to pass HQRM tests.
 
 ## [17.0.0] - 2024-09-30
 

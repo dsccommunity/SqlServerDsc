@@ -322,7 +322,7 @@ function Get-ServiceObject
     if (($ServiceType -eq 'IntegrationServices') -and ([String]::IsNullOrEmpty($VersionNumber)))
     {
         $errorMessage = $script:localizedData.MissingParameter -f $ServiceType
-        New-InvalidArgumentException -Message $errorMessage -ArgumentName 'VersionNumber'
+        New-ArgumentException -Message $errorMessage -ArgumentName 'VersionNumber'
     }
 
     # Load the SMO libraries
@@ -578,7 +578,7 @@ function Get-SqlServiceName
     else
     {
         $errorMessage = $script:localizedData.UnknownServiceType -f $ServiceType
-        New-InvalidArgumentException -Message $errorMessage -ArgumentName 'ServiceType'
+        New-ArgumentException -Message $errorMessage -ArgumentName 'ServiceType'
     }
 
     if ([System.String]::IsNullOrEmpty($serviceNamingScheme))

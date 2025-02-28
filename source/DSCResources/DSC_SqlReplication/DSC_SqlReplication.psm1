@@ -232,7 +232,7 @@ function Set-TargetResource
     if (($DistributorMode -eq 'Remote') -and (-not $RemoteDistributor))
     {
         $errorMessage = $script:localizedData.NoRemoteDistributor
-        New-InvalidArgumentException -ArgumentName 'RemoteDistributor' -Message $errorMessage
+        New-ArgumentException -ArgumentName 'RemoteDistributor' -Message $errorMessage
     }
 
     $sqlMajorVersion = Get-SqlInstanceMajorVersion -InstanceName $InstanceName
