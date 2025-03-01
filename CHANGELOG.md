@@ -32,6 +32,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Save-SqlDscSqlServerMediaFile`
   - Fix localizations strings that used wrong keys.
   - Fix unit tests so they work cross-platform.
+- `Install-SqlDscServer` and private function `Invoke-SetupAction`
+  - Fix localization string keys naming.
+  - Fix unit tests to use correct localization string names.
 - `SqlConfiguration`
   - Change the alias command to real command name, to pass HQRM tests.
 - `SqlDatabaseUser`
@@ -52,7 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - SqlSetup
-  - Added new parameter ProductCoveredbySA which is introduced in SQL 2022.
+  - Added new parameter ProductCoveredBySA which is introduced in SQL 2022.
 
 ### Added
 
