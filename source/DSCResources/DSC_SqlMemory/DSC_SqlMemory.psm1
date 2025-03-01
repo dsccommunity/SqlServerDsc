@@ -166,13 +166,13 @@ function Set-TargetResource
                     if ($MaxMemory)
                     {
                         $errorMessage = $script:localizedData.MaxMemoryParamMustBeNull
-                        New-InvalidArgumentException -ArgumentName 'MaxMemory' -Message $errorMessage
+                        New-ArgumentException -ArgumentName 'MaxMemory' -Message $errorMessage
                     }
 
                     if ($MaxMemoryPercent)
                     {
                         $errorMessage = $script:localizedData.MaxMemoryPercentParamMustBeNull
-                        New-InvalidArgumentException -ArgumentName 'MaxMemoryPercent' -Message $errorMessage
+                        New-ArgumentException -ArgumentName 'MaxMemoryPercent' -Message $errorMessage
                     }
 
                     $MaxMemory = Get-SqlDscDynamicMaxMemory
@@ -186,7 +186,7 @@ function Set-TargetResource
                     if ($PSBoundParameters.ContainsKey('MaxMemory') -and -not $MaxMemory)
                     {
                         $errorMessage = $script:localizedData.MaxMemoryParamMustNotBeNull
-                        New-InvalidArgumentException -ArgumentName 'MaxMemory' -Message $errorMessage
+                        New-ArgumentException -ArgumentName 'MaxMemory' -Message $errorMessage
                     }
                 }
 
@@ -195,7 +195,7 @@ function Set-TargetResource
                     if ($MaxMemoryPercent)
                     {
                         $errorMessage = $script:localizedData.MaxMemoryPercentParamMustBeNull
-                        New-InvalidArgumentException -ArgumentName 'MaxMemoryPercent' -Message $errorMessage
+                        New-ArgumentException -ArgumentName 'MaxMemoryPercent' -Message $errorMessage
                     }
 
                     $sqlServerObject.Configuration.MaxServerMemory.ConfigValue = $MaxMemory
@@ -220,7 +220,7 @@ function Set-TargetResource
                     if ($MinMemoryPercent)
                     {
                         $errorMessage = $script:localizedData.MinMemoryPercentParamMustBeNull
-                        New-InvalidArgumentException -ArgumentName 'MinMemoryPercent' -Message $errorMessage
+                        New-ArgumentException -ArgumentName 'MinMemoryPercent' -Message $errorMessage
                     }
 
                     $sqlServerObject.Configuration.MinServerMemory.ConfigValue = $MinMemory
@@ -420,13 +420,13 @@ function Test-TargetResource
                 if ($MaxMemory)
                 {
                     $errorMessage = $script:localizedData.MaxMemoryParamMustBeNull
-                    New-InvalidArgumentException -ArgumentName 'MaxMemory' -Message $errorMessage
+                    New-ArgumentException -ArgumentName 'MaxMemory' -Message $errorMessage
                 }
 
                 if ($MaxMemoryPercent)
                 {
                     $errorMessage = $script:localizedData.MaxMemoryPercentParamMustBeNull
-                    New-InvalidArgumentException -ArgumentName 'MaxMemoryPercent' -Message $errorMessage
+                    New-ArgumentException -ArgumentName 'MaxMemoryPercent' -Message $errorMessage
                 }
 
                 $MaxMemory = Get-SqlDscDynamicMaxMemory
@@ -440,7 +440,7 @@ function Test-TargetResource
                 if ($PSBoundParameters.ContainsKey('MaxMemory') -and -not $MaxMemory)
                 {
                     $errorMessage = $script:localizedData.MaxMemoryParamMustNotBeNull
-                    New-InvalidArgumentException -ArgumentName 'MaxMemory' -Message $errorMessage
+                    New-ArgumentException -ArgumentName 'MaxMemory' -Message $errorMessage
                 }
             }
 
@@ -449,7 +449,7 @@ function Test-TargetResource
                 if ($MaxMemory -and $MaxMemoryPercent)
                 {
                     $errorMessage = $script:localizedData.MaxMemoryPercentParamMustBeNull
-                    New-InvalidArgumentException -ArgumentName 'MaxMemoryPercent' -Message $errorMessage
+                    New-ArgumentException -ArgumentName 'MaxMemoryPercent' -Message $errorMessage
                 }
 
                 if ($MaxMemoryPercent)
@@ -472,7 +472,7 @@ function Test-TargetResource
                 if ($MinMemory -and $MinMemoryPercent)
                 {
                     $errorMessage = $script:localizedData.MinMemoryPercentParamMustBeNull
-                    New-InvalidArgumentException -ArgumentName 'MinMemoryPercent' -Message $errorMessage
+                    New-ArgumentException -ArgumentName 'MinMemoryPercent' -Message $errorMessage
                 }
 
                 if ($MinMemoryPercent)
