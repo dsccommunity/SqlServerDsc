@@ -5,6 +5,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Set-SqlDscServerPermission
+  - Added support for all server principals (login and role)
+
 ### Changed
 
 - SqlServerDsc
