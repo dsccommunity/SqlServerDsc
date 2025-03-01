@@ -58,14 +58,34 @@
         None.
 
     .EXAMPLE
-        Invoke-ReportServerSetup -ReportingServices -AcceptLicensingTerms -MediaPath 'E:\' -SQLSysAdminAccounts @('MyAdminAccount') -ReportingServicesInstallType 'InstallOnly'
+        Invoke-ReportServerSetupAction -Install -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe'
 
-        Installs Reporting Services.
+        Installs SQL Server Reporting Services with default settings.
 
     .EXAMPLE
-        Invoke-ReportServerSetup -BIReportServer -AcceptLicensingTerms -MediaPath 'E:\' -SQLSysAdminAccounts @('MyAdminAccount') -ReportingServicesInstallType 'InstallOnly'
+        Invoke-ReportServerSetupAction -Install -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe' -ProductKey '12345-12345-12345-12345-12345'
 
-        Installs BI Report Server.
+        Installs SQL Server Reporting Services using a product key.
+
+    .EXAMPLE
+        Invoke-ReportServerSetupAction -Install -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -Edition 'Evaluation' -InstallFolder 'C:\Program Files\Power BI Report Server'
+
+        Installs Power BI Report Server in evaluation edition to a custom folder.
+
+    .EXAMPLE
+        Invoke-ReportServerSetupAction -Install -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe' -ProductKey '12345-12345-12345-12345-12345' -EditionUpgrade -LogPath 'C:\Logs\SSRS_Install.log'
+
+        Installs SQL Server Reporting Services and upgrades the edition using a product key. Also specifies a custom log path.
+
+    .EXAMPLE
+        Invoke-ReportServerSetupAction -Repair -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe'
+
+        Repairs an existing installation of SQL Server Reporting Services.
+
+    .EXAMPLE
+        Invoke-ReportServerSetupAction -Uninstall -MediaPath 'E:\SQLServerReportingServices.exe' -Force
+
+        Uninstalls SQL Server Reporting Services without prompting for confirmation.
 #>
 function Invoke-ReportServerSetupAction
 {
