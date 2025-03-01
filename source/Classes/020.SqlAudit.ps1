@@ -547,12 +547,12 @@ class SqlAudit : SqlResourceBase
         # ReserveDiskSpace can only be used with MaximumFiles.
         if ($properties.Keys -contains 'ReserveDiskSpace' -and $properties.Keys -notcontains 'MaximumFiles')
         {
-            $errorMessage = $this.localizedData.BothFileSizePropertiesMustBeSet
+            $errorMessage = $this.localizedData.ReservDiskSpaceWithoutMaximumFiles
 
             New-InvalidArgumentException -ArgumentName 'ReserveDiskSpace' -Message $errorMessage
         }
 
-        # Test so that the path exist.
+        # Test so that the path exists.
         if ($properties.Keys -contains 'Path' -and -not (Test-Path -Path $properties.Path))
         {
             $errorMessage = $this.localizedData.PathInvalid -f $properties.Path

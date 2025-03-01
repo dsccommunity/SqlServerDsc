@@ -112,8 +112,8 @@ function Save-SqlDscSqlServerMediaFile
     if ((Test-Path -Path $destinationFilePath))
     {
         $verboseDescriptionMessage = $script:localizedData.SqlServerMediaFile_Save_ShouldProcessVerboseDescription -f $destinationFilePath
-        $verboseWarningMessage = $script:localizedData.qlServerMedia_Save_ShouldProcessVerboseWarning -f $destinationFilePath
-        $captionMessage = $script:localizedData.qlServerMedia_Save_ShouldProcessCaption
+        $verboseWarningMessage = $script:localizedData.SqlServerMediaFile_Save_ShouldProcessVerboseWarning -f $destinationFilePath
+        $captionMessage = $script:localizedData.SqlServerMediaFile_Save_ShouldProcessCaption
 
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
@@ -124,8 +124,6 @@ function Save-SqlDscSqlServerMediaFile
             return
         }
     }
-
-    Write-Verbose -Message ($script:localizedData.SqlServerMediaFile_Save_ShouldProcessVerboseDescription -f $destinationFilePath)
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -155,6 +153,8 @@ function Save-SqlDscSqlServerMediaFile
         $previousProgressPreference = $ProgressPreference
         $ProgressPreference = 'SilentlyContinue'
     }
+
+    Write-Verbose -Message ($script:localizedData.SqlServerMediaFile_Save_DownloadingInformation -f $Url)
 
     # Download the URL content.
     Invoke-WebRequest -Uri $Url -OutFile $downloadedFilePath | Out-Null

@@ -835,31 +835,31 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
 
         Context 'When the property <MockPropertyName> is not in desired state' -ForEach @(
             @{
-                MockPropertyName = 'Path'
+                MockPropertyName  = 'Path'
                 MockExpectedValue = 'C:\NewValue'
             }
             @{
-                MockPropertyName = 'AuditFilter'
+                MockPropertyName  = 'AuditFilter'
                 MockExpectedValue = 'object -like ''something'''
             }
             @{
-                MockPropertyName = 'MaximumFiles'
+                MockPropertyName  = 'MaximumFiles'
                 MockExpectedValue = 2
             }
             @{
-                MockPropertyName = 'MaximumRolloverFiles'
+                MockPropertyName  = 'MaximumRolloverFiles'
                 MockExpectedValue = 2
             }
             @{
-                MockPropertyName = 'OnFailure'
+                MockPropertyName  = 'OnFailure'
                 MockExpectedValue = 'FailOperation'
             }
             @{
-                MockPropertyName = 'QueueDelay'
+                MockPropertyName  = 'QueueDelay'
                 MockExpectedValue = 2000
             }
             @{
-                MockPropertyName = 'AuditGuid'
+                MockPropertyName  = 'AuditGuid'
                 MockExpectedValue = 'cfa0d47e-bf93-41ab-bc9a-b8511acbcdd6'
             }
         ) {
@@ -909,10 +909,10 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:mockSqlAuditInstance = [SqlAudit] @{
-                        Name                   = 'MockAuditName'
-                        InstanceName           = 'NamedInstance'
-                        MaximumFileSize        = 20
-                        MaximumFileSizeUnit    = 'Megabyte'
+                        Name                = 'MockAuditName'
+                        InstanceName        = 'NamedInstance'
+                        MaximumFileSize     = 20
+                        MaximumFileSizeUnit = 'Megabyte'
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
                             return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
@@ -953,10 +953,10 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:mockSqlAuditInstance = [SqlAudit] @{
-                        Name                   = 'MockAuditName'
-                        InstanceName           = 'NamedInstance'
-                        MaximumFileSize        = 20
-                        MaximumFileSizeUnit    = 'Megabyte'
+                        Name                = 'MockAuditName'
+                        InstanceName        = 'NamedInstance'
+                        MaximumFileSize     = 20
+                        MaximumFileSizeUnit = 'Megabyte'
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
                             return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
@@ -1041,9 +1041,9 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:mockSqlAuditInstance = [SqlAudit] @{
-                        Name             = 'MockAuditName'
-                        InstanceName     = 'NamedInstance'
-                        MaximumFiles     = 20
+                        Name         = 'MockAuditName'
+                        InstanceName = 'NamedInstance'
+                        MaximumFiles = 20
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
                             return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
@@ -1089,10 +1089,10 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:mockSqlAuditInstance = [SqlAudit] @{
-                        Name             = 'MockAuditName'
-                        InstanceName     = 'NamedInstance'
-                        Path             = 'C:\Temp'
-                        Force            = $true
+                        Name         = 'MockAuditName'
+                        InstanceName = 'NamedInstance'
+                        Path         = 'C:\Temp'
+                        Force        = $true
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
                             return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
@@ -1145,10 +1145,10 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:mockSqlAuditInstance = [SqlAudit] @{
-                        Name             = 'MockAuditName'
-                        InstanceName     = 'NamedInstance'
-                        LogType          = 'ApplicationLog'
-                        Force            = $true
+                        Name         = 'MockAuditName'
+                        InstanceName = 'NamedInstance'
+                        LogType      = 'ApplicationLog'
+                        Force        = $true
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
                             return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
@@ -1201,9 +1201,9 @@ Describe 'SqlAudit\Modify()' -Tag 'Modify' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:mockSqlAuditInstance = [SqlAudit] @{
-                        Name             = 'MockAuditName'
-                        InstanceName     = 'NamedInstance'
-                        Path             = 'C:\Temp'
+                        Name         = 'MockAuditName'
+                        InstanceName = 'NamedInstance'
+                        Path         = 'C:\Temp'
                     } |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
                             return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
@@ -1490,23 +1490,25 @@ Describe 'SqlAudit\AssertProperties()' -Tag 'AssertProperties' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
                     $script:mockSqlAuditInstance = [SqlAudit] @{
-                        Name         = 'MockAuditName'
-                        InstanceName = 'NamedInstance'
-                        Path         = 'C:\Temp'
+                        Name                = 'MockAuditName'
+                        InstanceName        = 'NamedInstance'
+                        Path                = 'C:\Temp'
                     }
                 }
             }
 
             It 'Should throw the correct error' {
                 InModuleScope -ScriptBlock {
-                    $mockErrorMessage = $script:mockSqlAuditInstance.localizedData.BothFileSizePropertiesMustBeSet
+                    $mockErrorMessage = $script:mockSqlAuditInstance.localizedData.ReservDiskSpaceWithoutMaximumFiles
 
                     $mockErrorMessage += ' (Parameter ''ReserveDiskSpace'')'
 
                     {
                         $mockSqlAuditInstance.AssertProperties(
                             @{
-                                ReserveDiskSpace = $true
+                                MaximumFileSize     = 10
+                                MaximumFileSizeUnit = 'Megabyte'
+                                ReserveDiskSpace    = $true
                             }
                         )
                     } | Should -Throw -ExpectedMessage $mockErrorMessage

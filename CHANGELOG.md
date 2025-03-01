@@ -18,8 +18,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fixed workaround for the GitHub Actions to support building module in Windows
+  PowerShell.
 - SqlServerDsc
   - Fix localization tests.
+- `SqlAudit`
+  - Fix localization strings in `Assert` method.
+- `Save-SqlDscSqlServerMediaFile`
+  - Fix localizations strings that used wrong keys.
+- `SqlConfiguration`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlDatabaseUser`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlMaxDop`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlMemory`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlReplication`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlRSSetup`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlServiceAccount`
+  - Change the alias command to real command name, to pass HQRM tests.
 
 ## [17.0.0] - 2024-09-30
 
