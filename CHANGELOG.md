@@ -31,10 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix localization strings in `Assert` method.
 - `Save-SqlDscSqlServerMediaFile`
   - Fix localizations strings that used wrong keys.
-  - Fix unit tests so the work cross-platform.
-- `Install-SqlDscServer` and private function `Invoke-SetupAction`
-  - Fix localization string keys naming.
-  - Fix unit tests to use correct localization string names.
+  - Fix unit tests so they work cross-platform.
 - `SqlConfiguration`
   - Change the alias command to real command name, to pass HQRM tests.
 - `SqlDatabaseUser`
