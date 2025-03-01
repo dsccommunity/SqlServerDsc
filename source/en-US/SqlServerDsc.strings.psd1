@@ -79,18 +79,30 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Audit_Disable_ShouldProcessCaption = Disable audit on instance
 
-    ## Install-SqlDscServer
-    Server_Install_ShouldProcessVerboseDescription = Invoking the Microsoft SQL Server setup action '{0}'.
-    Server_Install_ShouldProcessVerboseWarning = Are you sure you want to invoke the setup action '{0}'?
+    ## Invoke-SetupAction, Invoke-ReportServerSetupAction
+    SetupAction_SetupExitMessage = Setup exited with code '{0}'.
+    SetupAction_SetupSuccessful = Setup finished successfully.
+    SetupAction_SetupSuccessfulRebootRequired = Setup finished successfully, but a reboot is required.
+
+    ## Invoke-SetupAction
+    Invoke_SetupAction_ShouldProcessVerboseDescription = Invoking the Microsoft SQL Server setup action '{0}'.
+    Invoke_SetupAction_ShouldProcessVerboseWarning = Are you sure you want to invoke the setup action '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
-    Server_Install_ShouldProcessCaption = Invoke a Microsoft SQL Server setup action
-    Server_SetupExitMessage = Setup exited with code '{0}'.
-    Server_SetupSuccessful = Setup finished successfully.
-    Server_SetupSuccessfulRebootRequired = Setup finished successfully, but a reboot is required.
-    Server_SetupFailed = Please see the 'Summary.txt' log file in the 'Setup Bootstrap\\Log' folder.
-    Server_SetupArguments = Specified setup executable arguments: {0}
-    Server_MediaPathNotFound = The specified media path does not exist or does not contain 'setup.exe'.
-    Server_ConfigurationFileNotFound = The specified configuration file was not found.
+    Invoke_SetupAction_ShouldProcessCaption = Invoke a Microsoft SQL Server setup action
+    Invoke_SetupAction_ConfigurationFileNotFound = The specified configuration file was not found.
+    Invoke_SetupAction_MediaPathNotFound = The specified media path does not exist or does not contain 'setup.exe'.
+    Invoke_SetupAction_SetupArguments = Specified setup executable arguments: {0}
+    Invoke_SetupAction_SetupFailed = Please see the 'Summary.txt' log file in the 'Setup Bootstrap\\Log' folder.
+
+    ## Invoke-ReportServerSetupAction
+    ReportServerSetupAction_ReportServerExecutableNotFound = The specified executable does not exist.
+    ReportServerSetupAction_InstallFolderNotFound = The parent of the specified install folder does not exist.
+    ReportServerSetupAction_SetupArguments = Specified executable arguments: {0}
+    ReportServerSetupAction_TimeoutExceeded = The setup action has exceeded the specified timeout of {0} seconds.
+    ReportServerSetupAction_ShouldProcessVerboseDescription = Invoking the setup action '{0}'.
+    ReportServerSetupAction_ShouldProcessVerboseWarning = Are you sure you want to invoke the setup action '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    ReportServerSetupAction_ShouldProcessCaption = Invoke a setup action
 
     ## Assert-SetupActionProperties
     InstallSqlServerProperties_ASServerModeInvalidValue = The value for ASServerMode is not valid for the setup action {0}.

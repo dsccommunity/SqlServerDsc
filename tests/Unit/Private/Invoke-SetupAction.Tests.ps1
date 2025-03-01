@@ -785,7 +785,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                     # Redirect all verbose stream to $null to ge no output from ShouldProcess.
                     Invoke-SetupAction @installSqlDscServerParameters -Verbose 4> $null
 
-                    $mockVerboseMessage = $script:localizedData.Server_SetupArguments
+                    $mockVerboseMessage = $script:localizedData.Invoke_SetupAction_SetupArguments
 
                     Should -Invoke -CommandName Write-Verbose -ParameterFilter {
                         # Only test the command that output the string that should be tested.
@@ -3880,7 +3880,7 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
                         # Redirect all verbose stream to $null to ge no output from ShouldProcess.
                         Invoke-SetupAction @installSqlDscServerParameters -Verbose 4> $null
 
-                        $mockVerboseMessage = $script:localizedData.Server_SetupArguments
+                        $mockVerboseMessage = $script:localizedData.Invoke_SetupAction_SetupArguments
 
                         Should -Invoke -CommandName Write-Verbose -ParameterFilter {
                             # Only test the command that output the string that should be tested.
