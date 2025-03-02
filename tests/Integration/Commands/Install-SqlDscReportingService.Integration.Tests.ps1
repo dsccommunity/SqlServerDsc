@@ -27,8 +27,10 @@ Describe 'Install-SqlDscReportingService' -Tag @('Integration_SQL2022') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 
+        $script:temporaryFolder = Get-TemporaryFolder
+
         # Get the path to the Reporting Services executable
-        $reportingServicesExecutable = Join-Path -Path (Get-TemporaryFolder) -ChildPath 'SQLServerReportingServices.exe'
+        $reportingServicesExecutable = Join-Path -Path $script:temporaryFolder -ChildPath 'SQLServerReportingServices.exe'
     }
 
     Context 'When installing SQL Server 2022 Reporting Services' {
