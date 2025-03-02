@@ -101,7 +101,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
 
         # Define parameters for the function
         $Url = 'http://example.com/media.iso'
-        $DestinationPath = 'C:\Temp'
+        $DestinationPath = $TestDrive
     }
 
     Context 'When the URL does not end with .exe' {
@@ -161,7 +161,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
             Mock -CommandName Invoke-WebRequest
             Mock -CommandName Remove-Item
 
-            Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath 'C:\Temp' -Force
+            Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath $TestDrive -Force
 
             Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
             Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
@@ -172,7 +172,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
         It 'Should force the download of the media file' {
             Mock -CommandName Invoke-WebRequest
 
-            Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath 'C:\Temp' -Force
+            Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath $TestDrive -Force
 
             Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
         }
@@ -182,7 +182,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
         It 'Should download the media file silently' {
             Mock -CommandName Invoke-WebRequest
 
-            Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath 'C:\Temp' -Quiet  -Confirm:$false
+            Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.iso' -DestinationPath $TestDrive -Quiet  -Confirm:$false
 
             Should -Invoke -CommandName Invoke-WebRequest -Exactly -Times 1 -Scope It
         }
@@ -193,7 +193,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
             Mock -CommandName Invoke-WebRequest
             Mock -CommandName Start-Process
 
-            Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.exe' -DestinationPath 'C:\Temp' -Language 'fr-FR'  -Confirm:$false
+            Save-SqlDscSqlServerMediaFile -Url 'https://example.com/media.exe' -DestinationPath $TestDrive -Language 'fr-FR'  -Confirm:$false
 
             Should -Invoke -CommandName Invoke-WebRequest -Times 1 -Exactly
             Should -Invoke -CommandName Start-Process -Times 1 -Exactly

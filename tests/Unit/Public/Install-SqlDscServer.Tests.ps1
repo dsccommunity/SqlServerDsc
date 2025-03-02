@@ -730,7 +730,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                 Install-SqlDscServer @installSqlDscServerParameters -Verbose 4> $null
 
                 $mockVerboseMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.Server_SetupArguments
+                    $script:localizedData.Invoke_SetupAction_SetupArguments
                 }
 
                 Should -Invoke -CommandName Write-Verbose -ParameterFilter {
@@ -2320,7 +2320,7 @@ Describe 'Install-SqlDscServer' -Tag 'Public' {
                     Install-SqlDscServer @installSqlDscServerParameters -Verbose 4> $null
 
                     $mockVerboseMessage = InModuleScope -ScriptBlock {
-                        $script:localizedData.Server_SetupArguments
+                        $script:localizedData.Invoke_SetupAction_SetupArguments
                     }
 
                     Should -Invoke -CommandName Write-Verbose -ParameterFilter {

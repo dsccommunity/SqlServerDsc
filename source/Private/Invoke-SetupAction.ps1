@@ -55,9 +55,9 @@
 
     .PARAMETER AcceptLicensingTerms
         Required parameter to be able to run unattended install. By specifying this
-        parameter you acknowledge the acceptance all license terms and notices for
+        parameter you acknowledge the acceptance of all license terms and notices for
         the specified features, the terms and notices that the Microsoft SQL Server
-        setup executable normally ask for.
+        setup executable normally asks for.
 
     .PARAMETER MediaPath
         Specifies the path where to find the SQL Server installation media. On this
@@ -528,7 +528,7 @@ function Invoke-SetupAction
         [ValidateScript({
                 if (-not (Test-Path -Path $_))
                 {
-                    throw $script:localizedData.Server_ConfigurationFileNotFound
+                    throw $script:localizedData.Invoke_SetupAction_ConfigurationFileNotFound
                 }
 
                 return $true
@@ -567,7 +567,7 @@ function Invoke-SetupAction
         [ValidateScript({
                 if (-not (Test-Path -Path (Join-Path -Path $_ -ChildPath 'setup.exe')))
                 {
-                    throw $script:localizedData.Server_MediaPathNotFound
+                    throw $script:localizedData.Invoke_SetupAction_MediaPathNotFound
                 }
 
                 return $true
@@ -1674,11 +1674,11 @@ function Invoke-SetupAction
     # Clear sensitive values.
     $sensitiveValue = $null
 
-    Write-Verbose -Message ($script:localizedData.Server_SetupArguments -f $verboseSetupArgument)
+    Write-Verbose -Message ($script:localizedData.Invoke_SetupAction_SetupArguments -f $verboseSetupArgument)
 
-    $verboseDescriptionMessage = $script:localizedData.Server_Install_ShouldProcessVerboseDescription -f $PSCmdlet.ParameterSetName
-    $verboseWarningMessage = $script:localizedData.Server_Install_ShouldProcessVerboseWarning -f $PSCmdlet.ParameterSetName
-    $captionMessage = $script:localizedData.Server_Install_ShouldProcessCaption
+    $verboseDescriptionMessage = $script:localizedData.Invoke_SetupAction_ShouldProcessVerboseDescription -f $PSCmdlet.ParameterSetName
+    $verboseWarningMessage = $script:localizedData.Invoke_SetupAction_ShouldProcessVerboseWarning -f $PSCmdlet.ParameterSetName
+    $captionMessage = $script:localizedData.Invoke_SetupAction_ShouldProcessCaption
 
     if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
     {
@@ -1696,19 +1696,19 @@ function Invoke-SetupAction
         # Run setup executable.
         $processExitCode = Start-SqlSetupProcess @startProcessParameters
 
-        $setupExitMessage = ($script:localizedData.Server_SetupExitMessage -f $processExitCode)
+        $setupExitMessage = ($script:localizedData.SetupAction_SetupExitMessage -f $processExitCode)
 
         if ($processExitCode -eq 3010)
         {
             Write-Warning -Message (
-                '{0} {1}' -f $setupExitMessage, $script:localizedData.Server_SetupSuccessfulRebootRequired
+                '{0} {1}' -f $setupExitMessage, $script:localizedData.SetupAction_SetupSuccessfulRebootRequired
             )
         }
         elseif ($processExitCode -ne 0)
         {
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
-                    ('{0} {1}' -f $setupExitMessage, $script:localizedData.Server_SetupFailed),
+                    ('{0} {1}' -f $setupExitMessage, $script:localizedData.Invoke_SetupAction_SetupFailed),
                     'ISA0001', # cspell: disable-line
                     [System.Management.Automation.ErrorCategory]::InvalidOperation,
                     $InstanceName
@@ -1718,7 +1718,7 @@ function Invoke-SetupAction
         else
         {
             Write-Verbose -Message (
-                '{0} {1}' -f $setupExitMessage, ($script:localizedData.Server_SetupSuccessful)
+                '{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupAction_SetupSuccessful)
             )
         }
     }
