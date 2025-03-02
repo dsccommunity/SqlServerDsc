@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Install-SqlDscServer` and private function `Invoke-SetupAction`
   - Fix localization string keys naming.
   - Fix unit tests to use correct localization string names.
+  - Remove redundant unit tests.
 - `SqlConfiguration`
   - Change the alias command to real command name, to pass HQRM tests.
 - `SqlDatabaseUser`
