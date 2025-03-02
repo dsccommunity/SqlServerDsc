@@ -50,6 +50,10 @@
         Reporting Services: %ProgramFiles%\Microsoft SQL Server Reporting Services
         PI Report Server: %ProgramFiles%\Microsoft Power BI Report Server
 
+    .PARAMETER SuppressRestart
+        Suppresses the restart of the computer after the installation is finished.
+        By default the computer is restarted after the installation is finished.
+
     .PARAMETER Timeout
         Specifies how long to wait for the setup process to finish. Default value
         is `7200` seconds (2 hours). If the setup process does not finish before
@@ -167,6 +171,10 @@ function Invoke-ReportServerSetupAction
         $InstallFolder,
 
         [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $SuppressRestart,
+
+        [Parameter()]
         [System.UInt32]
         $Timeout = 7200,
 
@@ -240,6 +248,11 @@ function Invoke-ReportServerSetupAction
     if ($InstallFolder)
     {
         $setupArgument += ' /InstallFolder="{0}"' -f $InstallFolder
+    }
+
+    if ($SuppressRestart.IsPresent)
+    {
+        $setupArgument += ' /norestart'
     }
 
     $verboseSetupArgument = $setupArgument
