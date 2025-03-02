@@ -99,6 +99,56 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
         }
     }
 
+    Context 'When passing no existent path to parameter MediaPath' {
+        BeforeAll {
+            Mock -CommandName Assert-ElevatedUser
+
+            InModuleScope -ScriptBlock {
+                $script:mockDefaultParameters = @{
+                    Install = $true
+                    AcceptLicensingTerms = $true
+                    # Invalid path to test error handling
+                    MediaPath = $TestDrive
+                    Force = $true
+                }
+            }
+        }
+
+        It 'Should throw an error when the MediaPath does not exist' {
+            InModuleScope -ScriptBlock {
+                { Invoke-ReportServerSetupAction @mockDefaultParameters } |
+                    Should -Throw -ExpectedMessage "Cannot validate argument on parameter 'MediaPath'. The specified executable does not exist."
+            }
+        }
+    }
+
+    Context 'When passing no existent path to parameter InstallFolder' {
+        BeforeAll {
+            Mock -CommandName Assert-ElevatedUser
+
+            # Create the file "$TestDrive/ssrs.exe"
+            New-Item -Path "$TestDrive/ssrs.exe" -ItemType File -Force | Out-Null
+
+            InModuleScope -ScriptBlock {
+                $script:mockDefaultParameters = @{
+                    Install = $true
+                    AcceptLicensingTerms = $true
+                    MediaPath = "$TestDrive/ssrs.exe"
+                    # Invalid path to test error handling
+                    InstallFolder = "$TestDrive/MissingFolder2/SSRS"
+                    Force = $true
+                }
+            }
+        }
+
+        It 'Should throw an error when the InstallFolder does not exist' {
+            InModuleScope -ScriptBlock {
+                { Invoke-ReportServerSetupAction @mockDefaultParameters } |
+                    Should -Throw -ExpectedMessage "Cannot validate argument on parameter 'InstallFolder'. The parent of the specified install folder does not exist."
+            }
+        }
+    }
+
     Context 'When setup action is ''Install''' {
         BeforeAll {
             Mock -CommandName Assert-ElevatedUser

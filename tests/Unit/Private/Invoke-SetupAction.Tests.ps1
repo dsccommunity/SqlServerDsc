@@ -151,6 +151,51 @@ Describe 'Invoke-SetupAction' -Tag 'Private' {
         }
     }
 
+    Context 'When passing no existent path to parameter MediaPath' {
+        BeforeAll {
+            Mock -CommandName Assert-ElevatedUser
+
+            InModuleScope -ScriptBlock {
+                $script:mockDefaultParameters = @{
+                    Install = $true
+                    AcceptLicensingTerms = $true
+                    MediaPath = $TestDrive # Updated to an invalid path to test error handling
+                    Force = $true
+                }
+            }
+        }
+
+        It 'Should throw an error when the MediaPath does not exist' {
+            InModuleScope -ScriptBlock {
+                { Invoke-SetupAction @mockDefaultParameters } |
+                    Should -Throw -ExpectedMessage "Cannot validate argument on parameter 'MediaPath'. The specified media path does not exist or does not contain 'setup.exe'."
+            }
+        }
+    }
+
+    Context 'When passing no existent path to parameter ConfigurationFile' {
+        BeforeAll {
+            Mock -CommandName Assert-ElevatedUser
+
+            InModuleScope -ScriptBlock {
+                $script:mockDefaultParameters = @{
+                    Install = $true
+                    AcceptLicensingTerms = $true
+                    # Invalid path to test error handling
+                    ConfigurationFile = "$TestDrive/config.ini"
+                    Force = $true
+                }
+            }
+        }
+
+        It 'Should throw an error when the MediaPath does not exist' {
+            InModuleScope -ScriptBlock {
+                { Invoke-SetupAction @mockDefaultParameters } |
+                    Should -Throw -ExpectedMessage "Cannot validate argument on parameter 'ConfigurationFile'. The specified configuration file was not found."
+            }
+        }
+    }
+
     Context 'When setup action is ''Install''' {
         BeforeAll {
             Mock -CommandName Assert-SetupActionProperties

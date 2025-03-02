@@ -98,7 +98,6 @@ ConvertFrom-StringData @'
     ReportServerSetupAction_ReportServerExecutableNotFound = The specified executable does not exist.
     ReportServerSetupAction_InstallFolderNotFound = The parent of the specified install folder does not exist.
     ReportServerSetupAction_SetupArguments = Specified executable arguments: {0}
-    ReportServerSetupAction_TimeoutExceeded = The setup action has exceeded the specified timeout of {0} seconds.
     ReportServerSetupAction_ShouldProcessVerboseDescription = Invoking the setup action '{0}'.
     ReportServerSetupAction_ShouldProcessVerboseWarning = Are you sure you want to invoke the setup action '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.

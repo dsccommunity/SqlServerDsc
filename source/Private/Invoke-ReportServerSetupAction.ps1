@@ -154,7 +154,9 @@ function Invoke-ReportServerSetupAction
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'Repair')]
         [ValidateScript({
-                if (-not (Test-Path -Path (Split-Path -Path $_ -Parent) -PathType 'Container'))
+                $parentInstallFolder = Split-Path -Path $_ -Parent
+
+                if (-not (Test-Path -Path $parentInstallFolder))
                 {
                     throw $script:localizedData.ReportServerSetupAction_InstallFolderNotFound
                 }
