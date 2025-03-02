@@ -98,7 +98,7 @@ function Install-SqlDscReportingService
         $EditionUpgrade,
 
         [Parameter()]
-        [ValidateSet('Development', 'Evaluation', 'ExpressAdvanced')]
+        [ValidateSet('Developer', 'Evaluation', 'ExpressAdvanced')]
         [System.String]
         $Edition,
 

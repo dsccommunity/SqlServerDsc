@@ -47,13 +47,13 @@ Describe 'Install-SqlDscBIReportServer' -Tag @('Integration_SQL2016', 'Integrati
                     Force                = $true
                 }
 
-                Install-SqlDscBIReportServer @installSqlDscBIReportServerParameters
+                Install-SqlDscBIReportServer @installSqlDscBIReportServerParameters -ErrorAction 'Stop'
             } | Should -Not -Throw
         }
 
         It 'Should have installed Power BI Report Server' {
             # Validate the Power BI Report Server installation
-            $reportServerService = Get-Service -Name 'PBIReportServer'
+            $reportServerService = Get-Service -Name 'PowerBIReportServer'
 
             $reportServerService | Should -Not -BeNullOrEmpty
             $reportServerService.Status | Should -Be 'Running'
@@ -61,7 +61,7 @@ Describe 'Install-SqlDscBIReportServer' -Tag @('Integration_SQL2016', 'Integrati
 
         It 'Should stop the Power BI Report Server service' {
             # Stop the Power BI Report Server service to save memory on the build worker
-            $stopServiceResult = Stop-Service -Name 'PBIReportServer' -Force -PassThru -Verbose -ErrorAction 'Stop'
+            $stopServiceResult = Stop-Service -Name 'PowerBIReportServer' -Force -PassThru -Verbose -ErrorAction 'Stop'
 
             write-verbose -Message ($stopServiceResult | Out-String) -Verbose
 

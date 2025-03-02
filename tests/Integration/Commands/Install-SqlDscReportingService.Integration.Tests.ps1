@@ -47,7 +47,7 @@ Describe 'Install-SqlDscReportingService' -Tag @('Integration_SQL2022') {
                     Force                = $true
                 }
 
-                Install-SqlDscReportingService @installSqlDscReportingServicesParameters
+                Install-SqlDscReportingService @installSqlDscReportingServicesParameters -ErrorAction 'Stop'
             } | Should -Not -Throw
         }
 

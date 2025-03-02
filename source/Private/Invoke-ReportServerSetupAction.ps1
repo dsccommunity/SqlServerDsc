@@ -147,7 +147,7 @@ function Invoke-ReportServerSetupAction
 
         [Parameter(ParameterSetName = 'Install')]
         [Parameter(ParameterSetName = 'Repair')]
-        [ValidateSet('Development', 'Evaluation', 'ExpressAdvanced')]
+        [ValidateSet('Developer', 'Evaluation', 'ExpressAdvanced')]
         [System.String]
         $Edition,
 
@@ -213,6 +213,9 @@ function Invoke-ReportServerSetupAction
 
     Assert-BoundParameter @assertBoundParameters
 
+    # Sensitive values.
+    $sensitiveValue = @()
+
     # Default action is install or upgrade.
     $setupArgument = '/quiet /IAcceptLicenseTerms'
 
@@ -228,6 +231,10 @@ function Invoke-ReportServerSetupAction
     if ($ProductKey)
     {
         $setupArgument += ' /PID={0}' -f $ProductKey
+
+        $sensitiveValue += @(
+            $ProductKey
+        )
     }
 
     if ($EditionUpgrade.IsPresent)
@@ -262,11 +269,6 @@ function Invoke-ReportServerSetupAction
     }
 
     $verboseSetupArgument = $setupArgument
-
-    # Sensitive values.
-    $sensitiveValue = @(
-        $ProductKey
-    )
 
     # Obfuscate sensitive values.
     foreach ($currentSensitiveValue in $sensitiveValue)
