@@ -55,9 +55,9 @@
 
     .PARAMETER AcceptLicensingTerms
         Required parameter to be able to run unattended install. By specifying this
-        parameter you acknowledge the acceptance all license terms and notices for
+        parameter you acknowledge the acceptance of all license terms and notices for
         the specified features, the terms and notices that the Microsoft SQL Server
-        setup executable normally ask for.
+        setup executable normally asks for.
 
     .PARAMETER MediaPath
         Specifies the path where to find the SQL Server installation media. On this

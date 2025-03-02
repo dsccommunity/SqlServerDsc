@@ -7,9 +7,18 @@
 
         See the link in the commands help for information on each parameter.
 
+    .PARAMETER Install
+        Specifies that a new installation should be performed.
+
+    .PARAMETER Uninstall
+        Specifies that an uninstallation should be performed.
+
+    .PARAMETER Repair
+        Specifies that a repair should be performed on an existing installation.
+
     .PARAMETER AcceptLicensingTerms
         Required parameter to be able to run unattended install. By specifying this
-        parameter you acknowledge the acceptance all license terms and notices for
+        parameter you acknowledge the acceptance of all license terms and notices for
         the specified features, the terms and notices that the setup executable
         normally asks for.
 
