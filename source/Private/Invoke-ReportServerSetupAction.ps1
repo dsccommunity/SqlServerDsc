@@ -237,7 +237,13 @@ function Invoke-ReportServerSetupAction
 
     if ($Edition)
     {
-        $setupArgument += ' /Edition={0}' -f $Edition
+        $editionMap = @{
+            Developer = 'Dev'
+            Evaluation = 'Eval'
+            ExpressAdvanced = 'ExprAdv'
+        }
+
+        $setupArgument += ' /Edition={0}' -f $editionMap.$Edition
     }
 
     if ($LogPath)

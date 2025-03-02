@@ -46,14 +46,14 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Install-SqlDscReportingServices' -Tag 'Public' {
+Describe 'Install-SqlDscReportingService' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName   = '__AllParameterSets'
             MockExpectedParameters = '[-MediaPath] <string> [[-ProductKey] <string>] [[-Edition] <string>] [[-LogPath] <string>] [[-InstallFolder] <string>] [[-Timeout] <uint>] -AcceptLicensingTerms [-EditionUpgrade] [-SuppressRestart] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
-        $result = (Get-Command -Name 'Install-SqlDscReportingServices').ParameterSets |
+        $result = (Get-Command -Name 'Install-SqlDscReportingService').ParameterSets |
             Where-Object -FilterScript {
                 $_.Name -eq $mockParameterSetName
             } |
@@ -91,7 +91,7 @@ Describe 'Install-SqlDscReportingServices' -Tag 'Public' {
 
             Context 'When using parameter Confirm with value $false' {
                 It 'Should call the Invoke-ReportServerSetupAction with Install action' {
-                    Install-SqlDscReportingServices -Confirm:$false @mockDefaultParameters
+                    Install-SqlDscReportingService -Confirm:$false @mockDefaultParameters
 
                     Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
                         $Install -eq $true -and
@@ -103,7 +103,7 @@ Describe 'Install-SqlDscReportingServices' -Tag 'Public' {
 
             Context 'When using parameter Force' {
                 It 'Should call the Invoke-ReportServerSetupAction with Install action' {
-                    Install-SqlDscReportingServices -Force @mockDefaultParameters
+                    Install-SqlDscReportingService -Force @mockDefaultParameters
 
                     Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
                         $Install -eq $true -and
@@ -114,7 +114,7 @@ Describe 'Install-SqlDscReportingServices' -Tag 'Public' {
 
             Context 'When using parameter WhatIf' {
                 It 'Should call Invoke-ReportServerSetupAction' {
-                    Install-SqlDscReportingServices -WhatIf @mockDefaultParameters
+                    Install-SqlDscReportingService -WhatIf @mockDefaultParameters
 
                     Should -Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -Times 1 -Scope It
                 }
@@ -138,7 +138,7 @@ Describe 'Install-SqlDscReportingServices' -Tag 'Public' {
             }
 
             It 'Should pass all parameters to Invoke-ReportServerSetupAction' {
-                Install-SqlDscReportingServices @installParameters
+                Install-SqlDscReportingService @installParameters
 
                 Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
                     $Install -eq $true -and
@@ -167,7 +167,7 @@ Describe 'Install-SqlDscReportingServices' -Tag 'Public' {
             }
 
             It 'Should pass the Edition parameter to Invoke-ReportServerSetupAction' {
-                Install-SqlDscReportingServices @installParameters
+                Install-SqlDscReportingService @installParameters
 
                 Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
                     $Install -eq $true -and

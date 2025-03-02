@@ -1,13 +1,14 @@
 <#
     .SYNOPSIS
-        Installs SQL Server Reporting Services or Power BI Report Server.
+        Repairs an existing SQL Server Reporting Services or Power BI Report Server
+        installation.
 
     .DESCRIPTION
-        Installs SQL Server Reporting Services or Power BI Report Server using
-        the provided setup executable.
+        Repairs an existing SQL Server Reporting Services or Power BI Report Server
+        installation using the provided setup executable.
 
     .PARAMETER AcceptLicensingTerms
-        Required parameter to be able to run unattended install. By specifying this
+        Required parameter to be able to run unattended repair. By specifying this
         parameter you acknowledge the acceptance of all license terms and notices for
         the specified features, the terms and notices that the setup executable
         normally asks for.
@@ -17,7 +18,7 @@
         path the SQL Server setup executable must be found.
 
     .PARAMETER ProductKey
-        Specifies the product key to use for the installation, e.g. '12345-12345-12345-12345-12345'.
+        Specifies the product key to use for the repair, e.g. '12345-12345-12345-12345-12345'.
         This parameter is mutually exclusive with the parameter Edition.
 
     .PARAMETER EditionUpgrade
@@ -26,11 +27,11 @@
         upgrade is performed.
 
     .PARAMETER Edition
-        Specifies a free custom edition to use for the installation. This parameter
+        Specifies a free custom edition to use for the repair. This parameter
         is mutually exclusive with the parameter ProductKey.
 
     .PARAMETER LogPath
-        Specifies the file path where to write the log files, e.g. 'C:\Logs\Install.log'.
+        Specifies the file path where to write the log files, e.g. 'C:\Logs\Repair.log'.
         By default log files are created under %TEMP%.
 
     .PARAMETER InstallFolder
@@ -41,8 +42,8 @@
         PI Report Server: %ProgramFiles%\Microsoft Power BI Report Server
 
     .PARAMETER SuppressRestart
-        Suppresses the restart of the computer after the installation is finished.
-        By default the computer is restarted after the installation is finished.
+        Suppresses the restart of the computer after the repair is finished.
+        By default the computer is restarted after the repair is finished.
 
     .PARAMETER Timeout
         Specifies how long to wait for the setup process to finish. Default value
@@ -54,27 +55,22 @@
         is used.
 
     .EXAMPLE
-        Install-SqlDscReportingServices -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe'
+        Repair-SqlDscReportingService -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe'
 
-        Installs SQL Server Reporting Services with default settings.
-
-    .EXAMPLE
-        Install-SqlDscReportingServices -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe' -ProductKey '12345-12345-12345-12345-12345'
-
-        Installs SQL Server Reporting Services using a product key.
+        Repairs SQL Server Reporting Services with default settings.
 
     .EXAMPLE
-        Install-SqlDscReportingServices -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -Edition 'Evaluation' -InstallFolder 'C:\Program Files\Power BI Report Server'
+        Repair-SqlDscReportingService -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe' -ProductKey '12345-12345-12345-12345-12345' -EditionUpgrade
 
-        Installs Power BI Report Server in evaluation edition to a custom folder.
+        Repairs SQL Server Reporting Services and upgrades the edition using a
+        product key.
 
     .EXAMPLE
-        Install-SqlDscReportingServices -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe' -ProductKey '12345-12345-12345-12345-12345' -EditionUpgrade -LogPath 'C:\Logs\SSRS_Install.log'
+        Repair-SqlDscReportingService -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -LogPath 'C:\Logs\PowerBIReportServer_Repair.log'
 
-        Installs SQL Server Reporting Services and upgrades the edition using a
-        product key. Also specifies a custom log path.
+        Repairs Power BI Report Server and specifies a custom log path.
 #>
-function Install-SqlDscReportingServices
+function Repair-SqlDscReportingService
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
@@ -123,5 +119,5 @@ function Install-SqlDscReportingServices
         $Force
     )
 
-    Invoke-ReportServerSetupAction -Install @PSBoundParameters
+    Invoke-ReportServerSetupAction -Repair @PSBoundParameters
 }

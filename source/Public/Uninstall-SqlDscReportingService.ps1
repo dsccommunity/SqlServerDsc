@@ -28,21 +28,21 @@
         is used.
 
     .EXAMPLE
-        Uninstall-SqlDscReportingServices -MediaPath 'E:\SQLServerReportingServices.exe'
+        Uninstall-SqlDscReportingService -MediaPath 'E:\SQLServerReportingServices.exe'
 
         Uninstalls SQL Server Reporting Services.
 
     .EXAMPLE
-        Uninstall-SqlDscReportingServices -MediaPath 'E:\PowerBIReportServer.exe' -LogPath 'C:\Logs\PowerBIReportServer_Uninstall.log'
+        Uninstall-SqlDscReportingService -MediaPath 'E:\PowerBIReportServer.exe' -LogPath 'C:\Logs\PowerBIReportServer_Uninstall.log'
 
         Uninstalls Power BI Report Server and specifies a custom log path.
 
     .EXAMPLE
-        Uninstall-SqlDscReportingServices -MediaPath 'E:\SQLServerReportingServices.exe' -Force
+        Uninstall-SqlDscReportingService -MediaPath 'E:\SQLServerReportingServices.exe' -Force
 
         Uninstalls SQL Server Reporting Services without prompting for confirmation.
 #>
-function Uninstall-SqlDscReportingServices
+function Uninstall-SqlDscReportingService
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]

@@ -125,6 +125,28 @@ Describe 'Prerequisites' {
         }
     }
 
+    Context 'Download correct SQL Server 2022 Reporting Services installation executable' {
+        It 'Should download SQL Server 2022 Reporting Services installation executable' -Tag @('Integration_SQL2022') {
+            $url = 'https://download.microsoft.com/download/8/3/2/832616ff-af64-42b5-a0b1-5eb07f71dec9/SQLServerReportingServices.exe'
+
+            # Put the executable in a temporary folder that can be accessed by other tests
+            $script:mediaFile = Save-SqlDscSqlServerMediaFile -SkipExecution -Url $url -FileName 'SQLServerReportingServices.exe' -DestinationPath (Get-TemporaryFolder) -Force -Quiet -ErrorAction 'Stop'
+
+            $mediaFile.Name | Should -Be 'SQLServerReportingServices.exe'
+        }
+    }
+
+    Context 'Download correct Power BI Report Server installation executable' {
+        It 'Should download Power BI Report Server (January 2025) installation executable' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+            $url = 'https://download.microsoft.com/download/2/7/3/2739a88a-4769-4700-8748-1a01ddf60974/PowerBIReportServer.exe'
+
+            # Put the executable in a temporary folder that can be accessed by other tests
+            $script:mediaFile = Save-SqlDscSqlServerMediaFile -SkipExecution -Url $url -FileName 'PowerBIReportServer.exe' -DestinationPath (Get-TemporaryFolder) -Force -Quiet -ErrorAction 'Stop'
+
+            $mediaFile.Name | Should -Be 'PowerBIReportServer.exe'
+        }
+    }
+
     Context 'Mount SQL Server media' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
         It 'Should mount the media to a drive letter' {
             $mountedImage = Mount-DiskImage -ImagePath $script:mediaFile

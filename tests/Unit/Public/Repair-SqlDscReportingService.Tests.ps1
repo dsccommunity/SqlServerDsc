@@ -46,14 +46,14 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Uninstall-SqlDscReportingServices' -Tag 'Public' {
+Describe 'Repair-SqlDscReportingService' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName   = '__AllParameterSets'
-            MockExpectedParameters = '[-MediaPath] <string> [[-LogPath] <string>] [[-Timeout] <uint>] [-SuppressRestart] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '[-MediaPath] <string> [[-ProductKey] <string>] [[-Edition] <string>] [[-LogPath] <string>] [[-InstallFolder] <string>] [[-Timeout] <uint>] -AcceptLicensingTerms [-EditionUpgrade] [-SuppressRestart] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
-        $result = (Get-Command -Name 'Uninstall-SqlDscReportingServices').ParameterSets |
+        $result = (Get-Command -Name 'Repair-SqlDscReportingService').ParameterSets |
             Where-Object -FilterScript {
                 $_.Name -eq $mockParameterSetName
             } |
@@ -72,38 +72,41 @@ Describe 'Uninstall-SqlDscReportingServices' -Tag 'Public' {
         $result.ParameterListAsString | Should -Be $MockExpectedParameters
     }
 
-    Context 'When uninstalling SQL Server Reporting Services' {
+    Context 'When repairing SQL Server Reporting Services' {
         BeforeAll {
             Mock -CommandName Invoke-ReportServerSetupAction -RemoveParameterValidation @(
-                'MediaPath'
+                'MediaPath',
+                'InstallFolder'
             )
         }
 
         Context 'When using mandatory parameters only' {
             BeforeAll {
                 $mockDefaultParameters = @{
-                    MediaPath   = '\ReportingServices.exe'
-                    ErrorAction = 'Stop'
+                    AcceptLicensingTerms = $true
+                    MediaPath           = '\ReportingServices.exe'
+                    ErrorAction         = 'Stop'
                 }
             }
 
             Context 'When using parameter Confirm with value $false' {
-                It 'Should call the Invoke-ReportServerSetupAction with Uninstall action' {
-                    Uninstall-SqlDscReportingServices -Confirm:$false @mockDefaultParameters
+                It 'Should call the Invoke-ReportServerSetupAction with Repair action' {
+                    Repair-SqlDscReportingService -Confirm:$false @mockDefaultParameters
 
                     Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
-                        $Uninstall -eq $true -and
+                        $Repair -eq $true -and
+                        $AcceptLicensingTerms -eq $true -and
                         $MediaPath -eq '\ReportingServices.exe'
                     } -Exactly -Times 1 -Scope It
                 }
             }
 
             Context 'When using parameter Force' {
-                It 'Should call the Invoke-ReportServerSetupAction with Uninstall action' {
-                    Uninstall-SqlDscReportingServices -Force @mockDefaultParameters
+                It 'Should call the Invoke-ReportServerSetupAction with Repair action' {
+                    Repair-SqlDscReportingService -Force @mockDefaultParameters
 
                     Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
-                        $Uninstall -eq $true -and
+                        $Repair -eq $true -and
                         $Force -eq $true
                     } -Exactly -Times 1 -Scope It
                 }
@@ -111,35 +114,64 @@ Describe 'Uninstall-SqlDscReportingServices' -Tag 'Public' {
 
             Context 'When using parameter WhatIf' {
                 It 'Should call Invoke-ReportServerSetupAction' {
-                    Uninstall-SqlDscReportingServices -WhatIf @mockDefaultParameters
+                    Repair-SqlDscReportingService -WhatIf @mockDefaultParameters
 
-                    Should -Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -Times 1     -Scope It
+                    Should -Invoke -CommandName Invoke-ReportServerSetupAction -Exactly -Times 1 -Scope It
                 }
             }
         }
 
         Context 'When using optional parameters' {
             BeforeAll {
-                $uninstallParameters = @{
-                    MediaPath       = '\PowerBIReportServer.exe'
-                    LogPath         = 'C:\Logs\Uninstall.log'
-                    SuppressRestart = $true
-                    Timeout         = 3600
-                    Force           = $true
-                    ErrorAction     = 'Stop'
+                $repairParameters = @{
+                    AcceptLicensingTerms = $true
+                    MediaPath           = '\ReportingServices.exe'
+                    ProductKey          = '12345-12345-12345-12345-12345'
+                    EditionUpgrade      = $true
+                    LogPath             = 'C:\Logs\Repair.log'
+                    InstallFolder       = 'C:\Program Files\SSRS'
+                    SuppressRestart     = $true
+                    Timeout             = 3600
+                    Force               = $true
+                    ErrorAction         = 'Stop'
                 }
             }
 
             It 'Should pass all parameters to Invoke-ReportServerSetupAction' {
-                Uninstall-SqlDscReportingServices @uninstallParameters
+                Repair-SqlDscReportingService @repairParameters
 
                 Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
-                    $Uninstall -eq $true -and
-                    $MediaPath -eq '\PowerBIReportServer.exe' -and
-                    $LogPath -eq 'C:\Logs\Uninstall.log' -and
+                    $Repair -eq $true -and
+                    $AcceptLicensingTerms -eq $true -and
+                    $MediaPath -eq '\ReportingServices.exe' -and
+                    $ProductKey -eq '12345-12345-12345-12345-12345' -and
+                    $EditionUpgrade -eq $true -and
+                    $LogPath -eq 'C:\Logs\Repair.log' -and
+                    $InstallFolder -eq 'C:\Program Files\SSRS' -and
                     $SuppressRestart -eq $true -and
                     $Timeout -eq 3600 -and
                     $Force -eq $true
+                } -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When using Edition instead of ProductKey' {
+            BeforeAll {
+                $repairParameters = @{
+                    AcceptLicensingTerms = $true
+                    MediaPath           = '\PowerBIReportServer.exe'
+                    Edition             = 'Development'
+                    Force               = $true
+                    ErrorAction         = 'Stop'
+                }
+            }
+
+            It 'Should pass the Edition parameter to Invoke-ReportServerSetupAction' {
+                Repair-SqlDscReportingService @repairParameters
+
+                Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
+                    $Repair -eq $true -and
+                    $Edition -eq 'Development'
                 } -Exactly -Times 1 -Scope It
             }
         }
