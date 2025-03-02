@@ -9,8 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Public commands:
   - `Install-SqlDscReportingServices`
-  - `Install-SqlDscReportingServices`
+  - `Install-SqlDscBIReportServer`
+  - `Repair-SqlDscReportingServices`
+  - `Repair-SqlDscBIReportServer`
   - `Uninstall-SqlDscReportingServices`
+  - `Uninstall-SqlDscBIReportServer`
 - Private function:
   - `Invoke-ReportServerSetupAction`
 
