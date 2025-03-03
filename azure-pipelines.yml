@@ -119,7 +119,6 @@ stages:
               testResultsFormat: 'NUnit'
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'HQRM'
-
       - job: Test_Unit
         displayName: 'Unit'
         pool:
@@ -156,7 +155,6 @@ stages:
               targetPath: '$(buildFolderName)/$(testResultFolderName)/'
               artifactName: $(testArtifactName)
               parallel: true
-
       - job: Code_Coverage
         displayName: 'Publish Code Coverage'
         dependsOn: Test_Unit
@@ -195,7 +193,7 @@ stages:
 
   - stage: Integration_Test_Commands_SqlServer
     displayName: 'Integration Test Commands - SQL Server'
-    dependsOn: Build
+    dependsOn: Quality_Test_and_Unit_Test
     jobs:
       - job: Test_Integration
         displayName: 'Commands'
@@ -352,30 +350,12 @@ stages:
         displayName: 'Commands'
         strategy:
           matrix:
-            SQL2016_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2016_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2017_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2017'
-            SQL2017_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2017'
-            SQL2019_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2019'
-            SQL2019_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2019'
             SQL2022_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2022'
+              TEST_CONFIGURATION: 'Integration_PowerBI'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2022'
+              TEST_CONFIGURATION: 'Integration_PowerBI'
         pool:
           vmImage: $(JOB_VMIMAGE)
         timeoutInMinutes: 0
@@ -421,7 +401,7 @@ stages:
 
   - stage: Integration_Test_Resources_SqlServer
     displayName: 'Integration Test Resources - SQL Server'
-    dependsOn: Build
+    dependsOn: Quality_Test_and_Unit_Test
     jobs:
       - job: Test_Integration
         displayName: 'Integration'
@@ -523,7 +503,7 @@ stages:
 
   - stage: Integration_Test_Resources_SqlServer_dbatools
     displayName: 'Integration Test Resources - SQL Server (dbatools)'
-    dependsOn: Build
+    dependsOn: Quality_Test_and_Unit_Test
     jobs:
       - job: Test_Integration
         displayName: 'Integration'

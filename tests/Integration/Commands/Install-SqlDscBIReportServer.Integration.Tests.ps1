@@ -23,7 +23,7 @@ BeforeDiscovery {
     }
 }
 
-Describe 'Install-SqlDscBIReportServer' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Install-SqlDscBIReportServer' -Tag @('Integration_PowerBI') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 

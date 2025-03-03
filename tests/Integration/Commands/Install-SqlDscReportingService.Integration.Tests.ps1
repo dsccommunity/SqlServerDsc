@@ -23,7 +23,7 @@ BeforeDiscovery {
     }
 }
 
-Describe 'Install-SqlDscReportingService' -Tag @('Integration_SQL2022') {
+Describe 'Install-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 
@@ -33,7 +33,7 @@ Describe 'Install-SqlDscReportingService' -Tag @('Integration_SQL2022') {
         $reportingServicesExecutable = Join-Path -Path $script:temporaryFolder -ChildPath 'SQLServerReportingServices.exe'
     }
 
-    Context 'When installing SQL Server 2022 Reporting Services' {
+    Context 'When installing Reporting Services' {
         It 'Should run the command without throwing' {
             {
                 # Set splatting parameters for Install-SqlDscReportingService
@@ -51,7 +51,7 @@ Describe 'Install-SqlDscReportingService' -Tag @('Integration_SQL2022') {
             } | Should -Not -Throw
         }
 
-        It 'Should have installed SQL Server 2022 Reporting Services' {
+        It 'Should have installed Reporting Services' {
             # Validate the Reporting Services installation
             $reportServerService = Get-Service -Name 'SQLServerReportingServices'
 
