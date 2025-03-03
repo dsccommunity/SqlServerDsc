@@ -521,9 +521,12 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration Resources ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-      - job: Integration_Test_Resources_SqlServer_dbatools
-        displayName: 'Integration Test Resources - SQL Server (dbatools)'
-        dependsOn: Integration_Test_Resources_SqlServer
+  - stage: Integration_Test_Resources_SqlServer_dbatools
+    displayName: 'Integration Test Resources - SQL Server (dbatools)'
+    dependsOn: Build
+    jobs:
+      - job: Test_Integration
+        displayName: 'Integration'
         strategy:
           matrix:
             SQL2016_WIN2022:
@@ -611,9 +614,12 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration (dbatools) ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-      - job: Integration_Test_Resources_ReportingServices
-        displayName: 'Integration Test Resources - Reporting Services'
-        dependsOn: Integration_Test_Resources_SqlServer
+  - stage: Integration_Test_Resources_ReportingServices
+    displayName: 'Integration Test Resources - Reporting Services'
+    dependsOn: Integration_Test_Resources_SqlServer
+    jobs:
+      - job: Test_Integration
+        displayName: 'Integration'
         strategy:
           matrix:
             SQL2016_WIN2019:
@@ -688,9 +694,12 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration RS ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-      - job: Integration_Test_Resources_ReportingServices_dbatools
-        displayName: 'Integration Test Resources - Reporting Services (dbatools)'
-        dependsOn: Integration_Test_Resources_SqlServer
+  - stage: Integration_Test_Resources_ReportingServices_dbatools
+    displayName: 'Integration Test Resources - Reporting Services (dbatools)'
+    dependsOn: Integration_Test_Resources_SqlServer
+    jobs:
+      - job: Test_Integration
+        displayName: 'Integration'
         strategy:
           matrix:
             SQL2016_WIN2022:
@@ -751,7 +760,12 @@ stages:
     dependsOn:
     - Quality_Test_and_Unit_Test
     - Integration_Test_Commands_SqlServer
+    - Integration_Test_Commands_ReportingServices
+    - Integration_Test_Commands_BIReportServer
     - Integration_Test_Resources_SqlServer
+    - Integration_Test_Resources_SqlServer_dbatools
+    - Integration_Test_Resources_ReportingServices
+    - Integration_Test_Resources_ReportingServices_dbatools
     condition: |
       and(
         succeeded(),
