@@ -275,12 +275,6 @@ stages:
         displayName: 'Commands'
         strategy:
           matrix:
-            SQL2016_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2016_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
             SQL2017_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_SQL2017'
@@ -503,7 +497,7 @@ stages:
 
   - stage: Integration_Test_Resources_SqlServer_dbatools
     displayName: 'Integration Test Resources - SQL Server (dbatools)'
-    dependsOn: Quality_Test_and_Unit_Test
+    dependsOn: Integration_Test_Resources_SqlServer
     jobs:
       - job: Test_Integration
         displayName: 'Integration'
