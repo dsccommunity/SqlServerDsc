@@ -23,44 +23,47 @@ BeforeDiscovery {
     }
 }
 
-Describe 'Uninstall-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Repair-SqlDscBIReportServer' -Tag @('Integration_PowerBI') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 
         # Starting the Power BI Report Server service prior to running tests.
-        Start-Service -Name 'SQLServerReportingServices' -Verbose -ErrorAction 'Stop'
+        Start-Service -Name 'PowerBIReportServer' -Verbose -ErrorAction 'Stop'
 
         $script:temporaryFolder = Get-TemporaryFolder
 
-        # Get the path to the Reporting Services executable
-        $reportingServicesExecutable = Join-Path -Path $script:temporaryFolder -ChildPath 'SQLServerReportingServices.exe'
+        # Get the path to the Power BI Report Server executable
+        $powerBIReportServerExecutable = Join-Path -Path $script:temporaryFolder -ChildPath 'PowerBIReportServer.exe'
     }
 
-    It 'Should have the Reporting Services service running' {
-        $getServiceResult = Get-Service -Name 'SQLServerReportingServices' -ErrorAction 'Stop'
+    It 'Should have the BI Report Server service running' {
+        $getServiceResult = Get-Service -Name 'PowerBIReportServer' -ErrorAction 'Stop'
 
         $getServiceResult.Status | Should -Be 'Running'
     }
 
-    Context 'When uninstalling Reporting Services' {
+    Context 'When repairing BI Report Server' {
         It 'Should run the command without throwing' {
             {
-                # Set splatting parameters for Uninstall-SqlDscReportingService
-                $uninstallSqlDscReportingServiceParameters = @{
-                    MediaPath       = $reportingServicesExecutable
-                    LogPath         = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Uninstall.log'
+                # Set splatting parameters for Repair-SqlDscBIReportServer
+                $repairSqlDscBIReportServerParameters = @{
+                    MediaPath       = $powerBIReportServerExecutable
+                    LogPath         = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Repair.log'
                     SuppressRestart = $true
                     Verbose         = $true
                     ErrorAction     = 'Stop'
                     Force           = $true
                 }
 
-                Uninstall-SqlDscReportingService @uninstallSqlDscReportingServiceParameters
+                Repair-SqlDscBIReportServer @repairSqlDscBIReportServerParameters
             } | Should -Not -Throw
         }
 
-        It 'Should not have a SQL Server Reporting Services service' {
-            Get-Service -Name 'SQLServerReportingServices' -ErrorAction 'Ignore' | Should -BeNullOrEmpty
+        It 'Should still have a Power BI Report Server service running after repair' {
+            $getServiceResult = Get-Service -Name 'PowerBIReportServer' -ErrorAction 'Stop'
+
+            $getServiceResult | Should -Not -BeNullOrEmpty
+            $getServiceResult.Status | Should -Be 'Running'
         }
     }
 }

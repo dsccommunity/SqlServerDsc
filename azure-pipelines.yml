@@ -323,6 +323,8 @@ stages:
                   'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
                   # Group 1
                   'tests/Integration/Commands/Install-SqlDscReportingService.Integration.Tests.ps1'
+                  # Group 8
+                  'tests/Integration/Commands/Repair-SqlDscReportingService.Integration.Tests.ps1'
                   # Group 9
                   'tests/Integration/Commands/Uninstall-SqlDscReportingService.Integration.Tests.ps1'
               )
@@ -380,6 +382,8 @@ stages:
                   'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
                   # Group 1
                   'tests/Integration/Commands/Install-SqlDscBIReportServer.Integration.Tests.ps1'
+                  # Group 8
+                  'tests/Integration/Commands/Repair-SqlDscBIReportServer.Integration.Tests.ps1'
                   # Group 9
                   'tests/Integration/Commands/Uninstall-SqlDscBIReportServer.Integration.Tests.ps1'
               )

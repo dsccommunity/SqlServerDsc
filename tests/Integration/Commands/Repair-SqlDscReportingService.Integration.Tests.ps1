@@ -23,7 +23,7 @@ BeforeDiscovery {
     }
 }
 
-Describe 'Uninstall-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Repair-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 
@@ -42,25 +42,28 @@ Describe 'Uninstall-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integ
         $getServiceResult.Status | Should -Be 'Running'
     }
 
-    Context 'When uninstalling Reporting Services' {
-        It 'Should run the command without throwing' {
+    Context 'When repairing Reporting Services' {
+        It 'Should run the repair command without throwing' {
             {
-                # Set splatting parameters for Uninstall-SqlDscReportingService
-                $uninstallSqlDscReportingServiceParameters = @{
+                # Set splatting parameters for Repair-SqlDscReportingService
+                $repairSqlDscReportingServiceParameters = @{
                     MediaPath       = $reportingServicesExecutable
-                    LogPath         = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Uninstall.log'
+                    LogPath         = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Repair.log'
                     SuppressRestart = $true
                     Verbose         = $true
                     ErrorAction     = 'Stop'
                     Force           = $true
                 }
 
-                Uninstall-SqlDscReportingService @uninstallSqlDscReportingServiceParameters
+                Repair-SqlDscReportingService @repairSqlDscReportingServiceParameters
             } | Should -Not -Throw
         }
 
-        It 'Should not have a SQL Server Reporting Services service' {
-            Get-Service -Name 'SQLServerReportingServices' -ErrorAction 'Ignore' | Should -BeNullOrEmpty
+        It 'Should still have the SQL Server Reporting Services service running after repair' {
+            $getServiceResult = Get-Service -Name 'SQLServerReportingServices' -ErrorAction 'Stop'
+
+            $getServiceResult | Should -Not -BeNullOrEmpty
+            $getServiceResult.Status | Should -Be 'Running'
         }
     }
 }

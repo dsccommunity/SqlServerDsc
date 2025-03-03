@@ -47,8 +47,8 @@ Describe 'Uninstall-SqlDscBIReportServer' -Tag @('Integration_PowerBI') {
             {
                 # Set splatting parameters for Uninstall-SqlDscBIReportServer
                 $uninstallSqlDscBIReportServerParameters = @{
-                    MediaPath       = $reportingServicesExecutable
-                    LogPath         = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Install.log'
+                    MediaPath       = $powerBIReportServerExecutable
+                    LogPath         = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Uninstall.log'
                     SuppressRestart = $true
                     Verbose         = $true
                     ErrorAction     = 'Stop'
