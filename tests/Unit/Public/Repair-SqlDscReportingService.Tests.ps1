@@ -160,7 +160,7 @@ Describe 'Repair-SqlDscReportingService' -Tag 'Public' {
                 $repairParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath           = '\PowerBIReportServer.exe'
-                    Edition             = 'Development'
+                    Edition             = 'Developer'
                     Force               = $true
                     ErrorAction         = 'Stop'
                 }
@@ -171,7 +171,7 @@ Describe 'Repair-SqlDscReportingService' -Tag 'Public' {
 
                 Should -Invoke -CommandName Invoke-ReportServerSetupAction -ParameterFilter {
                     $Repair -eq $true -and
-                    $Edition -eq 'Development'
+                    $Edition -eq 'Developer'
                 } -Exactly -Times 1 -Scope It
             }
         }
