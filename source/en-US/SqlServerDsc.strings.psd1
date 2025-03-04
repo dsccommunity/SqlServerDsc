@@ -194,6 +194,21 @@ ConvertFrom-StringData @'
     ## Get-SqlDscConfigurationOption
     ConfigurationOption_Get_Missing = There is no configuration option with the name '{0}'.
 
+    ## Test-IsManagementStudioInstalled
+    IsManagementStudioInstalled_Test_NotSupportedVersion = SQL Server Management Studio is not supported for the provided version.
+
+    ## Test-IsManagementStudioAdvancedInstalled
+    IsManagementStudioAdvancedInstalled_Test_NotSupportedVersion = SQL Server Management Studio Advanced is not supported for the provided version.
+
+    ## Get-SqlDscIntegrationServicesInstalledSetting
+    IntegrationServicesSetting_Get_NotInstalled = There are no Integration Services installed with version {0}.
+
+    ## Get-SqlDscMasterDataServicesInstalledSetting
+    MasterDataServicesSetting_Get_NotInstalled = There are no Master Data Services installed with version {0}.
+
+    ## Get-SqlDscDatabaseEngineInstalledSetting
+    DatabaseEngineSetting_Get_NotInstalled = There are no Database Engine installed with version {0}.
+
     ## Save-SqlDscSqlServerMediaFile
     SqlServerMediaFile_Save_ShouldProcessVerboseDescription = The existing destination file '{0}' already exists and will be replaced.
     SqlServerMediaFile_Save_ShouldProcessVerboseWarning = Are you sure you want to replace existing file '{0}'?
