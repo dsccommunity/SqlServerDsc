@@ -34,10 +34,20 @@
         Forces the download of the media file even if the file already exists at the
         specified destination path.
 
+    .PARAMETER SkipExecution
+        When specified, and the URL points to an executable (.exe), the function will
+        download the executable file without executing it. The file will be saved using
+        the provided FileName parameter.
+
     .EXAMPLE
         Save-SqlDscSqlServerMediaFile -Url 'https://download.microsoft.com/download/c/c/9/cc9c6797-383c-4b24-8920-dc057c1de9d3/SQL2022-SSEI-Dev.exe' -DestinationPath 'C:\path\to\destination'
 
         This downloads the SQL Server 2022 media and saves it to the specified destination path.
+
+    .EXAMPLE
+        Save-SqlDscSqlServerMediaFile -Url 'https://download.microsoft.com/download/c/c/9/cc9c6797-383c-4b24-8920-dc057c1de9d3/SQL2022-SSEI-Dev.exe' -DestinationPath 'C:\path\to\destination' -SkipExecution
+
+        This downloads the SQL Server 2022 installer executable but does not execute it to extract the ISO.
 
     .EXAMPLE
         Save-SqlDscSqlServerMediaFile -Url 'https://download.microsoft.com/download/d/a/2/da259851-b941-459d-989c-54a18a5d44dd/SQL2019-SSEI-Dev.exe' -DestinationPath 'C:\path\to\destination'
@@ -85,7 +95,11 @@ function Save-SqlDscSqlServerMediaFile
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $Force
+        $Force,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $SkipExecution
     )
 
     if ($Force.IsPresent -and -not $Confirm)
@@ -93,7 +107,7 @@ function Save-SqlDscSqlServerMediaFile
         $ConfirmPreference = 'None'
     }
 
-    if ((Get-Item -Path "$DestinationPath/*.iso" -Force).Count -gt 0)
+    if ((Get-Item -Path "$DestinationPath/*.iso" -Force).Count -gt 0 -and -not $SkipExecution)
     {
         $auditAlreadyPresentMessage = $script:localizedData.SqlServerMediaFile_Save_InvalidDestinationFolder
 
@@ -165,7 +179,7 @@ function Save-SqlDscSqlServerMediaFile
         $ProgressPreference = $previousProgressPreference
     }
 
-    if ($isExecutable)
+    if ($isExecutable -and -not $SkipExecution)
     {
         Write-Verbose -Message $script:localizedData.SqlServerMediaFile_Save_IsExecutable
 

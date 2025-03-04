@@ -30,8 +30,6 @@ Describe 'Install-SqlDscServer' -Tag @('Integration_SQL2016', 'Integration_SQL20
 
         # Starting the named instance SQL Server service prior to running tests.
         Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
-
-        $computerName = Get-ComputerName
     }
 
     It 'Should have the named instance SQL Server service started' {

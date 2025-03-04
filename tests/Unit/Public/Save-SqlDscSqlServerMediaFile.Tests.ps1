@@ -52,7 +52,7 @@ Describe 'Save-SqlDscSqlServerMediaFile' -Tag 'Public' {
         @{
             MockParameterSetName = '__AllParameterSets'
             # cSpell: disable-next
-            MockExpectedParameters = '[-Url] <string> [-DestinationPath] <FileInfo> [[-FileName] <string>] [[-Language] <string>] [-Quiet] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '[-Url] <string> [-DestinationPath] <FileInfo> [[-FileName] <string>] [[-Language] <string>] [-Quiet] [-Force] [-SkipExecution] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'Save-SqlDscSqlServerMediaFile').ParameterSets |

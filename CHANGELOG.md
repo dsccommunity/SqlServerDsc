@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Public commands:
+  - `Install-SqlDscReportingService`
+  - `Install-SqlDscBIReportServer`
+  - `Repair-SqlDscReportingService`
+  - `Repair-SqlDscBIReportServer`
+  - `Uninstall-SqlDscReportingService`
+  - `Uninstall-SqlDscBIReportServer`
 - Private function:
   - `Invoke-ReportServerSetupAction`
 
@@ -17,6 +24,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     now been moved to the WikiSource folder. The examples are published to
     the repository Wiki. The README has been updated to link to the new
     location ([issue #2051](https://github.com/dsccommunity/SqlServerDsc/issues/2051)).
+  - Integration test stages has been modified to split the testing into
+    several different areas. The tests are dependent on this order:
+    - Quality_Test_and_Unit_Test
+    - Integration_Test_Commands_SqlServer
+      - Integration_Test_Commands_ReportingServices
+      - Integration_Test_Commands_BIReportServer
+    - Integration_Test_Resources_SqlServer
+      - Integration_Test_Resources_SqlServer_dbatools
+      - Integration_Test_Resources_ReportingServices
+        - Integration_Test_Resources_ReportingServices_dbatools
 - SqlSetup
   - Fixed issue with AddNode where cluster IP information was not being passed to
     setup.exe ([issue #1171](https://github.com/dsccommunity/SqlServerDsc/issues/1171)).
@@ -31,10 +48,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix localization strings in `Assert` method.
 - `Save-SqlDscSqlServerMediaFile`
   - Fix localizations strings that used wrong keys.
-  - Fix unit tests so the work cross-platform.
+  - Fix unit tests so they work cross-platform.
 - `Install-SqlDscServer` and private function `Invoke-SetupAction`
   - Fix localization string keys naming.
   - Fix unit tests to use correct localization string names.
+  - Remove redundant unit tests.
 - `SqlConfiguration`
   - Change the alias command to real command name, to pass HQRM tests.
 - `SqlDatabaseUser`
@@ -55,7 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - SqlSetup
-  - Added new parameter ProductCoveredbySA which is introduced in SQL 2022.
+  - Added new parameter ProductCoveredBySA which is introduced in SQL 2022.
 
 ### Added
 

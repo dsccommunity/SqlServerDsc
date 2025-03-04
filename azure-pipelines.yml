@@ -119,7 +119,6 @@ stages:
               testResultsFormat: 'NUnit'
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'HQRM'
-
       - job: Test_Unit
         displayName: 'Unit'
         pool:
@@ -156,7 +155,6 @@ stages:
               targetPath: '$(buildFolderName)/$(testResultFolderName)/'
               artifactName: $(testArtifactName)
               parallel: true
-
       - job: Code_Coverage
         displayName: 'Publish Code Coverage'
         dependsOn: Test_Unit
@@ -193,9 +191,9 @@ stages:
               bash <(curl -s https://codecov.io/bash) -f "./$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml" -F unit
             displayName: 'Publish Code Coverage to Codecov.io'
 
-  - stage: Integration_Test_Commands
-    displayName: 'Integration Test Commands'
-    dependsOn: Build
+  - stage: Integration_Test_Commands_SqlServer
+    displayName: 'Integration Test Commands - SQL Server'
+    dependsOn: Quality_Test_and_Unit_Test
     jobs:
       - job: Test_Integration
         displayName: 'Commands'
@@ -269,9 +267,139 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration Commands ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-  - stage: Integration_Test_Resources
-    displayName: 'Integration Test Resources'
-    dependsOn: Build
+  - stage: Integration_Test_Commands_ReportingServices
+    displayName: 'Integration Test Commands - Reporting Services'
+    dependsOn: Integration_Test_Commands_SqlServer
+    jobs:
+      - job: Test_Integration
+        displayName: 'Commands'
+        strategy:
+          matrix:
+            SQL2017_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2017'
+            SQL2017_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2017'
+            SQL2019_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2019_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2022_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+            SQL2022_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+        pool:
+          vmImage: $(JOB_VMIMAGE)
+        timeoutInMinutes: 0
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Configure WinRM'
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
+          - powershell: |
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+              Remove-Module -Name CommonTestHelper
+            name: cleanCIWorker
+            displayName: 'Clean CI worker'
+          - powershell: |
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
+                  # Run the integration tests in a specific group order.
+                  # Group 0
+                  'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
+                  # Group 1
+                  'tests/Integration/Commands/Install-SqlDscReportingService.Integration.Tests.ps1'
+                  # Group 8
+                  'tests/Integration/Commands/Repair-SqlDscReportingService.Integration.Tests.ps1'
+                  # Group 9
+                  'tests/Integration/Commands/Uninstall-SqlDscReportingService.Integration.Tests.ps1'
+              )
+            name: test
+            displayName: 'Run Integration Test'
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Integration Commands ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
+
+  - stage: Integration_Test_Commands_BIReportServer
+    displayName: 'Integration Test Commands - BI Report Server'
+    dependsOn: Integration_Test_Commands_SqlServer
+    jobs:
+      - job: Test_Integration
+        displayName: 'Commands'
+        strategy:
+          matrix:
+            SQL2022_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_PowerBI'
+            SQL2022_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_PowerBI'
+        pool:
+          vmImage: $(JOB_VMIMAGE)
+        timeoutInMinutes: 0
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Configure WinRM'
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
+          - powershell: |
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+              Remove-Module -Name CommonTestHelper
+            name: cleanCIWorker
+            displayName: 'Clean CI worker'
+          - powershell: |
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
+                  # Run the integration tests in a specific group order.
+                  # Group 0
+                  'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
+                  # Group 1
+                  'tests/Integration/Commands/Install-SqlDscBIReportServer.Integration.Tests.ps1'
+                  # Group 8
+                  'tests/Integration/Commands/Repair-SqlDscBIReportServer.Integration.Tests.ps1'
+                  # Group 9
+                  'tests/Integration/Commands/Uninstall-SqlDscBIReportServer.Integration.Tests.ps1'
+              )
+            name: test
+            displayName: 'Run Integration Test'
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Integration Commands ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
+
+  - stage: Integration_Test_Resources_SqlServer
+    displayName: 'Integration Test Resources - SQL Server'
+    dependsOn: Quality_Test_and_Unit_Test
     jobs:
       - job: Test_Integration
         displayName: 'Integration'
@@ -371,9 +499,12 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration Resources ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-      - job: Test_Integration_dbatools
-        displayName: 'Integration (dbatools)'
-        dependsOn: Test_Integration
+  - stage: Integration_Test_Resources_SqlServer_dbatools
+    displayName: 'Integration Test Resources - SQL Server (dbatools)'
+    dependsOn: Integration_Test_Resources_SqlServer
+    jobs:
+      - job: Test_Integration
+        displayName: 'Integration'
         strategy:
           matrix:
             SQL2016_WIN2022:
@@ -461,8 +592,12 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration (dbatools) ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-      - job: Test_Integration_RS
-        displayName: 'Integration Reporting Services'
+  - stage: Integration_Test_Resources_ReportingServices
+    displayName: 'Integration Test Resources - Reporting Services'
+    dependsOn: Integration_Test_Resources_SqlServer
+    jobs:
+      - job: Test_Integration
+        displayName: 'Integration'
         strategy:
           matrix:
             SQL2016_WIN2019:
@@ -537,9 +672,12 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration RS ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
-      - job: Test_Integration_RS_dbatools
-        displayName: 'Integration Reporting Services (dbatools)'
-        dependsOn: Test_Integration_RS
+  - stage: Integration_Test_Resources_ReportingServices_dbatools
+    displayName: 'Integration Test Resources - Reporting Services (dbatools)'
+    dependsOn: Integration_Test_Resources_SqlServer
+    jobs:
+      - job: Test_Integration
+        displayName: 'Integration'
         strategy:
           matrix:
             SQL2016_WIN2022:
@@ -599,8 +737,13 @@ stages:
   - stage: Deploy
     dependsOn:
     - Quality_Test_and_Unit_Test
-    - Integration_Test_Commands
-    - Integration_Test_Resources
+    - Integration_Test_Commands_SqlServer
+    - Integration_Test_Commands_ReportingServices
+    - Integration_Test_Commands_BIReportServer
+    - Integration_Test_Resources_SqlServer
+    - Integration_Test_Resources_SqlServer_dbatools
+    - Integration_Test_Resources_ReportingServices
+    - Integration_Test_Resources_ReportingServices_dbatools
     condition: |
       and(
         succeeded(),

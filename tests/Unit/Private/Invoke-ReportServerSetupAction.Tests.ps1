@@ -219,7 +219,7 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
             @{
                 MockParameterName = 'Edition'
                 MockParameterValue = 'Evaluation'
-                MockExpectedRegEx = '\/Edition=Evaluation'
+                MockExpectedRegEx = '\/Edition=Eval'
             }
             @{
                 MockParameterName = 'LogPath'
@@ -565,7 +565,7 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
             @{
                 MockParameterName = 'Edition'
                 MockParameterValue = 'Evaluation'
-                MockExpectedRegEx = '\/Edition=Evaluation'
+                MockExpectedRegEx = '\/Edition=Eval'
             }
             @{
                 MockParameterName = 'LogPath'
