@@ -141,5 +141,5 @@ function Initialize-SqlDscRebuildDatabase
         $Force
     )
 
-    Invoke-SetupAction -RebuildDatabase @PSBoundParameters -ErrorAction 'Stop'
+    Invoke-SetupAction -RebuildDatabase @PSBoundParameters
 }

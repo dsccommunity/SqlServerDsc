@@ -1139,5 +1139,5 @@ function Install-SqlDscServer
         $Force
     )
 
-    Invoke-SetupAction @PSBoundParameters -ErrorAction 'Stop'
+    Invoke-SetupAction @PSBoundParameters
 }

@@ -1,6 +1,7 @@
 [ClassVersion("1.0.0.0"), FriendlyName("SqlScript")]
 class DSC_SqlScript : OMI_BaseResource
 {
+    [Key, Description("Unique identifier for this resource. Set this to a unique value - allowing multiple resources with only the Variable parameter changing. The information entered is never used during the actual process of running the scripts.")] String Id;
     [Key, Description("Specifies the name of the _SQL Server Database Engine_ instance. For the default instance specify the value `'MSSQLSERVER'`.")] String InstanceName;
     [Key, Description("Path to the T-SQL file that will perform _Set_ action.")] String SetFilePath;
     [Key, Description("Path to the T-SQL file that will perform _Get_ action. Any values returned by the T-SQL queries will also be returned when calling _Get_ (for example by using the cmdlet `Get-DscConfiguration`) through the `'GetResult'` property.")] String GetFilePath;

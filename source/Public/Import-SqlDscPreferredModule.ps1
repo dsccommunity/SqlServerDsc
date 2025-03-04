@@ -88,7 +88,7 @@ function Import-SqlDscPreferredModule
         )
     }
 
-    if ($Force.IsPresent)
+    if ($Force.IsPresent -and -not $Confirm)
     {
         Write-Verbose -Message $script:localizedData.PreferredModule_ForceRemoval
 

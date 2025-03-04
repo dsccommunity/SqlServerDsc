@@ -89,7 +89,7 @@ function Set-SqlDscServerPermission
             Write-Warning -Message $script:localizedData.ServerPermission_IgnoreWithGrantForStateDeny
         }
 
-        if ($Force.IsPresent)
+        if ($Force.IsPresent -and -not $Confirm)
         {
             $ConfirmPreference = 'None'
         }

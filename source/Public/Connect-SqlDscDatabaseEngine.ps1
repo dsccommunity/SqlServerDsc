@@ -25,7 +25,7 @@
         are 'WindowsUser' or 'SqlLogin'. Default value is 'WindowsUser'
         If set to 'WindowsUser' then the it will impersonate using the Windows
         login specified in the parameter Credential.
-        If set to 'WindowsUser' then the it will impersonate using the native SQL
+        If set to 'SqlLogin' then it will impersonate using the native SQL
         login specified in the parameter Credential.
 
     .PARAMETER StatementTimeout
@@ -48,6 +48,16 @@
         Connect-SqlDscDatabaseEngine -ServerName 'sql.company.local' -InstanceName 'MyInstance'
 
         Connects to the instance 'MyInstance' on the server 'sql.company.local'.
+
+    .EXAMPLE
+        Connect-SqlDscDatabaseEngine -Credential ([System.Management.Automation.PSCredential]::new('DOMAIN\SqlUser', (ConvertTo-SecureString -String 'MyP@ssw0rd1' -AsPlainText -Force)))
+
+        Connects to the default instance on the local server impersonating the Windows user 'DOMAIN\SqlUser'.
+
+    .EXAMPLE
+        Connect-SqlDscDatabaseEngine -LoginType 'SqlLogin' -Credential ([System.Management.Automation.PSCredential]::new('sa', (ConvertTo-SecureString -String 'MyP@ssw0rd1' -AsPlainText -Force)))
+
+        Connects to the default instance on the local server using the SQL login 'sa'.
 
     .OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.Server]`

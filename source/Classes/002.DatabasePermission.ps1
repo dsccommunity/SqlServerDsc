@@ -24,6 +24,13 @@
         evaluate during runtime so that no two states are enforcing the same
         permission.
 
+        This class cannot inherit a parent class. If it would have, then the
+        DSC resource (e.g. SqlDatabasePermission) that uses the complex type fail
+        with the error:
+
+            "The 'Permission' property with type 'DatabasePermission' of DSC resource
+            class 'SqlDatabasePermission' is not supported."
+
         The method Equals() returns $false if type is not the same on both sides
         of the comparison. There was a thought to throw an exception if the object
         being compared was of another type, but since there was issues with using
@@ -32,6 +39,19 @@
         the for example [ServerPermission] to the right side, then the left side
         array is filtered with the matching values on the right side. This is the
         normal behavior for other types.
+
+    .EXAMPLE
+        [DatabasePermission] @{}
+
+        Initializes a new instance of the DatabasePermission class without any
+        property values.
+
+    .EXAMPLE
+        [DatabasePermission] @{ State = 'Grant'; Permission = @('Connect', 'Select') }
+
+        Initializes a new instance of the DatabasePermission class with property
+        values.
+
 #>
 class DatabasePermission : IComparable, System.IEquatable[Object]
 {
@@ -244,5 +264,12 @@ class DatabasePermission : IComparable, System.IEquatable[Object]
         }
 
         return $returnValue
+    }
+
+    [System.String] ToString()
+    {
+        $concatenatedPermission = ($this.Permission | Sort-Object) -join ', '
+
+        return ('{0}: {1}' -f $this.State, $concatenatedPermission)
     }
 }

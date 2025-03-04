@@ -144,7 +144,7 @@ function Set-TargetResource
                     if ($MaxDop)
                     {
                         $errorMessage = $script:localizedData.MaxDopParamMustBeNull
-                        New-InvalidArgumentException -ArgumentName 'MaxDop' -Message $errorMessage
+                        New-ArgumentException -ArgumentName 'MaxDop' -Message $errorMessage
                     }
 
                     $targetMaxDop = Get-SqlDscDynamicMaxDop -SqlServerObject $sqlServerObject
@@ -302,7 +302,7 @@ function Test-TargetResource
                 if ($MaxDop)
                 {
                     $errorMessage = $script:localizedData.MaxDopParamMustBeNull
-                    New-InvalidArgumentException -ArgumentName 'MaxDop' -Message $errorMessage
+                    New-ArgumentException -ArgumentName 'MaxDop' -Message $errorMessage
                 }
 
                 $MaxDop = Get-SqlDscDynamicMaxDop

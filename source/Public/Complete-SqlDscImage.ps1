@@ -375,5 +375,5 @@ function Complete-SqlDscImage
         $Force
     )
 
-    Invoke-SetupAction -CompleteImage @PSBoundParameters -ErrorAction 'Stop'
+    Invoke-SetupAction -CompleteImage @PSBoundParameters
 }

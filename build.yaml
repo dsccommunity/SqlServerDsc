@@ -12,17 +12,19 @@ BuildWorkflow:
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
     - Create_Changelog_Release_Output
+
+  docs:
+    - Clean_WikiContent_Folder
+    - Check_SqlServer_Availability
     - Generate_Conceptual_Help
     - Generate_Wiki_Content
-    - Package_WikContent
-
-  fastbuild:
-    - Clean
-    - Build_Module_ModuleBuilder
-    - Build_NestedModules_ModuleBuilder
+    - Generate_Wiki_Sidebar
+    - Clean_Markdown_Metadata
+    - Package_Wiki_Content
 
   pack:
     - build
+    - docs
     - package_module_nupkg # cSpell: disable-line
 
   hqrmtest: # cSpell: disable-line
@@ -38,42 +40,29 @@ BuildWorkflow:
     - Publish_Module_To_gallery
     - Publish_GitHub_Wiki_Content
 
-  Package_WikContent: |
+  Check_SqlServer_Availability: |
     {
-        <#
-            This is quick fix for issue https://github.com/PoshCode/ModuleBuilder/issues/103.
-            Aliases need to be added to module manifest, and we can only use
-            New-Alias or Set-Alias together with build tasks. This module
-            already automatically exports aliases using [Alias()] so this quick
-            fix is meant as a workaround until the above issue is resolved.
-        #>
-        param
-        (
-            $OutputDirectory = (property OutputDirectory (Join-Path $BuildRoot 'output')),
-            $ProjectName = (property ProjectName $(Get-SamplerProjectName -BuildRoot $BuildRoot)),
-            $BuildInfo = (property BuildInfo @{ })
-        )
+        Import-Module -Name SqlServer -ErrorAction 'SilentlyContinue'
 
-        "`tProject Name             = {0}" -f $ProjectName
-        "`tOutput Directory         = {0}" -f $OutputDirectory
-
-        $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath 'WikiContent'
-        $wikiArchiveSourcePath = Join-Path -Path $wikiOutputPath -ChildPath '*'
-        $wikiPackagePath = Join-Path -Path $OutputDirectory -ChildPath 'WikiContent.zip'
-
-        "`tWiki Output Path         = $wikiOutputPath"
-        "`tWiki Archive Source Path = $wikiArchiveSourcePath"
-        "`tWiki Package Path        = $wikiPackagePath"
-
-        if (-not (Test-Path -Path $wikiOutputPath))
+        try
         {
-            throw 'The Wiki Output Path does not exist. Please run the task Generate_Wiki_Content prior to running this task.'
+            [Microsoft.SqlServer.Management.Smo.Server] -as [Type] | Out-Null
+            [Microsoft.SqlServer.Management.Smo.Wmi.Service] -as [Type] | Out-Null
         }
-
-        # Overwrites any existing archive.
-        Compress-Archive -Path $wikiArchiveSourcePath -DestinationPath $wikiPackagePath -CompressionLevel 'Optimal' -Force -ErrorAction 'Stop'
+        catch
+        {
+            Write-Error -Message "Both the SqlServer namespaces Microsoft.SqlServer.Management.Smo or Microsoft.SqlServer.Management.Smo.Wmi are not available. Please install the SqlServer module.`nBy using PSResourceGet: Save-PSResource -Name SqlServer -Prerelease -Repository PSGallery -TrustRepository -Path .\output\RequiredModules\" -ErrorAction 'Stop'
+        }
     }
 
+  Clean_WikiContent_Folder: |
+    {
+        # Clean output/WikiContent folder
+        if (Test-Path -Path './output/WikiContent')
+        {
+            Remove-Item -Path './output/WikiContent' -Recurse -Force
+        }
+    }
 ####################################################
 #           ModuleBuilder Configuration            #
 ####################################################
@@ -161,6 +150,7 @@ DscTest:
         Verbosity: Detailed
         CIFormat: Auto
       TestResult:
+        Enabled: true
         OutputFormat: NUnitXML
         OutputEncoding: ascii
         OutputPath: ./output/testResults/NUnitXml_HQRM_Tests.xml
@@ -206,3 +196,18 @@ DscResource.DocGenerator:
       - '_(.+?)_' # Match Italic (underscore)
       - '\*\*(.+?)\*\*' # Match bold
       - '\*(.+?)\*' # Match Italic (asterisk)
+  Publish_GitHub_Wiki_Content:
+    Debug: false
+  Generate_Markdown_For_DSC_Resources:
+    MofResourceMetadata:
+      Type: MofResource
+      Category: Resources
+    ClassResourceMetadata:
+      Type: ClassResource
+      Category: Resources
+    CompositeResourceMetadata:
+      Type: CompositeResource
+      Category: Resources
+  Generate_Wiki_Sidebar:
+     Debug: false
+     AlwaysOverwrite: true

@@ -306,5 +306,5 @@ function Complete-SqlDscFailoverCluster
         $Force
     )
 
-    Invoke-SetupAction -CompleteFailoverCluster @PSBoundParameters -ErrorAction 'Stop'
+    Invoke-SetupAction -CompleteFailoverCluster @PSBoundParameters
 }

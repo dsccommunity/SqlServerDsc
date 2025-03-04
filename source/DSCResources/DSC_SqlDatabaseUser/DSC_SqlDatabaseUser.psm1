@@ -687,37 +687,37 @@ function Assert-Parameters
     if ($UserType -ne 'Login' -and $PSBoundParameters.ContainsKey('LoginName'))
     {
         $errorMessage = $script:localizedData.LoginNameProvidedWithWrongUserType -f $UserType
-        New-InvalidArgumentException -ArgumentName 'Action' -Message $errorMessage
+        New-ArgumentException -ArgumentName 'Action' -Message $errorMessage
     }
 
     if ($UserType -ne 'Certificate' -and $PSBoundParameters.ContainsKey('CertificateName'))
     {
         $errorMessage = $script:localizedData.CertificateNameProvidedWithWrongUserType -f $UserType
-        New-InvalidArgumentException -ArgumentName 'Action' -Message $errorMessage
+        New-ArgumentException -ArgumentName 'Action' -Message $errorMessage
     }
 
     if ($UserType -ne 'AsymmetricKey' -and $PSBoundParameters.ContainsKey('AsymmetricKeyName'))
     {
         $errorMessage = $script:localizedData.AsymmetricKeyNameProvidedWithWrongUserType -f $UserType
-        New-InvalidArgumentException -ArgumentName 'Action' -Message $errorMessage
+        New-ArgumentException -ArgumentName 'Action' -Message $errorMessage
     }
 
     if ($UserType -eq 'Login' -and -not $PSBoundParameters.ContainsKey('LoginName'))
     {
         $errorMessage = $script:localizedData.LoginUserTypeWithoutLoginName -f $UserType
-        New-InvalidArgumentException -ArgumentName 'Action' -Message $errorMessage
+        New-ArgumentException -ArgumentName 'Action' -Message $errorMessage
     }
 
     if ($UserType -eq 'AsymmetricKey' -and -not $PSBoundParameters.ContainsKey('AsymmetricKeyName'))
     {
         $errorMessage = $script:localizedData.AsymmetricKeyUserTypeWithoutAsymmetricKeyName -f $UserType
-        New-InvalidArgumentException -ArgumentName 'Action' -Message $errorMessage
+        New-ArgumentException -ArgumentName 'Action' -Message $errorMessage
     }
 
     if ($UserType -eq 'Certificate' -and -not $PSBoundParameters.ContainsKey('CertificateName'))
     {
         $errorMessage = $script:localizedData.CertificateUserTypeWithoutCertificateName -f $UserType
-        New-InvalidArgumentException -ArgumentName 'Action' -Message $errorMessage
+        New-ArgumentException -ArgumentName 'Action' -Message $errorMessage
     }
 }
 

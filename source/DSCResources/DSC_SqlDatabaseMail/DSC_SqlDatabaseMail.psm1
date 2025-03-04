@@ -64,18 +64,19 @@ function Get-TargetResource
     )
 
     $returnValue = @{
-        Ensure         = 'Absent'
-        ServerName     = $ServerName
-        InstanceName   = $InstanceName
-        AccountName    = $null
-        EmailAddress   = $null
-        MailServerName = $null
-        LoggingLevel   = $null
-        ProfileName    = $null
-        DisplayName    = $null
-        ReplyToAddress = $null
-        Description    = $null
-        TcpPort        = $null
+        Ensure                = 'Absent'
+        ServerName            = $ServerName
+        InstanceName          = $InstanceName
+        AccountName           = $null
+        EmailAddress          = $null
+        MailServerName        = $null
+        LoggingLevel          = $null
+        ProfileName           = $null
+        DisplayName           = $null
+        ReplyToAddress        = $null
+        Description           = $null
+        TcpPort               = $null
+        UseDefaultCredentials = $null
     }
 
     Write-Verbose -Message (
@@ -145,6 +146,7 @@ function Get-TargetResource
                 {
                     $returnValue['MailServerName'] = $mailServer.Name
                     $returnValue['TcpPort'] = $mailServer.Port
+                    $returnValue['UseDefaultCredentials'] = $mailServer.UseDefaultCredentials
                 }
 
                 $mailProfile = $databaseMail.Profiles |
@@ -233,9 +235,18 @@ function Get-TargetResource
     .PARAMETER TcpPort
         The TCP port used for communication. Default value is port 25.
 
+    .PARAMETER UseDefaultCredentials
+        Controls use of the DatabaseEngine service account for SMTP server authentication.
+        If $true, the DatabaseEngine service account is used access the SMTP server.
+        If $false, DatabaseEngine service account is not used.
+
     .NOTES
         Information about the different properties can be found here
         https://docs.microsoft.com/en-us/sql/relational-databases/database-mail/configure-database-mail.
+
+        "UseDefaultCredentials" corresponds to "Windows Authentication using Database Engine service credentials"
+        described at the above link.  This dsc resource does not yet address setting state for basic or anonymous
+        SMTP access that's used when UseDefaultCredentials is false.
 
 #>
 function Set-TargetResource
@@ -293,7 +304,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.UInt16]
-        $TcpPort = 25
+        $TcpPort = 25,
+
+        [Parameter()]
+        [System.Boolean]
+        $UseDefaultCredentials
     )
 
     Write-Verbose -Message (
@@ -380,6 +395,11 @@ function Set-TargetResource
                         if ($PSBoundParameters.ContainsKey('TcpPort'))
                         {
                             $mailServer.Port = $TcpPort
+                        }
+
+                        if ($PSBoundParameters.ContainsKey('UseDefaultCredentials'))
+                        {
+                            $mailServer.UseDefaultCredentials = $UseDefaultCredentials
                         }
 
                         $mailServer.Alter()
@@ -481,6 +501,21 @@ function Set-TargetResource
                         )
 
                         $mailServer.Port = $TcpPort
+                        $mailServer.Alter()
+                    }
+
+                    $currentUseDefaultCredentials = $mailServer.UseDefaultCredentials
+                    if ($PSBoundParameters.ContainsKey('UseDefaultCredentials') -and $currentUseDefaultCredentials -ne $UseDefaultCredentials)
+                    {
+                        Write-Verbose -Message (
+                            $script:localizedData.UpdatingPropertyOfMailServer -f @(
+                                $currentUseDefaultCredentials
+                                $UseDefaultCredentials
+                                $script:localizedData.MailServerPropertyUseDefaultCredentials
+                            )
+                        )
+
+                        $mailServer.UseDefaultCredentials = $UseDefaultCredentials
                         $mailServer.Alter()
                     }
                 }
@@ -633,6 +668,11 @@ function Set-TargetResource
 
     .PARAMETER TcpPort
         The TCP port used for communication. Default value is port 25.
+
+    .PARAMETER UseDefaultCredentials
+        Controls use of the DatabaseEngine service account for SMTP server authentication.
+        If $true, the DatabaseEngine service account is used access the SMTP server.
+        If $false, DatabaseEngine service account is not used.
 #>
 function Test-TargetResource
 {
@@ -691,7 +731,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.UInt16]
-        $TcpPort = 25
+        $TcpPort = 25,
+
+        [Parameter()]
+        [System.Boolean]
+        $UseDefaultCredentials
     )
 
     $getTargetResourceParameters = @{
@@ -727,6 +771,7 @@ function Test-TargetResource
                 'DisplayName'
                 'Description'
                 'LoggingLevel'
+                'UseDefaultCredentials'
             )
             TurnOffTypeChecking = $true
             Verbose             = $VerbosePreference

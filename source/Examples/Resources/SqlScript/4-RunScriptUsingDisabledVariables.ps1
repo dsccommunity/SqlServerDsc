@@ -18,6 +18,7 @@ Configuration Example
     {
         SqlScript 'RunWithDisabledVariables'
         {
+            Id               = 'RunWithDisabledVariables'
             ServerName       = 'localhost'
             InstanceName     = 'SQL2016'
             Credential       = $SqlCredential

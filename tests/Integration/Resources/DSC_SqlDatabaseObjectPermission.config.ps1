@@ -110,6 +110,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Table1_Config
     {
         SqlScriptQuery 'CreateTable'
         {
+            Id                   = 'CreateTable'
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
 
@@ -146,6 +147,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Procedure1_Config
     {
         SqlScriptQuery 'CreateProcedure1'
         {
+            Id                   = 'CreateProcedure1'
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
 
@@ -182,6 +184,7 @@ Configuration DSC_SqlDatabaseObjectPermission_Prerequisites_Procedure2_Config
     {
         SqlScriptQuery 'CreateProcedure2'
         {
+            Id                   = 'CreateProcedure2'
             ServerName           = $Node.ServerName
             InstanceName         = $Node.InstanceName
 
@@ -352,6 +355,12 @@ Configuration DSC_SqlDatabaseObjectPermission_Multiple_Grant_Config
                 {
                     State      = 'Grant'
                     Permission = 'Select'
+                }
+
+                DSC_DatabaseObjectPermission
+                {
+                    State      = 'Grant'
+                    Permission = 'Insert'
                 }
 
                 DSC_DatabaseObjectPermission

@@ -31,7 +31,7 @@ BeforeDiscovery {
 }
 
 BeforeAll {
-    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\..\TestHelpers\CommonTestHelper.psm1')
 
     # Need to define the variables here which will be used in Pester Run.
     $script:dscModuleName = 'SqlServerDsc'

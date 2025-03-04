@@ -89,7 +89,7 @@ function Set-SqlDscTraceFlag
 
     begin
     {
-        if ($Force.IsPresent)
+        if ($Force.IsPresent -and -not $Confirm)
         {
             $ConfirmPreference = 'None'
         }

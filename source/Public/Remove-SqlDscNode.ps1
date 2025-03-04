@@ -73,5 +73,5 @@ function Remove-SqlDscNode
         $Force
     )
 
-    Invoke-SetupAction -RemoveNode @PSBoundParameters -ErrorAction 'Stop'
+    Invoke-SetupAction -RemoveNode @PSBoundParameters
 }

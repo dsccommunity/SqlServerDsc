@@ -5,6 +5,134 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Public commands:
+  - `Install-SqlDscReportingService`
+  - `Install-SqlDscBIReportServer`
+  - `Repair-SqlDscReportingService`
+  - `Repair-SqlDscBIReportServer`
+  - `Uninstall-SqlDscReportingService`
+  - `Uninstall-SqlDscBIReportServer`
+- Private function:
+  - `Invoke-ReportServerSetupAction`
+
+### Changed
+
+- SqlServerDsc
+  - The examples that was located in the README in the examples folder has
+    now been moved to the WikiSource folder. The examples are published to
+    the repository Wiki. The README has been updated to link to the new
+    location ([issue #2051](https://github.com/dsccommunity/SqlServerDsc/issues/2051)).
+  - Integration test stages has been modified to split the testing into
+    several different areas. The tests are dependent on this order:
+    - Quality_Test_and_Unit_Test
+    - Integration_Test_Commands_SqlServer
+      - Integration_Test_Commands_ReportingServices
+      - Integration_Test_Commands_BIReportServer
+    - Integration_Test_Resources_SqlServer
+      - Integration_Test_Resources_SqlServer_dbatools
+      - Integration_Test_Resources_ReportingServices
+        - Integration_Test_Resources_ReportingServices_dbatools
+- SqlSetup
+  - Fixed issue with AddNode where cluster IP information was not being passed to
+    setup.exe ([issue #1171](https://github.com/dsccommunity/SqlServerDsc/issues/1171)).
+
+### Fixed
+
+- Fixed workaround for the GitHub Actions to support building module in Windows
+  PowerShell.
+- SqlServerDsc
+  - Fix localization tests.
+- `SqlAudit`
+  - Fix localization strings in `Assert` method.
+- `Save-SqlDscSqlServerMediaFile`
+  - Fix localizations strings that used wrong keys.
+  - Fix unit tests so they work cross-platform.
+- `Install-SqlDscServer` and private function `Invoke-SetupAction`
+  - Fix localization string keys naming.
+  - Fix unit tests to use correct localization string names.
+  - Remove redundant unit tests.
+- `SqlConfiguration`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlDatabaseUser`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlMaxDop`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlMemory`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlReplication`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlRSSetup`
+  - Change the alias command to real command name, to pass HQRM tests.
+- `SqlServiceAccount`
+  - Change the alias command to real command name, to pass HQRM tests.
+
+## [17.0.0] - 2024-09-30
+
+### Added
+
+- SqlSetup
+  - Added new parameter ProductCoveredBySA which is introduced in SQL 2022.
+
+### Added
+
+- `Connect-SqlDscDatabaseEngine`
+  - Added integration test for the command.
+- `Uninstall-SqlDscServer`
+  - Added integration test for the command.
+
+### Changed
+
+- SqlScript
+  - BREAKING CHANGE: The parameter `Id` is now required to allow
+    reuse of a script with different variables. Set this to a unique value.
+    The information entered is never used to actually run the script
+    ([issue #596](https://github.com/dsccommunity/SqlServerDsc/issues/596)).
+  - Fix unit test to fully check Set-TargetResource using timeout.
+- SqlScriptQuery
+  - BREAKING CHANGE: The parameter `Id` is now required to allow
+    reuse of a script with different variables. Set this to a unique value.
+    The information entered is never used to actually run the script
+    ([issue #596](https://github.com/dsccommunity/SqlServerDsc/issues/596)).
+  - Fix unit test to fully check Set-TargetResource using timeout.
+- SqlServerDsc
+  - Replaced inline task `Package_Wiki_Content` with the one now available
+    in the module _DscResource.DocGenerator_.
+- `Connect-SqlDscDatabaseEngine`
+  - Update comment-based help with more examples.
+- SqlSetup
+  - The parameter `SecurityMode` now only (correctly) allows the value
+    `SQL` ([issue #1185](https://github.com/dsccommunity/SqlServerDsc/issues/1185)).
+
+### Fixed
+
+- SqlServerDsc
+  - Fix issue template.
+- `Connect-SqlDscDatabaseEngine`
+  - Comment-based help for parameter `LoginType` was corrected.
+  - An integration test now runs to test the command.
+- SqlAudit
+  - Fixed unit tests.
+- SqlDatabaseMail
+  - Fix unit test, removing `Assert-VerifiableMock` that was left over from
+    Pester 5 conversion.
+
+## [16.6.0] - 2024-05-17
+
+### Added
+
+- SqlServerDsc
+  - Added build tasks to generate Wiki documentation for public commands.
+  - Initial integration tests for commands.
+- SqlDatabaseMail
+  - Added the parameter `UseDefaultCredentials` to control use of the DatabaseEngine
+    service account for SMTP server authentication.
+- New public commands
+  - `Save-SqlDscSqlServerMediaFile` - Downloads the content on the provided URL
+    and if it is an executable it will use the executable to download the
+    ISO image media.
+
 ### Fixed
 
 - SqlServerDsc
@@ -12,19 +140,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Return SQLPS version as 12.0 instead of 120
   - `Get-SqlDscPreferredModule`
     - Fix sort to get the latest version
+  - Public commands no handles when both `-Force` and `-Confirm $true`
+    would be passed to command.
+  - Enabled NUnit results for HQRM tests.
 - `Assert-Feature`
   - Fixed unit tests.
 - SqlAGReplica
   - Fix unit test FailedRemoveAvailabilityGroupReplica
+- SqlAgentOperator
+  - Integration test for changing e-mail address on an existing operator.
+- `DatabasePermission`
+  - New method ToString() for making verbose output better.
+- `ServerPermission`
+  - New method ToString() for making verbose output better.
+- SqlAgDatabase
+  - Remove unused help file ([issue #1745](https://github.com/dsccommunity/SqlServerDsc/issues/1745)).
+- SqlDatabaseObjectPermission
+  - Added `foreach` loop in `Get-TargetResource` to fix issues with `INSERT`
+    permissions when it's not the only permission on the table ([issue [#2006](https://github.com/dsccommunity/SqlServerDsc/issues/2006)]).
+- `Install-SqlDscServer`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Add-SqlDscNode`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Complete-SqlDscFailoverCluster`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Complete-SqlDscImage`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Initialize-SqlDscRebuildDatabase`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Remove-SqlDscNode`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Repair-SqlDscServer`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- `Uninstall-SqlDscServer`
+  - No longer throws with duplicate parameter error if the parameter
+    `ErrorAction` is passed to the command.
+- Private functions
+  - `Invoke-SetupAction` no longer throws when secure strings is passed on
+    Windows PowerShell.
 
 ### Changed
 
+- SqlServerDsc
+  - Updated pipeline files to support pre-releases with ModuleFast (when
+    resolving dependencies).
+  - Bump PSResourceGet to v1.0.0 (used when resolving dependencies).
+  - Update markdown highlights with newly supported keywords.
+  - Bump GitHub Action _Stale_ to v9.
+  - Bump GitHub Action _CodeQL-Action_ to v3.
+  - Documentation is now built using a separate meta task `docs`.
+    It is run with the meta task `pack` which is run by the pipeline.
+    To run the meta task `docs` the SMO assemblies must be loaded into the
+    session, either by importing SqlServer module or loading SMO stubs.
+  - QA test improved to speed up quality testing.
+  - The pipeline test stages has been split into different stages.
 - SqlAG
   - Converted unit test to Pester 5
   - DtcSupportEnabled option in Set-TargetResource and TestTargetResource
-- SqlServerDsc
-  - Bump PSResourceGet to v1.0.0 (used when resolving dependencies).
-  - Update markdown highlights with newly supported keywords.
+- SqlSetup
+  - Updated integration tests to use PSResourceGet to download required modules.
+- SqlRS
+  - Integration tests for SQL Server 2022 has been temporarily disabled due
+    to a unknown problem. More information in [issue #2009](https://github.com/dsccommunity/SqlServerDsc/issues/2009).
 
 ## [16.5.0] - 2023-10-05
 

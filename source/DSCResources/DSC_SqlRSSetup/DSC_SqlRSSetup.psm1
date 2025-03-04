@@ -287,20 +287,20 @@ function Set-TargetResource
     if ($Action -eq 'Install' -and $PSBoundParameters.ContainsKey('Edition') -and $PSBoundParameters.ContainsKey('ProductKey'))
     {
         $errorMessage = $script:localizedData.EditionInvalidParameter
-        New-InvalidArgumentException -ArgumentName 'Edition, ProductKey' -Message $errorMessage
+        New-ArgumentException -ArgumentName 'Edition, ProductKey' -Message $errorMessage
     }
 
     # Must either choose ProductKey or Edition, not none.
     if ($Action -eq 'Install' -and -not $PSBoundParameters.ContainsKey('Edition') -and -not $PSBoundParameters.ContainsKey('ProductKey'))
     {
         $errorMessage = $script:localizedData.EditionMissingParameter
-        New-InvalidArgumentException -ArgumentName 'Edition, ProductKey' -Message $errorMessage
+        New-ArgumentException -ArgumentName 'Edition, ProductKey' -Message $errorMessage
     }
 
     if (-not (Test-Path -Path $SourcePath) -or (Get-Item -Path $SourcePath).Extension -ne '.exe')
     {
         $errorMessage = $script:localizedData.SourcePathNotFound -f $SourcePath
-        New-InvalidArgumentException -ArgumentName 'SourcePath' -Message $errorMessage
+        New-ArgumentException -ArgumentName 'SourcePath' -Message $errorMessage
     }
 
     $InstanceName = $InstanceName.ToUpper()

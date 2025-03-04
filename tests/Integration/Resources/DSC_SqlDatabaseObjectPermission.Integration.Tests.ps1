@@ -432,16 +432,19 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 
             $resourceCurrentState.ObjectType | Should -Be 'Table'
             $resourceCurrentState.Name | Should -Be $ConfigurationData.AllNodes.User1_Name
 
-            $resourceCurrentState.Permission | Should -HaveCount 3
+            $resourceCurrentState.Permission | Should -HaveCount 4
             $resourceCurrentState.Permission[0] | Should -BeOfType 'CimInstance'
             $resourceCurrentState.Permission[1] | Should -BeOfType 'CimInstance'
+            $resourceCurrentState.Permission[2] | Should -BeOfType 'CimInstance'
             $resourceCurrentState.Permission[2] | Should -BeOfType 'CimInstance'
 
             $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Grant' })
             $grantPermission | Should -Not -BeNullOrEmpty
-            $grantPermission.Ensure | Should -Be 'Present'
-            $grantPermission.Permission | Should -HaveCount 1
+            $grantPermission.Ensure[0] | Should -Be 'Present'
+            $grantPermission.Ensure[1] | Should -Be 'Present'
+            $grantPermission.Permission | Should -HaveCount 2
             $grantPermission.Permission | Should -Contain @('Select')
+            $grantPermission.Permission | Should -Contain @('Insert')
 
             $grantPermission = $resourceCurrentState.Permission.Where( { $_.State -eq 'Deny' })
             $grantPermission | Should -Not -BeNullOrEmpty

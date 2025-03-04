@@ -74,7 +74,7 @@ function Get-TargetResource
     if (-not $option)
     {
         $errorMessage = $script:localizedData.ConfigurationOptionNotFound -f $OptionName
-        New-InvalidArgumentException -ArgumentName 'OptionName' -Message $errorMessage
+        New-ArgumentException -ArgumentName 'OptionName' -Message $errorMessage
     }
 
     Write-Verbose -Message (
@@ -157,7 +157,7 @@ function Set-TargetResource
     if (-not $option)
     {
         $errorMessage = $script:localizedData.ConfigurationOptionNotFound -f $OptionName
-        New-InvalidArgumentException -ArgumentName 'OptionName' -Message $errorMessage
+        New-ArgumentException -ArgumentName 'OptionName' -Message $errorMessage
     }
 
     $option.ConfigValue = $OptionValue

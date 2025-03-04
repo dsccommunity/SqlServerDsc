@@ -33,6 +33,9 @@ BeforeDiscovery {
     # Testing each supported SQL Server version
     $testProductVersion = @(
         @{
+            MockSqlMajorVersion = 16 # SQL Server 2022
+        }
+        @{
             MockSqlMajorVersion = 15 # SQL Server 2019
         }
         @{
@@ -332,11 +335,11 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
 
             InModuleScope -ScriptBlock {
                 $script:mockGetTargetResourceParameters = @{
-                    InstanceName     = 'MSSQLSERVER'
-                    SourceCredential = $null
-                    SourcePath       = $TestDrive
-                    Feature          = 'NewFeature' # Test enabling a code-feature.
-                    ServerName       = 'host.company.local'
+                    InstanceName       = 'MSSQLSERVER'
+                    SourceCredential   = $null
+                    SourcePath         = $TestDrive
+                    Feature            = 'NewFeature' # Test enabling a code-feature.
+                    ServerName         = 'host.company.local'
                 }
             }
         }
@@ -394,6 +397,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.RSSvcAccountUsername | Should -BeNullOrEmpty
                 $result.ASSvcAccountUsername | Should -BeNullOrEmpty
                 $result.ASCollation | Should -BeNullOrEmpty
+                $result.ProductCoveredBySA | Should -BeFalse
                 $result.ASSysAdminAccounts | Should -BeNullOrEmpty
                 $result.ASDataDir | Should -BeNullOrEmpty
                 $result.ASLogDir | Should -BeNullOrEmpty
@@ -449,7 +453,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     SQLUserDBDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                     SQLUserDBLogDir       = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                     SQLBackupDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\Backup"
-                    SecurityMode          = 'Windows'
+                    SecurityMode          = $null
                 }
             }
 
@@ -547,7 +551,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.AgtSvcAccountUsername | Should -Be 'COMPANY\AgentAccount'
                 $result.SqlCollation | Should -Be 'Finnish_Swedish_CI_AS'
                 $result.SQLSysAdminAccounts | Should -Be 'COMPANY\Stacy'
-                $result.SecurityMode | Should -Be 'Windows'
+                $result.SecurityMode | Should -BeNullOrEmpty
                 $result.InstallSQLDataDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL"
                 $result.SQLUserDBDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                 $result.SQLUserDBLogDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
@@ -658,10 +662,10 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $script:mockSourcePathUNC = Join-Path -Path "\\localhost\$testDrive_DriveShare" -ChildPath (Split-Path -Path $TestDrive -NoQualifier)
 
                 $script:mockGetTargetResourceParameters = @{
-                    InstanceName     = 'MSSQLSERVER'
-                    SourceCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
-                    SourcePath       = $mockSourcePathUNC
-                    SqlVersion       = ('{0}.0' -f $MockSqlMajorVersion)
+                    InstanceName       = 'MSSQLSERVER'
+                    SourceCredential   = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
+                    SourcePath         = $mockSourcePathUNC
+                    SqlVersion         = ('{0}.0' -f $MockSqlMajorVersion)
                 }
             }
         }
@@ -766,7 +770,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     SqlSvcStartupType     = 'Auto'
                     AgtSvcStartupType     = 'Auto'
                     SQLCollation          = 'Finnish_Swedish_CI_AS'
-                    SecurityMode          = 'Windows'
+                    SecurityMode          = $null
                 }
             }
 
@@ -828,6 +832,18 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'BOL\b'
                     $result.Features | Should -Match 'MDS\b'
                 }
+                elseif ($MockSqlMajorVersion -in ('16'))
+                {
+                    $result.Features | Should -Match 'SQLENGINE\b'
+                    $result.Features | Should -Match 'REPLICATION\b'
+                    $result.Features | Should -Match 'DQ\b'
+                    $result.Features | Should -Match 'DQC\b'
+                    $result.Features | Should -Match 'FULLTEXT\b'
+                    $result.Features | Should -Match 'AS\b'
+                    $result.Features | Should -Match 'IS\b'
+                    $result.Features | Should -Match 'BOL\b'
+                    $result.Features | Should -Match 'MDS\b'
+                }
                 else
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
@@ -884,7 +900,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     SQLUserDBDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                     SQLUserDBLogDir       = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                     SQLBackupDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\Backup"
-                    SecurityMode          = 'Windows'
+                    SecurityMode          = $null
                 }
             }
 
@@ -972,6 +988,18 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'BC\b'
                     $result.Features | Should -Match 'SDK\b'
                 }
+                elseif ($MockSqlMajorVersion -in ('16'))
+                {
+                    $result.Features | Should -Match 'SQLENGINE\b'
+                    $result.Features | Should -Match 'REPLICATION\b'
+                    $result.Features | Should -Match 'DQ\b'
+                    $result.Features | Should -Match 'DQC\b'
+                    $result.Features | Should -Match 'FULLTEXT\b'
+                    $result.Features | Should -Match 'AS\b'
+                    $result.Features | Should -Match 'IS\b'
+                    $result.Features | Should -Match 'BOL\b'
+                    $result.Features | Should -Match 'MDS\b'
+                }
                 else
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
@@ -1008,7 +1036,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.AgtSvcAccountUsername | Should -Be 'COMPANY\AgentAccount'
                 $result.SqlCollation | Should -Be 'Finnish_Swedish_CI_AS'
                 $result.SQLSysAdminAccounts | Should -Be 'COMPANY\Stacy'
-                $result.SecurityMode | Should -Be 'Windows'
+                $result.SecurityMode | Should -BeNullOrEmpty
                 $result.InstallSQLDataDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL"
                 $result.SQLUserDBDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                 $result.SQLUserDBLogDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
@@ -1114,7 +1142,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     SQLUserDBDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                     SQLUserDBLogDir       = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                     SQLBackupDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\Backup"
-                    SecurityMode          = 'Windows'
+                    SecurityMode          = $null
                 }
             }
 
@@ -1205,6 +1233,18 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'BC\b'
                     $result.Features | Should -Match 'SDK\b'
                 }
+                elseif ($MockSqlMajorVersion -in ('16'))
+                {
+                    $result.Features | Should -Match 'SQLENGINE\b'
+                    $result.Features | Should -Match 'REPLICATION\b'
+                    $result.Features | Should -Match 'DQ\b'
+                    $result.Features | Should -Match 'DQC\b'
+                    $result.Features | Should -Match 'FULLTEXT\b'
+                    $result.Features | Should -Match 'AS\b'
+                    $result.Features | Should -Match 'IS\b'
+                    $result.Features | Should -Match 'BOL\b'
+                    $result.Features | Should -Match 'MDS\b'
+                }
                 else
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
@@ -1241,7 +1281,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.AgtSvcAccountUsername | Should -Be 'COMPANY\AgentAccount'
                 $result.SqlCollation | Should -Be 'Finnish_Swedish_CI_AS'
                 $result.SQLSysAdminAccounts | Should -Be 'COMPANY\Stacy'
-                $result.SecurityMode | Should -Be 'Windows'
+                $result.SecurityMode | Should -BeNullOrEmpty
                 $result.InstallSQLDataDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL"
                 $result.SQLUserDBDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
                 $result.SQLUserDBLogDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).MSSQLSERVER\MSSQL\DATA\"
@@ -1428,7 +1468,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     SQLUserDBDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\DATA\"
                     SQLUserDBLogDir       = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\DATA\"
                     SQLBackupDir          = "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\Backup"
-                    SecurityMode          = 'Windows'
+                    SecurityMode          = $null
                 }
             }
 
@@ -1514,6 +1554,18 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                     $result.Features | Should -Match 'BC\b'
                     $result.Features | Should -Match 'SDK\b'
                 }
+                elseif ($MockSqlMajorVersion -in ('16'))
+                {
+                    $result.Features | Should -Match 'SQLENGINE\b'
+                    $result.Features | Should -Match 'REPLICATION\b'
+                    $result.Features | Should -Match 'DQ\b'
+                    $result.Features | Should -Match 'DQC\b'
+                    $result.Features | Should -Match 'FULLTEXT\b'
+                    $result.Features | Should -Match 'AS\b'
+                    $result.Features | Should -Match 'IS\b'
+                    $result.Features | Should -Match 'BOL\b'
+                    $result.Features | Should -Match 'MDS\b'
+                }
                 else
                 {
                     $result.Features | Should -Match 'SQLENGINE\b'
@@ -1550,7 +1602,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
                 $result.AgtSvcAccountUsername | Should -Be 'COMPANY\AgentAccount'
                 $result.SqlCollation | Should -Be 'Finnish_Swedish_CI_AS'
                 $result.SQLSysAdminAccounts | Should -Be 'COMPANY\Stacy'
-                $result.SecurityMode | Should -Be 'Windows'
+                $result.SecurityMode | Should -BeNullOrEmpty
                 $result.InstallSQLDataDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL"
                 $result.SQLUserDBDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\DATA\"
                 $result.SQLUserDBLogDir | Should -Be "C:\Program Files\Microsoft SQL Server\MSSQL$($MockSqlMajorVersion).TEST\MSSQL\DATA\"
@@ -2315,6 +2367,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     {
                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,CONN,BC,SDK,MDS'
                     }
+                    elseif ($MockSqlMajorVersion -in ('16'))
+                    {
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,MDS'
+                    }
                     else
                     {
                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS,SSMS,ADV_SSMS'
@@ -2351,7 +2407,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             BrowserSvcStartupType  = 'Automatic'
                         }
 
-                        if ($MockSqlMajorVersion -in ('13', '14', '15'))
+                        if ($MockSqlMajorVersion -in ('13', '14', '15', '16'))
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SSMS,ADV_SSMS', ''
                         }
@@ -2364,6 +2420,13 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         elseif ($MockSqlMajorVersion -in ('14', '15'))
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
+                        }
+                        elseif ($MockSqlMajorVersion -in ('16'))
+                        {
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Conn', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Bc', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SDK', ''
                         }
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
@@ -2598,6 +2661,10 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     {
                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,CONN,BC,SDK,MDS'
                     }
+                    elseif ($MockSqlMajorVersion -in ('16'))
+                    {
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,MDS'
+                    }
                     else
                     {
                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS,SSMS,ADV_SSMS'
@@ -2636,7 +2703,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                             SqlVersion             = ('{0}.0' -f $MockSqlMajorVersion)
                         }
 
-                        if ($MockSqlMajorVersion -in ('13', '14', '15'))
+                        if ($MockSqlMajorVersion -in ('13', '14', '15', '16'))
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SSMS,ADV_SSMS', ''
                         }
@@ -2649,6 +2716,13 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                         elseif ($MockSqlMajorVersion -in ('14', '15'))
                         {
                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
+                        }
+                        elseif ($MockSqlMajorVersion -in ('16'))
+                        {
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Conn', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Bc', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SDK', ''
                         }
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
@@ -2706,6 +2780,52 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                 Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
             }
         }
+
+        Context 'When installing the database engine and ProductcoveredBySA is true' {
+                BeforeAll {
+                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                        return 16
+                    }
+
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Features = ''
+                        }
+                    }
+                }
+
+                It 'Should set the system in the desired state when feature is SQLENGINE' {
+                    $mockStartSqlSetupProcessExpectedArgument = @{
+                        Quiet                        = 'True'
+                        IAcceptSQLServerLicenseTerms = 'True'
+                        Action                       = 'Install'
+                        InstanceName                 = 'MSSQLSERVER'
+                        Features                     = 'SQLENGINE'
+                        SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                        PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                        ProductCoveredBySA           = 'True'
+                    }
+
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters = @{
+                            Features            = 'SQLENGINE'
+                            SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                            InstanceName        = 'MSSQLSERVER'
+                            SourceCredential    = $null
+                            SourcePath          = $TestDrive
+                            ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                            ProductCoveredBySA  = $true
+                            ServerName          = 'host.company.local'
+                        }
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                }
+            }
 
         Context 'When installing the database engine and disabling the TCP protocol' {
             BeforeAll {
@@ -2965,6 +3085,9 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
     Context 'When passing invalid features for <MockSqlMajorVersion>' -ForEach @(
         @{
+            MockSqlMajorVersion = 16 # SQL Server 2022
+        }
+        @{
             MockSqlMajorVersion = 15 # SQL Server 2019
         }
         @{
@@ -3103,6 +3226,22 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     Features = ''
                 }
             }
+
+            $mockDynamicClusterSites = @(
+                @{
+                    Name    = 'SiteA'
+                    Address = '10.0.0.10' # First site IP address
+                    Mask    = '255.255.255.0'
+                }
+            )
+
+            Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterNetwork -ParameterFilter {
+                ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
+            }
+
+            Mock -CommandName Test-IPAddress -MockWith {
+                return $true
+            }
         }
 
         It 'Should pass proper parameters to setup' {
@@ -3117,6 +3256,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                 SqlSvcPassword               = 'SqlS3v!c3P@ssw0rd'
                 AsSvcAccount                 = 'COMPANY\AnalysisAccount'
                 AsSvcPassword                = 'AnalysisS3v!c3P@ssw0rd'
+                FailoverClusterIPAddresses   = 'IPv4;10.0.0.10;SiteA_Prod;255.255.255.0'
             }
 
             InModuleScope -ScriptBlock {
@@ -3132,6 +3272,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
                     SqlSvcAccount              = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\SqlAccount', ('SqlS3v!c3P@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
                     ASSvcAccount               = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\AnalysisAccount', ('AnalysisS3v!c3P@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
                     FailoverClusterNetworkName = 'TestDefaultCluster'
+                    FailoverClusterIPAddress   = '10.0.0.10'
                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
                 }
 
@@ -4628,7 +4769,7 @@ Describe 'Get-SqlEngineProperties' -Tag 'Helper' {
                 $result.SQLUserDBDir | Should -Be 'K:\MSSQL\Data'
                 $result.SQLUserDBLogDir | Should -Be 'L:\MSSQL\Logs'
                 $result.SQLBackupDir | Should -Be 'O:\MSSQL\Backup'
-                $result.SecurityMode | Should -Be 'Windows'
+                $result.SecurityMode | Should -BeNullOrEmpty
             }
         }
 
@@ -4643,7 +4784,7 @@ Describe 'Get-SqlEngineProperties' -Tag 'Helper' {
 
                     $result = Get-SqlEngineProperties -ServerName 'localhost' -InstanceName 'MSSQLSERVER'
 
-                    $result.SecurityMode | Should -BeExactly 'Windows'
+                    $result.SecurityMode | Should -BeNullOrEmpty
                 }
             }
         }

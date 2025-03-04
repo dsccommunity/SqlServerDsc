@@ -50,7 +50,7 @@ AfterAll {
 Describe 'Uninstall-SqlDscServer' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
-            MockParameterSetName = '__AllParameterSets'
+            MockParameterSetName   = '__AllParameterSets'
             # cSpell: disable-next
             MockExpectedParameters = '[-MediaPath] <string> [-InstanceName] <string> [[-Features] <string[]>] [[-Timeout] <uint>] [-Force] [-SuppressPrivacyStatementNotice] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
@@ -61,11 +61,11 @@ Describe 'Uninstall-SqlDscServer' -Tag 'Public' {
             } |
             Select-Object -Property @(
                 @{
-                    Name = 'ParameterSetName'
+                    Name       = 'ParameterSetName'
                     Expression = { $_.Name }
                 },
                 @{
-                    Name = 'ParameterListAsString'
+                    Name       = 'ParameterListAsString'
                     Expression = { $_.ToString() }
                 }
             )
@@ -85,17 +85,18 @@ Describe 'Uninstall-SqlDscServer' -Tag 'Public' {
             }
         }
 
-       Context 'When specifying only mandatory parameters' {
+        Context 'When specifying only mandatory parameters' {
             BeforeAll {
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     return 0
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    MediaPath = '\SqlMedia'
+                    MediaPath    = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case.
-                    Features = 'SqlEngine'
+                    Features     = 'SqlEngine'
+                    ErrorAction  = 'Stop'
                 }
             }
 

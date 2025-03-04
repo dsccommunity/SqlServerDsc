@@ -79,18 +79,29 @@ ConvertFrom-StringData @'
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     Audit_Disable_ShouldProcessCaption = Disable audit on instance
 
-    ## Install-SqlDscServer
-    Server_Install_ShouldProcessVerboseDescription = Invoking the Microsoft SQL Server setup action '{0}'.
-    Server_Install_ShouldProcessVerboseWarning = Are you sure you want to invoke the setup action '{0}'?
+    ## Invoke-SetupAction, Invoke-ReportServerSetupAction
+    SetupAction_SetupExitMessage = Setup exited with code '{0}'.
+    SetupAction_SetupSuccessful = Setup finished successfully.
+    SetupAction_SetupSuccessfulRebootRequired = Setup finished successfully, but a reboot is required.
+
+    ## Invoke-SetupAction
+    Invoke_SetupAction_ShouldProcessVerboseDescription = Invoking the Microsoft SQL Server setup action '{0}'.
+    Invoke_SetupAction_ShouldProcessVerboseWarning = Are you sure you want to invoke the setup action '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
-    Server_Install_ShouldProcessCaption = Invoke a Microsoft SQL Server setup action
-    Server_SetupExitMessage = Setup exited with code '{0}'.
-    Server_SetupSuccessful = Setup finished successfully.
-    Server_SetupSuccessfulRebootRequired = Setup finished successfully, but a reboot is required.
-    Server_SetupFailed = Please see the 'Summary.txt' log file in the 'Setup Bootstrap\\Log' folder.
-    Server_SetupArguments = Specified setup executable arguments: {0}
-    Server_MediaPathNotFound = The specified media path does not exist or does not contain 'setup.exe'.
-    Server_ConfigurationFileNotFound = The specified configuration file was not found.
+    Invoke_SetupAction_ShouldProcessCaption = Invoke a Microsoft SQL Server setup action
+    Invoke_SetupAction_ConfigurationFileNotFound = The specified configuration file was not found.
+    Invoke_SetupAction_MediaPathNotFound = The specified media path does not exist or does not contain 'setup.exe'.
+    Invoke_SetupAction_SetupArguments = Specified setup executable arguments: {0}
+    Invoke_SetupAction_SetupFailed = Please see the 'Summary.txt' log file in the 'Setup Bootstrap\\Log' folder.
+
+    ## Invoke-ReportServerSetupAction
+    ReportServerSetupAction_ReportServerExecutableNotFound = The specified executable does not exist.
+    ReportServerSetupAction_InstallFolderNotFound = The parent of the specified install folder does not exist.
+    ReportServerSetupAction_SetupArguments = Specified executable arguments: {0}
+    ReportServerSetupAction_ShouldProcessVerboseDescription = Invoking the setup action '{0}'.
+    ReportServerSetupAction_ShouldProcessVerboseWarning = Are you sure you want to invoke the setup action '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    ReportServerSetupAction_ShouldProcessCaption = Invoke a setup action
 
     ## Assert-SetupActionProperties
     InstallSqlServerProperties_ASServerModeInvalidValue = The value for ASServerMode is not valid for the setup action {0}.
@@ -150,7 +161,7 @@ ConvertFrom-StringData @'
     ## Get-SqlDscPreferredModule
     PreferredModule_ModuleVersionFound = Preferred module '{0}' with version '{1}' found.
     PreferredModule_ModuleNotFound =  No preferred PowerShell module was found.
-PreferredModule_ModuleVersionNotFound = No preferred Powershell module with version '{0}' was found.
+    PreferredModule_ModuleVersionNotFound = No preferred Powershell module with version '{0}' was found.
 
     ## Import-SqlDscPreferredModule
     PreferredModule_ImportedModule = Imported PowerShell module '{0}' with version '{1}' from path '{2}'.
@@ -197,4 +208,16 @@ PreferredModule_ModuleVersionNotFound = No preferred Powershell module with vers
 
     ## Get-SqlDscDatabaseEngineInstalledSetting
     DatabaseEngineSetting_Get_NotInstalled = There are no Database Engine installed with version {0}.
+
+    ## Save-SqlDscSqlServerMediaFile
+    SqlServerMediaFile_Save_ShouldProcessVerboseDescription = The existing destination file '{0}' already exists and will be replaced.
+    SqlServerMediaFile_Save_ShouldProcessVerboseWarning = Are you sure you want to replace existing file '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    SqlServerMediaFile_Save_ShouldProcessCaption = Replace existing file
+    SqlServerMediaFile_Save_InvalidDestinationFolder = Multiple files with the .iso extension was found in the destination path. Please choose another destination folder.
+    SqlServerMediaFile_Save_MultipleFilesFoundAfterDownload = Multiple files with the .iso extension was found in the destination path. Cannot determine which one of the files that was downloaded.
+    SqlServerMediaFile_Save_DownloadingInformation = Downloading the SQL Server media from '{0}'.
+    SqlServerMediaFile_Save_IsExecutable = Downloaded an executable file. Using the executable to download the media file.
+    SqlServerMediaFile_Save_RemovingExecutable = Removing the downloaded executable file.
+    SqlServerMediaFile_Save_RenamingFile = Renaming the downloaded file from '{0}' to '{1}'.
 '@

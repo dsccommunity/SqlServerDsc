@@ -50,7 +50,7 @@ AfterAll {
 Describe 'Repair-SqlDscServer' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
-            MockParameterSetName = '__AllParameterSets'
+            MockParameterSetName   = '__AllParameterSets'
             # cSpell: disable-next
             MockExpectedParameters = '[-MediaPath] <string> [-InstanceName] <string> [-Features] <string[]> [[-PBEngSvcAccount] <string>] [[-PBEngSvcPassword] <securestring>] [[-PBEngSvcStartupType] <string>] [[-PBStartPortRange] <ushort>] [[-PBEndPortRange] <ushort>] [[-Timeout] <uint>] [-Enu] [-PBScaleOut] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
@@ -61,11 +61,11 @@ Describe 'Repair-SqlDscServer' -Tag 'Public' {
             } |
             Select-Object -Property @(
                 @{
-                    Name = 'ParameterSetName'
+                    Name       = 'ParameterSetName'
                     Expression = { $_.Name }
                 },
                 @{
-                    Name = 'ParameterListAsString'
+                    Name       = 'ParameterListAsString'
                     Expression = { $_.ToString() }
                 }
             )
@@ -92,10 +92,11 @@ Describe 'Repair-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    MediaPath = '\SqlMedia'
+                    MediaPath    = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
-                    Features = 'SqlEngine'
+                    Features     = 'SqlEngine'
+                    ErrorAction  = 'Stop'
                 }
             }
 
@@ -145,13 +146,14 @@ Describe 'Repair-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $repairSqlDscServerParameters = @{
-                    MediaPath = '\SqlMedia'
-                    InstanceName = 'INSTANCE'
+                    MediaPath        = '\SqlMedia'
+                    InstanceName     = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
-                    Features = 'SqlEngine'
-                    Force = $true
+                    Features         = 'SqlEngine'
+                    Force            = $true
                     PBStartPortRange = 16450
-                    PBEndPortRange = 16460
+                    PBEndPortRange   = 16460
+                    ErrorAction      = 'Stop'
                 }
             }
 
@@ -169,29 +171,29 @@ Describe 'Repair-SqlDscServer' -Tag 'Public' {
 
         Context 'When specifying optional parameter <MockParameterName>' -ForEach @(
             @{
-                MockParameterName = 'Enu'
+                MockParameterName  = 'Enu'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/ENU\s*'
+                MockExpectedRegEx  = '\/ENU\s*'
             }
             @{
-                MockParameterName = 'PBEngSvcAccount'
+                MockParameterName  = 'PBEngSvcAccount'
                 MockParameterValue = 'NT Authority\NETWORK SERVICE'
-                MockExpectedRegEx = '\/PBENGSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCACCOUNT="NT Authority\\NETWORK SERVICE"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBEngSvcPassword'
+                MockParameterName  = 'PBEngSvcPassword'
                 MockParameterValue = 'jT7ELPbD2GGuvLmjABDL' | ConvertTo-SecureString -AsPlainText -Force # cspell: disable-line
-                MockExpectedRegEx = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCPASSWORD="jT7ELPbD2GGuvLmjABDL"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBEngSvcStartupType'
+                MockParameterName  = 'PBEngSvcStartupType'
                 MockParameterValue = 'Automatic'
-                MockExpectedRegEx = '\/PBENGSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBENGSVCSTARTUPTYPE="Automatic"' # cspell: disable-line
             }
             @{
-                MockParameterName = 'PBScaleOut'
+                MockParameterName  = 'PBScaleOut'
                 MockParameterValue = $true
-                MockExpectedRegEx = '\/PBSCALEOUT=True' # cspell: disable-line
+                MockExpectedRegEx  = '\/PBSCALEOUT=True' # cspell: disable-line
             }
         ) {
             BeforeAll {
@@ -200,11 +202,12 @@ Describe 'Repair-SqlDscServer' -Tag 'Public' {
                 } -RemoveParameterValidation 'FilePath'
 
                 $mockDefaultParameters = @{
-                    MediaPath = '\SqlMedia'
+                    MediaPath    = '\SqlMedia'
                     InstanceName = 'INSTANCE'
                     # Intentionally using both upper- and lower-case in the value.
-                    Features = 'SqlEngine'
-                    Force = $true
+                    Features     = 'SqlEngine'
+                    Force        = $true
+                    ErrorAction  = 'Stop'
                 }
             }
 

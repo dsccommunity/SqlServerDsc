@@ -26,16 +26,16 @@ BeforeDiscovery {
         Need to define that variables here to be used in the Pester Discover to
         build the ForEach-blocks.
     #>
-    $script:dscResourceFriendlyName = 'SqlAlwaysOnService'
+    $script:dscResourceFriendlyName = 'SqlSecureConnection'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 }
 
 BeforeAll {
-    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\..\TestHelpers\CommonTestHelper.psm1')
 
     # Need to define the variables here which will be used in Pester Run.
     $script:dscModuleName = 'SqlServerDsc'
-    $script:dscResourceFriendlyName = 'SqlAlwaysOnService'
+    $script:dscResourceFriendlyName = 'SqlSecureConnection'
     $script:dscResourceName = "DSC_$($script:dscResourceFriendlyName)"
 
     $script:testEnvironment = Initialize-TestEnvironment `
@@ -44,20 +44,18 @@ BeforeAll {
         -ResourceType 'Mof' `
         -TestType 'Integration'
 
+    <#
+        This will create a new self signed certificate an write the path to the new
+        certificate in the environment variable 'SqlPrivateCertificatePath', and its
+        thumbprint to the environment variable 'SqlCertificateThumbprint'
+    #>
+    $null = New-SQLSelfSignedCertificate -Verbose
+    $mockSqlPrivateKeyPassword = ConvertTo-SecureString -String '1234' -AsPlainText -Force
+    Import-PfxCertificate -FilePath $env:SqlPrivateCertificatePath -Password $mockSqlPrivateKeyPassword -Exportable -CertStoreLocation 'Cert:\LocalMachine\Root'
+    Import-PfxCertificate -FilePath $env:SqlPrivateCertificatePath -Password $mockSqlPrivateKeyPassword -Exportable -CertStoreLocation 'Cert:\LocalMachine\My'
+
     $configFile = Join-Path -Path $PSScriptRoot -ChildPath "$($script:dscResourceName).config.ps1"
     . $configFile
-
-    # These sets variables used for verification from the dot-sourced $ConfigurationData variable.
-    $mockLoopbackAdapterName = $ConfigurationData.AllNodes.LoopbackAdapterName
-
-    <#
-        Create the loopback adapter to be used with the cluster.
-        The loopback adapter is kept on the build worker after test finishes
-        so that the cluster is available.
-        The IP address of the loopback adapter is set in the dependencies
-        configuration.
-    #>
-    New-IntegrationLoopbackAdapter -AdapterName $mockLoopbackAdapterName
 }
 
 AfterAll {
@@ -66,17 +64,13 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-<#
-    TODO: This has temporarily been disabled as the test is not passing.
-          Tags should be changed to @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022')
-#>
-Describe "$($script:dscResourceName)_Integration" -Tag 'Skip'  {
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
 
     Context ('When using configuration <_>') -ForEach @(
-        "$($script:dscResourceName)_CreateDependencies_Config"
+        "$($script:dscResourceName)_AddSecureConnection_Config"
     ) {
         BeforeAll {
             $configurationName = $_
@@ -89,55 +83,20 @@ Describe "$($script:dscResourceName)_Integration" -Tag 'Skip'  {
         It 'Should compile and apply the MOF without throwing' {
             {
                 $configurationParameters = @{
-                    OutputPath = $TestDrive
+                    OutputPath                 = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData = $ConfigurationData
+                    ConfigurationData          = $ConfigurationData
                 }
 
                 & $configurationName @configurationParameters
 
                 $startDscConfigurationParameters = @{
-                    Path = $TestDrive
+                    Path         = $TestDrive
                     ComputerName = 'localhost'
-                    Wait = $true
-                    Verbose = $true
-                    Force = $true
-                    ErrorAction = 'Stop'
-                }
-
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
-        }
-    }
-
-    Context ('When using configuration <_>') -ForEach @(
-        "$($script:dscResourceName)_EnableAlwaysOn_Config"
-    ) {
-        BeforeAll {
-            $configurationName = $_
-        }
-
-        AfterEach {
-            Wait-ForIdleLcm
-        }
-
-        It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData = $ConfigurationData
-                }
-
-                & $configurationName @configurationParameters
-
-                $startDscConfigurationParameters = @{
-                    Path = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait = $true
-                    Verbose = $true
-                    Force = $true
-                    ErrorAction = 'Stop'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
@@ -156,7 +115,9 @@ Describe "$($script:dscResourceName)_Integration" -Tag 'Skip'  {
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Present'
+            $resourceCurrentState.Thumbprint | Should -Be $env:SqlCertificateThumbprint
+            $resourceCurrentState.ForceEncryption | Should -BeTrue
+            $resourceCurrentState.ServerName | Should -Be 'localhost'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
@@ -165,7 +126,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag 'Skip'  {
     }
 
     Context ('When using configuration <_>') -ForEach @(
-        "$($script:dscResourceName)_DisableAlwaysOn_Config"
+        "$($script:dscResourceName)_RemoveSecureConnection_Config"
     ) {
         BeforeAll {
             $configurationName = $_
@@ -178,7 +139,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag 'Skip'  {
         It 'Should compile and apply the MOF without throwing' {
             {
                 $configurationParameters = @{
-                    OutputPath = $TestDrive
+                    OutputPath        = $TestDrive
                     # The variable $ConfigurationData was dot-sourced above.
                     ConfigurationData = $ConfigurationData
                 }
@@ -186,12 +147,12 @@ Describe "$($script:dscResourceName)_Integration" -Tag 'Skip'  {
                 & $configurationName @configurationParameters
 
                 $startDscConfigurationParameters = @{
-                    Path = $TestDrive
+                    Path         = $TestDrive
                     ComputerName = 'localhost'
-                    Wait = $true
-                    Verbose = $true
-                    Force = $true
-                    ErrorAction = 'Stop'
+                    Wait         = $true
+                    Verbose      = $true
+                    Force        = $true
+                    ErrorAction  = 'Stop'
                 }
 
                 Start-DscConfiguration @startDscConfigurationParameters
@@ -210,46 +171,13 @@ Describe "$($script:dscResourceName)_Integration" -Tag 'Skip'  {
                 -and $_.ResourceId -eq $resourceId
             }
 
-            $resourceCurrentState.Ensure | Should -Be 'Absent'
+            $resourceCurrentState.Thumbprint | Should -Be 'Empty'
+            $resourceCurrentState.ForceEncryption | Should -BeFalse
+            $resourceCurrentState.ServerName | Should -Be 'localhost'
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
             Test-DscConfiguration -Verbose | Should -Be 'True'
-        }
-    }
-
-    Context ('When using configuration <_>') -ForEach @(
-        "$($script:dscResourceName)_CleanupDependencies_Config"
-    ) {
-        BeforeAll {
-            $configurationName = $_
-        }
-
-        AfterEach {
-            Wait-ForIdleLcm
-        }
-
-        It 'Should compile and apply the MOF without throwing' {
-            {
-                $configurationParameters = @{
-                    OutputPath = $TestDrive
-                    # The variable $ConfigurationData was dot-sourced above.
-                    ConfigurationData = $ConfigurationData
-                }
-
-                & $configurationName @configurationParameters
-
-                $startDscConfigurationParameters = @{
-                    Path = $TestDrive
-                    ComputerName = 'localhost'
-                    Wait = $true
-                    Verbose = $true
-                    Force = $true
-                    ErrorAction = 'Stop'
-                }
-
-                Start-DscConfiguration @startDscConfigurationParameters
-            } | Should -Not -Throw
         }
     }
 }

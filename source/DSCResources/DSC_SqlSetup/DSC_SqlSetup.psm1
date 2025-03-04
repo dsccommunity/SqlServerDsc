@@ -63,7 +63,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 #>
 function Get-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called implicitly in several function, for example Get-SqlEngineProperties')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called implicitly in several function, for example Get-SqlEngineProperties')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -176,6 +176,7 @@ function Get-TargetResource
         UseEnglish                 = $UseEnglish
         ServerName                 = $ServerName
         SqlVersion                 = $null
+        ProductCoveredBySA         = $null
     }
 
     <#
@@ -316,6 +317,16 @@ function Get-TargetResource
             $getTargetResourceReturnValue.SqlTempdbFileGrowth = $currentTempDbProperties.SqlTempdbFileGrowth
             $getTargetResourceReturnValue.SqlTempdbLogFileSize = $currentTempDbProperties.SqlTempdbLogFileSize
             $getTargetResourceReturnValue.SqlTempdbLogFileGrowth = $currentTempDbProperties.SqlTempdbLogFileGrowth
+        }
+
+        if ($sqlVersion -ge 16)
+        {
+            # Grab the value of ProductCoveredBySA from the registry based on the instance
+            $getRegistryPropertyParams = @{
+                Path = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL$($SqlVersion).$($InstanceName)\Setup"
+                Name = 'IsProductCoveredBySA'
+        }
+            $getTargetResourceReturnValue.ProductCoveredBySA = Get-RegistryPropertyValue @getRegistryPropertyParams
         }
 
         # Get all members of the sysadmin role.
@@ -518,6 +529,11 @@ function Get-TargetResource
     .PARAMETER ProductKey
         Product key for licensed installations.
 
+    .PARAMETER ProductCoveredBySA
+        Specifies the license coverage for SQL Server. True indicates it's covered under Software Assurance or SQL Server subscription.
+        False, or omitting the parameter, indicates it's covered under a SQL Server license.
+        Default value is False.
+
     .PARAMETER UpdateEnabled
         Enabled updates during installation.
 
@@ -553,9 +569,7 @@ function Get-TargetResource
 
     .PARAMETER SecurityMode
         Security mode to apply to the
-        SQL Server instance. 'SQL' indicates mixed-mode authentication while
-        'Windows' indicates Windows authentication.
-        Default is Windows. { *Windows* | SQL }
+        SQL Server instance. 'SQL' indicates mixed-mode authentication.
 
     .PARAMETER SAPwd
         SA password, if SecurityMode is set to 'SQL'.
@@ -708,8 +722,8 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification='Because $global:DSCMachineStatus is used to trigger a Restart, either by force or when there are pending changes.')]
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification='Because $global:DSCMachineStatus is only set, never used (by design of Desired State Configuration).')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Because $global:DSCMachineStatus is used to trigger a Restart, either by force or when there are pending changes.')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Because $global:DSCMachineStatus is only set, never used (by design of Desired State Configuration).')]
     [CmdletBinding()]
     param
     (
@@ -749,6 +763,10 @@ function Set-TargetResource
         [Parameter()]
         [System.String]
         $ProductKey,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProductCoveredBySA,
 
         [Parameter()]
         [System.String]
@@ -795,7 +813,7 @@ function Set-TargetResource
         $SQLSysAdminAccounts,
 
         [Parameter()]
-        [ValidateSet('SQL', 'Windows')]
+        [ValidateSet('SQL')]
         [System.String]
         $SecurityMode,
 
@@ -1247,15 +1265,16 @@ function Set-TargetResource
         $setupArguments['FailoverClusterDisks'] = ($failoverClusterDisks | Sort-Object)
     }
 
+
     # Determine network mapping for specific cluster installation types
-    if ($Action -in @('CompleteFailoverCluster', 'InstallFailoverCluster'))
+    if ($Action -in @('CompleteFailoverCluster', 'InstallFailoverCluster', 'AddNode'))
     {
         $clusterIPAddresses = @()
 
         # If no IP Address has been specified, use "DEFAULT"
         if ($FailoverClusterIPAddress.Count -eq 0)
         {
-            $clusterIPAddresses += "DEFAULT"
+            $clusterIPAddresses += 'DEFAULT'
         }
         else
         {
@@ -1290,6 +1309,12 @@ function Set-TargetResource
 
         # Add the networks to the installation arguments
         $setupArguments['FailoverClusterIPAddresses'] = $clusterIPAddresses
+    }
+
+    # Add Parameter ProductCoveredBySA
+    if ($PSBoundParameters.ContainsKey('ProductCoveredBySA'))
+    {
+        $setupArguments['ProductCoveredBySA'] = $ProductCoveredBySA
     }
 
     # Add standard install arguments
@@ -1501,7 +1526,7 @@ function Set-TargetResource
                 $setupArguments['ASSysAdminAccounts'] = @($PsDscContext.RunAsUser)
             }
 
-            if ($PSBoundParameters.ContainsKey("ASSysAdminAccounts"))
+            if ($PSBoundParameters.ContainsKey('ASSysAdminAccounts'))
             {
                 $setupArguments['ASSysAdminAccounts'] += $ASSysAdminAccounts
             }
@@ -1612,12 +1637,12 @@ function Set-TargetResource
 
     if ($SecurityMode -eq 'SQL')
     {
-        $log = $log.Replace($SAPwd.GetNetworkCredential().Password, "********")
+        $log = $log.Replace($SAPwd.GetNetworkCredential().Password, '********')
     }
 
-    if ($ProductKey -ne "")
+    if ($ProductKey -ne '')
     {
-        $log = $log.Replace($ProductKey, "*****-*****-*****-*****-*****")
+        $log = $log.Replace($ProductKey, '*****-*****-*****-*****-*****')
     }
 
     $logVars = @('AgtSvcAccount', 'SQLSvcAccount', 'FTSvcAccount', 'RSSvcAccount', 'ASSvcAccount', 'ISSvcAccount')
@@ -1625,7 +1650,7 @@ function Set-TargetResource
     {
         if ($PSBoundParameters.ContainsKey($logVar))
         {
-            $log = $log.Replace((Get-Variable -Name $logVar).Value.GetNetworkCredential().Password, "********")
+            $log = $log.Replace((Get-Variable -Name $logVar).Value.GetNetworkCredential().Password, '********')
         }
     }
 
@@ -1769,6 +1794,13 @@ function Set-TargetResource
     .PARAMETER ProductKey
         Product key for licensed installations.
 
+    .PARAMETER ProductCoveredBySA
+        Specifies the license coverage for SQL Server. True indicates it's covered under Software Assurance or SQL Server subscription.
+        False, or omitting the parameter, indicates it's covered under a SQL Server license.
+        Default value is False.
+
+        Not used in Test-TargetResource.    
+
     .PARAMETER UpdateEnabled
         Enabled updates during installation.
 
@@ -1804,9 +1836,7 @@ function Set-TargetResource
 
     .PARAMETER SecurityMode
         Security mode to apply to the
-        SQL Server instance. 'SQL' indicates mixed-mode authentication while
-        'Windows' indicates Windows authentication.
-        Default is Windows. { *Windows* | SQL }
+        SQL Server instance. 'SQL' indicates mixed-mode authentication.
 
     .PARAMETER SAPwd
         SA password, if SecurityMode is set to 'SQL'.
@@ -1967,7 +1997,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is implicitly called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is implicitly called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -2008,6 +2038,10 @@ function Test-TargetResource
         [Parameter()]
         [System.String]
         $ProductKey,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProductCoveredBySA,
 
         [Parameter()]
         [System.String]
@@ -2054,7 +2088,7 @@ function Test-TargetResource
         $SQLSysAdminAccounts,
 
         [Parameter()]
-        [ValidateSet('SQL', 'Windows')]
+        [ValidateSet('SQL')]
         [System.String]
         $SecurityMode,
 
@@ -2309,7 +2343,7 @@ function Test-TargetResource
         Write-Verbose -Message $script:localizedData.EvaluatingClusterParameters
 
         $variableNames = $PSBoundParameters.Keys |
-            Where-Object -FilterScript { $_ -imatch "^FailoverCluster" }
+            Where-Object -FilterScript { $_ -imatch '^FailoverCluster' }
 
         foreach ($variableName in $variableNames)
         {
@@ -2694,7 +2728,7 @@ function Get-SqlEngineProperties
     }
     else
     {
-        $securityMode = 'Windows'
+        $securityMode = $null
     }
 
     return @{

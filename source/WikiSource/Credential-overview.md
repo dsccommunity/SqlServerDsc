@@ -1,4 +1,8 @@
-# Credential Overview
+---
+Category: Usage
+---
+
+# Credential overview
 
 ## Group Managed Service Account
 
