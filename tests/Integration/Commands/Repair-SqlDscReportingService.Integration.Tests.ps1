@@ -47,12 +47,13 @@ Describe 'Repair-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integrat
             {
                 # Set splatting parameters for Repair-SqlDscReportingService
                 $repairSqlDscReportingServiceParameters = @{
-                    MediaPath       = $reportingServicesExecutable
-                    LogPath         = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Repair.log'
-                    SuppressRestart = $true
-                    Verbose         = $true
-                    ErrorAction     = 'Stop'
-                    Force           = $true
+                    AcceptLicensingTerms = $true
+                    MediaPath            = $reportingServicesExecutable
+                    LogPath              = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Repair.log'
+                    SuppressRestart      = $true
+                    Verbose              = $true
+                    ErrorAction          = 'Stop'
+                    Force                = $true
                 }
 
                 Repair-SqlDscReportingService @repairSqlDscReportingServiceParameters

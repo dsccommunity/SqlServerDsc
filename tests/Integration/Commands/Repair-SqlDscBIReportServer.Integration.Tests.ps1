@@ -47,12 +47,13 @@ Describe 'Repair-SqlDscBIReportServer' -Tag @('Integration_PowerBI') {
             {
                 # Set splatting parameters for Repair-SqlDscBIReportServer
                 $repairSqlDscBIReportServerParameters = @{
-                    MediaPath       = $powerBIReportServerExecutable
-                    LogPath         = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Repair.log'
-                    SuppressRestart = $true
-                    Verbose         = $true
-                    ErrorAction     = 'Stop'
-                    Force           = $true
+                    AcceptLicensingTerms = $true
+                    MediaPath            = $powerBIReportServerExecutable
+                    LogPath              = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Repair.log'
+                    SuppressRestart      = $true
+                    Verbose              = $true
+                    ErrorAction          = 'Stop'
+                    Force                = $true
                 }
 
                 Repair-SqlDscBIReportServer @repairSqlDscBIReportServerParameters
