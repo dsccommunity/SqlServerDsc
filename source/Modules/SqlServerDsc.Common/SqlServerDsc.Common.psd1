@@ -52,6 +52,7 @@
         'Import-Assembly'
         'ConvertTo-ServerInstanceName'
         'Get-FilePathMajorVersion'
+        'Get-FilePathMinorVersion'
         'Test-FeatureFlag'
     )
 
