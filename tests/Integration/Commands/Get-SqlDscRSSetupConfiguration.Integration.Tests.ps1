@@ -23,13 +23,6 @@ BeforeDiscovery {
     }
 }
 
-BeforeAll {
-    $script:dscModuleName = 'SqlServerDsc'
-
-    # Import the module
-    Import-Module -Name $script:dscModuleName
-}
-
 Describe 'Get-SqlDscRSSetupConfiguration' {
     Context 'When getting the configuration for SQL Server Reporting Services instance' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
         It 'Should return the correct configuration for SSRS instance' {

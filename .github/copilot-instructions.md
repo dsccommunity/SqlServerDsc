@@ -142,8 +142,10 @@ edge cases and common use cases are tested. The integration tests should
 also be written to test the command in a real environment, using real
 resources and dependencies.
 
-All integration tests for commands should should use this code block prior to the `Describe` block
-which will set up the test environment and load the correct module being tested:
+The module being tested should not be imported in the integration tests.
+All integration tests for commands should should use this code block prior
+to the `Describe` block which will set up the test environment and will make
+sure the correct module is available for testing:
 
 ```powershell
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
