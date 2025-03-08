@@ -51,7 +51,9 @@ private function being tested. Each scenario or code path being tested should
 have its own Pester `Context` block that starts with the phrase 'When'. Use
 nested `Context` blocks to split up test cases and improve tests readability.
 Pester `It` block descriptions should start with the phrase 'Should'. `It`
-blocks must always call the command or function being tested.
+blocks must always call the command or function being tested and result and
+outcomes should be kept in the same `It` block. `BeforeAll` and `BeforeEach`
+blocks should never call the command or function being tested.
 
 The `BeforeAll`, `BeforeEach`, `AfterAll` and `AfterEach` blocks should be
 used inside the `Context` block as near as possible to the `It` block that
