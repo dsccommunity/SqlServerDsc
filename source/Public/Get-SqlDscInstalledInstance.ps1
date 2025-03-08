@@ -8,6 +8,10 @@
     .PARAMETER InstanceName
        Specifies the instance name to return instances for.
 
+    .PARAMETER ServiceType
+        Specifies the service type to filter instances by. Valid values are
+        'DatabaseEngine', 'AnalysisServices', and 'ReportingServices'.
+
     .OUTPUTS
         `[System.Object[]]`
 
