@@ -131,3 +131,43 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 ```
+
+Integration tests should be added for all public commands. Integration must
+never mock any command but run the command in a real environment. The integration
+tests should be placed in the folder tests/Integration/Commands and the
+integration tests should be named after the public command they are testing,
+but should have the suffix .Integration.Tests.ps1. The integration tests should be
+written to cover all possible scenarios and code paths, ensuring that both
+edge cases and common use cases are tested. The integration tests should
+also be written to test the command in a real environment, using real
+resources and dependencies.
+
+All integration tests for commands should should use this code block prior to the `Describe` block
+which will set up the test environment and load the correct module being tested:
+
+```powershell
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
+param ()
+
+BeforeDiscovery {
+    try
+    {
+        if (-not (Get-Module -Name 'DscResource.Test'))
+        {
+            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
+            {
+                # Redirect all streams to $null, except the error stream (stream 2)
+                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+            }
+
+            # If the dependencies has not been resolved, this will throw an error.
+            Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        }
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+    }
+}
+```

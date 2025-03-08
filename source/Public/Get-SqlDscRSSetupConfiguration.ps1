@@ -106,7 +106,7 @@ function Get-SqlDscRSSetupConfiguration
         }
 
         # Get values from SSRS\Setup registry key
-        $getItemPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup'
+        $getItemPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\Setup' -f $instance.InstanceName
 
         # InstallRootDirectory
         $getItemPropertyValueParameters.Name = 'InstallRootDirectory'
@@ -125,7 +125,7 @@ function Get-SqlDscRSSetupConfiguration
         $returnObject.ConfigFilePath = Get-ItemPropertyValue @getItemPropertyValueParameters
 
         # Get values from SSRS\CPE registry key
-        $getItemPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\CPE'
+        $getItemPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\CPE' -f $instance.InstanceName
 
         # ErrorDumpDir
         $getItemPropertyValueParameters.Name = 'ErrorDumpDir'
@@ -140,7 +140,7 @@ function Get-SqlDscRSSetupConfiguration
         $returnObject.EnableErrorReporting = Get-ItemPropertyValue @getItemPropertyValueParameters
 
         # Get values from SSRS\MSSQLServer\CurrentVersion registry key
-        $getItemPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\MSSQLServer\CurrentVersion'
+        $getItemPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\MSSQLServer\CurrentVersion' -f $instance.InstanceName
 
         # CurrentVersion from registry
         $getItemPropertyValueParameters.Name = 'CurrentVersion'
