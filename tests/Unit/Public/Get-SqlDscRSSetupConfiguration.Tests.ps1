@@ -78,63 +78,90 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             }
 
             Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup' -and
+                (
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup' -or
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\Setup'
+                 ) -and
                 $Name -eq 'InstallRootDirectory'
             } -MockWith {
                 return $mockInstallFolder
             }
 
             Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup' -and
+                (
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup' -or
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\Setup'
+                ) -and
                 $Name -eq 'ServiceName'
             } -MockWith {
                 return $mockServiceName
             }
 
             Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup' -and
+                (
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup' -or
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\Setup'
+                ) -and
                 $Name -eq 'RSVirtualRootServer'
             } -MockWith {
                 return $mockVirtualRootServer
             }
 
             Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup' -and
+                (
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup' -or
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\Setup'
+                ) -and
                 $Name -eq 'RsConfigFilePath'
             } -MockWith {
                 return $mockConfigFilePath
             }
 
             Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\CPE' -and
+                (
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\CPE' -or
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\CPE'
+                ) -and
                 $Name -eq 'ErrorDumpDir'
             } -MockWith {
                 return $mockErrorDumpDirectory
             }
 
             Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\CPE' -and
+                (
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\CPE' -or
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\CPE'
+                ) -and
                 $Name -eq 'CustomerFeedback'
             } -MockWith {
                 return $mockCustomerFeedback
             }
 
             Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\CPE' -and
+                (
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\CPE' -or
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\CPE'
+                ) -and
                 $Name -eq 'EnableErrorReporting'
             } -MockWith {
                 return $mockEnableErrorReporting
             }
 
             Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\MSSQLServer\CurrentVersion' -and
+                (
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\MSSQLServer\CurrentVersion' -or
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\MSSQLServer\CurrentVersion'
+                 ) -and
                 $Name -eq 'CurrentVersion'
             } -MockWith {
                 return $mockCurrentVersion
             }
 
             Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
-                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\MSSQLServer\CurrentVersion' -and
+                (
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\MSSQLServer\CurrentVersion' -or
+                    $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\MSSQLServer\CurrentVersion'
+                 ) -and
                 $Name -eq 'ProductVersion'
             } -MockWith {
                 return $mockProductVersion
