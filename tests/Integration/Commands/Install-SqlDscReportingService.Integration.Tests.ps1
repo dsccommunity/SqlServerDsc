@@ -40,6 +40,7 @@ Describe 'Install-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integra
                 $installSqlDscReportingServicesParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath            = $reportingServicesExecutable
+                    InstallFolder        = 'C:\Program Files\SSRS'
                     Edition              = 'Developer'
                     LogPath              = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Install.log'
                     SuppressRestart      = $true

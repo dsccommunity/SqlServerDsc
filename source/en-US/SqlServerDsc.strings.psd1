@@ -205,4 +205,12 @@ ConvertFrom-StringData @'
     SqlServerMediaFile_Save_IsExecutable = Downloaded an executable file. Using the executable to download the media file.
     SqlServerMediaFile_Save_RemovingExecutable = Removing the downloaded executable file.
     SqlServerMediaFile_Save_RenamingFile = Renaming the downloaded file from '{0}' to '{1}'.
+
+    ## Get-SqlDscRSSetupConfiguration
+    Get_SqlDscRSSetupConfiguration_GetAllInstances = Getting all SQL Server Reporting Services instances.
+    Get_SqlDscRSSetupConfiguration_GetSpecificInstance = Getting SQL Server Reporting Services instance '{0}'.
+    Get_SqlDscRSSetupConfiguration_FoundInstance = Found a Microsoft SQL Server Reporting Services instance with the name '{0}'.
+    Get_SqlDscRSSetupConfiguration_ProcessingInstance = Processing configuration for instance '{0}'.
+    Get_SqlDscRSSetupConfiguration_InstanceNotFound = Could not find a Microsoft SQL Server Reporting Services instance with the name '{0}'.
+    Get_SqlDscRSSetupConfiguration_NoInstancesFound = No SQL Server Reporting Services instances were found.
 '@

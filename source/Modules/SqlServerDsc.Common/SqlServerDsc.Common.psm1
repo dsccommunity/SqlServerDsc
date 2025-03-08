@@ -14,6 +14,9 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
     .PARAMETER PropertyName
         Specifies the the name of the property to return the value for.
+
+    .NOTES
+        TODO: This function should be removed and all code using it should be refactored to use Get-ItemPropertyValue
 #>
 function Get-RegistryPropertyValue
 {
