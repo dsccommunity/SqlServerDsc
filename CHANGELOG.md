@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Public commands:
   - `Get-SqlDscInstalledInstance` to retrieve installed SQL instances.
+  - `Get-SqlDscRSSetupConfiguration` to retrieve the configuration of
+    SQL Server Reporting Services or Power BI Report Server.
   - `Install-SqlDscReportingService` to install SQL Server Reporting Services.
   - `Install-SqlDscBIReportServer` to install SQL Server BI Report Server.
   - `Repair-SqlDscReportingService` to repair an already installed SQL Server
