@@ -32,6 +32,11 @@ assigned to the variable $script:localizedData.
 
 All tests should use the Pester framework and use Pester v5.0 syntax.
 
+Never test, mock or use `Should -Invoke` for `Write-Verbose` and `Write-Debug`
+regardless of other instructions.
+
+Test code should never be added outside of the `Describe` block.
+
 Unit tests should be added for all public commands and private functions.
 The unit tests for public command should be placed in the folder tests/Unit/Public
 and the unit tests for private functions should be placed in the folder
@@ -42,13 +47,11 @@ ensuring that both edge cases and common use cases are tested.
 
 There should only be one Pester `Describe` block per test file, and the name of
 the `Describe` block should be the same as the name of the public command or
-private function being tested. No test code should be added outside of the
-`Describe` block. Each scenario or code path being tested should have its
-own Pester `Context` block that starts with the phrase 'When'. Use nested
-`Context` blocks to split up test cases and improve tests readability.
-Pester `It` blocks shall start with the phrase 'Should'. Each `It` block
-should contain a concise description of the expected behavior being tested
-and focus on specific outcomes or results.
+private function being tested. Each scenario or code path being tested should
+have its own Pester `Context` block that starts with the phrase 'When'. Use
+nested `Context` blocks to split up test cases and improve tests readability.
+Pester `It` block descriptions should start with the phrase 'Should'. `It`
+blocks must always call the command or function being tested.
 
 The `BeforeAll`, `BeforeEach`, `AfterAll` and `AfterEach` blocks should be
 used inside the `Context` block as near as possible to the `It` block that
@@ -56,12 +59,12 @@ will use the mocked test setup and teardown. The `BeforeAll` block should
 be used to set up any necessary test data or mocking, and the `AfterAll`
 block can be used to clean up any test data. The `BeforeEach` and `AfterEach`
 blocks should be used sparingly. It is okay to duplicated code in `BeforeAll`
-and `BeforeEach` blocks inside different `Context`blocks to help with
+and `BeforeEach` blocks inside different `Context` blocks to help with
 readability and understanding of the test cases, to keep the test setup
 and teardown as close to the test case as possible.
 
-To use localized strings in the tests, you should assign the localized string
-to a mock variable by and get the localized string key
+Use localized strings in the tests only when necessary. You can assign the
+localized string to a mock variable by and get the localized string key
 from the $script:localizedData variable inside a `InModuleScope` block.
 An example to get a localized string key from the $script:localizedData variable:
 
@@ -73,8 +76,6 @@ Files that need to be mocked should be created in Pesters test drive. The
 variable `$TestDrive` holds the path to the test drive. The `$TestDrive` is a
 temporary drive that is created for each test run and is automatically
 cleaned up after the test run is complete.
-
-The command `Write-Verbose` shall not be mocked nor tested if it is invoked.
 
 All unit tests should should use this code block prior to the `Describe` block
 which will set up the test environment and load the correct module being tested:
