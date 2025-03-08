@@ -74,7 +74,7 @@ variable `$TestDrive` holds the path to the test drive. The `$TestDrive` is a
 temporary drive that is created for each test run and is automatically
 cleaned up after the test run is complete.
 
-The command `Write-Verbose` shall not be tested nor mocked.
+The command `Write-Verbose` shall not be tested if it is invoked.
 
 All unit tests should should use this code block prior to the `Describe` block
 which will set up the test environment and load the correct module being tested:
