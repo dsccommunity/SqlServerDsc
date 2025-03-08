@@ -111,5 +111,6 @@
     "pester.suppressCodeLensNotice": true,
     "markdownlint.ignore": [
         ".github/CODEOWNERS"
-    ]
+    ],
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true
 }

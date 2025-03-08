@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Uninstall-SqlDscBIReportServer`
 - Private function:
   - `Invoke-ReportServerSetupAction`
+- Added new instructions for GitHub Copilot that might assist when developing
+  command and private functions in the module. More instructions should be
+  added as needed to help generated code and tests.
 
 ### Changed
 
