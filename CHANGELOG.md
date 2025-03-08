@@ -10,16 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Public commands:
   - `Get-SqlDscInstalledInstance` to retrieve installed SQL instances.
   - `Get-SqlDscRSSetupConfiguration` to retrieve the configuration of
-    SQL Server Reporting Services or Power BI Report Server.
-  - `Install-SqlDscReportingService` to install SQL Server Reporting Services.
+    SQL Server Reporting Services or Power BI Report Server ([issue #2072](https://github.com/dsccommunity/SqlServerDsc/issues/2072)).
+  - `Install-SqlDscReportingService` to install SQL Server Reporting Services
+    ([issue #2010](https://github.com/dsccommunity/SqlServerDsc/issues/2010)).
   - `Install-SqlDscBIReportServer` to install SQL Server BI Report Server.
+    ([issue #2010](https://github.com/dsccommunity/SqlServerDsc/issues/2010)).
   - `Repair-SqlDscReportingService` to repair an already installed SQL Server
-    Reporting Services.
+    Reporting Services ([issue #2064](https://github.com/dsccommunity/SqlServerDsc/issues/2064)).
   - `Repair-SqlDscBIReportServer` to repair an already installed SQL Server
-    BI Report Server.
+    BI Report Server ([issue #2064](https://github.com/dsccommunity/SqlServerDsc/issues/2064)).
   - `Uninstall-SqlDscReportingService` to uninstall SQL Server Reporting
-    Services.
-  - `Uninstall-SqlDscBIReportServer` to uninstall SQL Server BI Report Server.
+    Services ([issue #2065](https://github.com/dsccommunity/SqlServerDsc/issues/2065)).
+  - `Uninstall-SqlDscBIReportServer` to uninstall SQL Server BI Report Server
+    ([issue #2065](https://github.com/dsccommunity/SqlServerDsc/issues/2065)).
 - Private function:
   - `Invoke-ReportServerSetupAction` to run setup actions for Reporting
     Services and Power BI Report Server.
