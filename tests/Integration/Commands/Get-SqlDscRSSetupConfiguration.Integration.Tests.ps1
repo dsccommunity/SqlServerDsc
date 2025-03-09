@@ -26,6 +26,8 @@ BeforeDiscovery {
 Describe 'Get-SqlDscRSSetupConfiguration' {
     Context 'When getting the configuration for SQL Server Reporting Services instance' -Tag @('Integration_SQL2017_RS') {
         It 'Should return the correct configuration for SSRS instance' {
+            Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
+
             # Get the SSRS configuration
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS'
 
@@ -46,6 +48,8 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
 
     Context 'When getting the configuration for SQL Server Reporting Services instance' -Tag @('Integration_SQL2019_RS') {
         It 'Should return the correct configuration for SSRS instance' {
+            Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
+
             # Get the SSRS configuration
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS'
 
@@ -66,6 +70,8 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
 
     Context 'When getting the configuration for SQL Server Reporting Services instance' -Tag @('Integration_SQL2022_RS') {
         It 'Should return the correct configuration for SSRS instance' {
+            Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
+
             # Get the SSRS configuration
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS'
 
