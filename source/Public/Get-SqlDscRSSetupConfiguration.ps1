@@ -101,54 +101,54 @@ function Get-SqlDscRSSetupConfiguration
 
         Write-Verbose -Message ($script:localizedData.Get_SqlDscRSSetupConfiguration_FoundInstance -f $instance.InstanceName)
 
-        $getItemPropertyValueParameters = @{
+        $getRegistryPropertyValueParameters = @{
             ErrorAction = 'SilentlyContinue'
         }
 
         # Get values from SSRS\Setup registry key
-        $getItemPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\Setup' -f $instance.InstanceName
+        $getRegistryPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\Setup' -f $instance.InstanceName
 
         # InstallRootDirectory
-        $getItemPropertyValueParameters.Name = 'InstallRootDirectory'
-        $returnObject.InstallFolder = Get-ItemPropertyValue @getItemPropertyValueParameters
+        $getRegistryPropertyValueParameters.Name = 'InstallRootDirectory'
+        $returnObject.InstallFolder = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
         # ServiceName
-        $getItemPropertyValueParameters.Name = 'ServiceName'
-        $returnObject.ServiceName = Get-ItemPropertyValue @getItemPropertyValueParameters
+        $getRegistryPropertyValueParameters.Name = 'ServiceName'
+        $returnObject.ServiceName = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
         # RSVirtualRootServer
-        $getItemPropertyValueParameters.Name = 'RSVirtualRootServer'
-        $returnObject.VirtualRootServer = Get-ItemPropertyValue @getItemPropertyValueParameters
+        $getRegistryPropertyValueParameters.Name = 'RSVirtualRootServer'
+        $returnObject.VirtualRootServer = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
         # RsConfigFilePath
-        $getItemPropertyValueParameters.Name = 'RsConfigFilePath'
-        $returnObject.ConfigFilePath = Get-ItemPropertyValue @getItemPropertyValueParameters
+        $getRegistryPropertyValueParameters.Name = 'RsConfigFilePath'
+        $returnObject.ConfigFilePath = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
         # Get values from SSRS\CPE registry key
-        $getItemPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\CPE' -f $instance.InstanceName
+        $getRegistryPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\CPE' -f $instance.InstanceName
 
         # ErrorDumpDir
-        $getItemPropertyValueParameters.Name = 'ErrorDumpDir'
-        $returnObject.ErrorDumpDirectory = Get-ItemPropertyValue @getItemPropertyValueParameters
+        $getRegistryPropertyValueParameters.Name = 'ErrorDumpDir'
+        $returnObject.ErrorDumpDirectory = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
         # CustomerFeedback
-        $getItemPropertyValueParameters.Name = 'CustomerFeedback'
-        $returnObject.CustomerFeedback = Get-ItemPropertyValue @getItemPropertyValueParameters
+        $getRegistryPropertyValueParameters.Name = 'CustomerFeedback'
+        $returnObject.CustomerFeedback = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
         # EnableErrorReporting
-        $getItemPropertyValueParameters.Name = 'EnableErrorReporting'
-        $returnObject.EnableErrorReporting = Get-ItemPropertyValue @getItemPropertyValueParameters
+        $getRegistryPropertyValueParameters.Name = 'EnableErrorReporting'
+        $returnObject.EnableErrorReporting = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
         # Get values from SSRS\MSSQLServer\CurrentVersion registry key
-        $getItemPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\MSSQLServer\CurrentVersion' -f $instance.InstanceName
+        $getRegistryPropertyValueParameters.Path = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\MSSQLServer\CurrentVersion' -f $instance.InstanceName
 
         # CurrentVersion from registry
-        $getItemPropertyValueParameters.Name = 'CurrentVersion'
-        $returnObject.CurrentVersion = Get-ItemPropertyValue @getItemPropertyValueParameters
+        $getRegistryPropertyValueParameters.Name = 'CurrentVersion'
+        $returnObject.CurrentVersion = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
         # ProductVersion
-        $getItemPropertyValueParameters.Name = 'ProductVersion'
-        $returnObject.ProductVersion = Get-ItemPropertyValue @getItemPropertyValueParameters
+        $getRegistryPropertyValueParameters.Name = 'ProductVersion'
+        $returnObject.ProductVersion = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
 
         $reportingServicesInstances += $returnObject
     }
