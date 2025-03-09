@@ -60,7 +60,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.ServiceName | Should -Be 'SQLServerReportingServices'
             $result.ErrorDumpDirectory | Should -Be 'C:\Program Files\SSRS\SSRS\LogFiles'
             $result.CurrentVersion | Should -Be '15.0.1103.41'
-            $result.ProductVersion | Should -Be '16.0.9101.19239'
+            $result.ProductVersion | Should -Be '15.0.9098.6826'
             $result.CustomerFeedback | Should -Be 1
             $result.EnableErrorReporting | Should -Be 1
             $result.VirtualRootServer | Should -Be 'ReportServer'
