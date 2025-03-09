@@ -143,9 +143,9 @@ also be written to test the command in a real environment, using real
 resources and dependencies.
 
 The module being tested should not be imported in the integration tests.
-All integration tests for commands should should use this code block prior
-to the `Describe` block which will set up the test environment and will make
-sure the correct module is available for testing:
+All integration tests should should use this code block prior to the `Describe`
+block which will set up the test environment and will make sure the correct
+module is available for testing:
 
 ```powershell
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
@@ -160,7 +160,7 @@ BeforeDiscovery {
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
-                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
             }
 
             # If the dependencies has not been resolved, this will throw an error.
