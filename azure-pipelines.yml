@@ -119,6 +119,7 @@ stages:
               testResultsFormat: 'NUnit'
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'HQRM'
+
       - job: Test_Unit
         displayName: 'Unit'
         pool:
@@ -155,6 +156,7 @@ stages:
               targetPath: '$(buildFolderName)/$(testResultFolderName)/'
               artifactName: $(testArtifactName)
               parallel: true
+
       - job: Code_Coverage
         displayName: 'Publish Code Coverage'
         dependsOn: Test_Unit
@@ -277,22 +279,22 @@ stages:
           matrix:
             SQL2017_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2017'
+              TEST_CONFIGURATION: 'Integration_SQL2017_RS'
             SQL2017_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2017'
+              TEST_CONFIGURATION: 'Integration_SQL2017_RS'
             SQL2019_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2019'
+              TEST_CONFIGURATION: 'Integration_SQL2019_RS'
             SQL2019_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2019'
+              TEST_CONFIGURATION: 'Integration_SQL2019_RS'
             SQL2022_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2022'
+              TEST_CONFIGURATION: 'Integration_SQL2022_RS'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2022'
+              TEST_CONFIGURATION: 'Integration_SQL2022_RS'
         pool:
           vmImage: $(JOB_VMIMAGE)
         timeoutInMinutes: 0
@@ -323,6 +325,9 @@ stages:
                   'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
                   # Group 1
                   'tests/Integration/Commands/Install-SqlDscReportingService.Integration.Tests.ps1'
+                  # Group 2
+                  tests/Integration/Commands/Get-SqlDscInstalledInstance.Integration.Tests.ps1
+                  tests/Integration/Commands/Get-SqlDscRSSetupConfiguration.Integration.Tests.ps1
                   # Group 8
                   'tests/Integration/Commands/Repair-SqlDscReportingService.Integration.Tests.ps1'
                   # Group 9

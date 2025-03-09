@@ -70,7 +70,7 @@ Describe 'Get-SqlDscInstalledInstance' {
         }
     }
 
-    Context 'When using both instance name and service type parameters' {
+    Context 'When using both instance name and service type parameters' -Tag @('Integration_PowerBI') {
         It 'Should filter instances by DatabaseEngine service type' {
             $result = Get-SqlDscInstalledInstance -InstanceName 'PBIRS' -ServiceType 'ReportingServices'
 

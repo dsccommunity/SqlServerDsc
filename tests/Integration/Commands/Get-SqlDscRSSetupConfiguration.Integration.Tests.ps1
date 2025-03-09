@@ -24,7 +24,47 @@ BeforeDiscovery {
 }
 
 Describe 'Get-SqlDscRSSetupConfiguration' {
-    Context 'When getting the configuration for SQL Server Reporting Services instance' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+    Context 'When getting the configuration for SQL Server Reporting Services instance' -Tag @('Integration_SQL2017_RS') {
+        It 'Should return the correct configuration for SSRS instance' {
+            # Get the SSRS configuration
+            $result = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS'
+
+            # Verify the result
+            $result | Should -Not -BeNullOrEmpty
+            $result.InstanceName | Should -Be 'SSRS'
+            $result.InstallFolder | Should -Be 'C:\Program Files\SSRS'
+            $result.ServiceName | Should -Be 'SQLServerReportingServices'
+            $result.ErrorDumpDirectory | Should -Be 'C:\Program Files\SSRS\SSRS\LogFiles'
+            $result.CurrentVersion | Should -Be '14.0.601.20'
+            $result.ProductVersion | Should -Be '16.0.9101.19239'
+            $result.CustomerFeedback | Should -Be 1
+            $result.EnableErrorReporting | Should -Be 1
+            $result.VirtualRootServer | Should -Be 'ReportServer'
+            $result.ConfigFilePath | Should -Be 'C:\Program Files\SSRS\SSRS\ReportServer\rsreportserver.config'
+        }
+    }
+
+    Context 'When getting the configuration for SQL Server Reporting Services instance' -Tag @('Integration_SQL2019_RS') {
+        It 'Should return the correct configuration for SSRS instance' {
+            # Get the SSRS configuration
+            $result = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS'
+
+            # Verify the result
+            $result | Should -Not -BeNullOrEmpty
+            $result.InstanceName | Should -Be 'SSRS'
+            $result.InstallFolder | Should -Be 'C:\Program Files\SSRS'
+            $result.ServiceName | Should -Be 'SQLServerReportingServices'
+            $result.ErrorDumpDirectory | Should -Be 'C:\Program Files\SSRS\SSRS\LogFiles'
+            $result.CurrentVersion | Should -Be '15.0.1103.41'
+            $result.ProductVersion | Should -Be '16.0.9101.19239'
+            $result.CustomerFeedback | Should -Be 1
+            $result.EnableErrorReporting | Should -Be 1
+            $result.VirtualRootServer | Should -Be 'ReportServer'
+            $result.ConfigFilePath | Should -Be 'C:\Program Files\SSRS\SSRS\ReportServer\rsreportserver.config'
+        }
+    }
+
+    Context 'When getting the configuration for SQL Server Reporting Services instance' -Tag @('Integration_SQL2022_RS') {
         It 'Should return the correct configuration for SSRS instance' {
             # Get the SSRS configuration
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS'
