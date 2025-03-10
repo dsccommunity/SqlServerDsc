@@ -82,7 +82,7 @@ Describe 'DSC_SqlRSSetup\Get-TargetResource' -Tag 'Get' {
     Context 'When the system is in the desired state' {
         Context 'When there are no installed Reporting Services' {
             BeforeAll {
-                Mock -CommandName Get-RegistryPropertyValue
+                Mock -CommandName Get-SqlCommonRegistryPropertyValue
             }
 
             It 'Should return $null as the InstanceName' {
@@ -93,7 +93,7 @@ Describe 'DSC_SqlRSSetup\Get-TargetResource' -Tag 'Get' {
                     $result.InstanceName | Should -BeNullOrEmpty
                 }
 
-                Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope 'It'
+                Should -Invoke -CommandName Get-SqlCommonRegistryPropertyValue -Exactly -Times 1 -Scope 'It'
             }
 
             It 'Should return the same values as passed as parameters' {
@@ -106,7 +106,7 @@ Describe 'DSC_SqlRSSetup\Get-TargetResource' -Tag 'Get' {
                     $result.SourcePath | Should -Be $mockGetTargetResourceParameters.SourcePath
                 }
 
-                Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope 'It'
+                Should -Invoke -CommandName Get-SqlCommonRegistryPropertyValue -Exactly -Times 1 -Scope 'It'
             }
 
             It 'Should return $null or $false for the rest of the properties' {
@@ -128,7 +128,7 @@ Describe 'DSC_SqlRSSetup\Get-TargetResource' -Tag 'Get' {
                     $getTargetResourceResult.ServiceName | Should -BeNullOrEmpty
                 }
 
-                Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope 'It'
+                Should -Invoke -CommandName Get-SqlCommonRegistryPropertyValue -Exactly -Times 1 -Scope 'It'
             }
         }
 
@@ -162,21 +162,21 @@ Describe 'DSC_SqlRSSetup\Get-TargetResource' -Tag 'Get' {
                         -and $Name -eq 'ErrorDumpDir'
                 }
 
-                Mock -CommandName Get-RegistryPropertyValue `
+                Mock -CommandName Get-SqlCommonRegistryPropertyValue `
                     -MockWith $mockGetRegistryPropertyValue_InstanceName `
                     -ParameterFilter $mockGetRegistryPropertyValue_InstanceName_ParameterFilter
 
-                Mock -CommandName Get-RegistryPropertyValue `
+                Mock -CommandName Get-SqlCommonRegistryPropertyValue `
                     -MockWith {
                         return 'C:\Program Files\Microsoft SQL Server Reporting Services'
                     } -ParameterFilter $mockGetRegistryPropertyValue_InstallRootDirectory_ParameterFilter
 
-                Mock -CommandName Get-RegistryPropertyValue `
+                Mock -CommandName Get-SqlCommonRegistryPropertyValue `
                     -MockWith {
                         return 'SQLServerReportingServices'
                     } -ParameterFilter $mockGetRegistryPropertyValue_ServiceName_ParameterFilter
 
-                Mock -CommandName Get-RegistryPropertyValue `
+                Mock -CommandName Get-SqlCommonRegistryPropertyValue `
                     -MockWith {
                         return 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles'
                     } -ParameterFilter $mockGetRegistryPropertyValue_ErrorDumpDir_ParameterFilter
@@ -218,7 +218,7 @@ Describe 'DSC_SqlRSSetup\Get-TargetResource' -Tag 'Get' {
                     $result.InstanceName | Should -Be $mockGetTargetResourceParameters.InstanceName
                 }
 
-                Should -Invoke -CommandName Get-RegistryPropertyValue `
+                Should -Invoke -CommandName Get-SqlCommonRegistryPropertyValue `
                     -ParameterFilter $mockGetRegistryPropertyValue_InstanceName_ParameterFilter `
                     -Exactly -Times 1 -Scope 'It'
             }
@@ -253,15 +253,15 @@ Describe 'DSC_SqlRSSetup\Get-TargetResource' -Tag 'Get' {
                     $getTargetResourceResult.ServiceName | Should -Be 'SQLServerReportingServices'
                 }
 
-                Should -Invoke -CommandName Get-RegistryPropertyValue `
+                Should -Invoke -CommandName Get-SqlCommonRegistryPropertyValue `
                     -ParameterFilter $mockGetRegistryPropertyValue_InstallRootDirectory_ParameterFilter `
                     -Exactly -Times 1 -Scope 'It'
 
-                Should -Invoke -CommandName Get-RegistryPropertyValue `
+                Should -Invoke -CommandName Get-SqlCommonRegistryPropertyValue `
                     -ParameterFilter $mockGetRegistryPropertyValue_ServiceName_ParameterFilter `
                     -Exactly -Times 1 -Scope 'It'
 
-                Should -Invoke -CommandName Get-RegistryPropertyValue `
+                Should -Invoke -CommandName Get-SqlCommonRegistryPropertyValue `
                     -ParameterFilter $mockGetRegistryPropertyValue_ErrorDumpDir_ParameterFilter `
                     -Exactly -Times 1 -Scope 'It'
 

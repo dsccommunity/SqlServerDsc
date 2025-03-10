@@ -86,7 +86,7 @@ function Get-TargetResource
         Name = $InstanceName
     }
 
-    $reportingServiceInstanceId = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
+    $reportingServiceInstanceId = Get-SqlCommonRegistryPropertyValue @getRegistryPropertyValueParameters
     if ($reportingServiceInstanceId)
     {
         Write-Verbose -Message (
@@ -102,12 +102,12 @@ function Get-TargetResource
             Name = 'InstallRootDirectory'
         }
 
-        $returnObject['InstallFolder'] = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
+        $returnObject['InstallFolder'] = Get-SqlCommonRegistryPropertyValue @getRegistryPropertyValueParameters
 
         # ServiceName
         $getRegistryPropertyValueParameters['Name'] = 'ServiceName'
 
-        $returnObject['ServiceName'] = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
+        $returnObject['ServiceName'] = Get-SqlCommonRegistryPropertyValue @getRegistryPropertyValueParameters
 
         # ErrorDumpDirectory
         $getRegistryPropertyValueParameters = @{
@@ -115,7 +115,7 @@ function Get-TargetResource
             Name = 'ErrorDumpDir'
         }
 
-        $returnObject['ErrorDumpDirectory'] = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
+        $returnObject['ErrorDumpDirectory'] = Get-SqlCommonRegistryPropertyValue @getRegistryPropertyValueParameters
 
         # CurrentVersion
         $getPackageParameters = @{

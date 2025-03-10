@@ -83,6 +83,68 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
+Describe 'SqlServerDsc.Common\Get-SqlCommonRegistryPropertyValue' -Tag 'GetRegistryPropertyValue' {
+    BeforeAll {
+        $mockWrongRegistryPath = 'HKLM:\SOFTWARE\AnyPath'
+        $mockPropertyName = 'InstanceName'
+        $mockPropertyValue = 'AnyValue'
+    }
+
+    Context 'When there are no property in the registry' {
+        BeforeAll {
+            Mock -CommandName Get-ItemProperty -MockWith {
+                return @{
+                    'UnknownProperty' = $mockPropertyValue
+                }
+            }
+        }
+
+        It 'Should return $null' {
+            $result = Get-SqlCommonRegistryPropertyValue -Path $mockWrongRegistryPath -Name $mockPropertyName
+            $result | Should -BeNullOrEmpty
+
+            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It -Module $script:subModuleName
+        }
+    }
+
+    Context 'When the call to Get-ItemProperty throws an error (i.e. when the path does not exist)' {
+        BeforeAll {
+            Mock -CommandName Get-ItemProperty -MockWith {
+                throw 'mocked error'
+            }
+        }
+
+        It 'Should not throw an error, but return $null' {
+            $result = Get-SqlCommonRegistryPropertyValue -Path $mockWrongRegistryPath -Name $mockPropertyName
+            $result | Should -BeNullOrEmpty
+
+            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When there are a property in the registry' {
+        BeforeAll {
+            $mockCorrectRegistryPath = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\RS'
+
+            Mock -CommandName Get-ItemProperty -MockWith {
+                return @{
+                    $mockPropertyName = $mockPropertyValue
+                }
+            } -ParameterFilter {
+                $Path -eq $mockCorrectRegistryPath `
+                -and $Name -eq $mockPropertyName
+            }
+        }
+
+        It 'Should return the correct value' {
+            $result = Get-SqlCommonRegistryPropertyValue -Path $mockCorrectRegistryPath -Name $mockPropertyName
+            $result | Should -Be $mockPropertyValue
+
+            Should -Invoke -CommandName Get-ItemProperty -Exactly -Times 1 -Scope It
+        }
+    }
+}
+
 Describe 'SqlServerDsc.Common\Format-Path' -Tag 'FormatPath' {
     BeforeAll {
         $mockCorrectPath = 'C:\Correct\Path'
@@ -747,7 +809,7 @@ Describe 'SqlServerDsc.Common\Disconnect-UncPath' -Tag 'DisconnectUncPath' {
 Describe 'SqlServerDsc.Common\Test-PendingRestart' -Tag 'TestPendingRestart' {
     Context 'When there is a pending reboot' {
         BeforeAll {
-            Mock -CommandName Get-RegistryPropertyValue -MockWith {
+            Mock -CommandName Get-SqlCommonRegistryPropertyValue -MockWith {
                 return 'AnyValue'
             }
         }
@@ -756,20 +818,20 @@ Describe 'SqlServerDsc.Common\Test-PendingRestart' -Tag 'TestPendingRestart' {
             $testPendingRestartResult = Test-PendingRestart
             $testPendingRestartResult | Should -BeTrue
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-SqlCommonRegistryPropertyValue -Exactly -Times 1 -Scope It
         }
     }
 
     Context 'When there are no pending reboot' {
         BeforeAll {
-            Mock -CommandName Get-RegistryPropertyValue
+            Mock -CommandName Get-SqlCommonRegistryPropertyValue
         }
 
         It 'Should return $true' {
             $testPendingRestartResult = Test-PendingRestart
             $testPendingRestartResult | Should -BeFalse
 
-            Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Get-SqlCommonRegistryPropertyValue -Exactly -Times 1 -Scope It
         }
     }
 }
