@@ -77,7 +77,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 return @($mockSSRSInstance, $mockPBIRSInstance)
             }
 
-            Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
                 (
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup' -or
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\Setup'
@@ -87,7 +87,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 return $mockInstallFolder
             }
 
-            Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
                 (
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup' -or
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\Setup'
@@ -97,7 +97,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 return $mockServiceName
             }
 
-            Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
                 (
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup' -or
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\Setup'
@@ -107,7 +107,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 return $mockVirtualRootServer
             }
 
-            Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
                 (
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\Setup' -or
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\Setup'
@@ -117,7 +117,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 return $mockConfigFilePath
             }
 
-            Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
                 (
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\CPE' -or
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\CPE'
@@ -127,7 +127,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 return $mockErrorDumpDirectory
             }
 
-            Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
                 (
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\CPE' -or
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\CPE'
@@ -137,7 +137,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 return $mockCustomerFeedback
             }
 
-            Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
                 (
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\CPE' -or
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\CPE'
@@ -147,7 +147,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 return $mockEnableErrorReporting
             }
 
-            Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
                 (
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\MSSQLServer\CurrentVersion' -or
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\MSSQLServer\CurrentVersion'
@@ -157,7 +157,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 return $mockCurrentVersion
             }
 
-            Mock -CommandName Get-ItemPropertyValue -ParameterFilter {
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
                 (
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\MSSQLServer\CurrentVersion' -or
                     $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\PBIRS\MSSQLServer\CurrentVersion'
@@ -201,7 +201,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 -not $PSBoundParameters.ContainsKey('InstanceName')
             } -Exactly -Times 1
 
-            Should -Invoke -CommandName Get-ItemPropertyValue -Exactly -Times 18
+            Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 18
         }
     }
 
@@ -220,7 +220,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 return @($mockSSRSInstance)
             }
 
-            Mock -CommandName Get-ItemPropertyValue -MockWith {
+            Mock -CommandName Get-RegistryPropertyValue -MockWith {
                 return $mockInstallFolder
             }
         }
@@ -235,7 +235,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                 $InstanceName -eq 'SSRS'
             } -Exactly -Times 1
 
-            Should -Invoke -CommandName Get-ItemPropertyValue -Exactly -Times 9
+            Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 9
         }
     }
 
@@ -283,7 +283,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             }
 
             # Mock a scenario where registry values cannot be retrieved
-            Mock -CommandName Get-ItemPropertyValue -MockWith {
+            Mock -CommandName Get-RegistryPropertyValue -MockWith {
                 return $null
             }
         }
