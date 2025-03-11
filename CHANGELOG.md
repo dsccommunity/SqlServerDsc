@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- SqlServerDsc.Common
+  - Removed the function `Get-RegistryPropertyValue` in favor of the command
+    with the same name in the module _DscResource.Common_.
+
 ### Added
 
 - Public commands:
