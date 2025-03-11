@@ -128,7 +128,7 @@ function Set-TargetResource
     )
 
     # Build the instance name to allow the Enable/Disable-Always On to connect to the instance
-    if ($InstanceName -eq "MSSQLSERVER")
+    if ($InstanceName -eq 'MSSQLSERVER')
     {
         $serverInstance = $ServerName
     }
@@ -206,7 +206,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param

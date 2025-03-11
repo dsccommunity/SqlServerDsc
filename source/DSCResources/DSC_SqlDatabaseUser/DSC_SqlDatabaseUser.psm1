@@ -221,8 +221,8 @@ function Set-TargetResource
 
     # Default parameters for the cmdlet Invoke-SqlDscQuery used throughout.
     $invokeSqlDscQueryParameters = @{
-        ServerName    = $ServerName
-        InstanceName  = $InstanceName
+        ServerName   = $ServerName
+        InstanceName = $InstanceName
         DatabaseName = $DatabaseName
     }
 
@@ -546,15 +546,19 @@ function Test-TargetResource
             $desiredValues['Ensure'] = $Ensure
             $desiredValues['UserType'] = $UserType
 
-            $testTargetResourceReturnValue = Test-DscParameterState -CurrentValues $getTargetResourceResult `
-                -DesiredValues $desiredValues `
-                -ValuesToCheck @(
+            $testDscParameterStateParameters = @{
+                CurrentValues       = $getTargetResourceResult
+                DesiredValues       = $desiredValues
+                ValuesToCheck       = @(
                     'LoginName'
                     'AsymmetricKeyName'
                     'CertificateName'
                     'UserType'
-                ) `
-                -TurnOffTypeChecking
+                )
+                TurnOffTypeChecking = $true
+            }
+
+            $testTargetResourceReturnValue = Test-DscParameterState @testDscParameterStateParameters
         }
         else
         {

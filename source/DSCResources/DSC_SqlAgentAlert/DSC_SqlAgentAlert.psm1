@@ -297,7 +297,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -347,15 +347,18 @@ function Test-TargetResource
 
     if ($Ensure -eq 'Present')
     {
-        $returnValue = Test-DscParameterState `
-            -CurrentValues $getTargetResourceResult `
-            -DesiredValues $PSBoundParameters `
-            -ValuesToCheck @(
+        $testDscParameterStateParameters = @{
+            CurrentValues       = $getTargetResourceResult
+            DesiredValues       = $PSBoundParameters
+            ValuesToCheck       = @(
                 'Name'
                 'Severity'
                 'MessageId'
-            ) `
-            -TurnOffTypeChecking
+            )
+            TurnOffTypeChecking = $true
+        }
+
+        $returnValue = Test-DscParameterState @testDscParameterStateParameters
     }
     else
     {

@@ -1,5 +1,6 @@
 # Localized resources for helper module SqlServerDsc.Common.
 
+# cSpell: ignore SQLCOMMON
 ConvertFrom-StringData @'
     RobocopyIsCopying = Robocopy is copying media from source '{0}' to destination '{1}'. (SQLCOMMON0008)
     RobocopyUsingUnbufferedIo = Robocopy is using unbuffered I/O. (SQLCOMMON0009)

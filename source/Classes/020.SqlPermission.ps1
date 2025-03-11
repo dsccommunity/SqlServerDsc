@@ -354,8 +354,8 @@ class SqlPermission : SqlResourceBase
         $serverObject = $this.GetServerObject()
 
         $testSqlDscIsLoginParameters = @{
-            ServerObject      = $serverObject
-            Name              = $this.Name
+            ServerObject = $serverObject
+            Name         = $this.Name
         }
 
         # This will test wether the principal exist.
