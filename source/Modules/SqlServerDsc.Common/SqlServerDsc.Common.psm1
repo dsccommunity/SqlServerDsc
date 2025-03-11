@@ -6,58 +6,6 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
-        Returns the value of the provided Name parameter at the registry
-        location provided in the Path parameter.
-
-    .PARAMETER Path
-        Specifies the path in the registry to the property name.
-
-    .PARAMETER PropertyName
-        Specifies the the name of the property to return the value for.
-
-    .NOTES
-        This function should be removed in favor of using the Get-RegistryPropertyValue
-        in the module DscResource.Common, when dependent functions can be moved to
-        private/public.
-#>
-function Get-SqlCommonRegistryPropertyValue
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Path,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name
-    )
-
-    $getItemPropertyParameters = @{
-        Path = $Path
-        Name = $Name
-    }
-
-    <#
-        Using a try/catch block instead of 'SilentlyContinue' to be
-        able to unit test a failing registry path.
-    #>
-    try
-    {
-        $getItemPropertyResult = (Get-ItemProperty @getItemPropertyParameters -ErrorAction 'Stop').$Name
-    }
-    catch
-    {
-        $getItemPropertyResult = $null
-    }
-
-    return $getItemPropertyResult
-}
-
-<#
-    .SYNOPSIS
         Returns the value of the provided in the Name parameter, at the registry
         location provided in the Path parameter.
 
