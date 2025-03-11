@@ -395,15 +395,15 @@ class SqlAudit : SqlResourceBase
                         {
                             # Look for file audit properties not in desired state
                             $fileAuditProperty = $properties.Keys.Where({
-                                $_ -in @(
-                                    'Path'
-                                    'MaximumFiles'
-                                    'MaximumFileSize'
-                                    'MaximumFileSizeUnit'
-                                    'MaximumRolloverFiles'
-                                    'ReserveDiskSpace'
-                                )
-                            })
+                                    $_ -in @(
+                                        'Path'
+                                        'MaximumFiles'
+                                        'MaximumFileSize'
+                                        'MaximumFileSizeUnit'
+                                        'MaximumRolloverFiles'
+                                        'ReserveDiskSpace'
+                                    )
+                                })
 
                             # If a property was found, throw an exception.
                             if ($fileAuditProperty.Count -gt 0)

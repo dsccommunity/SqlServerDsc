@@ -95,7 +95,7 @@ function Get-SqlDscPreferredModule
     $availableModules = Get-Module -Name $Name -ListAvailable |
         ForEach-Object -Process {
             @{
-                PSModuleInfo = $_
+                PSModuleInfo      = $_
                 CalculatedVersion = $_ | Get-SMOModuleCalculatedVersion
             }
         }

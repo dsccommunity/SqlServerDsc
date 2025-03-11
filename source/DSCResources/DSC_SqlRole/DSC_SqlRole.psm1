@@ -79,13 +79,13 @@ function Get-TargetResource
     }
 
     return @{
-        ServerRoleName     = $ServerRoleName
-        Ensure             = $ensure
-        ServerName         = $ServerName
-        InstanceName       = $InstanceName
-        Members            = $membersInRole
-        MembersToInclude   = $null
-        MembersToExclude   = $null
+        ServerRoleName   = $ServerRoleName
+        Ensure           = $ensure
+        ServerName       = $ServerName
+        InstanceName     = $InstanceName
+        Members          = $membersInRole
+        MembersToInclude = $null
+        MembersToExclude = $null
     }
 }
 
@@ -155,7 +155,7 @@ function Set-TargetResource
     )
 
     $assertBoundParameterParameters = @{
-        BoundParameterList = $PSBoundParameters
+        BoundParameterList     = $PSBoundParameters
         MutuallyExclusiveList1 = @(
             'Members'
         )
@@ -327,7 +327,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -371,7 +371,7 @@ function Test-TargetResource
     )
 
     $assertBoundParameterParameters = @{
-        BoundParameterList = $PSBoundParameters
+        BoundParameterList     = $PSBoundParameters
         MutuallyExclusiveList1 = @(
             'Members'
         )
@@ -392,9 +392,9 @@ function Test-TargetResource
     $correctedParameters = Get-CorrectedMemberParameters @originalParameters
 
     $getTargetResourceParameters = @{
-        InstanceName     = $InstanceName
-        ServerName       = $ServerName
-        ServerRoleName   = $ServerRoleName
+        InstanceName   = $InstanceName
+        ServerName     = $ServerName
+        ServerRoleName = $ServerRoleName
     }
 
     $getTargetResourceResult = Get-TargetResource @getTargetResourceParameters
@@ -636,7 +636,7 @@ function Test-SqlSecurityPrincipal
     .SYNOPSIS
         This function sanitizes the parameters
         If Members is filled, MembersToInclude and MembersToExclude should be empty.
-        If ServerRoleName is sysadmin, make sure we dont try to delete SA from it.
+        If ServerRoleName is sysadmin, make sure we don't try to delete SA from it.
 
     .PARAMETER Members
         The members the server role should have.

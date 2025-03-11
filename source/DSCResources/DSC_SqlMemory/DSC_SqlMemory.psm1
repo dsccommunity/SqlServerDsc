@@ -315,7 +315,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -331,7 +331,7 @@ function Test-TargetResource
         $ServerName = (Get-ComputerName),
 
         [Parameter()]
-        [ValidateSet("Present", "Absent")]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -576,7 +576,7 @@ function Get-SqlDscPercentMemory
     try
     {
         $physicalMemory = (Get-CimInstance -ClassName Win32_ComputerSystem).TotalPhysicalMemory
-        $memoryInMegaBytes = [Math]::Round(($physicalMemory * ($PercentMemory/100)) / 1MB)
+        $memoryInMegaBytes = [Math]::Round(($physicalMemory * ($PercentMemory / 100)) / 1MB)
     }
     catch
     {

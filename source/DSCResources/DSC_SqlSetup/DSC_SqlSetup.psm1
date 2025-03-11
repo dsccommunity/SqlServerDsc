@@ -308,7 +308,7 @@ function Get-TargetResource
 
         if ($SqlVersion -ge 13)
         {
-            # Retrieve information about Tempdb database and its files.
+            # Retrieve information about TempDb database and its files.
             $currentTempDbProperties = Get-TempDbProperties -ServerName $sqlHostName -InstanceName $InstanceName
 
             $getTargetResourceReturnValue.SQLTempDBDir = $currentTempDbProperties.SQLTempDBDir
@@ -325,7 +325,7 @@ function Get-TargetResource
             $getRegistryPropertyParams = @{
                 Path = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL$($SqlVersion).$($InstanceName)\Setup"
                 Name = 'IsProductCoveredBySA'
-        }
+            }
             $getTargetResourceReturnValue.ProductCoveredBySA = Get-RegistryPropertyValue @getRegistryPropertyParams
         }
 
@@ -456,6 +456,7 @@ function Get-TargetResource
     $installedSharedFeatures = Get-InstalledSharedFeatures -SqlServerMajorVersion $SqlVersion
     $features += '{0},' -f ($installedSharedFeatures -join ',')
 
+    # cSpell: ignore SSMS ADV_SSMS
     if ((Test-IsSsmsInstalled -SqlServerMajorVersion $SqlVersion))
     {
         $features += 'SSMS,'
@@ -890,6 +891,7 @@ function Set-TargetResource
         [System.String]
         $ASConfigDir,
 
+        # cSpell: ignore POWERPIVOT
         [Parameter()]
         [ValidateSet('MULTIDIMENSIONAL', 'TABULAR', 'POWERPIVOT', IgnoreCase = $false)]
         [System.String]
@@ -1387,6 +1389,7 @@ function Set-TargetResource
 
             if ($PSBoundParameters.ContainsKey('NpEnabled'))
             {
+                # cSpell: ignore NPENABLED
                 if ($NpEnabled)
                 {
                     $setupArguments['NPENABLED'] = 1
@@ -1399,6 +1402,7 @@ function Set-TargetResource
 
             if ($PSBoundParameters.ContainsKey('TcpEnabled'))
             {
+                # cSpell: ignore TCPENABLED
                 if ($TcpEnabled)
                 {
                     $setupArguments['TCPENABLED'] = 1
@@ -1424,7 +1428,7 @@ function Set-TargetResource
         # tempdb : define SqlTempdbFileCount
         if ($PSBoundParameters.ContainsKey('SqlTempdbFileCount'))
         {
-            $setupArguments['SqlTempdbFileCount'] = $SqlTempdbFileCount
+            $setupArguments['SqlTempdbFileCount'] = $sqlTempDbFileCount
         }
 
         # tempdb : define SqlTempdbFileSize
@@ -1487,6 +1491,7 @@ function Set-TargetResource
 
         if ($PSBoundParameters.ContainsKey('RSInstallMode'))
         {
+            # cSpell: ignore RSINSTALLMODE
             $setupArguments['RSINSTALLMODE'] = $RSInstallMode
         }
     }
@@ -2518,7 +2523,7 @@ function Get-ServiceAccountParameters
     $accountParameters = Get-ServiceAccount -ServiceAccount $ServiceAccount
     $parameters = @{}
 
-    # Assign the service type the account
+    # Assign the service type the account. cSpell: ignore SVCACCOUNT
     $parameters = @{
         "$($ServiceType)SVCACCOUNT" = $accountParameters.UserName
     }
@@ -2526,7 +2531,7 @@ function Get-ServiceAccountParameters
     # Check to see if password is null
     if (![string]::IsNullOrEmpty($accountParameters.Password))
     {
-        # Add the password to the hashtable
+        # Add the password to the hashtable. cSpell: ignore SVCPASSWORD
         $parameters.Add("$($ServiceType)SVCPASSWORD", $accountParameters.Password)
     }
 
@@ -2916,22 +2921,22 @@ function Get-TempDbProperties
 
     $databaseTempDb = $sqlServerObject.Databases['tempdb']
 
-    # Tempdb data primary path.
+    # TempDb data primary path.
     $sqlTempDBPrimaryFilePath = $databaseTempDb.PrimaryFilePath
 
     $primaryFileGroup = $databaseTempDb.FileGroups['PRIMARY']
 
-    # Tempdb data files count.
-    $sqlTempdbFileCount = $primaryFileGroup.Files.Count
+    # TempDb data files count.
+    $sqlTempDbFileCount = $primaryFileGroup.Files.Count
 
-    # Tempdb data files size.
-    $sqlTempdbFileSize = (
+    # TempDb data files size.
+    $sqlTempDbFileSize = (
         $primaryFileGroup.Files.Size |
             Measure-Object -Average
     ).Average / 1KB
 
-    # Tempdb data files average growth in KB.
-    $sqlTempdbAverageFileGrowthKB = (
+    # TempDb data files average growth in KB.
+    $sqlTempDbAverageFileGrowthKB = (
         $primaryFileGroup.Files |
             Where-Object -FilterScript {
                 $_.GrowthType -eq 'KB'
@@ -2940,8 +2945,8 @@ function Get-TempDbProperties
             Measure-Object -Average
     ).Average
 
-    # Tempdb data files average growth in Percent.
-    $sqlTempdbFileGrowthPercent = (
+    # TempDb data files average growth in Percent.
+    $sqlTempDbFileGrowthPercent = (
         $primaryFileGroup.Files |
             Where-Object -FilterScript {
                 $_.GrowthType -eq 'Percent'
@@ -2950,23 +2955,23 @@ function Get-TempDbProperties
             Measure-Object -Average
     ).Average
 
-    $sqlTempdbFileGrowthMB = 0
+    $sqlTempDbFileGrowthMB = 0
 
     # Convert the KB value into MB.
-    if ($sqlTempdbAverageFileGrowthKB)
+    if ($sqlTempDbAverageFileGrowthKB)
     {
-        $sqlTempdbFileGrowthMB = $sqlTempdbAverageFileGrowthKB / 1KB
+        $sqlTempDbFileGrowthMB = $sqlTempDbAverageFileGrowthKB / 1KB
     }
 
-    $sqlTempdbFileGrowth = $sqlTempdbFileGrowthMB + $sqlTempdbFileGrowthPercent
+    $sqlTempDbFileGrowth = $sqlTempDbFileGrowthMB + $sqlTempDbFileGrowthPercent
 
     $tempdbLogFiles = $databaseTempDb.LogFiles
 
-    # Tempdb log file size.
-    $sqlTempdbLogFileSize = ($tempdbLogFiles.Size | Measure-Object -Average).Average / 1KB
+    # TempDb log file size.
+    $sqlTempDbLogFileSize = ($tempdbLogFiles.Size | Measure-Object -Average).Average / 1KB
 
-    # Tempdb log file average growth in KB.
-    $sqlTempdbAverageLogFileGrowthKB = (
+    # TempDb log file average growth in KB.
+    $sqlTempDbAverageLogFileGrowthKB = (
         $tempdbLogFiles |
             Where-Object -FilterScript {
                 $_.GrowthType -eq 'KB'
@@ -2975,8 +2980,8 @@ function Get-TempDbProperties
             Measure-Object -Average
     ).Average
 
-    # Tempdb log file average growth in Percent.
-    $sqlTempdbLogFileGrowthPercent = (
+    # TempDb log file average growth in Percent.
+    $sqlTempDbLogFileGrowthPercent = (
         $tempdbLogFiles |
             Where-Object -FilterScript {
                 $_.GrowthType -eq 'Percent'
@@ -2986,25 +2991,25 @@ function Get-TempDbProperties
     ).Average
 
     # Convert the KB value into MB.
-    if ($sqlTempdbAverageLogFileGrowthKB)
+    if ($sqlTempDbAverageLogFileGrowthKB)
     {
-        $sqlTempdbLogFileGrowthMB = $sqlTempdbAverageLogFileGrowthKB / 1KB
+        $sqlTempDbLogFileGrowthMB = $sqlTempDbAverageLogFileGrowthKB / 1KB
     }
     else
     {
-        $sqlTempdbLogFileGrowthMB = 0
+        $sqlTempDbLogFileGrowthMB = 0
     }
 
     # The sum of the average growth in KB and average growth in Percent.
-    $sqlTempdbLogFileGrowth = $sqlTempdbLogFileGrowthMB + $sqlTempdbLogFileGrowthPercent
+    $sqlTempDbLogFileGrowth = $sqlTempDbLogFileGrowthMB + $sqlTempDbLogFileGrowthPercent
 
     return @{
         SQLTempDBDir           = $sqlTempDBPrimaryFilePath
-        SqlTempdbFileCount     = $sqlTempdbFileCount
-        SqlTempdbFileSize      = $sqlTempdbFileSize
-        SqlTempdbFileGrowth    = $sqlTempdbFileGrowth
-        SqlTempdbLogFileSize   = $sqlTempdbLogFileSize
-        SqlTempdbLogFileGrowth = $sqlTempdbLogFileGrowth
+        SqlTempdbFileCount     = $sqlTempDbFileCount
+        SqlTempdbFileSize      = $sqlTempDbFileSize
+        SqlTempdbFileGrowth    = $sqlTempDbFileGrowth
+        SqlTempdbLogFileSize   = $sqlTempDbLogFileSize
+        SqlTempdbLogFileGrowth = $sqlTempDbLogFileGrowth
     }
 }
 
@@ -3042,6 +3047,7 @@ function Get-ServiceNamesForInstance
 
     if ($InstanceName -eq 'MSSQLSERVER')
     {
+        # cSpell: ignore SQLSERVERAGENT MSSQLFDLauncher
         $serviceNames.DatabaseService = 'MSSQLSERVER'
         $serviceNames.AgentService = 'SQLSERVERAGENT'
         $serviceNames.FullTextService = 'MSSQLFDLauncher'

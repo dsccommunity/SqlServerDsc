@@ -92,7 +92,7 @@ function Get-TargetResource
             New-ObjectNotFoundException -Message $errorMessage
         }
 
-        $databaseIsUpdateable  = $sqlDatabaseObject.IsUpdateable
+        $databaseIsUpdateable = $sqlDatabaseObject.IsUpdateable
 
         if ($sqlDatabaseRoleObject = $sqlDatabaseObject.Roles[$Name])
         {
@@ -414,7 +414,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param

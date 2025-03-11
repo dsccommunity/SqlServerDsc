@@ -78,11 +78,11 @@ function Get-TargetResource
                             $_.TrimStart('-T')
                         }
                 )
-           }
-           else
-           {
-               Write-Debug -Message ($script:localizedData.DebugNoTraceFlags -f $MyInvocation.MyCommand)
-           }
+            }
+            else
+            {
+                Write-Debug -Message ($script:localizedData.DebugNoTraceFlags -f $MyInvocation.MyCommand)
+            }
         }
         else
         {
@@ -363,7 +363,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SqlDscPreferredModule is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Import-SqlDscPreferredModule is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param

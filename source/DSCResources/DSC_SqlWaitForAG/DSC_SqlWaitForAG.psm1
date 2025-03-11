@@ -148,7 +148,7 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     param
     (
@@ -193,9 +193,10 @@ function Set-TargetResource
         if ($clusterGroupFound)
         {
             Write-Verbose -Message (
-                '{0} {1}' -f `
+                '{0} {1}' -f @(
                     ($script:localizedData.FoundClusterGroup -f $Name, $RetryCount, ($RetryIntervalSec * $RetryCount)),
                     ($script:localizedData.SleepMessage -f $RetryIntervalSec)
+                )
             )
 
             Start-Sleep -Seconds $RetryIntervalSec
@@ -203,9 +204,10 @@ function Set-TargetResource
         }
 
         Write-Verbose -Message (
-            '{0} {1}' -f `
+            '{0} {1}' -f @(
                 ($script:localizedData.MissingClusterGroup -f $Name, $RetryCount, ($RetryIntervalSec * $RetryCount)),
                 ($script:localizedData.RetryMessage -f $RetryIntervalSec)
+            )
         )
 
         Start-Sleep -Seconds $RetryIntervalSec
@@ -245,7 +247,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Connect-Sql is called when Get-TargetResource is called')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Connect-Sql is called when Get-TargetResource is called')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param

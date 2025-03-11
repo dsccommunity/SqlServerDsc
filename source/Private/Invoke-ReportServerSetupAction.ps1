@@ -245,8 +245,8 @@ function Invoke-ReportServerSetupAction
     if ($Edition)
     {
         $editionMap = @{
-            Developer = 'Dev'
-            Evaluation = 'Eval'
+            Developer       = 'Dev'
+            Evaluation      = 'Eval'
             ExpressAdvanced = 'ExprAdv'
         }
 
