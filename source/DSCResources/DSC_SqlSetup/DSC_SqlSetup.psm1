@@ -1389,7 +1389,7 @@ function Set-TargetResource
 
             if ($PSBoundParameters.ContainsKey('NpEnabled'))
             {
-                cSpell: ignore NPENABLED
+                # cSpell: ignore NPENABLED
                 if ($NpEnabled)
                 {
                     $setupArguments['NPENABLED'] = 1
@@ -1402,7 +1402,7 @@ function Set-TargetResource
 
             if ($PSBoundParameters.ContainsKey('TcpEnabled'))
             {
-                cSpell: ignore TCPENABLED
+                # cSpell: ignore TCPENABLED
                 if ($TcpEnabled)
                 {
                     $setupArguments['TCPENABLED'] = 1
@@ -1491,7 +1491,7 @@ function Set-TargetResource
 
         if ($PSBoundParameters.ContainsKey('RSInstallMode'))
         {
-            cSpell: ignore RSINSTALLMODE
+            # cSpell: ignore RSINSTALLMODE
             $setupArguments['RSINSTALLMODE'] = $RSInstallMode
         }
     }
