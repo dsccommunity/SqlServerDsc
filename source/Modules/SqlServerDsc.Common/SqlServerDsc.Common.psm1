@@ -314,9 +314,8 @@ function Test-PendingRestart
     param ()
 
     $getRegistryPropertyValueParameters = @{
-        Path        = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager'
-        Name        = 'PendingFileRenameOperations'
-        ErrorAction = 'SilentlyContinue'
+        Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager'
+        Name = 'PendingFileRenameOperations'
     }
 
     <#
