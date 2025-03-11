@@ -32,7 +32,7 @@ Describe 'Get-SqlDscInstalledInstance' {
         It 'Should return an array of objects' {
             $result = Get-SqlDscInstalledInstance
 
-            $result | Should -BeOfType ([System.Object[]])
+            $result | Should -BeGreaterOrEqual 1
         }
     }
 
@@ -41,6 +41,7 @@ Describe 'Get-SqlDscInstalledInstance' {
         It 'Should return the specified instance when it exists' {
             $result = Get-SqlDscInstalledInstance -InstanceName 'PBIRS'
 
+            $result | Should -BeOfType ([System.Management.Automation.PSCustomObject])
             $result.InstanceName | Should -Be 'PBIRS'
         }
 
