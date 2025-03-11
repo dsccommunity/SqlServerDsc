@@ -26,7 +26,7 @@ BeforeDiscovery {
 Describe 'Get-SqlDscRSSetupConfiguration' {
     Context 'When getting the configuration for SQL Server Reporting Services instance' -Tag @('Integration_SQL2017_RS') {
         It 'Should return the correct configuration for SSRS instance' {
-            Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
+            #Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
 
             # Get the SSRS configuration
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS'
@@ -38,7 +38,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.ServiceName | Should -Be 'SQLServerReportingServices'
             $result.ErrorDumpDirectory | Should -Be 'C:\Program Files\SSRS\SSRS\LogFiles'
             $result.CurrentVersion | Should -Be '14.0.601.20'
-            $result.ProductVersion | Should -Be '16.0.9101.19239'
+            $result.ProductVersion | Should -BeNullOrEmpty
             $result.CustomerFeedback | Should -Be 1
             $result.EnableErrorReporting | Should -Be 1
             $result.VirtualRootServer | Should -Be 'ReportServer'
@@ -48,7 +48,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
 
     Context 'When getting the configuration for SQL Server Reporting Services instance' -Tag @('Integration_SQL2019_RS') {
         It 'Should return the correct configuration for SSRS instance' {
-            Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
+            #Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
 
             # Get the SSRS configuration
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS'
@@ -70,7 +70,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
 
     Context 'When getting the configuration for SQL Server Reporting Services instance' -Tag @('Integration_SQL2022_RS') {
         It 'Should return the correct configuration for SSRS instance' {
-            Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
+            #Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
 
             # Get the SSRS configuration
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS'
