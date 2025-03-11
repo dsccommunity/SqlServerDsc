@@ -326,7 +326,7 @@ function Get-TargetResource
                 Path = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL$($SqlVersion).$($InstanceName)\Setup"
                 Name = 'IsProductCoveredBySA'
         }
-            $getTargetResourceReturnValue.ProductCoveredBySA = Get-SqlCommonRegistryPropertyValue @getRegistryPropertyParams
+            $getTargetResourceReturnValue.ProductCoveredBySA = Get-RegistryPropertyValue @getRegistryPropertyParams
         }
 
         # Get all members of the sysadmin role.
@@ -422,7 +422,7 @@ function Get-TargetResource
 
         $getTargetResourceReturnValue.ASSysAdminAccounts = [System.String[]] $analysisServer.Roles['Administrators'].Members.Name
 
-        $serviceAnalysisServiceImagePath = Get-SqlCommonRegistryPropertyValue -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$($serviceNames.AnalysisService)" -Name 'ImagePath'
+        $serviceAnalysisServiceImagePath = Get-RegistryPropertyValue -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$($serviceNames.AnalysisService)" -Name 'ImagePath'
         $foundAnalysisServiceConfigPath = $serviceAnalysisServiceImagePath -match '-s\s*"(.*)"'
 
         if ($foundAnalysisServiceConfigPath)
@@ -2768,7 +2768,7 @@ function Get-FullInstanceId
         Name = $InstanceName
     }
 
-    return (Get-SqlCommonRegistryPropertyValue @getRegistryPropertyValueParameters)
+    return (Get-RegistryPropertyValue @getRegistryPropertyValueParameters)
 }
 
 <#
@@ -2799,7 +2799,7 @@ function Test-IsReplicationFeatureInstalled
     # Check if Replication sub component is configured for this instance
     $replicationRegistryPath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$fullInstanceId\ConfigurationState"
 
-    $replicationInstallValue = Get-SqlCommonRegistryPropertyValue -Path $replicationRegistryPath -Name 'SQL_Replication_Core_Inst'
+    $replicationInstallValue = Get-RegistryPropertyValue -Path $replicationRegistryPath -Name 'SQL_Replication_Core_Inst'
 
     if ($replicationInstallValue -eq 1)
     {
@@ -2879,7 +2879,7 @@ function Get-InstanceProgramPath
     # Check if Replication sub component is configured for this instance
     $registryPath = 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\{0}\Setup' -f $fullInstanceId
 
-    $instanceDirectory = Get-SqlCommonRegistryPropertyValue -Path $registryPath -Name 'SqlProgramDir'
+    $instanceDirectory = Get-RegistryPropertyValue -Path $registryPath -Name 'SqlProgramDir'
 
     return $instanceDirectory.Trim('\')
 }

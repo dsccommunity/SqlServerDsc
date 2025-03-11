@@ -240,7 +240,7 @@ Describe 'SqlSetup\Get-TargetResource' -Tag 'Get' {
         Mock -CommandName Get-PSDrive
         Mock -CommandName Get-FilePathMajorVersion -MockWith $mockGetSqlMajorVersion
 
-        Mock -CommandName Get-SqlCommonRegistryPropertyValue -ParameterFilter {
+        Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
             $Name -eq 'ImagePath'
         } -MockWith {
             <#
@@ -4672,7 +4672,7 @@ Describe 'Test-FeatureFlag' -Tag 'Helper' {
 Describe 'Get-FullInstanceId' -Tag 'Helper' {
     Context 'When getting the full instance ID from the default instance' {
         BeforeAll {
-            Mock -CommandName Get-SqlCommonRegistryPropertyValue -MockWith {
+            Mock -CommandName Get-RegistryPropertyValue -MockWith {
                 return 'MSSQL14.MSSQLSERVER'
             }
         }
@@ -4686,7 +4686,7 @@ Describe 'Get-FullInstanceId' -Tag 'Helper' {
                 $result | Should -Be 'MSSQL14.MSSQLSERVER'
             }
 
-            Should -Invoke -CommandName Get-SqlCommonRegistryPropertyValue -ParameterFilter {
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' `
                     -and $Name -eq 'MSSQLSERVER'
             } -Exactly -Times 1 -Scope It
@@ -4695,7 +4695,7 @@ Describe 'Get-FullInstanceId' -Tag 'Helper' {
 
     Context 'When getting the full instance ID for a named instance' {
         BeforeAll {
-            Mock -CommandName Get-SqlCommonRegistryPropertyValue -MockWith {
+            Mock -CommandName Get-RegistryPropertyValue -MockWith {
                 return 'MSSQL14.NAMED'
             }
         }
@@ -4709,7 +4709,7 @@ Describe 'Get-FullInstanceId' -Tag 'Helper' {
                 $result | Should -Be 'MSSQL14.NAMED'
             }
 
-            Should -Invoke -CommandName Get-SqlCommonRegistryPropertyValue -ParameterFilter {
+            Should -Invoke -CommandName Get-RegistryPropertyValue -ParameterFilter {
                 $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL' `
                     -and $Name -eq 'NAMED'
             } -Exactly -Times 1 -Scope It
@@ -4851,7 +4851,7 @@ Describe 'Get-SqlEngineProperties' -Tag 'Helper' {
 Describe 'Test-IsReplicationFeatureInstalled' -Tag 'Helper' {
     Context 'When replication feature is installed' {
         BeforeAll {
-            Mock -CommandName Get-SqlCommonRegistryPropertyValue -MockWith {
+            Mock -CommandName Get-RegistryPropertyValue -MockWith {
                 return 1
             }
         }
@@ -4868,7 +4868,7 @@ Describe 'Test-IsReplicationFeatureInstalled' -Tag 'Helper' {
 
     Context 'When replication feature is installed' {
         BeforeAll {
-            Mock -CommandName Get-SqlCommonRegistryPropertyValue -MockWith {
+            Mock -CommandName Get-RegistryPropertyValue -MockWith {
                 return $null
             }
         }
@@ -4927,7 +4927,7 @@ Describe 'Test-IsDQComponentInstalled' -Tag 'Helper' {
 
 Describe 'Get-InstanceProgramPath' -Tag 'Helper' {
     BeforeAll {
-        Mock -CommandName Get-SqlCommonRegistryPropertyValue -MockWith {
+        Mock -CommandName Get-RegistryPropertyValue -MockWith {
             # Ending the path on purpose to make sure the function removes it.
             return 'C:\Program Files\Microsoft SQL Server\'
         }

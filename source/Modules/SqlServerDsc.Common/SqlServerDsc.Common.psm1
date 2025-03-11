@@ -323,7 +323,7 @@ function Test-PendingRestart
         If the key 'PendingFileRenameOperations' does not exist then if should
         return $false, otherwise it should return $true.
     #>
-    return $null -ne (Get-SqlCommonRegistryPropertyValue @getRegistryPropertyValueParameters)
+    return $null -ne (Get-RegistryPropertyValue @getRegistryPropertyValueParameters)
 }
 
 <#
