@@ -25,7 +25,7 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 #>
 function Get-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='Neither command is needed for this function since it uses CIM methods when calling Get-ReportingServicesData')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'Neither command is needed for this function since it uses CIM methods when calling Get-ReportingServicesData')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -223,7 +223,7 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification='Because the code throws based on an prior expression')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification = 'Because the code throws based on an prior expression')]
     [CmdletBinding()]
     param
     (
@@ -319,6 +319,7 @@ function Set-TargetResource
             $reportingServicesDatabaseName = "ReportServer`$$InstanceName"
         }
 
+        # cSpell: ignore cimv2
         $wmiOperatingSystem = Get-CimInstance -ClassName Win32_OperatingSystem -Namespace 'root/cimv2' -ErrorAction SilentlyContinue
         if ( $null -eq $wmiOperatingSystem )
         {
@@ -351,6 +352,7 @@ function Set-TargetResource
             {
                 Write-Verbose -Message "Setting report server virtual directory on $DatabaseServerName\$DatabaseInstanceName to '$ReportServerVirtualDirectory'."
 
+                # cSpell: ignore Lcid
                 $invokeRsCimMethodParameters = @{
                     CimInstance = $reportingServicesData.Configuration
                     MethodName  = 'SetVirtualDirectory'
@@ -599,6 +601,8 @@ function Set-TargetResource
                 existing URL reservations, change the appropriate virtual directory
                 setting and re-add URL reservations, which will then contain the
                 new virtual directory.
+
+                cSpell: ignore netsh urlacl
             #>
 
             if ( -not [System.String]::IsNullOrEmpty($ReportServerVirtualDirectory) -and ($ReportServerVirtualDirectory -ne $currentConfig.ReportServerVirtualDirectory) )
@@ -853,7 +857,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='Neither command is needed for this function since it uses CIM methods implicitly when calling Get-TargetResource')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'Neither command is needed for this function since it uses CIM methods implicitly when calling Get-TargetResource')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -1063,7 +1067,7 @@ function Get-ReportingServicesData
 #>
 function Invoke-RsCimMethod
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification='Because the code throws based on an prior expression')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification = 'Because the code throws based on an prior expression')]
     [CmdletBinding()]
     [OutputType([Microsoft.Management.Infrastructure.CimMethodResult])]
     param
@@ -1093,10 +1097,13 @@ function Invoke-RsCimMethod
     }
 
     $invokeCimMethodResult = $CimInstance | Invoke-CimMethod @invokeCimMethodParameters
+
     <#
         Successfully calling the method returns $invokeCimMethodResult.HRESULT -eq 0.
         If an general error occur in the Invoke-CimMethod, like calling a method
         that does not exist, returns $null in $invokeCimMethodResult.
+
+        cSpell: ignore HRESULT
     #>
     if ($invokeCimMethodResult -and $invokeCimMethodResult.HRESULT -ne 0)
     {

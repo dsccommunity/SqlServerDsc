@@ -349,7 +349,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='It is imported in Get-TargetResource, also this resource explicitly loads assemblies from the GAC. This is being tracked in issue https://github.com/dsccommunity/SqlServerDsc/issues/1352')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'It is imported in Get-TargetResource, also this resource explicitly loads assemblies from the GAC. This is being tracked in issue https://github.com/dsccommunity/SqlServerDsc/issues/1352')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -823,7 +823,7 @@ function Register-DistributorPublisher
         cannot use this:
 
         Import-Module SqlServer
-        $connectionInfo = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList @('testclu01a\SQL2014')
+        $connectionInfo = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList @('TestClu01a\SQL2014')
         # Missing assembly 'Microsoft.SqlServer.Rmo' in module SqlServer prevents this call from working.
         $replication = New-Object -TypeName 'Microsoft.SqlServer.Replication.ReplicationServer' -ArgumentList @($connectionInfo)
 #>
@@ -868,7 +868,7 @@ function Get-ConnectionInfoAssembly
         cannot use this:
 
         Import-Module SqlServer
-        $connectionInfo = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList @('testclu01a\SQL2014')
+        $connectionInfo = New-Object -TypeName 'Microsoft.SqlServer.Management.Common.ServerConnection' -ArgumentList @('TestClu01a\SQL2014')
         # Missing assembly 'Microsoft.SqlServer.Rmo' in module SqlServer prevents this call from working.
         # Tracked in issue https://github.com/microsoft/sqlmanagementobjects/issues/59.
         $replication = New-Object -TypeName 'Microsoft.SqlServer.Replication.ReplicationServer' -ArgumentList @($connectionInfo)

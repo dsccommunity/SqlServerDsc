@@ -229,7 +229,7 @@ function Get-TargetResource
 #>
 function Set-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SqlDscPreferredModule is implicitly called when calling Compare-TargetResourceState')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Import-SqlDscPreferredModule is implicitly called when calling Compare-TargetResourceState')]
     [CmdletBinding()]
     param
     (
@@ -493,7 +493,7 @@ function Set-TargetResource
 #>
 function Test-TargetResource
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification='The command Import-SqlDscPreferredModule is implicitly called when calling Compare-TargetResourceState')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('SqlServerDsc.AnalyzerRules\Measure-CommandsNeededToLoadSMO', '', Justification = 'The command Import-SqlDscPreferredModule is implicitly called when calling Compare-TargetResourceState')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param

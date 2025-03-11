@@ -83,7 +83,7 @@ function Copy-ItemWithRobocopy
 
     $quotedPath = '"{0}"' -f $Path
     $quotedDestinationPath = '"{0}"' -f $DestinationPath
-    $robocopyExecutable = Get-Command -Name "Robocopy.exe" -ErrorAction Stop
+    $robocopyExecutable = Get-Command -Name 'Robocopy.exe' -ErrorAction Stop
 
     $robocopyArgumentSilent = '/njh /njs /ndl /nc /ns /nfl'
     $robocopyArgumentCopySubDirectoriesIncludingEmpty = '/e'
@@ -1673,7 +1673,7 @@ function Split-FullSqlInstanceName
 #>
 function Test-ClusterPermissions
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification='Because the code throws based on an prior expression')]
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('AvoidThrowOutsideOfTry', '', Justification = 'Because the code throws based on an prior expression')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -1963,14 +1963,14 @@ function Get-ServiceAccount
         '^(?:NT ?AUTHORITY\\)?(SYSTEM|LOCALSERVICE|LOCAL SERVICE|NETWORKSERVICE|NETWORK SERVICE)$'
         {
             $accountParameters = @{
-                "UserName" = "NT AUTHORITY\$($Matches[1])"
+                UserName = "NT AUTHORITY\$($Matches[1])"
             }
         }
 
         '^(?:NT SERVICE\\)(.*)$'
         {
             $accountParameters = @{
-                "UserName" = "NT SERVICE\$($Matches[1])"
+                UserName = "NT SERVICE\$($Matches[1])"
             }
         }
 
@@ -1978,7 +1978,7 @@ function Get-ServiceAccount
         '\$$'
         {
             $accountParameters = @{
-                "UserName" = $ServiceAccount.UserName
+                UserName = $ServiceAccount.UserName
             }
         }
 
@@ -1986,8 +1986,8 @@ function Get-ServiceAccount
         default
         {
             $accountParameters = @{
-                "UserName" = $ServiceAccount.UserName
-                "Password" = $ServiceAccount.GetNetworkCredential().Password
+                UserName = $ServiceAccount.UserName
+                Password = $ServiceAccount.GetNetworkCredential().Password
             }
         }
     }

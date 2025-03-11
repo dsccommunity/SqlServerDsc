@@ -73,9 +73,9 @@ function Get-SqlDscConfigurationOption
                 $missingConfigurationOptionMessage = $script:localizedData.ConfigurationOption_Get_Missing -f $Name
 
                 $writeErrorParameters = @{
-                    Message = $missingConfigurationOptionMessage
-                    Category = 'InvalidOperation'
-                    ErrorId = 'GSDCO0001' # cspell: disable-line
+                    Message      = $missingConfigurationOptionMessage
+                    Category     = 'InvalidOperation'
+                    ErrorId      = 'GSDCO0001' # cspell: disable-line
                     TargetObject = $Name
                 }
 

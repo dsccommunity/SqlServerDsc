@@ -6,6 +6,7 @@
     or improve these strings.
 #>
 
+# cSpell: ignore Obuffrad SQLCOMMON
 ConvertFrom-StringData @'
     RobocopyIsCopying = Robocopy kopierar media från källan '{0}' till destinationen '{1}'. (SQLCOMMON0008)
     RobocopyUsingUnbufferedIo = Robocopy använder sig av obuffrad I/O. (SQLCOMMON0009)
