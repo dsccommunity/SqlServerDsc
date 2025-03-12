@@ -32,7 +32,11 @@ Describe 'Get-SqlDscInstalledInstance' {
         It 'Should return an array of objects' {
             $result = Get-SqlDscInstalledInstance
 
-            $result | Should -BeGreaterOrEqual 1
+            <#
+                Casting to array to ensure we get the count on Windows PowerShell
+                when there is only one instance.
+            #>
+            @($result).Count | Should -BeGreaterOrEqual 1
         }
     }
 
