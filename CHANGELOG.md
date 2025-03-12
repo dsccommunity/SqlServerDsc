@@ -14,14 +14,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Public commands:
-  - `Install-SqlDscReportingService`
-  - `Install-SqlDscBIReportServer`
-  - `Repair-SqlDscReportingService`
-  - `Repair-SqlDscBIReportServer`
-  - `Uninstall-SqlDscReportingService`
-  - `Uninstall-SqlDscBIReportServer`
+  - `Get-SqlDscInstalledInstance` to retrieve installed SQL instances.
+  - `Get-SqlDscRSSetupConfiguration` to retrieve the setup configuration of
+    SQL Server Reporting Services or Power BI Report Server ([issue #2072](https://github.com/dsccommunity/SqlServerDsc/issues/2072)).
+  - `Install-SqlDscReportingService` to install SQL Server Reporting Services
+    ([issue #2010](https://github.com/dsccommunity/SqlServerDsc/issues/2010)).
+  - `Install-SqlDscBIReportServer` to install SQL Server BI Report Server.
+    ([issue #2010](https://github.com/dsccommunity/SqlServerDsc/issues/2010)).
+  - `Repair-SqlDscReportingService` to repair an already installed SQL Server
+    Reporting Services ([issue #2064](https://github.com/dsccommunity/SqlServerDsc/issues/2064)).
+  - `Repair-SqlDscBIReportServer` to repair an already installed SQL Server
+    BI Report Server ([issue #2064](https://github.com/dsccommunity/SqlServerDsc/issues/2064)).
+  - `Uninstall-SqlDscReportingService` to uninstall SQL Server Reporting
+    Services ([issue #2065](https://github.com/dsccommunity/SqlServerDsc/issues/2065)).
+  - `Uninstall-SqlDscBIReportServer` to uninstall SQL Server BI Report Server
+    ([issue #2065](https://github.com/dsccommunity/SqlServerDsc/issues/2065)).
 - Private function:
-  - `Invoke-ReportServerSetupAction`
+  - `Invoke-ReportServerSetupAction` to run setup actions for Reporting
+    Services and Power BI Report Server.
+- Added new instructions for GitHub Copilot that might assist when developing
+  command and private functions in the module. More instructions should be
+  added as needed to help generated code and tests.
 
 ### Changed
 

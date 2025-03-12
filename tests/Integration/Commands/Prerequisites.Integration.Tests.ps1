@@ -100,7 +100,7 @@ Describe 'Prerequisites' {
             $mediaFile.Name | Should -Be 'media.iso'
         }
 
-        It 'Should download SQL Server 2017 media' -Tag @('Integration_SQL2017') {
+        It 'Should download SQL Server 2017 media' -Tag @('Integration_SQL2017', 'Integration_SQL2017_RS') {
             $url = 'https://download.microsoft.com/download/E/F/2/EF23C21D-7860-4F05-88CE-39AA114B014B/SQLServer2017-x64-ENU.iso'
 
             $script:mediaFile = Save-SqlDscSqlServerMediaFile -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
@@ -108,7 +108,7 @@ Describe 'Prerequisites' {
             $mediaFile.Name | Should -Be 'media.iso'
         }
 
-        It 'Should download SQL Server 2019 media' -Tag @('Integration_SQL2019') {
+        It 'Should download SQL Server 2019 media' -Tag @('Integration_SQL2019', 'Integration_SQL2019_RS') {
             $url = 'https://download.microsoft.com/download/d/a/2/da259851-b941-459d-989c-54a18a5d44dd/SQL2019-SSEI-Dev.exe'
 
             $script:mediaFile = Save-SqlDscSqlServerMediaFile -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
@@ -116,7 +116,7 @@ Describe 'Prerequisites' {
             $mediaFile.Name | Should -Be 'media.iso'
         }
 
-        It 'Should download SQL Server 2022 media' -Tag @('Integration_SQL2022', 'Integration_PowerBI') {
+        It 'Should download SQL Server 2022 media' -Tag @('Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2022_RS') {
             $url = 'https://download.microsoft.com/download/c/c/9/cc9c6797-383c-4b24-8920-dc057c1de9d3/SQL2022-SSEI-Dev.exe'
 
             $script:mediaFile = Save-SqlDscSqlServerMediaFile -Url $url -DestinationPath $env:TEMP -Force -Quiet -ErrorAction 'Stop'
@@ -125,7 +125,7 @@ Describe 'Prerequisites' {
         }
     }
 
-    Context 'Mount SQL Server media' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
+    Context 'Mount SQL Server media' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
         It 'Should mount the media to a drive letter' {
             $mountedImage = Mount-DiskImage -ImagePath $script:mediaFile
             $mountedImage | Should -BeOfType 'Microsoft.Management.Infrastructure.CimInstance'
@@ -150,14 +150,14 @@ Describe 'Prerequisites' {
     }
 
     Context 'Install correct version of module SqlServer' {
-        It 'Should have the minimum required version of Microsoft.PowerShell.PSResourceGet' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
+        It 'Should have the minimum required version of Microsoft.PowerShell.PSResourceGet' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
             $module = Get-Module -Name 'Microsoft.PowerShell.PSResourceGet' -ListAvailable
 
             $module | Should -HaveCount 1
             $module.Version -ge '1.0.4.1' | Should -BeTrue
         }
 
-        It 'Should have a resource repository PSGallery with correct URI' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
+        It 'Should have a resource repository PSGallery with correct URI' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
             $resourceRepository = Get-PSResourceRepository -Name 'PSGallery'
 
             $resourceRepository | Should -HaveCount 1
@@ -179,7 +179,7 @@ Describe 'Prerequisites' {
             $module.Version -eq '21.1.18256' | Should -BeTrue
         }
 
-        It 'Should install SqlServer module version 22.2.0' -Tag @('Integration_SQL2022', 'Integration_PowerBI') {
+        It 'Should install SqlServer module version 22.2.0' -Tag @('Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
             #Install-Module -Name 'SqlServer' -RequiredVersion '22.2.0' -Force -ErrorAction 'Stop'
             $module = Install-PSResource -Name 'SqlServer' -Version '22.2.0' -Scope 'AllUsers' -TrustRepository -ErrorAction 'Stop' -Confirm:$false -PassThru
 
@@ -187,7 +187,7 @@ Describe 'Prerequisites' {
             $module.Version -eq '22.2.0' | Should -BeTrue
         }
 
-        It 'Should have SqlServer module version 22.2.0 available' -Tag @('Integration_SQL2022', 'Integration_PowerBI') {
+        It 'Should have SqlServer module version 22.2.0 available' -Tag @('Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
             $module = Get-Module -Name 'SqlServer' -ListAvailable
 
             $module | Should -HaveCount 1
@@ -195,7 +195,7 @@ Describe 'Prerequisites' {
         }
     }
 
-    Context 'Test PS Remoting to localhost' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
+    Context 'Test PS Remoting to localhost' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
         It 'Should successfully run a command on localhost using PS Remoting' {
             # This is a simple test to verify that PS Remoting is working.
             # TODO: This fails on Appveyor, but works locally when debugging on AppVeyor. Investigate why.
@@ -206,9 +206,9 @@ Describe 'Prerequisites' {
     }
 
     Context 'Download correct SQL Server 2017 Reporting Services installation executable' {
-        It 'Should download SQL Server 2017 Reporting Services installation executable' -Tag @('Integration_SQL2017') {
-            # Microsoft SQL Server Reporting Services (October 2017)
-            $url = 'https://download.microsoft.com/download/E/6/4/E6477A2A-9B58-40F7-8AD6-62BB8491EA78/SQLServerReportingServices.exe'
+        It 'Should download SQL Server 2017 Reporting Services installation executable' -Tag @('Integration_SQL2017_RS') {
+            # Microsoft SQL Server 2017 Reporting Services (14.0.601.20 - 2023-02-14) - https://www.microsoft.com/en-us/download/details.aspx?id=55252
+            $url = 'https://download.microsoft.com/download/e/6/4/e6477a2a-9b58-40f7-8ad6-62bb8491ea78/SQLServerReportingServices.exe'
 
             # Put the executable in a temporary folder that can be accessed by other tests
             $script:mediaFile = Save-SqlDscSqlServerMediaFile -SkipExecution -Url $url -FileName 'SQLServerReportingServices.exe' -DestinationPath (Get-TemporaryFolder) -Force -Quiet -ErrorAction 'Stop'
@@ -218,8 +218,8 @@ Describe 'Prerequisites' {
     }
 
     Context 'Download correct SQL Server 2019 Reporting Services installation executable' {
-        It 'Should download SQL Server 2019 Reporting Services installation executable' -Tag @('Integration_SQL2019') {
-            # Microsoft SQL Server 2019 Reporting Services (15.0.1102.1047 - 2/6/2023)
+        It 'Should download SQL Server 2019 Reporting Services installation executable' -Tag @('Integration_SQL2019_RS') {
+            # Microsoft SQL Server 2017 Reporting Services (15.0.1103.41 - 2025-01-06) - https://www.microsoft.com/en-us/download/details.aspx?id=100122
             $url = 'https://download.microsoft.com/download/1/a/a/1aaa9177-3578-4931-b8f3-373b24f63342/SQLServerReportingServices.exe'
 
             # Put the executable in a temporary folder that can be accessed by other tests
@@ -230,8 +230,8 @@ Describe 'Prerequisites' {
     }
 
     Context 'Download correct SQL Server 2022 Reporting Services installation executable' {
-        It 'Should download SQL Server 2022 Reporting Services installation executable' -Tag @('Integration_SQL2022') {
-            # Microsoft SQL Server 2022 Reporting Services (16.0.1113.11 - 11/23/2022)
+        It 'Should download SQL Server 2022 Reporting Services installation executable' -Tag @('Integration_SQL2022_RS') {
+            # Microsoft SQL Server 2017 Reporting Services (16.0.1116.38 - 2025-01-06) - https://www.microsoft.com/en-us/download/details.aspx?id=104502
             $url = 'https://download.microsoft.com/download/8/3/2/832616ff-af64-42b5-a0b1-5eb07f71dec9/SQLServerReportingServices.exe'
 
             # Put the executable in a temporary folder that can be accessed by other tests

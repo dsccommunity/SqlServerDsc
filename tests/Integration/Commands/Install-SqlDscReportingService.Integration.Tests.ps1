@@ -23,7 +23,7 @@ BeforeDiscovery {
     }
 }
 
-Describe 'Install-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe 'Install-SqlDscReportingService' -Tag @('Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
     BeforeAll {
         Write-Verbose -Message ('Running integration test as user ''{0}''.' -f $env:UserName) -Verbose
 
@@ -40,6 +40,7 @@ Describe 'Install-SqlDscReportingService' -Tag @('Integration_SQL2017', 'Integra
                 $installSqlDscReportingServicesParameters = @{
                     AcceptLicensingTerms = $true
                     MediaPath            = $reportingServicesExecutable
+                    InstallFolder        = 'C:\Program Files\SSRS'
                     Edition              = 'Developer'
                     LogPath              = Join-Path -Path $script:temporaryFolder -ChildPath 'SSRS_Install.log'
                     SuppressRestart      = $true
