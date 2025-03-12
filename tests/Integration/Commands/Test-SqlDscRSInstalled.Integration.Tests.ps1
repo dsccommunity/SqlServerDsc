@@ -24,7 +24,7 @@ BeforeDiscovery {
 }
 
 Describe 'Test-SqlDscRSInstalled' {
-    Context 'When testing if a specific Reporting Services instance exists' {
+    Context 'When testing if a specific Reporting Services instance exists' -Tag @('Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS', 'Integration_PowerBI') {
         It 'Should return $false for a non-existing instance' {
             # We'll test with a fake instance name that we know doesn't exist.
             $result = Test-SqlDscRSInstalled -InstanceName 'FAKE_RS_INSTANCE'
