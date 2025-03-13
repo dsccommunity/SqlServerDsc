@@ -18,7 +18,7 @@
     Copyright            = 'Copyright the DSC Community contributors. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description          = 'Module with DSC resources for deployment and configuration of Microsoft SQL Server.'
+    Description          = 'This module contains commands and DSC resources for deployment and configuration of Microsoft SQL Server, SQL Server Reporting Services and Power BI Report Server.'
 
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion    = '5.0'
@@ -50,7 +50,7 @@
             Prerelease   = ''
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags         = @('DesiredStateConfiguration', 'DSC', 'DSCResourceKit', 'DSCResource')
+            Tags         = @('DesiredStateConfiguration', 'DSC', 'DSCResourceKit', 'DSCResource', 'SqlServer', 'PowerBI', 'ReportingServices', 'ReportServer')
 
             # A URL to the license for this module.
             LicenseUri   = 'https://github.com/dsccommunity/SqlServerDsc/blob/main/LICENSE'
