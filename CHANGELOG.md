@@ -57,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         - Integration_Test_Resources_ReportingServices_dbatools
   - Update build script path in integration tests.
   - Fix style formatting in all PowerShell script files.
+  - Update module description on GitHub, in the conceptual help, and in
+    the module manifest.
 - SqlSetup
   - Fixed issue with AddNode where cluster IP information was not being passed to
     setup.exe ([issue #1171](https://github.com/dsccommunity/SqlServerDsc/issues/1171)).
