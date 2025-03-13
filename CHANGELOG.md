@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Reporting Services ([issue #2064](https://github.com/dsccommunity/SqlServerDsc/issues/2064)).
   - `Repair-SqlDscBIReportServer` to repair an already installed SQL Server
     BI Report Server ([issue #2064](https://github.com/dsccommunity/SqlServerDsc/issues/2064)).
+  - `Test-SqlDscRSInstalled` to test whether an instance is installed or not
+     ([issue #2078](https://github.com/dsccommunity/SqlServerDsc/issues/2078)).
   - `Uninstall-SqlDscReportingService` to uninstall SQL Server Reporting
     Services ([issue #2065](https://github.com/dsccommunity/SqlServerDsc/issues/2065)).
   - `Uninstall-SqlDscBIReportServer` to uninstall SQL Server BI Report Server

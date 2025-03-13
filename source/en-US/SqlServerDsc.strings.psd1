@@ -213,4 +213,9 @@ ConvertFrom-StringData @'
     Get_SqlDscRSSetupConfiguration_ProcessingInstance = Processing configuration for instance '{0}'.
     Get_SqlDscRSSetupConfiguration_InstanceNotFound = Could not find a Microsoft SQL Server Reporting Services instance with the name '{0}'.
     Get_SqlDscRSSetupConfiguration_NoInstancesFound = No SQL Server Reporting Services instances were found.
+
+    ## Test-SqlDscRSInstalled
+    Test_SqlDscRSInstalled_Checking = Checking if Reporting Services instance '{0}' is installed.
+    Test_SqlDscRSInstalled_Found = Reporting Services instance '{0}' was found.
+    Test_SqlDscRSInstalled_NotFound = Reporting Services instance '{0}' was not found.
 '@

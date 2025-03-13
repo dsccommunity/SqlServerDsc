@@ -72,7 +72,10 @@
         "creplace",
         "dbatools",
         "db_datareader",
-        "fastbuild"
+        "fastbuild",
+        "CODEOWNERS",
+        "analyzersettings",
+        "sqlcmd"
     ],
     "cSpell.ignorePaths": [
         ".git"
