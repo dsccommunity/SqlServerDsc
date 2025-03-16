@@ -175,5 +175,38 @@ Describe 'Repair-SqlDscBIReportServer' -Tag 'Public' {
                 } -Exactly -Times 1 -Scope It
             }
         }
+
+        Context 'When using PassThru parameter' {
+            BeforeAll {
+                $mockDefaultParameters = @{
+                    AcceptLicensingTerms = $true
+                    MediaPath           = '\PowerBIReportServer.exe'
+                    Force               = $true
+                    ErrorAction         = 'Stop'
+                }
+
+                # Mock the Invoke-ReportServerSetupAction to return an exit code
+                Mock -CommandName Invoke-ReportServerSetupAction -MockWith {
+                    return 3010
+                }
+            }
+
+            It 'Should return the exit code when PassThru is specified' {
+                $result = Repair-SqlDscBIReportServer -PassThru @mockDefaultParameters
+
+                $result | Should -Be 3010
+                $result | Should -BeOfType [System.Int32]
+
+                Should -Invoke -CommandName Invoke-ReportServerSetupAction
+            }
+
+            It 'Should not return an exit code when PassThru is not specified' {
+                $result = Repair-SqlDscBIReportServer @mockDefaultParameters
+
+                $result | Should -BeNullOrEmpty
+
+                Should -Invoke -CommandName Invoke-ReportServerSetupAction
+            }
+        }
     }
 }
