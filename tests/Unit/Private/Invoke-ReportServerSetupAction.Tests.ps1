@@ -730,5 +730,34 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                 }
             }
         }
+
+        Context 'When using PassThru parameter' {
+            BeforeAll {
+                Mock -CommandName Start-SqlSetupProcess -MockWith {
+                    return 3010
+                } -RemoveParameterValidation 'FilePath'
+            }
+
+            It 'Should return the correct exit code' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $installSqlDscServerParameters = @{
+                        Repair = $true
+                        AcceptLicensingTerms = $true
+                        MediaPath = '\SqlMedia\setup.exe' # Added setup.exe to match the Test-Path mock
+                        Force = $true
+                        EditionUpgrade = $true
+                        ProductKey = '22222-00000-00000-00000-00000'
+                        PassThru = $true
+                    }
+
+                    $mockExitCode = Invoke-ReportServerSetupAction @installSqlDscServerParameters
+
+                    $mockExitCode | Should -Be 3010
+                    $mockExitCode | Should -BeOfType ([System.Int32])
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                }
+            }
+        }
     }
 }
