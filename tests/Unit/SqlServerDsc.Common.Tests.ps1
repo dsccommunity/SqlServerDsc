@@ -83,43 +83,6 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Describe 'SqlServerDsc.Common\Format-Path' -Tag 'FormatPath' {
-    BeforeAll {
-        $mockCorrectPath = 'C:\Correct\Path'
-        $mockPathWithTrailingBackslash = 'C:\Correct\Path\'
-        $mockPathWithOnlyQualifier = 'M:'
-        $mockCorrectQualifierPath = 'M:\'
-    }
-
-    Context 'When there is a path that is wrongly formatted, but now formatting was requested' {
-        It 'Should return the same wrongly formatted path' {
-            $result = Format-Path -Path $mockPathWithTrailingBackslash
-            $result | Should -BeExactly $mockPathWithTrailingBackslash
-        }
-    }
-
-    Context 'When there is a path that is formatted correctly, and using TrailingSlash' {
-        It 'Should return the same path' {
-            $result = Format-Path -Path $mockCorrectPath -TrailingSlash
-            $result | Should -BeExactly $mockCorrectPath
-        }
-    }
-
-    Context 'When there is a path that has a trailing backslash, and using TrailingSlash' {
-        It 'Should return the path without trailing backslash' {
-            $result = Format-Path -Path $mockPathWithTrailingBackslash -TrailingSlash
-            $result | Should -BeExactly $mockCorrectPath
-        }
-    }
-
-    Context 'When there is a path that has only a qualifier, and using TrailingSlash' {
-        It 'Should return the path with trailing backslash after the qualifier' {
-            $result = Format-Path -Path $mockPathWithOnlyQualifier -TrailingSlash
-            $result | Should -BeExactly $mockCorrectQualifierPath
-        }
-    }
-}
-
 # Tests only the parts of the code that does not already get tested thru the other tests.
 Describe 'SqlServerDsc.Common\Copy-ItemWithRobocopy' -Tag 'CopyItemWithRobocopy' {
     BeforeAll {
