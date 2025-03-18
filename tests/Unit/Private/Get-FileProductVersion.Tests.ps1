@@ -84,7 +84,7 @@ Describe 'Get-FileProductVersion' {
                 $mockGetFileProductVersionErrorMessage = $script:localizedData.Get_FileProductVersion_GetFileProductVersionError -f $mockFilePath, 'Mock exception message'
 
                 {
-                    Get-FileProductVersion -Path $mockFilePath
+                    Get-FileProductVersion -Path $mockFilePath -ErrorAction 'Stop'
                 } | Should -Throw $mockGetFileProductVersionErrorMessage
             }
         }
