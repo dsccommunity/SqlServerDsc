@@ -35,6 +35,6 @@ function Get-FileProductVersion
     {
         $errorMessage = $script:localizedData.Get_FileProductVersion_GetFileProductVersionError -f $Path, $_.Exception.Message
 
-        Write-Error -Message $errorMessage -ErrorAction 'Stop'
+        Write-Error -Message $errorMessage
     }
 }
