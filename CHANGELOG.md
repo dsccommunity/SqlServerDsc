@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - The parameter `SourcePath` was removed and replaced with `MediaPath`
     - The parameter `IAcceptLicenseTerms` was removed and replaced with a
       boolean parameter `AcceptLicenseTerms`
-    - The parameter `SourceCredential` was removed. Because of this the
+    - The parameter `SourceCredential` was removed. Because of this, the
       functionality that allowed copying the media from a UNC path using
       those credentials was also removed. If this was something you used,
       please open an issue.
@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       installed package (using `Get-Package`), but instead from the registry.
     - The read-only property `CurrentVersion` was removed and replaced with
       the more appropriate property `ProductVersion`.
-    - Prior when install was successful the resource checked whether there
+    - Prior when install was successful, the resource checked whether there
       were any pending rename operations. Since the install returns 3010
       if a restart is needed it is now assumed that the setup process takes
       care of this. If that is not the case, and this check is needed, then
@@ -98,7 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed issue with AddNode where cluster IP information was not being passed to
     setup.exe ([issue #1171](https://github.com/dsccommunity/SqlServerDsc/issues/1171)).
 - SqlRSSetup
-  - The DSC resource has been refactored to class-based resource.
+  - The DSC resource has been refactored into a class-based resource.
 
 ### Fixed
 
