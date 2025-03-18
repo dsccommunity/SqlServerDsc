@@ -14,6 +14,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed the function `Get-RegistryPropertyValue`, `Format-Path` and
     `Test-PendingRestart` in favor of the commands with the same names in
     the module _DscResource.Common_.
+- SqlRSSetup
+  - The DSC resource has been refactored into a class-based resource
+    - The parameter `SourcePath` was removed and replaced with `MediaPath`
+    - The parameter `IAcceptLicenseTerms` was removed and replaced with a
+      boolean parameter `AcceptLicenseTerms`
+    - The parameter `SourceCredential` was removed. Because of this the
+      functionality that allowed copying the media from a UNC path using
+      those credentials was also removed. If this was something you used,
+      please open an issue.
+    - The version validation no longer gets the current version from the
+      installed package (using `Get-Package`), but instead from the registry.
+    - The read-only property `CurrentVersion` was removed and replaced with
+      the more appropriate property `ProductVersion`.
+    - Prior when install was successful the resource checked whether there
+      were any pending rename operations. Since the install returns 3010
+      if a restart is needed it is now assumed that the setup process takes
+      care of this. If that is not the case, and this check is needed, then
+      open an issue to discuss in what cases this is needed.
 
 ### Added
 
@@ -43,6 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ([issue #2065](https://github.com/dsccommunity/SqlServerDsc/issues/2065)).
     - Add `PassThru` parameter to return exit code.
 - Private function:
+  - `Get-FileProductVersion` to get the product version from a file.
   - `Invoke-ReportServerSetupAction` to run setup actions for Reporting
     Services and Power BI Report Server.
 - Added new instructions for GitHub Copilot that might assist when developing
@@ -78,6 +97,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlSetup
   - Fixed issue with AddNode where cluster IP information was not being passed to
     setup.exe ([issue #1171](https://github.com/dsccommunity/SqlServerDsc/issues/1171)).
+- SqlRSSetup
+  - The DSC resource has been refactored to class-based resource.
 
 ### Fixed
 
