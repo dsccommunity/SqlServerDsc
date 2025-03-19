@@ -6,57 +6,6 @@ $script:localizedData = Get-LocalizedData -DefaultUICulture 'en-US'
 
 <#
     .SYNOPSIS
-        Returns the value of the provided in the Name parameter, at the registry
-        location provided in the Path parameter.
-
-    .PARAMETER Path
-        String containing the path in the registry to the property name.
-
-    .PARAMETER PropertyName
-        String containing the name of the property for which the value is returned.
-#>
-function Format-Path
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Path,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $TrailingSlash
-    )
-
-    # Remove trailing slash ('\') from path.
-    if ($TrailingSlash.IsPresent)
-    {
-        <#
-            Trim backslash, but only if the path contains a full path and
-            not just a qualifier.
-        #>
-        if ($Path -notmatch '^[a-zA-Z]:\\$')
-        {
-            $Path = $Path.TrimEnd('\')
-        }
-
-        <#
-            If the path only contains a qualifier but no backslash ('M:'),
-            then a backslash is added ('M:\').
-        #>
-        if ($Path -match '^[a-zA-Z]:$')
-        {
-            $Path = '{0}\' -f $Path
-        }
-    }
-
-    return $Path
-}
-
-<#
-    .SYNOPSIS
         Copy folder structure using Robocopy. Every file and folder, including empty ones are copied.
 
     .PARAMETER Path

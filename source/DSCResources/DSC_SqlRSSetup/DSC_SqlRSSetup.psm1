@@ -307,18 +307,18 @@ function Set-TargetResource
 
     $SourcePath = [Environment]::ExpandEnvironmentVariables($SourcePath)
 
-    $parametersToEvaluateTrailingSlash = @(
+    $parametersToEvaluateDirectorySeparator = @(
         'SourcePath',
         'InstallFolder'
     )
 
     # Making sure paths are correct.
-    foreach ($parameterName in $parametersToEvaluateTrailingSlash)
+    foreach ($parameterName in $parametersToEvaluateDirectorySeparator)
     {
         if ($PSBoundParameters.ContainsKey($parameterName))
         {
             $parameterValue = Get-Variable -Name $parameterName -ValueOnly
-            $formattedPath = Format-Path -Path $parameterValue -TrailingSlash
+            $formattedPath = Format-Path -Path $parameterValue -EnsureDriveLetterRoot -NoTrailingDirectorySeparator
             Set-Variable -Name $parameterName -Value $formattedPath
         }
     }
