@@ -23,7 +23,7 @@ Configuration Example
             InstanceName         = 'SSRS'
             AcceptLicensingTerms = $true
             SourcePath           = 'C:\InstallMedia\SQLServerReportingServices.exe'
-            Edition              = 'Development'
+            Edition              = 'Developer'
 
             PsDscRunAsCredential = $SqlInstallCredential
         }

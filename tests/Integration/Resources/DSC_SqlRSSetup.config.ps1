@@ -21,7 +21,7 @@ else
                 Action               = 'Install'
                 AcceptLicensingTerms = $true
                 MediaPath            = Join-Path -Path $env:TEMP -ChildPath 'SQLServerReportingServices.exe'
-                Edition              = 'Development'
+                Edition              = 'Developer'
                 InstallFolder        = 'C:\Program Files\SSRS'
                 LogPath              = Join-Path -Path $env:TEMP -ChildPath 'SSRS_Install.log'
 
