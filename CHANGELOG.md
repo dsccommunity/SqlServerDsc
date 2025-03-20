@@ -13,8 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SqlRSSetup
   - The DSC resource has been refactored into a class-based resource
     - The parameter `SourcePath` was removed and replaced with `MediaPath`
-    - The parameter `IAcceptLicenseTerms` was removed and replaced with a
-      boolean parameter `AcceptLicenseTerms`
+    - The parameter `IAcceptLicensTerms` was removed and replaced with a
+      boolean parameter `AcceptLicensingTerms`
     - The parameter `SourceCredential` was removed. Because of this, the
       functionality that allowed copying the media from a UNC path using
       those credentials was also removed. If this was something you used,
