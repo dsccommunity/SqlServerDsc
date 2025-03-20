@@ -16,19 +16,19 @@ else
     $ConfigurationData = @{
         AllNodes = @(
             @{
-                NodeName            = 'localhost'
-                InstanceName        = 'SSRS'
-                Action              = 'Install'
-                IAcceptLicenseTerms = $true
-                MediaPath           = Join-Path -Path $env:TEMP -ChildPath 'SQLServerReportingServices.exe'
-                Edition             = 'Development'
-                InstallFolder       = 'C:\Program Files\SSRS'
-                LogPath             = Join-Path -Path $env:TEMP -ChildPath 'SSRS_Install.log'
+                NodeName           = 'localhost'
+                InstanceName       = 'SSRS'
+                Action             = 'Install'
+                AcceptLicenseTerms = $true
+                MediaPath          = Join-Path -Path $env:TEMP -ChildPath 'SQLServerReportingServices.exe'
+                Edition            = 'Development'
+                InstallFolder      = 'C:\Program Files\SSRS'
+                LogPath            = Join-Path -Path $env:TEMP -ChildPath 'SSRS_Install.log'
 
-                UserName            = "$env:COMPUTERNAME\SqlInstall"
-                Password            = 'P@ssw0rd1'
+                UserName           = "$env:COMPUTERNAME\SqlInstall"
+                Password           = 'P@ssw0rd1'
 
-                CertificateFile     = $env:DscPublicCertificatePath
+                CertificateFile    = $env:DscPublicCertificatePath
             }
         )
     }
@@ -55,19 +55,19 @@ Configuration DSC_SqlRSSetup_InstallReportingServicesAsUser_Config
     {
         SqlRSSetup 'Integration_Test'
         {
-            InstanceName         = $Node.InstanceName
-            Action               = $Node.Action
-            IAcceptLicenseTerms  = $Node.IAcceptLicenseTerms
-            MediaPath            = $Node.MediaPath
-            Edition              = $Node.Edition
-            InstallFolder        = $Node.InstallFolder
-            LogPath              = $Node.LogPath
+            InstanceName       = $Node.InstanceName
+            Action             = $Node.Action
+            AcceptLicenseTerms = $Node.AcceptLicenseTerms
+            MediaPath          = $Node.MediaPath
+            Edition            = $Node.Edition
+            InstallFolder      = $Node.InstallFolder
+            LogPath            = $Node.LogPath
 
             # The build worker contains already an instance, make sure to upgrade it.
-            VersionUpgrade       = $true
+            VersionUpgrade     = $true
 
             # Suppressing restart because the build worker are not allowed to be restarted.
-            SuppressRestart      = $true
+            SuppressRestart    = $true
 
             PsDscRunAsCredential = New-Object `
                 -TypeName System.Management.Automation.PSCredential `

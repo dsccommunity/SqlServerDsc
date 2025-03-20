@@ -25,7 +25,7 @@ Configuration Example
             Action               = 'Uninstall'
 
             # This needs to be set to although it is not used during uninstall.
-            IAcceptLicenseTerms   = 'Yes'
+            AcceptLicenseTerms   = $true
 
             PsDscRunAsCredential = $SqlInstallCredential
         }
