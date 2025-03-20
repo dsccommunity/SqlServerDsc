@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       if a restart is needed it is now assumed that the setup process takes
       care of this. If that is not the case, and this check is needed, then
       open an issue to discuss in what cases this is needed.
+    - The `Edition` value 'Development` was removed and replaced by the value
+      `Developer`.
 
 ### Added
 
