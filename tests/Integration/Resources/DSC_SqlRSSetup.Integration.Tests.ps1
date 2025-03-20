@@ -48,7 +48,7 @@ BeforeAll {
     . $configFile
 
     # Download Microsoft SQL Server Reporting Services (October 2017) executable
-    if (-not (Test-Path -Path $ConfigurationData.AllNodes.SourcePath))
+    if (-not (Test-Path -Path $ConfigurationData.AllNodes.MediaPath))
     {
         # By switching to 'SilentlyContinue' should theoretically increase the download speed.
         $previousProgressPreference = $ProgressPreference
@@ -82,14 +82,14 @@ BeforeAll {
 
         Write-Verbose -Message ('Start downloading the {1} executable at {0}.' -f (Get-Date -Format 'yyyy-MM-dd hh:mm:ss'), $script:mockSourceMediaDisplayName) -Verbose
 
-        Invoke-WebRequest -Uri $script:mockSourceMediaUrl -OutFile $ConfigurationData.AllNodes.SourcePath
+        Invoke-WebRequest -Uri $script:mockSourceMediaUrl -OutFile $ConfigurationData.AllNodes.MediaPath
 
-        Write-Verbose -Message ('{1} executable file has SHA1 hash ''{0}''.' -f (Get-FileHash -Path $ConfigurationData.AllNodes.SourcePath -Algorithm 'SHA1').Hash, $script:mockSourceMediaDisplayName) -Verbose
+        Write-Verbose -Message ('{1} executable file has SHA1 hash ''{0}''.' -f (Get-FileHash -Path $ConfigurationData.AllNodes.MediaPath -Algorithm 'SHA1').Hash, $script:mockSourceMediaDisplayName) -Verbose
 
         $ProgressPreference = $previousProgressPreference
 
         # Double check that the Microsoft SQL Server Reporting Services (October 2017) was downloaded.
-        if (-not (Test-Path -Path $ConfigurationData.AllNodes.SourcePath))
+        if (-not (Test-Path -Path $ConfigurationData.AllNodes.MediaPath))
         {
             Write-Warning -Message ('{0} executable could not be downloaded, can not run the integration test.' -f $script:mockSourceMediaDisplayName)
             return
