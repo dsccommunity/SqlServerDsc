@@ -21,8 +21,8 @@ Configuration Example
         SqlRSSetup 'InstallDefaultInstance'
         {
             InstanceName         = 'SSRS'
-            SourcePath           = 'C:\InstallMedia\SQLServerReportingServices.exe'
             Action               = 'Uninstall'
+            MediaPath            = 'C:\InstallMedia\SQLServerReportingServices.exe'
 
             # This needs to be set to although it is not used during uninstall.
             AcceptLicensingTerms = $true
