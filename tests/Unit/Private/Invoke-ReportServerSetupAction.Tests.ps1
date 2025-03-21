@@ -65,17 +65,17 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
         @{
             MockParameterSetName = 'Install'
             # cSpell: disable-next
-            MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> [-ProductKey <string>] [-EditionUpgrade] [-Edition <string>] [-LogPath <string>] [-InstallFolder <string>] [-SuppressRestart] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> [-ProductKey <string>] [-EditionUpgrade] [-Edition <string>] [-LogPath <string>] [-InstallFolder <string>] [-SuppressRestart] [-Timeout <uint>] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'Uninstall'
             # cSpell: disable-next
-            MockExpectedParameters = '-Uninstall -MediaPath <string> [-LogPath <string>] [-SuppressRestart] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-Uninstall -MediaPath <string> [-LogPath <string>] [-SuppressRestart] [-Timeout <uint>] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'Repair'
             # cSpell: disable-next
-            MockExpectedParameters = '-Repair -AcceptLicensingTerms -MediaPath <string> [-ProductKey <string>] [-EditionUpgrade] [-Edition <string>] [-LogPath <string>] [-InstallFolder <string>] [-SuppressRestart] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-Repair -AcceptLicensingTerms -MediaPath <string> [-ProductKey <string>] [-EditionUpgrade] [-Edition <string>] [-LogPath <string>] [-InstallFolder <string>] [-SuppressRestart] [-Timeout <uint>] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         InModuleScope -Parameters $_ -ScriptBlock {

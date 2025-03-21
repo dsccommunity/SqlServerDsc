@@ -50,7 +50,7 @@ Describe 'Uninstall-SqlDscReportingService' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName   = '__AllParameterSets'
-            MockExpectedParameters = '[-MediaPath] <string> [[-LogPath] <string>] [[-Timeout] <uint>] [-SuppressRestart] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '[-MediaPath] <string> [[-LogPath] <string>] [[-Timeout] <uint>] [-SuppressRestart] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'Uninstall-SqlDscReportingService').ParameterSets |
