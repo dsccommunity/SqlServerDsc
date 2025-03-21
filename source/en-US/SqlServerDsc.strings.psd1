@@ -219,24 +219,6 @@ ConvertFrom-StringData @'
     Test_SqlDscRSInstalled_Found = Reporting Services instance '{0}' was found.
     Test_SqlDscRSInstalled_NotFound = Reporting Services instance '{0}' was not found.
 
-    # SqlRSSetup
-    SqlRSSetup_Evaluating = Evaluating SQL Reporting Services setup for instance '{0}'.
-    SqlRSSetup_Instance_NotInstalled = Instance '{0}' is not installed.
-    SqlRSSetup_Instance_Installed = Instance '{0}' is installed.
-    SqlRSSetup_AcceptLicensingTerms_Required = AcceptLicensingTerms must be set for Install and Repair operations.
-    SqlRSSetup_MediaPath_Invalid = The media path '{0}' does not exist.
-    SqlRSSetup_EditionOrProductKeyMissing = Neither the parameters Edition or ProductKey was specified.
-    SqlRSSetup_EditionUpgrade_RequiresKeyOrEdition = EditionUpgrade requires either ProductKey or Edition to be specified.
-    SqlRSSetup_LogPath_ParentMissing = The parent directory '{0}' for LogPath does not exist.
-    SqlRSSetup_InstallFolder_ParentMissing = The parent directory '{0}' for InstallFolder does not exist.
-    SqlRSSetup_Installing_ReportingServices = Installing SQL Server Reporting Services.
-    SqlRSSetup_Installing_PowerBIReportServer = Installing Power BI Report Server.
-    SqlRSSetup_Repairing_ReportingServices = Repairing SQL Server Reporting Services.
-    SqlRSSetup_Repairing_PowerBIReportServer = Repairing Power BI Report Server.
-    SqlRSSetup_Uninstalling_ReportingServices = Uninstalling SQL Server Reporting Services.
-    SqlRSSetup_Uninstalling_PowerBIReportServer = Uninstalling Power BI Report Server.
-    SqlRSSetup_NotDesiredProductVersion = The product version '{0}' is not the desired for the instance '{1}'. Desired version in executable: '{2}'.
-
     ## Get-FileProductVersion
     Get_FileProductVersion_GetFileProductVersionError = Failed to get product version for file '{0}'. Error: {1}
 '@
