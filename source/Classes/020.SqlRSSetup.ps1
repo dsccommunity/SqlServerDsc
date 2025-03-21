@@ -21,9 +21,9 @@
         All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlRSSetup).
 
     .PARAMETER InstanceName
-        Specifies the instance name for the Reporting Services instance.
-        This can be either 'SSRS' for SQL Server Reporting Services or
-        'PBIRS' for Power BI Report Server.
+        Specifies the instance name for the Reporting Services instance. This
+        must be either `'SSRS'` for SQL Server Reporting Services or `'PBIRS'` for
+        Power BI Report Server.
 
     .PARAMETER Action
         Specifies the action to take for the Reporting Services instance.
@@ -83,10 +83,21 @@
         is `7200` seconds (2 hours). If the setup process does not finish before
         this time, an exception will be thrown.
 
+    .PARAMETER ProductVersion
+        Returns the product version of the installed product. This property is not
+        configurable.
+
     .NOTES
         The Get method will also return the ProductVersion property, which is not
         configurable. This property is set to the product version of the installed
         product.
+
+        The property InstanceName is the key property for this resource. It does
+        not use a ValidateSet or Enum due to a limitation. A ValidateSet() or Enum
+        would not allow a `$null` value to be set for the property. Setting
+        a `$null` value is needed to be able to determine if the instance is
+        installed or not. Due to this limitation the property is evaluated in
+        the AssertProperties() method to have one of the valid values.
 
     .EXAMPLE
         Configuration Example
@@ -114,7 +125,6 @@ class SqlRSSetup : ResourceBase
 {
     # cSpell:ignore SSRS PBIRS
     [DscProperty(Key)]
-    [ValidateSet('SSRS', 'PBIRS')]
     [System.String]
     $InstanceName
 
@@ -173,7 +183,7 @@ class SqlRSSetup : ResourceBase
     [System.String]
     $ProductVersion
 
-    SqlRSSetup () : base ()
+    SqlRSSetup () : base ($PSScriptRoot)
     {
         # These properties will not be enforced.
         $this.ExcludeDscProperties = @(
@@ -237,7 +247,7 @@ class SqlRSSetup : ResourceBase
                 {
                     $productVersionInDesiredState = $false
 
-                    Write-Verbose -Message $this.localizedData.SqlRSSetup_NotDesiredProductVersion -f @(
+                    Write-Verbose -Message $this.localizedData.NotDesiredProductVersion -f @(
                         $fileVersion.ToString(),
                         $this.InstanceName, $installedVersion.ToString()
                     )
@@ -261,12 +271,13 @@ class SqlRSSetup : ResourceBase
     hidden [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
         Write-Verbose -Message (
-            $this.localizedData.SqlRSSetup_Evaluating -f @(
+            $this.localizedData.Evaluating -f @(
                 $properties.InstanceName
             )
         )
 
         $currentState = @{
+            # This must be set to the correct valid value for base method Get() to work.
             InstanceName  = $null
             InstallFolder = $null
         }
@@ -278,10 +289,9 @@ class SqlRSSetup : ResourceBase
         {
             # Instance is installed
             Write-Verbose -Message (
-                $this.localizedData.SqlRSSetup_Instance_Installed -f $properties.InstanceName
+                $this.localizedData.Instance_Installed -f $properties.InstanceName
             )
 
-            $currentState.InstanceName = $rsConfiguration.InstanceName
             $currentState.InstallFolder = $rsConfiguration.InstallFolder
             $currentState.ProductVersion = $rsConfiguration.ProductVersion
         }
@@ -289,7 +299,7 @@ class SqlRSSetup : ResourceBase
         {
             # Instance is not installed
             Write-Verbose -Message (
-                $this.localizedData.SqlRSSetup_Instance_NotInstalled -f $properties.InstanceName
+                $this.localizedData.Instance_NotInstalled -f $properties.InstanceName
             )
         }
 
@@ -340,7 +350,7 @@ class SqlRSSetup : ResourceBase
             {
                 'Install'
                 {
-                    Write-Verbose -Message $this.localizedData.SqlRSSetup_Installing_ReportingServices
+                    Write-Verbose -Message $this.localizedData.Installing_ReportingServices
 
                     $exitCode = Install-SqlDscReportingService @commandParameters -PassThru -Force -ErrorAction 'Stop'
 
@@ -349,7 +359,7 @@ class SqlRSSetup : ResourceBase
 
                 'Repair'
                 {
-                    Write-Verbose -Message $this.localizedData.SqlRSSetup_Repairing_ReportingServices
+                    Write-Verbose -Message $this.localizedData.Repairing_ReportingServices
 
                     $exitCode = Repair-SqlDscReportingService @commandParameters -PassThru -Force -ErrorAction 'Stop'
 
@@ -358,7 +368,7 @@ class SqlRSSetup : ResourceBase
 
                 'Uninstall'
                 {
-                    Write-Verbose -Message $this.localizedData.SqlRSSetup_Uninstalling_ReportingServices
+                    Write-Verbose -Message $this.localizedData.Uninstalling_ReportingServices
 
                     $exitCode = Uninstall-SqlDscReportingService @commandParameters -PassThru -Force -ErrorAction 'Stop'
 
@@ -372,7 +382,7 @@ class SqlRSSetup : ResourceBase
             {
                 'Install'
                 {
-                    Write-Verbose -Message $this.localizedData.SqlRSSetup_Installing_PowerBIReportServer
+                    Write-Verbose -Message $this.localizedData.Installing_PowerBIReportServer
 
                     $exitCode = Install-SqlDscBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
 
@@ -381,7 +391,7 @@ class SqlRSSetup : ResourceBase
 
                 'Repair'
                 {
-                    Write-Verbose -Message $this.localizedData.SqlRSSetup_Repairing_PowerBIReportServer
+                    Write-Verbose -Message $this.localizedData.Repairing_PowerBIReportServer
 
                     $exitCode = Repair-SqlDscBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
 
@@ -390,7 +400,7 @@ class SqlRSSetup : ResourceBase
 
                 'Uninstall'
                 {
-                    Write-Verbose -Message $this.localizedData.SqlRSSetup_Uninstalling_PowerBIReportServer
+                    Write-Verbose -Message $this.localizedData.Uninstalling_PowerBIReportServer
 
                     $exitCode = Uninstall-SqlDscBIReportServer @commandParameters -PassThru -Force -ErrorAction 'Stop'
 
@@ -415,12 +425,18 @@ class SqlRSSetup : ResourceBase
     #>
     hidden [void] AssertProperties([System.Collections.Hashtable] $properties)
     {
-        # TODO: Most or all of these checks are done in the Install-commands. We should remove them here
+        # TODO: Most or all of these checks are done in the Install, Uninstall or Repair-commands. We should remove them here if possible.
+
+        # Verify that the instance name is valid.
+        if ($properties.InstanceName -notin @('SSRS', 'PBIRS'))
+        {
+            New-ArgumentException -ArgumentName 'InstanceName' -Message $this.localizedData.InstanceName_Invalid
+        }
 
         # Verify that AcceptLicensingTerms is specified for Install and Repair actions.
         if ($properties.Action -in @('Install', 'Repair') -and -not $properties.AcceptLicensingTerms)
         {
-            New-ArgumentException -ArgumentName 'AcceptLicensingTerms' -Message $this.localizedData.SqlRSSetup_AcceptLicensingTerms_Required
+            New-ArgumentException -ArgumentName 'AcceptLicensingTerms' -Message $this.localizedData.AcceptLicensingTerms_Required
         }
 
         # ProductKey and Edition are mutually exclusive.
@@ -436,20 +452,20 @@ class SqlRSSetup : ResourceBase
         if (-not (Test-Path -Path $properties.MediaPath) -or (Get-Item -Path $properties.MediaPath).Extension -ne '.exe')
         {
             New-ArgumentException -ArgumentName 'MediaPath' -Message (
-                $this.localizedData.SqlRSSetup_MediaPath_Invalid -f $this.MediaPath
+                $this.localizedData.MediaPath_Invalid -f $this.MediaPath
             )
         }
 
         # Must have specified either ProductKey or Edition.
         if ($properties.Action -eq 'Install' -and $properties.Keys -notcontains 'Edition' -and $properties.Keys -notcontains 'ProductKey')
         {
-            New-ArgumentException -ArgumentName 'Edition, ProductKey' -Message $this.localizedData.SqlRSSetup_EditionOrProductKeyMissing
+            New-ArgumentException -ArgumentName 'Edition, ProductKey' -Message $this.localizedData.EditionOrProductKeyMissing
         }
 
         # EditionUpgrade requires either ProductKey or Edition for Install and Repair actions.
         if ($properties.Action -in @('Install', 'Repair') -and $properties.EditionUpgrade -and -not ($properties.ProductKey -or $properties.Edition))
         {
-            New-ArgumentException -ArgumentName 'EditionUpgrade' -Message $this.localizedData.SqlRSSetup_EditionUpgrade_RequiresKeyOrEdition
+            New-ArgumentException -ArgumentName 'EditionUpgrade' -Message $this.localizedData.EditionUpgrade_RequiresKeyOrEdition
         }
 
         # LogPath validation if specified.
@@ -461,7 +477,7 @@ class SqlRSSetup : ResourceBase
             if (-not (Test-Path -Path $logDirectory))
             {
                 New-ArgumentException -ArgumentName 'LogPath' -Message (
-                    $this.localizedData.SqlRSSetup_LogPath_ParentMissing -f $logDirectory
+                    $this.localizedData.LogPath_ParentMissing -f $logDirectory
                 )
             }
         }
@@ -475,7 +491,7 @@ class SqlRSSetup : ResourceBase
             if (-not (Test-Path -Path $installDirectory))
             {
                 New-ArgumentException -ArgumentName 'InstallFolder' -Message (
-                    $this.localizedData.SqlRSSetup_InstallFolder_ParentMissing -f $installDirectory
+                    $this.localizedData.InstallFolder_ParentMissing -f $installDirectory
                 )
             }
         }
