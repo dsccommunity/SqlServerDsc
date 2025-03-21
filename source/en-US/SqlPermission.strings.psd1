@@ -8,7 +8,7 @@ ConvertFrom-StringData @'
     ## Strings overrides for the ResourceBase's default strings.
     # None
 
-    ## Strings directly used by the derived class SqlDatabasePermission.
+    ## Strings directly used by the derived class SqlPermission.
     EvaluateServerPermissionForPrincipal = Evaluate the current permissions for the principal '{0}' on the instance '{1}'. (SP0001)
     DesiredPermissionAreAbsent = The desired permission '{0}' that shall be present are absent. (SP0002)
     DesiredAbsentPermissionArePresent = The desired permission '{0}' that shall be absent are present. (SP0003)
