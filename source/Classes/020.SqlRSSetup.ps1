@@ -292,6 +292,7 @@ class SqlRSSetup : ResourceBase
                 $this.localizedData.Instance_Installed -f $properties.InstanceName
             )
 
+            $currentState.InstanceName = $rsConfiguration.InstanceName
             $currentState.InstallFolder = $rsConfiguration.InstallFolder
             $currentState.ProductVersion = $rsConfiguration.ProductVersion
         }

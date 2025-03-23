@@ -333,3 +333,71 @@ Describe 'SqlRSSetup\Set()' -Tag 'Set' {
         }
     }
 }
+
+Describe 'SqlRSSetup\GetCurrentState()' -Tag 'GetCurrentState' {
+    Context 'When current state is missing SSRS instance' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                    InstanceName = 'SSRS'
+                } |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
+                        return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    } -PassThru
+            }
+
+            Mock -CommandName Get-SqlDscRSSetupConfiguration
+        }
+
+        It 'Should return the correct values' {
+            InModuleScope -ScriptBlock {
+                $currentState = $script:mockSqlRSSetupInstance.GetCurrentState(
+                    @{
+                        Name         = 'InstanceName'
+                        InstanceName = 'SSRS'
+                    }
+                )
+
+                $currentState.InstanceName | Should -BeNullOrEmpty
+            }
+        }
+    }
+
+    Context 'When current state have an SSRS instance' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                    InstanceName = 'SSRS'
+                } |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
+                        return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+                    } -PassThru
+            }
+
+            Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
+                return @(
+                    [PSCustomObject] @{
+                        InstanceName   = 'SSRS'
+                        InstallFolder  = 'C:\Program Files\SSRS'
+                        ProductVersion = '15.0.2000.5'
+                    }
+                )
+            }
+        }
+
+        It 'Should return the correct values' {
+            InModuleScope -ScriptBlock {
+                $currentState = $script:mockSqlRSSetupInstance.GetCurrentState(
+                    @{
+                        Name         = 'InstanceName'
+                        InstanceName = 'SSRS'
+                    }
+                )
+
+                $currentState.InstanceName | Should -Be 'SSRS'
+                $currentState.ProductVersion | Should -Be '15.0.2000.5'
+                $currentState.InstallFolder | Should -Be 'C:\Program Files\SSRS'
+            }
+        }
+    }
+}
