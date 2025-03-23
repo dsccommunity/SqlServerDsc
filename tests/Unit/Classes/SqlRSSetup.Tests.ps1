@@ -258,3 +258,78 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
         }
     }
 }
+
+Describe 'SqlRSSetup\Set()' -Tag 'Set' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                InstanceName = 'SSRS'
+                Edition      = 'Developer'
+                Action       = 'Install'
+            } |
+                # Mock method Modify which is called by the base method Set().
+                Add-Member -Force -MemberType 'ScriptMethod' -Name 'Modify' -Value {
+                    $script:mockMethodModifyCallCount += 1
+                } -PassThru
+        }
+    }
+
+    BeforeEach {
+        InModuleScope -ScriptBlock {
+            $script:mockMethodModifyCallCount = 0
+        }
+    }
+
+    Context 'When the system is in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlRSSetupInstance |
+                    # Mock method Compare() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                        return $null
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        return
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                        return
+                    }
+            }
+        }
+
+        It 'Should not call method Modify()' {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlRSSetupInstance.Set()
+
+                $script:mockMethodModifyCallCount | Should -Be 0
+            }
+        }
+    }
+
+    Context 'When the system is not in the desired state' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlRSSetupInstance |
+                    # Mock method Compare() which is called by the base method Set()
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                        return @{
+                            Property      = 'Installed'
+                            ExpectedValue = $true
+                            ActualValue   = $false
+                        }
+                    } -PassThru |
+                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                        return
+                    }
+            }
+        }
+
+        It 'Should call method Modify()' {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlRSSetupInstance.Set()
+
+                $script:mockMethodModifyCallCount | Should -Be 1
+            }
+        }
+    }
+}
