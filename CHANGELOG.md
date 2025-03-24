@@ -4,7 +4,6 @@ The format is based on and uses the types of changes according to [Keep a Change
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
 ### Removed
 
 - SqlServerDsc.Common
@@ -31,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Services ([issue #2065](https://github.com/dsccommunity/SqlServerDsc/issues/2065)).
   - `Uninstall-SqlDscBIReportServer` to uninstall SQL Server BI Report Server
     ([issue #2065](https://github.com/dsccommunity/SqlServerDsc/issues/2065)).
+   - `Test-SqlDscIsRole` to be used like `Test-SqlDscIsLogin` but tests for a
+     server role as principal.
 - Private function:
   - `Invoke-ReportServerSetupAction` to run setup actions for Reporting
     Services and Power BI Report Server.
@@ -59,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix style formatting in all PowerShell script files.
   - Update module description on GitHub, in the conceptual help, and in
     the module manifest.
+- `Set-SqlDscServerPermission`
   - Added support for assigning permissions to a server role.
 - SqlSetup
   - Fixed issue with AddNode where cluster IP information was not being passed to
