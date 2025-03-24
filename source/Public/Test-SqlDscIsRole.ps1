@@ -16,7 +16,7 @@
 
     .EXAMPLE
         $serverInstance = Connect-SqlDscDatabaseEngine
-        Test-SqlDscIsDatabaseRole -ServerObject $serverInstance -Name 'MyPrincipal'
+        Test-SqlDscIsRole -ServerObject $serverInstance -Name 'MyPrincipal'
 
         Returns $true if the principal exist as role, if not $false is returned.
 #>
