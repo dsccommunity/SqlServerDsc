@@ -4,7 +4,6 @@ The format is based on and uses the types of changes according to [Keep a Change
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
 ### Removed
 
 - SqlServerDsc.Common
@@ -59,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix style formatting in all PowerShell script files.
   - Update module description on GitHub, in the conceptual help, and in
     the module manifest.
+  - Added Test-SqlDscIsRole to be used like Test-SqlDscIsLogin but tests for a server role as principal.
 - SqlSetup
   - Fixed issue with AddNode where cluster IP information was not being passed to
     setup.exe ([issue #1171](https://github.com/dsccommunity/SqlServerDsc/issues/1171)).
