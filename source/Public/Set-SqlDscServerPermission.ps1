@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-        Set permission for a login.
+        Set permission for a server principal.
 
     .DESCRIPTION
-        This command sets the permissions for a existing login on a SQL Server
+        This command sets the permissions for a existing principal on a SQL Server
         Database Engine instance.
 
     .PARAMETER ServerObject
@@ -94,14 +94,15 @@ function Set-SqlDscServerPermission
             $ConfirmPreference = 'None'
         }
 
-        $testSqlDscIsLoginParameters = @{
+        $testSqlDscIsPrincipalParameters = @{
             ServerObject = $ServerObject
             Name         = $Name
         }
 
-        $isLogin = Test-SqlDscIsLogin @testSqlDscIsLoginParameters
+        $isLogin = Test-SqlDscIsLogin @testSqlDscIsPrincipalParameters
+        $isRole = Test-SqlDscIsRole @testSqlDscIsPrincipalParameters
 
-        if ($isLogin)
+        if ($isLogin -or $isRole)
         {
             # Get the permissions names that are set to $true in the ServerPermissionSet.
             $permissionName = $Permission |

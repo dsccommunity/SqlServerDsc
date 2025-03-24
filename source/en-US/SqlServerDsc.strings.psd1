@@ -25,7 +25,7 @@ ConvertFrom-StringData @'
     IsDatabasePrincipal_DatabaseMissing = The database '{0}' cannot be found.
 
     ## Get-SqlDscServerPermission, Set-SqlDscServerPermission
-    ServerPermission_MissingPrincipal = The principal '{0}' is not a login on the instance '{1}'.
+    ServerPermission_MissingPrincipal = The principal '{0}' is not a login nor role on the instance '{1}'.
 
     ## Set-SqlDscServerPermission
     ServerPermission_IgnoreWithGrantForStateDeny = The parameter WithGrant cannot be used together with the state Deny, the parameter WithGrant is ignored.
