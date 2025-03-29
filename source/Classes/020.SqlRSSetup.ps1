@@ -431,7 +431,7 @@ class SqlRSSetup : ResourceBase
         # Verify that the instance name is valid.
         if ($properties.InstanceName -notin @('SSRS', 'PBIRS'))
         {
-            New-ArgumentException -ArgumentName 'InstanceName' -Message $this.localizedData.InstanceName_Invalid
+            New-ArgumentException -ArgumentName 'InstanceName' -Message ($this.localizedData.InstanceName_Invalid -f $properties.InstanceName)
         }
 
         # Verify that AcceptLicensingTerms is specified for Install and Repair actions.
@@ -450,10 +450,17 @@ class SqlRSSetup : ResourceBase
         Assert-BoundParameter @assertBoundParameterParameters
 
         # Verify that MediaPath is valid.
-        if (-not (Test-Path -Path $properties.MediaPath) -or (Get-Item -Path $properties.MediaPath).Extension -ne '.exe')
+        if (-not (Test-Path -Path $properties.MediaPath))
         {
             New-ArgumentException -ArgumentName 'MediaPath' -Message (
-                $this.localizedData.MediaPath_Invalid -f $this.MediaPath
+                $this.localizedData.MediaPath_Invalid -f $properties.MediaPath
+            )
+        }
+
+        if ((Test-Path -Path $properties.MediaPath) -and (Get-Item -Path $properties.MediaPath).Extension -ne '.exe')
+        {
+            New-ArgumentException -ArgumentName 'MediaPath' -Message (
+                $this.localizedData.MediaPath_DoesNotHaveRequiredExtension -f $properties.MediaPath
             )
         }
 
@@ -464,7 +471,7 @@ class SqlRSSetup : ResourceBase
         }
 
         # EditionUpgrade requires either ProductKey or Edition for Install and Repair actions.
-        if ($properties.Action -in @('Install', 'Repair') -and $properties.EditionUpgrade -and -not ($properties.ProductKey -or $properties.Edition))
+        if ($properties.Action -in @('Repair') -and $properties.EditionUpgrade -and -not ($properties.ProductKey -or $properties.Edition))
         {
             New-ArgumentException -ArgumentName 'EditionUpgrade' -Message $this.localizedData.EditionUpgrade_RequiresKeyOrEdition
         }
