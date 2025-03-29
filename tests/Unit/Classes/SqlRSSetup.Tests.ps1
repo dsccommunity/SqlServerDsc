@@ -811,3 +811,392 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
         }
     }
 }
+
+Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
+    Context 'When the passing invalid instance name' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                    InstanceName = 'INSTANCE'
+                    Action       = 'Install'
+                    MediaPath    = $TestDrive
+                }
+            }
+        }
+
+        It 'Should throw the correct error message' {
+            InModuleScope -ScriptBlock {
+                $mockExpectedErrorMessage = ($script:mockSqlRSSetupInstance.localizedData.InstanceName_Invalid -f 'INSTANCE') + ' (Parameter ''InstanceName'')'
+
+                {
+                    $script:mockSqlRSSetupInstance.AssertProperties(
+                        @{
+                            InstanceName = 'INSTANCE'
+                            Action       = 'Install'
+                            MediaPath    = $TestDrive
+                        }
+                    )
+                } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+            }
+        }
+    }
+
+    Context 'When the parameter Action is set to ''Install''' {
+        Context 'When not passing parameter AcceptLicensingTerms' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName = 'SSRS'
+                        Action       = 'Install'
+                        MediaPath    = $TestDrive
+                    }
+                }
+            }
+
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    $mockExpectedErrorMessage = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required + ' (Parameter ''AcceptLicensingTerms'')'
+
+                    {
+                        $script:mockSqlRSSetupInstance.AssertProperties(
+                            @{
+                                InstanceName = 'SSRS'
+                                Action       = 'Install'
+                                MediaPath    = $TestDrive
+                            }
+                        )
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                }
+            }
+        }
+
+        Context 'When passing parameter AcceptLicensingTerms with the value $false' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName         = 'SSRS'
+                        Action               = 'Install'
+                        MediaPath            = $TestDrive
+                        AcceptLicensingTerms = $false
+                    }
+                }
+            }
+
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    $mockExpectedErrorMessage = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required + ' (Parameter ''AcceptLicensingTerms'')'
+
+                    {
+                        $script:mockSqlRSSetupInstance.AssertProperties(
+                            @{
+                                InstanceName         = 'SSRS'
+                                Action               = 'Install'
+                                MediaPath            = $TestDrive
+                                AcceptLicensingTerms = $false
+                            }
+                        )
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                }
+            }
+        }
+
+        Context 'When not passing either parameter ProductKey or Edition' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName         = 'SSRS'
+                        Action               = 'Install'
+                        MediaPath            = Join-Path -Path $TestDrive -ChildPath 'setup.exe'
+                        AcceptLicensingTerms = $true
+                    }
+                }
+
+                Set-Content -Path (Join-Path -Path $TestDrive -ChildPath 'setup.exe') -Value 'This is the mocked setup executable file.'
+            }
+
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    $mockExpectedErrorMessage = $script:mockSqlRSSetupInstance.localizedData.EditionOrProductKeyMissing + ' (Parameter ''Edition, ProductKey'')'
+
+                    {
+                        $script:mockSqlRSSetupInstance.AssertProperties(
+                            @{
+                                InstanceName         = 'SSRS'
+                                Action               = 'Install'
+                                MediaPath            = Join-Path -Path $TestDrive -ChildPath 'setup.exe'
+                                AcceptLicensingTerms = $true
+                            }
+                        )
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                }
+            }
+        }
+
+        Context 'When passing InstallFolder with invalid path' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName         = 'SSRS'
+                        Action               = 'Install'
+                        MediaPath            = Join-Path -Path $TestDrive -ChildPath 'setup.exe'
+                        AcceptLicensingTerms = $true
+                        Edition              = 'Developer'
+                        InstallFolder        = $TestDrive | Join-Path -ChildPath 'MissingParent' | Join-Path -ChildPath 'SSRS'
+                    }
+                }
+
+                Set-Content -Path (Join-Path -Path $TestDrive -ChildPath 'setup.exe') -Value 'This is the mocked setup executable file.'
+            }
+
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    $mockExpectedErrorMessage = ($script:mockSqlRSSetupInstance.localizedData.InstallFolder_ParentMissing -f ($TestDrive | Join-Path -ChildPath 'MissingParent')) + ' (Parameter ''InstallFolder'')'
+
+                    {
+                        $script:mockSqlRSSetupInstance.AssertProperties(
+                            @{
+                                InstanceName         = 'SSRS'
+                                Action               = 'Install'
+                                MediaPath            = Join-Path -Path $TestDrive -ChildPath 'setup.exe'
+                                AcceptLicensingTerms = $true
+                                Edition              = 'Developer'
+                                InstallFolder        = $TestDrive | Join-Path -ChildPath 'MissingParent' | Join-Path -ChildPath 'SSRS'
+                            }
+                        )
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                }
+            }
+        }
+    }
+
+    Context 'When the parameter Action is set to ''Repair''' {
+        Context 'When not passing parameter AcceptLicensingTerms' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName = 'SSRS'
+                        Action       = 'Repair'
+                        MediaPath    = $TestDrive
+                    }
+                }
+            }
+
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    $mockExpectedErrorMessage = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required + ' (Parameter ''AcceptLicensingTerms'')'
+
+                    {
+                        $script:mockSqlRSSetupInstance.AssertProperties(
+                            @{
+                                InstanceName = 'SSRS'
+                                Action       = 'Repair'
+                                MediaPath    = $TestDrive
+                            }
+                        )
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                }
+            }
+        }
+
+        Context 'When passing parameter AcceptLicensingTerms with the value $false' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName         = 'SSRS'
+                        Action               = 'Repair'
+                        MediaPath            = $TestDrive
+                        AcceptLicensingTerms = $false
+                    }
+                }
+            }
+
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    $mockExpectedErrorMessage = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required + ' (Parameter ''AcceptLicensingTerms'')'
+
+                    {
+                        $script:mockSqlRSSetupInstance.AssertProperties(
+                            @{
+                                InstanceName         = 'SSRS'
+                                Action               = 'Repair'
+                                MediaPath            = $TestDrive
+                                AcceptLicensingTerms = $false
+                            }
+                        )
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                }
+            }
+        }
+
+        Context 'When not passing parameter EditionUpgrade, but not either parameter ProductKey or Edition' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName         = 'SSRS'
+                        Action               = 'Repair'
+                        MediaPath            = Join-Path -Path $TestDrive -ChildPath 'setup.exe'
+                        AcceptLicensingTerms = $true
+                        EditionUpgrade       = $true
+                    }
+                }
+
+                Set-Content -Path (Join-Path -Path $TestDrive -ChildPath 'setup.exe') -Value 'This is the mocked setup executable file.'
+            }
+
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    $mockExpectedErrorMessage = $script:mockSqlRSSetupInstance.localizedData.EditionUpgrade_RequiresKeyOrEdition + ' (Parameter ''EditionUpgrade'')'
+
+                    {
+                        $script:mockSqlRSSetupInstance.AssertProperties(
+                            @{
+                                InstanceName         = 'SSRS'
+                                Action               = 'Repair'
+                                MediaPath            = Join-Path -Path $TestDrive -ChildPath 'setup.exe'
+                                AcceptLicensingTerms = $true
+                                EditionUpgrade       = $true
+                            }
+                        )
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                }
+            }
+        }
+    }
+
+    Context 'When the passing both parameters Edition and ProductKey' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                    InstanceName         = 'SSRS'
+                    Action               = 'Install'
+                    MediaPath            = $TestDrive
+                    AcceptLicensingTerms = $true
+                    Edition              = 'Developer'
+                    ProductKey           = 'XXXXX-XXXXX-XXXXX-XXXXX-XXXXX'
+                }
+            }
+        }
+
+        It 'Should throw the correct error message' {
+            InModuleScope -ScriptBlock {
+                {
+                    $script:mockSqlRSSetupInstance.AssertProperties(
+                        @{
+                            InstanceName         = 'SSRS'
+                            Action               = 'Install'
+                            MediaPath            = $TestDrive
+                            AcceptLicensingTerms = $true
+                            Edition              = 'Developer'
+                            ProductKey           = 'XXXXX-XXXXX-XXXXX-XXXXX-XXXXX'
+                        }
+                    )
+                } | Should -Throw -ExpectedMessage '*DRC0010*'
+            }
+        }
+    }
+
+    Context 'When the passing invalid path for parameter MediaPath' {
+        Context 'When the path does not exist' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName         = 'SSRS'
+                        Action               = 'Install'
+                        MediaPath            = Join-Path -Path $TestDrive -ChildPath 'InvalidFile.exe'
+                        AcceptLicensingTerms = $true
+                        Edition              = 'Developer'
+                    }
+                }
+            }
+
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    $mockExpectedErrorMessage = ($script:mockSqlRSSetupInstance.localizedData.MediaPath_Invalid -f (Join-Path -Path $TestDrive -ChildPath 'InvalidFile.exe')) + ' (Parameter ''MediaPath'')'
+
+                    {
+                        $script:mockSqlRSSetupInstance.AssertProperties(
+                            @{
+                                InstanceName         = 'SSRS'
+                                Action               = 'Install'
+                                MediaPath            = Join-Path -Path $TestDrive -ChildPath 'InvalidFile.exe'
+                                AcceptLicensingTerms = $true
+                                Edition              = 'Developer'
+                            }
+                        )
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                }
+            }
+        }
+
+        Context 'When the path exist but does not reference an executable with extension .exe' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName         = 'SSRS'
+                        Action               = 'Install'
+                        MediaPath            = Join-Path -Path $TestDrive -ChildPath 'InvalidFile.txt'
+                        AcceptLicensingTerms = $true
+                        Edition              = 'Developer'
+                    }
+                }
+
+                # Create a file in $TestDrive that does not have extension .exe
+                Set-Content -Path (Join-Path -Path $TestDrive -ChildPath 'InvalidFile.txt') -Value 'This is a test file.'
+            }
+
+            It 'Should throw the correct error message' {
+                InModuleScope -ScriptBlock {
+                    $mockExpectedErrorMessage = ($script:mockSqlRSSetupInstance.localizedData.MediaPath_DoesNotHaveRequiredExtension -f (Join-Path -Path $TestDrive -ChildPath 'InvalidFile.txt')) + ' (Parameter ''MediaPath'')'
+
+                    {
+                        $script:mockSqlRSSetupInstance.AssertProperties(
+                            @{
+                                InstanceName         = 'SSRS'
+                                Action               = 'Install'
+                                MediaPath            = Join-Path -Path $TestDrive -ChildPath 'InvalidFile.txt'
+                                AcceptLicensingTerms = $true
+                                Edition              = 'Developer'
+                            }
+                        )
+                    } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+                }
+            }
+        }
+    }
+
+    Context 'When passing LogPath with invalid path' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                    InstanceName         = 'SSRS'
+                    Action               = 'Install'
+                    MediaPath            = Join-Path -Path $TestDrive -ChildPath 'setup.exe'
+                    AcceptLicensingTerms = $true
+                    Edition              = 'Developer'
+                    LogPath              = $TestDrive | Join-Path -ChildPath 'MissingParent' | Join-Path -ChildPath 'Logs'
+                }
+            }
+
+            Set-Content -Path (Join-Path -Path $TestDrive -ChildPath 'setup.exe') -Value 'This is the mocked setup executable file.'
+        }
+
+        It 'Should throw the correct error message' {
+            InModuleScope -ScriptBlock {
+                $mockExpectedErrorMessage = ($script:mockSqlRSSetupInstance.localizedData.LogPath_ParentMissing -f ($TestDrive | Join-Path -ChildPath 'MissingParent')) + ' (Parameter ''LogPath'')'
+
+                {
+                    $script:mockSqlRSSetupInstance.AssertProperties(
+                        @{
+                            InstanceName         = 'SSRS'
+                            Action               = 'Install'
+                            MediaPath            = Join-Path -Path $TestDrive -ChildPath 'setup.exe'
+                            AcceptLicensingTerms = $true
+                            Edition              = 'Developer'
+                            LogPath              = $TestDrive | Join-Path -ChildPath 'MissingParent' | Join-Path -ChildPath 'Logs'
+                        }
+                    )
+                } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+            }
+        }
+    }
+}

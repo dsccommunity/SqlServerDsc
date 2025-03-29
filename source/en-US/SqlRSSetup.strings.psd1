@@ -15,6 +15,7 @@ ConvertFrom-StringData @'
     Instance_Installed = Instance '{0}' is installed.
     AcceptLicensingTerms_Required = AcceptLicensingTerms must be set for Install and Repair operations.
     MediaPath_Invalid = The media path '{0}' does not exist.
+    MediaPath_DoesNotHaveRequiredExtension = The media path '{0}' does not reference an executable with the required extension .exe.
     EditionOrProductKeyMissing = Neither the parameters Edition or ProductKey was specified.
     EditionUpgrade_RequiresKeyOrEdition = EditionUpgrade requires either ProductKey or Edition to be specified.
     LogPath_ParentMissing = The parent directory '{0}' for LogPath does not exist.
