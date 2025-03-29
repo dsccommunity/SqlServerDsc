@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Unit test for DSC_SqlDatabasePermission DSC resource.
+        Unit test for SqlDatabasePermission DSC resource.
 #>
 
 # Suppressing this rule because Script Analyzer does not understand Pester's syntax.

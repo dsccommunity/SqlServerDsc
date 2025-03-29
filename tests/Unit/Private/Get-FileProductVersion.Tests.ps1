@@ -1,8 +1,3 @@
-<#
-    .SYNOPSIS
-        Unit test for SqlReason class.
-#>
-
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 param ()
 
@@ -51,35 +46,47 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'SqlReason' -Tag 'SqlReason' {
-    Context 'When instantiating the class' {
-        It 'Should not throw an error' {
-            $script:mockSqlReasonInstance = InModuleScope -ScriptBlock {
-                [SqlReason]::new()
+Describe 'Get-FileProductVersion' {
+    Context 'When the file exists and has a product version' {
+        BeforeAll {
+            Mock -CommandName Get-Item -MockWith {
+                return [PSCustomObject] @{
+                    Exists      = $true
+                    VersionInfo = [PSCustomObject] @{
+                        ProductVersion = '15.0.2000.5'
+                    }
+                }
             }
         }
 
-        It 'Should be of the correct type' {
-            $mockSqlReasonInstance | Should -Not -BeNullOrEmpty
-            $mockSqlReasonInstance.GetType().Name | Should -Be 'SqlReason'
+        It 'Should return the correct product version as a System.Version object' {
+            InModuleScope -ScriptBlock {
+                $result = Get-FileProductVersion -Path (Join-Path -Path $TestDrive -ChildPath 'testfile.dll')
+                $result | Should -BeOfType [System.Version]
+                $result.Major | Should -Be 15
+                $result.Minor | Should -Be 0
+                $result.Build | Should -Be 2000
+                $result.Revision | Should -Be 5
+            }
         }
     }
 
-    Context 'When setting an reading values' {
-        It 'Should be able to set value in instance' {
-            $script:mockSqlReasonInstance = InModuleScope -ScriptBlock {
-                $sqlReasonInstance = [SqlReason]::new()
-
-                $sqlReasonInstance.Code = 'SqlAudit:SqlAudit:Ensure'
-                $sqlReasonInstance.Phrase = 'The property Ensure should be "Present", but was "Absent"'
-
-                return $sqlReasonInstance
+    Context 'When Get-Item throws an exception' {
+        BeforeAll {
+            Mock -CommandName Get-Item -MockWith {
+                throw 'Mock exception message'
             }
         }
 
-        It 'Should be able read the values from instance' {
-            $mockSqlReasonInstance.Code | Should -Be 'SqlAudit:SqlAudit:Ensure'
-            $mockSqlReasonInstance.Phrase = 'The property Ensure should be "Present", but was "Absent"'
+        It 'Should throw the correct error' {
+            InModuleScope -ScriptBlock {
+                $mockFilePath = Join-Path -Path $TestDrive -ChildPath 'testfile.dll'
+                $mockGetFileProductVersionErrorMessage = $script:localizedData.Get_FileProductVersion_GetFileProductVersionError -f $mockFilePath, 'Mock exception message'
+
+                {
+                    Get-FileProductVersion -Path $mockFilePath -ErrorAction 'Stop'
+                } | Should -Throw $mockGetFileProductVersionErrorMessage
+            }
         }
     }
 }

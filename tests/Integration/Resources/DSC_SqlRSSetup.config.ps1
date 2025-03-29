@@ -16,16 +16,19 @@ else
     $ConfigurationData = @{
         AllNodes = @(
             @{
-                NodeName            = 'localhost'
-                InstanceName        = 'SSRS'
-                IAcceptLicenseTerms = 'Yes'
-                SourcePath          = Join-Path -Path $env:TEMP -ChildPath 'SQLServerReportingServices.exe'
-                Edition             = 'Development'
+                NodeName             = 'localhost'
+                InstanceName         = 'SSRS'
+                Action               = 'Install'
+                AcceptLicensingTerms = $true
+                MediaPath            = Join-Path -Path $env:TEMP -ChildPath 'SQLServerReportingServices.exe'
+                Edition              = 'Developer'
+                InstallFolder        = 'C:\Program Files\SSRS'
+                LogPath              = Join-Path -Path $env:TEMP -ChildPath 'SSRS_Install.log'
 
-                UserName            = "$env:COMPUTERNAME\SqlInstall"
-                Password            = 'P@ssw0rd1'
+                UserName             = "$env:COMPUTERNAME\SqlInstall"
+                Password             = 'P@ssw0rd1'
 
-                CertificateFile     = $env:DscPublicCertificatePath
+                CertificateFile      = $env:DscPublicCertificatePath
             }
         )
     }
@@ -53,9 +56,12 @@ Configuration DSC_SqlRSSetup_InstallReportingServicesAsUser_Config
         SqlRSSetup 'Integration_Test'
         {
             InstanceName         = $Node.InstanceName
-            IAcceptLicenseTerms  = $Node.IAcceptLicenseTerms
-            SourcePath           = $Node.SourcePath
+            Action               = $Node.Action
+            AcceptLicensingTerms = $Node.AcceptLicensingTerms
+            MediaPath            = $Node.MediaPath
             Edition              = $Node.Edition
+            InstallFolder        = $Node.InstallFolder
+            LogPath              = $Node.LogPath
 
             # The build worker contains already an instance, make sure to upgrade it.
             VersionUpgrade       = $true

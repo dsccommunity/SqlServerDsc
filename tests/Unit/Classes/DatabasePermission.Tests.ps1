@@ -1,3 +1,8 @@
+<#
+    .SYNOPSIS
+        Unit test for DatabasePermission class.
+#>
+
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 param ()
 
