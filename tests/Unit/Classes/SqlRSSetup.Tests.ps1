@@ -340,10 +340,7 @@ Describe 'SqlRSSetup\GetCurrentState()' -Tag 'GetCurrentState' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
                     InstanceName = 'SSRS'
-                } |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                        return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                    } -PassThru
+                }
             }
 
             Mock -CommandName Get-SqlDscRSSetupConfiguration
@@ -368,10 +365,7 @@ Describe 'SqlRSSetup\GetCurrentState()' -Tag 'GetCurrentState' {
             InModuleScope -ScriptBlock {
                 $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
                     InstanceName = 'SSRS'
-                } |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetServerObject' -Value {
-                        return New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                    } -PassThru
+                }
             }
 
             Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
@@ -397,6 +391,422 @@ Describe 'SqlRSSetup\GetCurrentState()' -Tag 'GetCurrentState' {
                 $currentState.InstanceName | Should -Be 'SSRS'
                 $currentState.ProductVersion | Should -Be '15.0.2000.5'
                 $currentState.InstallFolder | Should -Be 'C:\Program Files\SSRS'
+            }
+        }
+    }
+}
+
+Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
+    Context 'When action is Install' {
+        Context 'When current state is missing SSRS instance' {
+            Context 'When the install command is successful' {
+                BeforeAll {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                            InstanceName = 'SSRS'
+                            Action       = 'Install'
+                            MediaPath    = $TestDrive
+                        }
+                    }
+
+                    Mock -CommandName Install-SqlDscReportingService -MockWith {
+                        return 0
+                    }
+                }
+
+                It 'Should return the correct values' {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance.Modify(
+                            @{
+                                Name         = 'InstanceName'
+                                InstanceName = 'SSRS'
+                            }
+                        )
+
+                        Should -Invoke -CommandName 'Install-SqlDscReportingService' -Exactly -Times 1 -Scope It
+                    }
+                }
+            }
+
+            Context 'When the install command returns exit code 3010' {
+                BeforeAll {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                            InstanceName = 'SSRS'
+                            Action       = 'Install'
+                            MediaPath    = $TestDrive
+                        }
+                    }
+
+                    Mock -CommandName Install-SqlDscReportingService -MockWith {
+                        return 3010
+                    }
+                }
+
+                AfterEach {
+                    InModuleScope -ScriptBlock {
+                        Remove-Variable -Name 'DSCMachineStatus' -Scope 'Global' -ErrorAction 'SilentlyContinue'
+                    }
+                }
+
+                It 'Should return the correct values' {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance.Modify(
+                            @{
+                                Name         = 'InstanceName'
+                                InstanceName = 'SSRS'
+                            }
+                        )
+
+                        Should -Invoke -CommandName 'Install-SqlDscReportingService' -Exactly -Times 1 -Scope It
+
+                        $global:DSCMachineStatus | Should -Be 1
+                    }
+                }
+            }
+        }
+
+        Context 'When current state is missing PBIRS instance' { # cSpell:ignore PBIRS
+            Context 'When the install command is successful' {
+                BeforeAll {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                            InstanceName = 'PBIRS'
+                            Action       = 'Install'
+                            MediaPath    = $TestDrive
+                        }
+                    }
+
+                    Mock -CommandName Install-SqlDscBIReportServer -MockWith {
+                        return 0
+                    }
+                }
+
+                It 'Should return the correct values' {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance.Modify(
+                            @{
+                                Name         = 'InstanceName'
+                                InstanceName = 'PBIRS'
+                            }
+                        )
+
+                        Should -Invoke -CommandName 'Install-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
+                    }
+                }
+            }
+
+            Context 'When the install command returns exit code 3010' {
+                BeforeAll {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                            InstanceName = 'PBIRS'
+                            Action       = 'Install'
+                            MediaPath    = $TestDrive
+                        }
+                    }
+
+                    Mock -CommandName Install-SqlDscBIReportServer -MockWith {
+                        return 3010
+                    }
+                }
+
+                AfterEach {
+                    InModuleScope -ScriptBlock {
+                        Remove-Variable -Name 'DSCMachineStatus' -Scope 'Global' -ErrorAction 'SilentlyContinue'
+                    }
+                }
+
+                It 'Should return the correct values' {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance.Modify(
+                            @{
+                                Name         = 'InstanceName'
+                                InstanceName = 'PBIRS'
+                            }
+                        )
+
+                        Should -Invoke -CommandName 'Install-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
+
+                        $global:DSCMachineStatus | Should -Be 1
+                    }
+                }
+            }
+        }
+    }
+
+    Context 'When action is Uninstall' {
+        Context 'When current state is missing SSRS instance' {
+            Context 'When the uninstall command is successful' {
+                BeforeAll {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                            InstanceName = 'SSRS'
+                            Action       = 'Uninstall'
+                            MediaPath    = $TestDrive
+                        }
+                    }
+
+                    Mock -CommandName Uninstall-SqlDscReportingService -MockWith {
+                        return 0
+                    }
+                }
+
+                It 'Should return the correct values' {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance.Modify(
+                            @{
+                                Name         = 'InstanceName'
+                                InstanceName = 'SSRS'
+                            }
+                        )
+
+                        Should -Invoke -CommandName 'Uninstall-SqlDscReportingService' -Exactly -Times 1 -Scope It
+                    }
+                }
+            }
+
+            Context 'When the uninstall command returns exit code 3010' {
+                BeforeAll {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                            InstanceName = 'SSRS'
+                            Action       = 'Uninstall'
+                            MediaPath    = $TestDrive
+                        }
+                    }
+
+                    Mock -CommandName Uninstall-SqlDscReportingService -MockWith {
+                        return 3010
+                    }
+                }
+
+                AfterEach {
+                    InModuleScope -ScriptBlock {
+                        Remove-Variable -Name 'DSCMachineStatus' -Scope 'Global' -ErrorAction 'SilentlyContinue'
+                    }
+                }
+
+                It 'Should return the correct values' {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance.Modify(
+                            @{
+                                Name         = 'InstanceName'
+                                InstanceName = 'SSRS'
+                            }
+                        )
+
+                        Should -Invoke -CommandName 'Uninstall-SqlDscReportingService' -Exactly -Times 1 -Scope It
+
+                        $global:DSCMachineStatus | Should -Be 1
+                    }
+                }
+            }
+        }
+
+        Context 'When current state is missing PBIRS instance' { # cSpell:ignore PBIRS
+            Context 'When the uninstall command is successful' {
+                BeforeAll {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                            InstanceName = 'PBIRS'
+                            Action       = 'Uninstall'
+                            MediaPath    = $TestDrive
+                        }
+                    }
+
+                    Mock -CommandName Uninstall-SqlDscBIReportServer -MockWith {
+                        return 0
+                    }
+                }
+
+                It 'Should return the correct values' {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance.Modify(
+                            @{
+                                Name         = 'InstanceName'
+                                InstanceName = 'PBIRS'
+                            }
+                        )
+
+                        Should -Invoke -CommandName 'Uninstall-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
+                    }
+                }
+            }
+
+            Context 'When the uninstall command returns exit code 3010' {
+                BeforeAll {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                            InstanceName = 'PBIRS'
+                            Action       = 'Uninstall'
+                            MediaPath    = $TestDrive
+                        }
+                    }
+
+                    Mock -CommandName Uninstall-SqlDscBIReportServer -MockWith {
+                        return 3010
+                    }
+                }
+
+                AfterEach {
+                    InModuleScope -ScriptBlock {
+                        Remove-Variable -Name 'DSCMachineStatus' -Scope 'Global' -ErrorAction 'SilentlyContinue'
+                    }
+                }
+
+                It 'Should return the correct values' {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance.Modify(
+                            @{
+                                Name         = 'InstanceName'
+                                InstanceName = 'PBIRS'
+                            }
+                        )
+
+                        Should -Invoke -CommandName 'Uninstall-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
+
+                        $global:DSCMachineStatus | Should -Be 1
+                    }
+                }
+            }
+        }
+    }
+
+    Context 'When action is Repair' {
+        Context 'When current state is missing SSRS instance' {
+            Context 'When the repair command is successful' {
+                BeforeAll {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                            InstanceName = 'SSRS'
+                            Action       = 'Repair'
+                            MediaPath    = $TestDrive
+                        }
+                    }
+
+                    Mock -CommandName Repair-SqlDscReportingService -MockWith {
+                        return 0
+                    }
+                }
+
+                It 'Should return the correct values' {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance.Modify(
+                            @{
+                                Name         = 'InstanceName'
+                                InstanceName = 'SSRS'
+                            }
+                        )
+
+                        Should -Invoke -CommandName 'Repair-SqlDscReportingService' -Exactly -Times 1 -Scope It
+                    }
+                }
+            }
+
+            Context 'When the repair command returns exit code 3010' {
+                BeforeAll {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                            InstanceName = 'SSRS'
+                            Action       = 'Repair'
+                            MediaPath    = $TestDrive
+                        }
+                    }
+
+                    Mock -CommandName Repair-SqlDscReportingService -MockWith {
+                        return 3010
+                    }
+                }
+
+                AfterEach {
+                    InModuleScope -ScriptBlock {
+                        Remove-Variable -Name 'DSCMachineStatus' -Scope 'Global' -ErrorAction 'SilentlyContinue'
+                    }
+                }
+
+                It 'Should return the correct values' {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance.Modify(
+                            @{
+                                Name         = 'InstanceName'
+                                InstanceName = 'SSRS'
+                            }
+                        )
+
+                        Should -Invoke -CommandName 'Repair-SqlDscReportingService' -Exactly -Times 1 -Scope It
+
+                        $global:DSCMachineStatus | Should -Be 1
+                    }
+                }
+            }
+        }
+
+        Context 'When current state is missing PBIRS instance' { # cSpell:ignore PBIRS
+            Context 'When the repair command is successful' {
+                BeforeAll {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                            InstanceName = 'PBIRS'
+                            Action       = 'Repair'
+                            MediaPath    = $TestDrive
+                        }
+                    }
+
+                    Mock -CommandName Repair-SqlDscBIReportServer -MockWith {
+                        return 0
+                    }
+                }
+
+                It 'Should return the correct values' {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance.Modify(
+                            @{
+                                Name         = 'InstanceName'
+                                InstanceName = 'PBIRS'
+                            }
+                        )
+
+                        Should -Invoke -CommandName 'Repair-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
+                    }
+                }
+            }
+
+            Context 'When the repair command returns exit code 3010' {
+                BeforeAll {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                            InstanceName = 'PBIRS'
+                            Action       = 'Repair'
+                            MediaPath    = $TestDrive
+                        }
+                    }
+
+                    Mock -CommandName Repair-SqlDscBIReportServer -MockWith {
+                        return 3010
+                    }
+                }
+
+                AfterEach {
+                    InModuleScope -ScriptBlock {
+                        Remove-Variable -Name 'DSCMachineStatus' -Scope 'Global' -ErrorAction 'SilentlyContinue'
+                    }
+                }
+
+                It 'Should return the correct values' {
+                    InModuleScope -ScriptBlock {
+                        $script:mockSqlRSSetupInstance.Modify(
+                            @{
+                                Name         = 'InstanceName'
+                                InstanceName = 'PBIRS'
+                            }
+                        )
+
+                        Should -Invoke -CommandName 'Repair-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
+
+                        $global:DSCMachineStatus | Should -Be 1
+                    }
+                }
             }
         }
     }
