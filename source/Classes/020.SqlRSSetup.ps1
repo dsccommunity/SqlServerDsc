@@ -78,6 +78,12 @@
         Specifies whether to upgrade the version of the installed product. By default,
         no version upgrade is performed.
 
+        If this parameter is specified the installed product version will be compared
+        against the product version of the setup executable. If the installed product
+        version is lower than the product version of the setup executable, the setup
+        will perform an upgrade. If the installed product version is equal to or higher
+        than the product version of the setup executable, no upgrade will be performed.
+
     .PARAMETER Timeout
         Specifies how long to wait for the setup process to finish. Default value
         is `7200` seconds (2 hours). If the setup process does not finish before
@@ -345,6 +351,9 @@ class SqlRSSetup : ResourceBase
             ExcludeName = @(
                 # Remove mandatory property that is not a command parameter.
                 'Action'
+
+                # Remove optional property that is not a command parameter.
+                'VersionUpgrade'
             )
         }
 
