@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       open an issue to discuss in what cases this is needed.
     - The `Edition` value 'Development` was removed and replaced by the value
       `Developer`.
+    - The read-only property `ServiceName` was removed.
 
 ### Added
 
