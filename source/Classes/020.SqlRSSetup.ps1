@@ -218,28 +218,44 @@ class SqlRSSetup : ResourceBase
 
         $actionStateResult = $baseTestResult
 
-        if (-not $baseTestResult -and $this.Action -in @('Repair', 'Uninstall'))
+        if ($this.Action -eq 'Repair' -and -not $baseTestResult)
         {
-            <#
-                If the instance is not installed and the action is Repair or Uninstall
-                then set the $actionStateResult to $true. This indicates that it is
-                not possible to perform a repair or there is nothing to uninstall.
-            #>
+            # Instance is not installed, so it is not possible to perform a repair.
             $actionStateResult = $true
+        }
+
+        if ($this.Action -in @('Uninstall', 'Repair'))
+        {
+            if ($baseTestResult)
+            {
+                # Instance is installed, it should be uninstalled or repaired.
+                $actionStateResult = $false
+            }
+            else
+            {
+                <#
+                    Instance is not installed, or it is not possible to perform a
+                    repair since the instance is uninstalled.
+                #>
+                $actionStateResult = $true
+            }
         }
 
         $productVersionInDesiredState = $true
 
-        # The product version is evaluated if VersionUpgrade is set to $true.
-        if ($this.Action -eq 'Install' -and $this.VersionUpgrade)
+        <#
+            The product version is evaluated if action is Install, instance is
+            installed and VersionUpgrade is set to $true.
+        #>
+        if ($this.Action -eq 'Install' -and $baseTestResult -and $this.VersionUpgrade)
         {
             $fileVersion = Get-FileProductVersion -Path $this.MediaPath -ErrorAction 'Stop'
 
             if ($fileVersion)
             {
                 $getTargetResourceResult = $this.GetCurrentState(@{
-                    InstanceName = $this.InstanceName
-                })
+                        InstanceName = $this.InstanceName
+                    })
 
                 $installedVersion = [System.Version] $getTargetResourceResult.ProductVersion
 
@@ -247,9 +263,12 @@ class SqlRSSetup : ResourceBase
                 {
                     $productVersionInDesiredState = $false
 
-                    Write-Verbose -Message $this.localizedData.NotDesiredProductVersion -f @(
-                        $fileVersion.ToString(),
-                        $this.InstanceName, $installedVersion.ToString()
+                    Write-Verbose -Message (
+                        $this.localizedData.NotDesiredProductVersion -f @(
+                            $fileVersion.ToString(),
+                            $this.InstanceName,
+                            $installedVersion.ToString()
+                        )
                     )
                 }
             }
