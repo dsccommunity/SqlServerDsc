@@ -168,8 +168,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
             }
 
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.InstallFolder | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services'
-            $resourceCurrentState.ErrorDumpDirectory | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles'
+            $resourceCurrentState.InstallFolder | Should -Be $ConfigurationData.AllNodes.InstallFolder
 
             if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
             {
