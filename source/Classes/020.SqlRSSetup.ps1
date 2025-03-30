@@ -253,9 +253,11 @@ class SqlRSSetup : ResourceBase
 
             if ($fileVersion)
             {
-                $getTargetResourceResult = $this.GetCurrentState(@{
-                        InstanceName = $this.InstanceName
-                    })
+                $keyProperties = @{
+                    InstanceName = $this.InstanceName
+                }
+
+                $getTargetResourceResult = $this.GetCurrentState($keyProperties)
 
                 $installedVersion = [System.Version] $getTargetResourceResult.ProductVersion
 
