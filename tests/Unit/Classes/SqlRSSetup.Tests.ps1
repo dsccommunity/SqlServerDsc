@@ -105,7 +105,7 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
                             return
-                        }
+                        } -PassThru
                 }
             }
 
@@ -160,7 +160,7 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
                             return
-                        }
+                        } -PassThru
                 }
             }
 
@@ -190,70 +190,284 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
 }
 
 Describe 'SqlRSSetup\Test()' -Tag 'Test' {
-    BeforeAll {
-        InModuleScope -ScriptBlock {
-            $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
-                InstanceName = 'SSRS'
-                Edition      = 'Developer'
-                Action       = 'Install'
-            }
-        }
-    }
-
     Context 'When the system is in the desired state' {
-        BeforeAll {
-            InModuleScope -ScriptBlock {
-                $script:mockSqlRSSetupInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        return $null
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                        return
-                    }
+        Context 'When the parameter action is set to Install' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName = 'SSRS'
+                        Edition      = 'Developer'
+                        Action       = 'Install'
+                    } |
+                        # Mock method Compare() which is called by the base method Set()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                            return $null
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                            return
+                        } -PassThru
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
+                }
             }
         }
 
-        It 'Should return $true' {
-            InModuleScope -ScriptBlock {
-                $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
+        Context 'When the parameter action is set to Uninstall' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName = 'SSRS'
+                        Edition      = 'Developer'
+                        Action       = 'Uninstall'
+                    } |
+                        # Mock method Compare() which is called by the base method Set()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                            <#
+                                Compare() method shall only return the properties NOT in
+                                desired state, in the format of the command Compare-DscParameterState.
+                            #>
+                            return @(
+                                @{
+                                    Property      = 'InstanceName'
+                                    ExpectedValue = 'SSRS'
+                                    ActualValue   = $null
+                                }
+                            )
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                            return
+                        } -PassThru
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
+                }
+            }
+        }
+
+        Context 'When the parameter action is set to Repair' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName = 'SSRS'
+                        Edition      = 'Developer'
+                        Action       = 'Repair'
+                    } |
+                        # Mock method Compare() which is called by the base method Set()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                            <#
+                                Compare() method shall only return the properties NOT in
+                                desired state, in the format of the command Compare-DscParameterState.
+                            #>
+                            return @(
+                                @{
+                                    Property      = 'InstanceName'
+                                    ExpectedValue = 'SSRS'
+                                    ActualValue   = $null
+                                }
+                            )
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                            return
+                        } -PassThru
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
+                }
+            }
+        }
+
+        Context 'When the parameter action is set to Install and VersionUpgrade is set to $true' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName   = 'SSRS'
+                        Edition        = 'Developer'
+                        Action         = 'Install'
+                        VersionUpgrade = $true
+                        MediaPath      = $TestDrive
+                    } |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                            return [System.Collections.Hashtable] @{
+                                InstanceName   = 'SSRS'
+                                ProductVersion = '9.9.99'
+                            }
+                        } -PassThru |
+                        # Mock method Compare() which is called by the base method Set()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                            return $null
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                            return
+                        } -PassThru
+                }
+
+                Mock -CommandName Get-FileProductVersion -MockWith {
+                    return [System.Version] '9.9.99'
+                }
+            }
+
+            It 'Should return $true' {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
+                }
             }
         }
     }
 
     Context 'When the system is not in the desired state' {
-        BeforeAll {
-            InModuleScope -ScriptBlock {
-                $script:mockSqlRSSetupInstance |
-                    # Mock method Compare() which is called by the base method Set()
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
-                        <#
-                            Compare() method shall only return the properties NOT in
-                            desired state, in the format of the command Compare-DscParameterState.
-                        #>
-                        return @(
-                            @{
-                                Property      = 'Installed'
-                                ExpectedValue = $true
-                                ActualValue   = $false
-                            }
-                        )
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
-                        return
-                    } -PassThru |
-                    Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
-                        return
-                    }
+        Context 'When the parameter action is set to Install' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName = 'SSRS'
+                        Edition      = 'Developer'
+                        Action       = 'Install'
+                    } |
+                        # Mock method Compare() which is called by the base method Set()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                            <#
+                                Compare() method shall only return the properties NOT in
+                                desired state, in the format of the command Compare-DscParameterState.
+                            #>
+                            return @(
+                                @{
+                                    Property      = 'InstanceName'
+                                    ExpectedValue = 'SSRS'
+                                    ActualValue   = $null
+                                }
+                            )
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                            return
+                        } -PassThru
+                }
+            }
+
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
+                }
             }
         }
 
-        It 'Should return $false' {
-            InModuleScope -ScriptBlock {
-                $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
+        Context 'When the parameter action is set to Uninstall' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName = 'SSRS'
+                        Edition      = 'Developer'
+                        Action       = 'Uninstall'
+                    } |
+                        # Mock method Compare() which is called by the base method Set()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                            return $null
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                            return
+                        } -PassThru
+                }
+            }
+
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
+                }
+            }
+        }
+
+        Context 'When the parameter action is set to Repair' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName = 'SSRS'
+                        Edition      = 'Developer'
+                        Action       = 'Repair'
+                    } |
+                        # Mock method Compare() which is called by the base method Set()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                            return $null
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                            return
+                        } -PassThru
+                }
+            }
+
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
+                }
+            }
+        }
+
+        Context 'When the parameter action is set to Install and VersionUpgrade is set to $true' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                        InstanceName   = 'SSRS'
+                        Edition        = 'Developer'
+                        Action         = 'Install'
+                        VersionUpgrade = $true
+                        MediaPath      = $TestDrive
+                    } |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
+                            return [System.Collections.Hashtable] @{
+                                InstanceName   = 'SSRS'
+                                ProductVersion = '5.5.0'
+                            }
+                        } -PassThru |
+                        # Mock method Compare() which is called by the base method Set()
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
+                            return $null
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
+                            return
+                        } -PassThru |
+                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
+                            return
+                        } -PassThru
+                }
+
+                Mock -CommandName Get-FileProductVersion -MockWith {
+                    return [System.Version] '9.9.99'
+                }
+            }
+
+            It 'Should return $false' {
+                InModuleScope -ScriptBlock {
+                    $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
+                }
             }
         }
     }
@@ -293,7 +507,7 @@ Describe 'SqlRSSetup\Set()' -Tag 'Set' {
                     } -PassThru |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'NormalizeProperties' -Value {
                         return
-                    }
+                    } -PassThru
             }
         }
 
@@ -313,14 +527,14 @@ Describe 'SqlRSSetup\Set()' -Tag 'Set' {
                     # Mock method Compare() which is called by the base method Set()
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                         return @{
-                            Property      = 'Installed'
-                            ExpectedValue = $true
-                            ActualValue   = $false
+                            Property      = 'InstanceName'
+                            ExpectedValue = 'SSRS'
+                            ActualValue   = $null
                         }
                     } -PassThru |
                     Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
                         return
-                    }
+                    } -PassThru
             }
         }
 
@@ -1196,6 +1410,76 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
                         }
                     )
                 } | Should -Throw -ExpectedMessage $mockExpectedErrorMessage
+            }
+        }
+    }
+}
+
+Describe 'SqlRSSetup\NormalizeProperties()' -Tag 'NormalizeProperties' {
+    Context 'When the passing all path parameters' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                    InstanceName         = 'SSRS'
+                    Action               = 'Install'
+                    AcceptLicensingTerms = $true
+                    Edition              = 'Developer'
+                    MediaPath            = $TestDrive
+                    LogPath              = $TestDrive | Join-Path -ChildPath 'Logs'
+                    InstallFolder        = $TestDrive | Join-Path -ChildPath 'SSRS'
+                }
+            }
+
+            Mock -CommandName Format-Path
+        }
+
+        It 'Should call the expected mock' {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlRSSetupInstance.NormalizeProperties(
+                    @{
+                        InstanceName         = 'SSRS'
+                        Action               = 'Install'
+                        AcceptLicensingTerms = $true
+                        Edition              = 'Developer'
+                        MediaPath            = $TestDrive
+                        LogPath              = $TestDrive | Join-Path -ChildPath 'Logs'
+                        InstallFolder        = $TestDrive | Join-Path -ChildPath 'SSRS'
+                    }
+                )
+
+                Should -Invoke -CommandName 'Format-Path' -Exactly -Times 3 -Scope It
+            }
+        }
+    }
+
+    Context 'When the passing one path parameter' {
+        BeforeAll {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlRSSetupInstance = [SqlRSSetup] @{
+                    InstanceName         = 'SSRS'
+                    Action               = 'Install'
+                    AcceptLicensingTerms = $true
+                    Edition              = 'Developer'
+                    LogPath              = $TestDrive | Join-Path -ChildPath 'Logs'
+                }
+            }
+
+            Mock -CommandName Format-Path
+        }
+
+        It 'Should call the expected mock' {
+            InModuleScope -ScriptBlock {
+                $script:mockSqlRSSetupInstance.NormalizeProperties(
+                    @{
+                        InstanceName         = 'SSRS'
+                        Action               = 'Install'
+                        AcceptLicensingTerms = $true
+                        Edition              = 'Developer'
+                        LogPath              = $TestDrive | Join-Path -ChildPath 'Logs'
+                    }
+                )
+
+                Should -Invoke -CommandName 'Format-Path' -Exactly -Times 1 -Scope It
             }
         }
     }
