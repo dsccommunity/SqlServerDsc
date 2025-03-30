@@ -172,17 +172,17 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
 
             if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
             {
-                $resourceCurrentState.CurrentVersion | Should -BeGreaterThan ([System.Version] '14.0.0.0')
+                $resourceCurrentState.ProductVersion | Should -BeGreaterThan ([System.Version] '14.0.0.0')
             }
 
             if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
             {
-                $resourceCurrentState.CurrentVersion | Should -BeGreaterThan ([System.Version] '15.0.0.0')
+                $resourceCurrentState.ProductVersion | Should -BeGreaterThan ([System.Version] '15.0.0.0')
             }
 
             if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022')
             {
-                $resourceCurrentState.CurrentVersion | Should -BeGreaterThan ([System.Version] '16.0.0.0')
+                $resourceCurrentState.ProductVersion | Should -BeGreaterThan ([System.Version] '16.0.0.0')
             }
         }
 
