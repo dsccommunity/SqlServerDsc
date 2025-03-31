@@ -97,7 +97,8 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                     $script:mockSqlRSSetupInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return [System.Collections.Hashtable] @{
-                                InstanceName = 'SSRS'
+                                InstanceName   = 'SSRS'
+                                ProductVersion = '14.0.0'
                             }
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
@@ -126,7 +127,7 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                     $currentState.SuppressRestart | Should -BeFalse
                     $currentState.ForceRestart | Should -BeFalse
                     $currentState.VersionUpgrade | Should -BeNullOrEmpty
-                    $currentState.ProductVersion | Should -BeNullOrEmpty
+                    $currentState.ProductVersion | Should -Be '14.0.0'
                 }
             }
         }
