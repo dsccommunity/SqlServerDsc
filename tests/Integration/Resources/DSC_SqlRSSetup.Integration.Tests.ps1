@@ -173,6 +173,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
             if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
             {
                 Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
+                Write-Verbose -Message (Get-SqlDscRSSetupConfiguration -InstanceName ('{0}' -f $ConfigurationData.AllNodes.InstanceName) | Out-String) -Verbose
 
                 $resourceCurrentState.ProductVersion | Should -BeGreaterThan ([System.Version] '14.0.0.0')
             }
@@ -180,6 +181,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
             if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
             {
                 Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
+                Write-Verbose -Message (Get-SqlDscRSSetupConfiguration -InstanceName ('{0}' -f $ConfigurationData.AllNodes.InstanceName) | Out-String) -Verbose
 
                 $resourceCurrentState.ProductVersion | Should -BeGreaterThan ([System.Version] '15.0.0.0')
             }
@@ -187,6 +189,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
             if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022')
             {
                 Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
+                Write-Verbose -Message (Get-SqlDscRSSetupConfiguration -InstanceName ('{0}' -f $ConfigurationData.AllNodes.InstanceName) | Out-String) -Verbose
 
                 $resourceCurrentState.ProductVersion | Should -BeGreaterThan ([System.Version] '16.0.0.0')
             }
