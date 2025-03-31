@@ -340,7 +340,19 @@ class SqlRSSetup : ResourceBase
 
             $currentState.InstanceName = $rsConfiguration.InstanceName
             $currentState.InstallFolder = $rsConfiguration.InstallFolder
-            $currentState.ProductVersion = $rsConfiguration.ProductVersion
+
+            if ([System.String]::IsNullOrEmpty($rsConfiguration.ProductVersion))
+            {
+                Write-Verbose -Message (
+                    $this.localizedData.MissingProductVersionUsingCurrentVersion -f $properties.InstanceName
+                )
+
+                $currentState.ProductVersion = $rsConfiguration.CurrentVersion
+            }
+            else
+            {
+                $currentState.ProductVersion = $rsConfiguration.ProductVersion
+            }
         }
         else
         {

@@ -121,7 +121,11 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
 
-    Context ('When using configuration <_>') -ForEach @(
+    <#
+        Skips on AppVeyor because the build image already has a different version
+        of Microsoft SQL Server Reporting Services installed.
+    #>
+    Context ('When using configuration <_>') -Skip:($env:APPVEYOR) -ForEach @(
         "$($script:dscResourceName)_InstallReportingServicesAsUser_Config"
     ) {
         BeforeAll {
@@ -203,7 +207,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
         }
     }
 
-    Context ('When using configuration <_>') -ForEach @(
+    Context ('When using configuration <_>') -Skip:($env:APPVEYOR) -ForEach @(
         "$($script:dscResourceName)_StopReportingServicesInstance_Config"
     ) {
         BeforeAll {
