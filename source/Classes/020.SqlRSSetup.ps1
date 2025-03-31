@@ -211,7 +211,15 @@ class SqlRSSetup : ResourceBase
     [SqlRSSetup] Get()
     {
         # Call the base method to return the properties.
-        return ([ResourceBase] $this).Get()
+        #return ([ResourceBase] $this).Get()
+
+        $getResult = ([ResourceBase] $this).Get()
+
+        Write-Verbose -Message 'DEBUG1' -Verbose
+        Write-Verbose -Message ($getResult | Out-String) -Verbose
+        Write-Verbose -Message 'DEBUG2' -Verbose
+
+        return $getResult
     }
 
     [System.Boolean] Test()
@@ -321,6 +329,10 @@ class SqlRSSetup : ResourceBase
 
         if ($rsConfiguration)
         {
+            Write-Verbose -Message 'DEBUG3' -Verbose
+            Write-Verbose -Message ($rsConfiguration | Out-String) -Verbose
+            Write-Verbose -Message 'DEBUG4' -Verbose
+
             # Instance is installed
             Write-Verbose -Message (
                 $this.localizedData.Instance_Installed -f $properties.InstanceName
