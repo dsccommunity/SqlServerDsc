@@ -28,4 +28,5 @@ ConvertFrom-StringData @'
     Uninstalling_PowerBIReportServer = Uninstalling Power BI Report Server.
     NotDesiredProductVersion = The product version '{0}' is not the desired for the instance '{1}'. Desired version in executable: '{2}'.
     InstanceName_Invalid = The instance name '{0}' is invalid. Only one of the supported instance name can be used, either SSRS or PBIRS depending on what setup executable is used.
+    CannotDetermineProductVersion = Could not determine the product version for the installed instance '{0}'. Run the command `Get-SqlDscRSSetupConfiguration -InstanceName '{0}'` to get the configuration for the instance and verify that it returns a valid product version.
 '@

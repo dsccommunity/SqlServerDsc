@@ -265,6 +265,13 @@ class SqlRSSetup : ResourceBase
 
                 $getTargetResourceResult = $this.GetCurrentState($keyProperties)
 
+                if ([System.String]::IsNullOrEmpty($getTargetResourceResult.ProductVersion))
+                {
+                    New-InvalidResultException -Message (
+                        $this.localizedData.CannotDetermineProductVersion -f $this.InstanceName
+                    )
+                }
+
                 $installedVersion = [System.Version] $getTargetResourceResult.ProductVersion
 
                 if ($installedVersion -lt $fileVersion)
