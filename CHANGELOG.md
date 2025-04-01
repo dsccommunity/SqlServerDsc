@@ -4,7 +4,6 @@ The format is based on and uses the types of changes according to [Keep a Change
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
 ### Removed
 
 - SqlServerDsc.Common
@@ -61,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the module manifest.
   - Now integration tests will fail on an exception when the command `Test-DscConfiguration`
     is run.
+  - Added Test-SqlDscIsRole to be used like Test-SqlDscIsLogin but tests for a server role as principal.
 - SqlSetup
   - Fixed issue with AddNode where cluster IP information was not being passed to
     setup.exe ([issue #1171](https://github.com/dsccommunity/SqlServerDsc/issues/1171)).
