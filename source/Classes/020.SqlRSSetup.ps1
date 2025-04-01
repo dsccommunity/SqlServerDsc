@@ -322,6 +322,7 @@ class SqlRSSetup : ResourceBase
             # This must be set to the correct valid value for base method Get() to work.
             InstanceName  = $null
             InstallFolder = $null
+            ProductVersion = $null
         }
 
         # Get the configuration if installed
@@ -344,7 +345,7 @@ class SqlRSSetup : ResourceBase
             if ([System.String]::IsNullOrEmpty($rsConfiguration.ProductVersion))
             {
                 Write-Verbose -Message (
-                    $this.localizedData.MissingProductVersionUsingCurrentVersion -f $properties.InstanceName
+                    $this.localizedData.MissingProductVersionUsingCurrentVersion -f $properties.InstanceName, $rsConfiguration.CurrentVersion
                 )
 
                 $currentState.ProductVersion = $rsConfiguration.CurrentVersion
