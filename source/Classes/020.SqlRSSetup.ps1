@@ -105,6 +105,14 @@
         installed or not. Due to this limitation the property is evaluated in
         the AssertProperties() method to have one of the valid values.
 
+        Known issues:
+        - Using `VersionUpgrade` with Microsoft SQL Server 2017 Reporting Services
+          does not work because that version does not set a product version in the
+          registry. So there is nothing to compare against the setup executable
+          product version. It does set a current version, but that does not correlate
+          to the product version. This apparently by design with Microsoft SQL Server
+          2017 Reporting Services.
+
     .EXAMPLE
         Configuration Example
         {
@@ -342,15 +350,7 @@ class SqlRSSetup : ResourceBase
             $currentState.InstanceName = $rsConfiguration.InstanceName
             $currentState.InstallFolder = $rsConfiguration.InstallFolder
 
-            if ([System.String]::IsNullOrEmpty($rsConfiguration.ProductVersion))
-            {
-                Write-Verbose -Message (
-                    $this.localizedData.MissingProductVersionUsingCurrentVersion -f $properties.InstanceName, $rsConfiguration.CurrentVersion
-                )
-
-                $currentState.ProductVersion = $rsConfiguration.CurrentVersion
-            }
-            else
+            if (-not ([System.String]::IsNullOrEmpty($rsConfiguration.ProductVersion)))
             {
                 $currentState.ProductVersion = $rsConfiguration.ProductVersion
             }

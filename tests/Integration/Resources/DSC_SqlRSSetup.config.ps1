@@ -63,8 +63,19 @@ Configuration DSC_SqlRSSetup_InstallReportingServicesAsUser_Config
             InstallFolder        = $Node.InstallFolder
             LogPath              = $Node.LogPath
 
-            # The build worker contains already an instance, make sure to upgrade it.
-            VersionUpgrade       = $true
+            <#
+                The build worker contains already an instance, make sure to upgrade it.
+                It does not work for Microsoft SQL Server 2017 Reporting Services,
+                see .NOTES section in the resource.
+            #>
+            VersionUpgrade       = if ($env:Integration_SQL2017)
+            {
+                $false
+            }
+            else
+            {
+                $true
+            }
 
             # Suppressing restart because the build worker are not allowed to be restarted.
             SuppressRestart      = $true
