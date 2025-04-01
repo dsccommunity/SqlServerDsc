@@ -161,7 +161,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
             {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
             } | Should -Not -Throw
         }
 
@@ -203,7 +203,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
         }
     }
 
