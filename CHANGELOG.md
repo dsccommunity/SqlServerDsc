@@ -4,6 +4,7 @@ The format is based on and uses the types of changes according to [Keep a Change
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
 ### Removed
 
 - SqlServerDsc.Common
@@ -94,6 +95,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Change the alias command to real command name, to pass HQRM tests.
 - `SqlServiceAccount`
   - Change the alias command to real command name, to pass HQRM tests.
+- `Get-SqlDscRSSetupConfiguration`
+  - The integration test was updated to verify so that the `CurrentVersion`
+    and `ProductVersion` strings can be converted to valid versions and
+    that they always are higher than what we expect.
 
 ## [17.0.0] - 2024-09-30
 
