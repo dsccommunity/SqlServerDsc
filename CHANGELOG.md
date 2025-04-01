@@ -59,6 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix style formatting in all PowerShell script files.
   - Update module description on GitHub, in the conceptual help, and in
     the module manifest.
+  - Now integration tests will fail on an exception when the command `Test-DscConfiguration`
+    is run.
 - SqlSetup
   - Fixed issue with AddNode where cluster IP information was not being passed to
     setup.exe ([issue #1171](https://github.com/dsccommunity/SqlServerDsc/issues/1171)).
