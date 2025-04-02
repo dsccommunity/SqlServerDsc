@@ -123,7 +123,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.EnableErrorReporting | Should -Be 1
             $result.VirtualRootServer | Should -Be 'ReportServer'
             $result.ConfigFilePath | Should -Be 'C:\Program Files\PBIRS\PBIRS\ReportServer\rsreportserver.config'
-            $result.InstanceId | Should -Be 'SSRS'
+            $result.InstanceId | Should -Be 'PBIRS'
             $result.EditionID | Should -Be 2017617798
             $result.EditionName | Should -Be 'Power BI Report Server - Developer'
             $result.IsSharePointIntegrated | Should -BeFalse
