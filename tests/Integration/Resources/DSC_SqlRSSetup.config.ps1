@@ -68,7 +68,7 @@ Configuration DSC_SqlRSSetup_InstallReportingServicesAsUser_Config
                 It does not work for Microsoft SQL Server 2017 Reporting Services,
                 see .NOTES section in the resource.
             #>
-            VersionUpgrade       = if ($env:Integration_SQL2017)
+            VersionUpgrade       = if ($env:TEST_CONFIGURATION -eq 'Integration_SQL2017')
             {
                 $false
             }
