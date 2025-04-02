@@ -43,6 +43,11 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.EnableErrorReporting | Should -Be 1
             $result.VirtualRootServer | Should -Be 'ReportServer'
             $result.ConfigFilePath | Should -Be 'C:\Program Files\SSRS\SSRS\ReportServer\rsreportserver.config'
+            $result.InstanceId | Should -Be 'SSRS'
+            $result.EditionID | Should -Be 2176971986
+            $result.EditionName | Should -Be 'SQL Server Developer'
+            $result.IsSharePointIntegrated | Should -BeFalse
+            [System.Version] $result.MSReportServerInstanceVersion | Should -BeGreaterOrEqual ([System.Version] '14.0.601.20')
         }
     }
 
@@ -65,6 +70,11 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.EnableErrorReporting | Should -Be 1
             $result.VirtualRootServer | Should -Be 'ReportServer'
             $result.ConfigFilePath | Should -Be 'C:\Program Files\SSRS\SSRS\ReportServer\rsreportserver.config'
+            $result.InstanceId | Should -Be 'SSRS'
+            $result.EditionID | Should -Be 2176971986
+            $result.EditionName | Should -Be 'SQL Server Developer'
+            $result.IsSharePointIntegrated | Should -BeFalse
+            [System.Version] $result.MSReportServerInstanceVersion | Should -BeGreaterOrEqual ([System.Version] '15.0.1103.41')
         }
     }
 
@@ -87,6 +97,11 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.EnableErrorReporting | Should -Be 1
             $result.VirtualRootServer | Should -Be 'ReportServer'
             $result.ConfigFilePath | Should -Be 'C:\Program Files\SSRS\SSRS\ReportServer\rsreportserver.config'
+            $result.InstanceId | Should -Be 'SSRS'
+            $result.EditionID | Should -Be 2176971986
+            $result.EditionName | Should -Be 'SQL Server Developer'
+            $result.IsSharePointIntegrated | Should -BeFalse
+            [System.Version] $result.MSReportServerInstanceVersion | Should -BeGreaterOrEqual ([System.Version] '16.0.1116.38')
         }
     }
 
@@ -108,6 +123,11 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.EnableErrorReporting | Should -Be 1
             $result.VirtualRootServer | Should -Be 'ReportServer'
             $result.ConfigFilePath | Should -Be 'C:\Program Files\PBIRS\PBIRS\ReportServer\rsreportserver.config'
+            $result.InstanceId | Should -Be 'SSRS'
+            $result.EditionID | Should -Be 2017617798
+            $result.EditionName | Should -Be 'Power BI Report Server - Developer'
+            $result.IsSharePointIntegrated | Should -BeFalse
+            [System.Version] $result.MSReportServerInstanceVersion | Should -BeGreaterOrEqual ([System.Version] '15.0.1117.98')
         }
     }
 
