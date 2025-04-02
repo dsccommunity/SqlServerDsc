@@ -264,6 +264,8 @@ stages:
               )
             name: test
             displayName: 'Run Integration Test'
+            env:
+              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
@@ -345,6 +347,8 @@ stages:
               )
             name: test
             displayName: 'Run Integration Test'
+            env:
+              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
@@ -411,6 +415,8 @@ stages:
               )
             name: test
             displayName: 'Run Integration Test'
+            env:
+              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
@@ -516,6 +522,8 @@ stages:
               )
             name: test
             displayName: 'Run Integration Test'
+            env:
+              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
@@ -544,8 +552,6 @@ stages:
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2022'
-        variables:
-          TEST_CONFIGURATION: $(TEST_CONFIGURATION)
         pool:
           vmImage: $(JOB_VMIMAGE)
         timeoutInMinutes: 0
@@ -611,6 +617,8 @@ stages:
               )
             name: test
             displayName: 'Run Integration Test'
+            env:
+              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
@@ -659,7 +667,6 @@ stages:
           SKIP_ANALYSIS_MULTI_INSTANCE: true
           SKIP_ANALYSIS_TABULAR_INSTANCE: true
           SMODefaultModuleName: 'SqlServer'
-          TEST_CONFIGURATION: $(TEST_CONFIGURATION)
         pool:
           vmImage: $(JOB_VMIMAGE)
         timeoutInMinutes: 0
@@ -695,6 +702,8 @@ stages:
               )
             name: test
             displayName: 'Run Reporting Services Integration Test'
+            env:
+              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
@@ -728,7 +737,6 @@ stages:
           SKIP_ANALYSIS_MULTI_INSTANCE: true
           SKIP_ANALYSIS_TABULAR_INSTANCE: true
           SMODefaultModuleName: 'dbatools'
-          TEST_CONFIGURATION: $(TEST_CONFIGURATION)
         pool:
           vmImage: $(JOB_VMIMAGE)
         timeoutInMinutes: 0
@@ -758,6 +766,8 @@ stages:
               )
             name: test
             displayName: 'Run Reporting Services Integration Test'
+            env:
+              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
