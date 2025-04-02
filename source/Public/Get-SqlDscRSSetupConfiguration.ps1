@@ -49,6 +49,12 @@
         - CurrentVersion: The current version from registry.
         - VirtualRootServer: The virtual root server value.
         - ConfigFilePath: The path to the report server configuration file.
+        - EditionID: The edition ID of the Reporting Services instance.
+        - EditionName: The edition name of the Reporting Services instance.
+        - IsSharePointIntegrated: Whether the instance is SharePoint integrated.
+        - MSReportServerInstanceVersion: The version from the CIM instance class
+          MSReportServer_Instance.
+        - InstanceId: The instance ID of the Reporting Services instance.
 #>
 function Get-SqlDscRSSetupConfiguration
 {
