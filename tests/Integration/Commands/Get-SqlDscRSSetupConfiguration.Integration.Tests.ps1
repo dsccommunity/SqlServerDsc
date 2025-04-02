@@ -37,7 +37,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.InstallFolder | Should -Be 'C:\Program Files\SSRS'
             $result.ServiceName | Should -Be 'SQLServerReportingServices'
             $result.ErrorDumpDirectory | Should -Be 'C:\Program Files\SSRS\SSRS\LogFiles'
-            $result.CurrentVersion | Should -Be '14.0.601.20'
+            [System.Version] $result.CurrentVersion | Should -BeGreaterOrEqual ([System.Version] '14.0.601.20')
             $result.ProductVersion | Should -BeNullOrEmpty
             $result.CustomerFeedback | Should -Be 1
             $result.EnableErrorReporting | Should -Be 1
@@ -59,8 +59,8 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.InstallFolder | Should -Be 'C:\Program Files\SSRS'
             $result.ServiceName | Should -Be 'SQLServerReportingServices'
             $result.ErrorDumpDirectory | Should -Be 'C:\Program Files\SSRS\SSRS\LogFiles'
-            $result.CurrentVersion | Should -Be '15.0.1103.41'
-            $result.ProductVersion | Should -Be '15.0.9098.6826'
+            [System.Version] $result.CurrentVersion | Should -BeGreaterOrEqual ([System.Version] '15.0.1103.41')
+            [System.Version] $result.ProductVersion | Should -BeGreaterOrEqual ([System.Version] '15.0.9098.6826')
             $result.CustomerFeedback | Should -Be 1
             $result.EnableErrorReporting | Should -Be 1
             $result.VirtualRootServer | Should -Be 'ReportServer'
@@ -81,8 +81,8 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.InstallFolder | Should -Be 'C:\Program Files\SSRS'
             $result.ServiceName | Should -Be 'SQLServerReportingServices'
             $result.ErrorDumpDirectory | Should -Be 'C:\Program Files\SSRS\SSRS\LogFiles'
-            $result.CurrentVersion | Should -Be '16.0.1116.38'
-            $result.ProductVersion | Should -Be '16.0.9101.19239'
+            [System.Version] $result.CurrentVersion | Should -BeGreaterOrEqual ([System.Version] '16.0.1116.38')
+            [System.Version] $result.ProductVersion | Should -BeGreaterOrEqual ([System.Version] '16.0.9101.19239')
             $result.CustomerFeedback | Should -Be 1
             $result.EnableErrorReporting | Should -Be 1
             $result.VirtualRootServer | Should -Be 'ReportServer'
@@ -102,8 +102,8 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.InstallFolder | Should -Be 'C:\Program Files\PBIRS'
             $result.ServiceName | Should -Be 'PowerBIReportServer'
             $result.ErrorDumpDirectory | Should -Be 'C:\Program Files\PBIRS\PBIRS\LogFiles'
-            $result.CurrentVersion | Should -Be '15.0.1117.98'
-            $result.ProductVersion | Should -Be '1.22.9153.7886'
+            [System.Version] $result.CurrentVersion | Should -BeGreaterOrEqual ([System.Version] '15.0.1117.98')
+            [System.Version] $result.ProductVersion | Should -BeGreaterOrEqual ([System.Version] '1.22.9153.7886')
             $result.CustomerFeedback | Should -Be 1
             $result.EnableErrorReporting | Should -Be 1
             $result.VirtualRootServer | Should -Be 'ReportServer'

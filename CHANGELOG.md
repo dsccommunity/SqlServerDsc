@@ -4,6 +4,7 @@ The format is based on and uses the types of changes according to [Keep a Change
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
 ### Removed
 
 - SqlServerDsc.Common
@@ -58,6 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix style formatting in all PowerShell script files.
   - Update module description on GitHub, in the conceptual help, and in
     the module manifest.
+  - Now integration tests will fail on an exception when the command `Test-DscConfiguration`
+    is run.
   - Added Test-SqlDscIsRole to be used like Test-SqlDscIsLogin but tests for a server role as principal.
 - SqlSetup
   - Fixed issue with AddNode where cluster IP information was not being passed to
@@ -92,6 +95,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Change the alias command to real command name, to pass HQRM tests.
 - `SqlServiceAccount`
   - Change the alias command to real command name, to pass HQRM tests.
+- `Get-SqlDscRSSetupConfiguration`
+  - The integration test was updated to verify so that the `CurrentVersion`
+    and `ProductVersion` strings can be converted to valid versions and
+    that they always are higher than what we expect.
 
 ## [17.0.0] - 2024-09-30
 
