@@ -110,9 +110,6 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             # Get the PBIRS configuration
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'PBIRS'
 
-            # TODO: Remove this line when debug is no longer necessary
-            Write-Verbose -Message ($result | Out-String) -Verbose
-
             # Verify the result
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'PBIRS'
@@ -126,7 +123,7 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.VirtualRootServer | Should -Be 'ReportServer'
             $result.ConfigFilePath | Should -Be 'C:\Program Files\PBIRS\PBIRS\ReportServer\rsreportserver.config'
             $result.InstanceId | Should -Be 'PBIRS'
-            $result.EditionID | Should -Be 1369084056
+            $result.EditionID | Should -Be 2017617798
             $result.EditionName | Should -Be 'Power BI Report Server - Developer'
             $result.IsSharePointIntegrated | Should -BeFalse
         }

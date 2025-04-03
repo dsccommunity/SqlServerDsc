@@ -42,7 +42,7 @@ Describe 'Install-SqlDscBIReportServer' -Tag @('Integration_PowerBI') {
                     AcceptLicensingTerms = $true
                     MediaPath            = $powerBIReportServerExecutable
                     InstallFolder        = 'C:\Program Files\PBIRS'
-                    Edition              = 'Evaluation'
+                    Edition              = 'Developer'
                     LogPath              = Join-Path -Path $script:temporaryFolder -ChildPath 'PowerBIReportServer_Install.log'
                     SuppressRestart      = $true
                     Verbose              = $true
