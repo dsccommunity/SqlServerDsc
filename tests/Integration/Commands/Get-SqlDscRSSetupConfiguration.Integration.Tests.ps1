@@ -31,6 +31,9 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             # Get the SSRS configuration
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS'
 
+            Write-Verbose -Message 'INTEG TEST DEBUG1' -Verbose
+            Write-Verbose -Message ($result | Out-String) -Verbose
+
             # Verify the result
             $result | Should -Not -BeNullOrEmpty
             $result.InstanceName | Should -Be 'SSRS'
@@ -47,7 +50,9 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.EditionID | Should -Be 2176971986
             $result.EditionName | Should -Be 'SQL Server Developer'
             $result.IsSharePointIntegrated | Should -BeFalse
+            Write-Verbose -Message 'INTEG TEST DEBUG2' -Verbose
             [System.Version] $result.MSReportServerInstanceVersion | Should -BeGreaterOrEqual ([System.Version] '14.0.601.20')
+            Write-Verbose -Message 'INTEG TEST DEBUG3' -Verbose
         }
     }
 
@@ -57,6 +62,9 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
 
             # Get the SSRS configuration
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'SSRS'
+
+            Write-Verbose -Message 'INTEG TEST DEBUG1' -Verbose
+            Write-Verbose -Message ($result | Out-String) -Verbose
 
             # Verify the result
             $result | Should -Not -BeNullOrEmpty
@@ -74,7 +82,9 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.EditionID | Should -Be 2176971986
             $result.EditionName | Should -Be 'SQL Server Developer'
             $result.IsSharePointIntegrated | Should -BeFalse
+            Write-Verbose -Message 'INTEG TEST DEBUG2' -Verbose
             [System.Version] $result.MSReportServerInstanceVersion | Should -BeGreaterOrEqual ([System.Version] '15.0.1103.41')
+            Write-Verbose -Message 'INTEG TEST DEBUG3' -Verbose
         }
     }
 
