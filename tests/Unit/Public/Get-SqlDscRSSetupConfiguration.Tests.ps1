@@ -204,7 +204,6 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
                     EditionID = 2176971986
                     EditionName = 'SQL Server Developer'
                     IsSharePointIntegrated = $false
-                    Version = '15.0.1.0'
                     InstanceId = 'SSRS'
                 }
             }
@@ -229,7 +228,6 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result[0].EditionID | Should -Be 2176971986
             $result[0].EditionName | Should -Be 'SQL Server Developer'
             $result[0].IsSharePointIntegrated | Should -BeFalse
-            $result[0].MSReportServerInstanceVersion | Should -Be '15.0.1.0'
             $result[0].InstanceId | Should -Be 'SSRS'
 
             $result[1].InstanceName | Should -Be $mockPBIRSInstance.InstanceName
@@ -245,7 +243,6 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result[0].EditionID | Should -Be 2176971986
             $result[0].EditionName | Should -Be 'SQL Server Developer'
             $result[0].IsSharePointIntegrated | Should -BeFalse
-            $result[0].MSReportServerInstanceVersion | Should -Be '15.0.1.0'
             $result[0].InstanceId | Should -Be 'SSRS'
 
             Should -Invoke -CommandName Get-SqlDscInstalledInstance -ParameterFilter {

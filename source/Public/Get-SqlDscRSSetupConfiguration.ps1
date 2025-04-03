@@ -52,7 +52,6 @@
         - EditionID: The edition ID of the Reporting Services instance.
         - EditionName: The edition name of the Reporting Services instance.
         - IsSharePointIntegrated: Whether the instance is SharePoint integrated.
-        - MSReportServerInstanceVersion: The version from the CIM instance class
           MSReportServer_Instance.
         - InstanceId: The instance ID of the Reporting Services instance.
 #>
@@ -106,7 +105,6 @@ function Get-SqlDscRSSetupConfiguration
             EditionID                     = $null
             EditionName                   = $null
             IsSharePointIntegrated        = $null
-            MSReportServerInstanceVersion = $null
             InstanceId                    = $null
         }
 
@@ -163,28 +161,19 @@ function Get-SqlDscRSSetupConfiguration
 
         if (-not [System.String]::IsNullOrEmpty($returnObject.CurrentVersion))
         {
-            Write-Verbose -Message 'DEBUG1' -Verbose
             $reportServerCurrentVersion = [System.Version] $returnObject.CurrentVersion
-            Write-Verbose -Message 'DEBUG2' -Verbose
 
             # Get values from MSReportServer_Instance
             $msReportServerInstance = Get-CimInstance -Namespace ('root\Microsoft\SqlServer\ReportServer\RS_{0}\v{1}' -f $instance.InstanceName, $reportServerCurrentVersion.Major) -ClassName 'MSReportServer_Instance' -ErrorAction 'SilentlyContinue'
 
-            Write-Verbose -Message ($msReportServerInstance | Out-String) -Verbose
-
             if ($msReportServerInstance)
             {
-                Write-Verbose -Message 'DEBUG3' -Verbose
                 $returnObject.EditionID = $msReportServerInstance.EditionID
                 $returnObject.EditionName = $msReportServerInstance.EditionName
                 $returnObject.IsSharePointIntegrated = $msReportServerInstance.IsSharePointIntegrated
-                $returnObject.MSReportServerInstanceVersion = $msReportServerInstance.Version
                 $returnObject.InstanceId = $msReportServerInstance.InstanceId
-                Write-Verbose -Message 'DEBUG4' -Verbose
             }
         }
-
-        Write-Verbose -Message ($returnObject | Out-String) -Verbose
 
         $reportingServicesInstances += $returnObject
     }
