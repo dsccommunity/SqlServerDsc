@@ -49,6 +49,7 @@ class DSC_SqlSetup : OMI_BaseResource
     [Write, Description("The server mode for _SQL Server Analysis Services_ instance. The default is to install in Multidimensional mode. Valid values in a cluster scenario are `'MULTIDIMENSIONAL'` or `'TABULAR'`. Parameter **ASServerMode** is case-sensitive. **All values must be expressed in upper case**."), ValueMap{"MULTIDIMENSIONAL", "TABULAR", "POWERPIVOT"}, Values{"MULTIDIMENSIONAL", "TABULAR", "POWERPIVOT"}] String ASServerMode;
     [Write, EmbeddedInstance("MSFT_Credential"), Description("Service account for _Integration Services_'s _Windows_ service.")] String ISSvcAccount;
     [Read, Description("Returns the username for the _Integration Services_'s _Windows_ service.")] String ISSvcAccountUsername;
+    [Read, Description("The minor version of the Sql server. for example in sql server 2022 cu2 iw will be 4015")] String SqlMinorVersion;
     [Write, Description("Specifies the startup mode for the _SQL Server Database Engine_'s _Windows_ service."), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String SqlSvcStartupType;
     [Write, Description("Specifies the startup mode for the _SQL Server Agent_'s _Windows_ service."), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String AgtSvcStartupType;
     [Write, Description("Specifies the startup mode for the _SQL Server Integration Services_'s _Windows_ service."), ValueMap{"Automatic", "Disabled", "Manual"}, Values{"Automatic", "Disabled", "Manual"}] String IsSvcStartupType;
