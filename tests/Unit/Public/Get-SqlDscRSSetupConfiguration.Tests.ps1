@@ -47,6 +47,38 @@ AfterAll {
 }
 
 Describe 'Get-SqlDscRSSetupConfiguration' {
+    BeforeAll {
+        InModuleScope -ScriptBlock {
+            function script:Get-CimInstance
+            {
+                param
+                (
+                    [System.String]
+                    $ClassName,
+
+                    [System.String]
+                    $Namespace
+                )
+
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        'StubNotImplemented',
+                        'StubCalledError',
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        $MyInvocation.MyCommand
+                    )
+                )
+
+            }
+        }
+    }
+
+    AfterAll {
+        InModuleScope -ScriptBlock {
+            Remove-Item -Path 'function:script:Get-CimInstance' -Force
+        }
+    }
+
     Context 'When getting all Reporting Services instances' {
         # cSpell: ignore PBIRS rsreportserver
         BeforeAll {
@@ -166,6 +198,15 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             } -MockWith {
                 return $mockProductVersion
             }
+
+            Mock -CommandName Get-CimInstance -MockWith {
+                return [PSCustomObject] @{
+                    EditionID = 2176971986
+                    EditionName = 'SQL Server Developer'
+                    IsSharePointIntegrated = $false
+                    InstanceId = 'SSRS'
+                }
+            }
         }
 
         It 'Should return all Reporting Services instances' {
@@ -184,6 +225,10 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result[0].EnableErrorReporting | Should -Be $mockEnableErrorReporting
             $result[0].CurrentVersion | Should -Be $mockCurrentVersion
             $result[0].ProductVersion | Should -Be $mockProductVersion
+            $result[0].EditionID | Should -Be 2176971986
+            $result[0].EditionName | Should -Be 'SQL Server Developer'
+            $result[0].IsSharePointIntegrated | Should -BeFalse
+            $result[0].InstanceId | Should -Be 'SSRS'
 
             $result[1].InstanceName | Should -Be $mockPBIRSInstance.InstanceName
             $result[1].InstallFolder | Should -Be $mockInstallFolder
@@ -195,6 +240,10 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result[1].EnableErrorReporting | Should -Be $mockEnableErrorReporting
             $result[1].CurrentVersion | Should -Be $mockCurrentVersion
             $result[1].ProductVersion | Should -Be $mockProductVersion
+            $result[0].EditionID | Should -Be 2176971986
+            $result[0].EditionName | Should -Be 'SQL Server Developer'
+            $result[0].IsSharePointIntegrated | Should -BeFalse
+            $result[0].InstanceId | Should -Be 'SSRS'
 
             Should -Invoke -CommandName Get-SqlDscInstalledInstance -ParameterFilter {
                 $ServiceType -eq 'ReportingServices' -and
@@ -211,17 +260,32 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $mockSSRSInstance = @{
                 InstanceName = 'SSRS'
                 ServiceName = 'ReportServer'
+                CurrentVersion = '15.0.1.0'
             }
 
             # Mock registry values
-            $mockInstallFolder = 'C:\Program Files\Microsoft SQL Server Reporting Services'
+            #$mockInstallFolder = 'C:\Program Files\Microsoft SQL Server Reporting Services'
 
             Mock -CommandName Get-SqlDscInstalledInstance -MockWith {
                 return @($mockSSRSInstance)
             }
 
-            Mock -CommandName Get-RegistryPropertyValue -MockWith {
-                return $mockInstallFolder
+            Mock -CommandName Get-RegistryPropertyValue
+            Mock -CommandName Get-RegistryPropertyValue -ParameterFilter {
+                $Path -eq 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\SSRS\MSSQLServer\CurrentVersion' -and
+                $Name -eq 'CurrentVersion'
+            } -MockWith {
+                return '15.0.1.0'
+            }
+
+            Mock -CommandName Get-CimInstance -MockWith {
+                return [PSCustomObject] @{
+                    EditionID = 2176971986
+                    EditionName = 'SQL Server Developer'
+                    IsSharePointIntegrated = $false
+                    Version = '15.0.1.0'
+                    InstanceId = 'SSRS'
+                }
             }
         }
 
