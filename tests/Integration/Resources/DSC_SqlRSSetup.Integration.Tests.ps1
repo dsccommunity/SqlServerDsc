@@ -216,7 +216,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
                 ## Uncomment this line to see the registry key values.
                 #Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
 
-                $resourceCurrentState.ProductVersion | Should -BeGreaterThan ([System.Version] '15.0.0.0')
+                $resourceCurrentState.ProductVersion | Should -BeGreaterThan ([System.Version] '1.22.9153.7886')
             }
         }
 
