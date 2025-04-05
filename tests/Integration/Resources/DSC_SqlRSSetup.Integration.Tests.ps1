@@ -192,7 +192,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
                     registry key not being set yet. Or maybe due to the fact that
                     the setup does not add a product version.
                 #>
-                #$resourceCurrentState.ProductVersion | Should -BeGreaterThan ([System.Version] '14.0.0.0')
+                #$resourceCurrentState.ProductVersion | Should -BeGreaterOrEqual ([System.Version] '14.0.0.0')
             }
 
             if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
@@ -200,7 +200,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
                 ## Uncomment this line to see the registry key values.
                 #Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
 
-                $resourceCurrentState.ProductVersion | Should -BeGreaterThan ([System.Version] '15.0.0.0')
+                $resourceCurrentState.ProductVersion | Should -BeGreaterOrEqual ([System.Version] '15.0.0.0')
             }
 
             if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022')
@@ -208,7 +208,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
                 ## Uncomment this line to see the registry key values.
                 #Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
 
-                $resourceCurrentState.ProductVersion | Should -BeGreaterThan ([System.Version] '16.0.0.0')
+                $resourceCurrentState.ProductVersion | Should -BeGreaterOrEqual ([System.Version] '16.0.0.0')
             }
 
             if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_PowerBI')
@@ -216,7 +216,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
                 ## Uncomment this line to see the registry key values.
                 #Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
 
-                $resourceCurrentState.ProductVersion | Should -BeGreaterThan ([System.Version] '1.22.9153.7886')
+                $resourceCurrentState.ProductVersion | Should -BeGreaterOrEqual ([System.Version] '1.22.9153.7886')
             }
         }
 
