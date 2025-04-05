@@ -261,8 +261,6 @@ stages:
               )
             name: test
             displayName: 'Run Integration Test'
-            env:
-              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
@@ -338,8 +336,6 @@ stages:
               )
             name: test
             displayName: 'Run Integration Test'
-            env:
-              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
@@ -403,8 +399,6 @@ stages:
               )
             name: test
             displayName: 'Run Integration Test'
-            env:
-              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
@@ -507,8 +501,6 @@ stages:
               )
             name: test
             displayName: 'Run Integration Test'
-            env:
-              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
@@ -602,8 +594,6 @@ stages:
               )
             name: test
             displayName: 'Run Integration Test'
-            env:
-              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
@@ -684,8 +674,6 @@ stages:
               )
             name: test
             displayName: 'Run Reporting Services Integration Test'
-            env:
-              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
@@ -748,8 +736,6 @@ stages:
               )
             name: test
             displayName: 'Run Reporting Services Integration Test'
-            env:
-              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
@@ -812,8 +798,6 @@ stages:
               )
             name: test
             displayName: 'Run Reporting Services Integration Test'
-            env:
-              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
           - task: PublishTestResults@2
             displayName: 'Publish Test Results'
             condition: succeededOrFailed()
