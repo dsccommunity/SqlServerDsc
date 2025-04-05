@@ -80,6 +80,13 @@ BeforeAll {
             $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/8/3/2/832616ff-af64-42b5-a0b1-5eb07f71dec9/SQLServerReportingServices.exe'
         }
 
+        if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_PowerBI')
+        {
+            # https://sqlserverbuilds.blogspot.com/2021/04/power-bi-report-server-versions.html
+            $script:mockSourceMediaDisplayName = 'Power BI Report Server 15.0.1117.98 - 2025-01-22'
+            $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/2/7/3/2739a88a-4769-4700-8748-1a01ddf60974/PowerBIReportServer.exe'
+        }
+
         Write-Verbose -Message ('Start downloading the {1} executable at {0}.' -f (Get-Date -Format 'yyyy-MM-dd hh:mm:ss'), $script:mockSourceMediaDisplayName) -Verbose
 
         Invoke-WebRequest -Uri $script:mockSourceMediaUrl -OutFile $ConfigurationData.AllNodes.MediaPath
@@ -116,7 +123,7 @@ AfterAll {
     Older versions of Reporting Services (eg. 2016) are integration tested in
     separate tests (part of resource SqlSetup).
 #>
-Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') -Skip:($env:APPVEYOR) {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }

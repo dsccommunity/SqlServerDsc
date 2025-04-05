@@ -88,7 +88,7 @@ BeforeAll {
 
         The actual download URL can easiest be found in the browser download history.
     #>
-    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022')
+    if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022', 'Integration_PowerBI')
     {
         $script:sqlVersion = '160'
         $script:mockSourceDownloadExeUrl = 'https://download.microsoft.com/download/c/c/9/cc9c6797-383c-4b24-8920-dc057c1de9d3/SQL2022-SSEI-Dev.exe'
@@ -174,7 +174,7 @@ AfterAll {
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 }
 
-Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
