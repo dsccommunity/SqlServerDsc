@@ -8,15 +8,48 @@
         SQL Server Reporting Services (SSRS) or Power BI Report Server (PBIRS).
 
         The built-in parameter **PSDscRunAsCredential** can be used to run the resource
-        as another user. The resource will then install as that user.
+        as another user. The resource will then install as that user, otherwise
+        install as SYSTEM.
+
+        >[!TIP]
+        >To install Microsoft SQL Server Reporting Services 2016 (or older),
+        >please use the resource SqlSetup instead.
+
+        > [!IMPORTANT]
+        > When using the action 'Uninstall' and the target node to begin with
+        > requires a restart, on the first run the Microsoft SQL Server Reporting
+        > Services instance will not be uninstalled, but instead exits with code
+        > 3010 and the node will be, by default, restarted. On the second run after
+        > restart, the Microsoft SQL Server Reporting Services instance will be
+        > uninstalled. If the parameter SuppressRestart is used, then the node must
+        > be restarted manually before the Microsoft SQL Server Reporting Services
+        > instance will be successfully uninstalled.
+        >
+        > The Microsoft SQL Server Reporting Services log will indicate that a
+        > restart is required by outputting; "*No action was taken as a system
+        > reboot is required (0x8007015E)*". The log is default located in the
+        > SSRS folder in `%TEMP%`, e.g. `C:\Users\<user>\AppData\Local\Temp\SSRS`.
+
 
         ## Requirements
 
         * Target machine must be running Windows Server 2012 or later.
         * Target machine must have access to the SQL Server Reporting Services or
           Power BI Report Server installation media.
+        * SYSTEM account or the users passed in the credentials for the `PsDscRunAsCredential`
+          common parameter must have permissions to connect to the location
+          where the _Microsoft SQL Server Reporting Services_ or _Microsoft Power_
+          _BI Report Server_ media is placed.
+        * The parameter `AcceptLicensingTerms` must be set to `$true`.
+        * The parameter `InstanceName` can only be set to `SSRS` or `PBIRS` since there
+          is no way to change the instance name.
 
         ## Known issues
+
+        * When using action 'Uninstall', the same version of the executable as the
+          version of the installed product must be used. If not, sometimes the uninstall
+          is successful (because the executable returns exit code 0) but the instance
+          was not actually removed.
 
         All issues are not listed here, see [here for all open issues](https://github.com/dsccommunity/SqlServerDsc/issues?q=is%3Aissue+is%3Aopen+in%3Atitle+SqlRSSetup).
 
