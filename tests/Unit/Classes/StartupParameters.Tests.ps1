@@ -1,3 +1,8 @@
+<#
+    .SYNOPSIS
+        Unit test for StartupParameter class.
+#>
+
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 param ()
 

@@ -1,7 +1,8 @@
 # Specific instructions for the PowerShell module project SqlServerDsc
 
-Assume that the word "command" references to a public command, and the word
-"function" references to a private function.
+Assume that the word "command" references to a public command, the word
+"function" references to a private function, and the word "resource"
+references a Desired State Configuration (DSC) class-based resource.
 
 PowerShell commands that should be public should always have its separate
 script file and the the command name as the file name with the .ps1 extension,
@@ -23,12 +24,22 @@ all possible parameter sets and different parameter combinations.
 
 All message strings for Write-Debug, Write-Verbose, Write-Error, Write-Warning
 and other error messages in public commands and private functions should be
-localized using localized string keys. You should always add all localized
-strings for public commands and private functions in the source/en-US/SqlServerDsc.strings.psd1
-file, re-use the same pattern for new string keys. Localized string key names
-should always be prefixed with the function name but use underscore as word
-separator. Always assume that all localized string keys have already been
-assigned to the variable $script:localizedData.
+localized using localized string keys.
+
+For public commands and private functions you should always add all localized
+strings for in the source/en-US/SqlServerDsc.strings.psd1 file, re-use the
+same pattern for new string keys. Localized string key names should always
+be prefixed with the function name but use underscore as word separator.
+Always assume that all localized string keys have already been assigned to
+the variable $script:localizedData.
+
+For class-based resource you should always add a localized strings in a
+separate file the folder source\en-US. The strings file for For class-based
+resource should be named using the resource's name and suffixed with `.strings.psd1`.
+Localized string key names should always never be prefixed with anything but
+use underscore as word separator. Always assume that all localized string
+keys for a class-based resource already have been assigned to the variable
+`$this.localizedData`.
 
 All tests should use the Pester framework and use Pester v5.0 syntax.
 

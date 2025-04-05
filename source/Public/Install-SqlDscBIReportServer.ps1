@@ -52,6 +52,13 @@
         If specified the command will not ask for confirmation. Same as if Confirm:$false
         is used.
 
+    .PARAMETER PassThru
+        If specified the command will return the setup process exit code.
+
+    .OUTPUTS
+        When PassThru is specified the function will return the setup process exit
+        code as System.Int32. Otherwise, the function does not generate any output.
+
     .EXAMPLE
         Install-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe'
 
@@ -71,12 +78,17 @@
         Install-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -ProductKey '12345-12345-12345-12345-12345' -EditionUpgrade -LogPath 'C:\Logs\PowerBIReportServer_Install.log'
 
         Installs Power BI Report Server and upgrades the edition using a product key. Also specifies a custom log path.
+
+    .EXAMPLE
+        $exitCode = Install-SqlDscBIReportServer -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -PassThru
+
+        Installs Power BI Report Server with default settings and returns the setup exit code.
 #>
 function Install-SqlDscBIReportServer
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
-    [OutputType()]
+    [OutputType([System.Int32])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -118,8 +130,17 @@ function Install-SqlDscBIReportServer
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $Force
+        $Force,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $PassThru
     )
 
-    Invoke-ReportServerSetupAction -Install @PSBoundParameters
+    $exitCode = Invoke-ReportServerSetupAction -Install @PSBoundParameters
+
+    if ($PassThru.IsPresent)
+    {
+        return $exitCode
+    }
 }
