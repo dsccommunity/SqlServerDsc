@@ -103,9 +103,18 @@ Configuration DSC_SqlRSSetup_StopReportingServicesInstance_Config
 {
     Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion '9.1.0'
 
+    $serviceConfigName = if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_PowerBI')
+    {
+        'StopPowerBIReportServerInstance'
+    }
+    else
+    {
+        'StopReportingServicesInstance'
+    }
+
     node $AllNodes.NodeName
     {
-        xService 'StopReportingServicesInstance'
+        xService $serviceConfigName
         {
             Name  = if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_PowerBI')
             {
