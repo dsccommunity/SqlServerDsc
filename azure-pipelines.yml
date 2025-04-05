@@ -356,10 +356,10 @@ stages:
         displayName: 'Commands'
         strategy:
           matrix:
-            SQL2022_WIN2019:
+            PowerBI_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_PowerBI'
-            SQL2022_WIN2022:
+            PowerBI_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_PowerBI'
         pool:
@@ -644,6 +644,70 @@ stages:
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2022'
+        variables:
+          SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
+          SKIP_ANALYSIS_MULTI_INSTANCE: true
+          SKIP_ANALYSIS_TABULAR_INSTANCE: true
+          SMODefaultModuleName: 'SqlServer'
+        pool:
+          vmImage: $(JOB_VMIMAGE)
+        timeoutInMinutes: 0
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Configure WinRM'
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
+          - powershell: |
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+              Remove-Module -Name CommonTestHelper
+            name: cleanCIWorker
+            displayName: 'Clean CI worker'
+          - powershell: |
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
+                  # Run the integration tests in a specific group order.
+                  # Group 1
+                  'tests/Integration/Resources/DSC_SqlSetup.Integration.Tests.ps1'
+                  # Group 2
+                  'tests/Integration/Resources/DSC_SqlRSSetup.Integration.Tests.ps1'
+                  # Group 3
+                  'tests/Integration/Resources/DSC_SqlRS.Integration.Tests.ps1'
+              )
+            name: test
+            displayName: 'Run Reporting Services Integration Test'
+            env:
+              TEST_CONFIGURATION: $(TEST_CONFIGURATION)
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Integration RS ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
+
+  - stage: Integration_Test_Resources_PowerBIReportServer
+    displayName: 'Integration Test Resources - Power BI Report Server'
+    dependsOn: Quality_Test_and_Unit_Test
+    jobs:
+      - job: Test_Integration
+        displayName: 'Integration'
+        strategy:
+          matrix:
+              PowerBI_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_PowerBI'
+            PowerBI_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_PowerBI'
         variables:
           SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
           SKIP_ANALYSIS_MULTI_INSTANCE: true
