@@ -720,7 +720,7 @@ stages:
         displayName: 'Integration'
         strategy:
           matrix:
-              PowerBI_WIN2019:
+            PowerBI_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_PowerBI'
             PowerBI_WIN2022:
