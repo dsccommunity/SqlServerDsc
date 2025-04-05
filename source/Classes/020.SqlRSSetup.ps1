@@ -346,7 +346,7 @@ class SqlRSSetup : ResourceBase
     hidden [System.Collections.Hashtable] GetCurrentState([System.Collections.Hashtable] $properties)
     {
         Write-Verbose -Message (
-            $this.localizedData.Evaluating -f @(
+            $this.localizedData.Getting_Information_Instance -f @(
                 $properties.InstanceName
             )
         )

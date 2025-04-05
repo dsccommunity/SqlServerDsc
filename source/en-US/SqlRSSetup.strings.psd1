@@ -10,7 +10,7 @@ ConvertFrom-StringData @'
     # None
 
     ## Strings directly used by the derived class SqlRSSetup.
-    Evaluating = Evaluating SQL Reporting Services setup for instance '{0}'.
+    Getting_Information_Instance = Getting information about instance '{0}'.
     Instance_NotInstalled = Instance '{0}' is not installed.
     Instance_Installed = Instance '{0}' is installed.
     AcceptLicensingTerms_Required = AcceptLicensingTerms must be set for Install and Repair operations.
