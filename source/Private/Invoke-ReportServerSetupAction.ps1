@@ -63,12 +63,16 @@
         If specified the command will not ask for confirmation. Same as if Confirm:$false
         is used.
 
+    .PARAMETER PassThru
+        If specified the command will return the setup process exit code.
+
     .LINK
         https://learn.microsoft.com/en-us/power-bi/report-server/install-report-server
         https://learn.microsoft.com/en-us/sql/reporting-services/install-windows/install-reporting-services
 
     .OUTPUTS
-        None.
+        When PassThru is specified the function will return the setup process exit
+        code as System.Int32. Otherwise, the function does not generate any output.
 
     .EXAMPLE
         Invoke-ReportServerSetupAction -Install -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe'
@@ -99,11 +103,16 @@
         Invoke-ReportServerSetupAction -Uninstall -MediaPath 'E:\SQLServerReportingServices.exe' -Force
 
         Uninstalls SQL Server Reporting Services without prompting for confirmation.
+
+    .EXAMPLE
+        $exitCode = Invoke-ReportServerSetupAction -Install -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe' -PassThru
+
+        Installs SQL Server Reporting Services and returns the setup process exit code.
 #>
 function Invoke-ReportServerSetupAction
 {
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
-    [OutputType()]
+    [OutputType([System.Int32])]
     param
     (
         [Parameter(ParameterSetName = 'Install', Mandatory = $true)]
@@ -180,7 +189,11 @@ function Invoke-ReportServerSetupAction
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $Force
+        $Force,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $PassThru
     )
 
     if ($Force.IsPresent -and -not $Confirm)
@@ -327,6 +340,11 @@ function Invoke-ReportServerSetupAction
             Write-Verbose -Message (
                 '{0} {1}' -f $setupExitMessage, ($script:localizedData.SetupAction_SetupSuccessful)
             )
+        }
+
+        if ($PassThru.IsPresent)
+        {
+            return $processExitCode
         }
     }
 }

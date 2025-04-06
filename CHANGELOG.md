@@ -20,18 +20,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Add additional properties to `Get-SqlDscRSSetupConfiguration` output.
   - `Install-SqlDscReportingService` to install SQL Server Reporting Services
     ([issue #2010](https://github.com/dsccommunity/SqlServerDsc/issues/2010)).
+    - Add `PassThru` parameter to return exit code.
   - `Install-SqlDscBIReportServer` to install SQL Server BI Report Server.
     ([issue #2010](https://github.com/dsccommunity/SqlServerDsc/issues/2010)).
+    - Add `PassThru` parameter to return exit code.
   - `Repair-SqlDscReportingService` to repair an already installed SQL Server
     Reporting Services ([issue #2064](https://github.com/dsccommunity/SqlServerDsc/issues/2064)).
+    - Add `PassThru` parameter to return exit code.
   - `Repair-SqlDscBIReportServer` to repair an already installed SQL Server
     BI Report Server ([issue #2064](https://github.com/dsccommunity/SqlServerDsc/issues/2064)).
+    - Add `PassThru` parameter to return exit code.
   - `Test-SqlDscRSInstalled` to test whether an instance is installed or not
      ([issue #2078](https://github.com/dsccommunity/SqlServerDsc/issues/2078)).
   - `Uninstall-SqlDscReportingService` to uninstall SQL Server Reporting
     Services ([issue #2065](https://github.com/dsccommunity/SqlServerDsc/issues/2065)).
+    - Add `PassThru` parameter to return exit code.
   - `Uninstall-SqlDscBIReportServer` to uninstall SQL Server BI Report Server
     ([issue #2065](https://github.com/dsccommunity/SqlServerDsc/issues/2065)).
+    - Add `PassThru` parameter to return exit code.
 - Private function:
   - `Invoke-ReportServerSetupAction` to run setup actions for Reporting
     Services and Power BI Report Server.
