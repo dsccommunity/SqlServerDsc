@@ -73,6 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   PowerShell.
 - SqlServerDsc
   - Fix localization tests.
+  - Cleanup in unit tests for classes.
+  - Cleanup in localization string files.
 - `SqlAudit`
   - Fix localization strings in `Assert` method.
 - `Save-SqlDscSqlServerMediaFile`
