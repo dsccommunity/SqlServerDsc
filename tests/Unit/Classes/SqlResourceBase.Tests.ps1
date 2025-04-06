@@ -1,3 +1,8 @@
+<#
+    .SYNOPSIS
+        Unit test for SqlResourceBase class.
+#>
+
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 param ()
 
