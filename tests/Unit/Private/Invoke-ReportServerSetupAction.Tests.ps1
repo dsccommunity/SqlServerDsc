@@ -65,17 +65,17 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
         @{
             MockParameterSetName = 'Install'
             # cSpell: disable-next
-            MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> [-ProductKey <string>] [-EditionUpgrade] [-Edition <string>] [-LogPath <string>] [-InstallFolder <string>] [-SuppressRestart] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-Install -AcceptLicensingTerms -MediaPath <string> [-ProductKey <string>] [-EditionUpgrade] [-Edition <string>] [-LogPath <string>] [-InstallFolder <string>] [-SuppressRestart] [-Timeout <uint>] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'Uninstall'
             # cSpell: disable-next
-            MockExpectedParameters = '-Uninstall -MediaPath <string> [-LogPath <string>] [-SuppressRestart] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-Uninstall -MediaPath <string> [-LogPath <string>] [-SuppressRestart] [-Timeout <uint>] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'Repair'
             # cSpell: disable-next
-            MockExpectedParameters = '-Repair -AcceptLicensingTerms -MediaPath <string> [-ProductKey <string>] [-EditionUpgrade] [-Edition <string>] [-LogPath <string>] [-InstallFolder <string>] [-SuppressRestart] [-Timeout <uint>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-Repair -AcceptLicensingTerms -MediaPath <string> [-ProductKey <string>] [-EditionUpgrade] [-Edition <string>] [-LogPath <string>] [-InstallFolder <string>] [-SuppressRestart] [-Timeout <uint>] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         InModuleScope -Parameters $_ -ScriptBlock {
@@ -727,6 +727,35 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
                         # Return wether the correct command was called or not.
                         $correctMessage
                     } -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When using PassThru parameter' {
+            BeforeAll {
+                Mock -CommandName Start-SqlSetupProcess -MockWith {
+                    return 3010
+                } -RemoveParameterValidation 'FilePath'
+            }
+
+            It 'Should return the correct exit code' {
+                InModuleScope -Parameters $_ -ScriptBlock {
+                    $installSqlDscServerParameters = @{
+                        Repair = $true
+                        AcceptLicensingTerms = $true
+                        MediaPath = '\SqlMedia\setup.exe' # Added setup.exe to match the Test-Path mock
+                        Force = $true
+                        EditionUpgrade = $true
+                        ProductKey = '22222-00000-00000-00000-00000'
+                        PassThru = $true
+                    }
+
+                    $mockExitCode = Invoke-ReportServerSetupAction @installSqlDscServerParameters
+
+                    $mockExitCode | Should -Be 3010
+                    $mockExitCode | Should -BeOfType ([System.Int32])
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
                 }
             }
         }
