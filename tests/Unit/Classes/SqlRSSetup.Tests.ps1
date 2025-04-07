@@ -98,7 +98,6 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return [System.Collections.Hashtable] @{
                                 InstanceName   = 'SSRS'
-                                ProductVersion = '14.0.0'
                             }
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'AssertProperties' -Value {
@@ -127,7 +126,6 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                     $currentState.SuppressRestart | Should -BeFalse
                     $currentState.ForceRestart | Should -BeFalse
                     $currentState.VersionUpgrade | Should -BeNullOrEmpty
-                    $currentState.ProductVersion | Should -Be '14.0.0'
                 }
             }
         }
@@ -183,7 +181,6 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                     $currentState.SuppressRestart | Should -BeFalse
                     $currentState.ForceRestart | Should -BeFalse
                     $currentState.VersionUpgrade | Should -BeNullOrEmpty
-                    $currentState.ProductVersion | Should -BeNullOrEmpty
                 }
             }
         }
@@ -306,12 +303,6 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                         VersionUpgrade = $true
                         MediaPath      = $TestDrive
                     } |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                            return [System.Collections.Hashtable] @{
-                                InstanceName   = 'SSRS'
-                                ProductVersion = '9.9.99'
-                            }
-                        } -PassThru |
                         # Mock method Compare() which is called by the base method Set()
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                             return $null
@@ -326,6 +317,13 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
 
                 Mock -CommandName Get-FileProductVersion -MockWith {
                     return [System.Version] '9.9.99'
+                }
+
+                Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
+                    return [System.Collections.Hashtable] @{
+                        InstanceName   = 'SSRS'
+                        ProductVersion = '9.9.99'
+                    }
                 }
             }
 
@@ -442,12 +440,6 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
                         VersionUpgrade = $true
                         MediaPath      = $TestDrive
                     } |
-                        Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
-                            return [System.Collections.Hashtable] @{
-                                InstanceName   = 'SSRS'
-                                ProductVersion = '5.5.0'
-                            }
-                        } -PassThru |
                         # Mock method Compare() which is called by the base method Set()
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'Compare' -Value {
                             return $null
@@ -462,6 +454,13 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
 
                 Mock -CommandName Get-FileProductVersion -MockWith {
                     return [System.Version] '9.9.99'
+                }
+
+                Mock -CommandName Get-SqlDscRSSetupConfiguration -MockWith {
+                    return [System.Collections.Hashtable] @{
+                        InstanceName   = 'SSRS'
+                        ProductVersion = '5.5.0'
+                    }
                 }
             }
 
@@ -588,7 +587,6 @@ Describe 'SqlRSSetup\GetCurrentState()' -Tag 'GetCurrentState' {
                     [PSCustomObject] @{
                         InstanceName   = 'SSRS'
                         InstallFolder  = 'C:\Program Files\SSRS'
-                        ProductVersion = '15.0.2000.5'
                     }
                 )
             }
@@ -604,7 +602,6 @@ Describe 'SqlRSSetup\GetCurrentState()' -Tag 'GetCurrentState' {
                 )
 
                 $currentState.InstanceName | Should -Be 'SSRS'
-                $currentState.ProductVersion | Should -Be '15.0.2000.5'
                 $currentState.InstallFolder | Should -Be 'C:\Program Files\SSRS'
             }
         }
