@@ -63,6 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Uninstall-SqlDscBIReportServer` to uninstall SQL Server BI Report Server
     ([issue #2065](https://github.com/dsccommunity/SqlServerDsc/issues/2065)).
     - Add `PassThru` parameter to return exit code.
+  - `ConvertTo-SqlDscEditionName` to return the edition name of the specified
+    edition ID.
 - Private function:
   - `Get-FileProductVersion` to get the product version from a file.
   - `Invoke-ReportServerSetupAction` to run setup actions for Reporting
