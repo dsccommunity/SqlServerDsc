@@ -8,7 +8,7 @@
         ID. The command returns a PSCustomObject containing the EditionId, Edition,
         and EditionName based on a predefined mapping table.
 
-    .PARAMETER EditionId
+    .PARAMETER Id
         Specifies the edition ID that should be converted.
 
     .EXAMPLE
