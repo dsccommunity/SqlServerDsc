@@ -122,15 +122,7 @@
         is `7200` seconds (2 hours). If the setup process does not finish before
         this time, an exception will be thrown.
 
-    .PARAMETER ProductVersion
-        Returns the product version of the installed product. This property is not
-        configurable.
-
     .NOTES
-        The Get method will also return the ProductVersion property, which is not
-        configurable. This property is set to the product version of the installed
-        product.
-
         The property InstanceName is the key property for this resource. It does
         not use a ValidateSet or Enum due to a limitation. A ValidateSet() or Enum
         would not allow a `$null` value to be set for the property. Setting
@@ -226,10 +218,6 @@ class SqlRSSetup : ResourceBase
     [Nullable[System.UInt32]]
     $Timeout = 7200
 
-    [DscProperty(NotConfigurable)]
-    [System.String]
-    $ProductVersion
-
     SqlRSSetup () : base ($PSScriptRoot)
     {
         # These properties will not be enforced.
@@ -288,49 +276,75 @@ class SqlRSSetup : ResourceBase
             }
         }
 
-        $productVersionInDesiredState = $true
+        $inDesiredState = $true
 
         <#
             The product version is evaluated if action is Install, instance is
             installed and VersionUpgrade is set to $true.
         #>
-        if ($this.Action -eq 'Install' -and $baseTestResult -and $this.VersionUpgrade)
+        if ($this.Action -eq 'Install' -and $baseTestResult)
         {
-            $fileVersion = Get-FileProductVersion -Path $this.MediaPath -ErrorAction 'Stop'
-
-            if ($fileVersion)
+            if ($this.EditionUpgrade)
             {
-                $keyProperties = @{
-                    InstanceName = $this.InstanceName
-                }
+                $currentState = Get-SqlDscRSSetupConfiguration -InstanceName $this.InstanceName
 
-                $getTargetResourceResult = $this.GetCurrentState($keyProperties)
-
-                if ([System.String]::IsNullOrEmpty($getTargetResourceResult.ProductVersion))
+                if ([System.String]::IsNullOrEmpty($currentState.EditionId))
                 {
                     New-InvalidResultException -Message (
-                        $this.localizedData.CannotDetermineProductVersion -f $this.InstanceName
+                        $this.localizedData.CannotDetermineEdition -f $this.InstanceName
                     )
                 }
 
-                $installedVersion = [System.Version] $getTargetResourceResult.ProductVersion
+                $currentEdition = ConvertTo-SqlDscEditionName -Id $currentState.EditionId
 
-                if ($installedVersion -lt $fileVersion)
+                if ($currentEdition.Edition -ne $this.Edition)
                 {
-                    $productVersionInDesiredState = $false
+                    $inDesiredState = $false
 
                     Write-Verbose -Message (
-                        $this.localizedData.NotDesiredProductVersion -f @(
-                            $fileVersion.ToString(),
+                        $this.localizedData.NotDesiredEdition -f @(
+                            $currentEdition.Edition,
                             $this.InstanceName,
-                            $installedVersion.ToString()
+                            $this.Edition
                         )
                     )
                 }
             }
+
+            if ($this.VersionUpgrade)
+            {
+                $fileVersion = Get-FileProductVersion -Path $this.MediaPath -ErrorAction 'Stop'
+
+                if ($fileVersion)
+                {
+                    $currentState = Get-SqlDscRSSetupConfiguration -InstanceName $this.InstanceName
+
+                    if ([System.String]::IsNullOrEmpty($currentState.ProductVersion))
+                    {
+                        New-InvalidResultException -Message (
+                            $this.localizedData.CannotDetermineProductVersion -f $this.InstanceName
+                        )
+                    }
+
+                    $installedVersion = [System.Version] $currentState.ProductVersion
+
+                    if ($installedVersion -lt $fileVersion)
+                    {
+                        $inDesiredState = $false
+
+                        Write-Verbose -Message (
+                            $this.localizedData.NotDesiredProductVersion -f @(
+                                $fileVersion.ToString(),
+                                $this.InstanceName,
+                                $installedVersion.ToString()
+                            )
+                        )
+                    }
+                }
+            }
         }
 
-        return ($actionStateResult -and $productVersionInDesiredState)
+        return ($actionStateResult -and $inDesiredState)
     }
 
     [void] Set()
@@ -355,7 +369,6 @@ class SqlRSSetup : ResourceBase
             # This must be set to the correct valid value for base method Get() to work.
             InstanceName  = $null
             InstallFolder = $null
-            ProductVersion = $null
         }
 
         # Get the configuration if installed
@@ -370,11 +383,6 @@ class SqlRSSetup : ResourceBase
 
             $currentState.InstanceName = $rsConfiguration.InstanceName
             $currentState.InstallFolder = $rsConfiguration.InstallFolder
-
-            if (-not ([System.String]::IsNullOrEmpty($rsConfiguration.ProductVersion)))
-            {
-                $currentState.ProductVersion = $rsConfiguration.ProductVersion
-            }
         }
         else
         {
