@@ -68,7 +68,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the module manifest.
   - Now integration tests will fail on an exception when the command `Test-DscConfiguration`
     is run.
-  - Added Test-SqlDscIsRole to be used like Test-SqlDscIsLogin but tests for a server role as principal.
+  - Added Test-SqlDscIsRole to be used like Test-SqlDscIsLogin but tests
+    for a server role as principal.
+  - Refine and enhance clarity in Copilot instructions.
 - SqlSetup
   - Fixed issue with AddNode where cluster IP information was not being passed to
     setup.exe ([issue #1171](https://github.com/dsccommunity/SqlServerDsc/issues/1171)).
