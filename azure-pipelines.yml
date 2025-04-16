@@ -289,9 +289,9 @@ stages:
             # SQL2019_WIN2022:
             #   JOB_VMIMAGE: 'windows-2022'
             #   TEST_CONFIGURATION: 'Integration_SQL2019_RS'
-            SQL2022_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2022_RS'
+            # SQL2022_WIN2019:
+            #   JOB_VMIMAGE: 'windows-2019'
+            #   TEST_CONFIGURATION: 'Integration_SQL2022_RS'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2022_RS'
@@ -628,9 +628,9 @@ stages:
             # SQL2019_WIN2022:
             #   JOB_VMIMAGE: 'windows-2022'
             #   TEST_CONFIGURATION: 'Integration_SQL2019'
-            SQL2022_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2022'
+            # SQL2022_WIN2019:
+            #   JOB_VMIMAGE: 'windows-2019'
+            #   TEST_CONFIGURATION: 'Integration_SQL2022'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2022'
