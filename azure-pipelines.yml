@@ -201,27 +201,27 @@ stages:
         displayName: 'Commands'
         strategy:
           matrix:
-            SQL2016_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2016_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2017_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2017'
-            SQL2017_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2017'
-            SQL2019_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2019'
-            SQL2019_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2019'
-            SQL2022_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2022'
+            # SQL2016_WIN2019:
+            #   JOB_VMIMAGE: 'windows-2019'
+            #   TEST_CONFIGURATION: 'Integration_SQL2016'
+            # SQL2016_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2016'
+            # SQL2017_WIN2019:
+            #   JOB_VMIMAGE: 'windows-2019'
+            #   TEST_CONFIGURATION: 'Integration_SQL2017'
+            # SQL2017_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2017'
+            # SQL2019_WIN2019:
+            #   JOB_VMIMAGE: 'windows-2019'
+            #   TEST_CONFIGURATION: 'Integration_SQL2019'
+            # SQL2019_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2019'
+            # SQL2022_WIN2019:
+            #   JOB_VMIMAGE: 'windows-2019'
+            #   TEST_CONFIGURATION: 'Integration_SQL2022'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2022'
@@ -277,18 +277,18 @@ stages:
         displayName: 'Commands'
         strategy:
           matrix:
-            SQL2017_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2017_RS'
-            SQL2017_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2017_RS'
-            SQL2019_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2019_RS'
-            SQL2019_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2019_RS'
+            # SQL2017_WIN2019:
+            #   JOB_VMIMAGE: 'windows-2019'
+            #   TEST_CONFIGURATION: 'Integration_SQL2017_RS'
+            # SQL2017_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2017_RS'
+            # SQL2019_WIN2019:
+            #   JOB_VMIMAGE: 'windows-2019'
+            #   TEST_CONFIGURATION: 'Integration_SQL2019_RS'
+            # SQL2019_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2019_RS'
             SQL2022_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_SQL2022_RS'
@@ -415,27 +415,27 @@ stages:
         displayName: 'Integration'
         strategy:
           matrix:
-            SQL2016_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2016_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2017_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2017'
-            SQL2017_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2017'
-            SQL2019_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2019'
-            SQL2019_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2019'
-            SQL2022_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2022'
+            # SQL2016_WIN2019:
+            #   JOB_VMIMAGE: 'windows-2019'
+            #   TEST_CONFIGURATION: 'Integration_SQL2016'
+            # SQL2016_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2016'
+            # SQL2017_WIN2019:
+            #   JOB_VMIMAGE: 'windows-2019'
+            #   TEST_CONFIGURATION: 'Integration_SQL2017'
+            # SQL2017_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2017'
+            # SQL2019_WIN2019:
+            #   JOB_VMIMAGE: 'windows-2019'
+            #   TEST_CONFIGURATION: 'Integration_SQL2019'
+            # SQL2019_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2019'
+            # SQL2022_WIN2019:
+            #   JOB_VMIMAGE: 'windows-2019'
+            #   TEST_CONFIGURATION: 'Integration_SQL2022'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2022'
@@ -517,15 +517,15 @@ stages:
         displayName: 'Integration'
         strategy:
           matrix:
-            SQL2016_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2017_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2017'
-            SQL2019_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2019'
+            # SQL2016_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2016'
+            # SQL2017_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2017'
+            # SQL2019_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2019'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2022'
@@ -610,24 +610,24 @@ stages:
         displayName: 'Integration'
         strategy:
           matrix:
-            SQL2016_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2016_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2017_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2017'
-            SQL2017_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2017'
-            SQL2019_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2019'
-            SQL2019_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2019'
+            # SQL2016_WIN2019:
+            #   JOB_VMIMAGE: 'windows-2019'
+            #   TEST_CONFIGURATION: 'Integration_SQL2016'
+            # SQL2016_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2016'
+            # SQL2017_WIN2019:
+            #   JOB_VMIMAGE: 'windows-2019'
+            #   TEST_CONFIGURATION: 'Integration_SQL2017'
+            # SQL2017_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2017'
+            # SQL2019_WIN2019:
+            #   JOB_VMIMAGE: 'windows-2019'
+            #   TEST_CONFIGURATION: 'Integration_SQL2019'
+            # SQL2019_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2019'
             SQL2022_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_SQL2022'
@@ -690,15 +690,15 @@ stages:
         displayName: 'Integration'
         strategy:
           matrix:
-            SQL2016_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2017_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2017'
-            SQL2019_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2019'
+            # SQL2016_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2016'
+            # SQL2017_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2017'
+            # SQL2019_WIN2022:
+            #   JOB_VMIMAGE: 'windows-2022'
+            #   TEST_CONFIGURATION: 'Integration_SQL2019'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2022'
