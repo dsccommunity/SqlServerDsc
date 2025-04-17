@@ -2096,2377 +2096,2376 @@ Describe 'SqlSetup\Test-TargetResource' -Tag 'Test' {
     }
 }
 
-# Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
-#     BeforeAll {
-#         <#
-#             These mocks is meant to make sure the commands are actually mocked in a
-#             Context-block below.
-
-#             If these are not mocked it can slow down testing. If a Context-block
-#             does not mock a command, it will be tested against the default mock which
-#             will be these ones and they will throw an error reminding to create
-#             a mock.
-#         #>
-#         Mock -CommandName Get-TargetResource -MockWith {
-#             throw 'The command ''Get-TargetResource'' needs to be mocked in the Context-block'
-#         }
-
-#         Mock -CommandName Invoke-InstallationMediaCopy -MockWith {
-#             throw 'The command ''Invoke-InstallationMediaCopy'' needs to be mocked in the Context-block'
-#         }
-
-#         Mock -CommandName Get-CimInstance -MockWith {
-#             throw 'The command ''Get-CimInstance'' needs to be mocked in the Context-block'
-#         }
-
-#         Mock -CommandName Get-CimAssociatedInstance -MockWith {
-#             throw 'The command ''Get-CimAssociatedInstance'' needs to be mocked in the Context-block'
-#         }
-
-#         Mock -CommandName Test-IPAddress -MockWith {
-#             throw 'The command ''Test-IPAddress'' needs to be mocked in the Context-block'
-#         }
-
-#         #region Setting up TestDrive:\
-
-#         <#
-#             Mocking folder structure. This takes the leaf from the $TestDrive (the Guid in this case) and
-#             uses that to create a mock folder to mimic the temp folder that would be created in, for example,
-#             temp folder 'C:\Windows\Temp'.
-#             This folder is used when SourcePath is called with a leaf, for example '\\server\share\folder'.
-#         #>
-#         $mediaTempSourcePathWithLeaf = (Join-Path -Path $TestDrive -ChildPath (Split-Path -Path $TestDrive -Leaf))
-#         if (-not (Test-Path $mediaTempSourcePathWithLeaf))
-#         {
-#             New-Item -Path $mediaTempSourcePathWithLeaf -ItemType Directory
-#         }
-
-#         <#
-#             Mocking folder structure to mimic the temp folder that would be created in, for example,
-#             temp folder 'C:\Windows\Temp'.
-#             This folder is used when SourcePath is called without a leaf, for example '\\server\share'.
-#         #>
-#         $mediaTempSourcePathWithoutLeaf = (Join-Path -Path $TestDrive -ChildPath 'cc719562-0f46-4a16-8605-9f8a47c70402')
-#         if (-not (Test-Path $mediaTempSourcePathWithoutLeaf))
-#         {
-#             New-Item -Path $mediaTempSourcePathWithoutLeaf -ItemType Directory
-#         }
-
-#         # Mocking executable setup.exe which will be used for tests without parameter SourceCredential
-#         Set-Content (Join-Path -Path $TestDrive -ChildPath 'setup.exe') -Value 'Mock exe file'
-
-#         # Mocking executable setup.exe which will be used for tests with parameter SourceCredential and an UNC path with leaf
-#         Set-Content (Join-Path -Path $mediaTempSourcePathWithLeaf -ChildPath 'setup.exe') -Value 'Mock exe file'
-
-#         # Mocking executable setup.exe which will be used for tests with parameter SourceCredential and an UNC path without leaf
-#         Set-Content (Join-Path -Path $mediaTempSourcePathWithoutLeaf -ChildPath 'setup.exe') -Value 'Mock exe file'
-
-#         #endregion Setting up TestDrive:\
-
-#         $mockNewTemporaryFolder = {
-#             $testDrive_DriveShare = (Split-Path -Path $TestDrive -Qualifier) -replace ':', '$'
-#             $mockSourcePathUNC = Join-Path -Path "\\localhost\$testDrive_DriveShare" -ChildPath (Split-Path -Path $TestDrive -NoQualifier)
-
-#             return $mockSourcePathUNC
-#         }
-
-#         $mockGetCimAssociatedInstance_MSCluster_ResourceToPossibleOwner = {
-#             return @(
-#                 (
-#                     @($env:COMPUTERNAME, 'SQL01', 'SQL02') | ForEach-Object -Process {
-#                         $node = $_
-#                         New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Node', 'root/MSCluster' |
-#                             Add-Member -MemberType NoteProperty -Name 'Name' -Value $node -PassThru -Force
-#                         }
-#                     )
-#                 )
-#             }
-
-#             $mockGetCimInstance_MSClusterResourceGroup_AvailableStorage = {
-#                 return @(
-#                     (
-#                         New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ResourceGroup', 'root/MSCluster' |
-#                             Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Available Storage' -PassThru -Force
-#                 )
-#             )
-#         }
-
-#         $mockGetCimInstance_MSClusterNetwork = {
-#             return @(
-#                 (
-#                     $mockDynamicClusterSites | ForEach-Object -Process {
-#                         $network = $_
-
-#                         New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Network', 'root/MSCluster' |
-#                             Add-Member -MemberType NoteProperty -Name 'Name' -Value "$($network.Name)_Prod" -PassThru -Force |
-#                             Add-Member -MemberType NoteProperty -Name 'Role' -Value 2 -PassThru -Force |
-#                             Add-Member -MemberType NoteProperty -Name 'Address' -Value $network.Address -PassThru -Force |
-#                             Add-Member -MemberType NoteProperty -Name 'AddressMask' -Value $network.Mask -PassThru -Force
-#                         }
-#                     )
-#                 )
-#             }
-
-#             # Mock to return physical disks that are part of the "Available Storage" cluster role
-#             $mockGetCimAssociatedInstance_MSCluster_ResourceGroupToResource = {
-#                 return @(
-#                     (
-#                         # $mockClusterDiskMap contains variables that are assigned dynamically (during runtime) before each test.
-#                     (& $mockClusterDiskMap).Keys | ForEach-Object -Process {
-#                             $diskName = $_
-#                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource', 'root/MSCluster' |
-#                                 Add-Member -MemberType NoteProperty -Name 'Name' -Value $diskName -PassThru -Force |
-#                                 Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -PassThru -Force |
-#                                 Add-Member -MemberType NoteProperty -Name 'Type' -Value 'Physical Disk' -PassThru -Force
-#                             }
-#                         )
-#                     )
-#                 }
-
-#                 $mockGetCimAssociatedInstance_MSCluster_DiskPartition = {
-#                     $clusterDiskName = $InputObject.Name
-
-#                     # $mockClusterDiskMap contains variables that are assigned dynamically (during runtime) before each test.
-#                     $clusterDiskPath = (& $mockClusterDiskMap).$clusterDiskName
-
-#                     return @(
-#                         (
-#                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_DiskPartition', 'root/MSCluster' |
-#                                 Add-Member -MemberType NoteProperty -Name 'Path' -Value $clusterDiskPath -PassThru -Force
-#                 )
-#             )
-#         }
-
-#         $mockClusterDiskMap = {
-#             @{
-#                 SysData    = Split-Path -Path $mockDynamicSqlDataDirectoryPath -Qualifier
-#                 UserData   = Split-Path -Path $mockDynamicSqlUserDatabasePath -Qualifier
-#                 UserLogs   = Split-Path -Path $mockDynamicSqlUserDatabaseLogPath -Qualifier
-#                 TempDbData = Split-Path -Path $mockDynamicSqlTempDatabasePath -Qualifier
-#                 TempDbLogs = Split-Path -Path $mockDynamicSqlTempDatabaseLogPath -Qualifier
-#                 Backup     = Split-Path -Path $mockDynamicSqlBackupPath -Qualifier
-#             }
-#         }
-
-#         <#
-#             Needed a way to see into the Set-method for the arguments the Set-method
-#             is building and sending to 'setup.exe', and fail the test if the arguments
-#             is different from the expected arguments. Solved this by dynamically set
-#             the expected arguments before each It-block. If the arguments differs the
-#             mock of Start-SqlSetupProcess throws an error message, similar to what
-#             Pester would have reported (expected -> but was).
-#         #>
-#         $mockStartSqlSetupProcessExpectedArgument = @{}
-
-#         $mockStartSqlSetupProcess = {
-#             Test-SetupArgument -Argument $ArgumentList -ExpectedArgument $mockStartSqlSetupProcessExpectedArgument
-
-#             return 0
-#         }
-
-#         $mockGetSqlMajorVersion = {
-#             return $MockSqlMajorVersion
-#         }
-
-#         # General mocks
-#         Mock -CommandName Get-PSDrive
-#         Mock -CommandName Import-SqlDscPreferredModule
-#         Mock -CommandName Get-FilePathMajorVersion -MockWith $mockGetSqlMajorVersion
-
-#         # Mocking SharedDirectory and SharedWowDirectory (when not previously installed)
-#         Mock -CommandName Get-ItemProperty
-
-#         Mock -CommandName Start-SqlSetupProcess -MockWith $mockStartSqlSetupProcess
-#         Mock -CommandName Test-TargetResource -MockWith {
-#             return $true
-#         }
-
-#         Mock -CommandName Test-PendingRestart -MockWith {
-#             return $false
-#         }
-
-#         InModuleScope -ScriptBlock {
-#             # Mock PsDscRunAsCredential context.
-#             $script:PsDscContext = @{
-#                 RunAsUser = 'COMPANY\sqladmin'
-#             }
-#         }
-#     }
-
-#     Context 'When setup action is Upgrade and parameter SqlVersion is passed' {
-#         It 'Should throw the correct exception' {
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockErrorMessage = Get-InvalidOperationRecord -Message (
-#                     $script:localizedData.ParameterSqlVersionNotAllowedForSetupActionUpgrade
-#                 )
-
-#                 $script:mockSetTargetResourceParameters = @{
-#                     Action           = 'Upgrade'
-#                     InstanceName     = 'MSSQLSERVER'
-#                     SourceCredential = $null
-#                     SourcePath       = $TestDrive
-#                     ServerName       = 'host.company.local'
-#                     SqlVersion       = '14.0'
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
-#             }
-#         }
-#     }
-
-
-#     Context 'When the system is not in the desired state' {
-#         Context 'When installing a default instance for major version <MockSqlMajorVersion>' -ForEach $testProductVersion {
-#             Context 'When installing all features' {
-#                 BeforeAll {
-#                     Mock -CommandName Get-TargetResource -MockWith {
-#                         return @{
-#                             Features = ''
-#                         }
-#                     }
-#                 }
-
-#                 It 'Should set the system in the desired state when feature is SQLENGINE' {
-#                     $mockStartSqlSetupProcessExpectedArgument = @{
-#                         Quiet                        = 'True'
-#                         IAcceptSQLServerLicenseTerms = 'True'
-#                         Action                       = 'Install'
-#                         InstanceName                 = 'MSSQLSERVER'
-#                         Features                     = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS,SSMS,ADV_SSMS'
-#                         SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                         ASSysAdminAccounts           = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                         PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                         InstanceDir                  = 'D:\'
-#                         InstallSQLDataDir            = 'E:\'
-#                         InstallSharedDir             = 'C:\Program Files\Microsoft SQL Server'
-#                         InstallSharedWOWDir          = 'C:\Program Files (x86)\Microsoft SQL Server'
-#                         UpdateEnabled                = 'True'
-#                         UpdateSource                 = 'C:\Updates' # Regression test for issue #720
-#                         ASServerMode                 = 'TABULAR'
-#                         SqlSvcStartupType            = 'Automatic'
-#                         AgtSvcStartupType            = 'Automatic'
-#                         AsSvcStartupType             = 'Automatic'
-#                         IsSvcStartupType             = 'Automatic'
-#                         SqlTempDbFileCount           = 2
-#                         SqlTempDbFileSize            = 128
-#                         SqlTempDbFileGrowth          = 128
-#                         SqlTempDbLogFileSize         = 128
-#                         SqlTempDbLogFileGrowth       = 128
-#                         BrowserSvcStartupType        = 'Automatic'
-#                     }
-
-#                     if ($MockSqlMajorVersion -in ('13'))
-#                     {
-#                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS'
-#                         $mockStartSqlSetupProcessExpectedArgument.RSInstallMode = 'DefaultNativeMode'
-#                         $mockStartSqlSetupProcessExpectedArgument.RsSvcStartupType = 'Automatic'
-#                     }
-#                     elseif ($MockSqlMajorVersion -in ('14', '15'))
-#                     {
-#                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,CONN,BC,SDK,MDS'
-#                     }
-#                     elseif ($MockSqlMajorVersion -in ('16'))
-#                     {
-#                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,MDS'
-#                     }
-#                     else
-#                     {
-#                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS,SSMS,ADV_SSMS'
-#                     }
-
-#                     InModuleScope -Parameters $_ -ScriptBlock {
-#                         Set-StrictMode -Version 1.0
-
-#                         # This is also used to regression test issue #1254, SqlSetup fails when root directory is specified.
-#                         $mockSetTargetResourceParameters = @{
-#                             Features               = 'SQLEngine,Replication,Dq,Dqc,FullText,Rs,As,Is,Bol,Conn,Bc,Sdk,Mds,Ssms,Adv_Ssms'
-#                             SQLSysAdminAccounts    = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-#                             ASSysAdminAccounts     = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-#                             InstanceName           = 'MSSQLSERVER'
-#                             SourceCredential       = $null
-#                             SourcePath             = $TestDrive
-#                             ProductKey             = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                             InstanceDir            = 'D:'
-#                             InstallSQLDataDir      = 'E:'
-#                             InstallSharedDir       = 'C:\Program Files\Microsoft SQL Server'
-#                             InstallSharedWOWDir    = 'C:\Program Files (x86)\Microsoft SQL Server'
-#                             UpdateEnabled          = 'True'
-#                             UpdateSource           = 'C:\Updates\' # Regression test for issue #720
-#                             ASServerMode           = 'TABULAR'
-#                             SqlSvcStartupType      = 'Automatic'
-#                             AgtSvcStartupType      = 'Automatic'
-#                             AsSvcStartupType       = 'Automatic'
-#                             IsSvcStartupType       = 'Automatic'
-#                             SqlTempDbFileCount     = 2
-#                             SqlTempDbFileSize      = 128
-#                             SqlTempDbFileGrowth    = 128
-#                             SqlTempDbLogFileSize   = 128
-#                             SqlTempDbLogFileGrowth = 128
-#                             BrowserSvcStartupType  = 'Automatic'
-#                         }
-
-#                         if ($MockSqlMajorVersion -in ('13', '14', '15', '16'))
-#                         {
-#                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SSMS,ADV_SSMS', ''
-#                         }
-
-#                         if ($MockSqlMajorVersion -in ('13'))
-#                         {
-#                             $mockSetTargetResourceParameters.RSInstallMode = 'DefaultNativeMode'
-#                             $mockSetTargetResourceParameters.RsSvcStartupType = 'Automatic'
-#                         }
-#                         elseif ($MockSqlMajorVersion -in ('14', '15'))
-#                         {
-#                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
-#                         }
-#                         elseif ($MockSqlMajorVersion -in ('16'))
-#                         {
-#                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Conn', ''
-#                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
-#                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Bc', ''
-#                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SDK', ''
-#                         }
-
-#                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                     }
-
-#                     Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
-#                 }
-#             }
-
-#             Context 'When installing the database engine and enabling the Named Pipes protocol' {
-#                 BeforeAll {
-#                     Mock -CommandName Get-TargetResource -MockWith {
-#                         return @{
-#                             Features = ''
-#                         }
-#                     }
-#                 }
-
-#                 It 'Should set the system in the desired state when feature is SQLENGINE' {
-#                     $mockStartSqlSetupProcessExpectedArgument = @{
-#                         Quiet                        = 'True'
-#                         IAcceptSQLServerLicenseTerms = 'True'
-#                         Action                       = 'Install'
-#                         InstanceName                 = 'MSSQLSERVER'
-#                         Features                     = 'SQLENGINE'
-#                         SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                         PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                         NpEnabled                    = 1
-#                     }
-
-#                     InModuleScope -ScriptBlock {
-#                         Set-StrictMode -Version 1.0
-
-#                         $mockSetTargetResourceParameters = @{
-#                             Features            = 'SQLENGINE'
-#                             SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-#                             InstanceName        = 'MSSQLSERVER'
-#                             SourceCredential    = $null
-#                             SourcePath          = $TestDrive
-#                             ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                             NpEnabled           = $true
-#                             ServerName          = 'host.company.local'
-#                         }
-
-#                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                     }
-
-#                     Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-#                 }
-#             }
-
-#             Context 'When installing the database engine and enabling the TCP protocol' {
-#                 BeforeAll {
-#                     Mock -CommandName Get-TargetResource -MockWith {
-#                         return @{
-#                             Features = ''
-#                         }
-#                     }
-#                 }
-
-#                 It 'Should set the system in the desired state when feature is SQLENGINE' {
-#                     $mockStartSqlSetupProcessExpectedArgument = @{
-#                         Quiet                        = 'True'
-#                         IAcceptSQLServerLicenseTerms = 'True'
-#                         Action                       = 'Install'
-#                         InstanceName                 = 'MSSQLSERVER'
-#                         Features                     = 'SQLENGINE'
-#                         SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                         PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                         TcpEnabled                   = 1
-#                     }
-
-#                     InModuleScope -ScriptBlock {
-#                         Set-StrictMode -Version 1.0
-
-#                         $mockSetTargetResourceParameters = @{
-#                             Features            = 'SQLENGINE'
-#                             SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-#                             InstanceName        = 'MSSQLSERVER'
-#                             SourceCredential    = $null
-#                             SourcePath          = $TestDrive
-#                             ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                             TcpEnabled          = $true
-#                         }
-
-#                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                     }
-
-#                     Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-#                 }
-#             }
-
-#             Context 'When using SourceCredential parameter, and using a UNC path with a leaf' {
-#                 BeforeAll {
-#                     Mock -CommandName Get-TargetResource -MockWith {
-#                         return @{
-#                             Features = ''
-#                         }
-#                     }
-
-#                     Mock -CommandName Invoke-InstallationMediaCopy -MockWith $mockNewTemporaryFolder
-#                 }
-
-#                 It 'Should set the system in the desired state when feature is SQLENGINE' {
-#                     $mockStartSqlSetupProcessExpectedArgument = @{
-#                         Quiet                        = 'True'
-#                         IAcceptSQLServerLicenseTerms = 'True'
-#                         Action                       = 'Install'
-#                         InstanceName                 = 'MSSQLSERVER'
-#                         Features                     = 'SQLENGINE'
-#                         SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                     }
-
-#                     InModuleScope -ScriptBlock {
-#                         Set-StrictMode -Version 1.0
-
-#                         $testDrive_DriveShare = (Split-Path -Path $TestDrive -Qualifier) -replace ':', '$'
-#                         $mockSourcePathUNC = Join-Path -Path "\\localhost\$testDrive_DriveShare" -ChildPath (Split-Path -Path $TestDrive -NoQualifier)
-
-#                         $mockSetTargetResourceParameters = @{
-#                             InstanceName        = 'MSSQLSERVER'
-#                             Features            = 'SQLENGINE'
-#                             SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-#                             SourceCredential    = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
-#                             SourcePath          = $mockSourcePathUNC
-#                         }
-
-#                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                     }
-
-#                     Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName Invoke-InstallationMediaCopy -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
-#                 }
-#             }
-
-#             Context 'When using SourceCredential parameter, and using a UNC path without a leaf' {
-#                 BeforeAll {
-#                     Mock -CommandName Get-TargetResource -MockWith {
-#                         return @{
-#                             Features = ''
-#                         }
-#                     }
-
-#                     Mock -CommandName Invoke-InstallationMediaCopy -MockWith $mockNewTemporaryFolder
-#                 }
-
-#                 It 'Should set the system in the desired state when feature is SQLENGINE' {
-#                     $mockStartSqlSetupProcessExpectedArgument = @{
-#                         Quiet                        = 'True'
-#                         IAcceptSQLServerLicenseTerms = 'True'
-#                         Action                       = 'Install'
-#                         InstanceName                 = 'MSSQLSERVER'
-#                         Features                     = 'SQLENGINE'
-#                         SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                     }
-
-#                     InModuleScope -ScriptBlock {
-#                         Set-StrictMode -Version 1.0
-
-#                         $mockSetTargetResourceParameters = @{
-#                             InstanceName        = 'MSSQLSERVER'
-#                             Features            = 'SQLENGINE'
-#                             SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-#                             SourceCredential    = Ne£w-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
-#                             SourcePath          = '\\server\share'
-#                             ForceReboot         = $true
-#                             SuppressReboot      = $true
-#                         }
-
-#                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                     }
-
-#                     Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName Invoke-InstallationMediaCopy -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
-#                 }
-#             }
-#         }
-
-#         Context 'When installing a named instance for major version <MockSqlMajorVersion>' -ForEach $testProductVersion {
-#             Context 'When installing all features' {
-#                 BeforeAll {
-#                     Mock -CommandName Get-TargetResource -MockWith {
-#                         return @{
-#                             Features = ''
-#                         }
-#                     }
-#                 }
-
-#                 It 'Should set the system in the desired state when feature is SQLENGINE' {
-#                     $mockStartSqlSetupProcessExpectedArgument = @{
-#                         Quiet                        = 'True'
-#                         IAcceptSQLServerLicenseTerms = 'True'
-#                         Action                       = 'Install'
-#                         InstanceName                 = 'TEST'
-#                         Features                     = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS,SSMS,ADV_SSMS'
-#                         SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                         ASSysAdminAccounts           = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                         PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                         InstanceDir                  = 'D:\'
-#                         InstallSQLDataDir            = 'E:\'
-#                         InstallSharedDir             = 'C:\Program Files\Microsoft SQL Server'
-#                         InstallSharedWOWDir          = 'C:\Program Files (x86)\Microsoft SQL Server'
-#                         UpdateEnabled                = 'True'
-#                         UpdateSource                 = 'C:\Updates' # Regression test for issue #720
-#                         ASServerMode                 = 'TABULAR'
-#                         SqlSvcStartupType            = 'Automatic'
-#                         AgtSvcStartupType            = 'Automatic'
-#                         AsSvcStartupType             = 'Automatic'
-#                         IsSvcStartupType             = 'Automatic'
-#                         SqlTempDbFileCount           = 2
-#                         SqlTempDbFileSize            = 128
-#                         SqlTempDbFileGrowth          = 128
-#                         SqlTempDbLogFileSize         = 128
-#                         SqlTempDbLogFileGrowth       = 128
-#                         BrowserSvcStartupType        = 'Automatic'
-#                     }
-
-#                     if ($MockSqlMajorVersion -in ('13'))
-#                     {
-#                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS'
-#                         $mockStartSqlSetupProcessExpectedArgument.RSInstallMode = 'DefaultNativeMode'
-#                         $mockStartSqlSetupProcessExpectedArgument.RsSvcStartupType = 'Automatic'
-#                     }
-#                     elseif ($MockSqlMajorVersion -in ('14', '15'))
-#                     {
-#                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,CONN,BC,SDK,MDS'
-#                     }
-#                     elseif ($MockSqlMajorVersion -in ('16'))
-#                     {
-#                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,MDS'
-#                     }
-#                     else
-#                     {
-#                         $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS,SSMS,ADV_SSMS'
-#                     }
-
-#                     InModuleScope -Parameters $_ -ScriptBlock {
-#                         Set-StrictMode -Version 1.0
-
-#                         # This is also used to regression test issue #1254, SqlSetup fails when root directory is specified.
-#                         $mockSetTargetResourceParameters = @{
-#                             Features               = 'SQLEngine,Replication,Dq,Dqc,FullText,Rs,As,Is,Bol,Conn,Bc,Sdk,Mds,Ssms,Adv_Ssms'
-#                             SQLSysAdminAccounts    = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-#                             ASSysAdminAccounts     = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-#                             InstanceName           = 'TEST'
-#                             SourceCredential       = $null
-#                             SourcePath             = $TestDrive
-#                             ProductKey             = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                             InstanceDir            = 'D:'
-#                             InstallSQLDataDir      = 'E:'
-#                             InstallSharedDir       = 'C:\Program Files\Microsoft SQL Server'
-#                             InstallSharedWOWDir    = 'C:\Program Files (x86)\Microsoft SQL Server'
-#                             UpdateEnabled          = 'True'
-#                             UpdateSource           = 'C:\Updates\' # Regression test for issue #720
-#                             ASServerMode           = 'TABULAR'
-#                             SqlSvcStartupType      = 'Automatic'
-#                             AgtSvcStartupType      = 'Automatic'
-#                             AsSvcStartupType       = 'Automatic'
-#                             IsSvcStartupType       = 'Automatic'
-#                             SqlTempDbFileCount     = 2
-#                             SqlTempDbFileSize      = 128
-#                             SqlTempDbFileGrowth    = 128
-#                             SqlTempDbLogFileSize   = 128
-#                             SqlTempDbLogFileGrowth = 128
-#                             BrowserSvcStartupType  = 'Automatic'
-#                             ForceReboot            = $true
-#                             SqlVersion             = ('{0}.0' -f $MockSqlMajorVersion)
-#                         }
-
-#                         if ($MockSqlMajorVersion -in ('13', '14', '15', '16'))
-#                         {
-#                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SSMS,ADV_SSMS', ''
-#                         }
-
-#                         if ($MockSqlMajorVersion -in ('13'))
-#                         {
-#                             $mockSetTargetResourceParameters.RSInstallMode = 'DefaultNativeMode'
-#                             $mockSetTargetResourceParameters.RsSvcStartupType = 'Automatic'
-#                         }
-#                         elseif ($MockSqlMajorVersion -in ('14', '15'))
-#                         {
-#                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
-#                         }
-#                         elseif ($MockSqlMajorVersion -in ('16'))
-#                         {
-#                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Conn', ''
-#                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
-#                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Bc', ''
-#                             $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SDK', ''
-#                         }
-
-#                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                     }
-
-#                     Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
-#                     Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 0 -Scope It
-#                 }
-#             }
-#         }
-
-#         Context 'When installing the database engine and disabling the Named Pipes protocol' {
-#             BeforeAll {
-#                 Mock -CommandName Get-FilePathMajorVersion -MockWith {
-#                     return 15
-#                 }
-
-#                 Mock -CommandName Get-TargetResource -MockWith {
-#                     return @{
-#                         Features = ''
-#                     }
-#                 }
-#             }
-
-#             It 'Should set the system in the desired state when feature is SQLENGINE' {
-#                 $mockStartSqlSetupProcessExpectedArgument = @{
-#                     Quiet                        = 'True'
-#                     IAcceptSQLServerLicenseTerms = 'True'
-#                     Action                       = 'Install'
-#                     InstanceName                 = 'MSSQLSERVER'
-#                     Features                     = 'SQLENGINE'
-#                     SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                     PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                     NpEnabled                    = 0
-#                 }
-
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockSetTargetResourceParameters = @{
-#                         Features            = 'SQLENGINE'
-#                         SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-#                         InstanceName        = 'MSSQLSERVER'
-#                         SourceCredential    = $null
-#                         SourcePath          = $TestDrive
-#                         ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                         NpEnabled           = $false
-#                     }
-
-#                     $result = Set-TargetResource @mockSetTargetResourceParameters
-#                     # { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                 }
-
-#                 Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-#             }
-#         }
-
-#         Context 'When installing the database engine and ProductcoveredBySA is true' {
-#                 BeforeAll {
-#                     Mock -CommandName Get-FilePathMajorVersion -MockWith {
-#                         return 16
-#                     }
-
-#                     Mock -CommandName Get-TargetResource -MockWith {
-#                         return @{
-#                             Features = ''
-#                         }
-#                     }
-#                 }
-
-#                 It 'Should set the system in the desired state when feature is SQLENGINE' {
-#                     $mockStartSqlSetupProcessExpectedArgument = @{
-#                         Quiet                        = 'True'
-#                         IAcceptSQLServerLicenseTerms = 'True'
-#                         Action                       = 'Install'
-#                         InstanceName                 = 'MSSQLSERVER'
-#                         Features                     = 'SQLENGINE'
-#                         SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                         PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                         ProductCoveredBySA           = 'True'
-#                     }
-
-#                     InModuleScope -ScriptBlock {
-#                         Set-StrictMode -Version 1.0
-
-#                         $mockSetTargetResourceParameters = @{
-#                             Features            = 'SQLENGINE'
-#                             SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-#                             InstanceName        = 'MSSQLSERVER'
-#                             SourceCredential    = $null
-#                             SourcePath          = $TestDrive
-#                             ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                             ProductCoveredBySA  = $true
-#                             ServerName          = 'host.company.local'
-#                         }
-
-#                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                     }
-
-#                     Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-#                 }
-#             }
-
-#         Context 'When installing the database engine and disabling the TCP protocol' {
-#             BeforeAll {
-#                 Mock -CommandName Get-FilePathMajorVersion -MockWith {
-#                     return 15
-#                 }
-
-#                 Mock -CommandName Get-TargetResource -MockWith {
-#                     return @{
-#                         Features = ''
-#                     }
-#                 }
-#             }
-
-#             It 'Should set the system in the desired state when feature is SQLENGINE' {
-#                 $mockStartSqlSetupProcessExpectedArgument = @{
-#                     Quiet                        = 'True'
-#                     IAcceptSQLServerLicenseTerms = 'True'
-#                     Action                       = 'Install'
-#                     InstanceName                 = 'MSSQLSERVER'
-#                     Features                     = 'SQLENGINE'
-#                     SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                     PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                     TcpEnabled                   = 0
-#                 }
-
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockSetTargetResourceParameters = @{
-#                         Features            = 'SQLENGINE'
-#                         SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-#                         InstanceName        = 'MSSQLSERVER'
-#                         SourceCredential    = $null
-#                         SourcePath          = $TestDrive
-#                         ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                         TcpEnabled          = $false
-#                     }
-
-#                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                 }
-
-#                 Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-#             }
-#         }
-
-#         Context 'When installing the database engine forcing to use english language in media' {
-#             BeforeAll {
-#                 Mock -CommandName Get-FilePathMajorVersion -MockWith {
-#                     return 15
-#                 }
-
-#                 Mock -CommandName Get-TargetResource -MockWith {
-#                     return @{
-#                         Features = ''
-#                     }
-#                 }
-#             }
-
-#             It 'Should set the system in the desired state when feature is SQLENGINE' {
-#                 $mockStartSqlSetupProcessExpectedArgument = @{
-#                     Quiet                        = 'True'
-#                     IAcceptSQLServerLicenseTerms = 'True'
-#                     Action                       = 'Install'
-#                     InstanceName                 = 'MSSQLSERVER'
-#                     Features                     = 'SQLENGINE'
-#                     SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                     PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                     Enu                          = '' # The argument does not have a value
-#                 }
-
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockSetTargetResourceParameters = @{
-#                         Features            = 'SQLENGINE'
-#                         SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-#                         InstanceName        = 'MSSQLSERVER'
-#                         SourceCredential    = $null
-#                         SourcePath          = $TestDrive
-#                         ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                         UseEnglish          = $true
-#                     }
-
-#                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                 }
-
-#                 Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-#             }
-#         }
-
-#         Context 'When installing using a skip rule' {
-#             BeforeAll {
-#                 Mock -CommandName Get-FilePathMajorVersion -MockWith {
-#                     return 15
-#                 }
-
-#                 Mock -CommandName Get-TargetResource -MockWith {
-#                     return @{
-#                         Features = ''
-#                     }
-#                 }
-#             }
-
-#             It 'Should call setup.exe with the correct skip rules as arguments' {
-#                 $mockStartSqlSetupProcessExpectedArgument = @{
-#                     Quiet                        = 'True'
-#                     IAcceptSQLServerLicenseTerms = 'True'
-#                     Action                       = 'Install'
-#                     InstanceName                 = 'MSSQLSERVER'
-#                     Features                     = 'SQLENGINE'
-#                     SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                     PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                     SkipRules                    = '"Cluster_VerifyForErrors"'
-#                 }
-
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockSetTargetResourceParameters = @{
-#                         Features            = 'SQLENGINE'
-#                         SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-#                         InstanceName        = 'MSSQLSERVER'
-#                         SourceCredential    = $null
-#                         SourcePath          = $TestDrive
-#                         ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                         SkipRule            = 'Cluster_VerifyForErrors'
-#                     }
-
-#                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                 }
-
-#                 Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-#             }
-#         }
-
-#         Context 'When installing using multiple skip rules' {
-#             BeforeAll {
-#                 Mock -CommandName Get-FilePathMajorVersion -MockWith {
-#                     return 15
-#                 }
-
-#                 Mock -CommandName Get-TargetResource -MockWith {
-#                     return @{
-#                         Features = ''
-#                     }
-#                 }
-#             }
-
-#             It 'Should call setup.exe with the correct skip rules as arguments' {
-#                 $mockStartSqlSetupProcessExpectedArgument = @{
-#                     Quiet                        = 'True'
-#                     IAcceptSQLServerLicenseTerms = 'True'
-#                     Action                       = 'Install'
-#                     InstanceName                 = 'MSSQLSERVER'
-#                     Features                     = 'SQLENGINE'
-#                     SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                     PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                     SkipRules                    = '"Cluster_IsWMIServiceOperational" "Cluster_VerifyForErrors" "ServerCoreBlockUnsupportedSxSCheck"'
-#                 }
-
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockSetTargetResourceParameters = @{
-#                         Features            = 'SQLENGINE'
-#                         SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-#                         InstanceName        = 'MSSQLSERVER'
-#                         SourceCredential    = $null
-#                         SourcePath          = $TestDrive
-#                         ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
-#                         SkipRule            = @(
-#                             'Cluster_VerifyForErrors'
-#                             'ServerCoreBlockUnsupportedSxSCheck'
-#                             'Cluster_IsWMIServiceOperational'
-#                         )
-#                     }
-
-#                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                 }
-
-#                 Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-#             }
-#         }
-#     }
-
-#     Context 'When setup process fails with an exit code' {
-#         BeforeAll {
-#             Mock -CommandName Get-FilePathMajorVersion -MockWith {
-#                 return 15
-#             }
-
-#             Mock -CommandName Get-TargetResource -MockWith {
-#                 return @{
-#                     Features = ''
-#                 }
-#             }
-#         }
-
-#         Context 'When setup exists with exit code 3010' {
-#             BeforeAll {
-#                 Mock -CommandName Start-SqlSetupProcess -MockWith {
-#                     return 3010
-#                 }
-#             }
-
-#             AfterEach {
-#                 # The code being test will set this global variable to 1, so we need to reset it.
-#                 $global:DSCMachineStatus = 0
-#             }
-
-#             It 'Should tell LCM that node need to restart' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockSetTargetResourceParameters = @{
-#                         Features         = 'SQLENGINE'
-#                         InstanceName     = 'MSSQLSERVER'
-#                         SourceCredential = $null
-#                         SourcePath       = $TestDrive
-#                     }
-
-#                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-
-#                     $global:DSCMachineStatus | Should -Be 1
-#                 }
-#             }
-#         }
-
-#         Context 'When setup exists with any other code than 3010 (exit code is set to 1 for the test)' {
-#             BeforeAll {
-#                 Mock -CommandName Write-Warning
-#                 Mock -CommandName Start-SqlSetupProcess -MockWith {
-#                     return 1
-#                 }
-#             }
-
-#             It 'Should call the correct mock' {
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockSetTargetResourceParameters = @{
-#                         Features         = 'SQLENGINE'
-#                         InstanceName     = 'MSSQLSERVER'
-#                         SourceCredential = $null
-#                         SourcePath       = $TestDrive
-#                     }
-
-#                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                 }
-
-#                 Should -Invoke -CommandName Write-Warning -Exactly -Times 1 -Scope It
-#                 Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 0 -Scope It
-#             }
-#         }
-#     }
-
-#     Context 'When passing invalid features for <MockSqlMajorVersion>' -ForEach @(
-#         @{
-#             MockSqlMajorVersion = 16 # SQL Server 2022
-#         }
-#         @{
-#             MockSqlMajorVersion = 15 # SQL Server 2019
-#         }
-#         @{
-#             MockSqlMajorVersion = 14 # SQL Server 2017
-#         }
-#         @{
-#             MockSqlMajorVersion = 13 # SQL Server 2016
-#         }
-#     ) {
-#         BeforeAll {
-#             Mock -CommandName Get-TargetResource -MockWith {
-#                 return @{
-#                     Features = ''
-#                 }
-#             }
-#         }
-
-#         It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016, 2017 or 2019' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{}
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     Features         = 'SSMS'
-#                     InstanceName     = 'MSSQLSERVER'
-#                     SourceCredential = $null
-#                     SourcePath       = $TestDrive
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "*'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
-#             }
-#         }
-
-#         It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016, 2017 or 2019' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{}
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     Features         = 'ADV_SSMS'
-#                     InstanceName     = 'MSSQLSERVER'
-#                     SourceCredential = $null
-#                     SourcePath       = $TestDrive
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage "*'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
-#             }
-#         }
-#     }
-
-#     Context 'When passing invalid features for <MockSqlMajorVersion>' -ForEach @(
-#         @{
-#             MockSqlMajorVersion = 12 # SQL Server 2014
-#         }
-#         @{
-#             MockSqlMajorVersion = 11 # SQL Server 2012
-#         }
-#         @{
-#             MockSqlMajorVersion = 10  # SQL Server 2008 and 2008 R2
-#         }
-#     ) {
-#         BeforeAll {
-#             Mock -CommandName Get-TargetResource -MockWith {
-#                 return @{
-#                     Features = ''
-#                 }
-#             }
-#         }
-
-#         It 'Should set the system in the desired state when feature is SSMS' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{
-#                 Quiet                        = 'True'
-#                 IAcceptSQLServerLicenseTerms = 'True'
-#                 Action                       = 'Install'
-#                 InstanceName                 = 'MSSQLSERVER'
-#                 Features                     = 'SSMS'
-#             }
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     Features         = 'SSMS'
-#                     InstanceName     = 'MSSQLSERVER'
-#                     SourceCredential = $null
-#                     SourcePath       = $TestDrive
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#             }
-
-#             Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-#             Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-#             Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
-#         }
-
-#         It 'Should set the system in the desired state when feature is ADV_SSMS' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{
-#                 Quiet                        = 'True'
-#                 IAcceptSQLServerLicenseTerms = 'True'
-#                 Action                       = 'Install'
-#                 InstanceName                 = 'MSSQLSERVER'
-#                 Features                     = 'ADV_SSMS'
-#             }
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     Features         = 'ADV_SSMS'
-#                     InstanceName     = 'MSSQLSERVER'
-#                     SourceCredential = $null
-#                     SourcePath       = $TestDrive
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#             }
-
-#             Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-#             Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-#             Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
-#         }
-#     }
-
-#     # For testing AddNode action
-#     Context 'When action is set to ''AddNode''' {
-#         BeforeAll {
-#             Mock -CommandName Get-FilePathMajorVersion -MockWith {
-#                 return 15
-#             }
-
-#             Mock -CommandName Get-TargetResource -MockWith {
-#                 return @{
-#                     Features = ''
-#                 }
-#             }
-
-#             $mockDynamicClusterSites = @(
-#                 @{
-#                     Name    = 'SiteA'
-#                     Address = '10.0.0.10' # First site IP address
-#                     Mask    = '255.255.255.0'
-#                 }
-#             )
-
-#             Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterNetwork -ParameterFilter {
-#                 ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
-#             }
-
-#             Mock -CommandName Test-IPAddress -MockWith {
-#                 return $true
-#             }
-#         }
-
-#         It 'Should pass proper parameters to setup' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{
-#                 IAcceptSQLServerLicenseTerms = 'True'
-#                 Quiet                        = 'True'
-#                 Action                       = 'AddNode'
-#                 InstanceName                 = 'MSSQLSERVER'
-#                 AgtSvcAccount                = 'COMPANY\AgentAccount'
-#                 AgtSvcPassword               = 'Ag3ntP@ssw0rd'
-#                 SqlSvcAccount                = 'COMPANY\SqlAccount'
-#                 SqlSvcPassword               = 'SqlS3v!c3P@ssw0rd'
-#                 AsSvcAccount                 = 'COMPANY\AnalysisAccount'
-#                 AsSvcPassword                = 'AnalysisS3v!c3P@ssw0rd'
-#                 FailoverClusterIPAddresses   = 'IPv4;10.0.0.10;SiteA_Prod;255.255.255.0'
-#             }
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     Action                     = 'AddNode'
-#                     # Feature support is tested elsewhere, so just include the minimum.
-#                     Features                   = 'SQLENGINE,AS'
-#                     InstanceName               = 'MSSQLSERVER'
-#                     SourcePath                 = $TestDrive
-#                     AgtSvcAccount              = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\AgentAccount', ('Ag3ntP@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
-#                     SqlSvcAccount              = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\SqlAccount', ('SqlS3v!c3P@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
-#                     ASSvcAccount               = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\AnalysisAccount', ('AnalysisS3v!c3P@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
-#                     FailoverClusterNetworkName = 'TestDefaultCluster'
-#                     FailoverClusterIPAddress   = '10.0.0.10'
-#                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#             }
-#         }
-#     }
-
-#     Context 'When action is set to ''InstallFailoverCluster''' {
-#         BeforeAll {
-#             Mock -CommandName Get-FilePathMajorVersion -MockWith {
-#                 return 15
-#             }
-
-#             # Cluster shared volumes will be tested and mocked later on.
-#             Mock -CommandName Get-CimInstance -MockWith {
-#                 return $null
-#             } -ParameterFilter {
-#                 $ClassName -eq 'MSCluster_ClusterSharedVolume'
-#             }
-
-#             Mock -CommandName Get-TargetResource -MockWith {
-#                 return @{
-#                     Features = ''
-#                 }
-#             }
-
-#             $mockDynamicSqlDataDirectoryPath = 'E:\MSSQL\Data'
-#             $mockDynamicSqlUserDatabasePath = 'K:\MSSQL\Data'
-#             $mockDynamicSqlUserDatabaseLogPath = 'L:\MSSQL\Logs'
-#             $mockDynamicSqlTempDatabasePath = 'M:\MSSQL\TempDb\Data'
-#             $mockDynamicSqlTempDatabaseLogPath = 'N:\MSSQL\TempDb\Logs'
-#             $mockDynamicSqlBackupPath = 'O:\MSSQL\Backup'
-
-#             Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterResourceGroup_AvailableStorage -ParameterFilter {
-#                 $Filter -eq "Name = 'Available Storage'"
-#             }
-
-#             Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceGroupToResource -ParameterFilter {
-#                 ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
-#             }
-
-#             Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceToPossibleOwner -ParameterFilter {
-#                 $Association -eq 'MSCluster_ResourceToPossibleOwner'
-#             }
-
-#             Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_DiskPartition -ParameterFilter {
-#                 $ResultClassName -eq 'MSCluster_DiskPartition'
-#             }
-
-#             $mockDynamicClusterSites = @(
-#                 @{
-#                     Name    = 'SiteA'
-#                     Address = '10.0.0.10' # First site IP address
-#                     Mask    = '255.255.255.0'
-#                 }
-#             )
-
-#             Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterNetwork -ParameterFilter {
-#                 ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
-#             }
-
-#             Mock -CommandName Test-IPAddress -MockWith {
-#                 return $true
-#             }
-#         }
-
-#         It 'Should pass proper parameters to setup' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{
-#                 Action                       = 'InstallFailoverCluster'
-#                 FailoverClusterDisks         = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
-#                 FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
-#                 FailoverClusterNetworkName   = 'TestDefaultCluster'
-#                 InstallSQLDataDir            = 'E:\MSSQL\Data'
-#                 SQLUserDBDir                 = 'K:\MSSQL\Data'
-#                 SQLUserDBLogDir              = 'L:\MSSQL\Logs'
-#                 SQLTempDBDir                 = 'M:\MSSQL\TempDb\Data'
-#                 SQLTempDBLogDir              = 'N:\MSSQL\TempDb\Logs'
-#                 SQLBackupDir                 = 'O:\MSSQL\Backup'
-#                 IAcceptSQLServerLicenseTerms = 'True'
-#                 Quiet                        = 'True'
-#                 InstanceName                 = 'MSSQLSERVER'
-#                 Features                     = 'SQLENGINE'
-#                 SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                 FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
-#             }
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                     # Feature support is tested elsewhere, so just include the minimum.
-#                     Features                   = 'SQLEngine'
-
-#                     InstanceName               = 'MSSQLSERVER'
-#                     SourcePath                 = $TestDrive
-#                     Action                     = 'InstallFailoverCluster'
-#                     FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                     FailoverClusterNetworkName = 'TestDefaultCluster'
-#                     FailoverClusterIPAddress   = '10.0.0.10'
-
-#                     # Ensure we use "clustered" disks for our paths
-#                     InstallSQLDataDir          = 'E:\MSSQL\Data'
-#                     SQLUserDBDir               = 'K:\MSSQL\Data'
-#                     SQLUserDBLogDir            = 'L:\MSSQL\Logs'
-#                     SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
-#                     SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
-#                     SQLBackupDir               = 'O:\MSSQL\Backup'
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#             }
-#         }
-
-#         It 'Should pass proper parameters to setup when only InstallSQLDataDir is assigned a path' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{
-#                 Action                       = 'InstallFailoverCluster'
-#                 FailoverClusterDisks         = 'SysData'
-#                 FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
-#                 FailoverClusterNetworkName   = 'TestDefaultCluster'
-#                 InstallSQLDataDir            = 'E:\MSSQL\Data'
-#                 IAcceptSQLServerLicenseTerms = 'True'
-#                 Quiet                        = 'True'
-#                 InstanceName                 = 'MSSQLSERVER'
-#                 Features                     = 'SQLENGINE'
-#                 SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                 FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
-#             }
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                     # Feature support is tested elsewhere, so just include the minimum.
-#                     Features                   = 'SQLEngine'
-
-#                     InstanceName               = 'MSSQLSERVER'
-#                     SourcePath                 = $TestDrive
-#                     Action                     = 'InstallFailoverCluster'
-#                     FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                     FailoverClusterNetworkName = 'TestDefaultCluster'
-#                     FailoverClusterIPAddress   = '10.0.0.10'
-
-#                     # Ensure we use "clustered" disks for our paths
-#                     InstallSQLDataDir          = 'E:\MSSQL\Data'
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#             }
-#         }
-
-#         It 'Should pass proper parameters to setup when three variables are assigned the same drive, but different paths' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{
-#                 Action                       = 'InstallFailoverCluster'
-#                 FailoverClusterDisks         = 'SysData'
-#                 FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
-#                 FailoverClusterNetworkName   = 'TestDefaultCluster'
-#                 InstallSQLDataDir            = 'E:\SQLData'
-#                 SQLUserDBDir                 = 'E:\SQLData\UserDb'
-#                 SQLUserDBLogDir              = 'E:\SQLData\UserDbLogs'
-#                 IAcceptSQLServerLicenseTerms = 'True'
-#                 Quiet                        = 'True'
-#                 InstanceName                 = 'MSSQLSERVER'
-#                 Features                     = 'SQLENGINE'
-#                 SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                 FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
-#             }
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                     # Feature support is tested elsewhere, so just include the minimum.
-#                     Features                   = 'SQLEngine'
-
-#                     InstanceName               = 'MSSQLSERVER'
-#                     SourcePath                 = $TestDrive
-#                     Action                     = 'InstallFailoverCluster'
-#                     FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                     FailoverClusterNetworkName = 'TestDefaultCluster'
-#                     FailoverClusterIPAddress   = '10.0.0.10'
-
-#                     # Ensure we use "clustered" disks for our paths
-#                     InstallSQLDataDir          = 'E:\SQLData\' # This ends with \ to test removal of paths ending with \
-#                     SQLUserDBDir               = 'E:\SQLData\UserDb'
-#                     SQLUserDBLogDir            = 'E:\SQLData\UserDbLogs'
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#             }
-#         }
-
-#         It 'Should throw an error when one or more paths are not resolved to clustered storage' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{}
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                     # Feature support is tested elsewhere, so just include the minimum.
-#                     Features                   = 'SQLEngine'
-
-#                     InstanceName               = 'MSSQLSERVER'
-#                     SourcePath                 = $TestDrive
-#                     Action                     = 'InstallFailoverCluster'
-#                     FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                     FailoverClusterNetworkName = 'TestDefaultCluster'
-#                     FailoverClusterIPAddress   = '10.0.0.10'
-
-#                     InstallSQLDataDir          = 'E:\MSSQL\Data'
-#                     SQLUserDBLogDir            = 'L:\MSSQL\Logs'
-#                     SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
-#                     SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
-#                     SQLBackupDir               = 'O:\MSSQL\Backup'
-
-#                     SQLUserDBDir               = 'C:\MSSQL\' # Pass in a bad path
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; SysData; TempDbData; TempDbLogs; UserLogs.'
-#             }
-#         }
-
-#         It 'Should build a DEFAULT address string when no network is specified in parameter FailoverClusterIPAddress' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{
-#                 Action                       = 'InstallFailoverCluster'
-#                 FailoverClusterIPAddresses   = 'DEFAULT'
-#                 FailoverClusterNetworkName   = 'TestDefaultCluster'
-#                 InstallSQLDataDir            = $mockDynamicSqlDataDirectoryPath
-#                 SQLUserDBDir                 = $mockDynamicSqlUserDatabasePath
-#                 SQLUserDBLogDir              = $mockDynamicSqlUserDatabaseLogPath
-#                 SQLTempDBDir                 = $mockDynamicSqlTempDatabasePath
-#                 SQLTempDBLogDir              = $mockDynamicSqlTempDatabaseLogPath
-#                 SQLBackupDir                 = $mockDynamicSqlBackupPath
-#                 FailoverClusterDisks         = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
-#                 IAcceptSQLServerLicenseTerms = 'True'
-#                 Quiet                        = 'True'
-#                 InstanceName                 = 'MSSQLSERVER'
-#                 Features                     = 'SQLENGINE'
-#                 SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                 FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
-#             }
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                     # Feature support is tested elsewhere, so just include the minimum.
-#                     Features                   = 'SQLEngine'
-
-#                     InstanceName               = 'MSSQLSERVER'
-#                     SourcePath                 = $TestDrive
-#                     Action                     = 'InstallFailoverCluster'
-#                     FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                     FailoverClusterNetworkName = 'TestDefaultCluster'
-
-#                     # Ensure we use "clustered" disks for our paths
-#                     InstallSQLDataDir          = 'E:\MSSQL\Data'
-#                     SQLUserDBDir               = 'K:\MSSQL\Data'
-#                     SQLUserDBLogDir            = 'L:\MSSQL\Logs'
-#                     SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
-#                     SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
-#                     SQLBackupDir               = 'O:\MSSQL\Backup'
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#             }
-#         }
-
-#         Context 'When an invalid IP Address is specified' {
-#             BeforeAll {
-#                 <#
-#                     The default mock (higher up in the test code) will mock $true
-#                     for Test-IPAddress. This mock will override the default mock
-#                     so that Test-IPAddress returns $false.
-#                 #>
-#                 Mock -CommandName Test-IPAddress -MockWith {
-#                     return $false
-#                 }
-#             }
-
-#             It 'Should throw an error when an invalid IP Address is specified' {
-#                 $mockStartSqlSetupProcessExpectedArgument = @{}
-
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockSetTargetResourceParameters = @{
-#                         SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                         # Feature support is tested elsewhere, so just include the minimum.
-#                         Features                   = 'SQLEngine'
-
-#                         InstanceName               = 'MSSQLSERVER'
-#                         SourcePath                 = $TestDrive
-#                         Action                     = 'InstallFailoverCluster'
-#                         FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                         FailoverClusterNetworkName = 'TestDefaultCluster'
-#                         FailoverClusterIPAddress   = '192.168.0.100'
-
-#                         # Ensure we use "clustered" disks for our paths
-#                         InstallSQLDataDir          = 'E:\MSSQL\Data'
-#                         SQLUserDBDir               = 'K:\MSSQL\Data'
-#                         SQLUserDBLogDir            = 'L:\MSSQL\Logs'
-#                         SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
-#                         SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
-#                         SQLBackupDir               = 'O:\MSSQL\Backup'
-#                     }
-
-#                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
-#                 }
-#             }
-#         }
-
-#         Context 'When an invalid IP Address is specified for a multi-subnet instance' {
-#             BeforeAll {
-#                 <#
-#                     The default mock (higher up in the test code) will mock $true
-#                     for Test-IPAddress. This mock will override the default mock
-#                     so that one IP address ('10.0.0.100') returns $false from
-#                     Test-IPAddress.
-#                 #>
-#                 Mock -CommandName Test-IPAddress -MockWith {
-#                     return $false
-#                 } -ParameterFilter {
-#                     $IPAddress -eq '10.0.0.100'
-#                 }
-#             }
-
-#             It 'Should throw an error ' {
-#                 $mockStartSqlSetupProcessExpectedArgument = @{}
-
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockSetTargetResourceParameters = @{
-#                         SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                         # Feature support is tested elsewhere, so just include the minimum.
-#                         Features                   = 'SQLEngine'
-
-#                         InstanceName               = 'MSSQLSERVER'
-#                         SourcePath                 = $TestDrive
-#                         Action                     = 'InstallFailoverCluster'
-#                         FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                         FailoverClusterNetworkName = 'TestDefaultCluster'
-#                         FailoverClusterIPAddress   = @('10.0.0.100', '192.168.0.100')
-
-#                         # Ensure we use "clustered" disks for our paths
-#                         InstallSQLDataDir          = 'E:\MSSQL\Data'
-#                         SQLUserDBDir               = 'K:\MSSQL\Data'
-#                         SQLUserDBLogDir            = 'L:\MSSQL\Logs'
-#                         SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
-#                         SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
-#                         SQLBackupDir               = 'O:\MSSQL\Backup'
-#                     }
-
-#                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
-#                 }
-#             }
-#         }
-
-#         Context 'When an invalid IP Address is specified for a multi-subnet instance' {
-#             BeforeAll {
-#                 <#
-#                     The default mock (higher up in the test code) will mock $true
-#                     for Test-IPAddress. These mocks will override the default mock
-#                     so that Test-IPAddress returns $false, and $true when IP address
-#                     has the correct subnet.
-#                 #>
-#                 Mock -CommandName Test-IPAddress -MockWith {
-#                     return $false
-#                 }
-
-#                 Mock -CommandName Test-IPAddress -MockWith {
-#                     return $true
-#                 } -ParameterFilter {
-#                     $IPAddress -eq '10.0.0.10' -and $NetworkID -eq '10.0.0.10'
-#                 }
-
-#                 Mock -CommandName Test-IPAddress -MockWith {
-#                     return $true
-#                 } -ParameterFilter {
-#                     $IPAddress -eq '10.0.10.100' -and $NetworkID -eq '10.0.10.100'
-#                 }
-#             }
-
-#             It 'Should build a valid IP address string for a multi-subnet cluster' {
-#                 # Setting up the mock to return multiple sites.
-#                 $mockDynamicClusterSites = @(
-#                     @{
-#                         Name    = 'SiteA'
-#                         Address = '10.0.0.10' # First site IP address
-#                         Mask    = '255.255.255.0'
-#                     },
-#                     @{
-#                         Name    = 'SiteB'
-#                         Address = '10.0.10.100' # Second site IP address
-#                         Mask    = '255.255.255.0'
-#                     }
-#                 )
-
-#                 $mockStartSqlSetupProcessExpectedArgument += @{
-#                     FailoverClusterIPAddresses   = 'IPv4;10.0.0.10;SiteA_Prod;255.255.255.0; IPv4;10.0.10.100;SiteB_Prod;255.255.255.0'
-#                     FailoverClusterNetworkName   = 'TestDefaultCluster'
-#                     InstallSQLDataDir            = $mockDynamicSqlDataDirectoryPath
-#                     SQLUserDBDir                 = $mockDynamicSqlUserDatabasePath
-#                     SQLUserDBLogDir              = $mockDynamicSqlUserDatabaseLogPath
-#                     SQLTempDBDir                 = $mockDynamicSqlTempDatabasePath
-#                     SQLTempDBLogDir              = $mockDynamicSqlTempDatabaseLogPath
-#                     SQLBackupDir                 = $mockDynamicSqlBackupPath
-#                     FailoverClusterDisks         = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
-#                     Action                       = 'InstallFailoverCluster'
-#                     IAcceptSQLServerLicenseTerms = 'True'
-#                     Quiet                        = 'True'
-#                     InstanceName                 = 'MSSQLSERVER'
-#                     Features                     = 'SQLENGINE'
-#                     SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                     FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
-#                 }
-
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockSetTargetResourceParameters = @{
-#                         SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                         # Feature support is tested elsewhere, so just include the minimum.
-#                         Features                   = 'SQLEngine'
-
-#                         InstanceName               = 'MSSQLSERVER'
-#                         SourcePath                 = $TestDrive
-#                         Action                     = 'InstallFailoverCluster'
-#                         FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                         FailoverClusterNetworkName = 'TestDefaultCluster'
-#                         FailoverClusterIPAddress   = @('10.0.0.10', '10.0.10.100')
-
-#                         # Ensure we use "clustered" disks for our paths
-#                         InstallSQLDataDir          = 'E:\MSSQL\Data'
-#                         SQLUserDBDir               = 'K:\MSSQL\Data'
-#                         SQLUserDBLogDir            = 'L:\MSSQL\Logs'
-#                         SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
-#                         SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
-#                         SQLBackupDir               = 'O:\MSSQL\Backup'
-#                     }
-
-#                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                 }
-
-#                 # Reverting the mock to return a single site.
-#                 $mockDynamicClusterSites = @(
-#                     @{
-#                         Name    = 'SiteA'
-#                         Address = '10.0.0.10' # First site IP address
-#                         Mask    = '255.255.255.0'
-#                     }
-#                 )
-#             }
-#         }
-
-#         Context 'When Cluster Shared volumes are specified' {
-#             BeforeAll {
-#                 $mockGetCIMInstance_MSCluster_ClusterSharedVolume = {
-#                     return @(
-#                         (
-#                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-#                                 Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\SysData' -PassThru -Force
-#                         ),
-#                         (
-#                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-#                                 Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\SQLData' -PassThru -Force
-#                         ),
-#                         (
-#                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-#                                 Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\SQLLogs' -PassThru -Force
-#                         ),
-#                         (
-#                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-#                                 Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\TempDBData' -PassThru -Force
-#                         ),
-#                         (
-#                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-#                                 Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\TempDBLogs' -PassThru -Force
-#                         ),
-#                         (
-#                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-#                                 Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\SQLBackup' -PassThru -Force
-#                         )
-#                     )
-#                 }
-
-#                 $mockGetCIMInstance_MSCluster_ClusterSharedVolumeToResource = {
-#                     return @(
-#                         (
-#                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-#                                 Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\SysData' }) -PassThru -Force |
-#                                 Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL System Data Disk)' }) -PassThru -Force
-#                         ),
-#                         (
-#                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-#                                 Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\SQLData' }) -PassThru -Force |
-#                                 Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL Data Disk)' }) -PassThru -Force
-#                         ),
-#                         (
-#                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-#                                 Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\SQLLogs' }) -PassThru -Force |
-#                                 Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL Log Disk)' }) -PassThru -Force
-#                         ),
-#                         (
-#                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-#                                 Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\TempDBData' }) -PassThru -Force |
-#                                 Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL TempDBData Disk)' }) -PassThru -Force
-#                         ),
-#                         (
-#                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-#                                 Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\TempDBLogs' }) -PassThru -Force |
-#                                 Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL TempDBLog Disk)' }) -PassThru -Force
-#                         ),
-#                         (
-#                             New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
-#                                 Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\SQLBackup' }) -PassThru -Force |
-#                                 Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL Backup Disk)' }) -PassThru -Force
-#                         )
-#                     )
-#                 }
-
-#                 Mock -CommandName Get-CimInstance -MockWith $mockGetCIMInstance_MSCluster_ClusterSharedVolume -ParameterFilter {
-#                     $ClassName -eq 'MSCluster_ClusterSharedVolume'
-#                 }
-
-#                 Mock -CommandName Get-CimInstance -MockWith $mockGetCIMInstance_MSCluster_ClusterSharedVolumeToResource -ParameterFilter {
-#                     $ClassName -eq 'MSCluster_ClusterSharedVolumeToResource'
-#                 }
-#             }
-
-#             It 'Should pass proper parameters to setup' {
-#                 $mockStartSqlSetupProcessExpectedArgument = @{
-#                     Action                       = 'InstallFailoverCluster'
-#                     FailoverClusterDisks         = 'Cluster Virtual Disk (SQL Backup Disk); Cluster Virtual Disk (SQL Data Disk); Cluster Virtual Disk (SQL Log Disk); Cluster Virtual Disk (SQL System Data Disk); Cluster Virtual Disk (SQL TempDBData Disk); Cluster Virtual Disk (SQL TempDBLog Disk)'
-#                     FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
-#                     FailoverClusterNetworkName   = 'TestDefaultCluster'
-#                     InstallSQLDataDir            = 'C:\ClusterStorage\SysData'
-#                     SQLUserDBDir                 = 'C:\ClusterStorage\SQLData'
-#                     SQLUserDBLogDir              = 'C:\ClusterStorage\SQLLogs'
-#                     SQLTempDBDir                 = 'C:\ClusterStorage\TempDBData'
-#                     SQLTempDBLogDir              = 'C:\ClusterStorage\TempDBLogs'
-#                     SQLBackupDir                 = 'C:\ClusterStorage\SQLBackup'
-#                     IAcceptSQLServerLicenseTerms = 'True'
-#                     Quiet                        = 'True'
-#                     InstanceName                 = 'MSSQLSERVER'
-#                     Features                     = 'SQLENGINE'
-#                     SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                     FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
-#                 }
-
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockSetTargetResourceParameters = @{
-#                         SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                         # Feature support is tested elsewhere, so just include the minimum.
-#                         Features                   = 'SQLEngine'
-
-#                         InstanceName               = 'MSSQLSERVER'
-#                         SourcePath                 = $TestDrive
-#                         Action                     = 'InstallFailoverCluster'
-#                         FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                         FailoverClusterNetworkName = 'TestDefaultCluster'
-#                         FailoverClusterIPAddress   = '10.0.0.10'
-
-#                         # Ensure we use "clustered" disks for our paths
-#                         InstallSQLDataDir          = 'C:\ClusterStorage\SysData'
-#                         SQLUserDBDir               = 'C:\ClusterStorage\SQLData'
-#                         SQLUserDBLogDir            = 'C:\ClusterStorage\SQLLogs'
-#                         SQLTempDbDir               = 'C:\ClusterStorage\TempDBData'
-#                         SQLTempDbLogDir            = 'C:\ClusterStorage\TempDBLogs'
-#                         SQLBackupDir               = 'C:\ClusterStorage\SQLBackup'
-#                     }
-
-#                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                 }
-#             }
-
-#             Context 'When Cluster Shared volumes are the same for one or more parameters' {
-#                 It 'Should pass proper parameters to setup' {
-#                     $mockStartSqlSetupProcessExpectedArgument = @{
-#                         Action                       = 'InstallFailoverCluster'
-#                         FailoverClusterDisks         = 'Cluster Virtual Disk (SQL Backup Disk); Cluster Virtual Disk (SQL Data Disk)'
-#                         FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
-#                         FailoverClusterNetworkName   = 'TestDefaultCluster'
-#                         InstallSQLDataDir            = 'C:\ClusterStorage\SQLData\Data'
-#                         SQLUserDBDir                 = 'C:\ClusterStorage\SQLData\Data'
-#                         SQLUserDBLogDir              = 'C:\ClusterStorage\SQLData\Logs'
-#                         SQLTempDBDir                 = 'C:\ClusterStorage\SQLData\TEMPDB'
-#                         SQLTempDBLogDir              = 'C:\ClusterStorage\SQLData\TEMPDBLOG'
-#                         SQLBackupDir                 = 'C:\ClusterStorage\SQLBackup\Backup'
-#                         IAcceptSQLServerLicenseTerms = 'True'
-#                         Quiet                        = 'True'
-#                         InstanceName                 = 'MSSQLSERVER'
-#                         Features                     = 'SQLENGINE'
-#                         SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                         FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
-#                     }
-
-#                     InModuleScope -ScriptBlock {
-#                         Set-StrictMode -Version 1.0
-
-#                         $mockSetTargetResourceParameters = @{
-#                             SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                             # Feature support is tested elsewhere, so just include the minimum.
-#                             Features                   = 'SQLEngine'
-
-#                             InstanceName               = 'MSSQLSERVER'
-#                             SourcePath                 = $TestDrive
-#                             Action                     = 'InstallFailoverCluster'
-#                             FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                             FailoverClusterNetworkName = 'TestDefaultCluster'
-#                             FailoverClusterIPAddress   = '10.0.0.10'
-
-#                             # Ensure we use "clustered" disks for our paths
-#                             InstallSQLDataDir          = 'C:\ClusterStorage\SQLData\Data'
-#                             SQLUserDBDir               = 'C:\ClusterStorage\SQLData\Data'
-#                             SQLUserDBLogDir            = 'C:\ClusterStorage\SQLData\Logs'
-#                             SQLTempDbDir               = 'C:\ClusterStorage\SQLData\TEMPDB'
-#                             SQLTempDbLogDir            = 'C:\ClusterStorage\SQLData\TEMPDBLOG'
-#                             SQLBackupDir               = 'C:\ClusterStorage\SQLBackup\Backup'
-#                         }
-
-#                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                     }
-#                 }
-#             }
-#         }
-#     }
-
-#     Context 'When action is set to ''PrepareFailoverCluster''' {
-#         BeforeAll {
-#             Mock -CommandName Get-FilePathMajorVersion -MockWith {
-#                 return 15
-#             }
-
-#             Mock -CommandName Get-TargetResource -MockWith {
-#                 return @{
-#                     Features = ''
-#                 }
-#             }
-
-#             Mock -CommandName Invoke-InstallationMediaCopy -MockWith $mockNewTemporaryFolder
-
-#             Mock -CommandName Get-CimInstance -ParameterFilter {
-#                 ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_ResourceGroup') -and ($Filter -eq "Name = 'Available Storage'")
-#             }
-
-#             Mock -CommandName Get-CimAssociatedInstance -ParameterFilter {
-#                 ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
-#             }
-
-#             Mock -CommandName Get-CimAssociatedInstance -ParameterFilter {
-#                 $Association -eq 'MSCluster_ResourceToPossibleOwner'
-#             }
-
-#             Mock -CommandName Get-CimAssociatedInstance -ParameterFilter {
-#                 $ResultClass -eq 'MSCluster_DiskPartition'
-#             }
-
-#             Mock -CommandName Get-CimInstance -ParameterFilter {
-#                 ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
-#             }
-#         }
-
-#         It 'Should pass correct arguments to the setup process' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{
-#                 Action                       = 'PrepareFailoverCluster'
-#                 IAcceptSQLServerLicenseTerms = 'True'
-#                 Quiet                        = 'True'
-#                 InstanceName                 = 'MSSQLSERVER'
-#                 Features                     = 'SQLENGINE'
-#             }
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     # Feature support is tested elsewhere, so just include the minimum.
-#                     Features     = 'SQLEngine'
-
-#                     InstanceName = 'MSSQLSERVER'
-#                     SourcePath   = $TestDrive
-#                     Action       = 'PrepareFailoverCluster'
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#             }
-
-#             Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
-#             Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
-#             Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
-
-#             Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
-#                 ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_ResourceGroup') -and ($Filter -eq "Name = 'Available Storage'")
-#             } -Exactly -Times 0 -Scope It
-
-#             Should -Invoke -CommandName Get-CimAssociatedInstance -ParameterFilter {
-#                 ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
-#             } -Exactly -Times 0 -Scope It
-
-#             Should -Invoke -CommandName Get-CimAssociatedInstance -ParameterFilter {
-#                 $Association -eq 'MSCluster_ResourceToPossibleOwner'
-#             } -Exactly -Times 0 -Scope It
-
-#             Should -Invoke -CommandName Get-CimAssociatedInstance -ParameterFilter {
-#                 $ResultClass -eq 'MSCluster_DiskPartition'
-#             } -Exactly -Times 0 -Scope It
-
-#             Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
-#                 ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
-#             } -Exactly -Times 0 -Scope It
-#         }
-#     }
-
-#     Context 'When action is set to ''CompleteFailoverCluster''' {
-#         BeforeAll {
-#             Mock -CommandName Get-FilePathMajorVersion -MockWith {
-#                 return 15
-#             }
-
-#             # Cluster shared volumes will be tested and mocked later on.
-#             Mock -CommandName Get-CimInstance -MockWith {
-#                 return $null
-#             } -ParameterFilter {
-#                 $ClassName -eq 'MSCluster_ClusterSharedVolume'
-#             }
-
-#             Mock -CommandName Get-TargetResource -MockWith {
-#                 return @{
-#                     Features = ''
-#                 }
-#             }
-
-#             $mockDynamicSqlDataDirectoryPath = 'E:\MSSQL\Data'
-#             $mockDynamicSqlUserDatabasePath = 'K:\MSSQL\Data'
-#             $mockDynamicSqlUserDatabaseLogPath = 'L:\MSSQL\Logs'
-#             $mockDynamicSqlTempDatabasePath = 'M:\MSSQL\TempDb\Data'
-#             $mockDynamicSqlTempDatabaseLogPath = 'N:\MSSQL\TempDb\Logs'
-#             $mockDynamicSqlBackupPath = 'O:\MSSQL\Backup'
-
-#             Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterResourceGroup_AvailableStorage -ParameterFilter {
-#                 $Filter -eq "Name = 'Available Storage'"
-#             }
-
-#             Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceGroupToResource -ParameterFilter {
-#                 ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
-#             }
-
-#             Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceToPossibleOwner -ParameterFilter {
-#                 $Association -eq 'MSCluster_ResourceToPossibleOwner'
-#             }
-
-#             Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_DiskPartition -ParameterFilter {
-#                 $ResultClassName -eq 'MSCluster_DiskPartition'
-#             }
-
-#             $mockDynamicClusterSites = @(
-#                 @{
-#                     Name    = 'SiteA'
-#                     Address = '10.0.0.10' # First site IP address
-#                     Mask    = '255.255.255.0'
-#                 }
-#             )
-
-#             Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterNetwork -ParameterFilter {
-#                 ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
-#             }
-
-#             Mock -CommandName Test-IPAddress -MockWith {
-#                 return $true
-#             }
-#         }
-
-#         It 'Should pass proper parameters to setup' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{
-#                 Action                       = 'CompleteFailoverCluster'
-#                 FailoverClusterDisks         = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
-#                 FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
-#                 FailoverClusterNetworkName   = 'TestDefaultCluster'
-#                 InstallSQLDataDir            = 'E:\MSSQL\Data'
-#                 SQLUserDBDir                 = 'K:\MSSQL\Data'
-#                 SQLUserDBLogDir              = 'L:\MSSQL\Logs'
-#                 SQLTempDBDir                 = 'M:\MSSQL\TempDb\Data'
-#                 SQLTempDBLogDir              = 'N:\MSSQL\TempDb\Logs'
-#                 SQLBackupDir                 = 'O:\MSSQL\Backup'
-#                 IAcceptSQLServerLicenseTerms = 'True'
-#                 Quiet                        = 'True'
-#                 InstanceName                 = 'MSSQLSERVER'
-#                 Features                     = 'SQLENGINE'
-#                 SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                 FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
-#             }
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                     # Feature support is tested elsewhere, so just include the minimum.
-#                     Features                   = 'SQLEngine'
-
-#                     InstanceName               = 'MSSQLSERVER'
-#                     SourcePath                 = $TestDrive
-#                     Action                     = 'CompleteFailoverCluster'
-#                     FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                     FailoverClusterNetworkName = 'TestDefaultCluster'
-#                     FailoverClusterIPAddress   = '10.0.0.10'
-
-#                     # Ensure we use "clustered" disks for our paths
-#                     InstallSQLDataDir          = 'E:\MSSQL\Data'
-#                     SQLUserDBDir               = 'K:\MSSQL\Data'
-#                     SQLUserDBLogDir            = 'L:\MSSQL\Logs'
-#                     SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
-#                     SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
-#                     SQLBackupDir               = 'O:\MSSQL\Backup'
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#             }
-#         }
-
-#         It 'Should pass proper parameters to setup when only InstallSQLDataDir is assigned a path' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{
-#                 Action                       = 'CompleteFailoverCluster'
-#                 FailoverClusterDisks         = 'SysData'
-#                 FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
-#                 FailoverClusterNetworkName   = 'TestDefaultCluster'
-#                 InstallSQLDataDir            = 'E:\MSSQL\Data'
-#                 IAcceptSQLServerLicenseTerms = 'True'
-#                 Quiet                        = 'True'
-#                 InstanceName                 = 'MSSQLSERVER'
-#                 Features                     = 'SQLENGINE'
-#                 SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                 FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
-#             }
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                     # Feature support is tested elsewhere, so just include the minimum.
-#                     Features                   = 'SQLEngine'
-
-#                     InstanceName               = 'MSSQLSERVER'
-#                     SourcePath                 = $TestDrive
-#                     Action                     = 'CompleteFailoverCluster'
-#                     FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                     FailoverClusterNetworkName = 'TestDefaultCluster'
-#                     FailoverClusterIPAddress   = '10.0.0.10'
-
-#                     # Ensure we use "clustered" disks for our paths
-#                     InstallSQLDataDir          = 'E:\MSSQL\Data'
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#             }
-#         }
-
-#         It 'Should pass proper parameters to setup when three variables are assigned the same drive, but different paths' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{
-#                 Action                       = 'CompleteFailoverCluster'
-#                 FailoverClusterDisks         = 'SysData'
-#                 FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
-#                 FailoverClusterNetworkName   = 'TestDefaultCluster'
-#                 InstallSQLDataDir            = 'E:\SQLData'
-#                 SQLUserDBDir                 = 'E:\SQLData\UserDb'
-#                 SQLUserDBLogDir              = 'E:\SQLData\UserDbLogs'
-#                 IAcceptSQLServerLicenseTerms = 'True'
-#                 Quiet                        = 'True'
-#                 InstanceName                 = 'MSSQLSERVER'
-#                 Features                     = 'SQLENGINE'
-#                 SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                 FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
-#             }
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                     # Feature support is tested elsewhere, so just include the minimum.
-#                     Features                   = 'SQLEngine'
-
-#                     InstanceName               = 'MSSQLSERVER'
-#                     SourcePath                 = $TestDrive
-#                     Action                     = 'CompleteFailoverCluster'
-#                     FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                     FailoverClusterNetworkName = 'TestDefaultCluster'
-#                     FailoverClusterIPAddress   = '10.0.0.10'
-
-#                     # Ensure we use "clustered" disks for our paths
-#                     InstallSQLDataDir          = 'E:\SQLData\' # This ends with \ to test removal of paths ending with \
-#                     SQLUserDBDir               = 'E:\SQLData\UserDb'
-#                     SQLUserDBLogDir            = 'E:\SQLData\UserDbLogs'
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#             }
-#         }
-
-#         It 'Should throw an error when one or more paths are not resolved to clustered storage' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{}
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                     # Feature support is tested elsewhere, so just include the minimum.
-#                     Features                   = 'SQLEngine'
-
-#                     InstanceName               = 'MSSQLSERVER'
-#                     SourcePath                 = $TestDrive
-#                     Action                     = 'CompleteFailoverCluster'
-#                     FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                     FailoverClusterNetworkName = 'TestDefaultCluster'
-#                     FailoverClusterIPAddress   = '10.0.0.10'
-
-#                     InstallSQLDataDir          = 'E:\MSSQL\Data'
-#                     SQLUserDBLogDir            = 'L:\MSSQL\Logs'
-#                     SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
-#                     SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
-#                     SQLBackupDir               = 'O:\MSSQL\Backup'
-
-#                     SQLUserDBDir               = 'C:\MSSQL\' # Pass in a bad path
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; SysData; TempDbData; TempDbLogs; UserLogs.'
-#             }
-#         }
-
-#         It 'Should build a DEFAULT address string when no network is specified in parameter FailoverClusterIPAddress' {
-#             $mockStartSqlSetupProcessExpectedArgument = @{
-#                 Action                       = 'CompleteFailoverCluster'
-#                 FailoverClusterIPAddresses   = 'DEFAULT'
-#                 FailoverClusterNetworkName   = 'TestDefaultCluster'
-#                 InstallSQLDataDir            = $mockDynamicSqlDataDirectoryPath
-#                 SQLUserDBDir                 = $mockDynamicSqlUserDatabasePath
-#                 SQLUserDBLogDir              = $mockDynamicSqlUserDatabaseLogPath
-#                 SQLTempDBDir                 = $mockDynamicSqlTempDatabasePath
-#                 SQLTempDBLogDir              = $mockDynamicSqlTempDatabaseLogPath
-#                 SQLBackupDir                 = $mockDynamicSqlBackupPath
-#                 FailoverClusterDisks         = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
-#                 IAcceptSQLServerLicenseTerms = 'True'
-#                 Quiet                        = 'True'
-#                 InstanceName                 = 'MSSQLSERVER'
-#                 Features                     = 'SQLENGINE'
-#                 SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                 FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
-#             }
-
-#             InModuleScope -ScriptBlock {
-#                 Set-StrictMode -Version 1.0
-
-#                 $mockSetTargetResourceParameters = @{
-#                     SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                     # Feature support is tested elsewhere, so just include the minimum.
-#                     Features                   = 'SQLEngine'
-
-#                     InstanceName               = 'MSSQLSERVER'
-#                     SourcePath                 = $TestDrive
-#                     Action                     = 'CompleteFailoverCluster'
-#                     FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                     FailoverClusterNetworkName = 'TestDefaultCluster'
-
-#                     # Ensure we use "clustered" disks for our paths
-#                     InstallSQLDataDir          = 'E:\MSSQL\Data'
-#                     SQLUserDBDir               = 'K:\MSSQL\Data'
-#                     SQLUserDBLogDir            = 'L:\MSSQL\Logs'
-#                     SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
-#                     SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
-#                     SQLBackupDir               = 'O:\MSSQL\Backup'
-#                 }
-
-#                 { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#             }
-#         }
-
-#         Context 'When an invalid IP Address is specified' {
-#             BeforeAll {
-#                 <#
-#                     The default mock (higher up in the test code) will mock $true
-#                     for Test-IPAddress. This mock will override the default mock
-#                     so that Test-IPAddress returns $false.
-#                 #>
-#                 Mock -CommandName Test-IPAddress -MockWith {
-#                     return $false
-#                 }
-#             }
-
-#             It 'Should throw an error when an invalid IP Address is specified' {
-#                 $mockStartSqlSetupProcessExpectedArgument = @{}
-
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockSetTargetResourceParameters = @{
-#                         SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                         # Feature support is tested elsewhere, so just include the minimum.
-#                         Features                   = 'SQLEngine'
-
-#                         InstanceName               = 'MSSQLSERVER'
-#                         SourcePath                 = $TestDrive
-#                         Action                     = 'CompleteFailoverCluster'
-#                         FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                         FailoverClusterNetworkName = 'TestDefaultCluster'
-#                         FailoverClusterIPAddress   = '192.168.0.100'
-
-#                         # Ensure we use "clustered" disks for our paths
-#                         InstallSQLDataDir          = 'E:\MSSQL\Data'
-#                         SQLUserDBDir               = 'K:\MSSQL\Data'
-#                         SQLUserDBLogDir            = 'L:\MSSQL\Logs'
-#                         SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
-#                         SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
-#                         SQLBackupDir               = 'O:\MSSQL\Backup'
-#                     }
-
-#                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
-#                 }
-#             }
-#         }
-
-#         Context 'When an invalid IP Address is specified for a multi-subnet instance' {
-#             BeforeAll {
-#                 <#
-#                     The default mock (higher up in the test code) will mock $true
-#                     for Test-IPAddress. This mock will override the default mock
-#                     so that one IP address ('10.0.0.100') returns $false from
-#                     Test-IPAddress.
-#                 #>
-#                 Mock -CommandName Test-IPAddress -MockWith {
-#                     return $false
-#                 } -ParameterFilter {
-#                     $IPAddress -eq '10.0.0.100'
-#                 }
-#             }
-
-#             It 'Should throw an error ' {
-#                 $mockStartSqlSetupProcessExpectedArgument = @{}
-
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockSetTargetResourceParameters = @{
-#                         SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                         # Feature support is tested elsewhere, so just include the minimum.
-#                         Features                   = 'SQLEngine'
-
-#                         InstanceName               = 'MSSQLSERVER'
-#                         SourcePath                 = $TestDrive
-#                         Action                     = 'CompleteFailoverCluster'
-#                         FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                         FailoverClusterNetworkName = 'TestDefaultCluster'
-#                         FailoverClusterIPAddress   = @('10.0.0.100', '192.168.0.100')
-
-#                         # Ensure we use "clustered" disks for our paths
-#                         InstallSQLDataDir          = 'E:\MSSQL\Data'
-#                         SQLUserDBDir               = 'K:\MSSQL\Data'
-#                         SQLUserDBLogDir            = 'L:\MSSQL\Logs'
-#                         SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
-#                         SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
-#                         SQLBackupDir               = 'O:\MSSQL\Backup'
-#                     }
-
-#                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
-#                 }
-#             }
-#         }
-
-#         Context 'When an invalid IP Address is specified for a multi-subnet instance' {
-#             BeforeAll {
-#                 <#
-#                     The default mock (higher up in the test code) will mock $true
-#                     for Test-IPAddress. These mocks will override the default mock
-#                     so that Test-IPAddress returns $false, and $true when IP address
-#                     has the correct subnet.
-#                 #>
-#                 Mock -CommandName Test-IPAddress -MockWith {
-#                     return $false
-#                 }
-
-#                 Mock -CommandName Test-IPAddress -MockWith {
-#                     return $true
-#                 } -ParameterFilter {
-#                     $IPAddress -eq '10.0.0.10' -and $NetworkID -eq '10.0.0.10'
-#                 }
-
-#                 Mock -CommandName Test-IPAddress -MockWith {
-#                     return $true
-#                 } -ParameterFilter {
-#                     $IPAddress -eq '10.0.10.100' -and $NetworkID -eq '10.0.10.100'
-#                 }
-#             }
-
-#             It 'Should build a valid IP address string for a multi-subnet cluster' {
-#                 # Setting up the mock to return multiple sites.
-#                 $mockDynamicClusterSites = @(
-#                     @{
-#                         Name    = 'SiteA'
-#                         Address = '10.0.0.10' # First site IP address
-#                         Mask    = '255.255.255.0'
-#                     },
-#                     @{
-#                         Name    = 'SiteB'
-#                         Address = '10.0.10.100' # Second site IP address
-#                         Mask    = '255.255.255.0'
-#                     }
-#                 )
-
-#                 $mockStartSqlSetupProcessExpectedArgument += @{
-#                     FailoverClusterIPAddresses   = 'IPv4;10.0.0.10;SiteA_Prod;255.255.255.0; IPv4;10.0.10.100;SiteB_Prod;255.255.255.0'
-#                     FailoverClusterNetworkName   = 'TestDefaultCluster'
-#                     InstallSQLDataDir            = $mockDynamicSqlDataDirectoryPath
-#                     SQLUserDBDir                 = $mockDynamicSqlUserDatabasePath
-#                     SQLUserDBLogDir              = $mockDynamicSqlUserDatabaseLogPath
-#                     SQLTempDBDir                 = $mockDynamicSqlTempDatabasePath
-#                     SQLTempDBLogDir              = $mockDynamicSqlTempDatabaseLogPath
-#                     SQLBackupDir                 = $mockDynamicSqlBackupPath
-#                     FailoverClusterDisks         = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
-#                     Action                       = 'CompleteFailoverCluster'
-#                     IAcceptSQLServerLicenseTerms = 'True'
-#                     Quiet                        = 'True'
-#                     InstanceName                 = 'MSSQLSERVER'
-#                     Features                     = 'SQLENGINE'
-#                     SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
-#                     FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
-#                 }
-
-#                 InModuleScope -ScriptBlock {
-#                     Set-StrictMode -Version 1.0
-
-#                     $mockSetTargetResourceParameters = @{
-#                         SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
-
-#                         # Feature support is tested elsewhere, so just include the minimum.
-#                         Features                   = 'SQLEngine'
-
-#                         InstanceName               = 'MSSQLSERVER'
-#                         SourcePath                 = $TestDrive
-#                         Action                     = 'CompleteFailoverCluster'
-#                         FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
-#                         FailoverClusterNetworkName = 'TestDefaultCluster'
-#                         FailoverClusterIPAddress   = @('10.0.0.10', '10.0.10.100')
-
-#                         # Ensure we use "clustered" disks for our paths
-#                         InstallSQLDataDir          = 'E:\MSSQL\Data'
-#                         SQLUserDBDir               = 'K:\MSSQL\Data'
-#                         SQLUserDBLogDir            = 'L:\MSSQL\Logs'
-#                         SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
-#                         SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
-#                         SQLBackupDir               = 'O:\MSSQL\Backup'
-#                     }
-
-#                     { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
-#                 }
-
-#                 # Reverting the mock to return a single site.
-#                 $mockDynamicClusterSites = @(
-#                     @{
-#                         Name    = 'SiteA'
-#                         Address = '10.0.0.10' # First site IP address
-#                         Mask    = '255.255.255.0'
-#                     }
-#                 )
-#             }
-#         }
-#     }
-# }
+Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
+    BeforeAll {
+        <#
+            These mocks is meant to make sure the commands are actually mocked in a
+            Context-block below.
+
+            If these are not mocked it can slow down testing. If a Context-block
+            does not mock a command, it will be tested against the default mock which
+            will be these ones and they will throw an error reminding to create
+            a mock.
+        #>
+        Mock -CommandName Get-TargetResource -MockWith {
+            throw 'The command ''Get-TargetResource'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Invoke-InstallationMediaCopy -MockWith {
+            throw 'The command ''Invoke-InstallationMediaCopy'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Get-CimInstance -MockWith {
+            throw 'The command ''Get-CimInstance'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Get-CimAssociatedInstance -MockWith {
+            throw 'The command ''Get-CimAssociatedInstance'' needs to be mocked in the Context-block'
+        }
+
+        Mock -CommandName Test-IPAddress -MockWith {
+            throw 'The command ''Test-IPAddress'' needs to be mocked in the Context-block'
+        }
+
+        #region Setting up TestDrive:\
+
+        <#
+            Mocking folder structure. This takes the leaf from the $TestDrive (the Guid in this case) and
+            uses that to create a mock folder to mimic the temp folder that would be created in, for example,
+            temp folder 'C:\Windows\Temp'.
+            This folder is used when SourcePath is called with a leaf, for example '\\server\share\folder'.
+        #>
+        $mediaTempSourcePathWithLeaf = (Join-Path -Path $TestDrive -ChildPath (Split-Path -Path $TestDrive -Leaf))
+        if (-not (Test-Path $mediaTempSourcePathWithLeaf))
+        {
+            New-Item -Path $mediaTempSourcePathWithLeaf -ItemType Directory
+        }
+
+        <#
+            Mocking folder structure to mimic the temp folder that would be created in, for example,
+            temp folder 'C:\Windows\Temp'.
+            This folder is used when SourcePath is called without a leaf, for example '\\server\share'.
+        #>
+        $mediaTempSourcePathWithoutLeaf = (Join-Path -Path $TestDrive -ChildPath 'cc719562-0f46-4a16-8605-9f8a47c70402')
+        if (-not (Test-Path $mediaTempSourcePathWithoutLeaf))
+        {
+            New-Item -Path $mediaTempSourcePathWithoutLeaf -ItemType Directory
+        }
+
+        # Mocking executable setup.exe which will be used for tests without parameter SourceCredential
+        Set-Content (Join-Path -Path $TestDrive -ChildPath 'setup.exe') -Value 'Mock exe file'
+
+        # Mocking executable setup.exe which will be used for tests with parameter SourceCredential and an UNC path with leaf
+        Set-Content (Join-Path -Path $mediaTempSourcePathWithLeaf -ChildPath 'setup.exe') -Value 'Mock exe file'
+
+        # Mocking executable setup.exe which will be used for tests with parameter SourceCredential and an UNC path without leaf
+        Set-Content (Join-Path -Path $mediaTempSourcePathWithoutLeaf -ChildPath 'setup.exe') -Value 'Mock exe file'
+
+        #endregion Setting up TestDrive:\
+
+        $mockNewTemporaryFolder = {
+            $testDrive_DriveShare = (Split-Path -Path $TestDrive -Qualifier) -replace ':', '$'
+            $mockSourcePathUNC = Join-Path -Path "\\localhost\$testDrive_DriveShare" -ChildPath (Split-Path -Path $TestDrive -NoQualifier)
+
+            return $mockSourcePathUNC
+        }
+
+        $mockGetCimAssociatedInstance_MSCluster_ResourceToPossibleOwner = {
+            return @(
+                (
+                    @($env:COMPUTERNAME, 'SQL01', 'SQL02') | ForEach-Object -Process {
+                        $node = $_
+                        New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Node', 'root/MSCluster' |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value $node -PassThru -Force
+                        }
+                    )
+                )
+            }
+
+            $mockGetCimInstance_MSClusterResourceGroup_AvailableStorage = {
+                return @(
+                    (
+                        New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ResourceGroup', 'root/MSCluster' |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value 'Available Storage' -PassThru -Force
+                )
+            )
+        }
+
+        $mockGetCimInstance_MSClusterNetwork = {
+            return @(
+                (
+                    $mockDynamicClusterSites | ForEach-Object -Process {
+                        $network = $_
+
+                        New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Network', 'root/MSCluster' |
+                            Add-Member -MemberType NoteProperty -Name 'Name' -Value "$($network.Name)_Prod" -PassThru -Force |
+                            Add-Member -MemberType NoteProperty -Name 'Role' -Value 2 -PassThru -Force |
+                            Add-Member -MemberType NoteProperty -Name 'Address' -Value $network.Address -PassThru -Force |
+                            Add-Member -MemberType NoteProperty -Name 'AddressMask' -Value $network.Mask -PassThru -Force
+                        }
+                    )
+                )
+            }
+
+            # Mock to return physical disks that are part of the "Available Storage" cluster role
+            $mockGetCimAssociatedInstance_MSCluster_ResourceGroupToResource = {
+                return @(
+                    (
+                        # $mockClusterDiskMap contains variables that are assigned dynamically (during runtime) before each test.
+                    (& $mockClusterDiskMap).Keys | ForEach-Object -Process {
+                            $diskName = $_
+                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_Resource', 'root/MSCluster' |
+                                Add-Member -MemberType NoteProperty -Name 'Name' -Value $diskName -PassThru -Force |
+                                Add-Member -MemberType NoteProperty -Name 'State' -Value 2 -PassThru -Force |
+                                Add-Member -MemberType NoteProperty -Name 'Type' -Value 'Physical Disk' -PassThru -Force
+                            }
+                        )
+                    )
+                }
+
+                $mockGetCimAssociatedInstance_MSCluster_DiskPartition = {
+                    $clusterDiskName = $InputObject.Name
+
+                    # $mockClusterDiskMap contains variables that are assigned dynamically (during runtime) before each test.
+                    $clusterDiskPath = (& $mockClusterDiskMap).$clusterDiskName
+
+                    return @(
+                        (
+                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_DiskPartition', 'root/MSCluster' |
+                                Add-Member -MemberType NoteProperty -Name 'Path' -Value $clusterDiskPath -PassThru -Force
+                )
+            )
+        }
+
+        $mockClusterDiskMap = {
+            @{
+                SysData    = Split-Path -Path $mockDynamicSqlDataDirectoryPath -Qualifier
+                UserData   = Split-Path -Path $mockDynamicSqlUserDatabasePath -Qualifier
+                UserLogs   = Split-Path -Path $mockDynamicSqlUserDatabaseLogPath -Qualifier
+                TempDbData = Split-Path -Path $mockDynamicSqlTempDatabasePath -Qualifier
+                TempDbLogs = Split-Path -Path $mockDynamicSqlTempDatabaseLogPath -Qualifier
+                Backup     = Split-Path -Path $mockDynamicSqlBackupPath -Qualifier
+            }
+        }
+
+        <#
+            Needed a way to see into the Set-method for the arguments the Set-method
+            is building and sending to 'setup.exe', and fail the test if the arguments
+            is different from the expected arguments. Solved this by dynamically set
+            the expected arguments before each It-block. If the arguments differs the
+            mock of Start-SqlSetupProcess throws an error message, similar to what
+            Pester would have reported (expected -> but was).
+        #>
+        $mockStartSqlSetupProcessExpectedArgument = @{}
+
+        $mockStartSqlSetupProcess = {
+            Test-SetupArgument -Argument $ArgumentList -ExpectedArgument $mockStartSqlSetupProcessExpectedArgument
+
+            return 0
+        }
+
+        $mockGetSqlMajorVersion = {
+            return $MockSqlMajorVersion
+        }
+
+        # General mocks
+        Mock -CommandName Get-PSDrive
+        Mock -CommandName Import-SqlDscPreferredModule
+        Mock -CommandName Get-FilePathMajorVersion -MockWith $mockGetSqlMajorVersion
+
+        # Mocking SharedDirectory and SharedWowDirectory (when not previously installed)
+        Mock -CommandName Get-ItemProperty
+
+        Mock -CommandName Start-SqlSetupProcess -MockWith $mockStartSqlSetupProcess
+        Mock -CommandName Test-TargetResource -MockWith {
+            return $true
+        }
+
+        Mock -CommandName Test-PendingRestart -MockWith {
+            return $false
+        }
+
+        InModuleScope -ScriptBlock {
+            # Mock PsDscRunAsCredential context.
+            $script:PsDscContext = @{
+                RunAsUser = 'COMPANY\sqladmin'
+            }
+        }
+    }
+
+    Context 'When setup action is Upgrade and parameter SqlVersion is passed' {
+        It 'Should throw the correct exception' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockErrorMessage = Get-InvalidOperationRecord -Message (
+                    $script:localizedData.ParameterSqlVersionNotAllowedForSetupActionUpgrade
+                )
+
+                $script:mockSetTargetResourceParameters = @{
+                    Action           = 'Upgrade'
+                    InstanceName     = 'MSSQLSERVER'
+                    SourceCredential = $null
+                    SourcePath       = $TestDrive
+                    ServerName       = 'host.company.local'
+                    SqlVersion       = '14.0'
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage $mockErrorMessage
+            }
+        }
+    }
+
+
+    Context 'When the system is not in the desired state' {
+        Context 'When installing a default instance for major version <MockSqlMajorVersion>' -ForEach $testProductVersion {
+            Context 'When installing all features' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Features = ''
+                        }
+                    }
+                }
+
+                It 'Should set the system in the desired state when feature is SQLENGINE' {
+                    $mockStartSqlSetupProcessExpectedArgument = @{
+                        Quiet                        = 'True'
+                        IAcceptSQLServerLicenseTerms = 'True'
+                        Action                       = 'Install'
+                        InstanceName                 = 'MSSQLSERVER'
+                        Features                     = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS,SSMS,ADV_SSMS'
+                        SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                        ASSysAdminAccounts           = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                        PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                        InstanceDir                  = 'D:\'
+                        InstallSQLDataDir            = 'E:\'
+                        InstallSharedDir             = 'C:\Program Files\Microsoft SQL Server'
+                        InstallSharedWOWDir          = 'C:\Program Files (x86)\Microsoft SQL Server'
+                        UpdateEnabled                = 'True'
+                        UpdateSource                 = 'C:\Updates' # Regression test for issue #720
+                        ASServerMode                 = 'TABULAR'
+                        SqlSvcStartupType            = 'Automatic'
+                        AgtSvcStartupType            = 'Automatic'
+                        AsSvcStartupType             = 'Automatic'
+                        IsSvcStartupType             = 'Automatic'
+                        SqlTempDbFileCount           = 2
+                        SqlTempDbFileSize            = 128
+                        SqlTempDbFileGrowth          = 128
+                        SqlTempDbLogFileSize         = 128
+                        SqlTempDbLogFileGrowth       = 128
+                        BrowserSvcStartupType        = 'Automatic'
+                    }
+
+                    if ($MockSqlMajorVersion -in ('13'))
+                    {
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS'
+                        $mockStartSqlSetupProcessExpectedArgument.RSInstallMode = 'DefaultNativeMode'
+                        $mockStartSqlSetupProcessExpectedArgument.RsSvcStartupType = 'Automatic'
+                    }
+                    elseif ($MockSqlMajorVersion -in ('14', '15'))
+                    {
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,CONN,BC,SDK,MDS'
+                    }
+                    elseif ($MockSqlMajorVersion -in ('16'))
+                    {
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,MDS'
+                    }
+                    else
+                    {
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS,SSMS,ADV_SSMS'
+                    }
+
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        # This is also used to regression test issue #1254, SqlSetup fails when root directory is specified.
+                        $mockSetTargetResourceParameters = @{
+                            Features               = 'SQLEngine,Replication,Dq,Dqc,FullText,Rs,As,Is,Bol,Conn,Bc,Sdk,Mds,Ssms,Adv_Ssms'
+                            SQLSysAdminAccounts    = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                            ASSysAdminAccounts     = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                            InstanceName           = 'MSSQLSERVER'
+                            SourceCredential       = $null
+                            SourcePath             = $TestDrive
+                            ProductKey             = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                            InstanceDir            = 'D:'
+                            InstallSQLDataDir      = 'E:'
+                            InstallSharedDir       = 'C:\Program Files\Microsoft SQL Server'
+                            InstallSharedWOWDir    = 'C:\Program Files (x86)\Microsoft SQL Server'
+                            UpdateEnabled          = 'True'
+                            UpdateSource           = 'C:\Updates\' # Regression test for issue #720
+                            ASServerMode           = 'TABULAR'
+                            SqlSvcStartupType      = 'Automatic'
+                            AgtSvcStartupType      = 'Automatic'
+                            AsSvcStartupType       = 'Automatic'
+                            IsSvcStartupType       = 'Automatic'
+                            SqlTempDbFileCount     = 2
+                            SqlTempDbFileSize      = 128
+                            SqlTempDbFileGrowth    = 128
+                            SqlTempDbLogFileSize   = 128
+                            SqlTempDbLogFileGrowth = 128
+                            BrowserSvcStartupType  = 'Automatic'
+                        }
+
+                        if ($MockSqlMajorVersion -in ('13', '14', '15', '16'))
+                        {
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SSMS,ADV_SSMS', ''
+                        }
+
+                        if ($MockSqlMajorVersion -in ('13'))
+                        {
+                            $mockSetTargetResourceParameters.RSInstallMode = 'DefaultNativeMode'
+                            $mockSetTargetResourceParameters.RsSvcStartupType = 'Automatic'
+                        }
+                        elseif ($MockSqlMajorVersion -in ('14', '15'))
+                        {
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
+                        }
+                        elseif ($MockSqlMajorVersion -in ('16'))
+                        {
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Conn', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Bc', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SDK', ''
+                        }
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When installing the database engine and enabling the Named Pipes protocol' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Features = ''
+                        }
+                    }
+                }
+
+                It 'Should set the system in the desired state when feature is SQLENGINE' {
+                    $mockStartSqlSetupProcessExpectedArgument = @{
+                        Quiet                        = 'True'
+                        IAcceptSQLServerLicenseTerms = 'True'
+                        Action                       = 'Install'
+                        InstanceName                 = 'MSSQLSERVER'
+                        Features                     = 'SQLENGINE'
+                        SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                        PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                        NpEnabled                    = 1
+                    }
+
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters = @{
+                            Features            = 'SQLENGINE'
+                            SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                            InstanceName        = 'MSSQLSERVER'
+                            SourceCredential    = $null
+                            SourcePath          = $TestDrive
+                            ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                            NpEnabled           = $true
+                            ServerName          = 'host.company.local'
+                        }
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When installing the database engine and enabling the TCP protocol' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Features = ''
+                        }
+                    }
+                }
+
+                It 'Should set the system in the desired state when feature is SQLENGINE' {
+                    $mockStartSqlSetupProcessExpectedArgument = @{
+                        Quiet                        = 'True'
+                        IAcceptSQLServerLicenseTerms = 'True'
+                        Action                       = 'Install'
+                        InstanceName                 = 'MSSQLSERVER'
+                        Features                     = 'SQLENGINE'
+                        SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                        PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                        TcpEnabled                   = 1
+                    }
+
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters = @{
+                            Features            = 'SQLENGINE'
+                            SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                            InstanceName        = 'MSSQLSERVER'
+                            SourceCredential    = $null
+                            SourcePath          = $TestDrive
+                            ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                            TcpEnabled          = $true
+                        }
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When using SourceCredential parameter, and using a UNC path with a leaf' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Features = ''
+                        }
+                    }
+
+                    Mock -CommandName Invoke-InstallationMediaCopy -MockWith $mockNewTemporaryFolder
+                }
+
+                It 'Should set the system in the desired state when feature is SQLENGINE' {
+                    $mockStartSqlSetupProcessExpectedArgument = @{
+                        Quiet                        = 'True'
+                        IAcceptSQLServerLicenseTerms = 'True'
+                        Action                       = 'Install'
+                        InstanceName                 = 'MSSQLSERVER'
+                        Features                     = 'SQLENGINE'
+                        SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                    }
+
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $testDrive_DriveShare = (Split-Path -Path $TestDrive -Qualifier) -replace ':', '$'
+                        $mockSourcePathUNC = Join-Path -Path "\\localhost\$testDrive_DriveShare" -ChildPath (Split-Path -Path $TestDrive -NoQualifier)
+
+                        $mockSetTargetResourceParameters = @{
+                            InstanceName        = 'MSSQLSERVER'
+                            Features            = 'SQLENGINE'
+                            SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                            SourceCredential    = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
+                            SourcePath          = $mockSourcePathUNC
+                        }
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Invoke-InstallationMediaCopy -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+                }
+            }
+
+            Context 'When using SourceCredential parameter, and using a UNC path without a leaf' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Features = ''
+                        }
+                    }
+
+                    Mock -CommandName Invoke-InstallationMediaCopy -MockWith $mockNewTemporaryFolder
+                }
+
+                It 'Should set the system in the desired state when feature is SQLENGINE' {
+                    $mockStartSqlSetupProcessExpectedArgument = @{
+                        Quiet                        = 'True'
+                        IAcceptSQLServerLicenseTerms = 'True'
+                        Action                       = 'Install'
+                        InstanceName                 = 'MSSQLSERVER'
+                        Features                     = 'SQLENGINE'
+                        SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                    }
+
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters = @{
+                            InstanceName        = 'MSSQLSERVER'
+                            Features            = 'SQLENGINE'
+                            SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                            SourceCredential    = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\sqladmin', ('dummyPassw0rd' | ConvertTo-SecureString -asPlainText -Force))
+                            SourcePath          = '\\server\share'
+                            ForceReboot         = $true
+                            SuppressReboot      = $true
+                        }
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Invoke-InstallationMediaCopy -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+                }
+            }
+        }
+
+        Context 'When installing a named instance for major version <MockSqlMajorVersion>' -ForEach $testProductVersion {
+            Context 'When installing all features' {
+                BeforeAll {
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Features = ''
+                        }
+                    }
+                }
+
+                It 'Should set the system in the desired state when feature is SQLENGINE' {
+                    $mockStartSqlSetupProcessExpectedArgument = @{
+                        Quiet                        = 'True'
+                        IAcceptSQLServerLicenseTerms = 'True'
+                        Action                       = 'Install'
+                        InstanceName                 = 'TEST'
+                        Features                     = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS,SSMS,ADV_SSMS'
+                        SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                        ASSysAdminAccounts           = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                        PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                        InstanceDir                  = 'D:\'
+                        InstallSQLDataDir            = 'E:\'
+                        InstallSharedDir             = 'C:\Program Files\Microsoft SQL Server'
+                        InstallSharedWOWDir          = 'C:\Program Files (x86)\Microsoft SQL Server'
+                        UpdateEnabled                = 'True'
+                        UpdateSource                 = 'C:\Updates' # Regression test for issue #720
+                        ASServerMode                 = 'TABULAR'
+                        SqlSvcStartupType            = 'Automatic'
+                        AgtSvcStartupType            = 'Automatic'
+                        AsSvcStartupType             = 'Automatic'
+                        IsSvcStartupType             = 'Automatic'
+                        SqlTempDbFileCount           = 2
+                        SqlTempDbFileSize            = 128
+                        SqlTempDbFileGrowth          = 128
+                        SqlTempDbLogFileSize         = 128
+                        SqlTempDbLogFileGrowth       = 128
+                        BrowserSvcStartupType        = 'Automatic'
+                    }
+
+                    if ($MockSqlMajorVersion -in ('13'))
+                    {
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS'
+                        $mockStartSqlSetupProcessExpectedArgument.RSInstallMode = 'DefaultNativeMode'
+                        $mockStartSqlSetupProcessExpectedArgument.RsSvcStartupType = 'Automatic'
+                    }
+                    elseif ($MockSqlMajorVersion -in ('14', '15'))
+                    {
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,CONN,BC,SDK,MDS'
+                    }
+                    elseif ($MockSqlMajorVersion -in ('16'))
+                    {
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,AS,IS,BOL,MDS'
+                    }
+                    else
+                    {
+                        $mockStartSqlSetupProcessExpectedArgument.Features = 'SQLENGINE,REPLICATION,DQ,DQC,FULLTEXT,RS,AS,IS,BOL,CONN,BC,SDK,MDS,SSMS,ADV_SSMS'
+                    }
+
+                    InModuleScope -Parameters $_ -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        # This is also used to regression test issue #1254, SqlSetup fails when root directory is specified.
+                        $mockSetTargetResourceParameters = @{
+                            Features               = 'SQLEngine,Replication,Dq,Dqc,FullText,Rs,As,Is,Bol,Conn,Bc,Sdk,Mds,Ssms,Adv_Ssms'
+                            SQLSysAdminAccounts    = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                            ASSysAdminAccounts     = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                            InstanceName           = 'TEST'
+                            SourceCredential       = $null
+                            SourcePath             = $TestDrive
+                            ProductKey             = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                            InstanceDir            = 'D:'
+                            InstallSQLDataDir      = 'E:'
+                            InstallSharedDir       = 'C:\Program Files\Microsoft SQL Server'
+                            InstallSharedWOWDir    = 'C:\Program Files (x86)\Microsoft SQL Server'
+                            UpdateEnabled          = 'True'
+                            UpdateSource           = 'C:\Updates\' # Regression test for issue #720
+                            ASServerMode           = 'TABULAR'
+                            SqlSvcStartupType      = 'Automatic'
+                            AgtSvcStartupType      = 'Automatic'
+                            AsSvcStartupType       = 'Automatic'
+                            IsSvcStartupType       = 'Automatic'
+                            SqlTempDbFileCount     = 2
+                            SqlTempDbFileSize      = 128
+                            SqlTempDbFileGrowth    = 128
+                            SqlTempDbLogFileSize   = 128
+                            SqlTempDbLogFileGrowth = 128
+                            BrowserSvcStartupType  = 'Automatic'
+                            ForceReboot            = $true
+                            SqlVersion             = ('{0}.0' -f $MockSqlMajorVersion)
+                        }
+
+                        if ($MockSqlMajorVersion -in ('13', '14', '15', '16'))
+                        {
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SSMS,ADV_SSMS', ''
+                        }
+
+                        if ($MockSqlMajorVersion -in ('13'))
+                        {
+                            $mockSetTargetResourceParameters.RSInstallMode = 'DefaultNativeMode'
+                            $mockSetTargetResourceParameters.RsSvcStartupType = 'Automatic'
+                        }
+                        elseif ($MockSqlMajorVersion -in ('14', '15'))
+                        {
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
+                        }
+                        elseif ($MockSqlMajorVersion -in ('16'))
+                        {
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Conn', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',RS', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',Bc', ''
+                            $mockSetTargetResourceParameters.Features = $mockSetTargetResourceParameters.Features -replace ',SDK', ''
+                        }
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 0 -Scope It
+                }
+            }
+        }
+
+        Context 'When installing the database engine and disabling the Named Pipes protocol' {
+            BeforeAll {
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return 15
+                }
+
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Features = ''
+                    }
+                }
+            }
+
+            It 'Should set the system in the desired state when feature is SQLENGINE' {
+                $mockStartSqlSetupProcessExpectedArgument = @{
+                    Quiet                        = 'True'
+                    IAcceptSQLServerLicenseTerms = 'True'
+                    Action                       = 'Install'
+                    InstanceName                 = 'MSSQLSERVER'
+                    Features                     = 'SQLENGINE'
+                    SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                    PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                    NpEnabled                    = 0
+                }
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        Features            = 'SQLENGINE'
+                        SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                        InstanceName        = 'MSSQLSERVER'
+                        SourceCredential    = $null
+                        SourcePath          = $TestDrive
+                        ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                        NpEnabled           = $false
+                    }
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When installing the database engine and ProductcoveredBySA is true' {
+                BeforeAll {
+                    Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                        return 16
+                    }
+
+                    Mock -CommandName Get-TargetResource -MockWith {
+                        return @{
+                            Features = ''
+                        }
+                    }
+                }
+
+                It 'Should set the system in the desired state when feature is SQLENGINE' {
+                    $mockStartSqlSetupProcessExpectedArgument = @{
+                        Quiet                        = 'True'
+                        IAcceptSQLServerLicenseTerms = 'True'
+                        Action                       = 'Install'
+                        InstanceName                 = 'MSSQLSERVER'
+                        Features                     = 'SQLENGINE'
+                        SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                        PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                        ProductCoveredBySA           = 'True'
+                    }
+
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters = @{
+                            Features            = 'SQLENGINE'
+                            SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                            InstanceName        = 'MSSQLSERVER'
+                            SourceCredential    = $null
+                            SourcePath          = $TestDrive
+                            ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                            ProductCoveredBySA  = $true
+                            ServerName          = 'host.company.local'
+                        }
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+
+                    Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+                }
+            }
+
+        Context 'When installing the database engine and disabling the TCP protocol' {
+            BeforeAll {
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return 15
+                }
+
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Features = ''
+                    }
+                }
+            }
+
+            It 'Should set the system in the desired state when feature is SQLENGINE' {
+                $mockStartSqlSetupProcessExpectedArgument = @{
+                    Quiet                        = 'True'
+                    IAcceptSQLServerLicenseTerms = 'True'
+                    Action                       = 'Install'
+                    InstanceName                 = 'MSSQLSERVER'
+                    Features                     = 'SQLENGINE'
+                    SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                    PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                    TcpEnabled                   = 0
+                }
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        Features            = 'SQLENGINE'
+                        SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                        InstanceName        = 'MSSQLSERVER'
+                        SourceCredential    = $null
+                        SourcePath          = $TestDrive
+                        ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                        TcpEnabled          = $false
+                    }
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When installing the database engine forcing to use english language in media' {
+            BeforeAll {
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return 15
+                }
+
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Features = ''
+                    }
+                }
+            }
+
+            It 'Should set the system in the desired state when feature is SQLENGINE' {
+                $mockStartSqlSetupProcessExpectedArgument = @{
+                    Quiet                        = 'True'
+                    IAcceptSQLServerLicenseTerms = 'True'
+                    Action                       = 'Install'
+                    InstanceName                 = 'MSSQLSERVER'
+                    Features                     = 'SQLENGINE'
+                    SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                    PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                    Enu                          = '' # The argument does not have a value
+                }
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        Features            = 'SQLENGINE'
+                        SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                        InstanceName        = 'MSSQLSERVER'
+                        SourceCredential    = $null
+                        SourcePath          = $TestDrive
+                        ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                        UseEnglish          = $true
+                    }
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When installing using a skip rule' {
+            BeforeAll {
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return 15
+                }
+
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Features = ''
+                    }
+                }
+            }
+
+            It 'Should call setup.exe with the correct skip rules as arguments' {
+                $mockStartSqlSetupProcessExpectedArgument = @{
+                    Quiet                        = 'True'
+                    IAcceptSQLServerLicenseTerms = 'True'
+                    Action                       = 'Install'
+                    InstanceName                 = 'MSSQLSERVER'
+                    Features                     = 'SQLENGINE'
+                    SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                    PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                    SkipRules                    = '"Cluster_VerifyForErrors"'
+                }
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        Features            = 'SQLENGINE'
+                        SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                        InstanceName        = 'MSSQLSERVER'
+                        SourceCredential    = $null
+                        SourcePath          = $TestDrive
+                        ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                        SkipRule            = 'Cluster_VerifyForErrors'
+                    }
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When installing using multiple skip rules' {
+            BeforeAll {
+                Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                    return 15
+                }
+
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
+                        Features = ''
+                    }
+                }
+            }
+
+            It 'Should call setup.exe with the correct skip rules as arguments' {
+                $mockStartSqlSetupProcessExpectedArgument = @{
+                    Quiet                        = 'True'
+                    IAcceptSQLServerLicenseTerms = 'True'
+                    Action                       = 'Install'
+                    InstanceName                 = 'MSSQLSERVER'
+                    Features                     = 'SQLENGINE'
+                    SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                    PID                          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                    SkipRules                    = '"Cluster_IsWMIServiceOperational" "Cluster_VerifyForErrors" "ServerCoreBlockUnsupportedSxSCheck"'
+                }
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        Features            = 'SQLENGINE'
+                        SQLSysAdminAccounts = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                        InstanceName        = 'MSSQLSERVER'
+                        SourceCredential    = $null
+                        SourcePath          = $TestDrive
+                        ProductKey          = '1FAKE-2FAKE-3FAKE-4FAKE-5FAKE'
+                        SkipRule            = @(
+                            'Cluster_VerifyForErrors'
+                            'ServerCoreBlockUnsupportedSxSCheck'
+                            'Cluster_IsWMIServiceOperational'
+                        )
+                    }
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+
+    Context 'When setup process fails with an exit code' {
+        BeforeAll {
+            Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                return 15
+            }
+
+            Mock -CommandName Get-TargetResource -MockWith {
+                return @{
+                    Features = ''
+                }
+            }
+        }
+
+        Context 'When setup exists with exit code 3010' {
+            BeforeAll {
+                Mock -CommandName Start-SqlSetupProcess -MockWith {
+                    return 3010
+                }
+            }
+
+            AfterEach {
+                # The code being test will set this global variable to 1, so we need to reset it.
+                $global:DSCMachineStatus = 0
+            }
+
+            It 'Should tell LCM that node need to restart' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        Features         = 'SQLENGINE'
+                        InstanceName     = 'MSSQLSERVER'
+                        SourceCredential = $null
+                        SourcePath       = $TestDrive
+                    }
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+
+                    $global:DSCMachineStatus | Should -Be 1
+                }
+            }
+        }
+
+        Context 'When setup exists with any other code than 3010 (exit code is set to 1 for the test)' {
+            BeforeAll {
+                Mock -CommandName Write-Warning
+                Mock -CommandName Start-SqlSetupProcess -MockWith {
+                    return 1
+                }
+            }
+
+            It 'Should call the correct mock' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        Features         = 'SQLENGINE'
+                        InstanceName     = 'MSSQLSERVER'
+                        SourceCredential = $null
+                        SourcePath       = $TestDrive
+                    }
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                Should -Invoke -CommandName Write-Warning -Exactly -Times 1 -Scope It
+                Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 0 -Scope It
+            }
+        }
+    }
+
+    Context 'When passing invalid features for <MockSqlMajorVersion>' -ForEach @(
+        @{
+            MockSqlMajorVersion = 16 # SQL Server 2022
+        }
+        @{
+            MockSqlMajorVersion = 15 # SQL Server 2019
+        }
+        @{
+            MockSqlMajorVersion = 14 # SQL Server 2017
+        }
+        @{
+            MockSqlMajorVersion = 13 # SQL Server 2016
+        }
+    ) {
+        BeforeAll {
+            Mock -CommandName Get-TargetResource -MockWith {
+                return @{
+                    Features = ''
+                }
+            }
+        }
+
+        It 'Should throw when feature parameter contains ''SSMS'' when installing SQL Server 2016, 2017 or 2019' {
+            $mockStartSqlSetupProcessExpectedArgument = @{}
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    Features         = 'SSMS'
+                    InstanceName     = 'MSSQLSERVER'
+                    SourceCredential = $null
+                    SourcePath       = $TestDrive
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "*'SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
+            }
+        }
+
+        It 'Should throw when feature parameter contains ''ADV_SSMS'' when installing SQL Server 2016, 2017 or 2019' {
+            $mockStartSqlSetupProcessExpectedArgument = @{}
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    Features         = 'ADV_SSMS'
+                    InstanceName     = 'MSSQLSERVER'
+                    SourceCredential = $null
+                    SourcePath       = $TestDrive
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage "*'ADV_SSMS' is not a valid value for setting 'FEATURES'.  Refer to SQL Help for more information."
+            }
+        }
+    }
+
+    Context 'When passing invalid features for <MockSqlMajorVersion>' -ForEach @(
+        @{
+            MockSqlMajorVersion = 12 # SQL Server 2014
+        }
+        @{
+            MockSqlMajorVersion = 11 # SQL Server 2012
+        }
+        @{
+            MockSqlMajorVersion = 10  # SQL Server 2008 and 2008 R2
+        }
+    ) {
+        BeforeAll {
+            Mock -CommandName Get-TargetResource -MockWith {
+                return @{
+                    Features = ''
+                }
+            }
+        }
+
+        It 'Should set the system in the desired state when feature is SSMS' {
+            $mockStartSqlSetupProcessExpectedArgument = @{
+                Quiet                        = 'True'
+                IAcceptSQLServerLicenseTerms = 'True'
+                Action                       = 'Install'
+                InstanceName                 = 'MSSQLSERVER'
+                Features                     = 'SSMS'
+            }
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    Features         = 'SSMS'
+                    InstanceName     = 'MSSQLSERVER'
+                    SourceCredential = $null
+                    SourcePath       = $TestDrive
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+            }
+
+            Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+        }
+
+        It 'Should set the system in the desired state when feature is ADV_SSMS' {
+            $mockStartSqlSetupProcessExpectedArgument = @{
+                Quiet                        = 'True'
+                IAcceptSQLServerLicenseTerms = 'True'
+                Action                       = 'Install'
+                InstanceName                 = 'MSSQLSERVER'
+                Features                     = 'ADV_SSMS'
+            }
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    Features         = 'ADV_SSMS'
+                    InstanceName     = 'MSSQLSERVER'
+                    SourceCredential = $null
+                    SourcePath       = $TestDrive
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+            }
+
+            Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+        }
+    }
+
+    # For testing AddNode action
+    Context 'When action is set to ''AddNode''' {
+        BeforeAll {
+            Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                return 15
+            }
+
+            Mock -CommandName Get-TargetResource -MockWith {
+                return @{
+                    Features = ''
+                }
+            }
+
+            $mockDynamicClusterSites = @(
+                @{
+                    Name    = 'SiteA'
+                    Address = '10.0.0.10' # First site IP address
+                    Mask    = '255.255.255.0'
+                }
+            )
+
+            Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterNetwork -ParameterFilter {
+                ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
+            }
+
+            Mock -CommandName Test-IPAddress -MockWith {
+                return $true
+            }
+        }
+
+        It 'Should pass proper parameters to setup' {
+            $mockStartSqlSetupProcessExpectedArgument = @{
+                IAcceptSQLServerLicenseTerms = 'True'
+                Quiet                        = 'True'
+                Action                       = 'AddNode'
+                InstanceName                 = 'MSSQLSERVER'
+                AgtSvcAccount                = 'COMPANY\AgentAccount'
+                AgtSvcPassword               = 'Ag3ntP@ssw0rd'
+                SqlSvcAccount                = 'COMPANY\SqlAccount'
+                SqlSvcPassword               = 'SqlS3v!c3P@ssw0rd'
+                AsSvcAccount                 = 'COMPANY\AnalysisAccount'
+                AsSvcPassword                = 'AnalysisS3v!c3P@ssw0rd'
+                FailoverClusterIPAddresses   = 'IPv4;10.0.0.10;SiteA_Prod;255.255.255.0'
+            }
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    Action                     = 'AddNode'
+                    # Feature support is tested elsewhere, so just include the minimum.
+                    Features                   = 'SQLENGINE,AS'
+                    InstanceName               = 'MSSQLSERVER'
+                    SourcePath                 = $TestDrive
+                    AgtSvcAccount              = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\AgentAccount', ('Ag3ntP@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
+                    SqlSvcAccount              = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\SqlAccount', ('SqlS3v!c3P@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
+                    ASSvcAccount               = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList @('COMPANY\AnalysisAccount', ('AnalysisS3v!c3P@ssw0rd' | ConvertTo-SecureString -AsPlainText -Force))
+                    FailoverClusterNetworkName = 'TestDefaultCluster'
+                    FailoverClusterIPAddress   = '10.0.0.10'
+                    SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+            }
+        }
+    }
+
+    Context 'When action is set to ''InstallFailoverCluster''' {
+        BeforeAll {
+            Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                return 15
+            }
+
+            # Cluster shared volumes will be tested and mocked later on.
+            Mock -CommandName Get-CimInstance -MockWith {
+                return $null
+            } -ParameterFilter {
+                $ClassName -eq 'MSCluster_ClusterSharedVolume'
+            }
+
+            Mock -CommandName Get-TargetResource -MockWith {
+                return @{
+                    Features = ''
+                }
+            }
+
+            $mockDynamicSqlDataDirectoryPath = 'E:\MSSQL\Data'
+            $mockDynamicSqlUserDatabasePath = 'K:\MSSQL\Data'
+            $mockDynamicSqlUserDatabaseLogPath = 'L:\MSSQL\Logs'
+            $mockDynamicSqlTempDatabasePath = 'M:\MSSQL\TempDb\Data'
+            $mockDynamicSqlTempDatabaseLogPath = 'N:\MSSQL\TempDb\Logs'
+            $mockDynamicSqlBackupPath = 'O:\MSSQL\Backup'
+
+            Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterResourceGroup_AvailableStorage -ParameterFilter {
+                $Filter -eq "Name = 'Available Storage'"
+            }
+
+            Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceGroupToResource -ParameterFilter {
+                ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
+            }
+
+            Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceToPossibleOwner -ParameterFilter {
+                $Association -eq 'MSCluster_ResourceToPossibleOwner'
+            }
+
+            Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_DiskPartition -ParameterFilter {
+                $ResultClassName -eq 'MSCluster_DiskPartition'
+            }
+
+            $mockDynamicClusterSites = @(
+                @{
+                    Name    = 'SiteA'
+                    Address = '10.0.0.10' # First site IP address
+                    Mask    = '255.255.255.0'
+                }
+            )
+
+            Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterNetwork -ParameterFilter {
+                ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
+            }
+
+            Mock -CommandName Test-IPAddress -MockWith {
+                return $true
+            }
+        }
+
+        It 'Should pass proper parameters to setup' {
+            $mockStartSqlSetupProcessExpectedArgument = @{
+                Action                       = 'InstallFailoverCluster'
+                FailoverClusterDisks         = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
+                FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
+                FailoverClusterNetworkName   = 'TestDefaultCluster'
+                InstallSQLDataDir            = 'E:\MSSQL\Data'
+                SQLUserDBDir                 = 'K:\MSSQL\Data'
+                SQLUserDBLogDir              = 'L:\MSSQL\Logs'
+                SQLTempDBDir                 = 'M:\MSSQL\TempDb\Data'
+                SQLTempDBLogDir              = 'N:\MSSQL\TempDb\Logs'
+                SQLBackupDir                 = 'O:\MSSQL\Backup'
+                IAcceptSQLServerLicenseTerms = 'True'
+                Quiet                        = 'True'
+                InstanceName                 = 'MSSQLSERVER'
+                Features                     = 'SQLENGINE'
+                SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
+            }
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                    # Feature support is tested elsewhere, so just include the minimum.
+                    Features                   = 'SQLEngine'
+
+                    InstanceName               = 'MSSQLSERVER'
+                    SourcePath                 = $TestDrive
+                    Action                     = 'InstallFailoverCluster'
+                    FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                    FailoverClusterNetworkName = 'TestDefaultCluster'
+                    FailoverClusterIPAddress   = '10.0.0.10'
+
+                    # Ensure we use "clustered" disks for our paths
+                    InstallSQLDataDir          = 'E:\MSSQL\Data'
+                    SQLUserDBDir               = 'K:\MSSQL\Data'
+                    SQLUserDBLogDir            = 'L:\MSSQL\Logs'
+                    SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
+                    SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
+                    SQLBackupDir               = 'O:\MSSQL\Backup'
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+            }
+        }
+
+        It 'Should pass proper parameters to setup when only InstallSQLDataDir is assigned a path' {
+            $mockStartSqlSetupProcessExpectedArgument = @{
+                Action                       = 'InstallFailoverCluster'
+                FailoverClusterDisks         = 'SysData'
+                FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
+                FailoverClusterNetworkName   = 'TestDefaultCluster'
+                InstallSQLDataDir            = 'E:\MSSQL\Data'
+                IAcceptSQLServerLicenseTerms = 'True'
+                Quiet                        = 'True'
+                InstanceName                 = 'MSSQLSERVER'
+                Features                     = 'SQLENGINE'
+                SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
+            }
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                    # Feature support is tested elsewhere, so just include the minimum.
+                    Features                   = 'SQLEngine'
+
+                    InstanceName               = 'MSSQLSERVER'
+                    SourcePath                 = $TestDrive
+                    Action                     = 'InstallFailoverCluster'
+                    FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                    FailoverClusterNetworkName = 'TestDefaultCluster'
+                    FailoverClusterIPAddress   = '10.0.0.10'
+
+                    # Ensure we use "clustered" disks for our paths
+                    InstallSQLDataDir          = 'E:\MSSQL\Data'
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+            }
+        }
+
+        It 'Should pass proper parameters to setup when three variables are assigned the same drive, but different paths' {
+            $mockStartSqlSetupProcessExpectedArgument = @{
+                Action                       = 'InstallFailoverCluster'
+                FailoverClusterDisks         = 'SysData'
+                FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
+                FailoverClusterNetworkName   = 'TestDefaultCluster'
+                InstallSQLDataDir            = 'E:\SQLData'
+                SQLUserDBDir                 = 'E:\SQLData\UserDb'
+                SQLUserDBLogDir              = 'E:\SQLData\UserDbLogs'
+                IAcceptSQLServerLicenseTerms = 'True'
+                Quiet                        = 'True'
+                InstanceName                 = 'MSSQLSERVER'
+                Features                     = 'SQLENGINE'
+                SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
+            }
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                    # Feature support is tested elsewhere, so just include the minimum.
+                    Features                   = 'SQLEngine'
+
+                    InstanceName               = 'MSSQLSERVER'
+                    SourcePath                 = $TestDrive
+                    Action                     = 'InstallFailoverCluster'
+                    FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                    FailoverClusterNetworkName = 'TestDefaultCluster'
+                    FailoverClusterIPAddress   = '10.0.0.10'
+
+                    # Ensure we use "clustered" disks for our paths
+                    InstallSQLDataDir          = 'E:\SQLData\' # This ends with \ to test removal of paths ending with \
+                    SQLUserDBDir               = 'E:\SQLData\UserDb'
+                    SQLUserDBLogDir            = 'E:\SQLData\UserDbLogs'
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+            }
+        }
+
+        It 'Should throw an error when one or more paths are not resolved to clustered storage' {
+            $mockStartSqlSetupProcessExpectedArgument = @{}
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                    # Feature support is tested elsewhere, so just include the minimum.
+                    Features                   = 'SQLEngine'
+
+                    InstanceName               = 'MSSQLSERVER'
+                    SourcePath                 = $TestDrive
+                    Action                     = 'InstallFailoverCluster'
+                    FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                    FailoverClusterNetworkName = 'TestDefaultCluster'
+                    FailoverClusterIPAddress   = '10.0.0.10'
+
+                    InstallSQLDataDir          = 'E:\MSSQL\Data'
+                    SQLUserDBLogDir            = 'L:\MSSQL\Logs'
+                    SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
+                    SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
+                    SQLBackupDir               = 'O:\MSSQL\Backup'
+
+                    SQLUserDBDir               = 'C:\MSSQL\' # Pass in a bad path
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; SysData; TempDbData; TempDbLogs; UserLogs.'
+            }
+        }
+
+        It 'Should build a DEFAULT address string when no network is specified in parameter FailoverClusterIPAddress' {
+            $mockStartSqlSetupProcessExpectedArgument = @{
+                Action                       = 'InstallFailoverCluster'
+                FailoverClusterIPAddresses   = 'DEFAULT'
+                FailoverClusterNetworkName   = 'TestDefaultCluster'
+                InstallSQLDataDir            = $mockDynamicSqlDataDirectoryPath
+                SQLUserDBDir                 = $mockDynamicSqlUserDatabasePath
+                SQLUserDBLogDir              = $mockDynamicSqlUserDatabaseLogPath
+                SQLTempDBDir                 = $mockDynamicSqlTempDatabasePath
+                SQLTempDBLogDir              = $mockDynamicSqlTempDatabaseLogPath
+                SQLBackupDir                 = $mockDynamicSqlBackupPath
+                FailoverClusterDisks         = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
+                IAcceptSQLServerLicenseTerms = 'True'
+                Quiet                        = 'True'
+                InstanceName                 = 'MSSQLSERVER'
+                Features                     = 'SQLENGINE'
+                SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
+            }
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                    # Feature support is tested elsewhere, so just include the minimum.
+                    Features                   = 'SQLEngine'
+
+                    InstanceName               = 'MSSQLSERVER'
+                    SourcePath                 = $TestDrive
+                    Action                     = 'InstallFailoverCluster'
+                    FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                    FailoverClusterNetworkName = 'TestDefaultCluster'
+
+                    # Ensure we use "clustered" disks for our paths
+                    InstallSQLDataDir          = 'E:\MSSQL\Data'
+                    SQLUserDBDir               = 'K:\MSSQL\Data'
+                    SQLUserDBLogDir            = 'L:\MSSQL\Logs'
+                    SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
+                    SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
+                    SQLBackupDir               = 'O:\MSSQL\Backup'
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+            }
+        }
+
+        Context 'When an invalid IP Address is specified' {
+            BeforeAll {
+                <#
+                    The default mock (higher up in the test code) will mock $true
+                    for Test-IPAddress. This mock will override the default mock
+                    so that Test-IPAddress returns $false.
+                #>
+                Mock -CommandName Test-IPAddress -MockWith {
+                    return $false
+                }
+            }
+
+            It 'Should throw an error when an invalid IP Address is specified' {
+                $mockStartSqlSetupProcessExpectedArgument = @{}
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                        # Feature support is tested elsewhere, so just include the minimum.
+                        Features                   = 'SQLEngine'
+
+                        InstanceName               = 'MSSQLSERVER'
+                        SourcePath                 = $TestDrive
+                        Action                     = 'InstallFailoverCluster'
+                        FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                        FailoverClusterNetworkName = 'TestDefaultCluster'
+                        FailoverClusterIPAddress   = '192.168.0.100'
+
+                        # Ensure we use "clustered" disks for our paths
+                        InstallSQLDataDir          = 'E:\MSSQL\Data'
+                        SQLUserDBDir               = 'K:\MSSQL\Data'
+                        SQLUserDBLogDir            = 'L:\MSSQL\Logs'
+                        SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
+                        SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
+                        SQLBackupDir               = 'O:\MSSQL\Backup'
+                    }
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
+                }
+            }
+        }
+
+        Context 'When an invalid IP Address is specified for a multi-subnet instance' {
+            BeforeAll {
+                <#
+                    The default mock (higher up in the test code) will mock $true
+                    for Test-IPAddress. This mock will override the default mock
+                    so that one IP address ('10.0.0.100') returns $false from
+                    Test-IPAddress.
+                #>
+                Mock -CommandName Test-IPAddress -MockWith {
+                    return $false
+                } -ParameterFilter {
+                    $IPAddress -eq '10.0.0.100'
+                }
+            }
+
+            It 'Should throw an error ' {
+                $mockStartSqlSetupProcessExpectedArgument = @{}
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                        # Feature support is tested elsewhere, so just include the minimum.
+                        Features                   = 'SQLEngine'
+
+                        InstanceName               = 'MSSQLSERVER'
+                        SourcePath                 = $TestDrive
+                        Action                     = 'InstallFailoverCluster'
+                        FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                        FailoverClusterNetworkName = 'TestDefaultCluster'
+                        FailoverClusterIPAddress   = @('10.0.0.100', '192.168.0.100')
+
+                        # Ensure we use "clustered" disks for our paths
+                        InstallSQLDataDir          = 'E:\MSSQL\Data'
+                        SQLUserDBDir               = 'K:\MSSQL\Data'
+                        SQLUserDBLogDir            = 'L:\MSSQL\Logs'
+                        SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
+                        SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
+                        SQLBackupDir               = 'O:\MSSQL\Backup'
+                    }
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
+                }
+            }
+        }
+
+        Context 'When an invalid IP Address is specified for a multi-subnet instance' {
+            BeforeAll {
+                <#
+                    The default mock (higher up in the test code) will mock $true
+                    for Test-IPAddress. These mocks will override the default mock
+                    so that Test-IPAddress returns $false, and $true when IP address
+                    has the correct subnet.
+                #>
+                Mock -CommandName Test-IPAddress -MockWith {
+                    return $false
+                }
+
+                Mock -CommandName Test-IPAddress -MockWith {
+                    return $true
+                } -ParameterFilter {
+                    $IPAddress -eq '10.0.0.10' -and $NetworkID -eq '10.0.0.10'
+                }
+
+                Mock -CommandName Test-IPAddress -MockWith {
+                    return $true
+                } -ParameterFilter {
+                    $IPAddress -eq '10.0.10.100' -and $NetworkID -eq '10.0.10.100'
+                }
+            }
+
+            It 'Should build a valid IP address string for a multi-subnet cluster' {
+                # Setting up the mock to return multiple sites.
+                $mockDynamicClusterSites = @(
+                    @{
+                        Name    = 'SiteA'
+                        Address = '10.0.0.10' # First site IP address
+                        Mask    = '255.255.255.0'
+                    },
+                    @{
+                        Name    = 'SiteB'
+                        Address = '10.0.10.100' # Second site IP address
+                        Mask    = '255.255.255.0'
+                    }
+                )
+
+                $mockStartSqlSetupProcessExpectedArgument += @{
+                    FailoverClusterIPAddresses   = 'IPv4;10.0.0.10;SiteA_Prod;255.255.255.0; IPv4;10.0.10.100;SiteB_Prod;255.255.255.0'
+                    FailoverClusterNetworkName   = 'TestDefaultCluster'
+                    InstallSQLDataDir            = $mockDynamicSqlDataDirectoryPath
+                    SQLUserDBDir                 = $mockDynamicSqlUserDatabasePath
+                    SQLUserDBLogDir              = $mockDynamicSqlUserDatabaseLogPath
+                    SQLTempDBDir                 = $mockDynamicSqlTempDatabasePath
+                    SQLTempDBLogDir              = $mockDynamicSqlTempDatabaseLogPath
+                    SQLBackupDir                 = $mockDynamicSqlBackupPath
+                    FailoverClusterDisks         = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
+                    Action                       = 'InstallFailoverCluster'
+                    IAcceptSQLServerLicenseTerms = 'True'
+                    Quiet                        = 'True'
+                    InstanceName                 = 'MSSQLSERVER'
+                    Features                     = 'SQLENGINE'
+                    SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                    FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
+                }
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                        # Feature support is tested elsewhere, so just include the minimum.
+                        Features                   = 'SQLEngine'
+
+                        InstanceName               = 'MSSQLSERVER'
+                        SourcePath                 = $TestDrive
+                        Action                     = 'InstallFailoverCluster'
+                        FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                        FailoverClusterNetworkName = 'TestDefaultCluster'
+                        FailoverClusterIPAddress   = @('10.0.0.10', '10.0.10.100')
+
+                        # Ensure we use "clustered" disks for our paths
+                        InstallSQLDataDir          = 'E:\MSSQL\Data'
+                        SQLUserDBDir               = 'K:\MSSQL\Data'
+                        SQLUserDBLogDir            = 'L:\MSSQL\Logs'
+                        SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
+                        SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
+                        SQLBackupDir               = 'O:\MSSQL\Backup'
+                    }
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                # Reverting the mock to return a single site.
+                $mockDynamicClusterSites = @(
+                    @{
+                        Name    = 'SiteA'
+                        Address = '10.0.0.10' # First site IP address
+                        Mask    = '255.255.255.0'
+                    }
+                )
+            }
+        }
+
+        Context 'When Cluster Shared volumes are specified' {
+            BeforeAll {
+                $mockGetCIMInstance_MSCluster_ClusterSharedVolume = {
+                    return @(
+                        (
+                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                                Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\SysData' -PassThru -Force
+                        ),
+                        (
+                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                                Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\SQLData' -PassThru -Force
+                        ),
+                        (
+                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                                Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\SQLLogs' -PassThru -Force
+                        ),
+                        (
+                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                                Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\TempDBData' -PassThru -Force
+                        ),
+                        (
+                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                                Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\TempDBLogs' -PassThru -Force
+                        ),
+                        (
+                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                                Add-Member -MemberType NoteProperty -Name 'Name' -Value 'C:\ClusterStorage\SQLBackup' -PassThru -Force
+                        )
+                    )
+                }
+
+                $mockGetCIMInstance_MSCluster_ClusterSharedVolumeToResource = {
+                    return @(
+                        (
+                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                                Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\SysData' }) -PassThru -Force |
+                                Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL System Data Disk)' }) -PassThru -Force
+                        ),
+                        (
+                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                                Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\SQLData' }) -PassThru -Force |
+                                Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL Data Disk)' }) -PassThru -Force
+                        ),
+                        (
+                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                                Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\SQLLogs' }) -PassThru -Force |
+                                Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL Log Disk)' }) -PassThru -Force
+                        ),
+                        (
+                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                                Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\TempDBData' }) -PassThru -Force |
+                                Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL TempDBData Disk)' }) -PassThru -Force
+                        ),
+                        (
+                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                                Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\TempDBLogs' }) -PassThru -Force |
+                                Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL TempDBLog Disk)' }) -PassThru -Force
+                        ),
+                        (
+                            New-Object -TypeName Microsoft.Management.Infrastructure.CimInstance 'MSCluster_ClusterSharedVolume', 'root/MSCluster' |
+                                Add-Member -MemberType NoteProperty -Name GroupComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'C:\ClusterStorage\SQLBackup' }) -PassThru -Force |
+                                Add-Member -MemberType NoteProperty -Name PartComponent -Value (New-Object -TypeName PSObject -Property @{ Name = 'Cluster Virtual Disk (SQL Backup Disk)' }) -PassThru -Force
+                        )
+                    )
+                }
+
+                Mock -CommandName Get-CimInstance -MockWith $mockGetCIMInstance_MSCluster_ClusterSharedVolume -ParameterFilter {
+                    $ClassName -eq 'MSCluster_ClusterSharedVolume'
+                }
+
+                Mock -CommandName Get-CimInstance -MockWith $mockGetCIMInstance_MSCluster_ClusterSharedVolumeToResource -ParameterFilter {
+                    $ClassName -eq 'MSCluster_ClusterSharedVolumeToResource'
+                }
+            }
+
+            It 'Should pass proper parameters to setup' {
+                $mockStartSqlSetupProcessExpectedArgument = @{
+                    Action                       = 'InstallFailoverCluster'
+                    FailoverClusterDisks         = 'Cluster Virtual Disk (SQL Backup Disk); Cluster Virtual Disk (SQL Data Disk); Cluster Virtual Disk (SQL Log Disk); Cluster Virtual Disk (SQL System Data Disk); Cluster Virtual Disk (SQL TempDBData Disk); Cluster Virtual Disk (SQL TempDBLog Disk)'
+                    FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
+                    FailoverClusterNetworkName   = 'TestDefaultCluster'
+                    InstallSQLDataDir            = 'C:\ClusterStorage\SysData'
+                    SQLUserDBDir                 = 'C:\ClusterStorage\SQLData'
+                    SQLUserDBLogDir              = 'C:\ClusterStorage\SQLLogs'
+                    SQLTempDBDir                 = 'C:\ClusterStorage\TempDBData'
+                    SQLTempDBLogDir              = 'C:\ClusterStorage\TempDBLogs'
+                    SQLBackupDir                 = 'C:\ClusterStorage\SQLBackup'
+                    IAcceptSQLServerLicenseTerms = 'True'
+                    Quiet                        = 'True'
+                    InstanceName                 = 'MSSQLSERVER'
+                    Features                     = 'SQLENGINE'
+                    SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                    FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
+                }
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                        # Feature support is tested elsewhere, so just include the minimum.
+                        Features                   = 'SQLEngine'
+
+                        InstanceName               = 'MSSQLSERVER'
+                        SourcePath                 = $TestDrive
+                        Action                     = 'InstallFailoverCluster'
+                        FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                        FailoverClusterNetworkName = 'TestDefaultCluster'
+                        FailoverClusterIPAddress   = '10.0.0.10'
+
+                        # Ensure we use "clustered" disks for our paths
+                        InstallSQLDataDir          = 'C:\ClusterStorage\SysData'
+                        SQLUserDBDir               = 'C:\ClusterStorage\SQLData'
+                        SQLUserDBLogDir            = 'C:\ClusterStorage\SQLLogs'
+                        SQLTempDbDir               = 'C:\ClusterStorage\TempDBData'
+                        SQLTempDbLogDir            = 'C:\ClusterStorage\TempDBLogs'
+                        SQLBackupDir               = 'C:\ClusterStorage\SQLBackup'
+                    }
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+            }
+
+            Context 'When Cluster Shared volumes are the same for one or more parameters' {
+                It 'Should pass proper parameters to setup' {
+                    $mockStartSqlSetupProcessExpectedArgument = @{
+                        Action                       = 'InstallFailoverCluster'
+                        FailoverClusterDisks         = 'Cluster Virtual Disk (SQL Backup Disk); Cluster Virtual Disk (SQL Data Disk)'
+                        FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
+                        FailoverClusterNetworkName   = 'TestDefaultCluster'
+                        InstallSQLDataDir            = 'C:\ClusterStorage\SQLData\Data'
+                        SQLUserDBDir                 = 'C:\ClusterStorage\SQLData\Data'
+                        SQLUserDBLogDir              = 'C:\ClusterStorage\SQLData\Logs'
+                        SQLTempDBDir                 = 'C:\ClusterStorage\SQLData\TEMPDB'
+                        SQLTempDBLogDir              = 'C:\ClusterStorage\SQLData\TEMPDBLOG'
+                        SQLBackupDir                 = 'C:\ClusterStorage\SQLBackup\Backup'
+                        IAcceptSQLServerLicenseTerms = 'True'
+                        Quiet                        = 'True'
+                        InstanceName                 = 'MSSQLSERVER'
+                        Features                     = 'SQLENGINE'
+                        SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                        FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
+                    }
+
+                    InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
+                        $mockSetTargetResourceParameters = @{
+                            SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                            # Feature support is tested elsewhere, so just include the minimum.
+                            Features                   = 'SQLEngine'
+
+                            InstanceName               = 'MSSQLSERVER'
+                            SourcePath                 = $TestDrive
+                            Action                     = 'InstallFailoverCluster'
+                            FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                            FailoverClusterNetworkName = 'TestDefaultCluster'
+                            FailoverClusterIPAddress   = '10.0.0.10'
+
+                            # Ensure we use "clustered" disks for our paths
+                            InstallSQLDataDir          = 'C:\ClusterStorage\SQLData\Data'
+                            SQLUserDBDir               = 'C:\ClusterStorage\SQLData\Data'
+                            SQLUserDBLogDir            = 'C:\ClusterStorage\SQLData\Logs'
+                            SQLTempDbDir               = 'C:\ClusterStorage\SQLData\TEMPDB'
+                            SQLTempDbLogDir            = 'C:\ClusterStorage\SQLData\TEMPDBLOG'
+                            SQLBackupDir               = 'C:\ClusterStorage\SQLBackup\Backup'
+                        }
+
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                    }
+                }
+            }
+        }
+    }
+
+    Context 'When action is set to ''PrepareFailoverCluster''' {
+        BeforeAll {
+            Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                return 15
+            }
+
+            Mock -CommandName Get-TargetResource -MockWith {
+                return @{
+                    Features = ''
+                }
+            }
+
+            Mock -CommandName Invoke-InstallationMediaCopy -MockWith $mockNewTemporaryFolder
+
+            Mock -CommandName Get-CimInstance -ParameterFilter {
+                ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_ResourceGroup') -and ($Filter -eq "Name = 'Available Storage'")
+            }
+
+            Mock -CommandName Get-CimAssociatedInstance -ParameterFilter {
+                ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
+            }
+
+            Mock -CommandName Get-CimAssociatedInstance -ParameterFilter {
+                $Association -eq 'MSCluster_ResourceToPossibleOwner'
+            }
+
+            Mock -CommandName Get-CimAssociatedInstance -ParameterFilter {
+                $ResultClass -eq 'MSCluster_DiskPartition'
+            }
+
+            Mock -CommandName Get-CimInstance -ParameterFilter {
+                ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
+            }
+        }
+
+        It 'Should pass correct arguments to the setup process' {
+            $mockStartSqlSetupProcessExpectedArgument = @{
+                Action                       = 'PrepareFailoverCluster'
+                IAcceptSQLServerLicenseTerms = 'True'
+                Quiet                        = 'True'
+                InstanceName                 = 'MSSQLSERVER'
+                Features                     = 'SQLENGINE'
+            }
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    # Feature support is tested elsewhere, so just include the minimum.
+                    Features     = 'SQLEngine'
+
+                    InstanceName = 'MSSQLSERVER'
+                    SourcePath   = $TestDrive
+                    Action       = 'PrepareFailoverCluster'
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+            }
+
+            Should -Invoke -CommandName Get-PSDrive -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Start-SqlSetupProcess -Exactly -Times 1 -Scope It
+            Should -Invoke -CommandName Test-TargetResource -Exactly -Times 1 -Scope It
+
+            Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_ResourceGroup') -and ($Filter -eq "Name = 'Available Storage'")
+            } -Exactly -Times 0 -Scope It
+
+            Should -Invoke -CommandName Get-CimAssociatedInstance -ParameterFilter {
+                ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
+            } -Exactly -Times 0 -Scope It
+
+            Should -Invoke -CommandName Get-CimAssociatedInstance -ParameterFilter {
+                $Association -eq 'MSCluster_ResourceToPossibleOwner'
+            } -Exactly -Times 0 -Scope It
+
+            Should -Invoke -CommandName Get-CimAssociatedInstance -ParameterFilter {
+                $ResultClass -eq 'MSCluster_DiskPartition'
+            } -Exactly -Times 0 -Scope It
+
+            Should -Invoke -CommandName Get-CimInstance -ParameterFilter {
+                ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
+            } -Exactly -Times 0 -Scope It
+        }
+    }
+
+    Context 'When action is set to ''CompleteFailoverCluster''' {
+        BeforeAll {
+            Mock -CommandName Get-FilePathMajorVersion -MockWith {
+                return 15
+            }
+
+            # Cluster shared volumes will be tested and mocked later on.
+            Mock -CommandName Get-CimInstance -MockWith {
+                return $null
+            } -ParameterFilter {
+                $ClassName -eq 'MSCluster_ClusterSharedVolume'
+            }
+
+            Mock -CommandName Get-TargetResource -MockWith {
+                return @{
+                    Features = ''
+                }
+            }
+
+            $mockDynamicSqlDataDirectoryPath = 'E:\MSSQL\Data'
+            $mockDynamicSqlUserDatabasePath = 'K:\MSSQL\Data'
+            $mockDynamicSqlUserDatabaseLogPath = 'L:\MSSQL\Logs'
+            $mockDynamicSqlTempDatabasePath = 'M:\MSSQL\TempDb\Data'
+            $mockDynamicSqlTempDatabaseLogPath = 'N:\MSSQL\TempDb\Logs'
+            $mockDynamicSqlBackupPath = 'O:\MSSQL\Backup'
+
+            Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterResourceGroup_AvailableStorage -ParameterFilter {
+                $Filter -eq "Name = 'Available Storage'"
+            }
+
+            Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceGroupToResource -ParameterFilter {
+                ($Association -eq 'MSCluster_ResourceGroupToResource') -and ($ResultClassName -eq 'MSCluster_Resource')
+            }
+
+            Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_ResourceToPossibleOwner -ParameterFilter {
+                $Association -eq 'MSCluster_ResourceToPossibleOwner'
+            }
+
+            Mock -CommandName Get-CimAssociatedInstance -MockWith $mockGetCimAssociatedInstance_MSCluster_DiskPartition -ParameterFilter {
+                $ResultClassName -eq 'MSCluster_DiskPartition'
+            }
+
+            $mockDynamicClusterSites = @(
+                @{
+                    Name    = 'SiteA'
+                    Address = '10.0.0.10' # First site IP address
+                    Mask    = '255.255.255.0'
+                }
+            )
+
+            Mock -CommandName Get-CimInstance -MockWith $mockGetCimInstance_MSClusterNetwork -ParameterFilter {
+                ($Namespace -eq 'root/MSCluster') -and ($ClassName -eq 'MSCluster_Network') -and ($Filter -eq 'Role >= 2')
+            }
+
+            Mock -CommandName Test-IPAddress -MockWith {
+                return $true
+            }
+        }
+
+        It 'Should pass proper parameters to setup' {
+            $mockStartSqlSetupProcessExpectedArgument = @{
+                Action                       = 'CompleteFailoverCluster'
+                FailoverClusterDisks         = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
+                FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
+                FailoverClusterNetworkName   = 'TestDefaultCluster'
+                InstallSQLDataDir            = 'E:\MSSQL\Data'
+                SQLUserDBDir                 = 'K:\MSSQL\Data'
+                SQLUserDBLogDir              = 'L:\MSSQL\Logs'
+                SQLTempDBDir                 = 'M:\MSSQL\TempDb\Data'
+                SQLTempDBLogDir              = 'N:\MSSQL\TempDb\Logs'
+                SQLBackupDir                 = 'O:\MSSQL\Backup'
+                IAcceptSQLServerLicenseTerms = 'True'
+                Quiet                        = 'True'
+                InstanceName                 = 'MSSQLSERVER'
+                Features                     = 'SQLENGINE'
+                SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
+            }
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                    # Feature support is tested elsewhere, so just include the minimum.
+                    Features                   = 'SQLEngine'
+
+                    InstanceName               = 'MSSQLSERVER'
+                    SourcePath                 = $TestDrive
+                    Action                     = 'CompleteFailoverCluster'
+                    FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                    FailoverClusterNetworkName = 'TestDefaultCluster'
+                    FailoverClusterIPAddress   = '10.0.0.10'
+
+                    # Ensure we use "clustered" disks for our paths
+                    InstallSQLDataDir          = 'E:\MSSQL\Data'
+                    SQLUserDBDir               = 'K:\MSSQL\Data'
+                    SQLUserDBLogDir            = 'L:\MSSQL\Logs'
+                    SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
+                    SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
+                    SQLBackupDir               = 'O:\MSSQL\Backup'
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+            }
+        }
+
+        It 'Should pass proper parameters to setup when only InstallSQLDataDir is assigned a path' {
+            $mockStartSqlSetupProcessExpectedArgument = @{
+                Action                       = 'CompleteFailoverCluster'
+                FailoverClusterDisks         = 'SysData'
+                FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
+                FailoverClusterNetworkName   = 'TestDefaultCluster'
+                InstallSQLDataDir            = 'E:\MSSQL\Data'
+                IAcceptSQLServerLicenseTerms = 'True'
+                Quiet                        = 'True'
+                InstanceName                 = 'MSSQLSERVER'
+                Features                     = 'SQLENGINE'
+                SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
+            }
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                    # Feature support is tested elsewhere, so just include the minimum.
+                    Features                   = 'SQLEngine'
+
+                    InstanceName               = 'MSSQLSERVER'
+                    SourcePath                 = $TestDrive
+                    Action                     = 'CompleteFailoverCluster'
+                    FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                    FailoverClusterNetworkName = 'TestDefaultCluster'
+                    FailoverClusterIPAddress   = '10.0.0.10'
+
+                    # Ensure we use "clustered" disks for our paths
+                    InstallSQLDataDir          = 'E:\MSSQL\Data'
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+            }
+        }
+
+        It 'Should pass proper parameters to setup when three variables are assigned the same drive, but different paths' {
+            $mockStartSqlSetupProcessExpectedArgument = @{
+                Action                       = 'CompleteFailoverCluster'
+                FailoverClusterDisks         = 'SysData'
+                FailoverClusterIPAddresses   = 'IPV4;10.0.0.10;SiteA_Prod;255.255.255.0'
+                FailoverClusterNetworkName   = 'TestDefaultCluster'
+                InstallSQLDataDir            = 'E:\SQLData'
+                SQLUserDBDir                 = 'E:\SQLData\UserDb'
+                SQLUserDBLogDir              = 'E:\SQLData\UserDbLogs'
+                IAcceptSQLServerLicenseTerms = 'True'
+                Quiet                        = 'True'
+                InstanceName                 = 'MSSQLSERVER'
+                Features                     = 'SQLENGINE'
+                SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
+            }
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                    # Feature support is tested elsewhere, so just include the minimum.
+                    Features                   = 'SQLEngine'
+
+                    InstanceName               = 'MSSQLSERVER'
+                    SourcePath                 = $TestDrive
+                    Action                     = 'CompleteFailoverCluster'
+                    FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                    FailoverClusterNetworkName = 'TestDefaultCluster'
+                    FailoverClusterIPAddress   = '10.0.0.10'
+
+                    # Ensure we use "clustered" disks for our paths
+                    InstallSQLDataDir          = 'E:\SQLData\' # This ends with \ to test removal of paths ending with \
+                    SQLUserDBDir               = 'E:\SQLData\UserDb'
+                    SQLUserDBLogDir            = 'E:\SQLData\UserDbLogs'
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+            }
+        }
+
+        It 'Should throw an error when one or more paths are not resolved to clustered storage' {
+            $mockStartSqlSetupProcessExpectedArgument = @{}
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                    # Feature support is tested elsewhere, so just include the minimum.
+                    Features                   = 'SQLEngine'
+
+                    InstanceName               = 'MSSQLSERVER'
+                    SourcePath                 = $TestDrive
+                    Action                     = 'CompleteFailoverCluster'
+                    FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                    FailoverClusterNetworkName = 'TestDefaultCluster'
+                    FailoverClusterIPAddress   = '10.0.0.10'
+
+                    InstallSQLDataDir          = 'E:\MSSQL\Data'
+                    SQLUserDBLogDir            = 'L:\MSSQL\Logs'
+                    SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
+                    SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
+                    SQLBackupDir               = 'O:\MSSQL\Backup'
+
+                    SQLUserDBDir               = 'C:\MSSQL\' # Pass in a bad path
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified paths to valid cluster storage. Drives mapped: Backup; SysData; TempDbData; TempDbLogs; UserLogs.'
+            }
+        }
+
+        It 'Should build a DEFAULT address string when no network is specified in parameter FailoverClusterIPAddress' {
+            $mockStartSqlSetupProcessExpectedArgument = @{
+                Action                       = 'CompleteFailoverCluster'
+                FailoverClusterIPAddresses   = 'DEFAULT'
+                FailoverClusterNetworkName   = 'TestDefaultCluster'
+                InstallSQLDataDir            = $mockDynamicSqlDataDirectoryPath
+                SQLUserDBDir                 = $mockDynamicSqlUserDatabasePath
+                SQLUserDBLogDir              = $mockDynamicSqlUserDatabaseLogPath
+                SQLTempDBDir                 = $mockDynamicSqlTempDatabasePath
+                SQLTempDBLogDir              = $mockDynamicSqlTempDatabaseLogPath
+                SQLBackupDir                 = $mockDynamicSqlBackupPath
+                FailoverClusterDisks         = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
+                IAcceptSQLServerLicenseTerms = 'True'
+                Quiet                        = 'True'
+                InstanceName                 = 'MSSQLSERVER'
+                Features                     = 'SQLENGINE'
+                SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
+            }
+
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $mockSetTargetResourceParameters = @{
+                    SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                    # Feature support is tested elsewhere, so just include the minimum.
+                    Features                   = 'SQLEngine'
+
+                    InstanceName               = 'MSSQLSERVER'
+                    SourcePath                 = $TestDrive
+                    Action                     = 'CompleteFailoverCluster'
+                    FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                    FailoverClusterNetworkName = 'TestDefaultCluster'
+
+                    # Ensure we use "clustered" disks for our paths
+                    InstallSQLDataDir          = 'E:\MSSQL\Data'
+                    SQLUserDBDir               = 'K:\MSSQL\Data'
+                    SQLUserDBLogDir            = 'L:\MSSQL\Logs'
+                    SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
+                    SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
+                    SQLBackupDir               = 'O:\MSSQL\Backup'
+                }
+
+                { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+            }
+        }
+
+        Context 'When an invalid IP Address is specified' {
+            BeforeAll {
+                <#
+                    The default mock (higher up in the test code) will mock $true
+                    for Test-IPAddress. This mock will override the default mock
+                    so that Test-IPAddress returns $false.
+                #>
+                Mock -CommandName Test-IPAddress -MockWith {
+                    return $false
+                }
+            }
+
+            It 'Should throw an error when an invalid IP Address is specified' {
+                $mockStartSqlSetupProcessExpectedArgument = @{}
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                        # Feature support is tested elsewhere, so just include the minimum.
+                        Features                   = 'SQLEngine'
+
+                        InstanceName               = 'MSSQLSERVER'
+                        SourcePath                 = $TestDrive
+                        Action                     = 'CompleteFailoverCluster'
+                        FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                        FailoverClusterNetworkName = 'TestDefaultCluster'
+                        FailoverClusterIPAddress   = '192.168.0.100'
+
+                        # Ensure we use "clustered" disks for our paths
+                        InstallSQLDataDir          = 'E:\MSSQL\Data'
+                        SQLUserDBDir               = 'K:\MSSQL\Data'
+                        SQLUserDBLogDir            = 'L:\MSSQL\Logs'
+                        SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
+                        SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
+                        SQLBackupDir               = 'O:\MSSQL\Backup'
+                    }
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
+                }
+            }
+        }
+
+        Context 'When an invalid IP Address is specified for a multi-subnet instance' {
+            BeforeAll {
+                <#
+                    The default mock (higher up in the test code) will mock $true
+                    for Test-IPAddress. This mock will override the default mock
+                    so that one IP address ('10.0.0.100') returns $false from
+                    Test-IPAddress.
+                #>
+                Mock -CommandName Test-IPAddress -MockWith {
+                    return $false
+                } -ParameterFilter {
+                    $IPAddress -eq '10.0.0.100'
+                }
+            }
+
+            It 'Should throw an error ' {
+                $mockStartSqlSetupProcessExpectedArgument = @{}
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                        # Feature support is tested elsewhere, so just include the minimum.
+                        Features                   = 'SQLEngine'
+
+                        InstanceName               = 'MSSQLSERVER'
+                        SourcePath                 = $TestDrive
+                        Action                     = 'CompleteFailoverCluster'
+                        FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                        FailoverClusterNetworkName = 'TestDefaultCluster'
+                        FailoverClusterIPAddress   = @('10.0.0.100', '192.168.0.100')
+
+                        # Ensure we use "clustered" disks for our paths
+                        InstallSQLDataDir          = 'E:\MSSQL\Data'
+                        SQLUserDBDir               = 'K:\MSSQL\Data'
+                        SQLUserDBLogDir            = 'L:\MSSQL\Logs'
+                        SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
+                        SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
+                        SQLBackupDir               = 'O:\MSSQL\Backup'
+                    }
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw -ExpectedMessage '*Unable to map the specified IP Address(es) to valid cluster networks.'
+                }
+            }
+        }
+
+        Context 'When an invalid IP Address is specified for a multi-subnet instance' {
+            BeforeAll {
+                <#
+                    The default mock (higher up in the test code) will mock $true
+                    for Test-IPAddress. These mocks will override the default mock
+                    so that Test-IPAddress returns $false, and $true when IP address
+                    has the correct subnet.
+                #>
+                Mock -CommandName Test-IPAddress -MockWith {
+                    return $false
+                }
+
+                Mock -CommandName Test-IPAddress -MockWith {
+                    return $true
+                } -ParameterFilter {
+                    $IPAddress -eq '10.0.0.10' -and $NetworkID -eq '10.0.0.10'
+                }
+
+                Mock -CommandName Test-IPAddress -MockWith {
+                    return $true
+                } -ParameterFilter {
+                    $IPAddress -eq '10.0.10.100' -and $NetworkID -eq '10.0.10.100'
+                }
+            }
+
+            It 'Should build a valid IP address string for a multi-subnet cluster' {
+                # Setting up the mock to return multiple sites.
+                $mockDynamicClusterSites = @(
+                    @{
+                        Name    = 'SiteA'
+                        Address = '10.0.0.10' # First site IP address
+                        Mask    = '255.255.255.0'
+                    },
+                    @{
+                        Name    = 'SiteB'
+                        Address = '10.0.10.100' # Second site IP address
+                        Mask    = '255.255.255.0'
+                    }
+                )
+
+                $mockStartSqlSetupProcessExpectedArgument += @{
+                    FailoverClusterIPAddresses   = 'IPv4;10.0.0.10;SiteA_Prod;255.255.255.0; IPv4;10.0.10.100;SiteB_Prod;255.255.255.0'
+                    FailoverClusterNetworkName   = 'TestDefaultCluster'
+                    InstallSQLDataDir            = $mockDynamicSqlDataDirectoryPath
+                    SQLUserDBDir                 = $mockDynamicSqlUserDatabasePath
+                    SQLUserDBLogDir              = $mockDynamicSqlUserDatabaseLogPath
+                    SQLTempDBDir                 = $mockDynamicSqlTempDatabasePath
+                    SQLTempDBLogDir              = $mockDynamicSqlTempDatabaseLogPath
+                    SQLBackupDir                 = $mockDynamicSqlBackupPath
+                    FailoverClusterDisks         = 'Backup; SysData; TempDbData; TempDbLogs; UserData; UserLogs'
+                    Action                       = 'CompleteFailoverCluster'
+                    IAcceptSQLServerLicenseTerms = 'True'
+                    Quiet                        = 'True'
+                    InstanceName                 = 'MSSQLSERVER'
+                    Features                     = 'SQLENGINE'
+                    SQLSysAdminAccounts          = 'COMPANY\sqladmin COMPANY\SQLAdmins COMPANY\User1'
+                    FailoverClusterGroup         = 'SQL Server (MSSQLSERVER)'
+                }
+
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $mockSetTargetResourceParameters = @{
+                        SQLSysAdminAccounts        = 'COMPANY\User1', 'COMPANY\SQLAdmins'
+
+                        # Feature support is tested elsewhere, so just include the minimum.
+                        Features                   = 'SQLEngine'
+
+                        InstanceName               = 'MSSQLSERVER'
+                        SourcePath                 = $TestDrive
+                        Action                     = 'CompleteFailoverCluster'
+                        FailoverClusterGroupName   = 'SQL Server (MSSQLSERVER)'
+                        FailoverClusterNetworkName = 'TestDefaultCluster'
+                        FailoverClusterIPAddress   = @('10.0.0.10', '10.0.10.100')
+
+                        # Ensure we use "clustered" disks for our paths
+                        InstallSQLDataDir          = 'E:\MSSQL\Data'
+                        SQLUserDBDir               = 'K:\MSSQL\Data'
+                        SQLUserDBLogDir            = 'L:\MSSQL\Logs'
+                        SQLTempDbDir               = 'M:\MSSQL\TempDb\Data'
+                        SQLTempDbLogDir            = 'N:\MSSQL\TempDb\Logs'
+                        SQLBackupDir               = 'O:\MSSQL\Backup'
+                    }
+
+                    { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
+                }
+
+                # Reverting the mock to return a single site.
+                $mockDynamicClusterSites = @(
+                    @{
+                        Name    = 'SiteA'
+                        Address = '10.0.0.10' # First site IP address
+                        Mask    = '255.255.255.0'
+                    }
+                )
+            }
+        }
+    }
+}
 
 Describe 'Get-ServiceAccountParameters' -Tag 'Helper' {
     BeforeAll {
