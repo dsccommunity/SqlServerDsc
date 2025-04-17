@@ -123,7 +123,7 @@ stages:
       - job: Test_Unit
         displayName: 'Unit'
         pool:
-          vmImage: 'windows-2019'
+          vmImage: 'windows-2022'
         timeoutInMinutes: 0
         variables:
           # This sets environment variable $env:SqlServerDscCI.
