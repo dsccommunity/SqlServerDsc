@@ -361,13 +361,13 @@ stages:
         displayName: 'Commands'
         strategy:
           matrix:
-            SQL2022_WIN2019:
+            PowerBI_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_PowerBI'
-            SQL2022_WIN2022:
+            PowerBI_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_PowerBI'
-            SQL2022_WIN2025:
+            PowerBI_WIN2025:
               JOB_VMIMAGE: 'windows-2025'
               TEST_CONFIGURATION: 'Integration_PowerBI'
         pool:
