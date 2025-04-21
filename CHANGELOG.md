@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- SqlServerDsc
+  - Revert workaround in GitHub Actions workflows as new version of ModuleBuilder
+    was released.
 - SqlServerDsc.Common
   - Removed the function `Get-RegistryPropertyValue` and `Format-Path` in
     favor of the commands with the same names in the module _DscResource.Common_.
