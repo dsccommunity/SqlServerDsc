@@ -65,7 +65,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `ConvertTo-SqlDscEditionName` to return the edition name of the specified
     edition ID.
 - Private function:
-  - `Get-FileProductVersion` to get the product version from a file.
   - `Invoke-ReportServerSetupAction` to run setup actions for Reporting
     Services and Power BI Report Server.
 - Added new instructions for GitHub Copilot that might assist when developing

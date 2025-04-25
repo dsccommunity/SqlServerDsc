@@ -219,9 +219,6 @@ ConvertFrom-StringData @'
     Test_SqlDscRSInstalled_Found = Reporting Services instance '{0}' was found.
     Test_SqlDscRSInstalled_NotFound = Reporting Services instance '{0}' was not found.
 
-    ## Get-FileProductVersion
-    Get_FileProductVersion_GetFileProductVersionError = Failed to get product version for file '{0}'. Error: {1}
-
     ## ConvertTo-SqlDscEditionName
     ConvertTo_EditionName_ConvertingEditionId = Converting EditionId '{0}' to Edition name.
     ConvertTo_EditionName_UnknownEditionId = The EditionId '{0}' is unknown and could not be converted.
