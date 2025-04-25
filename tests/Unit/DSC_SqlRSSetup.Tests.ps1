@@ -958,7 +958,7 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
                     Edition = 'Dev'
                 }
 
-                Mock -CommandName Test-PendingRestart
+                Mock -CommandName Test-PendingRestart -RemoveParameterType 'Check'
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     Test-SetupArgument -Argument $ArgumentList -ExpectedArgument $mockStartSqlSetupProcess_ExpectedArgumentList
 
@@ -996,7 +996,7 @@ Describe "DSC_SqlRSSetup\Set-TargetResource" -Tag 'Set' {
 
                 Mock -CommandName Test-PendingRestart -MockWith {
                     return $true
-                }
+                } -RemoveParameterType 'Check'
 
                 Mock -CommandName Start-SqlSetupProcess -MockWith {
                     Test-SetupArgument -Argument $ArgumentList -ExpectedArgument $mockStartSqlSetupProcess_ExpectedArgumentList
