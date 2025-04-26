@@ -714,6 +714,9 @@ stages:
             PowerBI_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_PowerBI'
+            PowerBI_WIN2025:
+              JOB_VMIMAGE: 'windows-2025'
+              TEST_CONFIGURATION: 'Integration_PowerBI'
         variables:
           SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
           SKIP_ANALYSIS_MULTI_INSTANCE: true
