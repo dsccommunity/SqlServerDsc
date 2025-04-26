@@ -26,7 +26,6 @@
         'Invoke-InstallationMediaCopy'
         'Connect-UncPath'
         'Disconnect-UncPath'
-        'Test-PendingRestart'
         'Start-SqlSetupProcess'
         'Connect-SQL'
         'Connect-SQLAnalysis'

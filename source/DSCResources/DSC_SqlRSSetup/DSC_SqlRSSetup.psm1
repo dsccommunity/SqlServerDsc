@@ -527,7 +527,7 @@ function Set-TargetResource
 
         Write-Verbose -Message $script:localizedData.SuppressRestart
     }
-    elseif (-not $SuppressRestart -and (Test-PendingRestart))
+    elseif (-not $SuppressRestart -and (Test-PendingRestart -Check 'PendingFileRename'))
     {
         $global:DSCMachineStatus = 1
     }

@@ -1707,7 +1707,7 @@ function Set-TargetResource
             Write-Verbose -Message $setupExitMessageSuccessful
         }
 
-        if ($ForceReboot -or (Test-PendingRestart))
+        if ($ForceReboot -or (Test-PendingRestart -Check 'PendingFileRename'))
         {
             if (-not ($SuppressReboot))
             {

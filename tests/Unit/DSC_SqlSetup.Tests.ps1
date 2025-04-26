@@ -2283,7 +2283,7 @@ Describe 'SqlSetup\Set-TargetResource' -Tag 'Set' {
 
         Mock -CommandName Test-PendingRestart -MockWith {
             return $false
-        }
+        } -RemoveParameterType 'Check'
 
         InModuleScope -ScriptBlock {
             # Mock PsDscRunAsCredential context.

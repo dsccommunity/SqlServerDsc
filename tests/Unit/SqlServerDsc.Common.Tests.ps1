@@ -707,36 +707,6 @@ Describe 'SqlServerDsc.Common\Disconnect-UncPath' -Tag 'DisconnectUncPath' {
     }
 }
 
-Describe 'SqlServerDsc.Common\Test-PendingRestart' -Tag 'TestPendingRestart' {
-    Context 'When there is a pending reboot' {
-        BeforeAll {
-            Mock -CommandName Get-RegistryPropertyValue -MockWith {
-                return 'AnyValue'
-            }
-        }
-
-        It 'Should return $true' {
-            $testPendingRestartResult = Test-PendingRestart
-            $testPendingRestartResult | Should -BeTrue
-
-            Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope It
-        }
-    }
-
-    Context 'When there are no pending reboot' {
-        BeforeAll {
-            Mock -CommandName Get-RegistryPropertyValue
-        }
-
-        It 'Should return $true' {
-            $testPendingRestartResult = Test-PendingRestart
-            $testPendingRestartResult | Should -BeFalse
-
-            Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope It
-        }
-    }
-}
-
 Describe 'SqlServerDsc.Common\Start-SqlSetupProcess' -Tag 'StartSqlSetupProcess' {
     BeforeAll {
         $mockPowerShellExecutable = if ($IsLinux -or $IsMacOS)

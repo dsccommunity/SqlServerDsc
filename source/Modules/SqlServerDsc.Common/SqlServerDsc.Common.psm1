@@ -251,31 +251,6 @@ function Disconnect-UncPath
 
 <#
     .SYNOPSIS
-        Queries the registry and returns $true if there is a pending reboot.
-
-    .OUTPUTS
-        Returns $true if there is a pending reboot, otherwise it returns $false.
-#>
-function Test-PendingRestart
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param ()
-
-    $getRegistryPropertyValueParameters = @{
-        Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager'
-        Name = 'PendingFileRenameOperations'
-    }
-
-    <#
-        If the key 'PendingFileRenameOperations' does not exist then if should
-        return $false, otherwise it should return $true.
-    #>
-    return $null -ne (Get-RegistryPropertyValue @getRegistryPropertyValueParameters)
-}
-
-<#
-    .SYNOPSIS
         Starts the SQL setup process.
 
     .PARAMETER FilePath
