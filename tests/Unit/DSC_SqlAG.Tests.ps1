@@ -99,7 +99,7 @@ Describe 'SqlAG\Get-TargetResource' {
             $mockAvailabilityGroupReplica1.Name = 'Server1'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = 'TCP://Server1.domain.com:1433'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica1.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica1.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica2.AvailabilityMode = 'AsynchronousCommit'
@@ -111,7 +111,7 @@ Describe 'SqlAG\Get-TargetResource' {
             $mockAvailabilityGroupReplica2.Name = 'Server2'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica2.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
@@ -123,7 +123,7 @@ Describe 'SqlAG\Get-TargetResource' {
             $mockAvailabilityGroupReplica3.Name = 'Server3'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica3.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             # Mock the availability groups
             $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
@@ -188,7 +188,7 @@ Describe 'SqlAG\Get-TargetResource' {
             $mockAvailabilityGroupReplica2.Name = 'Server2'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica2.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
@@ -200,7 +200,7 @@ Describe 'SqlAG\Get-TargetResource' {
             $mockAvailabilityGroupReplica3.Name = 'Server3'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica3.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             # Mock the availability groups
             $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
@@ -369,7 +369,7 @@ Describe 'SqlAG\Set-TargetResource' {
             $mockAvailabilityGroupReplica1.Name = 'Server1'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = 'TCP://Server1.domain.com:1433'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica1.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica1.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica2.AvailabilityMode = 'AsynchronousCommit'
@@ -381,7 +381,7 @@ Describe 'SqlAG\Set-TargetResource' {
             $mockAvailabilityGroupReplica2.Name = 'Server2'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica2.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
@@ -393,7 +393,7 @@ Describe 'SqlAG\Set-TargetResource' {
             $mockAvailabilityGroupReplica3.Name = 'Server3'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica3.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             # Mock the availability groups
             $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
@@ -446,7 +446,7 @@ Describe 'SqlAG\Set-TargetResource' {
             $mockAvailabilityGroupReplica1.Name = 'Server1'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = 'TCP://Server1.domain.com:1433'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica1.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica1.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica2.AvailabilityMode = 'AsynchronousCommit'
@@ -458,7 +458,7 @@ Describe 'SqlAG\Set-TargetResource' {
             $mockAvailabilityGroupReplica2.Name = 'Server2'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica2.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
@@ -470,7 +470,7 @@ Describe 'SqlAG\Set-TargetResource' {
             $mockAvailabilityGroupReplica3.Name = 'Server3'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica3.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             # Mock the availability groups
             $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
@@ -693,7 +693,7 @@ Describe 'SqlAG\Set-TargetResource' {
             $mockReplicaObject.EndpointUrl = 'TCP://Server1:5022'
             $mockReplicaObject.FailoverMode = 'Manual'
             $mockReplicaObject.Name = 'Server1'
-            $mockReplicaObject.SeedingMode = 'Manual'
+            $mockReplicaObject.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             Mock -CommandName New-SqlAvailabilityReplica -MockWith {
                 return $mockReplicaObject
@@ -1215,7 +1215,7 @@ Describe 'SqlAG\Test-TargetResource' {
             $mockAvailabilityGroupReplica1.Name = 'Server1'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingConnectionUrl = 'TCP://Server1.domain.com:1433'
             $mockAvailabilityGroupReplica1.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica1.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica1.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             $mockAvailabilityGroupReplica2 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica2.AvailabilityMode = 'AsynchronousCommit'
@@ -1227,7 +1227,7 @@ Describe 'SqlAG\Test-TargetResource' {
             $mockAvailabilityGroupReplica2.Name = 'Server2'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica2.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
@@ -1239,7 +1239,7 @@ Describe 'SqlAG\Test-TargetResource' {
             $mockAvailabilityGroupReplica3.Name = 'Server3'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica3.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             # Mock the availability groups
             $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
@@ -1303,7 +1303,7 @@ Describe 'SqlAG\Test-TargetResource' {
             $mockAvailabilityGroupReplica2.Name = 'Server2'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingConnectionUrl = 'TCP://Server2.domain.com:1433'
             $mockAvailabilityGroupReplica2.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica2.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica2.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             $mockAvailabilityGroupReplica3 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityReplica
             $mockAvailabilityGroupReplica3.AvailabilityMode = 'AsynchronousCommit'
@@ -1315,7 +1315,7 @@ Describe 'SqlAG\Test-TargetResource' {
             $mockAvailabilityGroupReplica3.Name = 'Server3'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingConnectionUrl = 'TCP://Server3.domain.com:1433'
             $mockAvailabilityGroupReplica3.ReadOnlyRoutingList = @('Server1', 'Server2')
-            $mockAvailabilityGroupReplica3.SeedingMode = 'Manual'
+            $mockAvailabilityGroupReplica3.SeedingMode = [Microsoft.SqlServer.Management.Smo.AvailabilityReplicaSeedingMode]::Manual
 
             # Mock the availability groups
             $mockAvailabilityGroup1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup

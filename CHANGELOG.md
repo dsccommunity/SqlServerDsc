@@ -116,6 +116,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     that they always are higher than what we expect.
 - `SqlRS`
   - Re-enable integration tests.
+- `SqlAG`
+  - Fix SeedingMode existence condition.
+- `SqlAGReplica`
+  - Fix SeedingMode existence condition.
 
 ## [17.0.0] - 2024-09-30
 
