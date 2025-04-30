@@ -168,8 +168,7 @@ class SqlRSSetup : ResourceBase
     $InstanceName
 
     [DscProperty(Mandatory)]
-    [ValidateSet('Install', 'Repair', 'Uninstall')]
-    [System.String]
+    [InstallAction]
     $Action
 
     [DscProperty(Mandatory)]
@@ -189,8 +188,7 @@ class SqlRSSetup : ResourceBase
     $EditionUpgrade
 
     [DscProperty()]
-    [ValidateSet('Developer', 'Evaluation', 'ExpressAdvanced')]
-    [System.String]
+    [ReportServerEdition]
     $Edition
 
     [DscProperty()]
