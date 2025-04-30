@@ -19,7 +19,7 @@ else
                 NodeName             = 'localhost'
                 InstanceName         = if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_PowerBI')
                 {
-                    'PBIRS' # cSpell:ignore PBIRS
+                    'PBIRS'
                 }
                 else
                 {
