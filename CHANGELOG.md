@@ -83,6 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed workaround for the GitHub Actions to support building module in Windows
   PowerShell.
+- Fix tests to redirect output streams correctly.
 - SqlServerDsc
   - Fix localization tests.
   - Cleanup in unit tests for classes.
