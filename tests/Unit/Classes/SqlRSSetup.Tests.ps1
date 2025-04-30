@@ -182,12 +182,14 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
                     $currentState.InstanceName | Should -BeNull
                     $currentState.Installed | Should -BeFalse
                     $currentState.Timeout | Should -Be 7200
-                    $currentState.Action | Should -BeNullOrEmpty
+                    # Returns 0, that means no value was set by GetCurrentState() from the enum InstallAction
+                    $currentState.Action | Should -Be 0
                     $currentState.AcceptLicensingTerms | Should -BeFalse
                     $currentState.MediaPath | Should -BeNullOrEmpty
                     $currentState.ProductKey | Should -BeNullOrEmpty
                     $currentState.EditionUpgrade | Should -BeNullOrEmpty
-                    $currentState.Edition | Should -BeNullOrEmpty
+                    # Returns 0, that means no value was set by GetCurrentState() from the enum ReportServerEdition
+                    $currentState.Edition | Should -Be 0
                     $currentState.LogPath | Should -BeNullOrEmpty
                     $currentState.InstallFolder | Should -BeNullOrEmpty
                     $currentState.SuppressRestart | Should -BeFalse
