@@ -10,7 +10,7 @@ BeforeDiscovery {
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
-                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
             # If the dependencies has not been resolved, this will throw an error.
@@ -49,10 +49,6 @@ AfterAll {
 Describe 'ConvertTo-SqlDscEditionName' {
     Context 'When converting a known EditionId' {
         BeforeAll {
-            $mockLocalizedConvertingEditionId = InModuleScope -ScriptBlock {
-                $script:localizedData.ConvertTo_EditionName_ConvertingEditionId
-            }
-
             $testEditionId = 2176971986
             $mockExpectedResult = @{
                 EditionId = 2176971986
@@ -93,10 +89,6 @@ Describe 'ConvertTo-SqlDscEditionName' {
 
     Context 'When converting an unknown EditionId' {
         BeforeAll {
-            $mockLocalizedUnknownEditionId = InModuleScope -ScriptBlock {
-                $script:localizedData.ConvertTo_EditionName_UnknownEditionId
-            }
-
             $testEditionId = 99999
             $mockExpectedResult = @{
                 EditionId = 99999
