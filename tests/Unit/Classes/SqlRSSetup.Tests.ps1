@@ -720,7 +720,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
             }
         }
 
-        Context 'When current state is missing PBIRS instance' { # cSpell:ignore PBIRS
+        Context 'When current state is missing PBIRS instance' {
             Context 'When the install command is successful' {
                 BeforeAll {
                     InModuleScope -ScriptBlock {
@@ -866,7 +866,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
             }
         }
 
-        Context 'When current state is missing PBIRS instance' { # cSpell:ignore PBIRS
+        Context 'When current state is missing PBIRS instance' {
             Context 'When the uninstall command is successful' {
                 BeforeAll {
                     InModuleScope -ScriptBlock {
@@ -1012,7 +1012,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
             }
         }
 
-        Context 'When current state is missing PBIRS instance' { # cSpell:ignore PBIRS
+        Context 'When current state is missing PBIRS instance' {
             Context 'When the repair command is successful' {
                 BeforeAll {
                     InModuleScope -ScriptBlock {

@@ -162,7 +162,6 @@
 [DscResource(RunAsCredential = 'Optional')]
 class SqlRSSetup : ResourceBase
 {
-    # cSpell:ignore SSRS PBIRS
     [DscProperty(Key)]
     [System.String]
     $InstanceName

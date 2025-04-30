@@ -75,7 +75,9 @@
         "fastbuild",
         "CODEOWNERS",
         "analyzersettings",
-        "sqlcmd"
+        "sqlcmd",
+        "PBIRS",
+        "SSRS"
     ],
     "cSpell.ignorePaths": [
         ".git"
