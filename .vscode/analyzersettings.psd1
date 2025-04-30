@@ -33,7 +33,7 @@
         'PSUseApprovedVerbs'
         'PSUseCmdletCorrectly'
         'PSUseOutputTypeCorrectly'
-        #'PSAvoidGlobalVars'
+        'PSAvoidGlobalVars'
         'PSAvoidUsingConvertToSecureStringWithPlainText'
         'PSAvoidUsingPlainTextForPassword'
         'PSAvoidUsingUsernameAndPasswordParams'

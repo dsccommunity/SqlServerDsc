@@ -506,7 +506,7 @@ class SqlRSSetup : ResourceBase
         #>
         if ($this.ForceRestart -or ($exitCode -eq 3010 -and -not $this.SuppressRestart))
         {
-            $global:DSCMachineStatus = 1
+            Set-Variable -Name 'DSCMachineStatus' -Value 1 -Scope 'Global'
         }
     }
 
