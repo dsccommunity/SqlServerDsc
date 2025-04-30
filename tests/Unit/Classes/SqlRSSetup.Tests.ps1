@@ -16,7 +16,7 @@ BeforeDiscovery {
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
-                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
             # If the dependencies has not been resolved, this will throw an error.
@@ -56,12 +56,16 @@ Describe 'SqlRSSetup' {
     Context 'When class is instantiated' {
         It 'Should not throw an exception' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 { [SqlRSSetup]::new() } | Should -Not -Throw
             }
         }
 
         It 'Should have a default or empty constructor' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $instance = [SqlRSSetup]::new()
                 $instance | Should -Not -BeNullOrEmpty
             }
@@ -69,6 +73,8 @@ Describe 'SqlRSSetup' {
 
         It 'Should be the correct type' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $instance = [SqlRSSetup]::new()
                 $instance.GetType().Name | Should -Be 'SqlRSSetup'
             }
@@ -111,6 +117,8 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
 
             It 'Should return the correct values' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $currentState = $script:mockSqlRSSetupInstance.Get()
 
                     $currentState.InstanceName | Should -Be 'SSRS'
@@ -165,6 +173,8 @@ Describe 'SqlRSSetup\Get()' -Tag 'Get' {
 
             It 'Should return the correct values' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $currentState = $script:mockSqlRSSetupInstance.Get()
 
                     $currentState.InstanceName | Should -BeNull
@@ -212,6 +222,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
 
             It 'Should return $true' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
                 }
             }
@@ -250,6 +262,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
 
             It 'Should return $true' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
                 }
             }
@@ -288,6 +302,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
 
             It 'Should return $true' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
                 }
             }
@@ -329,6 +345,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
 
             It 'Should return $true' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlRSSetupInstance.Test() | Should -BeTrue
                 }
             }
@@ -369,6 +387,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
 
             It 'Should return $false' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
                 }
             }
@@ -397,6 +417,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
 
             It 'Should return $false' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
                 }
             }
@@ -425,6 +447,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
 
             It 'Should return $false' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
                 }
             }
@@ -466,6 +490,8 @@ Describe 'SqlRSSetup\Test()' -Tag 'Test' {
 
             It 'Should return $false' {
                 InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
                     $script:mockSqlRSSetupInstance.Test() | Should -BeFalse
                 }
             }
@@ -490,6 +516,8 @@ Describe 'SqlRSSetup\Set()' -Tag 'Set' {
 
     BeforeEach {
         InModuleScope -ScriptBlock {
+            Set-StrictMode -Version 1.0
+
             $script:mockMethodModifyCallCount = 0
         }
     }
@@ -513,6 +541,8 @@ Describe 'SqlRSSetup\Set()' -Tag 'Set' {
 
         It 'Should not call method Modify()' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlRSSetupInstance.Set()
 
                 $script:mockMethodModifyCallCount | Should -Be 0
@@ -540,6 +570,8 @@ Describe 'SqlRSSetup\Set()' -Tag 'Set' {
 
         It 'Should call method Modify()' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlRSSetupInstance.Set()
 
                 $script:mockMethodModifyCallCount | Should -Be 1
@@ -562,6 +594,8 @@ Describe 'SqlRSSetup\GetCurrentState()' -Tag 'GetCurrentState' {
 
         It 'Should return the correct values' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $currentState = $script:mockSqlRSSetupInstance.GetCurrentState(
                     @{
                         Name         = 'InstanceName'
@@ -594,6 +628,8 @@ Describe 'SqlRSSetup\GetCurrentState()' -Tag 'GetCurrentState' {
 
         It 'Should return the correct values' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $currentState = $script:mockSqlRSSetupInstance.GetCurrentState(
                     @{
                         Name         = 'InstanceName'
@@ -628,6 +664,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                 It 'Should return the correct values' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlRSSetupInstance.Modify(
                             @{
                                 Name         = 'InstanceName'
@@ -663,6 +701,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                 It 'Should return the correct values' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlRSSetupInstance.Modify(
                             @{
                                 Name         = 'InstanceName'
@@ -696,6 +736,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                 It 'Should return the correct values' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlRSSetupInstance.Modify(
                             @{
                                 Name         = 'InstanceName'
@@ -731,6 +773,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                 It 'Should return the correct values' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlRSSetupInstance.Modify(
                             @{
                                 Name         = 'InstanceName'
@@ -766,6 +810,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                 It 'Should return the correct values' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlRSSetupInstance.Modify(
                             @{
                                 Name         = 'InstanceName'
@@ -801,6 +847,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                 It 'Should return the correct values' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlRSSetupInstance.Modify(
                             @{
                                 Name         = 'InstanceName'
@@ -834,6 +882,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                 It 'Should return the correct values' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlRSSetupInstance.Modify(
                             @{
                                 Name         = 'InstanceName'
@@ -869,6 +919,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                 It 'Should return the correct values' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlRSSetupInstance.Modify(
                             @{
                                 Name         = 'InstanceName'
@@ -904,6 +956,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                 It 'Should return the correct values' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlRSSetupInstance.Modify(
                             @{
                                 Name         = 'InstanceName'
@@ -939,6 +993,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                 It 'Should return the correct values' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlRSSetupInstance.Modify(
                             @{
                                 Name         = 'InstanceName'
@@ -972,6 +1028,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                 It 'Should return the correct values' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlRSSetupInstance.Modify(
                             @{
                                 Name         = 'InstanceName'
@@ -1007,6 +1065,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                 It 'Should return the correct values' {
                     InModuleScope -ScriptBlock {
+                        Set-StrictMode -Version 1.0
+
                         $script:mockSqlRSSetupInstance.Modify(
                             @{
                                 Name         = 'InstanceName'
@@ -1038,6 +1098,8 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
 
         It 'Should throw the correct error message' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $mockExpectedErrorMessage = ($script:mockSqlRSSetupInstance.localizedData.InstanceName_Invalid -f 'INSTANCE') + ' (Parameter ''InstanceName'')'
 
                 {
@@ -1067,13 +1129,21 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
 
             It 'Should throw the correct error message' {
                 InModuleScope -ScriptBlock {
-                    $mockExpectedErrorMessage = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required + ' (Parameter ''AcceptLicensingTerms'')'
+                    Set-StrictMode -Version 1.0
+
+                    $getInvalidArgumentRecordParameters = @{
+                        Message     = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required
+                        ArgumentName = 'AcceptLicensingTerms'
+                    }
+
+                    $mockExpectedErrorMessage = Get-InvalidArgumentRecord @getInvalidArgumentRecordParameters
 
                     {
                         $script:mockSqlRSSetupInstance.AssertProperties(
                             @{
                                 InstanceName = 'SSRS'
                                 Action       = 'Install'
+
                                 MediaPath    = $TestDrive
                             }
                         )
@@ -1096,7 +1166,14 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
 
             It 'Should throw the correct error message' {
                 InModuleScope -ScriptBlock {
-                    $mockExpectedErrorMessage = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required + ' (Parameter ''AcceptLicensingTerms'')'
+                    Set-StrictMode -Version 1.0
+
+                    $getInvalidArgumentRecordParameters = @{
+                        Message     = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required
+                        ArgumentName = 'AcceptLicensingTerms'
+                    }
+
+                    $mockExpectedErrorMessage = Get-InvalidArgumentRecord @getInvalidArgumentRecordParameters
 
                     {
                         $script:mockSqlRSSetupInstance.AssertProperties(
@@ -1128,7 +1205,14 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
 
             It 'Should throw the correct error message' {
                 InModuleScope -ScriptBlock {
-                    $mockExpectedErrorMessage = $script:mockSqlRSSetupInstance.localizedData.EditionOrProductKeyMissing + ' (Parameter ''Edition, ProductKey'')'
+                    Set-StrictMode -Version 1.0
+
+                    $getInvalidArgumentRecordParameters = @{
+                        Message     = $script:mockSqlRSSetupInstance.localizedData.EditionOrProductKeyMissing
+                        ArgumentName = 'Edition, ProductKey'
+                    }
+
+                    $mockExpectedErrorMessage = Get-InvalidArgumentRecord @getInvalidArgumentRecordParameters
 
                     {
                         $script:mockSqlRSSetupInstance.AssertProperties(
@@ -1162,7 +1246,14 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
 
             It 'Should throw the correct error message' {
                 InModuleScope -ScriptBlock {
-                    $mockExpectedErrorMessage = ($script:mockSqlRSSetupInstance.localizedData.InstallFolder_ParentMissing -f ($TestDrive | Join-Path -ChildPath 'MissingParent')) + ' (Parameter ''InstallFolder'')'
+                    Set-StrictMode -Version 1.0
+
+                    $getInvalidArgumentRecordParameters = @{
+                        Message     = $script:mockSqlRSSetupInstance.localizedData.InstallFolder_ParentMissing -f ($TestDrive | Join-Path -ChildPath 'MissingParent')
+                        ArgumentName = 'InstallFolder'
+                    }
+
+                    $mockExpectedErrorMessage = Get-InvalidArgumentRecord @getInvalidArgumentRecordParameters
 
                     {
                         $script:mockSqlRSSetupInstance.AssertProperties(
@@ -1195,7 +1286,14 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
 
             It 'Should throw the correct error message' {
                 InModuleScope -ScriptBlock {
-                    $mockExpectedErrorMessage = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required + ' (Parameter ''AcceptLicensingTerms'')'
+                    Set-StrictMode -Version 1.0
+
+                    $getInvalidArgumentRecordParameters = @{
+                        Message     = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required
+                        ArgumentName = 'AcceptLicensingTerms'
+                    }
+
+                    $mockExpectedErrorMessage = Get-InvalidArgumentRecord @getInvalidArgumentRecordParameters
 
                     {
                         $script:mockSqlRSSetupInstance.AssertProperties(
@@ -1224,7 +1322,14 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
 
             It 'Should throw the correct error message' {
                 InModuleScope -ScriptBlock {
-                    $mockExpectedErrorMessage = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required + ' (Parameter ''AcceptLicensingTerms'')'
+                    Set-StrictMode -Version 1.0
+
+                    $getInvalidArgumentRecordParameters = @{
+                        Message     = $script:mockSqlRSSetupInstance.localizedData.AcceptLicensingTerms_Required
+                        ArgumentName = 'AcceptLicensingTerms'
+                    }
+
+                    $mockExpectedErrorMessage = Get-InvalidArgumentRecord @getInvalidArgumentRecordParameters
 
                     {
                         $script:mockSqlRSSetupInstance.AssertProperties(
@@ -1257,7 +1362,14 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
 
             It 'Should throw the correct error message' {
                 InModuleScope -ScriptBlock {
-                    $mockExpectedErrorMessage = $script:mockSqlRSSetupInstance.localizedData.EditionUpgrade_RequiresKeyOrEdition + ' (Parameter ''EditionUpgrade'')'
+                    Set-StrictMode -Version 1.0
+
+                    $getInvalidArgumentRecordParameters = @{
+                        Message     = $script:mockSqlRSSetupInstance.localizedData.EditionUpgrade_RequiresKeyOrEdition
+                        ArgumentName = 'EditionUpgrade'
+                    }
+
+                    $mockExpectedErrorMessage = Get-InvalidArgumentRecord @getInvalidArgumentRecordParameters
 
                     {
                         $script:mockSqlRSSetupInstance.AssertProperties(
@@ -1291,6 +1403,8 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
 
         It 'Should throw the correct error message' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 {
                     $script:mockSqlRSSetupInstance.AssertProperties(
                         @{
@@ -1323,7 +1437,14 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
 
             It 'Should throw the correct error message' {
                 InModuleScope -ScriptBlock {
-                    $mockExpectedErrorMessage = ($script:mockSqlRSSetupInstance.localizedData.MediaPath_Invalid -f (Join-Path -Path $TestDrive -ChildPath 'InvalidFile.exe')) + ' (Parameter ''MediaPath'')'
+                    Set-StrictMode -Version 1.0
+
+                    $getInvalidArgumentRecordParameters = @{
+                        Message     = $script:mockSqlRSSetupInstance.localizedData.MediaPath_Invalid -f (Join-Path -Path $TestDrive -ChildPath 'InvalidFile.exe')
+                        ArgumentName = 'MediaPath'
+                    }
+
+                    $mockExpectedErrorMessage = Get-InvalidArgumentRecord @getInvalidArgumentRecordParameters
 
                     {
                         $script:mockSqlRSSetupInstance.AssertProperties(
@@ -1358,7 +1479,14 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
 
             It 'Should throw the correct error message' {
                 InModuleScope -ScriptBlock {
-                    $mockExpectedErrorMessage = ($script:mockSqlRSSetupInstance.localizedData.MediaPath_DoesNotHaveRequiredExtension -f (Join-Path -Path $TestDrive -ChildPath 'InvalidFile.txt')) + ' (Parameter ''MediaPath'')'
+                    Set-StrictMode -Version 1.0
+
+                    $getInvalidArgumentRecordParameters = @{
+                        Message     = $script:mockSqlRSSetupInstance.localizedData.MediaPath_DoesNotHaveRequiredExtension -f (Join-Path -Path $TestDrive -ChildPath 'InvalidFile.txt')
+                        ArgumentName = 'MediaPath'
+                    }
+
+                    $mockExpectedErrorMessage = Get-InvalidArgumentRecord @getInvalidArgumentRecordParameters
 
                     {
                         $script:mockSqlRSSetupInstance.AssertProperties(
@@ -1394,7 +1522,14 @@ Describe 'SqlRSSetup\AssertProperties()' -Tag 'AssertProperties' {
 
         It 'Should throw the correct error message' {
             InModuleScope -ScriptBlock {
-                $mockExpectedErrorMessage = ($script:mockSqlRSSetupInstance.localizedData.LogPath_ParentMissing -f ($TestDrive | Join-Path -ChildPath 'MissingParent')) + ' (Parameter ''LogPath'')'
+                Set-StrictMode -Version 1.0
+
+                $getInvalidArgumentRecordParameters = @{
+                    Message     = $script:mockSqlRSSetupInstance.localizedData.LogPath_ParentMissing -f (Join-Path -Path $TestDrive -ChildPath 'MissingParent')
+                    ArgumentName = 'LogPath'
+                }
+
+                $mockExpectedErrorMessage = Get-InvalidArgumentRecord @getInvalidArgumentRecordParameters
 
                 {
                     $script:mockSqlRSSetupInstance.AssertProperties(
@@ -1433,6 +1568,8 @@ Describe 'SqlRSSetup\NormalizeProperties()' -Tag 'NormalizeProperties' {
 
         It 'Should call the expected mock' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlRSSetupInstance.NormalizeProperties(
                     @{
                         InstanceName         = 'SSRS'
@@ -1467,6 +1604,8 @@ Describe 'SqlRSSetup\NormalizeProperties()' -Tag 'NormalizeProperties' {
 
         It 'Should call the expected mock' {
             InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
                 $script:mockSqlRSSetupInstance.NormalizeProperties(
                     @{
                         InstanceName         = 'SSRS'
