@@ -233,8 +233,6 @@ class SqlRSSetup : ResourceBase
             'ForceRestart'
             'VersionUpgrade'
         )
-
-        $this.FeatureOptionalEnums = $true
     }
 
     [SqlRSSetup] Get()
