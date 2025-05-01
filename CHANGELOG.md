@@ -64,8 +64,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Add `PassThru` parameter to return exit code.
   - `ConvertTo-SqlDscEditionName` to return the edition name of the specified
     edition ID.
-  - `Test-SqlDscIsRole` to be used like `Test-SqlDscIsLogin` but tests for a
-     server role as principal.
 - Private function:
   - `Invoke-ReportServerSetupAction` to run setup actions for Reporting
     Services and Power BI Report Server.

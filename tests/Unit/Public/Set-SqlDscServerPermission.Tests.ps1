@@ -50,6 +50,7 @@ AfterAll {
 }
 
 Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
+    Context 'When the principal does not exist' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'MockInstance'
@@ -77,6 +78,7 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
             { Set-SqlDscServerPermission -ServerObject $mockServerObject @mockDefaultParameters } |
                 Should -Throw -ExpectedMessage ($mockErrorMessage -f 'UnknownUser', 'MockInstance')
         }
+    }
 
     Context 'When the login exists' {
         Context 'When using parameter Confirm with value $false for a login' {
@@ -479,6 +481,7 @@ Describe 'Set-SqlDscServerPermission' -Tag 'Public' {
             }
         }
     }
+    
     Context 'When the role exists' {
         Context 'When using parameter Confirm with value $false for a role' {
             BeforeAll {
