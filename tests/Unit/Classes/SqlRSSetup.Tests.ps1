@@ -695,12 +695,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                     Mock -CommandName Install-SqlDscReportingService -MockWith {
                         return 3010
                     }
-                }
 
-                AfterEach {
-                    InModuleScope -ScriptBlock {
-                        Remove-Variable -Name 'DSCMachineStatus' -Scope 'Global' -ErrorAction 'SilentlyContinue'
-                    }
+                    Mock -CommandName Set-DscMachineRebootRequired
                 }
 
                 It 'Should return the correct values' {
@@ -715,8 +711,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                         )
 
                         Should -Invoke -CommandName 'Install-SqlDscReportingService' -Exactly -Times 1 -Scope It
-
-                        $global:DSCMachineStatus | Should -Be 1
+                        Should -Invoke -CommandName 'Set-DscMachineRebootRequired' -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -767,12 +762,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                     Mock -CommandName Install-SqlDscBIReportServer -MockWith {
                         return 3010
                     }
-                }
 
-                AfterEach {
-                    InModuleScope -ScriptBlock {
-                        Remove-Variable -Name 'DSCMachineStatus' -Scope 'Global' -ErrorAction 'SilentlyContinue'
-                    }
+                    Mock -CommandName Set-DscMachineRebootRequired
                 }
 
                 It 'Should return the correct values' {
@@ -788,7 +779,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                         Should -Invoke -CommandName 'Install-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
 
-                        $global:DSCMachineStatus | Should -Be 1
+                        Should -Invoke -CommandName 'Set-DscMachineRebootRequired' -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -841,12 +832,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                     Mock -CommandName Uninstall-SqlDscReportingService -MockWith {
                         return 3010
                     }
-                }
 
-                AfterEach {
-                    InModuleScope -ScriptBlock {
-                        Remove-Variable -Name 'DSCMachineStatus' -Scope 'Global' -ErrorAction 'SilentlyContinue'
-                    }
+                    Mock -CommandName Set-DscMachineRebootRequired
                 }
 
                 It 'Should return the correct values' {
@@ -862,7 +849,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                         Should -Invoke -CommandName 'Uninstall-SqlDscReportingService' -Exactly -Times 1 -Scope It
 
-                        $global:DSCMachineStatus | Should -Be 1
+                        Should -Invoke -CommandName 'Set-DscMachineRebootRequired' -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -913,12 +900,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                     Mock -CommandName Uninstall-SqlDscBIReportServer -MockWith {
                         return 3010
                     }
-                }
 
-                AfterEach {
-                    InModuleScope -ScriptBlock {
-                        Remove-Variable -Name 'DSCMachineStatus' -Scope 'Global' -ErrorAction 'SilentlyContinue'
-                    }
+                    Mock -CommandName Set-DscMachineRebootRequired
                 }
 
                 It 'Should return the correct values' {
@@ -934,7 +917,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                         Should -Invoke -CommandName 'Uninstall-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
 
-                        $global:DSCMachineStatus | Should -Be 1
+                        Should -Invoke -CommandName 'Set-DscMachineRebootRequired' -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -987,12 +970,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                     Mock -CommandName Repair-SqlDscReportingService -MockWith {
                         return 3010
                     }
-                }
 
-                AfterEach {
-                    InModuleScope -ScriptBlock {
-                        Remove-Variable -Name 'DSCMachineStatus' -Scope 'Global' -ErrorAction 'SilentlyContinue'
-                    }
+                    Mock -CommandName Set-DscMachineRebootRequired
                 }
 
                 It 'Should return the correct values' {
@@ -1008,7 +987,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                         Should -Invoke -CommandName 'Repair-SqlDscReportingService' -Exactly -Times 1 -Scope It
 
-                        $global:DSCMachineStatus | Should -Be 1
+                        Should -Invoke -CommandName 'Set-DscMachineRebootRequired' -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -1059,12 +1038,8 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
                     Mock -CommandName Repair-SqlDscBIReportServer -MockWith {
                         return 3010
                     }
-                }
 
-                AfterEach {
-                    InModuleScope -ScriptBlock {
-                        Remove-Variable -Name 'DSCMachineStatus' -Scope 'Global' -ErrorAction 'SilentlyContinue'
-                    }
+                    Mock -CommandName Set-DscMachineRebootRequired
                 }
 
                 It 'Should return the correct values' {
@@ -1080,7 +1055,7 @@ Describe 'SqlRSSetup\Modify()' -Tag 'Modify' {
 
                         Should -Invoke -CommandName 'Repair-SqlDscBIReportServer' -Exactly -Times 1 -Scope It
 
-                        $global:DSCMachineStatus | Should -Be 1
+                        Should -Invoke -CommandName 'Set-DscMachineRebootRequired' -Exactly -Times 1 -Scope It
                     }
                 }
             }
