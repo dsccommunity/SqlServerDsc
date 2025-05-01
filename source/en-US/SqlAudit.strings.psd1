@@ -1,14 +1,14 @@
 <#
     .SYNOPSIS
         The localized resource strings in English (en-US) for the
-        resource SqlPermission.
+        resource SqlAudit.
 #>
 
 ConvertFrom-StringData @'
     ## Strings overrides for the ResourceBase's default strings.
     # None
 
-    ## Strings directly used by the derived class SqlDatabasePermission.
+    ## Strings directly used by the derived class SqlAudit.
     BothFileSizePropertiesMustBeSet = Both the parameter MaximumFileSize and MaximumFileSizeUnit must be assigned. (SA0001)
     ReservDiskSpaceWithoutMaximumFiles = The parameter ReservDiskSpace can only be used together with the parameter MaximumFiles. (SA0002)
     PathInvalid = The path '{0}' does not exist. Audit file can only be created in a path that already exist and where the SQL Server instance has permission to write. (SA0003)

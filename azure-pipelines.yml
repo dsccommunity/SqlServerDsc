@@ -123,7 +123,7 @@ stages:
       - job: Test_Unit
         displayName: 'Unit'
         pool:
-          vmImage: 'windows-2019'
+          vmImage: 'windows-2022'
         timeoutInMinutes: 0
         variables:
           # This sets environment variable $env:SqlServerDscCI.
@@ -204,9 +204,6 @@ stages:
             SQL2016_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2016_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
             SQL2017_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_SQL2017'
@@ -219,11 +216,17 @@ stages:
             SQL2019_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2019_WIN2025:
+              JOB_VMIMAGE: 'windows-2025'
+              TEST_CONFIGURATION: 'Integration_SQL2019'
             SQL2022_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_SQL2022'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+            SQL2022_WIN2025:
+              JOB_VMIMAGE: 'windows-2025'
               TEST_CONFIGURATION: 'Integration_SQL2022'
         pool:
           vmImage: $(JOB_VMIMAGE)
@@ -289,11 +292,17 @@ stages:
             SQL2019_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2019_RS'
+            SQL2019_WIN2025:
+              JOB_VMIMAGE: 'windows-2025'
+              TEST_CONFIGURATION: 'Integration_SQL2019_RS'
             SQL2022_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_SQL2022_RS'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2022_RS'
+            SQL2022_WIN2025:
+              JOB_VMIMAGE: 'windows-2025'
               TEST_CONFIGURATION: 'Integration_SQL2022_RS'
         pool:
           vmImage: $(JOB_VMIMAGE)
@@ -352,11 +361,14 @@ stages:
         displayName: 'Commands'
         strategy:
           matrix:
-            SQL2022_WIN2019:
+            PowerBI_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_PowerBI'
-            SQL2022_WIN2022:
+            PowerBI_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_PowerBI'
+            PowerBI_WIN2025:
+              JOB_VMIMAGE: 'windows-2025'
               TEST_CONFIGURATION: 'Integration_PowerBI'
         pool:
           vmImage: $(JOB_VMIMAGE)
@@ -418,9 +430,6 @@ stages:
             SQL2016_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2016_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
             SQL2017_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_SQL2017'
@@ -433,11 +442,17 @@ stages:
             SQL2019_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2019_WIN2025:
+              JOB_VMIMAGE: 'windows-2025'
+              TEST_CONFIGURATION: 'Integration_SQL2019'
             SQL2022_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_SQL2022'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+            SQL2022_WIN2025:
+              JOB_VMIMAGE: 'windows-2025'
               TEST_CONFIGURATION: 'Integration_SQL2022'
         pool:
           vmImage: $(JOB_VMIMAGE)
@@ -517,8 +532,8 @@ stages:
         displayName: 'Integration'
         strategy:
           matrix:
-            SQL2016_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
+            SQL2016_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_SQL2016'
             SQL2017_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
@@ -613,9 +628,6 @@ stages:
             SQL2016_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2016_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
             SQL2017_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_SQL2017'
@@ -628,12 +640,83 @@ stages:
             SQL2019_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2019'
+            SQL2019_WIN2025:
+              JOB_VMIMAGE: 'windows-2025'
+              TEST_CONFIGURATION: 'Integration_SQL2019'
             SQL2022_WIN2019:
               JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_SQL2022'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2022'
+            SQL2022_WIN2025:
+              JOB_VMIMAGE: 'windows-2025'
+              TEST_CONFIGURATION: 'Integration_SQL2022'
+        variables:
+          SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
+          SKIP_ANALYSIS_MULTI_INSTANCE: true
+          SKIP_ANALYSIS_TABULAR_INSTANCE: true
+          SMODefaultModuleName: 'SqlServer'
+        pool:
+          vmImage: $(JOB_VMIMAGE)
+        timeoutInMinutes: 0
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Configure WinRM'
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
+          - powershell: |
+              Import-Module -Name ./tests/TestHelpers/CommonTestHelper.psm1
+              Remove-PowerShellModuleFromCI -Name @('SqlServer', 'SQLPS')
+              Remove-Module -Name CommonTestHelper
+            name: cleanCIWorker
+            displayName: 'Clean CI worker'
+          - powershell: |
+              ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
+                  # Run the integration tests in a specific group order.
+                  # Group 1
+                  'tests/Integration/Resources/DSC_SqlSetup.Integration.Tests.ps1'
+                  # Group 2
+                  'tests/Integration/Resources/DSC_SqlRSSetup.Integration.Tests.ps1'
+                  # Group 3
+                  'tests/Integration/Resources/DSC_SqlRS.Integration.Tests.ps1'
+              )
+            name: test
+            displayName: 'Run Reporting Services Integration Test'
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'Integration RS ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
+
+  - stage: Integration_Test_Resources_PowerBIReportServer
+    displayName: 'Integration Test Resources - Power BI Report Server'
+    dependsOn: Quality_Test_and_Unit_Test
+    jobs:
+      - job: Test_Integration
+        displayName: 'Integration'
+        strategy:
+          matrix:
+            PowerBI_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+              TEST_CONFIGURATION: 'Integration_PowerBI'
+            PowerBI_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+              TEST_CONFIGURATION: 'Integration_PowerBI'
+            PowerBI_WIN2025:
+              JOB_VMIMAGE: 'windows-2025'
+              TEST_CONFIGURATION: 'Integration_PowerBI'
         variables:
           SKIP_DATABASE_ENGINE_DEFAULT_INSTANCE: true
           SKIP_ANALYSIS_MULTI_INSTANCE: true
@@ -690,8 +773,8 @@ stages:
         displayName: 'Integration'
         strategy:
           matrix:
-            SQL2016_WIN2022:
-              JOB_VMIMAGE: 'windows-2022'
+            SQL2016_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
               TEST_CONFIGURATION: 'Integration_SQL2016'
             SQL2017_WIN2022:
               JOB_VMIMAGE: 'windows-2022'

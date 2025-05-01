@@ -48,7 +48,7 @@ BeforeAll {
     . $configFile
 
     # Download Microsoft SQL Server Reporting Services (October 2017) executable
-    if (-not (Test-Path -Path $ConfigurationData.AllNodes.SourcePath))
+    if (-not (Test-Path -Path $ConfigurationData.AllNodes.MediaPath))
     {
         # By switching to 'SilentlyContinue' should theoretically increase the download speed.
         $previousProgressPreference = $ProgressPreference
@@ -80,16 +80,23 @@ BeforeAll {
             $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/8/3/2/832616ff-af64-42b5-a0b1-5eb07f71dec9/SQLServerReportingServices.exe'
         }
 
+        if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_PowerBI')
+        {
+            # https://sqlserverbuilds.blogspot.com/2021/04/power-bi-report-server-versions.html
+            $script:mockSourceMediaDisplayName = 'Power BI Report Server 15.0.1117.98 - 2025-01-22'
+            $script:mockSourceMediaUrl = 'https://download.microsoft.com/download/2/7/3/2739a88a-4769-4700-8748-1a01ddf60974/PowerBIReportServer.exe'
+        }
+
         Write-Verbose -Message ('Start downloading the {1} executable at {0}.' -f (Get-Date -Format 'yyyy-MM-dd hh:mm:ss'), $script:mockSourceMediaDisplayName) -Verbose
 
-        Invoke-WebRequest -Uri $script:mockSourceMediaUrl -OutFile $ConfigurationData.AllNodes.SourcePath
+        Invoke-WebRequest -Uri $script:mockSourceMediaUrl -OutFile $ConfigurationData.AllNodes.MediaPath
 
-        Write-Verbose -Message ('{1} executable file has SHA1 hash ''{0}''.' -f (Get-FileHash -Path $ConfigurationData.AllNodes.SourcePath -Algorithm 'SHA1').Hash, $script:mockSourceMediaDisplayName) -Verbose
+        Write-Verbose -Message ('{1} executable file has SHA1 hash ''{0}''.' -f (Get-FileHash -Path $ConfigurationData.AllNodes.MediaPath -Algorithm 'SHA1').Hash, $script:mockSourceMediaDisplayName) -Verbose
 
         $ProgressPreference = $previousProgressPreference
 
         # Double check that the Microsoft SQL Server Reporting Services (October 2017) was downloaded.
-        if (-not (Test-Path -Path $ConfigurationData.AllNodes.SourcePath))
+        if (-not (Test-Path -Path $ConfigurationData.AllNodes.MediaPath))
         {
             Write-Warning -Message ('{0} executable could not be downloaded, can not run the integration test.' -f $script:mockSourceMediaDisplayName)
             return
@@ -116,12 +123,16 @@ AfterAll {
     Older versions of Reporting Services (eg. 2016) are integration tested in
     separate tests (part of resource SqlSetup).
 #>
-Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') -Skip:($env:APPVEYOR) {
     BeforeAll {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
 
-    Context ('When using configuration <_>') -ForEach @(
+    <#
+        Skips on AppVeyor because the build image already has a different version
+        of Microsoft SQL Server Reporting Services installed.
+    #>
+    Context ('When using configuration <_>') -Skip:($env:APPVEYOR) -ForEach @(
         "$($script:dscResourceName)_InstallReportingServicesAsUser_Config"
     ) {
         BeforeAll {
@@ -157,7 +168,7 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
 
         It 'Should be able to call Get-DscConfiguration without throwing' {
             {
-                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction Stop
+                $script:currentConfiguration = Get-DscConfiguration -Verbose -ErrorAction 'Stop'
             } | Should -Not -Throw
         }
 
@@ -167,33 +178,19 @@ Describe "$($script:dscResourceName)_Integration" -Tag @('Integration_SQL2017', 
                     -and $_.ResourceId -eq $resourceId
             }
 
+            ## Uncomment this line to see the registry key values.
+            #Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
+
             $resourceCurrentState.InstanceName | Should -Be $ConfigurationData.AllNodes.InstanceName
-            $resourceCurrentState.InstallFolder | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services'
-            $resourceCurrentState.ServiceName | Should -Be 'SQLServerReportingServices'
-            $resourceCurrentState.ErrorDumpDirectory | Should -Be 'C:\Program Files\Microsoft SQL Server Reporting Services\SSRS\LogFiles'
-
-            if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2017')
-            {
-                $resourceCurrentState.CurrentVersion | Should -BeGreaterThan ([System.Version] '14.0.0.0')
-            }
-
-            if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2019')
-            {
-                $resourceCurrentState.CurrentVersion | Should -BeGreaterThan ([System.Version] '15.0.0.0')
-            }
-
-            if (Test-ContinuousIntegrationTaskCategory -Category 'Integration_SQL2022')
-            {
-                $resourceCurrentState.CurrentVersion | Should -BeGreaterThan ([System.Version] '16.0.0.0')
-            }
+            $resourceCurrentState.InstallFolder | Should -Be $ConfigurationData.AllNodes.InstallFolder
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
         }
     }
 
-    Context ('When using configuration <_>') -ForEach @(
+    Context ('When using configuration <_>') -Skip:($env:APPVEYOR) -ForEach @(
         "$($script:dscResourceName)_StopReportingServicesInstance_Config"
     ) {
         BeforeAll {

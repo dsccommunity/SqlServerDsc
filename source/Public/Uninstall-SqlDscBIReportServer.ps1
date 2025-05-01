@@ -26,6 +26,13 @@
         If specified the command will not ask for confirmation. Same as if Confirm:$false
         is used.
 
+    .PARAMETER PassThru
+        If specified the command will return the setup process exit code.
+
+    .OUTPUTS
+        When PassThru is specified the function will return the setup process exit
+        code as System.Int32. Otherwise, the function does not generate any output.
+
     .EXAMPLE
         Uninstall-SqlDscBIReportServer -MediaPath 'E:\PowerBIReportServer.exe'
 
@@ -40,12 +47,17 @@
         Uninstall-SqlDscBIReportServer -MediaPath 'E:\PowerBIReportServer.exe' -Force
 
         Uninstalls Power BI Report Server without prompting for confirmation.
+
+    .EXAMPLE
+        $exitCode = Uninstall-SqlDscBIReportServer -MediaPath 'E:\PowerBIReportServer.exe' -PassThru
+
+        Uninstalls Power BI Report Server and returns the setup exit code.
 #>
 function Uninstall-SqlDscBIReportServer
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
-    [OutputType()]
+    [OutputType([System.Int32])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -66,8 +78,17 @@ function Uninstall-SqlDscBIReportServer
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $Force
+        $Force,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $PassThru
     )
 
-    Invoke-ReportServerSetupAction -Uninstall @PSBoundParameters
+    $exitCode = Invoke-ReportServerSetupAction -Uninstall @PSBoundParameters
+
+    if ($PassThru.IsPresent)
+    {
+        return $exitCode
+    }
 }

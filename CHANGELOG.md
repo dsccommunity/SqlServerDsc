@@ -4,11 +4,36 @@ The format is based on and uses the types of changes according to [Keep a Change
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
 ### Removed
 
+- SqlServerDsc
+  - Revert workaround in GitHub Actions workflows as new version of ModuleBuilder
+    was released.
 - SqlServerDsc.Common
-  - Removed the function `Get-RegistryPropertyValue` and `Format-Path` in
-    favor of the commands with the same names in the module _DscResource.Common_.
+  - Removed the function `Get-RegistryPropertyValue`, `Format-Path` and
+    `Test-PendingRestart` in favor of the commands with the same names in
+    the module _DscResource.Common_.
+- SqlRSSetup
+  - The DSC resource has been refactored into a class-based resource.
+    - The parameter `SourcePath` was replaced with `MediaPath`.
+    - The parameter `IAcceptLicensTerms` was replaced with a boolean parameter
+      `AcceptLicensingTerms`.
+    - The parameter `SourceCredential` was removed. Because of this, the
+      functionality that allowed copying the media from a UNC path using
+      those credentials was also removed. If this was something you used,
+      please open an issue.
+    - The version validation no longer gets the current version from the
+      installed package (using `Get-Package`), but instead from the registry.
+    - Prior when install was successful, the resource checked whether there
+      were any pending rename operations. Since the install returns 3010
+      if a restart is needed it is now assumed that the setup process takes
+      care of this. If that is not the case, and this check is needed, then
+      open an issue to discuss in what cases this is needed.
+    - The `Edition` option 'Development` was replaced by the value
+      `Developer`.
+    - The read-only properties `CurrentVersion`, `ServiceName` and `ErrorDumpDirectory`
+      were removed.
 
 ### Added
 
@@ -16,21 +41,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Get-SqlDscInstalledInstance` to retrieve installed SQL instances.
   - `Get-SqlDscRSSetupConfiguration` to retrieve the setup configuration of
     SQL Server Reporting Services or Power BI Report Server ([issue #2072](https://github.com/dsccommunity/SqlServerDsc/issues/2072)).
+    - Add additional properties to `Get-SqlDscRSSetupConfiguration` output.
   - `Install-SqlDscReportingService` to install SQL Server Reporting Services
     ([issue #2010](https://github.com/dsccommunity/SqlServerDsc/issues/2010)).
+    - Add `PassThru` parameter to return exit code.
   - `Install-SqlDscBIReportServer` to install SQL Server BI Report Server.
     ([issue #2010](https://github.com/dsccommunity/SqlServerDsc/issues/2010)).
+    - Add `PassThru` parameter to return exit code.
   - `Repair-SqlDscReportingService` to repair an already installed SQL Server
     Reporting Services ([issue #2064](https://github.com/dsccommunity/SqlServerDsc/issues/2064)).
+    - Add `PassThru` parameter to return exit code.
   - `Repair-SqlDscBIReportServer` to repair an already installed SQL Server
     BI Report Server ([issue #2064](https://github.com/dsccommunity/SqlServerDsc/issues/2064)).
+    - Add `PassThru` parameter to return exit code.
   - `Test-SqlDscRSInstalled` to test whether an instance is installed or not
      ([issue #2078](https://github.com/dsccommunity/SqlServerDsc/issues/2078)).
   - `Uninstall-SqlDscReportingService` to uninstall SQL Server Reporting
     Services ([issue #2065](https://github.com/dsccommunity/SqlServerDsc/issues/2065)).
+    - Add `PassThru` parameter to return exit code.
   - `Uninstall-SqlDscBIReportServer` to uninstall SQL Server BI Report Server
     ([issue #2065](https://github.com/dsccommunity/SqlServerDsc/issues/2065)).
-   - `Test-SqlDscIsRole` to be used like `Test-SqlDscIsLogin` but tests for a
+    - Add `PassThru` parameter to return exit code.
+  - `ConvertTo-SqlDscEditionName` to return the edition name of the specified
+    edition ID.
+  - `Test-SqlDscIsRole` to be used like `Test-SqlDscIsLogin` but tests for a
      server role as principal.
 - Private function:
   - `Invoke-ReportServerSetupAction` to run setup actions for Reporting
@@ -60,18 +94,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix style formatting in all PowerShell script files.
   - Update module description on GitHub, in the conceptual help, and in
     the module manifest.
-- `Set-SqlDscServerPermission`
-  - Added support for assigning permissions to a server role.
+  - Now integration tests will fail on an exception when the command `Test-DscConfiguration`
+    is run.
+  - Added Test-SqlDscIsRole to be used like Test-SqlDscIsLogin but tests
+    for a server role as principal.
+  - Refine and enhance clarity in Copilot instructions.
 - SqlSetup
   - Fixed issue with AddNode where cluster IP information was not being passed to
     setup.exe ([issue #1171](https://github.com/dsccommunity/SqlServerDsc/issues/1171)).
+- SqlRSSetup
+  - The DSC resource has been refactored into a class-based resource.
+- `Set-SqlDscServerPermission`
+  - Added support for assigning permissions to a server role.
 
 ### Fixed
 
 - Fixed workaround for the GitHub Actions to support building module in Windows
   PowerShell.
+- Fix tests to redirect output streams correctly.
 - SqlServerDsc
   - Fix localization tests.
+  - Cleanup in unit tests for classes.
+  - Cleanup in localization string files.
 - `SqlAudit`
   - Fix localization strings in `Assert` method.
 - `Save-SqlDscSqlServerMediaFile`
@@ -95,6 +139,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Change the alias command to real command name, to pass HQRM tests.
 - `SqlServiceAccount`
   - Change the alias command to real command name, to pass HQRM tests.
+- `Get-SqlDscRSSetupConfiguration`
+  - The integration test was updated to verify so that the `CurrentVersion`
+    and `ProductVersion` strings can be converted to valid versions and
+    that they always are higher than what we expect.
+- `SqlRS`
+  - Re-enable integration tests.
+- `SqlAG`
+  - Fix SeedingMode existence condition.
+- `SqlAGReplica`
+  - Fix SeedingMode existence condition.
 
 ## [17.0.0] - 2024-09-30
 

@@ -739,7 +739,7 @@ function Test-TargetResource
                 'ReadOnlyRoutingConnectionUrl',
                 'ReadOnlyRoutingList'
             )
-            if ( $getTargetResourceResult.SeedingMode)
+            if ( $null -ne $getTargetResourceResult.SeedingMode )
             {
                 $parametersToCheck += 'SeedingMode'
             }

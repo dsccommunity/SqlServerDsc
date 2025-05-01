@@ -10,7 +10,7 @@ BeforeDiscovery {
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
-                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
             # If the dependencies has not been resolved, this will throw an error.
@@ -50,7 +50,7 @@ Describe 'Install-SqlDscReportingService' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName   = '__AllParameterSets'
-            MockExpectedParameters = '[-MediaPath] <string> [[-ProductKey] <string>] [[-Edition] <string>] [[-LogPath] <string>] [[-InstallFolder] <string>] [[-Timeout] <uint>] -AcceptLicensingTerms [-EditionUpgrade] [-SuppressRestart] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '[-MediaPath] <string> [[-ProductKey] <string>] [[-Edition] <string>] [[-LogPath] <string>] [[-InstallFolder] <string>] [[-Timeout] <uint>] -AcceptLicensingTerms [-EditionUpgrade] [-SuppressRestart] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
     ) {
         $result = (Get-Command -Name 'Install-SqlDscReportingService').ParameterSets |
@@ -173,6 +173,39 @@ Describe 'Install-SqlDscReportingService' -Tag 'Public' {
                     $Install -eq $true -and
                     $Edition -eq 'Evaluation'
                 } -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'When using PassThru parameter' {
+            BeforeAll {
+                $mockDefaultParameters = @{
+                    AcceptLicensingTerms = $true
+                    MediaPath           = '\PowerBIReportServer.exe'
+                    Force               = $true
+                    ErrorAction         = 'Stop'
+                }
+
+                # Mock the Invoke-ReportServerSetupAction to return an exit code
+                Mock -CommandName Invoke-ReportServerSetupAction -MockWith {
+                    return 3010
+                }
+            }
+
+            It 'Should return the exit code when PassThru is specified' {
+                $result = Install-SqlDscReportingService -PassThru @mockDefaultParameters
+
+                $result | Should -Be 3010
+                $result | Should -BeOfType [System.Int32]
+
+                Should -Invoke -CommandName Invoke-ReportServerSetupAction
+            }
+
+            It 'Should not return an exit code when PassThru is not specified' {
+                $result = Install-SqlDscReportingService @mockDefaultParameters
+
+                $result | Should -BeNullOrEmpty
+
+                Should -Invoke -CommandName Invoke-ReportServerSetupAction
             }
         }
     }

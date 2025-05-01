@@ -49,6 +49,11 @@
         - CurrentVersion: The current version from registry.
         - VirtualRootServer: The virtual root server value.
         - ConfigFilePath: The path to the report server configuration file.
+        - EditionID: The edition ID of the Reporting Services instance.
+        - EditionName: The edition name of the Reporting Services instance.
+        - IsSharePointIntegrated: Whether the instance is SharePoint integrated.
+          MSReportServer_Instance.
+        - InstanceId: The instance ID of the Reporting Services instance.
 #>
 function Get-SqlDscRSSetupConfiguration
 {
@@ -87,16 +92,20 @@ function Get-SqlDscRSSetupConfiguration
         Write-Verbose -Message ($script:localizedData.Get_SqlDscRSSetupConfiguration_ProcessingInstance -f $instance.InstanceName)
 
         $returnObject = [PSCustomObject]@{
-            InstanceName         = $instance.InstanceName
-            InstallFolder        = $null
-            ServiceName          = $null
-            ErrorDumpDirectory   = $null
-            CurrentVersion       = $null
-            CustomerFeedback     = $null
-            EnableErrorReporting = $null
-            ProductVersion       = $null
-            VirtualRootServer    = $null
-            ConfigFilePath       = $null
+            InstanceName                  = $instance.InstanceName
+            InstallFolder                 = $null
+            ServiceName                   = $null
+            ErrorDumpDirectory            = $null
+            CurrentVersion                = $null
+            CustomerFeedback              = $null
+            EnableErrorReporting          = $null
+            ProductVersion                = $null
+            VirtualRootServer             = $null
+            ConfigFilePath                = $null
+            EditionID                     = $null
+            EditionName                   = $null
+            IsSharePointIntegrated        = $null
+            InstanceId                    = $null
         }
 
         Write-Verbose -Message ($script:localizedData.Get_SqlDscRSSetupConfiguration_FoundInstance -f $instance.InstanceName)
@@ -149,6 +158,22 @@ function Get-SqlDscRSSetupConfiguration
         # ProductVersion
         $getRegistryPropertyValueParameters.Name = 'ProductVersion'
         $returnObject.ProductVersion = Get-RegistryPropertyValue @getRegistryPropertyValueParameters
+
+        if (-not [System.String]::IsNullOrEmpty($returnObject.CurrentVersion))
+        {
+            $reportServerCurrentVersion = [System.Version] $returnObject.CurrentVersion
+
+            # Get values from MSReportServer_Instance
+            $msReportServerInstance = Get-CimInstance -Namespace ('root\Microsoft\SqlServer\ReportServer\RS_{0}\v{1}' -f $instance.InstanceName, $reportServerCurrentVersion.Major) -ClassName 'MSReportServer_Instance' -ErrorAction 'SilentlyContinue'
+
+            if ($msReportServerInstance)
+            {
+                $returnObject.EditionID = $msReportServerInstance.EditionID
+                $returnObject.EditionName = $msReportServerInstance.EditionName
+                $returnObject.IsSharePointIntegrated = $msReportServerInstance.IsSharePointIntegrated
+                $returnObject.InstanceId = $msReportServerInstance.InstanceId
+            }
+        }
 
         $reportingServicesInstances += $returnObject
     }

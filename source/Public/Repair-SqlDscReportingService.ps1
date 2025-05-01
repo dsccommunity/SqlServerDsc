@@ -54,6 +54,13 @@
         If specified the command will not ask for confirmation. Same as if Confirm:$false
         is used.
 
+    .PARAMETER PassThru
+        If specified the command will return the setup process exit code.
+
+    .OUTPUTS
+        When PassThru is specified the function will return the setup process exit
+        code as System.Int32. Otherwise, the function does not generate any output.
+
     .EXAMPLE
         Repair-SqlDscReportingService -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe'
 
@@ -69,12 +76,17 @@
         Repair-SqlDscReportingService -AcceptLicensingTerms -MediaPath 'E:\PowerBIReportServer.exe' -LogPath 'C:\Logs\PowerBIReportServer_Repair.log'
 
         Repairs Power BI Report Server and specifies a custom log path.
+
+    .EXAMPLE
+        $exitCode = Repair-SqlDscReportingService -AcceptLicensingTerms -MediaPath 'E:\SQLServerReportingServices.exe' -PassThru
+
+        Repairs SQL Server Reporting Services with default settings and returns the setup exit code.
 #>
 function Repair-SqlDscReportingService
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSShouldProcess', '', Justification = 'Because ShouldProcess is used in Invoke-SetupAction')]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
-    [OutputType()]
+    [OutputType([System.Int32])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -116,8 +128,17 @@ function Repair-SqlDscReportingService
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $Force
+        $Force,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $PassThru
     )
 
-    Invoke-ReportServerSetupAction -Repair @PSBoundParameters
+    $exitCode = Invoke-ReportServerSetupAction -Repair @PSBoundParameters
+
+    if ($PassThru.IsPresent)
+    {
+        return $exitCode
+    }
 }

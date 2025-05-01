@@ -34,7 +34,7 @@ BeforeDiscovery {
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
-                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
             # If the dependencies has not been resolved, this will throw an error.
@@ -703,36 +703,6 @@ Describe 'SqlServerDsc.Common\Disconnect-UncPath' -Tag 'DisconnectUncPath' {
             } | Should -Not -Throw
 
             Should -Invoke -CommandName Remove-SmbMapping -Exactly -Times 1 -Scope It
-        }
-    }
-}
-
-Describe 'SqlServerDsc.Common\Test-PendingRestart' -Tag 'TestPendingRestart' {
-    Context 'When there is a pending reboot' {
-        BeforeAll {
-            Mock -CommandName Get-RegistryPropertyValue -MockWith {
-                return 'AnyValue'
-            }
-        }
-
-        It 'Should return $true' {
-            $testPendingRestartResult = Test-PendingRestart
-            $testPendingRestartResult | Should -BeTrue
-
-            Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope It
-        }
-    }
-
-    Context 'When there are no pending reboot' {
-        BeforeAll {
-            Mock -CommandName Get-RegistryPropertyValue
-        }
-
-        It 'Should return $true' {
-            $testPendingRestartResult = Test-PendingRestart
-            $testPendingRestartResult | Should -BeFalse
-
-            Should -Invoke -CommandName Get-RegistryPropertyValue -Exactly -Times 1 -Scope It
         }
     }
 }

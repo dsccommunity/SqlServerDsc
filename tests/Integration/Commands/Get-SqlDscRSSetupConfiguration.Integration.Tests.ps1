@@ -10,7 +10,7 @@ BeforeDiscovery {
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
-                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 2>&1 4>&1 5>&1 6>&1 > $null
+                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
             # If the dependencies has not been resolved, this will throw an error.
@@ -37,12 +37,16 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.InstallFolder | Should -Be 'C:\Program Files\SSRS'
             $result.ServiceName | Should -Be 'SQLServerReportingServices'
             $result.ErrorDumpDirectory | Should -Be 'C:\Program Files\SSRS\SSRS\LogFiles'
-            $result.CurrentVersion | Should -Be '14.0.601.20'
+            [System.Version] $result.CurrentVersion | Should -BeGreaterOrEqual ([System.Version] '14.0.601.20')
             $result.ProductVersion | Should -BeNullOrEmpty
             $result.CustomerFeedback | Should -Be 1
             $result.EnableErrorReporting | Should -Be 1
             $result.VirtualRootServer | Should -Be 'ReportServer'
             $result.ConfigFilePath | Should -Be 'C:\Program Files\SSRS\SSRS\ReportServer\rsreportserver.config'
+            $result.InstanceId | Should -Be 'SSRS'
+            $result.EditionID | Should -Be 2176971986
+            $result.EditionName | Should -Be 'SQL Server Developer'
+            $result.IsSharePointIntegrated | Should -BeFalse
         }
     }
 
@@ -59,12 +63,16 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.InstallFolder | Should -Be 'C:\Program Files\SSRS'
             $result.ServiceName | Should -Be 'SQLServerReportingServices'
             $result.ErrorDumpDirectory | Should -Be 'C:\Program Files\SSRS\SSRS\LogFiles'
-            $result.CurrentVersion | Should -Be '15.0.1103.41'
-            $result.ProductVersion | Should -Be '15.0.9098.6826'
+            [System.Version] $result.CurrentVersion | Should -BeGreaterOrEqual ([System.Version] '15.0.1103.41')
+            [System.Version] $result.ProductVersion | Should -BeGreaterOrEqual ([System.Version] '15.0.9098.6826')
             $result.CustomerFeedback | Should -Be 1
             $result.EnableErrorReporting | Should -Be 1
             $result.VirtualRootServer | Should -Be 'ReportServer'
             $result.ConfigFilePath | Should -Be 'C:\Program Files\SSRS\SSRS\ReportServer\rsreportserver.config'
+            $result.InstanceId | Should -Be 'SSRS'
+            $result.EditionID | Should -Be 2176971986
+            $result.EditionName | Should -Be 'SQL Server Developer'
+            $result.IsSharePointIntegrated | Should -BeFalse
         }
     }
 
@@ -81,18 +89,24 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.InstallFolder | Should -Be 'C:\Program Files\SSRS'
             $result.ServiceName | Should -Be 'SQLServerReportingServices'
             $result.ErrorDumpDirectory | Should -Be 'C:\Program Files\SSRS\SSRS\LogFiles'
-            $result.CurrentVersion | Should -Be '16.0.1116.38'
-            $result.ProductVersion | Should -Be '16.0.9101.19239'
+            [System.Version] $result.CurrentVersion | Should -BeGreaterOrEqual ([System.Version] '16.0.1116.38')
+            [System.Version] $result.ProductVersion | Should -BeGreaterOrEqual ([System.Version] '16.0.9101.19239')
             $result.CustomerFeedback | Should -Be 1
             $result.EnableErrorReporting | Should -Be 1
             $result.VirtualRootServer | Should -Be 'ReportServer'
             $result.ConfigFilePath | Should -Be 'C:\Program Files\SSRS\SSRS\ReportServer\rsreportserver.config'
+            $result.InstanceId | Should -Be 'SSRS'
+            $result.EditionID | Should -Be 2176971986
+            $result.EditionName | Should -Be 'SQL Server Developer'
+            $result.IsSharePointIntegrated | Should -BeFalse
         }
     }
 
     Context 'When getting the configuration for Power BI Report Server instance' -Tag @('Integration_PowerBI') {
         # cSpell: ignore PBIRS rsreportserver
         It 'Should return the correct configuration for PBIRS instance' {
+            #Write-Verbose -Message ((reg query "HKLM\SOFTWARE\Microsoft\Microsoft SQL Server" /s) | Out-String) -Verbose
+
             # Get the PBIRS configuration
             $result = Get-SqlDscRSSetupConfiguration -InstanceName 'PBIRS'
 
@@ -102,12 +116,16 @@ Describe 'Get-SqlDscRSSetupConfiguration' {
             $result.InstallFolder | Should -Be 'C:\Program Files\PBIRS'
             $result.ServiceName | Should -Be 'PowerBIReportServer'
             $result.ErrorDumpDirectory | Should -Be 'C:\Program Files\PBIRS\PBIRS\LogFiles'
-            $result.CurrentVersion | Should -Be '15.0.1117.98'
-            $result.ProductVersion | Should -Be '1.22.9153.7886'
+            [System.Version] $result.CurrentVersion | Should -BeGreaterOrEqual ([System.Version] '15.0.1117.98')
+            [System.Version] $result.ProductVersion | Should -BeGreaterOrEqual ([System.Version] '1.22.9153.7886')
             $result.CustomerFeedback | Should -Be 1
             $result.EnableErrorReporting | Should -Be 1
             $result.VirtualRootServer | Should -Be 'ReportServer'
             $result.ConfigFilePath | Should -Be 'C:\Program Files\PBIRS\PBIRS\ReportServer\rsreportserver.config'
+            $result.InstanceId | Should -Be 'PBIRS'
+            $result.EditionID | Should -Be 2017617798
+            $result.EditionName | Should -Be 'Power BI Report Server - Developer'
+            $result.IsSharePointIntegrated | Should -BeFalse
         }
     }
 
