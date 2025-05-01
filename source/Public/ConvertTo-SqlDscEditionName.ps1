@@ -35,49 +35,42 @@ function ConvertTo-SqlDscEditionName
         $Id
     )
 
-    # Maps the EditionId integer value to each respective edition and edition name.
-    $EditionIdMap = @{
-        # Reporting Services v16
-        ID_2176971986 = @{
-            Edition = 'Developer'
-            EditionName = 'SQL Server Developer'
-        }
-
-        # Power BI Report Server v15
-        ID_2017617798 = @{
-            Edition = 'Developer'
-            EditionName = 'Power BI Report Server - Developer'
-        }
-        ID_1369084056 = @{
-            Edition = 'Evaluation'
-            EditionName = 'Power BI Report Server - Evaluation'
-        }
-    }
-
     Write-Debug -Message ($script:localizedData.ConvertTo_EditionName_ConvertingEditionId -f $Id)
 
-    $mappingID = 'ID_' + $Id
+    $resultObject = [PSCustomObject] @{
+        EditionId = $Id
+        Edition = ''
+        EditionName = ''
+    }
 
-    if ($EditionIdMap.ContainsKey($mappingID))
+    switch ($Id)
     {
-        $editionInfo = $EditionIdMap[$mappingID]
-
-        $resultObject = [PSCustomObject]@{
-            EditionId = $Id
-            Edition = $editionInfo.Edition
-            EditionName = $editionInfo.EditionName
+        2176971986
+        {
+            $resultObject.Edition = 'Developer'
+            $resultObject.EditionName = 'SQL Server Developer'
         }
 
-        return $resultObject
-    }
-    else
-    {
-        Write-Debug -Message ($script:localizedData.ConvertTo_EditionName_UnknownEditionId -f $Id)
+        2017617798
+        {
+            $resultObject.Edition = 'Developer'
+            $resultObject.EditionName = 'Power BI Report Server - Developer'
+        }
 
-        return [PSCustomObject]@{
-            EditionId = $Id
-            Edition = 'Unknown'
-            EditionName = 'Unknown'
+        1369084056
+        {
+            $resultObject.Edition = 'Evaluation'
+            $resultObject.EditionName = 'Power BI Report Server - Evaluation'
+        }
+
+        default
+        {
+            Write-Debug -Message ($script:localizedData.ConvertTo_EditionName_UnknownEditionId -f $Id)
+
+            $resultObject.Edition = 'Unknown'
+            $resultObject.EditionName = 'Unknown'
         }
     }
+
+    return $resultObject
 }

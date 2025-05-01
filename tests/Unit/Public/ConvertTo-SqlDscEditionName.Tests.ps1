@@ -50,6 +50,7 @@ Describe 'ConvertTo-SqlDscEditionName' {
     Context 'When converting a known EditionId' {
         BeforeAll {
             $testEditionId = 2176971986
+
             $mockExpectedResult = @{
                 EditionId = 2176971986
                 Edition = 'Developer'
