@@ -102,6 +102,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     setup.exe ([issue #1171](https://github.com/dsccommunity/SqlServerDsc/issues/1171)).
 - SqlRSSetup
   - The DSC resource has been refactored into a class-based resource.
+- `Set-SqlDscServerPermission`
+  - Added support for assigning permissions to a server role.
 
 ### Fixed
 
