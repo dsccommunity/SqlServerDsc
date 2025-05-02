@@ -712,7 +712,7 @@ stages:
 
   - stage: Integration_Test_DSCv3_Resources_PowerBIReportServer
     displayName: 'Integration Test DSCv3 Resources - Power BI Report Server'
-    dependsOn: Quality_Test_and_Unit_Test
+    #dependsOn: Quality_Test_and_Unit_Test
     jobs:
       - job: Test_Integration
         displayName: 'Integration'
