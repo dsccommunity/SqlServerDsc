@@ -1190,6 +1190,7 @@ stages:
           - pwsh: |
               Install-PSResource -Name 'PSDSC' -Repository 'PSGallery' -TrustRepository -Quiet -Confirm:$false
               Install-DscExe -Force -Verbose
+              dsc --version
             name: installDSCv3
             displayName: 'Install DSCv3'
           - pwsh: |
