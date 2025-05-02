@@ -752,11 +752,16 @@ stages:
           - pwsh: |
               # Install-DscExe installed in the path $env:LOCALAPPDATA\dsc
               $env:PATH += '{0}{1}' -f [System.IO.Path]::PathSeparator, (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc')
+              # Make the built module available to the current session.
+              ./build.ps1 -Tasks noop
+              # Get the list of available resources.
               dsc --version
+              'Native resources:'
               dsc resource list
+              'Resources using adapter Microsoft.Windows/WindowsPowerShell:'
               dsc resource list --adapter Microsoft.Windows/WindowsPowerShell
-            name: getDSCv3Information
-            displayName: 'Get DSCv3 Information'
+            name: getDSCv3AvailableResources
+            displayName: 'Get DSCv3 Available Resources'
           - powershell: |
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
