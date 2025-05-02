@@ -753,8 +753,11 @@ stages:
             name: installDSCv3
             displayName: 'Install DSCv3'
           - pwsh: |
+              $env:PATH
               [System.Environment]::GetEnvironmentVariable('Path', 'User')
               [System.Environment]::GetEnvironmentVariable('Path', 'Machine')
+              $env:PATH = [System.Environment]::GetEnvironmentVariable('Path', 'User')
+              $env:PATH
               dsc --version
               dsc resource list
               dsc resource list --adapter Microsoft.Windows/WindowsPowerShell
