@@ -744,7 +744,7 @@ stages:
             name: cleanCIWorker
             displayName: 'Clean CI worker'
           - pwsh: |
-              Install-Module -Name 'PSDSC'
+              Install-PSResource -Name 'PSDSC' -Repository 'PSGallery' -TrustRepository -Quiet -Confirm:$false
               Install-DscExe -Force -Verbose
             name: installDSCv3
             displayName: 'Install DSCv3'
