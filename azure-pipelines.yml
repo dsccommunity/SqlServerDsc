@@ -1194,12 +1194,13 @@ stages:
             name: installDSCv3
             displayName: 'Install DSCv3'
           - pwsh: |
-              # Install-DscExe installed in the path $env:LOCALAPPDATA\dsc
+              # Install-DscExe installs in the path $env:LOCALAPPDATA\dsc
               $env:PATH += '{0}{1}' -f [System.IO.Path]::PathSeparator, (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc')
               # Make the built module available to the current session.
               ./build.ps1 -Tasks noop
-              # Get the list of available resources.
+              # Output DSCv3 version
               dsc --version
+              # Get the list of available resources.
               'Native resources:'
               dsc resource list
               'Resources using adapter Microsoft.Windows/WindowsPowerShell:'
@@ -1207,8 +1208,13 @@ stages:
             name: getDSCv3AvailableResources
             displayName: 'Get DSCv3 Available Resources'
           - powershell: |
+              # Install-DscExe installed in the path $env:LOCALAPPDATA\dsc
+              $env:PATH += '{0}{1}' -f [System.IO.Path]::PathSeparator, (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc')
               ./build.ps1 -Tasks test -CodeCoverageThreshold 0 -PesterTag $(TEST_CONFIGURATION) -PesterPath @(
                   # Run the integration tests in a specific group order.
+                  # Prerequisites
+                  # TODO: Move the prerequisites tests to generic folder than Commands
+                  'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
                   # Group 1
                   #'tests/Integration/Resources/DSC_SqlSetup.Integration.Tests.ps1'
                   # Group 2
