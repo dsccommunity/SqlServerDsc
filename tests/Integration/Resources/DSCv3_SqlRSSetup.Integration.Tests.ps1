@@ -44,23 +44,19 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
     Context 'When getting the current state of the resource' {
         It 'Should return the expected current state' {
             # Media file has already been saved to (Get-TemporaryFolder)\PowerBIReportServer.exe
-            $desiredParameters = '{
-                "InstanceName": "PBIRS",
-                "AcceptLicensingTerms": true,
-                "Action": "Install",
-                "MediaPath": "{0}",
-                "InstallPath": "{1}",
-                "Edition": "Developer",
-                "SuppressRestart": true,
-                "LogPath": "{2}",
-                "VersionUpgrade": true
-            }' -f @(
-                (Join-Path -Path Get-TemporaryFolder -ChildPath 'PowerBIReportServer.exe'),
-                '$env:ProgramFiles\Microsoft Power BI Report Server',
-                (Join-Path -Path Get-TemporaryFolder -ChildPath 'PBIRS.log')
-            )
+            $desiredParameters = @{
+                InstanceName = 'PBIRS'
+                AcceptLicensingTerms = $true
+                Action = 'Install'
+                MediaPath = Join-Path -Path (Get-TemporaryFolder) -ChildPath 'PowerBIReportServer.exe'
+                InstallPath = Join-Path -Path $env:ProgramFiles -ChildPath 'Microsoft Power BI Report Server'
+                Edition = 'Developer'
+                SuppressRestart = $true
+                LogPath = Join-Path -Path (Get-TemporaryFolder) -ChildPath 'PBIRS.log'
+                VersionUpgrade = $true
+            }
 
-            dsc resource get --resource SqlServerDsc/SqlRSSetup  --input $desiredParameters --adapter Microsoft.Windows/WindowsPowerShell --output-format pretty-json
+            dsc resource get --resource SqlServerDsc/SqlRSSetup --adapter Microsoft.Windows/WindowsPowerShell --output-format pretty-json --input ($desiredParameters | ConvertTo-Json -Compress)
         }
     }
 }
