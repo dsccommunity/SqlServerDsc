@@ -49,14 +49,14 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 AcceptLicensingTerms = $true
                 Action = 'Install'
                 MediaPath = Join-Path -Path (Get-TemporaryFolder) -ChildPath 'PowerBIReportServer.exe'
-                InstallPath = Join-Path -Path $env:ProgramFiles -ChildPath 'Microsoft Power BI Report Server'
+                InstallFolder = Join-Path -Path $env:ProgramFiles -ChildPath 'Microsoft Power BI Report Server'
                 Edition = 'Developer'
                 SuppressRestart = $true
                 LogPath = Join-Path -Path (Get-TemporaryFolder) -ChildPath 'PBIRS.log'
                 VersionUpgrade = $true
             }
 
-            dsc resource get --resource SqlServerDsc/SqlRSSetup --adapter Microsoft.Windows/WindowsPowerShell --output-format pretty-json --input ($desiredParameters | ConvertTo-Json -Compress)
+            dsc resource get --resource SqlServerDsc/SqlRSSetup --output-format pretty-json --input ($desiredParameters | ConvertTo-Json -Compress)
         }
     }
 }
