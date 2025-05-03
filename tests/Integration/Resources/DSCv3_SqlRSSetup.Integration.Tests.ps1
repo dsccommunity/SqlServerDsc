@@ -56,7 +56,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 VersionUpgrade = $true
             }
 
-            dsc --trace-level info resource get --resource SqlServerDsc/SqlRSSetup --output-format pretty-json --input ($desiredParameters | ConvertTo-Json -Compress)
+            dsc --trace-level trace resource get --resource SqlServerDsc/SqlRSSetup --output-format pretty-json --input ($desiredParameters | ConvertTo-Json -Compress)
 
             if ($LASTEXITCODE -ne 0)
             {
