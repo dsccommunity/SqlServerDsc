@@ -57,6 +57,11 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
             }
 
             dsc --trace-level info resource get --resource SqlServerDsc/SqlRSSetup --output-format pretty-json --input ($desiredParameters | ConvertTo-Json -Compress)
+
+            if ($LASTEXITCODE -ne 0)
+            {
+                throw 'Failed to get the current state of the resource.'
+            }
         }
     }
 }
