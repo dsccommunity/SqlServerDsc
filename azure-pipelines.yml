@@ -771,10 +771,11 @@ stages:
               'Resources using adapter Microsoft.Windows/WindowsPowerShell:'
               dsc resource list --adapter Microsoft.Windows/WindowsPowerShell
 
-              $cacheFile = Join-Path $env:LocalAppData "dsc\PSAdapterCache.json"
-              $getConfig = Get-Content -Path $cacheFile -Raw | ConvertFrom-Json
-              Write-Verbose -Message "PSAdapterCache.json content:`n $($getConfig | Out-String)" -Verbose
-              Write-Verbose -Message "PSAdapterCache.json content:`n $($getConfig | ConvertTo-Json -Depth 10)" -Verbose
+              Get-ChildItem -Path (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc') -Recurse -Filter '*.json'
+              # $cacheFile = Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc/WindowsPSAdapterCache.json"
+              # $getConfig = Get-Content -Path $cacheFile -Raw | ConvertFrom-Json
+              # Write-Verbose -Message "PSAdapterCache.json content:`n $($getConfig | Out-String)" -Verbose
+              # Write-Verbose -Message "PSAdapterCache.json content:`n $($getConfig | ConvertTo-Json -Depth 10)" -Verbose
             name: getDSCv3AvailableResources
             displayName: 'Get DSCv3 Available Resources'
           - pwsh: |
