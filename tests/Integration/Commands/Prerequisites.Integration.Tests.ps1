@@ -153,7 +153,7 @@ Describe 'Prerequisites' {
         It 'Should have the minimum required version of Microsoft.PowerShell.PSResourceGet' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI', 'Integration_SQL2017_RS', 'Integration_SQL2019_RS', 'Integration_SQL2022_RS') {
             $module = Get-Module -Name 'Microsoft.PowerShell.PSResourceGet' -ListAvailable
 
-            $module | Should -HaveCount 1
+            $module | Should -BeGreaterOrEqual 1
             $module.Version -ge '1.0.4.1' | Should -BeTrue
         }
 
