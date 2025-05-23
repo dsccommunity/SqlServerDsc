@@ -42,25 +42,38 @@ BeforeAll {
 #>
 Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
     Context 'When getting the current state of the resource' {
+        BeforeAll {
+            # Get temporary folder for the test and make sure it exists, if not create it
+            $tempFolder = Get-TemporaryFolder
+            Write-Verbose -Message "Temporary folder is $tempFolder"
+            if (-not (Test-Path -Path $tempFolder))
+            {
+                Write-Verbose -Message "Temporary folder did not exist, creating temporary folder $tempFolder"
+                New-Item -Path $tempFolder -ItemType Directory -Force | Out-Null
+            }
+        }
+
         It 'Should return the expected current state' {
             # Media file has already been saved to (Get-TemporaryFolder)\PowerBIReportServer.exe
             $desiredParameters = @{
                 InstanceName = 'PBIRS'
                 AcceptLicensingTerms = $true
                 Action = 'Install'
-                MediaPath = Join-Path -Path (Get-TemporaryFolder) -ChildPath 'PowerBIReportServer.exe'
+                MediaPath = Join-Path -Path $tempFolder -ChildPath 'PowerBIReportServer.exe'
                 InstallFolder = Join-Path -Path $env:ProgramFiles -ChildPath 'Microsoft Power BI Report Server'
                 Edition = 'Developer'
                 SuppressRestart = $true
-                LogPath = Join-Path -Path (Get-TemporaryFolder) -ChildPath 'PBIRS.log'
+                LogPath = Join-Path -Path $tempFolder -ChildPath 'PBIRS.log'
                 VersionUpgrade = $true
             }
 
             dsc --trace-level trace resource get --resource SqlServerDsc/SqlRSSetup --output-format pretty-json --input ($desiredParameters | ConvertTo-Json -Compress)
 
-            if ($LASTEXITCODE -ne 0)
+            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+
+            if ($dscExitCode -ne 0)
             {
-                throw 'Failed to get the current state of the resource.'
+                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
         }
     }
