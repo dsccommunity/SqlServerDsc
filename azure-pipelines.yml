@@ -1218,7 +1218,6 @@ stages:
               Get-ChildItem -Path (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc') -Recurse -Filter '*.json'
               $cacheFile = Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc/WindowsPSAdapterCache.json'
               $getConfig = Get-Content -Path $cacheFile -Raw | ConvertFrom-Json
-              Write-Verbose -Message "WindowsPSAdapterCache.json content:`n $($getConfig | Out-String)" -Verbose
               Write-Verbose -Message "WindowsPSAdapterCache.json content:`n $($getConfig | ConvertTo-Json -Depth 10)" -Verbose
             name: getDSCv3AvailableResources
             displayName: 'Get DSCv3 Available Resources'
@@ -1231,6 +1230,7 @@ stages:
                   # TODO: Move the prerequisites tests to generic folder than Commands
                   'tests/Integration/Commands/Prerequisites.Integration.Tests.ps1'
                   # Group 1
+                  'tests/Integration/Resources/DSCv3_DebugDscEngine.Integration.Tests.ps1'
                   #'tests/Integration/Resources/DSC_SqlSetup.Integration.Tests.ps1'
                   # Group 2
                   'tests/Integration/Resources/DSCv3_SqlRSSetup.Integration.Tests.ps1'
