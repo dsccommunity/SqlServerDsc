@@ -21,6 +21,6 @@ if (-not $env:SqlServerDscCI)
             It is not possible to throw the error from Import-SqlDscPreferredModule
             since it will just fail the command Import-Module with an obscure error.
         #>
-        Write-Warning -Message $_.Exception.Message
+        #Write-Warning -Message $_.Exception.Message
     }
 }
