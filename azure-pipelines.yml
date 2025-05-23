@@ -754,7 +754,7 @@ stages:
           - pwsh: |
               Install-PSResource -Name 'PSDSC' -Repository 'PSGallery' -TrustRepository -Quiet -Confirm:$false
               #Install-DscExe -Force -Verbose
-              Install-DscExe -Version 3.1.0-preview.5 -Force -Verbose
+              Install-DscExe -IncludePrerelease -Force -Verbose
             name: installDSCv3
             displayName: 'Install DSCv3'
           - pwsh: |
