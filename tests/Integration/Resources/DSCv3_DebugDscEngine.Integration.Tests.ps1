@@ -35,7 +35,7 @@ BeforeAll {
     $script:dscResourceFriendlyName = 'DebugDscEngine'
 }
 
-Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
+Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
     Context 'When getting the current state of the resource' {
         It 'Should return the expected current state with minimal properties' {
             $desiredParameters = @{
