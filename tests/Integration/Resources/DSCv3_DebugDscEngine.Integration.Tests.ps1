@@ -53,7 +53,8 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
 
             $result = dsc --trace-level trace resource get --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
-            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
+            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
+            Write-Verbose -Message "Result (actualState):`n$($result.actualState | ConvertTo-Json | Out-String)" -Verbose
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
