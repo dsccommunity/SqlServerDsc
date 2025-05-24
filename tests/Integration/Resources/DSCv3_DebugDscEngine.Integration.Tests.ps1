@@ -38,7 +38,7 @@ BeforeAll {
 Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
     BeforeAll {
         # Output $PSVersionTable to verify the PowerShell version used in the test
-        Write-Verbose -Message "PowerShell version: $($PSVersionTable.PSVersion)" -Verbose
+        Write-Verbose -Message "PowerShell version: $($PSVersionTable)" -Verbose
     }
 
     Context 'When getting the current state of the resource' {
