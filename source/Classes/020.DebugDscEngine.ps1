@@ -90,6 +90,9 @@ class DebugDscEngine : ResourceBase
 
     [DebugDscEngine] Get()
     {
+        # Output all environment variables to verify the environment
+        Write-Verbose -Message "`nEnvironment Variables from inside DSC resource:`n$(Get-ChildItem -Path Env: | Out-String)" -Verbose
+
         # Call the base method to return the properties.
         return ([ResourceBase] $this).Get()
     }
