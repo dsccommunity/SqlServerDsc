@@ -76,8 +76,8 @@ stages:
       - job: Test_HQRM
         displayName: 'HQRM'
         pool:
-          vmImage: 'windows-2022'
-        timeoutInMinutes: 0
+          vmImage: 'windows-latest'
+        timeoutInMinutes: '0'
         variables:
           # This sets environment variable $env:SqlServerDscCI.
           SqlServerDscCI: true
@@ -123,8 +123,8 @@ stages:
       - job: Test_Unit
         displayName: 'Unit'
         pool:
-          vmImage: 'windows-2022'
-        timeoutInMinutes: 0
+          vmImage: 'windows-latest'
+        timeoutInMinutes: '0'
         variables:
           # This sets environment variable $env:SqlServerDscCI.
           SqlServerDscCI: true
@@ -155,7 +155,6 @@ stages:
             inputs:
               targetPath: '$(buildFolderName)/$(testResultFolderName)/'
               artifactName: $(testArtifactName)
-              parallel: true
 
       - job: Code_Coverage
         displayName: 'Publish Code Coverage'
@@ -163,7 +162,7 @@ stages:
         condition: succeededOrFailed()
         pool:
           vmImage: 'ubuntu-latest'
-        timeoutInMinutes: 0
+        timeoutInMinutes: '0'
         steps:
           - pwsh: |
               $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
@@ -201,27 +200,15 @@ stages:
         displayName: 'Commands'
         strategy:
           matrix:
-            SQL2016_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2017_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2017'
             SQL2017_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2017'
-            SQL2019_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2019'
             SQL2019_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2019'
             SQL2019_WIN2025:
               JOB_VMIMAGE: 'windows-2025'
               TEST_CONFIGURATION: 'Integration_SQL2019'
-            SQL2022_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2022'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2022'
@@ -230,7 +217,7 @@ stages:
               TEST_CONFIGURATION: 'Integration_SQL2022'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: 0
+        timeoutInMinutes: '0'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -280,24 +267,15 @@ stages:
         displayName: 'Commands'
         strategy:
           matrix:
-            SQL2017_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2017_RS'
             SQL2017_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2017_RS'
-            SQL2019_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2019_RS'
             SQL2019_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2019_RS'
             SQL2019_WIN2025:
               JOB_VMIMAGE: 'windows-2025'
               TEST_CONFIGURATION: 'Integration_SQL2019_RS'
-            SQL2022_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2022_RS'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2022_RS'
@@ -306,7 +284,7 @@ stages:
               TEST_CONFIGURATION: 'Integration_SQL2022_RS'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: 0
+        timeoutInMinutes: '0'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -361,9 +339,6 @@ stages:
         displayName: 'Commands'
         strategy:
           matrix:
-            PowerBI_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_PowerBI'
             PowerBI_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_PowerBI'
@@ -372,7 +347,7 @@ stages:
               TEST_CONFIGURATION: 'Integration_PowerBI'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: 0
+        timeoutInMinutes: '0'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -427,27 +402,15 @@ stages:
         displayName: 'Integration'
         strategy:
           matrix:
-            SQL2016_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2017_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2017'
             SQL2017_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2017'
-            SQL2019_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2019'
             SQL2019_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2019'
             SQL2019_WIN2025:
               JOB_VMIMAGE: 'windows-2025'
               TEST_CONFIGURATION: 'Integration_SQL2019'
-            SQL2022_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2022'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2022'
@@ -456,7 +419,7 @@ stages:
               TEST_CONFIGURATION: 'Integration_SQL2022'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: 0
+        timeoutInMinutes: '0'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -532,9 +495,6 @@ stages:
         displayName: 'Integration'
         strategy:
           matrix:
-            SQL2016_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
             SQL2017_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2017'
@@ -546,7 +506,7 @@ stages:
               TEST_CONFIGURATION: 'Integration_SQL2022'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: 0
+        timeoutInMinutes: '0'
         variables:
           SMODefaultModuleName: 'dbatools'
         steps:
@@ -625,27 +585,15 @@ stages:
         displayName: 'Integration'
         strategy:
           matrix:
-            SQL2016_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
-            SQL2017_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2017'
             SQL2017_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2017'
-            SQL2019_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2019'
             SQL2019_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2019'
             SQL2019_WIN2025:
               JOB_VMIMAGE: 'windows-2025'
               TEST_CONFIGURATION: 'Integration_SQL2019'
-            SQL2022_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2022'
             SQL2022_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2022'
@@ -659,7 +607,7 @@ stages:
           SMODefaultModuleName: 'SqlServer'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: 0
+        timeoutInMinutes: '0'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -708,9 +656,6 @@ stages:
         displayName: 'Integration'
         strategy:
           matrix:
-            PowerBI_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_PowerBI'
             PowerBI_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_PowerBI'
@@ -724,7 +669,7 @@ stages:
           SMODefaultModuleName: 'SqlServer'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: 0
+        timeoutInMinutes: '0'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
@@ -773,9 +718,6 @@ stages:
         displayName: 'Integration'
         strategy:
           matrix:
-            SQL2016_WIN2019:
-              JOB_VMIMAGE: 'windows-2019'
-              TEST_CONFIGURATION: 'Integration_SQL2016'
             SQL2017_WIN2022:
               JOB_VMIMAGE: 'windows-2022'
               TEST_CONFIGURATION: 'Integration_SQL2017'
@@ -792,7 +734,7 @@ stages:
           SMODefaultModuleName: 'dbatools'
         pool:
           vmImage: $(JOB_VMIMAGE)
-        timeoutInMinutes: 0
+        timeoutInMinutes: '0'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
