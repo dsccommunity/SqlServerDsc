@@ -45,6 +45,28 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
     }
 
     Context 'When getting the current state of the resource' {
+        It 'DEBUG - WILL THIS FAIL? - Should return the expected current state with all properties' {
+            $desiredParameters = @{
+                KeyProperty       = 'TEST_KEY_002'
+                MandatoryProperty = 'TestMandatoryValue'
+                WriteProperty     = 'DesiredWriteValue'
+            }
+
+            $result = dsc --trace-level trace resource get --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+
+            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+
+            if ($dscExitCode -ne 0)
+            {
+                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
+            }
+
+            $result.actualState.KeyProperty | Should -Be 'TEST_KEY_002'
+            $result.actualState.MandatoryProperty | Should -Be 'CurrentMandatoryStateValue'
+            $result.actualState.WriteProperty | Should -Be 'CurrentStateValue'
+            $result.actualState.ReadProperty | Should -Match '^ReadOnlyValue_\d{8}_\d{6}$'
+        }
+
         It 'Should return the expected current state with minimal properties' {
             $desiredParameters = @{
                 KeyProperty       = 'TEST_KEY_001'
