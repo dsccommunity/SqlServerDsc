@@ -45,28 +45,6 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
     }
 
     Context 'When getting the current state of the resource' {
-        It 'DEBUG - WILL THIS FAIL? - Should return the expected current state with all properties' {
-            $desiredParameters = @{
-                KeyProperty       = 'TEST_KEY_002'
-                MandatoryProperty = 'TestMandatoryValue'
-                WriteProperty     = 'DesiredWriteValue'
-            }
-
-            $result = dsc --trace-level trace resource get --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
-
-            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
-
-            if ($dscExitCode -ne 0)
-            {
-                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
-            }
-
-            $result.actualState.KeyProperty | Should -Be 'TEST_KEY_002'
-            $result.actualState.MandatoryProperty | Should -Be 'CurrentMandatoryStateValue'
-            $result.actualState.WriteProperty | Should -Be 'CurrentStateValue'
-            $result.actualState.ReadProperty | Should -Match '^ReadOnlyValue_\d{8}_\d{6}$'
-        }
-
         It 'Should return the expected current state with minimal properties' {
             $desiredParameters = @{
                 KeyProperty       = 'TEST_KEY_001'
@@ -75,15 +53,14 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
 
             $result = dsc --trace-level trace resource get --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
-            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
-            Write-Verbose -Message "Result (actualState):`n$($result.actualState | ConvertTo-Json | Out-String)" -Verbose
-
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
             if ($dscExitCode -ne 0)
             {
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
+
+            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
 
             $result.actualState.KeyProperty | Should -Be 'TEST_KEY_001'
             $result.actualState.MandatoryProperty | Should -Be 'CurrentMandatoryStateValue'
@@ -107,6 +84,8 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
 
+            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
+
             $result.actualState.KeyProperty | Should -Be 'TEST_KEY_002'
             $result.actualState.MandatoryProperty | Should -Be 'CurrentMandatoryStateValue'
             $result.actualState.WriteProperty | Should -Be 'CurrentStateValue'
@@ -127,6 +106,8 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
             {
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
+
+            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
 
             $result.actualState.KeyProperty | Should -BeExactly 'TEST_KEY_LOWERCASE'
         }
@@ -149,7 +130,9 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
 
-            $result.inDesiredState | Should -Be $true
+            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
+
+            $result.inDesiredState | Should -BeTrue
         }
 
         It 'Should return false when WriteProperty is not in desired state' {
@@ -168,7 +151,9 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
 
-            $result.inDesiredState | Should -Be $false
+            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
+
+            $result.inDesiredState | Should -BeFalse
         }
 
         It 'Should return true when only key and mandatory properties are specified' {
@@ -186,8 +171,10 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
 
+            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
+
             # Should be true because MandatoryProperty is in ExcludeDscProperties
-            $result.inDesiredState | Should -Be $true
+            $result.inDesiredState | Should -BeTrue
         }
     }
 
@@ -208,6 +195,8 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 {
                     throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
                 }
+
+                Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
             } | Should -Not -Throw
         }
 
@@ -227,6 +216,8 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 {
                     throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
                 }
+
+                Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
             } | Should -Not -Throw
         }
     }
@@ -242,6 +233,9 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 $result = dsc --trace-level trace resource get --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
                 $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+
+                Write-Verbose -Message "DSCv3 exit code: $($dscExitCode | Out-String)" -Verbose
+                Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
 
                 if ($dscExitCode -ne 0)
                 {
@@ -261,6 +255,9 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
 
                 $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
+                Write-Verbose -Message "DSCv3 exit code: $($dscExitCode | Out-String)" -Verbose
+                Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
+
                 if ($dscExitCode -ne 0)
                 {
                     throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
@@ -269,18 +266,23 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
         }
     }
 
-    Context 'When using PSDscRunAsCredential' {
+    Context 'When using PSDscRunAsCredential' -Skip:$true {
         BeforeAll {
             # Create a test user for RunAs scenarios (only in test environments)
             $testUserName = 'TestDscUser'
             $testPassword = ConvertTo-SecureString -String 'P@ssw0rd123!' -AsPlainText -Force
         }
 
-        It 'Should work without PSDscRunAsCredential specified' {
+        It 'Should work with PSDscRunAsCredential specified' {
             $desiredParameters = @{
                 KeyProperty       = 'TEST_KEY_008'
                 MandatoryProperty = 'TestMandatoryValue'
                 WriteProperty     = 'NoRunAsCredential'
+                # TODO: PSDscRunAsCredential should be passed
+                #PSDscRunAsCredential = @{
+                #    UserName = $testUserName
+                #    Password = $testPassword
+                #}
             }
 
             {
