@@ -769,6 +769,7 @@ stages:
           - pwsh: |
               # Install-DscExe installed in the path $env:LOCALAPPDATA\dsc
               $env:PATH += '{0}{1}' -f [System.IO.Path]::PathSeparator, (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc')
+              $env:ModuleVersion = '0.0.1'
               ./build.ps1 -Task build
               #dsc resource list --adapter Microsoft.Windows/WindowsPowerShell
               Invoke-Pester -Path 'tests/Integration/Resources/DSCv3_DebugDscEngine.Integration.Tests.ps1' -Output Detailed
