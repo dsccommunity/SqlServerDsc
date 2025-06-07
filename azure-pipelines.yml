@@ -710,6 +710,50 @@ stages:
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
               testRunTitle: 'Integration RS ($(TEST_CONFIGURATION) / $(JOB_VMIMAGE))'
 
+  - stage: Integration_Test_DSCv3_DEBUG
+    displayName: 'Integration Test DSCv3 Resources - DEBUG'
+    dependsOn: Build
+    jobs:
+      - job: Test_Integration
+        displayName: 'Integration'
+        strategy:
+          matrix:
+            PowerBI_WIN2019:
+              JOB_VMIMAGE: 'windows-2019'
+            PowerBI_WIN2022:
+              JOB_VMIMAGE: 'windows-2022'
+            PowerBI_WIN2025:
+              JOB_VMIMAGE: 'windows-2025'
+        pool:
+          vmImage: $(JOB_VMIMAGE)
+        timeoutInMinutes: 0
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PowerShell@2
+            name: configureWinRM
+            displayName: 'Configure WinRM'
+            inputs:
+              targetType: 'inline'
+              script: 'winrm quickconfig -quiet'
+              pwsh: false
+          - pwsh: |
+              Install-PSResource -Name 'PSDSC' -Repository 'PSGallery' -TrustRepository -Quiet -Confirm:$false
+              Install-DscExe -IncludePrerelease -Force -Verbose
+            name: installDSCv3
+            displayName: 'Install DSCv3'
+          - pwsh: |
+              # Install-DscExe installed in the path $env:LOCALAPPDATA\dsc
+              $env:PATH += '{0}{1}' -f [System.IO.Path]::PathSeparator, (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc')
+              ./build.ps -Task noop
+              Invoke-Pester -Path 'tests/Integration/Resources/DSCv3_DebugDscEngine.Integration.Tests.ps1' -Output Detailed
+            name: test
+            displayName: 'Run Reporting Services Integration Test'
+
   - stage: Integration_Test_DSCv3_Resources_PowerBIReportServer
     displayName: 'Integration Test DSCv3 Resources - Power BI Report Server'
     #dependsOn: Quality_Test_and_Unit_Test
