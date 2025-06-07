@@ -771,7 +771,7 @@ stages:
               $env:PATH += '{0}{1}' -f [System.IO.Path]::PathSeparator, (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc')
               $env:ModuleVersion = '0.0.1'
               ./build.ps1 -Task build
-              #dsc resource list --adapter Microsoft.Windows/WindowsPowerShell
+              dsc resource list --adapter Microsoft.Windows/WindowsPowerShell
               Invoke-Pester -Path 'tests/Integration/Resources/DSCv3_DebugDscEngine.Integration.Tests.ps1' -Output Detailed
             name: test
             displayName: 'Run Reporting Services Integration Test'
