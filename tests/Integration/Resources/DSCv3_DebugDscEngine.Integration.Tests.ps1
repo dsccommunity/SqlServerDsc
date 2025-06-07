@@ -38,7 +38,7 @@ BeforeAll {
 Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {
     BeforeAll {
         # Output all environment variables to verify the environment
-        Write-Verbose -Message "`nEnvironment Variables in integration test:`n$(Get-ChildItem -Path Env: | Out-String)" -Verbose
+        #Write-Verbose -Message "`nEnvironment Variables in integration test:`n$(Get-ChildItem -Path Env: | Out-String)" -Verbose
 
         # Output $PSVersionTable to verify the PowerShell version used in the test
         Write-Verbose -Message "`nPowerShell version used in integration test:`n$($PSVersionTable | Out-String)" -Verbose
