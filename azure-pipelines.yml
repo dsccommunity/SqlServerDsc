@@ -1193,7 +1193,7 @@ stages:
           - pwsh: |
               # Install-DscExe installed in the path $env:LOCALAPPDATA\dsc
               $env:PATH += '{0}{1}' -f [System.IO.Path]::PathSeparator, (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc')
-              ./build.ps -Task noop
+              ./build.ps1 -Task noop
               Invoke-Pester -Path 'tests/Integration/Resources/DSCv3_DebugDscEngine.Integration.Tests.ps1' -Output Detailed
             name: test
             displayName: 'Run Reporting Services Integration Test'
