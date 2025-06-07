@@ -1191,6 +1191,26 @@ stages:
             name: installDSCv3
             displayName: 'Install DSCv3'
           - pwsh: |
+              # Install-DscExe installs in the path $env:LOCALAPPDATA\dsc
+              $env:PATH += '{0}{1}' -f [System.IO.Path]::PathSeparator, (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc')
+              # Make the built module available to the current session.
+              ./build.ps1 -Tasks noop
+              Get-Module -Name SqlServerDsc -ListAvailable
+              # Output DSCv3 version
+              dsc --version
+              # Get the list of available resources.
+              'Native resources:'
+              dsc resource list
+              'Resources using adapter Microsoft.Windows/WindowsPowerShell:'
+              dsc resource list --adapter Microsoft.Windows/WindowsPowerShell
+
+              Get-ChildItem -Path (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc') -Recurse -Filter '*.json'
+              $cacheFile = Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc/WindowsPSAdapterCache.json'
+              $getConfig = Get-Content -Path $cacheFile -Raw | ConvertFrom-Json
+              Write-Verbose -Message "WindowsPSAdapterCache.json content:`n $($getConfig | ConvertTo-Json -Depth 10)" -Verbose
+            name: getDSCv3AvailableResources
+            displayName: 'Get DSCv3 Available Resources'
+          - pwsh: |
               # Install-DscExe installed in the path $env:LOCALAPPDATA\dsc
               $env:PATH += '{0}{1}' -f [System.IO.Path]::PathSeparator, (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc')
               ./build.ps1 -Task noop
