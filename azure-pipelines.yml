@@ -771,7 +771,7 @@ stages:
               $env:PATH += '{0}{1}' -f [System.IO.Path]::PathSeparator, (Join-Path -Path $env:LOCALAPPDATA -ChildPath 'dsc')
               $env:ModuleVersion = '0.0.1'
               ./build.ps1 -Task build
-              dsc resource list --adapter Microsoft.Windows/WindowsPowerShell
+              #dsc resource list --adapter Microsoft.Windows/WindowsPowerShell
               $desiredParameters = @{KeyProperty = 'TEST_KEY_001';MandatoryProperty = 'TestMandatoryValue'}
               $result = dsc --trace-level trace resource get --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress)
               $dscExitCode = $LASTEXITCODE
