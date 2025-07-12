@@ -260,7 +260,8 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
         }
     }
 
-    Context 'When using PSDscRunAsCredential' {
+    # TODO: Remove skip when PSDscRunAsCredential is implemented in DScv3
+    Context 'When using PSDscRunAsCredential' -Skip:$true {
         BeforeAll {
             # Create a test user for RunAs scenarios (only in test environments)
             $testUserName = 'TestDscUser'
