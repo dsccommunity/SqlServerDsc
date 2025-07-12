@@ -208,16 +208,12 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
             $result = dsc --trace-level trace resource set --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
-            Write-Verbose -Message "DSCv3 exit code: $($dscExitCode | Out-String)" -Verbose
-            Write-Verbose -Message "DSCv3 exit code type: $($dscExitCode.GetType().FullName | Out-String)" -Verbose
-
 
             if ($dscExitCode -ne 0)
             {
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
 
-            Write-Verbose -Message "DSCv3 exit code: $($dscExitCode | Out-String)" -Verbose
             Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
         }
     }
@@ -229,18 +225,18 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 MandatoryProperty = 'TestMandatoryValue'
             }
 
+            $mockExpectedErrorCode = 2
+
             {
                 $result = dsc --trace-level trace resource get --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
                 $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
-                Write-Verbose -Message "DSCv3 exit code: $($dscExitCode | Out-String)" -Verbose
-
                 if ($dscExitCode -ne 0)
                 {
                     throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
                 }
-            } | Should -Throw -ExpectedMessage 'MOCK ERROR: KeyProperty is required'
+            } | Should -Throw -ExpectedMessage ('DSC executable failed with exit code {0}.' -f $mockExpectedErrorCode)
         }
 
         It 'Should fail when MandatoryProperty is empty' {
@@ -249,18 +245,18 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 MandatoryProperty = ''
             }
 
+            $mockExpectedErrorCode = 2
+
             {
                 $result = dsc --trace-level trace resource get --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
 
                 $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
-                Write-Verbose -Message "DSCv3 exit code: $($dscExitCode | Out-String)" -Verbose
-
                 if ($dscExitCode -ne 0)
                 {
                     throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
                 }
-            } | Should -Throw
+            } | Should -Throw -ExpectedMessage ('DSC executable failed with exit code {0}.' -f $mockExpectedErrorCode)
         }
     }
 
@@ -287,10 +283,14 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
 
             $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
+             Write-Verbose -Message "DSCv3 exit code: $($dscExitCode | Out-String)" -Verbose
+
             if ($dscExitCode -ne 0)
             {
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
+
+            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
         }
     }
 }
