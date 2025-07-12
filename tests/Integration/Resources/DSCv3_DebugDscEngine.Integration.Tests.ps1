@@ -260,7 +260,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
         }
     }
 
-    Context 'When using PSDscRunAsCredential' -Skip:$true {
+    Context 'When using PSDscRunAsCredential' {
         BeforeAll {
             # Create a test user for RunAs scenarios (only in test environments)
             $testUserName = 'TestDscUser'
@@ -273,10 +273,10 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 MandatoryProperty = 'TestMandatoryValue'
                 WriteProperty     = 'NoRunAsCredential'
                 # TODO: PSDscRunAsCredential should be passed
-                #PSDscRunAsCredential = @{
-                #    UserName = $testUserName
-                #    Password = $testPassword
-                #}
+                PSDscRunAsCredential = @{
+                   UserName = $testUserName
+                   Password = $testPassword
+                }
             }
 
             $result = dsc --trace-level trace resource get --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
