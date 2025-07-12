@@ -235,13 +235,12 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
                 Write-Verbose -Message "DSCv3 exit code: $($dscExitCode | Out-String)" -Verbose
-                Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
 
                 if ($dscExitCode -ne 0)
                 {
                     throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
                 }
-            } | Should -Throw
+            } | Should -Throw -ExpectedMessage 'MOCK ERROR: KeyProperty is required'
         }
 
         It 'Should fail when MandatoryProperty is empty' {
@@ -256,7 +255,6 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
 
                 Write-Verbose -Message "DSCv3 exit code: $($dscExitCode | Out-String)" -Verbose
-                Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
 
                 if ($dscExitCode -ne 0)
                 {
