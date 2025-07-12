@@ -60,7 +60,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
 
-            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
 
             $result.actualState.KeyProperty | Should -Be 'TEST_KEY_001'
             $result.actualState.MandatoryProperty | Should -Be 'CurrentMandatoryStateValue'
@@ -84,7 +84,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
 
-            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
 
             $result.actualState.KeyProperty | Should -Be 'TEST_KEY_002'
             $result.actualState.MandatoryProperty | Should -Be 'CurrentMandatoryStateValue'
@@ -107,7 +107,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
 
-            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
 
             $result.actualState.KeyProperty | Should -BeExactly 'TEST_KEY_LOWERCASE'
         }
@@ -130,7 +130,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
 
-            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
 
             $result.inDesiredState | Should -BeTrue
         }
@@ -151,7 +151,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
 
-            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
 
             $result.inDesiredState | Should -BeFalse
         }
@@ -171,7 +171,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
 
-            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
 
             # Should be true because MandatoryProperty is in ExcludeDscProperties
             $result.inDesiredState | Should -BeTrue
@@ -195,7 +195,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
 
-            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
         }
 
         It 'Should handle property normalization during set operation' {
@@ -214,7 +214,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
 
-            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
         }
     }
 
@@ -290,7 +290,7 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
 
-            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
         }
     }
 }
