@@ -75,6 +75,8 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
             {
                 throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
             }
+
+            Write-Verbose -Message "Result:`n$($result | ConvertTo-Json | Out-String)" -Verbose
         }
     }
 }
