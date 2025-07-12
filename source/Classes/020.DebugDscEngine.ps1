@@ -91,6 +91,7 @@ class DebugDscEngine : ResourceBase
     [DebugDscEngine] Get()
     {
         # Output all environment variables to verify the environment
+        Write-Warning -Message 'Mocked warning message for testing purposes.'
         #Write-Verbose -Message "`nEnvironment Variables from inside DSC resource:`n$([System.Environment]::GetEnvironmentVariables().GetEnumerator() | Sort-Object Key | ForEach-Object { "$($_.Key) = $($_.Value)" } | Out-String)" -Verbose
 
         # Call the base method to return the properties.
