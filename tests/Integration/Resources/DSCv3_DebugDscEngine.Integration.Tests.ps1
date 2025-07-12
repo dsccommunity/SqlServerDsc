@@ -186,18 +186,16 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 WriteProperty     = 'NewDesiredValue'
             }
 
+            $result = dsc --trace-level trace resource set --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+
+            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+
+            if ($dscExitCode -ne 0)
             {
-                $result = dsc --trace-level trace resource set --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
+            }
 
-                $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
-
-                if ($dscExitCode -ne 0)
-                {
-                    throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
-                }
-
-                Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
-            } | Should -Not -Throw
+            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
         }
 
         It 'Should handle property normalization during set operation' {
@@ -207,18 +205,20 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 WriteProperty     = '  SpacedValue  '
             }
 
+            $result = dsc --trace-level trace resource set --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+
+            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+            Write-Verbose -Message "DSCv3 exit code: $($dscExitCode | Out-String)" -Verbose
+            Write-Verbose -Message "DSCv3 exit code type: $($dscExitCode.GetType().FullName | Out-String)" -Verbose
+
+
+            if ($dscExitCode -ne 0)
             {
-                $result = dsc --trace-level trace resource set --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
+            }
 
-                $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
-
-                if ($dscExitCode -ne 0)
-                {
-                    throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
-                }
-
-                Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
-            } | Should -Not -Throw
+            Write-Verbose -Message "DSCv3 exit code: $($dscExitCode | Out-String)" -Verbose
+            Write-Verbose -Message "Result (all):`n$($result | ConvertTo-Json | Out-String)" -Verbose
         }
     }
 
@@ -285,16 +285,14 @@ Describe "$($script:dscResourceFriendlyName)_Integration" -Tag @('Integration_SQ
                 #}
             }
 
+            $result = dsc --trace-level trace resource get --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
+
+            $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
+
+            if ($dscExitCode -ne 0)
             {
-                $result = dsc --trace-level trace resource get --resource SqlServerDsc/DebugDscEngine --output-format json --input ($desiredParameters | ConvertTo-Json -Compress) | ConvertFrom-Json
-
-                $dscExitCode = $LASTEXITCODE # cSpell: ignore LASTEXITCODE
-
-                if ($dscExitCode -ne 0)
-                {
-                    throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
-                }
-            } | Should -Not -Throw
+                throw ('DSC executable failed with exit code {0}.' -f $dscExitCode)
+            }
         }
     }
 }
