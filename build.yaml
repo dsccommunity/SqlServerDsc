@@ -6,8 +6,12 @@ BuildWorkflow:
   '.':
     - build
     - test
+   
+lint:
+    - Run_PSScriptAnalyzer
 
   build:
+    - lint
     - Clean
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
@@ -63,6 +67,19 @@ BuildWorkflow:
             Remove-Item -Path './output/WikiContent' -Recurse -Force
         }
     }
+  Run_PSScriptAnalyzer: |
+    {
+        Write-Host "Running PSScriptAnalyzer..."
+        $files = Get-ChildItem -Path . -Recurse -Include *.ps1,*.psm1,*.psd1 | Where-Object { $_.FullName -notmatch '\\output\\' }
+        $results = Invoke-ScriptAnalyzer -Path $files.FullName -Recurse -Severity Warning, Error
+        if ($results.Count -gt 0) {
+            $results | Format-Table
+            throw "PSScriptAnalyzer found issues. Please fix them before proceeding."
+        } else {
+            Write-Host "No script analyzer issues found."
+        }
+    }
+
 ####################################################
 #           ModuleBuilder Configuration            #
 ####################################################
