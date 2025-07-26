@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `azure-pipelines.yml`
   - Remove `windows-2019` images fixes [#2106](https://github.com/dsccommunity/SqlServerDsc/issues/2106).
   - Move individual tasks to `windows-latest`.
+- Removed `CmdletsToExport` from psd1 to fix [#2109](https://github.com/dsccommunity/SqlServerDsc/issues/2109).
 
 ## [17.1.0] - 2025-05-22
 
