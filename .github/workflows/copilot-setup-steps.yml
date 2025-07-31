@@ -51,7 +51,7 @@ jobs:
           dotnet tool install --global GitVersion.Tool --version 5.*
 
           # Verify installation
-          dotnet-gitversion --version
+          dotnet-gitversion
 
           Write-Host ".NET tools installation complete." -ForegroundColor Green
 
