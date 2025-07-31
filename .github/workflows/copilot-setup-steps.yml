@@ -1,4 +1,4 @@
-name: GitHub Copilot Setup Steps
+name: 'GitHub Copilot Setup Steps'
 
 # This workflow sets up a complete development environment for the SqlServerDsc PowerShell DSC module project
 # when executed by GitHub Copilot Agent for development assistance.
@@ -11,6 +11,12 @@ on:
         required: false
         default: true
         type: boolean
+  pull_request:
+    paths:
+      - '.github/workflows/copilot-setup-steps.yml'
+  push:
+    paths:
+      - '.github/workflows/copilot-setup-steps.yml'
 
 # cSpell: ignore pwsh cmdlets DSCResources nupkg HQRM SqlServerDsc dotnet gitversion
 jobs:
