@@ -116,7 +116,7 @@ jobs:
           }
 
       - name: Run QA & Unit Tests (Optional)
-        if: ${{ inputs.skip_tests != 'true' }}
+        if: ${{ !inputs.skip_tests }}
         shell: pwsh
         run: |
           Write-Host "Running QA & unit tests..." -ForegroundColor Green
