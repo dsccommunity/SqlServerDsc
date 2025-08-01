@@ -71,16 +71,16 @@ jobs:
           # Install GitVersion for semantic versioning
           dotnet tool install --global GitVersion.Tool --version 5.*
 
-          # Verify installation
-          dotnet-gitversion
+          # # Verify installation
+          # dotnet-gitversion
 
           Write-Host ".NET tools installation complete." -ForegroundColor Green
 
-      - name: Verify GitVersion
-        shell: pwsh
-        run: |
-          Write-Host "Running GitVersion to determine semantic version..." -ForegroundColor Green
-          dotnet-gitversion | ConvertFrom-Json
+      # - name: Verify GitVersion
+      #   shell: pwsh
+      #   run: |
+      #     Write-Host "Running GitVersion to determine semantic version..." -ForegroundColor Green
+      #     dotnet-gitversion | ConvertFrom-Json
 
       - name: Resolve Dependencies
         shell: pwsh
