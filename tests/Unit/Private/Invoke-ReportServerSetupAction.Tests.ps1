@@ -128,6 +128,8 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
 
         It 'Should throw a terminating error and not continue execution' {
             InModuleScope -ScriptBlock {
+                # This test verifies the fix for issue #2070 where Assert-ElevatedUser
+                # would throw an error but the function would continue executing
                 { Invoke-ReportServerSetupAction @mockDefaultParameters } |
                     Should -Throw -ExpectedMessage '*This command must run in an elevated PowerShell session*'
             }
