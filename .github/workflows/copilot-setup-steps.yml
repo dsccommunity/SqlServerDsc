@@ -42,7 +42,7 @@ jobs:
         run: |
           Write-Host "Unshallow Copilot branch..." -ForegroundColor Green
 
-          Write-Host "Removing the depth limit, prune unused refs, and grab tags
+          Write-Host "Removing the depth limit, prune unused refs, and grab tags" -ForegroundColor DarkGray
           git fetch --prune --unshallow --tags --no-recurse-submodules
 
           Write-Host "Unshallow complete." -ForegroundColor Green
