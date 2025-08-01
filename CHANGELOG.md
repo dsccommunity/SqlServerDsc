@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added setup workflow for GitHub Copilot.
   - Switch the workflow to use Linux.
-  - Trying to unshallow the COpilot branch
+  - Attempt to unshallow the Copilot branch
 
 ### Changed
 
