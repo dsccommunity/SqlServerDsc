@@ -1,4 +1,4 @@
-name: 'GitHub Copilot Setup Steps'
+name: 'Copilot Setup Steps'
 
 # This workflow sets up a complete development environment for the SqlServerDsc PowerShell DSC module project
 # when executed by GitHub Copilot Agent for development assistance.
