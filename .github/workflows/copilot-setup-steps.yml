@@ -1,0 +1,199 @@
+name: 'GitHub Copilot Setup Steps'
+
+# This workflow sets up a complete development environment for the SqlServerDsc PowerShell DSC module project
+# when executed by GitHub Copilot Agent for development assistance.
+
+on:
+  workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: 'Skip running tests during setup'
+        required: false
+        default: true
+        type: boolean
+  pull_request:
+    paths:
+      - '.github/workflows/copilot-setup-steps.yml'
+  push:
+    paths:
+      - '.github/workflows/copilot-setup-steps.yml'
+
+# cSpell: ignore pwsh cmdlets DSCResources nupkg HQRM SqlServerDsc dotnet gitversion
+jobs:
+  setup-development-environment:
+    name: Setup SqlServerDsc Development Environment
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history needed for GitVersion
+
+      - name: Setup PowerShell Environment
+        shell: pwsh
+        run: |
+          Write-Host "Setting up PowerShell environment..." -ForegroundColor Green
+
+          # Install dependent PowerShell modules
+          Install-PSResource -Name 'SqlServer' -Version '21.1.18256' -Scope 'CurrentUser' -Repository 'PSGallery' -TrustRepository
+
+          # Set execution policy for development
+          Set-ExecutionPolicy -ExecutionPolicy 'RemoteSigned' -Scope 'CurrentUser' -Force
+
+          Write-Host "PowerShell environment setup complete." -ForegroundColor Green
+
+      - name: Install .NET Tools
+        shell: pwsh
+        run: |
+          Write-Host "Installing .NET tools..." -ForegroundColor Green
+
+          # Install GitVersion for semantic versioning
+          dotnet tool install --global GitVersion.Tool --version 5.*
+
+          # Verify installation
+          dotnet-gitversion
+
+          Write-Host ".NET tools installation complete." -ForegroundColor Green
+
+      - name: Verify GitVersion
+        shell: pwsh
+        run: |
+          Write-Host "Running GitVersion to determine semantic version..." -ForegroundColor Green
+          dotnet-gitversion | ConvertFrom-Json
+
+      - name: Resolve Dependencies
+        shell: pwsh
+        run: |
+          Write-Host "Resolving project dependencies..." -ForegroundColor Green
+
+          # Run dependency resolution
+          .\build.ps1 -ResolveDependency -Tasks 'noop' -ErrorAction Stop
+
+          Write-Host "Dependencies resolved successfully." -ForegroundColor Green
+
+      - name: Build Module
+        shell: pwsh
+        run: |
+          Write-Host "Building SqlServerDsc module..." -ForegroundColor Green
+
+          # Build the module
+          .\build.ps1 -Tasks 'build' -ErrorAction Stop
+
+          # Verify build output
+          if (Test-Path -Path "output\builtModule\SqlServerDsc") {
+              Write-Host "Module built successfully at: output\builtModule\SqlServerDsc" -ForegroundColor Green
+              Get-ChildItem -Path "output\builtModule\SqlServerDsc" -Recurse | Select-Object Name, Length | Format-Table
+          } else {
+              Write-Error "Module build failed - output directory not found"
+              exit 1
+          }
+
+      - name: Import Built Module
+        shell: pwsh
+        run: |
+          Write-Host "Importing built SqlServerDsc module..." -ForegroundColor Green
+
+          .\build.ps1 -Tasks 'noop'
+          Import-Module -Name 'SqlServerDsc' -Force
+
+          # Verify module is loaded
+          $module = Get-Module -Name SqlServerDsc
+          if ($module) {
+              Write-Host "Module imported successfully:" -ForegroundColor Green
+              Write-Host "  Name: $($module.Name)" -ForegroundColor Cyan
+              Write-Host "  Version: $($module.Version)" -ForegroundColor Cyan
+              Write-Host "  Path: $($module.Path)" -ForegroundColor Cyan
+
+              # Show available commands and resources
+              $commands = Get-Command -Module SqlServerDsc
+              Write-Host "  Exported Commands: $($commands.Count)" -ForegroundColor Cyan
+
+              $dscResources = Get-DscResource -Module SqlServerDsc
+              Write-Host "  DSC Resources: $($dscResources.Count)" -ForegroundColor Cyan
+          } else {
+              Write-Error "Failed to import module"
+              exit 1
+          }
+
+      # - name: Run QA & Unit Tests (Optional)
+      #   if: ${{ inputs.skip_tests == false }}
+      #   shell: powershell
+      #   run: |
+      #     Write-Host "Running QA & unit tests..." -ForegroundColor Green
+
+      #     # Run QA & unit tests only (skip integration tests in setup)
+      #     .\build.ps1 -Tasks 'test' -PesterPath 'tests\Unit', 'tests\QA'
+
+      #     Write-Host "QA & unit tests completed." -ForegroundColor Green
+
+    #   - name: Validate Project Structure
+    #     shell: pwsh
+    #     run: |
+    #       Write-Host "Validating project structure..." -ForegroundColor Green
+
+    #       $requiredPaths = @(
+    #           'source\Classes',
+    #           'source\Public',
+    #           'source\Private',
+    #           'source\DSCResources',
+    #           'source\en-US',
+    #           'tests\Unit',
+    #           'tests\Integration',
+    #           'build.ps1',
+    #           'build.yaml',
+    #           'RequiredModules.psd1'
+    #       )
+
+    #       $missingPaths = @()
+    #       foreach ($path in $requiredPaths) {
+    #           if (-not (Test-Path -Path $path)) {
+    #               $missingPaths += $path
+    #           } else {
+    #               Write-Host "✓ $path" -ForegroundColor Green
+    #           }
+    #       }
+
+    #       if ($missingPaths.Count -gt 0) {
+    #           Write-Warning "Missing expected project paths:"
+    #           $missingPaths | ForEach-Object { Write-Host "  ✗ $_" -ForegroundColor Red }
+    #       } else {
+    #           Write-Host "All expected project paths found." -ForegroundColor Green
+    #       }
+
+      - name: Setup Complete - Display Environment Info
+        shell: pwsh
+        run: |
+          Write-Host ""
+          Write-Host "=========================================" -ForegroundColor Green
+          Write-Host "SqlServerDsc Development Environment Ready!" -ForegroundColor Green
+          Write-Host "=========================================" -ForegroundColor Green
+          Write-Host ""
+          Write-Host "Project Information:" -ForegroundColor Cyan
+          Write-Host "  Repository: SqlServerDsc PowerShell DSC Module" -ForegroundColor White
+          Write-Host "  Type: Class-based DSC resources for SQL Server" -ForegroundColor White
+          Write-Host "  Framework: Sampler + ModuleBuilder" -ForegroundColor White
+          Write-Host "  Testing: Pester v5 framework" -ForegroundColor White
+          Write-Host ""
+          Write-Host "Available Build Commands:" -ForegroundColor Cyan
+          Write-Host "  .\build.ps1 -Tasks build          # Build module" -ForegroundColor White
+          Write-Host "  .\build.ps1 -Tasks test           # Run all tests" -ForegroundColor White
+          Write-Host "  .\build.ps1 -Tasks docs           # Generate documentation" -ForegroundColor White
+          Write-Host "  .\build.ps1 -Tasks clean          # Clean output" -ForegroundColor White
+          Write-Host ""
+          Write-Host "Key Directories:" -ForegroundColor Cyan
+          Write-Host "  source\Classes\     # DSC class-based resources" -ForegroundColor White
+          Write-Host "  source\Public\      # Public PowerShell commands" -ForegroundColor White
+          Write-Host "  source\Private\     # Private helper functions" -ForegroundColor White
+          Write-Host "  tests\Unit\         # Unit tests (Pester v5)" -ForegroundColor White
+          Write-Host "  tests\Integration\  # Integration tests" -ForegroundColor White
+          Write-Host "  output\builtModule\ # Built module output" -ForegroundColor White
+          Write-Host ""
+          Write-Host "Development Guidelines:" -ForegroundColor Cyan
+          Write-Host "  • Follow DSC Community style guidelines" -ForegroundColor White
+          Write-Host "  • Use PascalCase for functions, camelCase for variables" -ForegroundColor White
+          Write-Host "  • Inherit DSC resources from ResourceBase or SqlResourceBase" -ForegroundColor White
+          Write-Host "  • Include comment-based help for all functions" -ForegroundColor White
+          Write-Host "  • Add unit tests for all new code" -ForegroundColor White
+          Write-Host "  • Use localized strings for user messages" -ForegroundColor White
+          Write-Host ""
+          Write-Host "Ready for development! 🚀" -ForegroundColor Green
