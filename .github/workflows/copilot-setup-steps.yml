@@ -56,7 +56,6 @@ jobs:
           Install-DscExe -IncludePrerelease -Force
 
           Write-Host "DSCv3 install complete." -ForegroundColor Green
-          dsc --version
 
       - name: Verify DSCv3
         shell: pwsh
