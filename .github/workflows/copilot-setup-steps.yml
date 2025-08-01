@@ -38,6 +38,7 @@ jobs:
 
       - name: Unshallow repository for GitVersion
         #if: startsWith(github.ref, 'refs/heads/copilot/')
+        shell: pwsh
         run: |
           Write-Host "Unshallow Copilot branch..." -ForegroundColor Green
 
