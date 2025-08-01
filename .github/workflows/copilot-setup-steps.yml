@@ -44,9 +44,6 @@ jobs:
           # Install dependent PowerShell modules
           Install-PSResource -Name 'SqlServer' -Version '21.1.18256' -Scope 'CurrentUser' -Repository 'PSGallery' -TrustRepository
 
-          # Set execution policy for development
-          Set-ExecutionPolicy -ExecutionPolicy 'RemoteSigned' -Scope 'CurrentUser' -Force
-
           Write-Host "PowerShell environment setup complete." -ForegroundColor Green
 
       - name: Install .NET Tools
