@@ -99,6 +99,44 @@ Describe 'Invoke-ReportServerSetupAction' -Tag 'Private' {
         }
     }
 
+    Context 'When user is not elevated' {
+        BeforeAll {
+            # Mock Assert-ElevatedUser to throw the same error it would in a real scenario
+            Mock -CommandName Assert-ElevatedUser -MockWith {
+                $PSCmdlet.ThrowTerminatingError(
+                    [System.Management.Automation.ErrorRecord]::new(
+                        'This command must run in an elevated PowerShell session. (DRC0043)',
+                        'UserNotElevated',
+                        [System.Management.Automation.ErrorCategory]::InvalidOperation,
+                        'Command parameters'
+                    )
+                )
+            }
+
+            # Create a valid executable file for the test
+            New-Item -Path "$TestDrive/ssrs.exe" -ItemType File -Force | Out-Null
+
+            InModuleScope -ScriptBlock {
+                $script:mockDefaultParameters = @{
+                    Install = $true
+                    AcceptLicensingTerms = $true
+                    MediaPath = "$TestDrive/ssrs.exe"
+                    Force = $true
+                }
+            }
+        }
+
+        It 'Should throw a terminating error and not continue execution' {
+            InModuleScope -ScriptBlock {
+                { Invoke-ReportServerSetupAction @mockDefaultParameters } |
+                    Should -Throw -ExpectedMessage '*This command must run in an elevated PowerShell session*'
+            }
+
+            # Ensure Assert-ElevatedUser was called
+            Should -Invoke -CommandName Assert-ElevatedUser -Exactly -Times 1 -Scope It
+        }
+    }
+
     Context 'When passing no existent path to parameter MediaPath' {
         BeforeAll {
             Mock -CommandName Assert-ElevatedUser

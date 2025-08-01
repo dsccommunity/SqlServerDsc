@@ -1377,7 +1377,15 @@ function Invoke-SetupAction
         $ConfirmPreference = 'None'
     }
 
-    Assert-ElevatedUser -ErrorAction 'Stop'
+    try
+    {
+        Assert-ElevatedUser -ErrorAction 'Stop'
+    }
+    catch
+    {
+        # Re-throw the error to ensure the function terminates
+        $PSCmdlet.ThrowTerminatingError($_)
+    }
 
     switch ($PSCmdlet.ParameterSetName)
     {
