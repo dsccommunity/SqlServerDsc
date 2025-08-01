@@ -36,15 +36,33 @@ jobs:
         with:
           fetch-depth: 0  # Full history needed for GitVersion
 
-      - name: Setup PowerShell Environment
+      - name: Configure PowerShell Environment
         shell: pwsh
         run: |
-          Write-Host "Setting up PowerShell environment..." -ForegroundColor Green
+          Write-Host "Configure PowerShell environment..." -ForegroundColor Green
 
           # Install dependent PowerShell modules
           Install-PSResource -Name 'SqlServer' -Version '21.1.18256' -Scope 'CurrentUser' -Repository 'PSGallery' -TrustRepository
+          Install-PSResource -Name 'PSDSC' -Scope 'CurrentUser' -Repository 'PSGallery' -TrustRepository
 
-          Write-Host "PowerShell environment setup complete." -ForegroundColor Green
+          Write-Host "PowerShell environment configuration complete." -ForegroundColor Green
+
+      - name: Install DSCv3
+        shell: pwsh
+        run: |
+          Write-Host "Install DSCv3 in environment..." -ForegroundColor Green
+
+          # Install dependent PowerShell modules
+          Install-DscExe -IncludePrerelease -Force
+
+          Write-Host "DSCv3 install complete." -ForegroundColor Green
+          dsc --version
+
+      - name: Verify DSCv3
+        shell: pwsh
+        run: |
+          Write-Host "Running DSCv3 to validate correct operation..." -ForegroundColor Green
+          dsc --version
 
       - name: Install .NET Tools
         shell: pwsh
@@ -112,8 +130,8 @@ jobs:
               $commands = Get-Command -Module SqlServerDsc
               Write-Host "  Exported Commands: $($commands.Count)" -ForegroundColor Cyan
 
-              $dscResources = Get-DscResource -Module SqlServerDsc
-              Write-Host "  DSC Resources: $($dscResources.Count)" -ForegroundColor Cyan
+              $dscResources = @(dsc resource list --adapter Microsoft.DSC/PowerShell --output-format json | ConvertFrom-Json)
+              Write-Host "  Available class-based DSC Resources: $($dscResources.Count)" -ForegroundColor Cyan
           } else {
               Write-Error "Failed to import module"
               exit 1
