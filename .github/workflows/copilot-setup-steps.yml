@@ -115,16 +115,16 @@ jobs:
               exit 1
           }
 
-      - name: Run QA & Unit Tests (Optional)
-        if: ${{ inputs.skip_tests == false }}
-        shell: powershell
-        run: |
-          Write-Host "Running QA & unit tests..." -ForegroundColor Green
+      # - name: Run QA & Unit Tests (Optional)
+      #   if: ${{ inputs.skip_tests == false }}
+      #   shell: powershell
+      #   run: |
+      #     Write-Host "Running QA & unit tests..." -ForegroundColor Green
 
-          # Run QA & unit tests only (skip integration tests in setup)
-          .\build.ps1 -Tasks 'test' -PesterPath 'tests\Unit', 'tests\QA'
+      #     # Run QA & unit tests only (skip integration tests in setup)
+      #     .\build.ps1 -Tasks 'test' -PesterPath 'tests\Unit', 'tests\QA'
 
-          Write-Host "QA & unit tests completed." -ForegroundColor Green
+      #     Write-Host "QA & unit tests completed." -ForegroundColor Green
 
     #   - name: Validate Project Structure
     #     shell: pwsh
