@@ -36,6 +36,17 @@ jobs:
         with:
           fetch-depth: 0  # Full history needed for GitVersion
 
+      - name: Unshallow repository for GitVersion
+        if: startsWith(github.ref, 'refs/heads/copilot/')
+        shell: pwsh
+        run: |
+          Write-Host "Unshallow Copilot branch..." -ForegroundColor Green
+
+          Write-Host "Removing the depth limit, prune unused refs, and grab tags" -ForegroundColor DarkGray
+          git fetch --prune --unshallow --tags --no-recurse-submodules
+
+          Write-Host "Unshallow complete." -ForegroundColor Green
+
       - name: Configure PowerShell Environment
         shell: pwsh
         run: |
@@ -71,16 +82,16 @@ jobs:
           # Install GitVersion for semantic versioning
           dotnet tool install --global GitVersion.Tool --version 5.*
 
-          # # Verify installation
-          # dotnet-gitversion
+          # Verify installation
+          dotnet-gitversion
 
           Write-Host ".NET tools installation complete." -ForegroundColor Green
 
-      # - name: Verify GitVersion
-      #   shell: pwsh
-      #   run: |
-      #     Write-Host "Running GitVersion to determine semantic version..." -ForegroundColor Green
-      #     dotnet-gitversion | ConvertFrom-Json
+      - name: Verify GitVersion
+        shell: pwsh
+        run: |
+          Write-Host "Running GitVersion to determine semantic version..." -ForegroundColor Green
+          dotnet-gitversion | ConvertFrom-Json
 
       - name: Resolve Dependencies
         shell: pwsh
@@ -96,11 +107,6 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "Building SqlServerDsc module..." -ForegroundColor Green
-
-          # Hard-code versin due to how Coilot is switching branch (?) so gitversion fails.
-          $ModuleVersion = '0.0.1'
-          $env:ModuleVersion = '0.0.1'
-          [System.Environment]::SetEnvironmentVariable('ModuleVersion','0.0.1', 'Machine')
 
           # Build the module
           .\build.ps1 -Tasks 'build' -ErrorAction Stop

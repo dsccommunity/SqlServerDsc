@@ -9,8 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added setup workflow for GitHub Copilot.
   - Switch the workflow to use Linux.
-  - Skip verify GitVersion after install due to problem with how Copilot switches branch directly after checkout, before setup is finsihed.
-  - Hardcode module version to 0.0.1 for the build step due to the problem with GitVersion.
+  - Attempt to unshallow the Copilot branch
 
 ### Changed
 
