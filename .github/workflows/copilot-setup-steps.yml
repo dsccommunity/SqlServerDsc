@@ -97,6 +97,10 @@ jobs:
         run: |
           Write-Host "Building SqlServerDsc module..." -ForegroundColor Green
 
+          # Hard-code versin due to how Coilot is switching branch (?) so gitversion fails.
+          $ModuleVersion = '0.0.1'
+          $env:ModuleVersion = '0.0.1'
+
           # Build the module
           .\build.ps1 -Tasks 'build' -ErrorAction Stop
 
