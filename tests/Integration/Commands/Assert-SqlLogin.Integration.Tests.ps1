@@ -47,11 +47,26 @@ Describe 'Assert-SqlLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
             It 'Should not throw an error when using pipeline' {
                 { $script:serverObject | Assert-SqlLogin -Principal 'sa' } | Should -Not -Throw
             }
+
+            It 'Should not throw an error for NT AUTHORITY\SYSTEM login' {
+                { Assert-SqlLogin -ServerObject $script:serverObject -Principal 'NT AUTHORITY\SYSTEM' } | Should -Not -Throw
+            }
         }
 
         Context 'When a login does not exist' {
             It 'Should throw a terminating error for non-existent login' {
                 { Assert-SqlLogin -ServerObject $script:serverObject -Principal 'NonExistentLogin123' } | Should -Throw -ExpectedMessage "*does not exist as a login*"
+            }
+
+            It 'Should throw an error with ObjectNotFound category' {
+                try
+                {
+                    Assert-SqlLogin -ServerObject $script:serverObject -Principal 'NonExistentLogin123'
+                }
+                catch
+                {
+                    $_.CategoryInfo.Category | Should -Be 'ObjectNotFound'
+                }
             }
         }
     }

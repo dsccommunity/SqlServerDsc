@@ -49,27 +49,17 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Assert-SqlLogin' {
+Describe 'Assert-SqlLogin' -Tag 'Public' {
     Context 'When a login exists' {
         BeforeAll {
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-            $mockServerObject.InstanceName = 'TestInstance'
-
-            # Create a mock login collection
-            $mockLoginCollection = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.LoginCollection' -ArgumentList $mockServerObject
-            $mockLogin = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList $mockServerObject, 'TestLogin'
-            $mockLoginCollection.Add($mockLogin)
-            $mockServerObject.Logins = $mockLoginCollection
-
-            # Mock the indexer to return the login
-            $mockServerObject.Logins | Add-Member -MemberType ScriptMethod -Name 'Item' -Value {
-                param($name)
-                if ($name -eq 'TestLogin')
-                {
-                    return $mockLogin
-                }
-                return $null
-            } -Force
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -PassThru |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                    return @{
+                        'TestLogin' = New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestLogin' -PassThru -Force
+                    }
+                } -PassThru -Force
         }
 
         It 'Should not throw an error when the login exists' {
@@ -83,20 +73,14 @@ Describe 'Assert-SqlLogin' {
 
     Context 'When a login does not exist' {
         BeforeAll {
-            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-            $mockServerObject.InstanceName = 'TestInstance'
-
-            # Create a mock login collection without the target login
-            $mockLoginCollection = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.LoginCollection' -ArgumentList $mockServerObject
-            $mockServerObject.Logins = $mockLoginCollection
-
-            # Mock the indexer to return null for missing login
-            $mockServerObject.Logins | Add-Member -MemberType ScriptMethod -Name 'Item' -Value {
-                param($name)
-                return $null
-            } -Force
-
-            $mockLocalizedStringText = InModuleScope -ScriptBlock { $script:localizedData.AssertLogin_LoginMissing }
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
+                Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -PassThru |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                    return @{
+                        'ExistingLogin' = New-Object -TypeName Object |
+                            Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'ExistingLogin' -PassThru -Force
+                    }
+                } -PassThru -Force
         }
 
         It 'Should throw a terminating error when the login does not exist' {
