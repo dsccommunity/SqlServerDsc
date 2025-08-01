@@ -22,7 +22,7 @@ on:
 jobs:
   copilot-setup-steps:
     name: Setup SqlServerDsc Development Environment
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     # Set the permissions to the lowest permissions possible needed for your steps.
     # Copilot will be given its own token for its operations.
