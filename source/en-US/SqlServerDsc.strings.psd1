@@ -222,4 +222,16 @@ ConvertFrom-StringData @'
     ## ConvertTo-SqlDscEditionName
     ConvertTo_EditionName_ConvertingEditionId = Converting EditionId '{0}' to Edition name.
     ConvertTo_EditionName_UnknownEditionId = The EditionId '{0}' is unknown and could not be converted.
+
+    ## Get-SqlDscServerProtocol
+    ServerProtocol_GetState = Getting server protocol '{0}' information for instance '{1}' on server '{2}'.
+    ServerProtocol_UsingCimApproach = Using CIM approach to get server protocol '{0}' information for instance '{1}' on server '{2}'.
+    ServerProtocol_UsingSmoApproach = Using SMO approach to get server protocol '{0}' information for instance '{1}' on server '{2}'.
+    ServerProtocol_CimFallbackToSmo = CIM approach failed for protocol '{0}' on instance '{1}' on server '{2}', falling back to SMO approach.
+    ServerProtocol_TryingNamespace = Trying to connect to namespace '{0}'.
+    ServerProtocol_FoundProtocol = Found server protocol '{0}' for instance '{1}' using '{2}'.
+    ServerProtocol_NamespaceNotFound = Namespace '{0}' is not available: {1}
+    ServerProtocol_CimProtocolNotFound = Could not find server protocol '{0}' for instance '{1}' on server '{2}' using CIM approach.
+    ServerProtocol_SmoProtocolNotFound = Could not find server protocol '{0}' for instance '{1}' on server '{2}' using SMO approach.
+    ServerProtocol_InstanceNotFound = Could not find SQL Server instance '{0}' on server '{1}'.
 '@
