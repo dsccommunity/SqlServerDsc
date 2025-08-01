@@ -5,12 +5,12 @@ name: 'Copilot Setup Steps'
 
 on:
   workflow_dispatch:
-    inputs:
-      skip_tests:
-        description: 'Skip running tests during setup'
-        required: false
-        default: true
-        type: boolean
+    # inputs:
+    #   skip_tests:
+    #     description: 'Skip running tests during setup'
+    #     required: false
+    #     default: true
+    #     type: boolean
   pull_request:
     paths:
       - '.github/workflows/copilot-setup-steps.yml'
@@ -20,9 +20,16 @@ on:
 
 # cSpell: ignore pwsh cmdlets DSCResources nupkg HQRM SqlServerDsc dotnet gitversion
 jobs:
-  setup-development-environment:
+  copilot-setup-steps:
     name: Setup SqlServerDsc Development Environment
     runs-on: windows-latest
+
+    # Set the permissions to the lowest permissions possible needed for your steps.
+    # Copilot will be given its own token for its operations.
+    permissions:
+      # If you want to clone the repository as part of your setup steps, for example to install dependencies, you'll need the `contents: read` permission. If you don't clone the repository in your setup steps, Copilot will do this for you automatically after the steps complete.
+      contents: read
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
