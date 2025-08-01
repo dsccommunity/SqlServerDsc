@@ -100,6 +100,7 @@ jobs:
           # Hard-code versin due to how Coilot is switching branch (?) so gitversion fails.
           $ModuleVersion = '0.0.1'
           $env:ModuleVersion = '0.0.1'
+          [System.Environment]::SetEnvironmentVariable('ModuleVersion','0.0.1', 'Machine')
 
           # Build the module
           .\build.ps1 -Tasks 'build' -ErrorAction Stop
