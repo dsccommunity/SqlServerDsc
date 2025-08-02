@@ -38,7 +38,7 @@ Describe 'Assert-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
     Context 'When connecting to SQL Server instance' {
         BeforeAll {
             $script:sqlAdminCredential = New-Object -TypeName 'System.Management.Automation.PSCredential' -ArgumentList @(
-                'SqlAdmin',
+                ('{0}\SqlAdmin' -f (Get-ComputerName)),
                 ('P@ssw0rd1' | ConvertTo-SecureString -AsPlainText -Force)
             )
             $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:instanceName -Credential $script:sqlAdminCredential
