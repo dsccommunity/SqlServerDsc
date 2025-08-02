@@ -31,16 +31,16 @@ BeforeAll {
 
 Describe 'Assert-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        # Starting the default instance SQL Server service prior to running tests.
-        Start-Service -Name 'MSSQLSERVER' -Verbose -ErrorAction 'Stop'
+        # Starting the named instance SQL Server service prior to running tests.
+        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
 
         $script:instanceName = 'DSCSQLTEST'
         $script:computerName = Get-ComputerName
     }
 
     AfterAll {
-        # Stop the default instance SQL Server service to save memory on the build worker.
-        Stop-Service -Name 'MSSQLSERVER' -Verbose -ErrorAction 'Stop'
+        # Stop the named instance SQL Server service to save memory on the build worker.
+        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
     }
 
     Context 'When connecting to SQL Server instance' {
