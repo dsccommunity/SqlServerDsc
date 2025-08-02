@@ -10,6 +10,9 @@ PowerShell commands that should be public should always have its separate
 script file and the command name as the file name with the .ps1 extension,
 these files shall always be placed in the folder source/Public.
 
+All public command names must have the noun prefixed with 'SqlDsc', e.g. 
+{Verb}-SqlDsc{Noun}.
+
 Public commands may use private functions to move out logic that can be
 reused by other public commands, so move out any logic that can be deemed
 reusable.
@@ -302,6 +305,19 @@ edge cases and common use cases are tested. The integration tests should
 also be written to test the command in a real environment, using real
 resources and dependencies.
 
+Integration test script files for public commands must be added to a group 
+within the 'Integration_Test_Commands_SqlServer' stage in ./azure-pipelines.yml. 
+Choose the appropriate group number based on the dependencies of the command 
+being tested (e.g., commands that require Database Engine should be in Group 2 
+or later, after the Database Engine installation tests).
+
+When integration tests need the computer name in CI environments, always use 
+the Get-ComputerName command, which is available in the build pipeline.
+
+For integration testing commands use the information in the 
+tests/Integration/Commands/README.md, which describes the testing environment 
+including available instances, users, credentials, and other configuration details.
+
 All integration tests must use the below code block prior to the first
 `Describe`-block. The following code will set up the integration test
 environment and it will make sure the module being tested is available
@@ -343,6 +359,24 @@ The module DscResource.Test is used by the pipeline and its commands
 are normally not used when testing public functions, private functions or
 class-based resources.
 
+## SQL Server
+
+### SQL Server Management Objects (SMO)
+
+When developing commands, private functions, class-based resources, or making
+modifications to existing functionality, always prefer using SQL Server 
+Management Objects (SMO) as the primary method for interacting with SQL Server. 
+Only use T-SQL when it is not possible to achieve the desired functionality 
+with SMO.
+
+## Change log
+
+The Unreleased section in CHANGELOG.md should always be updated when making
+changes to the codebase. Use the keepachangelog format and provide concrete
+release notes that describe the main changes made. This includes new commands,
+private functions, class-based resources, or significant modifications to
+existing functionality.
+
 ## Style guidelines
 
 This project use the style guidelines from the DSC Community: https://dsccommunity.org/styleguidelines
@@ -356,6 +390,7 @@ This project use the style guidelines from the DSC Community: https://dsccommuni
 ### PowerShell files
 
 - All files should use UTF8 without BOM.
+- All files must end with a new line.
 
 ### PowerShell code
 
