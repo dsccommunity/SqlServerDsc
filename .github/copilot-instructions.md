@@ -302,13 +302,14 @@ edge cases and common use cases are tested. The integration tests should
 also be written to test the command in a real environment, using real
 resources and dependencies.
 
-Any integration tests script files for commands should be added to a group 
-in the stage 'Integration_Test_Commands_SqlServer' in ./azure-pipelines.yml. 
-The group number should be determined by what other command's integration test 
-it is dependent on.
+Integration test script files for public commands must be added to a group 
+within the 'Integration_Test_Commands_SqlServer' stage in ./azure-pipelines.yml. 
+Choose the appropriate group number based on the dependencies of the command 
+being tested (e.g., commands that require Database Engine should be in Group 2 
+or later, after the Database Engine installation tests).
 
-To dynamically get the computer name the CI has, always use the command 
-Get-ComputerName (a command that is available in the build pipeline).
+When integration tests need the computer name in CI environments, always use 
+the Get-ComputerName command, which is available in the build pipeline.
 
 All integration tests must use the below code block prior to the first
 `Describe`-block. The following code will set up the integration test
@@ -350,6 +351,16 @@ BeforeAll {
 The module DscResource.Test is used by the pipeline and its commands
 are normally not used when testing public functions, private functions or
 class-based resources.
+
+## SQL Server
+
+### SQL Server Management Objects (SMO)
+
+When developing commands, private functions, class-based resources, or making
+modifications to existing functionality, always prefer using SQL Server 
+Management Objects (SMO) as the primary method for interacting with SQL Server. 
+Only use T-SQL when it is not possible to achieve the desired functionality 
+with SMO.
 
 ## Change log
 
