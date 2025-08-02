@@ -31,16 +31,25 @@ BeforeAll {
 
 Describe 'Assert-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
+        # Starting the default instance SQL Server service prior to running tests.
+        Start-Service -Name 'MSSQLSERVER' -Verbose -ErrorAction 'Stop'
+
         $script:instanceName = 'DSCSQLTEST'
         $script:computerName = Get-ComputerName
     }
 
+    AfterAll {
+        # Stop the default instance SQL Server service to save memory on the build worker.
+        Stop-Service -Name 'MSSQLSERVER' -Verbose -ErrorAction 'Stop'
+    }
+
     Context 'When connecting to SQL Server instance' {
         BeforeAll {
-            $script:sqlAdminCredential = New-Object -TypeName 'System.Management.Automation.PSCredential' -ArgumentList @(
-                ('{0}\SqlAdmin' -f (Get-ComputerName)),
-                ('P@ssw0rd1' | ConvertTo-SecureString -AsPlainText -Force)
-            )
+            $sqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+            $sqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+            $script:sqlAdminCredential = [System.Management.Automation.PSCredential]::new($sqlAdministratorUserName, $sqlAdministratorPassword)
+
             $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:instanceName -Credential $script:sqlAdminCredential
         }
 
