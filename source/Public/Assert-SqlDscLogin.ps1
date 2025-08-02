@@ -46,11 +46,11 @@ function Assert-SqlDscLogin
 
     process
     {
-        Write-Verbose -Message ($script:localizedData.AssertDscLogin_CheckingLogin -f $Name, $ServerObject.InstanceName)
+        Write-Verbose -Message ($script:localizedData.Assert_Login_CheckingLogin -f $Name, $ServerObject.InstanceName)
 
         if (-not (Test-SqlDscIsLogin -ServerObject $ServerObject -Name $Name))
         {
-            $missingLoginMessage = $script:localizedData.AssertDscLogin_LoginMissing -f $Name, $ServerObject.InstanceName
+            $missingLoginMessage = $script:localizedData.Assert_Login_LoginMissing -f $Name, $ServerObject.InstanceName
 
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
@@ -62,6 +62,6 @@ function Assert-SqlDscLogin
             )
         }
 
-        Write-Debug -Message ($script:localizedData.AssertDscLogin_LoginExists -f $Name)
+        Write-Debug -Message ($script:localizedData.Assert_Login_LoginExists -f $Name)
     }
 }
