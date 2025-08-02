@@ -302,6 +302,14 @@ edge cases and common use cases are tested. The integration tests should
 also be written to test the command in a real environment, using real
 resources and dependencies.
 
+Any integration tests script files for commands should be added to a group 
+in the stage 'Integration_Test_Commands_SqlServer' in ./azure-pipelines.yml. 
+The group number should be determined by what other command's integration test 
+it is dependent on.
+
+To dynamically get the computer name the CI has, always use the command 
+Get-ComputerName (a command that is available in the build pipeline).
+
 All integration tests must use the below code block prior to the first
 `Describe`-block. The following code will set up the integration test
 environment and it will make sure the module being tested is available
@@ -356,6 +364,7 @@ This project use the style guidelines from the DSC Community: https://dsccommuni
 ### PowerShell files
 
 - All files should use UTF8 without BOM.
+- All files must end with a new line.
 
 ### PowerShell code
 
