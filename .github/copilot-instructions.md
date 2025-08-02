@@ -311,6 +311,10 @@ or later, after the Database Engine installation tests).
 When integration tests need the computer name in CI environments, always use 
 the Get-ComputerName command, which is available in the build pipeline.
 
+For integration testing commands use the information in the 
+tests/Integration/Commands/README.md, which describes the testing environment 
+including available instances, users, credentials, and other configuration details.
+
 All integration tests must use the below code block prior to the first
 `Describe`-block. The following code will set up the integration test
 environment and it will make sure the module being tested is available
