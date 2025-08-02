@@ -11,7 +11,7 @@
         Specifies current server connection object.
 
     .PARAMETER Principal
-        Specifies the principal that need to exist as a login.
+        Specifies the principal that needs to exist as a login.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
