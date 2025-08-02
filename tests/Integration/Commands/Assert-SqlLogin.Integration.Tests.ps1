@@ -32,6 +32,7 @@ BeforeAll {
 Describe 'Assert-SqlLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
         $script:instanceName = 'DSCSQLTEST'
+        $script:computerName = Get-ComputerName
     }
 
     Context 'When connecting to SQL Server instance' {
@@ -50,6 +51,10 @@ Describe 'Assert-SqlLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
 
             It 'Should not throw an error for NT AUTHORITY\SYSTEM login' {
                 { Assert-SqlLogin -ServerObject $script:serverObject -Principal 'NT AUTHORITY\SYSTEM' } | Should -Not -Throw
+            }
+
+            It 'Should not throw an error for SqlAdmin login' {
+                { Assert-SqlLogin -ServerObject $script:serverObject -Principal ('{0}\SqlAdmin' -f $script:computerName) } | Should -Not -Throw
             }
         }
 
