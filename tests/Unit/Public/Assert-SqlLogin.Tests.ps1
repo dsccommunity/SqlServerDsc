@@ -95,7 +95,7 @@ Describe 'Assert-SqlLogin' -Tag 'Public' {
             catch
             {
                 $_.CategoryInfo.Category | Should -Be 'ObjectNotFound'
-                $_.FullyQualifiedErrorId | Should -Be 'ASL0001'
+                $_.FullyQualifiedErrorId | Should -Be 'ASL0001,Assert-SqlLogin'
             }
         }
 
