@@ -49,25 +49,30 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Assert-SqlLogin' -Tag 'Public' {
+Describe 'Assert-SqlDscLogin' -Tag 'Public' {
     Context 'When a login exists' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
-            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
-                return @{
-                    'TestLogin' = New-Object -TypeName Object |
-                        Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'TestLogin' -PassThru -Force
-                }
-            } -Force
+
+            Mock -CommandName 'Test-SqlDscIsLogin' -MockWith { return $true }
         }
 
         It 'Should not throw an error when the login exists' {
-            { Assert-SqlLogin -ServerObject $mockServerObject -Principal 'TestLogin' } | Should -Not -Throw
+            { Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'TestLogin' } | Should -Not -Throw
+        }
+
+        It 'Should call Test-SqlDscIsLogin with correct parameters' {
+            Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'TestLogin'
+            
+            Should -Invoke -CommandName 'Test-SqlDscIsLogin' -ParameterFilter {
+                $ServerObject.InstanceName -eq 'TestInstance' -and
+                $Name -eq 'TestLogin'
+            } -Exactly -Times 1
         }
 
         It 'Should accept ServerObject from pipeline' {
-            { $mockServerObject | Assert-SqlLogin -Principal 'TestLogin' } | Should -Not -Throw
+            { $mockServerObject | Assert-SqlDscLogin -Name 'TestLogin' } | Should -Not -Throw
         }
     }
 
@@ -75,36 +80,46 @@ Describe 'Assert-SqlLogin' -Tag 'Public' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
-            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
-                return @{
-                    'ExistingLogin' = New-Object -TypeName Object |
-                        Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'ExistingLogin' -PassThru -Force
-                }
-            } -Force
+
+            Mock -CommandName 'Test-SqlDscIsLogin' -MockWith { return $false }
         }
 
         It 'Should throw a terminating error when the login does not exist' {
-            { Assert-SqlLogin -ServerObject $mockServerObject -Principal 'NonExistentLogin' } | Should -Throw -ExpectedMessage "*does not exist as a login*"
+            { Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin' } | Should -Throw -ExpectedMessage "*does not exist as a login*"
         }
 
         It 'Should throw an error with the correct error category' {
             try
             {
-                Assert-SqlLogin -ServerObject $mockServerObject -Principal 'NonExistentLogin'
+                Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin'
             }
             catch
             {
                 $_.CategoryInfo.Category | Should -Be 'ObjectNotFound'
-                $_.FullyQualifiedErrorId | Should -Be 'ASL0001,Assert-SqlLogin'
+                $_.FullyQualifiedErrorId | Should -Be 'ASDL0001,Assert-SqlDscLogin'
             }
         }
 
         It 'Should include the principal name in the error message' {
-            { Assert-SqlLogin -ServerObject $mockServerObject -Principal 'NonExistentLogin' } | Should -Throw -ExpectedMessage "*NonExistentLogin*"
+            { Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin' } | Should -Throw -ExpectedMessage "*NonExistentLogin*"
         }
 
         It 'Should include the instance name in the error message' {
-            { Assert-SqlLogin -ServerObject $mockServerObject -Principal 'NonExistentLogin' } | Should -Throw -ExpectedMessage "*TestInstance*"
+            { Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin' } | Should -Throw -ExpectedMessage "*TestInstance*"
+        }
+
+        It 'Should call Test-SqlDscIsLogin with correct parameters' {
+            try {
+                Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin'
+            }
+            catch {
+                # Expected error
+            }
+            
+            Should -Invoke -CommandName 'Test-SqlDscIsLogin' -ParameterFilter {
+                $ServerObject.InstanceName -eq 'TestInstance' -and
+                $Name -eq 'NonExistentLogin'
+            } -Exactly -Times 1
         }
     }
 
@@ -114,17 +129,17 @@ Describe 'Assert-SqlLogin' -Tag 'Public' {
         }
 
         It 'Should have ServerObject as a mandatory parameter' {
-            $parameterInfo = (Get-Command -Name 'Assert-SqlLogin').Parameters['ServerObject']
+            $parameterInfo = (Get-Command -Name 'Assert-SqlDscLogin').Parameters['ServerObject']
             $parameterInfo.Attributes.Mandatory | Should -Contain $true
         }
 
-        It 'Should have Principal as a mandatory parameter' {
-            $parameterInfo = (Get-Command -Name 'Assert-SqlLogin').Parameters['Principal']
+        It 'Should have Name as a mandatory parameter' {
+            $parameterInfo = (Get-Command -Name 'Assert-SqlDscLogin').Parameters['Name']
             $parameterInfo.Attributes.Mandatory | Should -Contain $true
         }
 
         It 'Should accept ServerObject from pipeline' {
-            $parameterInfo = (Get-Command -Name 'Assert-SqlLogin').Parameters['ServerObject']
+            $parameterInfo = (Get-Command -Name 'Assert-SqlDscLogin').Parameters['ServerObject']
             $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
         }
     }

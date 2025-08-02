@@ -10,18 +10,18 @@
     .PARAMETER ServerObject
         Specifies current server connection object.
 
-    .PARAMETER Principal
-        Specifies the principal that needs to exist as a login.
+    .PARAMETER Name
+        Specifies the name of the principal that needs to exist as a login.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $serverObject | Assert-SqlLogin -Principal 'MyLogin'
+        $serverObject | Assert-SqlDscLogin -Name 'MyLogin'
 
         Asserts that the principal 'MyLogin' exists as a login.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        Assert-SqlLogin -ServerObject $serverObject -Principal 'MyLogin'
+        Assert-SqlDscLogin -ServerObject $serverObject -Name 'MyLogin'
 
         Asserts that the principal 'MyLogin' exists as a login.
 
@@ -29,7 +29,7 @@
         This command throws a terminating error if the specified SQL Server
         principal does not exist as a SQL server login.
 #>
-function Assert-SqlLogin
+function Assert-SqlDscLogin
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('UseSyntacticallyCorrectExamples', '', Justification = 'Because the rule does not yet support parsing the code when a parameter type is not available. The ScriptAnalyzer rule UseSyntacticallyCorrectExamples will always error in the editor due to https://github.com/indented-automation/Indented.ScriptAnalyzerRules/issues/8.')]
     [CmdletBinding()]
@@ -41,27 +41,27 @@ function Assert-SqlLogin
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Principal
+        $Name
     )
 
     process
     {
-        Write-Verbose -Message ($script:localizedData.AssertLogin_CheckingLogin -f $Principal, $ServerObject.InstanceName)
+        Write-Verbose -Message ($script:localizedData.AssertDscLogin_CheckingLogin -f $Name, $ServerObject.InstanceName)
 
-        if (-not $ServerObject.Logins[$Principal])
+        if (-not (Test-SqlDscIsLogin -ServerObject $ServerObject -Name $Name))
         {
-            $missingLoginMessage = $script:localizedData.AssertLogin_LoginMissing -f $Principal, $ServerObject.InstanceName
+            $missingLoginMessage = $script:localizedData.AssertDscLogin_LoginMissing -f $Name, $ServerObject.InstanceName
 
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
                     $missingLoginMessage,
-                    'ASL0001', # cspell: disable-line
+                    'ASDL0001', # cspell: disable-line
                     [System.Management.Automation.ErrorCategory]::ObjectNotFound,
-                    $Principal
+                    $Name
                 )
             )
         }
 
-        Write-Debug -Message ($script:localizedData.AssertLogin_LoginExists -f $Principal)
+        Write-Debug -Message ($script:localizedData.AssertDscLogin_LoginExists -f $Name)
     }
 }

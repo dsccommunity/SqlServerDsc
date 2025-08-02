@@ -10,6 +10,9 @@ PowerShell commands that should be public should always have its separate
 script file and the command name as the file name with the .ps1 extension,
 these files shall always be placed in the folder source/Public.
 
+All public command names must have the noun prefixed with 'SqlDsc', e.g. 
+{Verb}-SqlDsc{Noun}.
+
 Public commands may use private functions to move out logic that can be
 reused by other public commands, so move out any logic that can be deemed
 reusable.
