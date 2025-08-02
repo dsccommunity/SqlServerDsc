@@ -10,12 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added setup workflow for GitHub Copilot.
   - Switch the workflow to use Linux.
   - Attempt to unshallow the Copilot branch
+- `Assert-SqlLogin`
+  - Added new public command to validate that a specified SQL Server principal
+    exists as a login, throwing a terminating error if it doesn't exist.
+  - Supports pipeline input and provides detailed error messages with localization.
 
 ### Changed
 
 - `azure-pipelines.yml`
   - Remove `windows-2019` images fixes [#2106](https://github.com/dsccommunity/SqlServerDsc/issues/2106).
   - Move individual tasks to `windows-latest`.
+  - Added integration tests for `Assert-SqlLogin` command in Group 2.
 
 ## [17.1.0] - 2025-05-22
 

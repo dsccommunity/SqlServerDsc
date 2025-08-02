@@ -351,6 +351,14 @@ The module DscResource.Test is used by the pipeline and its commands
 are normally not used when testing public functions, private functions or
 class-based resources.
 
+## Change log
+
+The Unreleased section in CHANGELOG.md should always be updated when making
+changes to the codebase. Use the keepachangelog format and provide concrete
+release notes that describe the main changes made. This includes new commands,
+private functions, class-based resources, or significant modifications to
+existing functionality.
+
 ## Style guidelines
 
 This project use the style guidelines from the DSC Community: https://dsccommunity.org/styleguidelines
