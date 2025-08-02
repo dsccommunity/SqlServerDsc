@@ -77,7 +77,8 @@
         "analyzersettings",
         "sqlcmd",
         "PBIRS",
-        "SSRS"
+        "SSRS",
+        "DSCSQLTEST"
     ],
     "cSpell.ignorePaths": [
         ".git"
