@@ -59,7 +59,7 @@ Describe 'Assert-SqlDscLogin' -Tag 'Public' {
         }
 
         It 'Should not throw an error when the login exists' {
-            { Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'TestLogin' } | Should -Not -Throw
+            Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'TestLogin'
         }
 
         It 'Should call Test-SqlDscIsLogin with correct parameters' {
@@ -109,12 +109,7 @@ Describe 'Assert-SqlDscLogin' -Tag 'Public' {
         }
 
         It 'Should call Test-SqlDscIsLogin with correct parameters' {
-            try {
-                Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin'
-            }
-            catch {
-                # Expected error
-            }
+            { Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin' } | Should -Throw
             
             Should -Invoke -CommandName 'Test-SqlDscIsLogin' -ParameterFilter {
                 $ServerObject.InstanceName -eq 'TestInstance' -and
@@ -141,6 +136,31 @@ Describe 'Assert-SqlDscLogin' -Tag 'Public' {
         It 'Should accept ServerObject from pipeline' {
             $parameterInfo = (Get-Command -Name 'Assert-SqlDscLogin').Parameters['ServerObject']
             $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
+        }
+
+        It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
+            @{
+                MockParameterSetName = '__AllParameterSets'
+                MockExpectedParameters = '[-ServerObject] <Server> [-Name] <string> [<CommonParameters>]'
+            }
+        ) {
+            $result = (Get-Command -Name 'Assert-SqlDscLogin').ParameterSets |
+                Where-Object -FilterScript {
+                    $_.Name -eq $mockParameterSetName
+                } |
+                Select-Object -Property @(
+                    @{
+                        Name = 'ParameterSetName'
+                        Expression = { $_.Name }
+                    },
+                    @{
+                        Name = 'ParameterListAsString'
+                        Expression = { $_.ToString() }
+                    }
+                )
+
+            $result.ParameterSetName | Should -Be $MockParameterSetName
+            $result.ParameterListAsString | Should -Be $MockExpectedParameters
         }
     }
 }

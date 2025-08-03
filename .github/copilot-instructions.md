@@ -199,6 +199,10 @@ case (`It`-block) as possible.
 Never test, mock or use `Should -Invoke` for `Write-Verbose` and `Write-Debug`
 regardless of other instructions.
 
+Never use `Should -Not -Throw` to prepare for Pester v6 where it has been 
+removed. By default the `It` block will handle any unexpected exception. 
+Instead of `{ Command } | Should -Not -Throw`, use `Command` directly.
+
 Unit tests should be added for all public commands, private functions and
 class-based resources. The unit tests for class-based resources should be
 placed in the folder tests/Unit/Classes. The unit tests for public command
@@ -208,6 +212,36 @@ unit tests should be named after the public command or private function
 they are testing, but should have the suffix .Tests.ps1. The unit tests
 should be written to cover all possible scenarios and code paths, ensuring
 that both edge cases and common use cases are tested.
+
+All public commands should always have a test to validate parameter sets 
+using this template:
+
+```powershell
+It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
+    @{
+        MockParameterSetName = '__AllParameterSets'
+        MockExpectedParameters = '[-Parameter1] <Type> [-Parameter2] <Type> [<CommonParameters>]'
+    }
+) {
+    $result = (Get-Command -Name 'CommandName').ParameterSets |
+        Where-Object -FilterScript {
+            $_.Name -eq $mockParameterSetName
+        } |
+        Select-Object -Property @(
+            @{
+                Name = 'ParameterSetName'
+                Expression = { $_.Name }
+            },
+            @{
+                Name = 'ParameterListAsString'
+                Expression = { $_.ToString() }
+            }
+        )
+
+    $result.ParameterSetName | Should -Be $MockParameterSetName
+    $result.ParameterListAsString | Should -Be $MockExpectedParameters
+}
+```
 
 The `BeforeAll` block should be used to set up any necessary test data or mocking
 
