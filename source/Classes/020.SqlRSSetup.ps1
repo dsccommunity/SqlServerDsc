@@ -187,8 +187,7 @@ class SqlRSSetup : ResourceBase
     $EditionUpgrade
 
     [DscProperty()]
-    [ValidateSet('Developer', 'Evaluation', 'ExpressAdvanced')]
-    [System.String]
+    [ReportServerEdition]
     $Edition
 
     [DscProperty()]
