@@ -64,7 +64,7 @@ Describe 'Assert-SqlDscLogin' -Tag 'Public' {
 
         It 'Should call Test-SqlDscIsLogin with correct parameters' {
             Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'TestLogin'
-            
+
             Should -Invoke -CommandName 'Test-SqlDscIsLogin' -ParameterFilter {
                 $ServerObject.InstanceName -eq 'TestInstance' -and
                 $Name -eq 'TestLogin'
@@ -72,7 +72,7 @@ Describe 'Assert-SqlDscLogin' -Tag 'Public' {
         }
 
         It 'Should accept ServerObject from pipeline' {
-            { $mockServerObject | Assert-SqlDscLogin -Name 'TestLogin' } | Should -Not -Throw
+            $mockServerObject | Assert-SqlDscLogin -Name 'TestLogin'
         }
     }
 
@@ -110,7 +110,7 @@ Describe 'Assert-SqlDscLogin' -Tag 'Public' {
 
         It 'Should call Test-SqlDscIsLogin with correct parameters' {
             { Assert-SqlDscLogin -ServerObject $mockServerObject -Name 'NonExistentLogin' } | Should -Throw
-            
+
             Should -Invoke -CommandName 'Test-SqlDscIsLogin' -ParameterFilter {
                 $ServerObject.InstanceName -eq 'TestInstance' -and
                 $Name -eq 'NonExistentLogin'

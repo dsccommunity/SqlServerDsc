@@ -214,7 +214,7 @@ should be written to cover all possible scenarios and code paths, ensuring
 that both edge cases and common use cases are tested.
 
 All public commands should always have a test to validate parameter sets 
-using this template:
+using this template. For commands with a single parameter set:
 
 ```powershell
 It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
@@ -240,6 +240,53 @@ It 'Should have the correct parameters in parameter set <MockParameterSetName>' 
 
     $result.ParameterSetName | Should -Be $MockParameterSetName
     $result.ParameterListAsString | Should -Be $MockExpectedParameters
+}
+```
+
+For commands with multiple parameter sets, use this pattern:
+
+```powershell
+It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
+    @{
+        MockParameterSetName = 'ParameterSet1'
+        MockExpectedParameters = '-ServerObject <Server> -Name <string> -Parameter1 <string> [<CommonParameters>]'
+    }
+    @{
+        MockParameterSetName = 'ParameterSet2'
+        MockExpectedParameters = '-ServerObject <Server> -Name <string> -Parameter2 <uint> [<CommonParameters>]'
+    }
+) {
+    $result = (Get-Command -Name 'CommandName').ParameterSets |
+        Where-Object -FilterScript {
+            $_.Name -eq $mockParameterSetName
+        } |
+        Select-Object -Property @(
+            @{
+                Name = 'ParameterSetName'
+                Expression = { $_.Name }
+            },
+            @{
+                Name = 'ParameterListAsString'
+                Expression = { $_.ToString() }
+            }
+        )
+
+    $result.ParameterSetName | Should -Be $MockParameterSetName
+    $result.ParameterListAsString | Should -Be $MockExpectedParameters
+}
+```
+
+All public commands should also include tests to validate parameter properties:
+
+```powershell
+It 'Should have ParameterName as a mandatory parameter' {
+    $parameterInfo = (Get-Command -Name 'CommandName').Parameters['ParameterName']
+    $parameterInfo.Attributes.Mandatory | Should -Contain $true
+}
+
+It 'Should accept ParameterName from pipeline' {
+    $parameterInfo = (Get-Command -Name 'CommandName').Parameters['ParameterName']
+    $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
 }
 ```
 
