@@ -10,6 +10,9 @@ PowerShell commands that should be public should always have its separate
 script file and the command name as the file name with the .ps1 extension,
 these files shall always be placed in the folder source/Public.
 
+All public command names must have the noun prefixed with 'SqlDsc', e.g. 
+{Verb}-SqlDsc{Noun}.
+
 Public commands may use private functions to move out logic that can be
 reused by other public commands, so move out any logic that can be deemed
 reusable.
@@ -196,6 +199,10 @@ case (`It`-block) as possible.
 Never test, mock or use `Should -Invoke` for `Write-Verbose` and `Write-Debug`
 regardless of other instructions.
 
+Never use `Should -Not -Throw` to prepare for Pester v6 where it has been 
+removed. By default the `It` block will handle any unexpected exception. 
+Instead of `{ Command } | Should -Not -Throw`, use `Command` directly.
+
 Unit tests should be added for all public commands, private functions and
 class-based resources. The unit tests for class-based resources should be
 placed in the folder tests/Unit/Classes. The unit tests for public command
@@ -205,6 +212,83 @@ unit tests should be named after the public command or private function
 they are testing, but should have the suffix .Tests.ps1. The unit tests
 should be written to cover all possible scenarios and code paths, ensuring
 that both edge cases and common use cases are tested.
+
+All public commands should always have a test to validate parameter sets 
+using this template. For commands with a single parameter set:
+
+```powershell
+It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
+    @{
+        MockParameterSetName = '__AllParameterSets'
+        MockExpectedParameters = '[-Parameter1] <Type> [-Parameter2] <Type> [<CommonParameters>]'
+    }
+) {
+    $result = (Get-Command -Name 'CommandName').ParameterSets |
+        Where-Object -FilterScript {
+            $_.Name -eq $mockParameterSetName
+        } |
+        Select-Object -Property @(
+            @{
+                Name = 'ParameterSetName'
+                Expression = { $_.Name }
+            },
+            @{
+                Name = 'ParameterListAsString'
+                Expression = { $_.ToString() }
+            }
+        )
+
+    $result.ParameterSetName | Should -Be $MockParameterSetName
+    $result.ParameterListAsString | Should -Be $MockExpectedParameters
+}
+```
+
+For commands with multiple parameter sets, use this pattern:
+
+```powershell
+It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
+    @{
+        MockParameterSetName = 'ParameterSet1'
+        MockExpectedParameters = '-ServerObject <Server> -Name <string> -Parameter1 <string> [<CommonParameters>]'
+    }
+    @{
+        MockParameterSetName = 'ParameterSet2'
+        MockExpectedParameters = '-ServerObject <Server> -Name <string> -Parameter2 <uint> [<CommonParameters>]'
+    }
+) {
+    $result = (Get-Command -Name 'CommandName').ParameterSets |
+        Where-Object -FilterScript {
+            $_.Name -eq $mockParameterSetName
+        } |
+        Select-Object -Property @(
+            @{
+                Name = 'ParameterSetName'
+                Expression = { $_.Name }
+            },
+            @{
+                Name = 'ParameterListAsString'
+                Expression = { $_.ToString() }
+            }
+        )
+
+    $result.ParameterSetName | Should -Be $MockParameterSetName
+    $result.ParameterListAsString | Should -Be $MockExpectedParameters
+}
+```
+
+All public commands should also include tests to validate parameter properties:
+
+```powershell
+It 'Should have ParameterName as a mandatory parameter' {
+    $parameterInfo = (Get-Command -Name 'CommandName').Parameters['ParameterName']
+    $parameterInfo.Attributes.Mandatory | Should -Contain $true
+}
+
+It 'Should accept ParameterName from pipeline' {
+    $parameterInfo = (Get-Command -Name 'CommandName').Parameters['ParameterName']
+    $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
+}
+```
 
 The `BeforeAll` block should be used to set up any necessary test data or mocking
 
@@ -302,6 +386,19 @@ edge cases and common use cases are tested. The integration tests should
 also be written to test the command in a real environment, using real
 resources and dependencies.
 
+Integration test script files for public commands must be added to a group 
+within the 'Integration_Test_Commands_SqlServer' stage in ./azure-pipelines.yml. 
+Choose the appropriate group number based on the dependencies of the command 
+being tested (e.g., commands that require Database Engine should be in Group 2 
+or later, after the Database Engine installation tests).
+
+When integration tests need the computer name in CI environments, always use 
+the Get-ComputerName command, which is available in the build pipeline.
+
+For integration testing commands use the information in the 
+tests/Integration/Commands/README.md, which describes the testing environment 
+including available instances, users, credentials, and other configuration details.
+
 All integration tests must use the below code block prior to the first
 `Describe`-block. The following code will set up the integration test
 environment and it will make sure the module being tested is available
@@ -343,6 +440,24 @@ The module DscResource.Test is used by the pipeline and its commands
 are normally not used when testing public functions, private functions or
 class-based resources.
 
+## SQL Server
+
+### SQL Server Management Objects (SMO)
+
+When developing commands, private functions, class-based resources, or making
+modifications to existing functionality, always prefer using SQL Server 
+Management Objects (SMO) as the primary method for interacting with SQL Server. 
+Only use T-SQL when it is not possible to achieve the desired functionality 
+with SMO.
+
+## Change log
+
+The Unreleased section in CHANGELOG.md should always be updated when making
+changes to the codebase. Use the keepachangelog format and provide concrete
+release notes that describe the main changes made. This includes new commands,
+private functions, class-based resources, or significant modifications to
+existing functionality.
+
 ## Style guidelines
 
 This project use the style guidelines from the DSC Community: https://dsccommunity.org/styleguidelines
@@ -356,6 +471,7 @@ This project use the style guidelines from the DSC Community: https://dsccommuni
 ### PowerShell files
 
 - All files should use UTF8 without BOM.
+- All files must end with a new line.
 
 ### PowerShell code
 
