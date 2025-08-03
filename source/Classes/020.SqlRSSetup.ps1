@@ -401,8 +401,9 @@ class SqlRSSetup : ResourceBase
     hidden [void] Modify([System.Collections.Hashtable] $properties)
     {
         $getDscPropertyParameters = @{
-            HasValue    = $true
-            Attribute   = @(
+            HasValue             = $true
+            IgnoreZeroEnumValue  = $true
+            Attribute            = @(
                 'Optional'
                 'Mandatory'
             )
