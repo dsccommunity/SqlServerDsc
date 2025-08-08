@@ -222,4 +222,9 @@ ConvertFrom-StringData @'
     ## ConvertTo-SqlDscEditionName
     ConvertTo_EditionName_ConvertingEditionId = Converting EditionId '{0}' to Edition name.
     ConvertTo_EditionName_UnknownEditionId = The EditionId '{0}' is unknown and could not be converted.
+
+    ## Assert-SqlDscLogin
+    Assert_Login_CheckingLogin = Checking if the principal '{0}' exists as a login on the instance '{1}'.
+    Assert_Login_LoginMissing = The principal '{0}' does not exist as a login on the instance '{1}'.
+    Assert_Login_LoginExists = The principal '{0}' exists as a login.
 '@
