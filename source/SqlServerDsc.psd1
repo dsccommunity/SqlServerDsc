@@ -29,6 +29,9 @@
     # Functions to export from this module
     FunctionsToExport    = @()
 
+    # Cmdlets to export from this module
+    CmdletsToExport      = @('*')
+
     # Variables to export from this module
     VariablesToExport    = @()
 
