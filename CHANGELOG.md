@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Move individual tasks to `windows-latest`.
   - Added integration tests for `Assert-SqlDscLogin` command in Group 2.
 - `SqlServerDsc.psd`
-  - Removed `CmdletsToExport` from psd1 to fix [#2109](https://github.com/dsccommunity/SqlServerDsc/issues/2109).
+  - Set `CmdletsToExport` to `*` in module manifest to fix issue [#2109](https://github.com/dsccommunity/SqlServerDsc/issues/2109).
 
 ## [17.1.0] - 2025-05-22
 

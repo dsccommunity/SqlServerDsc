@@ -30,7 +30,8 @@
     FunctionsToExport    = @()
 
     # Cmdlets to export from this module
-    CmdletsToExport      = @('*')
+    # Use wildcard to avoid PSDesiredStateConfiguration 2.0.7 filtering class-based DSC resources (see #2109).
+    CmdletsToExport      = '*'
 
     # Variables to export from this module
     VariablesToExport    = @()
