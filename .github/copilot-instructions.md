@@ -42,7 +42,6 @@ in desired state it will call the overridable method `Modify`. It will also
 call the overridable methods `AssertProperties` and `NormalizeProperties` to
 validate and normalize the provided values of the desired state.
 
-
 ### Derived class
 
 The derived class should use the decoration `[DscResource(RunAsCredential = 'Optional')]`.
@@ -133,28 +132,20 @@ combinations.
 
 ## Localization
 
-All message strings for Write-Debug, Write-Verbose, Write-Error, Write-Warning
-and other error messages in public commands and private functions should be
-localized using localized string keys.
+All strings in public commands, private functions and classes should be localized
+using localized string keys.
 
-For public commands and private functions you should always add all localized
-strings for in the source/en-US/SqlServerDsc.strings.psd1 file, re-use the
-same pattern for new string keys. Localized string key names should always
-be prefixed with the function name but use underscore as word separator.
-Always assume that all localized string keys have already been assigned to
-the variable $script:localizedData.
+### Public Commands and Private Functions
 
-For class-based resource you should always add a localized strings in a
-separate file the folder source\en-US. The strings file for a class-based
-resource should be named to exactly match the resource class name with the
-suffix `.strings.psd1`.
-Localized string key names should use underscore as word separator if key
-name has more than one word. Always assume that all localized string keys
-for a class-based resource already have been assigned to the variable
-`$this.localizedData` by the parent class.
+For detailed localization guidelines for commands and functions, refer to the
+[Command Localization Style Guidelines](instructions/dsc-community-style-guidelines-command-localization.instructions.md).
 
+### Classes
 
-### Unit tests
+For detailed localization guidelines for classes, refer to the
+[Class Localization Style Guidelines](instructions/dsc-community-style-guidelines-class-localization.instructions.md).
+
+## Unit tests
 
 Unit tests should be added for all public commands, private functions and
 class-based resources.
@@ -164,7 +155,7 @@ placed in the folder tests/Unit/Classes.
 The unit tests for public command should be placed in the folder tests/Unit/Public.
 The unit tests for private functions should be placed in the folder tests/Unit/Private.
 
-For detailed integration test guidelines and code templates, refer to the
+For detailed unit test guidelines and code templates, refer to the
 [Command Unit Test Style Guidelines](instructions/dsc-community-style-guidelines-command-unit-tests.instructions.md).
 
 
