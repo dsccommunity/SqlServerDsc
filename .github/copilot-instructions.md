@@ -164,12 +164,16 @@ placed in the folder tests/Unit/Classes.
 The unit tests for public command should be placed in the folder tests/Unit/Public.
 The unit tests for private functions should be placed in the folder tests/Unit/Private.
 
+For detailed integration test guidelines and code templates, refer to the
+[Command Unit Test Style Guidelines](instructions/dsc-community-style-guidelines-command-unit-tests.instructions.md).
+
+
 ### Integration tests
 
 All public commands must have an integration test in the folder "tests/Integration/Commands"
 
 For detailed integration test guidelines and code templates, refer to the
-[Command Integration Test Style Guidelines](.github/instructions/dsc-community-style-guidelines-command-integration-tests.instructions.md).
+[Command Integration Test Style Guidelines](instructions/dsc-community-style-guidelines-command-integration-tests.instructions.md).
 
 ## Change log
 
