@@ -1,4 +1,3 @@
-````instructions
 ---
 applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 ---
