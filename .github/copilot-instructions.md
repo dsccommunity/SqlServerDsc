@@ -356,7 +356,7 @@ AfterAll {
 All public commands must have an integration test in the folder "tests/Integration/Commands"
 
 For detailed integration test guidelines and code templates, refer to the
-[integration test style guidelines](.github/instructions/dsc-community-style-guidelines-command-integration-tests.instructions.md).
+[Command Integration Test Style Guidelines](.github/instructions/dsc-community-style-guidelines-command-integration-tests.instructions.md).
 
 ## Change log
 

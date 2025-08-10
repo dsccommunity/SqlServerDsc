@@ -2,7 +2,7 @@
 applyTo: "tests/[iI]ntegration/[cC]ommands/**/*.[iI]ntegration.[tT]ests.ps1"
 ---
 
-# Integration Tests Style Guidelines
+# Command Integration Tests Style Guidelines
 
 Integration tests should be added for all public commands. Integration must
 never mock any command but run the command in a real environment. All integration
