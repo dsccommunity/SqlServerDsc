@@ -26,3 +26,14 @@ applyTo: "source/DSCResources/**/*.psm1"
   - `Test-TargetResource`: Use verbose message starting with "Determining the current state of..."
 - Use localized strings for all messages (Write-Verbose, Write-Error, etc.)
 - Import localized strings using `Get-LocalizedData` at module top
+
+## Error Handling
+- Do not use `throw` for terminating errors
+- Use `try/catch` blocks to handle exceptions
+- Throw localized exceptions using the appropriate `New-*Exception` cmdlet:
+  - [`New‑InvalidDataException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91InvalidDataException)
+  - [`New-ArgumentException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91ArgumentException)
+  - [`New-InvalidOperationException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91InvalidOperationException)
+  - [`New-ObjectNotFoundException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91ObjectNotFoundException)
+  - [`New-InvalidResultException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91InvalidResultException)
+  - [`New-NotImplementedException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91NotImplementedException)
