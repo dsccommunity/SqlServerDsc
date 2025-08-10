@@ -4,10 +4,8 @@ applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 
 # PowerShell Desired State Configuration (DSC) Style Guidelines
 
-## File Encoding
-- Use UTF-8 encoding (no BOM) for all files except .schema.mof files that must use ASCII
-
 ## Naming
+
 - Use descriptive names (3+ characters, no abbreviations)
 - Functions: PascalCase with Verb-Noun format using approved verbs
 - Parameters: PascalCase
@@ -26,22 +24,27 @@ applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 - No trailing whitespace after backticks
 
 ### Braces
+
 - Newline before opening brace (except variable assignments)
 - One newline after opening brace
 - Two newlines after closing brace (one if followed by another brace or continuation)
 
 ### Quotes
+
 - Use single quotes unless variable expansion needed: `'text'` vs `"text $variable"`
 
 ### Arrays
+
 - Single line: `@('one', 'two', 'three')`
 - Multi-line: each element on separate line with proper indentation
 
 ### Hashtables
+
 - Empty: `@{}`
 - Multi-line: each property on separate line with proper indentation
 
 ### Comments
+
 - Single line: `# Comment` (capitalized, on own line)
 - Multi-line: `<# Comment #>` format (opening and closing brackets on own line)
 - No commented-out code
@@ -56,6 +59,7 @@ applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 - For state changing functions use `SupportsShouldProcess`
 
 ### Structure
+
 ```powershell
 <#
     .SYNOPSIS
@@ -87,6 +91,7 @@ function Get-Something
 ```
 
 ### Requirements
+
 - Include `[CmdletBinding()]` on every function
 - Parameter block at top
 - Non-empty parameter has opening and closing parentheses on their own line (empty `param ()` if no parameters)
@@ -109,6 +114,7 @@ function Get-Something
 - Return only one object per function
 
 ### Security & Safety
+
 - Use `PSCredential` for credentials
 - Avoid hardcoded computer names, use cross-platform `Get-ComputerName` instead of `$env:COMPUTERNAME`
 - Place `$null` on left side of comparisons
@@ -117,6 +123,7 @@ function Get-Something
 - Use CIM commands instead of WMI commands
 
 ### Variables
+
 - Avoid global variables (exception: `$global:DSCMachineStatus`)
 - Use declared variables more than once
 - Avoid unnecessary type declarations when type is clear
@@ -124,10 +131,15 @@ function Get-Something
 - No default values for mandatory or switch parameters
 
 ## File Rules
+
 - End files with newline
 - Use CR+LF line endings
 - Maximum two consecutive newlines
 
+## File Encoding
+
+- Use UTF-8 encoding (no BOM) for all files except .schema.mof files that must use ASCII
+
 ## Module Manifest
+
 - Don't use `NestedModules` for shared commands without `RootModule`
-````
