@@ -11,6 +11,7 @@ applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 - Parameters: PascalCase
 - Variables: camelCase
 - Keywords: lower-case
+- Classes: PascalCase
 - Include scope for script/global/environment variables: `$script:`, `$global:`, `$env:`
 
 ## Formatting
@@ -21,7 +22,7 @@ applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 - One space between type and variable: `[String] $name`
 - One space between keyword and parenthesis: `if ($condition)`
 - No spaces on empty lines
-- No trailing whitespace after backticks
+- Try to limit lines to 120 characters
 
 ### Braces
 
@@ -42,21 +43,29 @@ applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 
 - Empty: `@{}`
 - Multi-line: each property on separate line with proper indentation
+- Properties: Use PascalCase
 
 ### Comments
 
 - Single line: `# Comment` (capitalized, on own line)
-- Multi-line: `<# Comment #>` format (opening and closing brackets on own line)
+- Multi-line: `<# Comment #>` format (opening and closing brackets on own line), and indent text
 - No commented-out code
 
 ## Functions
 
 - Avoid aliases (use full command names)
-- Avoid `Write-Host` (use `Write-Verbose`, `Write-Output`, etc.)
+- Avoid `Write-Host` (use `Write-Verbose`, `Write-Information`, etc.)
+- Avoid `Write-Output` (use `return` instead)
 - Avoid `ConvertTo-SecureString -AsPlainText` in production code
 - Don't redefine reserved parameters (Verbose, Debug, etc.)
 - Include a `Force` parameter for functions that supports `$PSCmdlet.ShouldContinue` or with `$PSCmdlet.ShouldProcess`
 - For state changing functions use `SupportsShouldProcess`
+- Use `Write-Error` for non-terminating errors
+- Use `Write-Warning` for warnings
+- Use `Write-Debug` for debugging information
+- Use `Write-Verbose` for actionable information
+- Use `Write-Information` for informational messages.
+- Never use backtick as line continuation in production code.
 
 ### Structure
 
