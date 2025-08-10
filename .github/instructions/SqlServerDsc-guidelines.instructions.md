@@ -67,3 +67,19 @@ For integration testing commands use the information in the
 tests/Integration/Commands/README.md, which describes the testing environment
 including available instances, users, credentials, and other configuration
 details.
+
+## Testing
+
+### Unit Tests
+
+For every unit test the following must be added to the top level `BeforeAll`- and `AfterAll`-blocks in the test file:
+
+```powershell
+BeforeAll {
+    $env:SqlServerDscCI = $true
+}
+
+AfterAll {
+    Remove-Item -Path 'env:SqlServerDscCI'
+}
+```
