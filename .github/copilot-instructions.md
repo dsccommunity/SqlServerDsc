@@ -10,8 +10,7 @@ PowerShell commands that should be public should always have its separate
 script file and the command name as the file name with the .ps1 extension,
 these files shall always be placed in the folder source/Public.
 
-All public command names must have the noun prefixed with 'SqlDsc', e.g. 
-{Verb}-SqlDsc{Noun}.
+All public command names must have the noun prefixed with 'SqlDsc', e.g. {Verb}-SqlDsc{Noun}.
 
 Public commands may use private functions to move out logic that can be
 reused by other public commands, so move out any logic that can be deemed
@@ -194,13 +193,18 @@ The duplication helps with readability and understanding of the test cases,
 and to be able to keep the test setup and teardown as close to the test
 case (`It`-block) as possible.
 
+To use `-ForEach` on `Context`- or `It`-blocks that use data driven tests the
+variables must be defined in a `BeforeDiscovery`-block for Pester to find in in the discovery phase.
+There can be several `BeforeDiscovery`-blocks in a test file, so we can keep the
+values for the particular test context separate.
+
 ### Unit tests
 
 Never test, mock or use `Should -Invoke` for `Write-Verbose` and `Write-Debug`
 regardless of other instructions.
 
-Never use `Should -Not -Throw` to prepare for Pester v6 where it has been 
-removed. By default the `It` block will handle any unexpected exception. 
+Never use `Should -Not -Throw` to prepare for Pester v6 where it has been
+removed. By default the `It` block will handle any unexpected exception.
 Instead of `{ Command } | Should -Not -Throw`, use `Command` directly.
 
 Unit tests should be added for all public commands, private functions and
@@ -213,7 +217,7 @@ they are testing, but should have the suffix .Tests.ps1. The unit tests
 should be written to cover all possible scenarios and code paths, ensuring
 that both edge cases and common use cases are tested.
 
-All public commands should always have a test to validate parameter sets 
+All public commands should always have a test to validate parameter sets
 using this template. For commands with a single parameter set:
 
 ```powershell
@@ -386,17 +390,17 @@ edge cases and common use cases are tested. The integration tests should
 also be written to test the command in a real environment, using real
 resources and dependencies.
 
-Integration test script files for public commands must be added to a group 
-within the 'Integration_Test_Commands_SqlServer' stage in ./azure-pipelines.yml. 
-Choose the appropriate group number based on the dependencies of the command 
-being tested (e.g., commands that require Database Engine should be in Group 2 
+Integration test script files for public commands must be added to a group
+within the 'Integration_Test_Commands_SqlServer' stage in ./azure-pipelines.yml.
+Choose the appropriate group number based on the dependencies of the command
+being tested (e.g., commands that require Database Engine should be in Group 2
 or later, after the Database Engine installation tests).
 
-When integration tests need the computer name in CI environments, always use 
+When integration tests need the computer name in CI environments, always use
 the Get-ComputerName command, which is available in the build pipeline.
 
-For integration testing commands use the information in the 
-tests/Integration/Commands/README.md, which describes the testing environment 
+For integration testing commands use the information in the
+tests/Integration/Commands/README.md, which describes the testing environment
 including available instances, users, credentials, and other configuration details.
 
 All integration tests must use the below code block prior to the first
@@ -445,9 +449,9 @@ class-based resources.
 ### SQL Server Management Objects (SMO)
 
 When developing commands, private functions, class-based resources, or making
-modifications to existing functionality, always prefer using SQL Server 
-Management Objects (SMO) as the primary method for interacting with SQL Server. 
-Only use T-SQL when it is not possible to achieve the desired functionality 
+modifications to existing functionality, always prefer using SQL Server
+Management Objects (SMO) as the primary method for interacting with SQL Server.
+Only use T-SQL when it is not possible to achieve the desired functionality
 with SMO.
 
 ## Change log
@@ -519,3 +523,23 @@ This project use the style guidelines from the DSC Community: https://dsccommuni
   line.
 - When comparing a value to `$null`, `$null` should be on the left side of
   the comparison.
+- When using .NET types, use the full type name, e.g. `[System.String]` or
+  `[System.Collections.Generic.List[System.String]]`.
+
+## Project scripts
+
+The build script is located in the root of the repository and is named
+`build.ps1`.
+
+### Build
+
+- To run the build script after code changes in ./source, run `.\build.ps1 -Tasks build`.
+
+## Test project
+
+- To run tests, always run `.\build.ps1 -Tasks noop` prior to running `Invoke-Pester`.
+- To run single test file, always run `.\build.ps1 -Tasks noop` together with `Invoke-Pester`,
+  e.g `.\build.ps1 -Tasks noop;Invoke-Pester -Path '<test path>' -Output Detailed`
+- `.\build.ps1 -Tasks test` which will run all QA and unit tests in the project
+  with code coverage. Add `-CodeCoverageThreshold 0` to disable code coverage, e.g.
+  `.\build.ps1 -Tasks test -CodeCoverageThreshold 0`.
