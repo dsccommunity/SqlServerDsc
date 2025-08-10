@@ -8,6 +8,7 @@ applyTo: "tests/**/*.[Tt]ests.ps1"
 - `It` block descriptions must start with "Should"
 - `Context` block descriptions must start with "When"
 - Use PascalCase for PowerShell commands in tests
+- Distinguish variable names used in test setup by using prefix 'mock'
 
 Example:
 ```powershell
