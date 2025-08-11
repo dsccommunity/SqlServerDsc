@@ -2,10 +2,7 @@
 applyTo: "source/[cC]lasses/**/*.ps1"
 ---
 
-# Class Localization Style Guidelines
-
-All message strings for Write-Debug, Write-Verbose, Write-Error, Write-Warning
-and other error messages in classes should be localized using localized string keys.
+# Class-based DSC Resource Localization Style Guidelines
 
 For class-based resource you should always add a localized strings in a
 separate file the folder source\en-US. The strings file for a class-based
