@@ -22,26 +22,6 @@ extension. These files shall always be placed in the folder source/Private.
 This also applies to functions that are only used within a single public
 command.
 
-## Comment-based help
-
-Comment-based help should always be before the function-statement for each
-public command and private function, and before the class-statement for each
-class-based resource. Comment-based help should always be in the format of
-a comment block and at least use the keywords: .SYNOPSIS, .DESCRIPTION,
-.PARAMETER, .EXAMPLE, and .NOTES.
-
-Each comment-based help keyword should be indented with 4 spaces and each
-keyword's text should be indented 8 spaces.
-
-The text for keyword .DESCRIPTION should be descriptive and must have a
-length greater than 40 characters. The .SYNOPSIS keyword text should be
-a short description of the public command, private function, or class-based
-resource.
-
-A comment-based help must have at least one example, but preferably more
-examples to showcase all possible parameter sets and different parameter
-combinations.
-
 ## Localization
 
 All strings in public commands, private functions and classes should be localized
