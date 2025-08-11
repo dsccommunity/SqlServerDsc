@@ -1,5 +1,5 @@
 ---
-applyTo: "**/*.ps1,**/*.psm1"
+applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 ---
 
 # SqlServerDsc Module Guidelines
