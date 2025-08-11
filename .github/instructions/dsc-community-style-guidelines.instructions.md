@@ -104,7 +104,8 @@ function Get-Something
 - Include `[CmdletBinding()]` on every function
 - Parameter block at top
 - Non-empty parameter has opening and closing parentheses on their own line (empty `param ()` if no parameters)
-- Comment-based help with SYNOPSIS, DESCRIPTION and PARAMETER sections
+- Comment-based help with SYNOPSIS, DESCRIPTION and PARAMETER sections, before the function or class keyword
+- Each comment-based help keyword should be indented with 4 spaces and each keyword's text should be indented 8 spaces.
 - `[OutputType()]` for functions with output
 - All parameters use `[Parameter()]` attribute, mandatory parameters use `[Parameter(Mandatory = $true)]`
 - Parameter attributes on separate lines
