@@ -4,6 +4,8 @@ applyTo: "source/[cC]lasses/**/*.ps1"
 
 # Class-based DSC Resource Localization Style Guidelines
 
+Only use this instruction if the class is decorated with `[DscResource(...)]`.
+
 For class-based resource you should always add a localized strings in a
 separate file the folder source\en-US. The strings file for a class-based
 resource should be named to exactly match the resource class name with the
