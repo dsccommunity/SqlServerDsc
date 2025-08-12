@@ -57,3 +57,5 @@ BeforeAll {
 The module DscResource.Test is used by the pipeline and its commands
 are normally not used when testing public functions, private functions or
 class-based resources.
+
+Do not run integration tests locally unless explicitly instructed.
