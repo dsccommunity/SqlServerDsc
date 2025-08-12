@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Enhanced the command to support server roles in addition to logins by utilizing
     `Test-SqlDscIsRole` alongside the existing `Test-SqlDscIsLogin` check.
   - The function now accepts both login principals and server role principals
-    as the `Name` parameter.
+    as the `Name` parameter (issue [#2063](https://github.com/dsccommunity/SqlServerDsc/issues/2063)).
 - `azure-pipelines.yml`
   - Remove `windows-2019` images fixes [#2106](https://github.com/dsccommunity/SqlServerDsc/issues/2106).
   - Move individual tasks to `windows-latest`.
