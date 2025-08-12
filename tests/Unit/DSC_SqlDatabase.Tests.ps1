@@ -27,13 +27,14 @@ BeforeDiscovery {
     {
         throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
+
+    # Set environment variable to prevent loading real SQL Server assemblies during testing
+    $env:SqlServerDscCI = $true
 }
 
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlDatabase'
-
-    $env:SqlServerDscCI = $true
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `

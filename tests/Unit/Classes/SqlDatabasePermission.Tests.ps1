@@ -17,7 +17,7 @@ BeforeDiscovery {
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
-            }
+            }    # Set environment variable to prevent loading real SQL Server assemblies during testing}}
 
             # If the dependencies has not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
@@ -31,8 +31,6 @@ BeforeDiscovery {
 
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
-
-    $env:SqlServerDscCI = $true
 
     Import-Module -Name $script:dscModuleName
 
@@ -63,7 +61,7 @@ AfterAll {
     # Remove module common test helper.
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 
-    Remove-Item -Path 'env:SqlServerDscCI'
+    if (Test-Path -Path 'env:SqlServerDscCI') { Remove-Item -Path 'env:SqlServerDscCI' }
 }
 
 Describe 'SqlDatabasePermission' {

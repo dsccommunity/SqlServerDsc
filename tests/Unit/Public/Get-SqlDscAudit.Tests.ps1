@@ -21,12 +21,13 @@ BeforeDiscovery {
     {
         throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
+
+    # Set environment variable to prevent loading real SQL Server assemblies during testing
+    $env:SqlServerDscCI = $true
 }
 
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
-
-    $env:SqlServerDscCI = $true
 
     Import-Module -Name $script:dscModuleName
 
@@ -46,7 +47,9 @@ AfterAll {
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 
-    Remove-Item -Path 'env:SqlServerDscCI'
+    if (Test-Path -Path 'env:SqlServerDscCI') {
+        Remove-Item -Path 'env:SqlServerDscCI'
+    }
 }
 
 Describe 'Get-SqlDscAudit' -Tag 'Public' {
