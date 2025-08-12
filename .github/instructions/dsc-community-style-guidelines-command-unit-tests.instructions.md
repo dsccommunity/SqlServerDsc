@@ -21,6 +21,8 @@ they are testing, but should have the suffix .Tests.ps1. The unit tests
 should be written to cover all possible scenarios and code paths, ensuring
 that both edge cases and common use cases are tested.
 
+Testing commands or functions, assign to $null when command return object that are not used in test.
+
 All public commands should always have a test to validate parameter sets
 using this template. For commands with a single parameter set:
 
