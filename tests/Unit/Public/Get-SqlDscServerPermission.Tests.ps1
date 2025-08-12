@@ -242,7 +242,7 @@ Describe 'Get-SqlDscServerPermission' -Tag 'Public' {
         }
 
         It 'Should call both Test-SqlDscIsLogin and Test-SqlDscIsRole' {
-            Get-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestPrincipal' -ErrorAction 'SilentlyContinue'
+            $null = Get-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestPrincipal' -ErrorAction 'SilentlyContinue'
 
             Should -Invoke -CommandName Test-SqlDscIsLogin -ParameterFilter {
                 $ServerObject.Equals($mockServerObject) -and $Name -eq 'TestPrincipal'
