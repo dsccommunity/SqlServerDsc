@@ -57,29 +57,3 @@ All public commands must have an integration test in the folder "tests/Integrati
 
 For detailed integration test guidelines and code templates, refer to the
 [Command Integration Test Style Guidelines](instructions/dsc-community-style-guidelines-command-integration-tests.instructions.md).
-
-## Change log
-
-The Unreleased section in CHANGELOG.md should always be updated when making
-changes to the codebase. Use the keepachangelog format and provide concrete
-release notes that describe the main changes made. This includes new commands,
-private functions, class-based resources, or significant modifications to
-existing functionality.
-
-## Project scripts
-
-The build script is located in the root of the repository and is named
-`build.ps1`.
-
-### Build
-
-- To run the build script after code changes in ./source, run `.\build.ps1 -Tasks build`.
-
-## Test project
-
-- To run tests, always run `.\build.ps1 -Tasks noop` prior to running `Invoke-Pester`.
-- To run single test file, always run `.\build.ps1 -Tasks noop` together with `Invoke-Pester`,
-  e.g `.\build.ps1 -Tasks noop;Invoke-Pester -Path '<test path>' -Output Detailed`
-- `.\build.ps1 -Tasks test` which will run all QA and unit tests in the project
-  with code coverage. Add `-CodeCoverageThreshold 0` to disable code coverage, e.g.
-  `.\build.ps1 -Tasks test -CodeCoverageThreshold 0`.
