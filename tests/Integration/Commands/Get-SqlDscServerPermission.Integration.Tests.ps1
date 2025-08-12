@@ -167,5 +167,50 @@ Describe 'Get-SqlDscServerPermission' -Tag @('Integration_SQL2016', 'Integration
                 }
             }
         }
+
+        Context 'When using PrincipalType parameter' {
+            It 'Should return permissions for sa login when PrincipalType is Login' {
+                $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sa' -PrincipalType 'Login'
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+            }
+
+            It 'Should return permissions for sysadmin role when PrincipalType is Role' {
+                $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sysadmin' -PrincipalType 'Role'
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+            }
+
+            It 'Should return permissions for sa login when PrincipalType is both Login and Role' {
+                $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sa' -PrincipalType 'Login', 'Role'
+
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -BeOfType [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo]
+            }
+
+            It 'Should throw error when looking for login as role' {
+                { Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sa' -PrincipalType 'Role' -ErrorAction 'Stop' } |
+                    Should -Throw -ExpectedMessage "*does not exist*"
+            }
+
+            It 'Should throw error when looking for role as login' {
+                { Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sysadmin' -PrincipalType 'Login' -ErrorAction 'Stop' } |
+                    Should -Throw -ExpectedMessage "*does not exist*"
+            }
+
+            It 'Should return null when looking for login as role with SilentlyContinue' {
+                $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sa' -PrincipalType 'Role' -ErrorAction 'SilentlyContinue'
+
+                $result | Should -BeNullOrEmpty
+            }
+
+            It 'Should return null when looking for role as login with SilentlyContinue' {
+                $result = Get-SqlDscServerPermission -ServerObject $script:serverObject -Name 'sysadmin' -PrincipalType 'Login' -ErrorAction 'SilentlyContinue'
+
+                $result | Should -BeNullOrEmpty
+            }
+        }
     }
 }
