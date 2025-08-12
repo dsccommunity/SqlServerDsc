@@ -50,14 +50,15 @@ function Get-SqlDscServerPermission
     {
         $getSqlDscServerPermissionResult = $null
 
-        $testSqlDscIsLoginParameters = @{
+        $testSqlDscIsPrincipalParameters = @{
             ServerObject = $ServerObject
             Name         = $Name
         }
 
-        $isLogin = Test-SqlDscIsLogin @testSqlDscIsLoginParameters
+        $isLogin = Test-SqlDscIsLogin @testSqlDscIsPrincipalParameters
+        $isRole = Test-SqlDscIsRole @testSqlDscIsPrincipalParameters
 
-        if ($isLogin)
+        if ($isLogin -or $isRole)
         {
             $getSqlDscServerPermissionResult = $ServerObject.EnumServerPermissions($Name)
         }
