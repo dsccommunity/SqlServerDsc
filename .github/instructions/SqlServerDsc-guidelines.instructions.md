@@ -6,10 +6,6 @@ applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 
 This file contains specific guidelines for working with SqlServerDsc PowerShell module project.
 
-Assume that the word "command" references to a public command, the word
-"function" references to a private function, and the word "resource"
-references a Desired State Configuration (DSC) class-based resource.
-
 ## Public Command Naming
 
 All public command names must have the noun prefixed with 'SqlDsc', e.g.
@@ -87,3 +83,7 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 ```
+
+### Integration tests
+
+When using command `Connect-SqlDscDatabaseEngine` always use `Disconnect-SqlDscDatabaseEngine` when connection is no longer needed
