@@ -79,7 +79,7 @@ AfterAll {
     # Remove module common test helper.
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 
-    if (Test-Path -Path 'env:SqlServerDscCI') { Remove-Item -Path 'env:SqlServerDscCI' }
+    if (Test-Path -Path 'env:SqlServerDscCI') { if (Test-Path -Path 'env:SqlServerDscCI') { Remove-Item -Path 'env:SqlServerDscCI' } }
 }
 
 Describe 'SqlMaxDop\Get-TargetResource' -Tag 'Get' {

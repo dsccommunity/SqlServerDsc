@@ -529,6 +529,13 @@ begin
 
         Write-Host -Object "[build] Starting build with InvokeBuild." -ForegroundColor Green
 
+        # Set environment variable for test tasks to prevent loading real SQL Server assemblies during unit testing
+        if ($Tasks -contains 'test' -or $Tasks -contains 'Pester_Tests_Stop_On_Fail')
+        {
+            $env:SqlServerDscCI = $true
+            Write-Host -Object "[build] Set SqlServerDscCI environment variable for testing." -ForegroundColor Green
+        }
+
         Invoke-Build @PSBoundParameters -Task $Tasks -File $MyInvocation.MyCommand.Path
 
         Pop-Location -StackName 'BuildModule'

@@ -28,8 +28,6 @@ BeforeDiscovery {
         throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
 
-    # Set environment variable to prevent loading real SQL Server assemblies during testing
-    $env:SqlServerDscCI = $true
 }
 
 BeforeAll {
@@ -68,7 +66,6 @@ AfterAll {
     # Remove module common test helper.
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 
-    Remove-Item -Path 'env:SqlServerDscCI'
 }
 
 Describe 'SqlDatabase\Get-TargetResource' {
