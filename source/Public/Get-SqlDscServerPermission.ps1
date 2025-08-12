@@ -1,16 +1,18 @@
 <#
     .SYNOPSIS
-        Returns the current permissions for the principal.
+        Returns the current permissions for a SQL Server login or server role.
 
     .DESCRIPTION
-        Returns the current permissions for the principal.
+        Returns the current permissions for a SQL Server login or server role.
+        The command can retrieve permissions for both user-defined and built-in
+        server principals including SQL Server logins and server roles.
 
     .PARAMETER ServerObject
         Specifies current server connection object.
 
     .PARAMETER Name
-        Specifies the name of the principal for which the permissions are
-        returned.
+        Specifies the name of the SQL Server login or server role for which
+        the permissions are returned.
 
     .OUTPUTS
         [Microsoft.SqlServer.Management.Smo.ServerPermissionInfo[]]
@@ -20,6 +22,12 @@
         Get-SqlDscServerPermission -ServerObject $serverInstance -Name 'MyPrincipal'
 
         Get the permissions for the principal 'MyPrincipal'.
+
+    .EXAMPLE
+        $serverInstance = Connect-SqlDscDatabaseEngine
+        Get-SqlDscServerPermission -ServerObject $serverInstance -Name 'sysadmin'
+
+        Get the permissions for the server role 'sysadmin'.
 
     .NOTES
         If specifying `-ErrorAction 'SilentlyContinue'` then the command will silently
