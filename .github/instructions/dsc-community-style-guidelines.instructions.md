@@ -21,16 +21,23 @@ Always run build script from root path.
 
 ### Run tests
 
-Always build project prior to running tests.
-Always run `Invoke-Pester` from root path.
-After adding or changing classes, always run tests in new session.
-
-- To run tests, always run `.\build.ps1 -Tasks noop` or `.\build.ps1 -Tasks build` prior to running `Invoke-Pester`.
-- To run single test file, always run `.\build.ps1 -Tasks noop` together with `Invoke-Pester`,
-  e.g `.\build.ps1 -Tasks noop;Invoke-Pester -Path '<test path>' -Output Detailed`
-- `.\build.ps1 -Tasks test` which will run all QA and unit tests in the project
-  with code coverage. Add `-CodeCoverageThreshold 0` to disable code coverage, e.g.
-  `.\build.ps1 -Tasks test -CodeCoverageThreshold 0`.
+- Always use PowerShell or Windows PowerShell to run tests.
+- Always build project prior to running tests: `.\build.ps1 -Tasks build`
+- Always run `Invoke-Pester` from root path: `Invoke-Pester -Path @('<test paths>') -Output Detailed`
+- After adding or changing classes, always run tests in new session.
+- To run a test file with code coverage (this can takes a while for large codebases):
+  ```powershell
+  $config = New-PesterConfiguration
+  $config.Run.Path = @('<test paths>')
+  $config.CodeCoverage.Enabled = $true
+  $config.CodeCoverage.Path = @('./output/builtModule/<ModuleName>')
+  $config.CodeCoverage.CoveragePercentTarget = 0
+  $config.Output.Verbosity = 'Detailed'
+  $config.Run.PassThru = $true
+  $result = Invoke-Pester -Configuration $config
+  # After running above, get all commands that was missed with a reference to the SourceLineNumber in SourceFile.
+  $result.CodeCoverage.CommandsMissed | Where-Object { $_.Function -eq '<FunctionName>' -or $_.Class -eq '<ClassName>' } | Convert-LineNumber -PassThru | Select-Object Class, Function, Command, SourceLineNumber, SourceFile
+  ```
 
 ## Change log
 
