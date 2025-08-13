@@ -4,7 +4,7 @@ applyTo: "tests/[iI]ntegration/[cC]ommands/**/*.[iI]ntegration.[tT]ests.ps1"
 
 # Command Integration Tests Style Guidelines
 
-Integration tests should be added for all public commands. Integration must
+Every public command must have an integration test. Integration tests must
 never mock any command but run the command in a real environment. All integration
 tests should be placed in the root of the folder "tests/Integration/Commands"
 and the integration tests should be named after the public command they are testing,
