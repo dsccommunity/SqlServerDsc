@@ -15,8 +15,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     exists as a login, throwing a terminating error if it doesn't exist.
   - Supports pipeline input and provides detailed error messages with localization.
   - Uses `Test-SqlDscIsLogin` command for login validation following module patterns.
+- `New-SqlDscLogin`
+  - Added new public command to create a new login on a SQL Server Database
+    Engine instance.
+  - Supports creating SQL Server logins, Windows user logins, Windows group
+    logins, certificate-based logins, and asymmetric key-based logins.
 
 ### Changed
+
+- `Prerequisites` tests
+  - Added creation of `SqlIntegrationTest` local Windows user for integration testing.
+- `tests/Integration/Commands/README.md`
+  - Added documentation for `SqlIntegrationTest` user and
+    `IntegrationTestSqlLogin` login.
+  - Added run order information for `New-SqlDscLogin` integration test.
 
 - `azure-pipelines.yml`
   - Remove `windows-2019` images fixes [#2106](https://github.com/dsccommunity/SqlServerDsc/issues/2106).

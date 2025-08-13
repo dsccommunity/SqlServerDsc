@@ -478,6 +478,14 @@ namespace Microsoft.SqlServer.Management.Smo
             }
         }
 
+        public void Disable()
+        {
+        }
+
+        public string Certificate;
+        public string AsymmetricKey;
+        public string Language;
+
         public void Drop()
         {
         }
