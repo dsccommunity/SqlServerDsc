@@ -13,6 +13,7 @@ references a Desired State Configuration (DSC) class-based resource.
 Always run project scripts in PowerShell.
 The build script is located in the root of the repository and is named
 `build.ps1`.
+Always run build script from root path.
 
 ### Build project
 
@@ -21,7 +22,7 @@ The build script is located in the root of the repository and is named
 ### Run tests
 
 Always build project prior to running tests.
-Always run build script or `Invoke-Pester` from root path.
+Always run `Invoke-Pester` from root path.
 After adding or changing classes, always run tests in new session.
 
 - To run tests, always run `.\build.ps1 -Tasks noop` or `.\build.ps1 -Tasks build` prior to running `Invoke-Pester`.
