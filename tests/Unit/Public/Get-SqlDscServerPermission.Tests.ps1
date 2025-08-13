@@ -244,14 +244,16 @@ Describe 'Get-SqlDscServerPermission' -Tag 'Public' {
                 }
             }
 
-            It 'Should call Test-SqlDscIsLogin but not Test-SqlDscIsRole when login is found' {
+            It 'Should call both Test-SqlDscIsLogin and Test-SqlDscIsRole' {
                 $null = Get-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestPrincipal' -ErrorAction 'SilentlyContinue'
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -ParameterFilter {
                     $ServerObject.Equals($mockServerObject) -and $Name -eq 'TestPrincipal'
                 } -Exactly -Times 1
 
-                Should -Invoke -CommandName Test-SqlDscIsRole -Exactly -Times 0
+                Should -Invoke -CommandName Test-SqlDscIsRole -ParameterFilter {
+                    $ServerObject.Equals($mockServerObject) -and $Name -eq 'TestPrincipal'
+                } -Exactly -Times 1
             }
         }
 
@@ -266,7 +268,7 @@ Describe 'Get-SqlDscServerPermission' -Tag 'Public' {
                 }
             }
 
-            It 'Should call both Test-SqlDscIsLogin and Test-SqlDscIsRole when login is not found' {
+            It 'Should call both Test-SqlDscIsLogin and Test-SqlDscIsRole' {
                 $null = Get-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestPrincipal' -ErrorAction 'SilentlyContinue'
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -ParameterFilter {
@@ -334,14 +336,16 @@ Describe 'Get-SqlDscServerPermission' -Tag 'Public' {
                 }
             }
 
-            It 'Should call Test-SqlDscIsLogin but not Test-SqlDscIsRole when login is found' {
+            It 'Should call both Test-SqlDscIsLogin and Test-SqlDscIsRole when both types are specified' {
                 $null = Get-SqlDscServerPermission -ServerObject $mockServerObject -Name 'TestPrincipal' -PrincipalType 'Login', 'Role' -ErrorAction 'SilentlyContinue'
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -ParameterFilter {
                     $ServerObject.Equals($mockServerObject) -and $Name -eq 'TestPrincipal'
                 } -Exactly -Times 1
 
-                Should -Invoke -CommandName Test-SqlDscIsRole -Exactly -Times 0
+                Should -Invoke -CommandName Test-SqlDscIsRole -ParameterFilter {
+                    $ServerObject.Equals($mockServerObject) -and $Name -eq 'TestPrincipal'
+                } -Exactly -Times 1
             }
         }
     }
