@@ -5,11 +5,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Make sure tests forcibly imports the module being tested to avoid AI failing
+  when testing changes.
+
 ### Added
 
 - Added setup workflow for GitHub Copilot.
   - Switch the workflow to use Linux.
-  - Attempt to unshallow the Copilot branch
+  - Attempt to un-shallow the Copilot branch
 - `Assert-SqlDscLogin`
   - Added new public command to validate that a specified SQL Server principal
     exists as a login, throwing a terminating error if it doesn't exist.

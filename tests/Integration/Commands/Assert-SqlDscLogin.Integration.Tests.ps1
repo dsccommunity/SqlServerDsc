@@ -26,7 +26,7 @@ BeforeDiscovery {
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:dscModuleName
+    Import-Module -Name $script:dscModuleName -Force
 }
 
 Describe 'Assert-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {

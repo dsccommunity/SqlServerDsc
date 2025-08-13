@@ -28,7 +28,7 @@ BeforeAll {
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName
+    Import-Module -Name $script:dscModuleName -Force
 
     # Loading mocked classes
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Stubs') -ChildPath 'SMO.cs')
