@@ -43,6 +43,13 @@ Describe 'Prerequisites' {
             $user.Name | Should -Be 'SqlAdmin'
             (Get-LocalUser -Name 'SqlAdmin').Name | Should -Be 'SqlAdmin'
         }
+
+        It 'Should create SqlIntegrationTest user' {
+            $user = New-LocalUser -Name 'SqlIntegrationTest' -Password $password -FullName 'SQL Integration Test User' -Description 'User for SQL integration testing.'
+
+            $user.Name | Should -Be 'SqlIntegrationTest'
+            (Get-LocalUser -Name 'SqlIntegrationTest').Name | Should -Be 'SqlIntegrationTest'
+        }
     }
 
     Context 'Should create required local Windows service accounts' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022', 'Integration_PowerBI') {

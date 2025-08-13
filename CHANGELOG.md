@@ -37,12 +37,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Includes a `-Refresh` parameter to refresh the server's login collection
     before attempting removal.
   - Provides detailed error messages with localization support.
+- `New-SqlDscLogin`
+  - Added new public command to create a new login on a SQL Server Database
+    Engine instance.
+  - Supports creating SQL Server logins, Windows user logins, Windows group
+    logins, certificate-based logins, and asymmetric key-based logins.
 
 ### Changed
 
 - Module now outputs a verbose message instead of a warning when the SMO
   dependency module is missing during import to work around a DSC v3 issue.
 - VS Code tasks configuration was improved to support AI.
+- `Prerequisites` tests
+  - Added creation of `SqlIntegrationTest` local Windows user for integration testing.
+- `tests/Integration/Commands/README.md`
+  - Added documentation for `SqlIntegrationTest` user and
+    `IntegrationTestSqlLogin` login.
+  - Added run order information for `New-SqlDscLogin` integration test.
 - `azure-pipelines.yml`
   - Remove `windows-2019` images fixes [#2106](https://github.com/dsccommunity/SqlServerDsc/issues/2106).
   - Move individual tasks to `windows-latest`.
