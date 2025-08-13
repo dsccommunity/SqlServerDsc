@@ -27,6 +27,7 @@ Always run build script from root path.
 - After adding or changing classes, always run tests in new session.
 - To run a test file with code coverage (this can takes a while for large codebases):
   ```powershell
+  .\build.ps1 -Tasks noop
   $config = New-PesterConfiguration
   $config.Run.Path = @('<test paths>')
   $config.CodeCoverage.Enabled = $true
