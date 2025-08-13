@@ -11,6 +11,9 @@ Never use `Should -Not -Throw` to prepare for Pester v6 where it has been
 removed. By default the `It` block will handle any unexpected exception.
 Instead of `{ Command } | Should -Not -Throw`, use `Command` directly.
 
+Always make sure to pass mandatory parameters to the command being tested,
+to avoid tests making interactive prompts waiting for input.
+
 Unit tests should be added for all public commands, private functions and
 class-based resources. The unit tests for class-based resources should be
 placed in the folder tests/Unit/Classes. The unit tests for public command
