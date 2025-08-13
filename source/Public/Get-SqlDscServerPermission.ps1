@@ -105,7 +105,7 @@ function Get-SqlDscServerPermission
             $false
         }
 
-        $isRole = if ($checkRole -and -not $isLogin)
+        $isRole = if ($checkRole)
         {
             Test-SqlDscIsRole @testSqlDscIsPrincipalParameters
         }
