@@ -35,6 +35,11 @@ variables must be defined in a `BeforeDiscovery`-block for Pester to find in in 
 There can be several `BeforeDiscovery`-blocks in a test file, so we can keep the
 values for the particular test context separate.
 
+- Always use the latest Pester v5 syntax and features in your tests.
+- Always prefer `-BeTrue` over `-Be $true`.
+- Always prefer `-BeFalse` over `-Not -Be $true` or `-Be $false`.
+- Do not use `-Not -Throw`, let `It`-block handle unexpected exceptions.
+
 ## Test Formatting Rules
 
 - Use PascalCase for all Pester keywords: `Describe`, `Context`, `It`, `Should`
