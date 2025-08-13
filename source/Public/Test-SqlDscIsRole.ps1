@@ -1,15 +1,15 @@
 <#
     .SYNOPSIS
-        Returns whether the database principal exists and is a database role.
+        Returns whether the server principal exists and is a server role.
 
     .DESCRIPTION
-        Returns whether the database principal exist and is a database role.
+        Returns whether the server principal exist and is a server role.
 
     .PARAMETER ServerObject
         Specifies current server connection object.
 
     .PARAMETER Name
-        Specifies the name of the database principal.
+        Specifies the name of the server principal.
 
     .OUTPUTS
         [System.Boolean]
@@ -18,7 +18,7 @@
         $serverInstance = Connect-SqlDscDatabaseEngine
         Test-SqlDscIsRole -ServerObject $serverInstance -Name 'MyPrincipal'
 
-        Returns $true if the principal exist as role, if not $false is returned.
+        Returns $true if the principal exist as a server role, if not $false is returned.
 #>
 function Test-SqlDscIsRole
 {
