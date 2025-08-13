@@ -32,6 +32,9 @@ Management Objects (SMO) as the primary method for interacting with SQL Server.
 Only use T-SQL when it is not possible to achieve the desired functionality
 with SMO.
 
+Do not mock SMO types in unit tests, use SMO stub types from SMO.cs.
+Always run tests in new session after changing stub types in SMO.cs.
+
 ## Integration Testing Environment
 
 ### SQL Server Database Engine
