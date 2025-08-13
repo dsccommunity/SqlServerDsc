@@ -27,8 +27,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Supports getting a specific login by name or all logins if no name is specified.
   - Includes a `-Refresh` parameter to refresh the server's login collection
     before retrieval.
+- `New-SqlDscLogin`
+  - Added new public command to create a new login on a SQL Server Database
+    Engine instance.
+  - Supports creating SQL Server logins, Windows user logins, Windows group
+    logins, certificate-based logins, and asymmetric key-based logins.
 
 ### Changed
+
+- `Prerequisites` tests
+  - Added creation of `SqlIntegrationTest` local Windows user for integration testing.
+- `tests/Integration/Commands/README.md`
+  - Added documentation for `SqlIntegrationTest` user and
+    `IntegrationTestSqlLogin` login.
+  - Added run order information for `New-SqlDscLogin` integration test.
 
 - `azure-pipelines.yml`
   - Remove `windows-2019` images fixes [#2106](https://github.com/dsccommunity/SqlServerDsc/issues/2106).
