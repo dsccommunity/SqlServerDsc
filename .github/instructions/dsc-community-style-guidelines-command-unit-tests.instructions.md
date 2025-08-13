@@ -26,6 +26,8 @@ that both edge cases and common use cases are tested.
 
 Testing commands or functions, assign to $null when command return object that are not used in test.
 
+Never use `InModuleScope` when testing public commands.
+
 All public commands should always have a test to validate parameter sets
 using this template. For commands with a single parameter set:
 
