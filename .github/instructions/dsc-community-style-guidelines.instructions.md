@@ -1,4 +1,5 @@
 ---
+description: Guidelines for DSC community contributions.
 applyTo: "**"
 ---
 

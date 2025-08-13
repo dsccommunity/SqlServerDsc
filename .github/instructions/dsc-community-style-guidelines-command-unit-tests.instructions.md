@@ -1,4 +1,5 @@
 ---
+description: Guidelines for implementing unit tests for commands.
 applyTo: "tests/[uU]nit/[pP]ublic/**/*.[tT]ests.ps1,tests/[uU]nit/[pP]rivate/**/*.[tT]ests.ps1"
 ---
 

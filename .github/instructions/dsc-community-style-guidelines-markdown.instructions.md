@@ -1,4 +1,5 @@
 ---
+description: Guidelines for writing and maintaining Markdown documentation.
 applyTo: "**/*.md"
 ---
 

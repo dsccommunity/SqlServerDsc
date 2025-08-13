@@ -1,4 +1,5 @@
 ---
+description: Guidelines for maintaining a clear and consistent changelog.
 applyTo: "CHANGELOG.md"
 ---
 

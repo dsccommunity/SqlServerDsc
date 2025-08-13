@@ -1,4 +1,5 @@
 ---
+description: Guidelines for implementing localization for commands.
 applyTo: "source/[pP]ublic/**/*.ps1,source/[pP]rivate/**/*.ps1"
 ---
 

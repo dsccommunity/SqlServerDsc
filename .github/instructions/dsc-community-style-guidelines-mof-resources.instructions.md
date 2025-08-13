@@ -1,4 +1,5 @@
 ---
+description: Guidelines for implementing MOF DSC resources.
 applyTo: "source/DSCResources/**/*.psm1"
 ---
 

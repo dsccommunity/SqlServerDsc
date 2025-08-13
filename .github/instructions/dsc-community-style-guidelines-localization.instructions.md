@@ -1,4 +1,5 @@
 ---
+description: Guidelines for implementing localization.
 applyTo: "source/**/*.ps1"
 ---
 

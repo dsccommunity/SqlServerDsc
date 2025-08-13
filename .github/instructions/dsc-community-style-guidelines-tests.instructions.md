@@ -1,4 +1,5 @@
 ---
+description: Guidelines for writing and maintaining tests using Pester.
 applyTo: "tests/**/*.[Tt]ests.ps1"
 ---
 

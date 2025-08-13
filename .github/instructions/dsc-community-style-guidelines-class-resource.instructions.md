@@ -1,4 +1,5 @@
 ---
+description: Guidelines for implementing Desired State Configuration (DSC) class-based resources.
 applyTo: "source/[cC]lasses/**/*.ps1"
 ---
 

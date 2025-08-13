@@ -1,4 +1,5 @@
 ---
+description: Guidelines for implementing localization for MOF DSC resources.
 applyTo: "source/DSCResources/**/*.psm1,source/DSCResources/**/*.strings.psd1"
 ---
 
