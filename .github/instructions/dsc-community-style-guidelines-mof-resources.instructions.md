@@ -38,3 +38,10 @@ applyTo: "source/DSCResources/**/*.psm1"
   - [`New-ObjectNotFoundException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91ObjectNotFoundException)
   - [`New-InvalidResultException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91InvalidResultException)
   - [`New-NotImplementedException`](https://github.com/dsccommunity/DscResource.Common/wiki/New%E2%80%91NotImplementedException)
+
+# MOF Resource Localization
+
+## File Structure
+- Create `en-US` folder in each resource directory
+- Name strings file: `DSC_<ResourceName>.strings.psd1`
+- Use names returned from `Get-UICulture` for additional language folder names
