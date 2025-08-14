@@ -4,6 +4,8 @@ This file provides AI agent guidance for the SqlServerDsc project. Each instruct
 
 ## Instructions Overview
 
+The guidelines always take priority over existing code patterns in project.
+
 - SqlServerDsc-specific guidelines override general project guidelines
 - PowerShell style guidelines must be maintained
 - Maintain localization requirements across all source files
