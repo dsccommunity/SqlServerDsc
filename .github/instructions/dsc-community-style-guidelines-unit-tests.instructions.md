@@ -60,7 +60,6 @@ Describe 'Get-TargetResource' {
 }
 ```
 
-
 Never test, mock or use `Should -Invoke` for `Write-Verbose` and `Write-Debug`
 regardless of other instructions.
 
