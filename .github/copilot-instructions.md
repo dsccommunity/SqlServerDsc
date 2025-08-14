@@ -21,7 +21,7 @@ This file provides AI agent guidance for the SqlServerDsc project. Each instruct
 
 ## PowerShell Code Guidelines
 
-- Always follow PowerShell code style requirements: ./instructions/dsc-community-style-guidelines-powershell.instructions.md
+- Always follow PowerShell code style guidelines: ./instructions/dsc-community-style-guidelines-powershell.instructions.md
 
 ## Desired State Configuration (DSC) Resource Guidelines
 
