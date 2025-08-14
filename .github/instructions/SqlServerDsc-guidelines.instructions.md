@@ -1,6 +1,6 @@
 ---
 description: Guidelines for working with the SqlServerDsc PowerShell module.
-applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
+applyTo: "**"
 ---
 
 # SqlServerDsc Module Guidelines
