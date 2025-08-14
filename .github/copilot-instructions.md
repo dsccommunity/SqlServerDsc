@@ -27,6 +27,4 @@ This file provides AI agent guidance for the SqlServerDsc project. Each instruct
 
 New DSC resources should always be created as class-based resources.
 
-Follow these guidelines when creating or modifying class-based resources: ./instructions/dsc-community-style-guidelines-class-resource.instructions.md
-
-Only follow these guidelines when modifying existing MOF-based resources: ./instructions/dsc-community-style-guidelines-mof-resources.instructions.md
+Follow class-based resources guidelines: ./instructions/dsc-community-style-guidelines-class-resource.instructions.md
