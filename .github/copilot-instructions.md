@@ -14,10 +14,10 @@ This file provides AI agent guidance for the SqlServerDsc project. Each instruct
 - Follow SqlServerDsc project specific guidelines: ./instructions/SqlServerDsc-guidelines.instructions.md
 - Follow Project-level guidelines: ./instructions/dsc-community-style-guidelines.instructions.md
 - Follow localization requirements: ./instructions/dsc-community-style-guidelines-localization.instructions.md
-- Follow Unit testing requirements: ./instructions/dsc-community-style-guidelines-unit-tests.instructions.md
-- Follow Integration testing requirements: ./instructions/dsc-community-style-guidelines-integration-tests.instructions.md
+- Always add Unit testing according to: ./instructions/dsc-community-style-guidelines-unit-tests.instructions.md
+- Always add Integration testing according to: ./instructions/dsc-community-style-guidelines-integration-tests.instructions.md
 - Follow Markdown formatting requirements: ./instructions/dsc-community-style-guidelines-markdown.instructions.md
-- Required to update CHANGELOG.md: ./instructions/dsc-community-style-guidelines-changelog.instructions.md
+- Always update CHANGELOG.md: ./instructions/dsc-community-style-guidelines-changelog.instructions.md
 
 ## PowerShell Code Guidelines
 
