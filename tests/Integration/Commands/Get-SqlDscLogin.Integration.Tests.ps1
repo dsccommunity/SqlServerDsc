@@ -50,7 +50,7 @@ Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
                 when there is only one login.
             #>
             @($result).Count | Should -BeGreaterOrEqual 1
-            $result[0] | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Login'
+            @($result)[0] | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Login'
         }
 
         It 'Should return system logins including sa' {
