@@ -45,3 +45,8 @@ applyTo: "source/DSCResources/**/*.psm1"
 - Create `en-US` folder in each resource directory
 - Name strings file: `DSC_<ResourceName>.strings.psd1`
 - Use names returned from `Get-UICulture` for additional language folder names
+
+## String File Format
+
+- In `.strings.psd1` files, use underscores as word separators in localized
+  string key names (for multi-word keys)

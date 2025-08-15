@@ -82,25 +82,26 @@ It 'Should accept ParameterName from pipeline' {
 }
 ```
 
-Use localized strings in the tests only when necessary. You can assign the
-localized string to a mock variable by and get the localized string key
-from the $script:localizedData variable inside a `InModuleScope` block.
-An example to get a localized string key from the $script:localizedData variable:
+Use localized strings in tests only when necessary. You can assign the
+localized text to a mock variable by getting the localized string key
+from $script:localizedData inside an `InModuleScope` block.
+Example of retrieving a localized string key from $script:localizedData:
 
 ```powershell
 $mockLocalizedStringText = InModuleScope -ScriptBlock { $script:localizedData.LocalizedStringKey }
 ```
 
-Files that need to be mocked should be created in Pesters test drive. The
-variable `$TestDrive` holds the path to the test drive. The `$TestDrive` is a
+Files that need to be mocked should be created in Pester’s test drive. The
+variable `$TestDrive` holds the path to the test drive. `$TestDrive` is a
 temporary drive that is created for each test run and is automatically
 cleaned up after the test run is complete.
 
-All unit tests should should use this code block prior to the `Describe` block
-which will set up the test environment and load the correct module being tested:
+All unit tests should use this code block before the `Describe` block to set
+up the test environment and load the correct module being tested:
 
 ```powershell
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
@@ -108,7 +109,7 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)

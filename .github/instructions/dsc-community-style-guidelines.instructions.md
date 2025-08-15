@@ -5,16 +5,16 @@ applyTo: "**"
 
 # DSC Community Guidelines
 
-Assume that the word "command" references to a public command, the word
-"function" references to a private function, and the word "resource"
-references a Desired State Configuration (DSC) class-based resource.
+Assume that the word "command" refers to a public command, the word
+"function" refers to a private function, and the word "resource"
+refers to a Desired State Configuration (DSC) class-based resource.
 
 ## Project scripts
 
 Always run project scripts in PowerShell.
 The build script is located in the root of the repository and is named
 `build.ps1`.
-Always run build script from root path.
+- Always run the build script from the repository root.
 
 ### Build project
 
@@ -23,10 +23,10 @@ Always run build script from root path.
 ### Run tests
 
 - Always use PowerShell or Windows PowerShell to run tests.
-- Always build project prior to running tests: `.\build.ps1 -Tasks build`
-- Always run `Invoke-Pester` from root path: `Invoke-Pester -Path @('<test paths>') -Output Detailed`
-- After adding or changing classes, always run tests in new session.
-- To get code coverage (this can takes a while for large codebases):
+- Always build the project before running tests: `.\build.ps1 -Tasks build`
+- Always run `Invoke-Pester` from the repository root: `Invoke-Pester -Path @('<test paths>') -Output Detailed`
+- After adding or changing classes, always run tests in a new session.
+- To get code coverage (this can take a while for large codebases):
   ```powershell
   .\build.ps1 -Tasks noop
   $config = New-PesterConfiguration
@@ -37,19 +37,19 @@ Always run build script from root path.
   $config.Output.Verbosity = 'None'
   $config.Run.PassThru = $true
   $result = Invoke-Pester -Configuration $config
-  # After running above, get all commands that was missed, no output equals no missed lines
+  # After running above, list missed commands; no output means no missed lines.
   $result.CodeCoverage.CommandsMissed | Where-Object { $_.Function -eq 'FunctionName' -or $_.Class -eq 'ClassName' } | Convert-LineNumber -PassThru | Select-Object Class, Function, Command, SourceLineNumber, SourceFile
   ```
 
 ## Change log
 
-Always update the Unreleased section in CHANGELOG.md when making changes to the codebase.
+Always update the Unreleased section in CHANGELOG.md with every change.
 
 ## Public commands
 
-PowerShell commands that should be public should always have its separate
-script file and the command name as the file name with the .ps1 extension,
-these files shall always be placed in the folder source/Public.
+Public commands must each have their own script file named after
+the command (with the .ps1 extension). These files must be placed in
+source/Public.
 
 Public commands may use private functions to separate logic that can be
 reused by other public commands. Separate any logic that can be deemed
@@ -57,25 +57,27 @@ reusable.
 
 ## Private functions
 
-Private functions (also known as helper functions) should always have its
-separate script file and the function name as the file name with the .ps1
-extension. These files shall always be placed in the folder source/Private.
+Before creating a private function, check if it there is an available command in
+the module [DscResource.Common](https://raw.githubusercontent.com/wiki/dsccommunity/DscResource.Common/_Sidebar.md) that can be used.
+
+Private functions (helper functions) must each have their own script file,
+named after the function (with the .ps1 extension). These files must be
+placed in source/Private
 
 ## Localization
 
-All strings in public commands, private functions and classes should be localized
-using localized string keys.
+All strings in public commands, private functions, and class-based resources
+must be localized using string keys.
 
 ## Unit tests
 
-Unit tests should be added for all public commands, private functions and
+Unit tests should be added for all public commands, private functions, and
 class-based resources.
 
-The unit tests for class-based resources should be
-placed in the folder tests/Unit/Classes.
-The unit tests for public command should be placed in the folder tests/Unit/Public.
-The unit tests for private functions should be placed in the folder tests/Unit/Private.
+Place unit tests for class-based resources in tests/Unit/Classes,
+for public commands in tests/Unit/Public, and
+for private functions in tests/Unit/Private.
 
 ### Integration tests
 
-All public commands must have an integration test in the folder "tests/Integration/Commands"
+All public commands must have an integration test in tests/Integration/Commands.

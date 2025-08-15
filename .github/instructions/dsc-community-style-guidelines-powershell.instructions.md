@@ -33,7 +33,7 @@ applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 
 ### Quotes
 
-- Use single quotes unless variable expansion needed: `'text'` vs `"text $variable"`
+- Use single quotes unless variable expansion is needed: `'text'` vs `"text $variable"`
 
 ### Arrays
 
@@ -124,12 +124,12 @@ function Get-Something
 - Use splatting for long parameter lists
 - Limit piping to one pipe per line
 - Assign function results to variables rather than inline calls
-- Return only one object per function
+- Return a single, consistent object type per function
 
 ### Security & Safety
 
 - Use `PSCredential` for credentials
-- Avoid hardcoded computer names, use cross-platform `Get-ComputerName` instead of `$env:COMPUTERNAME`
+- Avoid hardcoded computer names, use cross-platform [`Get-ComputerName`](https://github.com/dsccommunity/DscResource.Common/wiki/Get%E2%80%91ComputerName) instead of `$env:COMPUTERNAME`
 - Place `$null` on left side of comparisons
 - Avoid empty catch blocks (use `-ErrorAction SilentlyContinue`)
 - Don't use `Invoke-Expression` (use `&` operator)

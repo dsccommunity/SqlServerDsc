@@ -5,7 +5,7 @@ applyTo: "**"
 
 # SqlServerDsc Module Guidelines
 
-This file contains specific guidelines for working with SqlServerDsc PowerShell module project.
+This file contains specific guidelines for working with the SqlServerDsc PowerShell module project.
 
 ## Public Command Naming
 
@@ -16,12 +16,12 @@ All public command names must have the noun prefixed with 'SqlDsc', e.g.
 
 ### SqlResourceBase
 
-A derived class should inherit the parent class `SqlResourceBase` (which inherits `ResourceBase`)
-if the class-based resource needs to connect to a SQL Server Database Engine.
+Derived resources should inherit `SqlResourceBase` (which inherits `ResourceBase`)
+when they need to connect to the SQL Server Database Engine.
 
-The parent class `SqlResourceBase` provides the DSC properties `InstanceName`,
-`ServerName`, `Credential` and `Reasons` and the method `GetServerObject`
-which is used to connect to a SQL Server Database Engine instance.
+`SqlResourceBase` provides the DSC properties `InstanceName`, `ServerName`,
+`Credential`, and `Reasons`, and the `GetServerObject` method used to connect
+to a SQL Server Database Engine instance.
 
 ## SQL Server
 
@@ -34,7 +34,7 @@ Only use T-SQL when it is not possible to achieve the desired functionality
 with SMO.
 
 Do not mock SMO types in unit tests, use SMO stub types from SMO.cs.
-Always run tests in new session after changing stub types in SMO.cs.
+Always run tests in a new session after changing stub types in SMO.cs.
 
 ## Integration Testing Environment
 
@@ -63,12 +63,12 @@ Report Server version.
 
 Integration test script files for public commands must be added to a group
 within the 'Integration_Test_Commands_SqlServer' stage in ./azure-pipelines.yml.
-Choose the appropriate group number based on the dependencies of the command
-being tested (e.g., commands that require Database Engine should be in Group 2
+Choose the appropriate group number based on the command’s dependencies
+(for example, commands that require Database Engine should be in Group 2
 or later, after the Database Engine installation tests).
 
-For integration testing commands use the information in the
-tests/Integration/Commands/README.md, which describes the testing environment
+For integration testing commands, use the information in
+tests/Integration/Commands/README.md, which describes the testing environment,
 including available instances, users, credentials, and other configuration
 details.
 
@@ -90,4 +90,4 @@ AfterAll {
 
 ### Integration tests
 
-When using command `Connect-SqlDscDatabaseEngine` always use `Disconnect-SqlDscDatabaseEngine` when connection is no longer needed
+When using command `Connect-SqlDscDatabaseEngine` always use `Disconnect-SqlDscDatabaseEngine` when connection is no longer needed.

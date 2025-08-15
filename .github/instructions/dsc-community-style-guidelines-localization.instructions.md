@@ -5,16 +5,21 @@ applyTo: "source/**/*.ps1"
 
 # Localization Style Guidelines
 
-For public commands and private functions you should always add all localized
-strings for in the source/en-US/SqlServerDsc.strings.psd1 file, re-use the
+For public commands and private functions, you should always add all localized
+strings in the source/en-US/SqlServerDsc.strings.psd1 file, reusing the
 same pattern for new string keys. Localized string key names should always
-be prefixed with the function name but use underscore as word separator.
+be prefixed with the function name but use underscores as word separators.
 Always assume that all localized string keys have already been assigned to
 the variable $script:localizedData.
 
-All message strings for Write-Debug, Write-Verbose, Write-Error, Write-Warning
-and other error messages in classes, public commands and private functions should
+All message strings for Write-Debug, Write-Verbose, Write-Error, Write-Warning,
+and other error messages in classes, public commands, and private functions should
 be localized using localized string keys.
+
+## String File Locations
+
+- Public commands and private functions: source/en-US/SqlServerDsc.strings.psd1
+- Class-based resources: source/en-US/<ResourceClassName>.strings.psd1
 
 ## String File Format
 ```powershell

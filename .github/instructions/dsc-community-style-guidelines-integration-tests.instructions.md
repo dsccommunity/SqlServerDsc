@@ -6,21 +6,20 @@ applyTo: "**/*.[iI]ntegration.[tT]ests.ps1"
 # Command Integration Tests Style Guidelines
 
 Every public command must have an integration test. Integration tests must
-never mock any command but run the command in a real environment. All integration
-tests should be placed in the root of the folder "tests/Integration/Commands"
-and the integration tests should be named after the public command they are testing,
-but should have the suffix .Integration.Tests.ps1. The integration tests should
-be written to cover all possible scenarios and code paths, ensuring that both
-edge cases and common use cases are tested. The integration tests should
-also be written to test the command in a real environment, using real
-resources and dependencies.
+never mock any command; they run in a real environment. Place all integration
+tests in the folder `tests/Integration/Commands`. Name each test after the
+public command it verifies and suffix it with `.Integration.Tests.ps1`.
 
-When integration tests need the computer name in CI environments, always use
-the `Get-ComputerName` command, which is available in the build pipeline.
+Write tests to cover all scenarios and code paths, including common cases
+and edge cases. Tests should exercise the command in a real environment,
+using real resources and dependencies.
 
-All integration tests must use the below code block prior to the first
-`Describe`-block. The following code will set up the integration test
-environment and it will make sure the module being tested is available
+When integration tests need the computer name in CI, use [`Get-ComputerName`](https://github.com/dsccommunity/DscResource.Common/wiki/Get%E2%80%91ComputerName).
+This helper is provided in the build pipeline and is not required locally.
+
+All integration tests must use the code block below before the first
+`Describe` block. The following code sets up the integration test
+environment and it will make sure the module being tested is available:
 
 ```powershell
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
@@ -31,7 +30,7 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
@@ -51,12 +50,12 @@ BeforeDiscovery {
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:dscModuleName
+    Import-Module -Name $script:dscModuleName -Force
 }
 ```
 
-The module DscResource.Test is used by the pipeline and its commands
-are normally not used when testing public functions, private functions or
+The DscResource.Test module is used by the pipeline and its commands are
+typically not used when testing public functions, private functions, or
 class-based resources.
 
 Do not run integration tests locally unless explicitly instructed.

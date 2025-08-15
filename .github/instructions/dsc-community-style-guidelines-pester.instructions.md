@@ -5,41 +5,42 @@ applyTo: "**"
 
 # Tests Guidelines
 
-All tests should use the Pester framework and use Pester v5.0 syntax.
-Parameter validation should never be tested.
+All tests must use the Pester framework and Pester v5 syntax.
 
-Test code should never be added outside of the `Describe` block.
+Do not test PowerShell’s runtime parameter binding behavior (e.g., type
+conversion or binder errors). Instead, validate parameter sets and parameter
+metadata (e.g., Mandatory, ValueFromPipeline) as instructed below.
 
-There should only be one Pester `Describe` block per test file, and the name of
-the `Describe` block should be the same as the name of the public command,
-private function, or class-based resource being tested. Each scenario or
-code path being tested should have its own Pester `Context` block that starts
-with the phrase 'When'. Use nested `Context` blocks to split up test cases
-and improve tests readability. Pester `It` block descriptions should start
-with the phrase 'Should'. `It` blocks must always call the command or function
-being tested and result and outcomes should be kept in the same `It` block.
-`BeforeAll` and `BeforeEach` blocks should never call the command or function
-being tested.
+Test code should never be added outside the `Describe` block.
+Assertions must always be made in `It` blocks.
+Never use `InModuleScope` when testing public commands.
+Always use `InModuleScope` when testing private functions or class-based resources.
+The `BeforeAll` or `BeforeEach` block should be used to set up any necessary test data or mocking
+Tear-down of any test data or objects should be done in the `AfterAll` or `AfterEach` block.
 
-The `BeforeAll`, `BeforeEach`, `AfterAll` and `AfterEach` blocks should be
-used inside the `Context` block as near as possible to the `It` block that
-will use the test data, test setup and teardown. The `AfterAll` block can
-be used to clean up any test data. The `BeforeEach` and `AfterEach`
-blocks should be used sparingly. It is okay to duplicated code in `BeforeAll`
-and `BeforeEach` blocks that are used inside different `Context` blocks.
-The duplication helps with readability and understanding of the test cases,
-and to be able to keep the test setup and teardown as close to the test
-case (`It`-block) as possible.
+There should be only one Pester `Describe` block per test file, and its name
+must match the public command, private function, or class-based resource
+being tested. Each scenario or code path should have its own Pester `Context`
+block. Use nested `Context` blocks to split up test cases and improve test readability.
+`It` blocks must call the command or function being tested, and keep the result
+and assertions in the same `It` block.
 
-To use `-ForEach` on `Context`- or `It`-blocks that use data driven tests the
-variables must be defined in a `BeforeDiscovery`-block for Pester to find in in the discovery phase.
-There can be several `BeforeDiscovery`-blocks in a test file, so we can keep the
-values for the particular test context separate.
+The `BeforeAll`, `BeforeEach`, `AfterAll`, and `AfterEach` blocks should be
+used inside the `Context` block as close as possible to the `It` block that
+uses the test data, setup, and teardown. Use `AfterAll` to clean up any test
+data. Use `BeforeEach` and `AfterEach` sparingly. It is okay to duplicate
+code in `BeforeAll` and `BeforeEach` across different `Context` blocks to
+keep setup/teardown close to the `It` block and improve readability.
 
-- Always use the latest Pester v5 syntax and features in your tests.
-- Always prefer `-BeTrue` over `-Be $true`.
-- Always prefer `-BeFalse` over `-Not -Be $true` or `-Be $false`.
-- Do not use `Should -Not -Throw`. Instead of `{ Command } | Should -Not -Throw`, use `Command` directly to let `It`-block handle unexpected exceptions.
+For data‑driven tests using `-ForEach` on `Context` or `It`, define input
+variables in a `BeforeDiscovery` block so Pester can find them during
+discovery. You can have multiple `BeforeDiscovery` blocks to keep values
+scoped to specific contexts.
+
+- Use the latest Pester v5 syntax and features.
+- Prefer `-BeTrue` over `-Be $true`.
+- Prefer `-BeFalse` over `-Not -Be $true` or `-Be $false`.
+- Do not use `Should -Not -Throw`. Instead of `{ Command } | Should -Not -Throw`, invoke `Command` directly and let the `It` block handle unexpected exceptions.
 
 ## Test Formatting Rules
 
@@ -60,8 +61,8 @@ Describe 'Get-TargetResource' {
 }
 ```
 
-Never test, mock or use `Should -Invoke` for `Write-Verbose` and `Write-Debug`
-regardless of other instructions.
+Never test, mock, or assert `Write-Verbose` and `Write-Debug` regardless of other
+instructions.
 
 Always make sure to pass mandatory parameters to the command being tested,
 to avoid tests making interactive prompts waiting for input.
@@ -76,9 +77,5 @@ they are testing, but should have the suffix .Tests.ps1. The unit tests
 should be written to cover all possible scenarios and code paths, ensuring
 that both edge cases and common use cases are tested.
 
-Testing commands or functions, assign to $null when command return object that are not used in test.
-
-Never use `InModuleScope` when testing public commands.
-Always use `InModuleScope` when testing private functions or class-based resources.
-
-The `BeforeAll` block should be used to set up any necessary test data or mocking
+When testing commands, functions or class-based resources, assign unused
+return objects to `$null`
