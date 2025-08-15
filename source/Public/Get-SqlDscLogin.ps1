@@ -16,7 +16,7 @@
         trying get the login object. This is helpful when logins could have been
         modified outside of the **ServerObject**, for example through T-SQL. But
         on instances with a large amount of logins it might be better to make
-        sure the **ServerObject** is recent enough, or pass in **LoginObject**.
+        sure the **ServerObject** is recent enough.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
