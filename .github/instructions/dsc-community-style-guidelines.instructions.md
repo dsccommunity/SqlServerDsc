@@ -57,7 +57,7 @@ reusable.
 
 ## Private functions
 
-Before creating a private function, check if it there is an available command in
+Before creating a private function, check if there is an available command in
 the module [DscResource.Common](https://raw.githubusercontent.com/wiki/dsccommunity/DscResource.Common/_Sidebar.md) that can be used.
 
 Private functions (helper functions) must each have their own script file,
@@ -78,6 +78,6 @@ Place unit tests for class-based resources in tests/Unit/Classes,
 for public commands in tests/Unit/Public, and
 for private functions in tests/Unit/Private.
 
-### Integration tests
+## Integration tests
 
 All public commands must have an integration test in tests/Integration/Commands.

@@ -19,7 +19,7 @@ This helper is provided in the build pipeline and is not required locally.
 
 All integration tests must use the code block below before the first
 `Describe` block. The following code sets up the integration test
-environment and it will make sure the module being tested is available:
+environment and ensures the module under test is available:
 
 ```powershell
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]

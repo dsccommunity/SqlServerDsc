@@ -39,7 +39,8 @@ applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 
 - Single line: `@('one', 'two', 'three')`
 - Multi-line: each element on separate line with proper indentation
-- Return statement should not use comma operator to cast to array
+- Do not use the unary comma operator (`,`) in return statements to force
+  an array
 
 ### Hashtables
 
