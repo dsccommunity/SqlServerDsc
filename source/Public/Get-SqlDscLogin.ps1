@@ -64,7 +64,7 @@ function Get-SqlDscLogin
 
             if (-not $loginObject)
             {
-                $missingLoginMessage = $script:localizedData.Login_Missing -f $Name
+                $missingLoginMessage = $script:localizedData.Login_Get_Missing -f $Name
 
                 $writeErrorParameters = @{
                     Message      = $missingLoginMessage

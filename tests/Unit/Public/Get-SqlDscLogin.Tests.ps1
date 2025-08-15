@@ -91,7 +91,7 @@ Describe 'Get-SqlDscLogin' -Tag 'Public' {
         Context 'When specifying to throw on error' {
             BeforeAll {
                 $mockErrorMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.Login_Missing
+                    $script:localizedData.Login_Get_Missing
                 }
             }
 
