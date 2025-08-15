@@ -31,28 +31,14 @@ BeforeAll {
 
 Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        $mockInstanceName = $env:COMPUTERNAME
-        $mockSqlCredential = $null
-        $mockConnectTimeout = 30
-        $mockEncryptConnection = $true
+        $mockInstanceName = Get-ComputerName
 
-        if ($env:INTEGRATION_TESTS_SQLSERVER_CREDENTIAL)
-        {
-            <#
-                This is set by the pipeline so we can run the tests towards the
-                SQL Server instance on the AppVeyor build worker.
-            #>
-            $mockSqlCredential = (ConvertFrom-Json -InputObject $env:INTEGRATION_TESTS_SQLSERVER_CREDENTIAL)
-        }
+        $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+        $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
-        try
-        {
-            $serverObject = Connect-SqlDscDatabaseEngine -InstanceName $mockInstanceName -Credential $mockSqlCredential -ConnectTimeout $mockConnectTimeout -EncryptConnection $mockEncryptConnection
-        }
-        catch
-        {
-            Set-ItResult -Skip -Because 'Could not connect to SQL Server instance'
-        }
+        $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
+
+        $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
     }
 
     Context 'When getting all SQL Server logins' {
