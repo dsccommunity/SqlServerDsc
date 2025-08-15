@@ -71,7 +71,7 @@ Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
 
         It 'Should throw an error when the login does not exist' {
             { Get-SqlDscLogin -ServerObject $serverObject -Name 'NonExistentLogin' -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage "There is no login with the name 'NonExistentLogin'."
+                Should -Throw -ExpectedMessage 'There is no login with the name ''NonExistentLogin''.'
         }
 
         It 'Should return null when the login does not exist and error action is SilentlyContinue' {
