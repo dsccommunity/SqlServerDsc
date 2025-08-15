@@ -1,6 +1,6 @@
 ---
 description: Guidelines for implementing integration tests for commands.
-applyTo: "tests/[iI]ntegration/[cC]ommands/**/*.[iI]ntegration.[tT]ests.ps1"
+applyTo: "**/*.[iI]ntegration.[tT]ests.ps1"
 ---
 
 # Command Integration Tests Style Guidelines
