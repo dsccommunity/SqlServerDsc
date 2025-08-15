@@ -60,8 +60,8 @@ applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 - Avoid `Write-Output` (use `return` instead)
 - Avoid `ConvertTo-SecureString -AsPlainText` in production code
 - Don't redefine reserved parameters (Verbose, Debug, etc.)
-- Include a `Force` parameter for functions that supports `$PSCmdlet.ShouldContinue` or with `$PSCmdlet.ShouldProcess`
-- For state changing functions use `SupportsShouldProcess`
+- Include a `Force` parameter for functions that support `$PSCmdlet.ShouldContinue` or that use `$PSCmdlet.ShouldProcess`
+- For state-changing functions, use `SupportsShouldProcess`
 - Use `Write-Error` for non-terminating errors
 - Use `Write-Warning` for warnings
 - Use `Write-Debug` for debugging information
