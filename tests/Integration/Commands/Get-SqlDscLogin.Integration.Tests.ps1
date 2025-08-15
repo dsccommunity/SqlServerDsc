@@ -86,7 +86,7 @@ Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
             $resultWithoutRefresh = Get-SqlDscLogin -ServerObject $serverObject
             $resultWithRefresh = Get-SqlDscLogin -ServerObject $serverObject -Refresh
 
-            $resultWithoutRefresh.Count | Should -Be $resultWithRefresh.Count
+            @($resultWithoutRefresh).Count | Should -Be @($resultWithRefresh).Count
         }
     }
 
