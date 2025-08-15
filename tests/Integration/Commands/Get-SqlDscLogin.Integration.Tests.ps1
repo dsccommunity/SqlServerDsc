@@ -27,22 +27,6 @@ BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
 
     Import-Module -Name $script:dscModuleName
-
-    # Loading stub cmdlets
-    Import-Module -Name "$PSScriptRoot/../../Stubs/SqlServerStub.psm1" -Force
-
-    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
-    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
-}
-
-AfterAll {
-    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
-    $PSDefaultParameterValues.Remove('Mock:ModuleName')
-    $PSDefaultParameterValues.Remove('Should:ModuleName')
-
-    # Unload the module being tested so that it doesn't impact any other tests.
-    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 }
 
 Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
