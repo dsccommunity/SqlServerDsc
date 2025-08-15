@@ -31,19 +31,19 @@ BeforeAll {
 
 Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        $mockInstanceName = Get-ComputerName
+        $script:mockInstanceName = Get-ComputerName
 
-        $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
-        $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+        $script:mockSqlAdministratorUserName = 'SqlAdmin' # Using the computer name as NetBIOS name throws an exception.
+        $script:mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
 
-        $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
+        $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($script:mockSqlAdministratorUserName, $script:mockSqlAdministratorPassword)
 
         $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
     }
 
     Context 'When getting all SQL Server logins' {
         It 'Should return an array of Login objects' {
-            $result = Get-SqlDscLogin -ServerObject $serverObject
+            $result = Get-SqlDscLogin -ServerObject $script:serverObject
 
             <#
                 Casting to array to ensure we get the count on Windows PowerShell
@@ -54,7 +54,7 @@ Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
         }
 
         It 'Should return system logins including sa' {
-            $result = Get-SqlDscLogin -ServerObject $serverObject
+            $result = Get-SqlDscLogin -ServerObject $script:serverObject
 
             $result.Name | Should -Contain 'sa'
         }
@@ -62,7 +62,7 @@ Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
 
     Context 'When getting a specific SQL Server login' {
         It 'Should return the specified login when it exists' {
-            $result = Get-SqlDscLogin -ServerObject $serverObject -Name 'sa'
+            $result = Get-SqlDscLogin -ServerObject $script:serverObject -Name 'sa'
 
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Login'
             $result.Name | Should -Be 'sa'
@@ -70,12 +70,12 @@ Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
         }
 
         It 'Should throw an error when the login does not exist' {
-            { Get-SqlDscLogin -ServerObject $serverObject -Name 'NonExistentLogin' -ErrorAction 'Stop' } |
+            { Get-SqlDscLogin -ServerObject $script:serverObject -Name 'NonExistentLogin' -ErrorAction 'Stop' } |
                 Should -Throw -ExpectedMessage 'There is no login with the name ''NonExistentLogin''.'
         }
 
         It 'Should return null when the login does not exist and error action is SilentlyContinue' {
-            $result = Get-SqlDscLogin -ServerObject $serverObject -Name 'NonExistentLogin' -ErrorAction 'SilentlyContinue'
+            $result = Get-SqlDscLogin -ServerObject $script:serverObject -Name 'NonExistentLogin' -ErrorAction 'SilentlyContinue'
 
             $result | Should -BeNullOrEmpty
         }
@@ -83,8 +83,8 @@ Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
 
     Context 'When using the Refresh parameter' {
         It 'Should return the same results with and without Refresh' {
-            $resultWithoutRefresh = Get-SqlDscLogin -ServerObject $serverObject
-            $resultWithRefresh = Get-SqlDscLogin -ServerObject $serverObject -Refresh
+            $resultWithoutRefresh = Get-SqlDscLogin -ServerObject $script:serverObject
+            $resultWithRefresh = Get-SqlDscLogin -ServerObject $script:serverObject -Refresh
 
             @($resultWithoutRefresh).Count | Should -Be @($resultWithRefresh).Count
         }
@@ -92,7 +92,7 @@ Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
 
     Context 'When using pipeline input' {
         It 'Should accept ServerObject from pipeline' {
-            $result = $serverObject | Get-SqlDscLogin -Name 'sa'
+            $result = $script:serverObject | Get-SqlDscLogin -Name 'sa'
 
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Login'
             $result.Name | Should -Be 'sa'
