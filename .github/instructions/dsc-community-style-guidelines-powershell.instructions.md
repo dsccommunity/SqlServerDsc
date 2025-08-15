@@ -151,7 +151,7 @@ function Get-Something
 
 ## File Encoding
 
-- Use UTF-8 encoding (no BOM) for all files except .schema.mof files that must use ASCII
+- Use UTF-8 encoding (no BOM) for all files
 
 ## Module Manifest
 
