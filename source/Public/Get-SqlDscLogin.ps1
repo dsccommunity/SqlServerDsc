@@ -6,8 +6,8 @@
         This command gets a server login from a SQL Server Database Engine instance.
 
     .PARAMETER ServerObject
-        Specifies current server connection object.
-
+        .PARAMETER ServerObject
+            Specifies the current server connection object.
     .PARAMETER Name
         Specifies the name of the server login to get.
 
