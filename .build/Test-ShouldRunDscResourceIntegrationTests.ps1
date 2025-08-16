@@ -8,6 +8,7 @@
         - DSC resources themselves
         - Public commands used by DSC resources or classes
         - Private functions used by those public commands
+        - Private functions used by class-based DSC resources
         - Classes used by DSC resources
 
     .PARAMETER BaseBranch
@@ -261,13 +262,85 @@ function Get-PrivateFunctionsUsedByCommand
 
 <#
     .SYNOPSIS
+        Gets private functions that class-based DSC resources depend on.
+
+    .DESCRIPTION
+        This function analyzes class-based DSC resource files (those with [DscResource(...)]
+        decoration) to identify which private functions they depend on by searching for
+        function calls in the source code.
+
+    .PARAMETER SourcePath
+        The source path containing Classes and Private directories.
+
+    .EXAMPLE
+        Get-PrivateFunctionsUsedByClassResources -SourcePath 'source'
+
+    .OUTPUTS
+        System.String[]. Array of private function names that are used by class-based DSC resources.
+#>
+function Get-PrivateFunctionsUsedByClassResources
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $SourcePath
+    )
+    
+    $privateFunctions = @()
+    $classesPath = Join-Path -Path $SourcePath -ChildPath 'Classes'
+    
+    if (-not (Test-Path -Path $classesPath))
+    {
+        return @()
+    }
+    
+    # Get all private function names
+    $privateFunctionFiles = Get-ChildItem -Path (Join-Path -Path $SourcePath -ChildPath "Private") -Filter "*.ps1" -ErrorAction SilentlyContinue
+    if (-not $privateFunctionFiles)
+    {
+        return @()
+    }
+    
+    $privateFunctionNames = $privateFunctionFiles | Select-Object -ExpandProperty BaseName
+    
+    # Get all class files and check if they have [DscResource(...)] decoration
+    $classFiles = Get-ChildItem -Path $classesPath -Filter '*.ps1' -ErrorAction SilentlyContinue
+    foreach ($file in $classFiles)
+    {
+        $content = Get-Content -Path $file.FullName -Raw -ErrorAction SilentlyContinue
+        if ($content)
+        {
+            # Check if this is a class-based DSC resource (has [DscResource(...)] decoration)
+            if ($content -match '\[DscResource\([^\]]*\)\]')
+            {
+                # Look for private function usage in this class-based DSC resource
+                foreach ($privateFunction in $privateFunctionNames)
+                {
+                    if ($content -match "\b$privateFunction\b")
+                    {
+                        $privateFunctions += $privateFunction
+                    }
+                }
+            }
+        }
+    }
+    
+    # Return unique private functions
+    return $privateFunctions | Sort-Object -Unique
+}
+
+<#
+    .SYNOPSIS
         Main function that determines if DSC resource integration tests should run.
 
     .DESCRIPTION
         This function analyzes the changes between two git references and determines
         if DSC resource integration tests should run based on the files that have
         been modified. It checks for changes to DSC resources, classes, public
-        commands used by DSC resources, private functions, integration tests, and
+        commands used by DSC resources, private functions used by those public commands,
+        private functions used by class-based DSC resources, integration tests, and
         pipeline configuration.
 
     .PARAMETER BaseBranch
@@ -352,20 +425,29 @@ function Test-ShouldRunDscResourceIntegrationTests
         return $true
     }
     
-    # Check if any private functions used by the affected public commands are changed
+    # Check if any private functions used by the affected public commands or class-based DSC resources are changed
     $changedPrivateFunctions = $changedFiles | Where-Object -FilterScript { $_ -match '^source/Private/(.+)\.ps1$' } | 
         ForEach-Object -Process { [System.IO.Path]::GetFileNameWithoutExtension((Split-Path -Path $_ -Leaf)) }
     
     $affectedPrivateFunctions = @()
+    
+    # Check private functions used by public commands
     foreach ($command in $PublicCommandsUsedByDscResources)
     {
         $privateFunctionsUsed = Get-PrivateFunctionsUsedByCommand -CommandName $command -SourcePath $SourcePath
         $affectedPrivateFunctions += $privateFunctionsUsed | Where-Object -FilterScript { $_ -in $changedPrivateFunctions }
     }
     
+    # Check private functions used by class-based DSC resources
+    $privateFunctionsUsedByClassResources = Get-PrivateFunctionsUsedByClassResources -SourcePath $SourcePath
+    $affectedPrivateFunctions += $privateFunctionsUsedByClassResources | Where-Object -FilterScript { $_ -in $changedPrivateFunctions }
+    
+    # Remove duplicates
+    $affectedPrivateFunctions = $affectedPrivateFunctions | Sort-Object -Unique
+    
     if ($affectedPrivateFunctions)
     {
-        Write-Host "Private functions used by DSC resource-related public commands have been modified. DSC resource integration tests will run."
+        Write-Host "Private functions used by DSC resource-related public commands or class-based DSC resources have been modified. DSC resource integration tests will run."
         Write-Host "Affected private functions:"
         $affectedPrivateFunctions | ForEach-Object -Process { Write-Host "  $_" }
         Write-Host ""

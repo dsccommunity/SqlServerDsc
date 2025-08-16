@@ -13,7 +13,7 @@ The script checks for changes to:
 1. **DSC Resources**: Files under `source/DSCResources/`
 2. **Classes**: Files under `source/Classes/`  
 3. **Public Commands**: Commands that are actually used by DSC resources or classes (dynamically discovered)
-4. **Private Functions**: Functions used by the monitored public commands
+4. **Private Functions**: Functions used by the monitored public commands or class-based DSC resources
 5. **Integration Tests**: DSC resource integration test files under `tests/Integration/Resources/`
 6. **Pipeline Configuration**: Azure Pipelines configuration and build scripts
 
