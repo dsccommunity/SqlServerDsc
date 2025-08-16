@@ -78,7 +78,7 @@ function Get-PublicCommandsUsedByDscResources
     
     if (-not $publicCommandNames)
     {
-        Write-Host "##vso[task.logissue type=warning]No public commands found in $SourcePath/Public"
+        Write-Warning "##[warning]No public commands found in $SourcePath/Public"
         return @()
     }
     
@@ -194,12 +194,12 @@ function Get-ChangedFiles
             }
         }
         
-        Write-Host "##vso[task.logissue type=warning]Failed to get git diff between $From and $To. Exit code: $LASTEXITCODE. Output: $gitDiffOutput"
+        Write-Warning "##[warning]Failed to get git diff between $From and $To. Exit code: $LASTEXITCODE. Output: $gitDiffOutput"
         return @()
     }
     catch
     {
-        Write-Host "##vso[task.logissue type=warning]Error getting changed files: $_"
+        Write-Warning "##[warning]Error getting changed files: $_"
         return @()
     }
 }
@@ -379,36 +379,36 @@ function Test-ShouldRunDscResourceIntegrationTests
         $SourcePath = 'source'
     )
     
-    Write-Host "##vso[section]Analyzing DSC Resource Integration Test Requirements"
+    Write-Host "##[section]Analyzing DSC Resource Integration Test Requirements"
     Write-Host "Analyzing changes between $BaseBranch and $CurrentBranch..."
     Write-Host ""
     
     # Get list of public commands used by DSC resources dynamically
     $PublicCommandsUsedByDscResources = Get-PublicCommandsUsedByDscResources -SourcePath $SourcePath
-    Write-Host "##vso[task.logissue type=debug]Discovered $($PublicCommandsUsedByDscResources.Count) public commands used by DSC resources and classes."
+    Write-Host "Discovered $($PublicCommandsUsedByDscResources.Count) public commands used by DSC resources and classes."
     Write-Host ""
     
     $changedFiles = Get-ChangedFiles -From $BaseBranch -To $CurrentBranch
     
     if (-not $changedFiles)
     {
-        Write-Host "##vso[task.logissue type=warning]No changed files detected. DSC resource integration tests will run by default."
+        Write-Warning "##[warning]No changed files detected. DSC resource integration tests will run by default."
         Write-Host ""
         return $true
     }
     
-    Write-Host "##vso[group]Changed Files"
+    Write-Host "##[group]Changed Files"
     $changedFiles | ForEach-Object -Process { Write-Host "  $_" }
-    Write-Host "##vso[task.logdetail id=1;progress=100;state=Completed]"
+    Write-Host ""
     
     # Check if any DSC resources are directly changed
     $changedDscResources = $changedFiles | Where-Object -FilterScript { $_ -match '^source/DSCResources/' -or $_ -match '^source/Classes/' }
     if ($changedDscResources)
     {
-        Write-Host "##vso[task.logissue type=warning]DSC resources or classes have been modified. DSC resource integration tests will run."
-        Write-Host "##vso[group]Changed DSC Resources/Classes"
+        Write-Warning "##[warning]DSC resources or classes have been modified. DSC resource integration tests will run."
+        Write-Host "##[group]Changed DSC Resources/Classes"
         $changedDscResources | ForEach-Object -Process { Write-Host "  $_" }
-        Write-Host "##vso[task.logdetail id=2;progress=100;state=Completed]"
+        Write-Host ""
         return $true
     }
     
@@ -419,10 +419,10 @@ function Test-ShouldRunDscResourceIntegrationTests
     $affectedCommands = $changedPublicCommands | Where-Object -FilterScript { $_ -in $PublicCommandsUsedByDscResources }
     if ($affectedCommands)
     {
-        Write-Host "##vso[task.logissue type=warning]Public commands used by DSC resources have been modified. DSC resource integration tests will run."
-        Write-Host "##vso[group]Affected Commands"
+        Write-Warning "##[warning]Public commands used by DSC resources have been modified. DSC resource integration tests will run."
+        Write-Host "##[group]Affected Commands"
         $affectedCommands | ForEach-Object -Process { Write-Host "  $_" }
-        Write-Host "##vso[task.logdetail id=3;progress=100;state=Completed]"
+        Write-Host ""
         return $true
     }
     
@@ -448,10 +448,10 @@ function Test-ShouldRunDscResourceIntegrationTests
     
     if ($affectedPrivateFunctions)
     {
-        Write-Host "##vso[task.logissue type=warning]Private functions used by DSC resource-related public commands or class-based DSC resources have been modified. DSC resource integration tests will run."
-        Write-Host "##vso[group]Affected Private Functions"
+        Write-Warning "##[warning]Private functions used by DSC resource-related public commands or class-based DSC resources have been modified. DSC resource integration tests will run."
+        Write-Host "##[group]Affected Private Functions"
         $affectedPrivateFunctions | ForEach-Object -Process { Write-Host "  $_" }
-        Write-Host "##vso[task.logdetail id=4;progress=100;state=Completed]"
+        Write-Host ""
         return $true
     }
     
@@ -459,10 +459,10 @@ function Test-ShouldRunDscResourceIntegrationTests
     $changedIntegrationTests = $changedFiles | Where-Object -FilterScript { $_ -match '^tests/Integration/Resources/' }
     if ($changedIntegrationTests)
     {
-        Write-Host "##vso[task.logissue type=warning]DSC resource integration test files have been modified. DSC resource integration tests will run."
-        Write-Host "##vso[group]Changed Integration Test Files"
+        Write-Warning "##[warning]DSC resource integration test files have been modified. DSC resource integration tests will run."
+        Write-Host "##[group]Changed Integration Test Files"
         $changedIntegrationTests | ForEach-Object -Process { Write-Host "  $_" }
-        Write-Host "##vso[task.logdetail id=5;progress=100;state=Completed]"
+        Write-Host ""
         return $true
     }
     
@@ -470,14 +470,14 @@ function Test-ShouldRunDscResourceIntegrationTests
     $changedPipelineFiles = $changedFiles | Where-Object -FilterScript { $_ -match 'azure-pipelines\.yml$|\.build/' }
     if ($changedPipelineFiles)
     {
-        Write-Host "##vso[task.logissue type=warning]Pipeline configuration has been modified. DSC resource integration tests will run."
-        Write-Host "##vso[group]Changed Pipeline Files"
+        Write-Warning "##[warning]Pipeline configuration has been modified. DSC resource integration tests will run."
+        Write-Host "##[group]Changed Pipeline Files"
         $changedPipelineFiles | ForEach-Object -Process { Write-Host "  $_" }
-        Write-Host "##vso[task.logdetail id=6;progress=100;state=Completed]"
+        Write-Host ""
         return $true
     }
     
-    Write-Host "##vso[task.logissue type=debug]No changes detected that would affect DSC resources. DSC resource integration tests can be skipped."
+    Write-Host "No changes detected that would affect DSC resources. DSC resource integration tests can be skipped."
     Write-Host ""
     return $false
 }
@@ -491,14 +491,14 @@ if ($MyInvocation.InvocationName -ne '.')
     Write-Output -InputObject "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests]$shouldRun"
     
     # Provide clear final result with appropriate color coding
-    Write-Host "##vso[section]Test Requirements Decision"
+    Write-Host "##[section]Test Requirements Decision"
     if ($shouldRun)
     {
-        Write-Host "##vso[task.logissue type=warning]RESULT: DSC resource integration tests WILL RUN"
+        Write-Warning "##[warning]RESULT: DSC resource integration tests WILL RUN"
     }
     else
     {
-        Write-Host "##vso[task.logissue type=debug]RESULT: DSC resource integration tests will be SKIPPED"
+        Write-Host "RESULT: DSC resource integration tests will be SKIPPED"
     }
     
     # Also output as regular output for local testing
