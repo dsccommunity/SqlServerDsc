@@ -50,7 +50,7 @@ BeforeDiscovery {
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
 
-    Import-Module -Name $script:dscModuleName -Force
+    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
 }
 ```
 
