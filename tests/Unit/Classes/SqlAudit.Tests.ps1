@@ -34,7 +34,7 @@ BeforeAll {
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName -Force
+    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
 
     Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '../../TestHelpers/CommonTestHelper.psm1')
 
