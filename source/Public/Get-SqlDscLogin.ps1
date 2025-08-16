@@ -61,6 +61,8 @@ function Get-SqlDscLogin
     {
         if ($Refresh.IsPresent)
         {
+            Write-Verbose -Message ($script:localizedData.Login_Get_RefreshingLogins -f $ServerObject.InstanceName)
+
             # Make sure the logins are up-to-date to get any newly created logins.
             $ServerObject.Logins.Refresh()
         }
@@ -69,6 +71,8 @@ function Get-SqlDscLogin
 
         if ($PSBoundParameters.ContainsKey('Name'))
         {
+            Write-Verbose -Message ($script:localizedData.Login_Get_RetrievingByName -f $Name, $ServerObject.InstanceName)
+
             $loginObject = $ServerObject.Logins[$Name]
 
             if (-not $loginObject)
@@ -87,6 +91,8 @@ function Get-SqlDscLogin
         }
         else
         {
+            Write-Verbose -Message ($script:localizedData.Login_Get_ReturningAllLogins -f $ServerObject.InstanceName)
+
             $loginObject = $ServerObject.Logins
         }
 
