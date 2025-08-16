@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added setup workflow for GitHub Copilot.
   - Switch the workflow to use Linux.
   - Attempt to unshallow the Copilot branch
+  - Improved AI instructions.
 - `Assert-SqlDscLogin`
   - Added new public command to validate that a specified SQL Server principal
     exists as a login, throwing a terminating error if it doesn't exist.
