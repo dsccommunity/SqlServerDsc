@@ -27,13 +27,12 @@ BeforeDiscovery {
     {
         throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
+
 }
 
 BeforeAll {
     $script:dscModuleName = 'SqlServerDsc'
     $script:dscResourceName = 'DSC_SqlDatabase'
-
-    $env:SqlServerDscCI = $true
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
@@ -67,7 +66,6 @@ AfterAll {
     # Remove module common test helper.
     Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
 
-    Remove-Item -Path 'env:SqlServerDscCI'
 }
 
 Describe 'SqlDatabase\Get-TargetResource' {
