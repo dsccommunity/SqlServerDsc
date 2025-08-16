@@ -96,12 +96,15 @@ stages:
                 if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
                     $targetBranch = "origin/main"
                 }
-                
+
                 Write-Output "Target branch: $targetBranch"
                 Write-Output "Current branch: HEAD"
-                
+
                 # Run the script to determine if DSC resource integration tests should run
-                ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch $targetBranch -CurrentBranch HEAD
+                $shouldRun = ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch $targetBranch -CurrentBranch HEAD
+                
+                # Set Azure DevOps output variable for pipeline conditions
+                Write-Host "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests;isOutput=true]$shouldRun"
               pwsh: true
               
       - job: Test_HQRM

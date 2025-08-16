@@ -492,10 +492,10 @@ if ($MyInvocation.InvocationName -ne '.')
         Write-Host "RESULT: DSC resource integration tests will be SKIPPED"
     }
     
-    # Set Azure DevOps output variable for pipeline conditions
-    Write-Host "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests;isOutput=true]$shouldRun"
-    
-    # Also output as regular output for local testing
+    # Output the result for the calling script to capture
     Write-Output -InputObject ""
     Write-Output -InputObject "ShouldRunDscResourceIntegrationTests: $shouldRun"
+    
+    # Return the boolean value for pipeline script to use
+    return $shouldRun
 }
