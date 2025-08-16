@@ -6,14 +6,14 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
@@ -31,15 +31,25 @@ BeforeAll {
 
 Describe 'Get-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 'Integration_SQL2019', 'Integration_SQL2022') {
     BeforeAll {
-        $script:mockInstanceName = Get-ComputerName
+        # Starting the named instance SQL Server service prior to running tests.
+        Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
 
-        $script:mockSqlAdministratorUserName = 'SqlAdmin' # Using the computer name as NetBIOS name throws an exception.
-        $script:mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+        $script:mockInstanceName = 'DSCSQLTEST'
+        $script:mockComputerName = Get-ComputerName
 
-        $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($script:mockSqlAdministratorUserName, $script:mockSqlAdministratorPassword)
+        $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
+        $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
+
+        $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
         $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
     }
+
+    AfterAll {
+        # Stop the named instance SQL Server service to save memory on the build worker.
+        Stop-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
+    }
+
 
     Context 'When getting all SQL Server logins' {
         It 'Should return an array of Login objects' {
