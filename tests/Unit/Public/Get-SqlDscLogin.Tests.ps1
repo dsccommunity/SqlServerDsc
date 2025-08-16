@@ -1,4 +1,4 @@
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 param ()
 
 BeforeDiscovery {
@@ -28,7 +28,7 @@ BeforeAll {
 
     $env:SqlServerDscCI = $true
 
-    Import-Module -Name $script:dscModuleName -Force -ErrorAction 'Stop'
+    Import-Module -Name $script:dscModuleName -Force
 
     # Loading mocked classes
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Stubs') -ChildPath 'SMO.cs')
@@ -49,14 +49,14 @@ AfterAll {
     Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Describe 'Get-SqlDscAudit' -Tag 'Public' {
+Describe 'Get-SqlDscLogin' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName = '__AllParameterSets'
             MockExpectedParameters = '[-ServerObject] <Server> [[-Name] <string>] [-Refresh] [<CommonParameters>]'
         }
     ) {
-        $result = (Get-Command -Name 'Get-SqlDscAudit').ParameterSets |
+        $result = (Get-Command -Name 'Get-SqlDscLogin').ParameterSets |
             Where-Object -FilterScript {
                 $_.Name -eq $mockParameterSetName
             } |
@@ -75,96 +75,113 @@ Describe 'Get-SqlDscAudit' -Tag 'Public' {
         $result.ParameterListAsString | Should -Be $MockExpectedParameters
     }
 
-    Context 'When no audit exist' {
+    It 'Should have the correct parameter metadata for ServerObject, Name, and Refresh' {
+        $cmd = Get-Command -Name 'Get-SqlDscLogin'
+        
+        # Test ServerObject parameter
+        $cmd.Parameters['ServerObject'].ParameterType.FullName | Should -Be 'Microsoft.SqlServer.Management.Smo.Server'
+        $cmd.Parameters['ServerObject'].Attributes.Mandatory | Should -BeTrue
+        $cmd.Parameters['ServerObject'].Attributes.ValueFromPipeline | Should -BeTrue
+        
+        # Test Name parameter
+        $cmd.Parameters['Name'].ParameterType.FullName | Should -Be 'System.String'
+        $cmd.Parameters['Name'].Attributes.Mandatory | Should -BeFalse
+        
+        # Test Refresh parameter
+        $cmd.Parameters['Refresh'].ParameterType.FullName | Should -Be 'System.Management.Automation.SwitchParameter'
+        $cmd.Parameters['Refresh'].Attributes.Mandatory | Should -BeFalse
+    }
+
+    Context 'When no login exists' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
                     return @{}
                 } -PassThru -Force
 
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
-                Name = 'Log1'
+                Name = 'TestLogin'
             }
         }
 
         Context 'When specifying to throw on error' {
             BeforeAll {
                 $mockErrorMessage = InModuleScope -ScriptBlock {
-                    $script:localizedData.Audit_Missing
+                    $script:localizedData.Login_Get_Missing
                 }
             }
 
             It 'Should throw the correct error' {
-                { Get-SqlDscAudit @mockDefaultParameters -ErrorAction 'Stop' } |
-                    Should -Throw -ExpectedMessage ($mockErrorMessage -f 'Log1')
+                { Get-SqlDscLogin @mockDefaultParameters -ErrorAction 'Stop' } |
+                    Should -Throw -ExpectedMessage ($mockErrorMessage -f 'TestLogin')
             }
         }
 
         Context 'When ignoring the error' {
             It 'Should not throw an exception and return $null' {
-                Get-SqlDscAudit @mockDefaultParameters -ErrorAction 'SilentlyContinue' |
+                Get-SqlDscLogin @mockDefaultParameters -ErrorAction 'SilentlyContinue' |
                     Should -BeNullOrEmpty
             }
         }
     }
 
-    Context 'When getting a specific audit' {
+    Context 'When getting a specific login' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
 
             $mockServerObject = $mockServerObject |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
                     return @{
-                        'Log1' = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                        'TestLogin' = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
                             $mockServerObject,
-                            'Log1'
+                            'TestLogin'
                         )
                     }
                 } -PassThru -Force
 
             $mockDefaultParameters = @{
                 ServerObject = $mockServerObject
-                Name = 'Log1'
+                Name = 'TestLogin'
             }
         }
 
         It 'Should return the correct values' {
-            $result = Get-SqlDscAudit @mockDefaultParameters
+            $result = Get-SqlDscLogin @mockDefaultParameters
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Audit'
-            $result.Name | Should -Be 'Log1'
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Login'
+            $result.Name | Should -Be 'TestLogin'
         }
 
         Context 'When passing parameter ServerObject over the pipeline' {
             It 'Should return the correct values' {
-                $result = $mockServerObject | Get-SqlDscAudit -Name 'Log1'
+                $result = $mockServerObject | Get-SqlDscLogin -Name 'TestLogin'
 
-                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Audit'
-                $result.Name | Should -Be 'Log1'
+                $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Login'
+                $result.Name | Should -Be 'TestLogin'
             }
         }
     }
 
-    Context 'When getting all current audits' {
+    Context 'When getting all current logins' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject.InstanceName = 'TestInstance'
 
             $mockServerObject = $mockServerObject |
-                Add-Member -MemberType 'ScriptProperty' -Name 'Audits' -Value {
+                Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
                     return @(
                         (
-                            New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                            New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
                                 $mockServerObject,
-                                'Log1'
+                                'TestLogin1'
                             )
                         ),
                         (
-                            New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Audit' -ArgumentList @(
+                            New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
                                 $mockServerObject,
-                                'Log2'
+                                'TestLogin2'
                             )
                         )
                     )
@@ -176,12 +193,48 @@ Describe 'Get-SqlDscAudit' -Tag 'Public' {
         }
 
         It 'Should return the correct values' {
-            $result = Get-SqlDscAudit @mockDefaultParameters
+            $result = Get-SqlDscLogin @mockDefaultParameters
 
-            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Audit'
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.Login'
             $result | Should -HaveCount 2
-            $result.Name | Should -Contain 'Log1'
-            $result.Name | Should -Contain 'Log2'
+            $result.Name | Should -Contain 'TestLogin1'
+            $result.Name | Should -Contain 'TestLogin2'
+        }
+    }
+
+    Context 'When using the Refresh parameter' {
+        BeforeAll {
+            $script:mockRefreshCallCount = 0
+
+            $mockLoginsCollection = @{
+                'TestLogin' = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Login' -ArgumentList @(
+                    $null,
+                    'TestLogin'
+                )
+            } |
+                Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                    $script:mockRefreshCallCount++
+                } -PassThru -Force
+
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject.InstanceName = 'TestInstance'
+
+            $mockServerObject = $mockServerObject |
+                Add-Member -MemberType 'ScriptProperty' -Name 'Logins' -Value {
+                    return $mockLoginsCollection
+                } -PassThru -Force
+
+            $mockDefaultParameters = @{
+                ServerObject = $mockServerObject
+                Name = 'TestLogin'
+                Refresh = $true
+            }
+        }
+
+        It 'Should call the Refresh method on the Logins collection' {
+            Get-SqlDscLogin @mockDefaultParameters
+
+            $script:mockRefreshCallCount | Should -Be 1
         }
     }
 }

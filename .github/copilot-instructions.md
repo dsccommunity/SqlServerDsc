@@ -27,4 +27,4 @@ The guidelines always take priority over existing code patterns in project.
 
 New DSC resources should always be created as class-based resources.
 
-Follow class-based resources guidelines: [./instructions/dsc-community-style-guidelines-class-resource.instructions.md](./instructions/dsc-community-style-guidelines-class-resource.instructions.md)
+- Follow class-based resources guidelines: [./instructions/dsc-community-style-guidelines-class-resource.instructions.md](./instructions/dsc-community-style-guidelines-class-resource.instructions.md)

@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Make sure tests forcibly imports the module being tested to avoid AI failing
+  when testing changes.
+
 ### Added
 
 - Added setup workflow for GitHub Copilot.
@@ -16,6 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     exists as a login, throwing a terminating error if it doesn't exist.
   - Supports pipeline input and provides detailed error messages with localization.
   - Uses `Test-SqlDscIsLogin` command for login validation following module patterns.
+- `Get-SqlDscLogin`
+  - Added new public command to get a SQL Server login from a Database Engine instance.
+  - Returns a `Microsoft.SqlServer.Management.Smo.Login` object that represents
+    the login.
+  - Supports getting a specific login by name or all logins if no name is specified.
+  - Includes a `-Refresh` parameter to refresh the server's login collection
+    before retrieval.
 
 ### Changed
 
