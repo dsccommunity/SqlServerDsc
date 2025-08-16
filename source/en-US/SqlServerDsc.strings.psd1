@@ -61,6 +61,12 @@ ConvertFrom-StringData @'
     ## Get-SqlDscAudit
     Audit_Missing = There is no audit with the name '{0}'.
 
+    ## Get-SqlDscLogin
+    Login_Get_Missing = There is no login with the name '{0}'.
+    Login_Get_RefreshingLogins = Refreshing logins on server '{0}'.
+    Login_Get_RetrievingByName = Retrieving login by name '{0}' from server '{1}'.
+    Login_Get_ReturningAllLogins = Returning all logins from server '{0}'.
+
     ## Remove-SqlDscAudit
     Audit_Remove_ShouldProcessVerboseDescription = Removing the audit '{0}' on the instance '{1}'.
     Audit_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the audit '{0}'?
