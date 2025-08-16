@@ -845,17 +845,7 @@ stages:
           eq(variables['Build.SourceBranch'], 'refs/heads/main'),
           startsWith(variables['Build.SourceBranch'], 'refs/tags/')
         ),
-        contains(variables['System.TeamFoundationCollectionUri'], 'dsccommunity'),
-        or(
-          eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'False'),
-          and(
-            succeeded('Integration_Test_Resources_SqlServer'),
-            succeeded('Integration_Test_Resources_SqlServer_dbatools'),
-            succeeded('Integration_Test_Resources_ReportingServices'),
-            succeeded('Integration_Test_Resources_PowerBIReportServer'),
-            succeeded('Integration_Test_Resources_ReportingServices_dbatools')
-          )
-        )
+        contains(variables['System.TeamFoundationCollectionUri'], 'dsccommunity')
       )
     jobs:
       - job: Deploy_Module
