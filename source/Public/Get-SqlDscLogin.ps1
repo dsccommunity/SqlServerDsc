@@ -76,7 +76,7 @@ function Get-SqlDscLogin
 
                 $writeErrorParameters = @{
                     Message      = $missingLoginMessage
-                    Category     = 'InvalidOperation'
+                    Category     = 'ObjectNotFound'
                     ErrorId      = 'GSDL0001' # cspell: disable-line
                     TargetObject = $Name
                 }
