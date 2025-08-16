@@ -78,7 +78,7 @@ function Get-PublicCommandsUsedByDscResources
     
     if (-not $publicCommandNames)
     {
-        Write-Warning "##[warning]No public commands found in $SourcePath/Public"
+        Write-Warning "No public commands found in $SourcePath/Public"
         return @()
     }
     
@@ -194,12 +194,12 @@ function Get-ChangedFiles
             }
         }
         
-        Write-Warning "##[warning]Failed to get git diff between $From and $To. Exit code: $LASTEXITCODE. Output: $gitDiffOutput"
+        Write-Warning "Failed to get git diff between $From and $To. Exit code: $LASTEXITCODE. Output: $gitDiffOutput"
         return @()
     }
     catch
     {
-        Write-Warning "##[warning]Error getting changed files: $_"
+        Write-Warning "Error getting changed files: $_"
         return @()
     }
 }
@@ -392,22 +392,24 @@ function Test-ShouldRunDscResourceIntegrationTests
     
     if (-not $changedFiles)
     {
-        Write-Warning "##[warning]No changed files detected. DSC resource integration tests will run by default."
+        Write-Warning "No changed files detected. DSC resource integration tests will run by default."
         Write-Host ""
         return $true
     }
     
     Write-Host "##[group]Changed Files"
     $changedFiles | ForEach-Object -Process { Write-Host "  $_" }
+    Write-Host "##[endgroup]"
     Write-Host ""
     
     # Check if any DSC resources are directly changed
     $changedDscResources = $changedFiles | Where-Object -FilterScript { $_ -match '^source/DSCResources/' -or $_ -match '^source/Classes/' }
     if ($changedDscResources)
     {
-        Write-Warning "##[warning]DSC resources or classes have been modified. DSC resource integration tests will run."
+        Write-Warning "DSC resources or classes have been modified. DSC resource integration tests will run."
         Write-Host "##[group]Changed DSC Resources/Classes"
         $changedDscResources | ForEach-Object -Process { Write-Host "  $_" }
+        Write-Host "##[endgroup]"
         Write-Host ""
         return $true
     }
@@ -419,9 +421,10 @@ function Test-ShouldRunDscResourceIntegrationTests
     $affectedCommands = $changedPublicCommands | Where-Object -FilterScript { $_ -in $PublicCommandsUsedByDscResources }
     if ($affectedCommands)
     {
-        Write-Warning "##[warning]Public commands used by DSC resources have been modified. DSC resource integration tests will run."
+        Write-Warning "Public commands used by DSC resources have been modified. DSC resource integration tests will run."
         Write-Host "##[group]Affected Commands"
         $affectedCommands | ForEach-Object -Process { Write-Host "  $_" }
+        Write-Host "##[endgroup]"
         Write-Host ""
         return $true
     }
@@ -448,9 +451,10 @@ function Test-ShouldRunDscResourceIntegrationTests
     
     if ($affectedPrivateFunctions)
     {
-        Write-Warning "##[warning]Private functions used by DSC resource-related public commands or class-based DSC resources have been modified. DSC resource integration tests will run."
+        Write-Warning "Private functions used by DSC resource-related public commands or class-based DSC resources have been modified. DSC resource integration tests will run."
         Write-Host "##[group]Affected Private Functions"
         $affectedPrivateFunctions | ForEach-Object -Process { Write-Host "  $_" }
+        Write-Host "##[endgroup]"
         Write-Host ""
         return $true
     }
@@ -459,20 +463,10 @@ function Test-ShouldRunDscResourceIntegrationTests
     $changedIntegrationTests = $changedFiles | Where-Object -FilterScript { $_ -match '^tests/Integration/Resources/' }
     if ($changedIntegrationTests)
     {
-        Write-Warning "##[warning]DSC resource integration test files have been modified. DSC resource integration tests will run."
+        Write-Warning "DSC resource integration test files have been modified. DSC resource integration tests will run."
         Write-Host "##[group]Changed Integration Test Files"
         $changedIntegrationTests | ForEach-Object -Process { Write-Host "  $_" }
-        Write-Host ""
-        return $true
-    }
-    
-    # Check if pipeline configuration is changed
-    $changedPipelineFiles = $changedFiles | Where-Object -FilterScript { $_ -match 'azure-pipelines\.yml$|\.build/' }
-    if ($changedPipelineFiles)
-    {
-        Write-Warning "##[warning]Pipeline configuration has been modified. DSC resource integration tests will run."
-        Write-Host "##[group]Changed Pipeline Files"
-        $changedPipelineFiles | ForEach-Object -Process { Write-Host "  $_" }
+        Write-Host "##[endgroup]"
         Write-Host ""
         return $true
     }
@@ -494,7 +488,7 @@ if ($MyInvocation.InvocationName -ne '.')
     Write-Host "##[section]Test Requirements Decision"
     if ($shouldRun)
     {
-        Write-Warning "##[warning]RESULT: DSC resource integration tests WILL RUN"
+        Write-Warning "RESULT: DSC resource integration tests WILL RUN"
     }
     else
     {
