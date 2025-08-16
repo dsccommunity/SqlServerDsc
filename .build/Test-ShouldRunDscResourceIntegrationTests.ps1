@@ -306,30 +306,35 @@ function Test-ShouldRunDscResourceIntegrationTests
         $SourcePath = 'source'
     )
     
-    Write-Output -InputObject "Analyzing changes between $BaseBranch and $CurrentBranch..."
+    Write-Host "Analyzing changes between $BaseBranch and $CurrentBranch..."
+    Write-Host ""
     
     # Get list of public commands used by DSC resources dynamically
     $PublicCommandsUsedByDscResources = Get-PublicCommandsUsedByDscResources -SourcePath $SourcePath
-    Write-Output -InputObject "Discovered $($PublicCommandsUsedByDscResources.Count) public commands used by DSC resources and classes."
+    Write-Host "Discovered $($PublicCommandsUsedByDscResources.Count) public commands used by DSC resources and classes."
+    Write-Host ""
     
     $changedFiles = Get-ChangedFiles -From $BaseBranch -To $CurrentBranch
     
     if (-not $changedFiles)
     {
-        Write-Output -InputObject "No changed files detected. DSC resource integration tests will run by default."
+        Write-Host "No changed files detected. DSC resource integration tests will run by default."
+        Write-Host ""
         return $true
     }
     
-    Write-Output -InputObject "Changed files:"
-    $changedFiles | ForEach-Object -Process { Write-Output -InputObject "  $_" }
+    Write-Host "Changed files:"
+    $changedFiles | ForEach-Object -Process { Write-Host "  $_" }
+    Write-Host ""
     
     # Check if any DSC resources are directly changed
     $changedDscResources = $changedFiles | Where-Object -FilterScript { $_ -match '^source/DSCResources/' -or $_ -match '^source/Classes/' }
     if ($changedDscResources)
     {
-        Write-Output -InputObject "DSC resources or classes have been modified. DSC resource integration tests will run."
-        Write-Output -InputObject "Changed DSC resources/classes:"
-        $changedDscResources | ForEach-Object -Process { Write-Output -InputObject "  $_" }
+        Write-Host "DSC resources or classes have been modified. DSC resource integration tests will run."
+        Write-Host "Changed DSC resources/classes:"
+        $changedDscResources | ForEach-Object -Process { Write-Host "  $_" }
+        Write-Host ""
         return $true
     }
     
@@ -340,9 +345,10 @@ function Test-ShouldRunDscResourceIntegrationTests
     $affectedCommands = $changedPublicCommands | Where-Object -FilterScript { $_ -in $PublicCommandsUsedByDscResources }
     if ($affectedCommands)
     {
-        Write-Output -InputObject "Public commands used by DSC resources have been modified. DSC resource integration tests will run."
-        Write-Output -InputObject "Affected commands:"
-        $affectedCommands | ForEach-Object -Process { Write-Output -InputObject "  $_" }
+        Write-Host "Public commands used by DSC resources have been modified. DSC resource integration tests will run."
+        Write-Host "Affected commands:"
+        $affectedCommands | ForEach-Object -Process { Write-Host "  $_" }
+        Write-Host ""
         return $true
     }
     
@@ -359,9 +365,10 @@ function Test-ShouldRunDscResourceIntegrationTests
     
     if ($affectedPrivateFunctions)
     {
-        Write-Output -InputObject "Private functions used by DSC resource-related public commands have been modified. DSC resource integration tests will run."
-        Write-Output -InputObject "Affected private functions:"
-        $affectedPrivateFunctions | ForEach-Object -Process { Write-Output -InputObject "  $_" }
+        Write-Host "Private functions used by DSC resource-related public commands have been modified. DSC resource integration tests will run."
+        Write-Host "Affected private functions:"
+        $affectedPrivateFunctions | ForEach-Object -Process { Write-Host "  $_" }
+        Write-Host ""
         return $true
     }
     
@@ -369,9 +376,10 @@ function Test-ShouldRunDscResourceIntegrationTests
     $changedIntegrationTests = $changedFiles | Where-Object -FilterScript { $_ -match '^tests/Integration/Resources/' }
     if ($changedIntegrationTests)
     {
-        Write-Output -InputObject "DSC resource integration test files have been modified. DSC resource integration tests will run."
-        Write-Output -InputObject "Changed integration test files:"
-        $changedIntegrationTests | ForEach-Object -Process { Write-Output -InputObject "  $_" }
+        Write-Host "DSC resource integration test files have been modified. DSC resource integration tests will run."
+        Write-Host "Changed integration test files:"
+        $changedIntegrationTests | ForEach-Object -Process { Write-Host "  $_" }
+        Write-Host ""
         return $true
     }
     
@@ -379,13 +387,15 @@ function Test-ShouldRunDscResourceIntegrationTests
     $changedPipelineFiles = $changedFiles | Where-Object -FilterScript { $_ -match 'azure-pipelines\.yml$|\.build/' }
     if ($changedPipelineFiles)
     {
-        Write-Output -InputObject "Pipeline configuration has been modified. DSC resource integration tests will run."
-        Write-Output -InputObject "Changed pipeline files:"
-        $changedPipelineFiles | ForEach-Object -Process { Write-Output -InputObject "  $_" }
+        Write-Host "Pipeline configuration has been modified. DSC resource integration tests will run."
+        Write-Host "Changed pipeline files:"
+        $changedPipelineFiles | ForEach-Object -Process { Write-Host "  $_" }
+        Write-Host ""
         return $true
     }
     
-    Write-Output -InputObject "No changes detected that would affect DSC resources. DSC resource integration tests can be skipped."
+    Write-Host "No changes detected that would affect DSC resources. DSC resource integration tests can be skipped."
+    Write-Host ""
     return $false
 }
 
@@ -398,6 +408,7 @@ if ($MyInvocation.InvocationName -ne '.')
     Write-Output -InputObject "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests]$shouldRun"
     
     # Also output as regular output for local testing
+    Write-Output -InputObject ""
     Write-Output -InputObject "ShouldRunDscResourceIntegrationTests: $shouldRun"
     
     # Set exit code based on result for script usage
