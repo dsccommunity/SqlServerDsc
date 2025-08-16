@@ -10,7 +10,7 @@
         repository DscResource.Test is resolved this should not be needed. See issue
         https://github.com/dsccommunity/DscResource.Test/issues/100.
 #>
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
 param ()
 
 BeforeDiscovery {
