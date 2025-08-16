@@ -10,7 +10,7 @@ PowerShell commands that should be public should always have its separate
 script file and the command name as the file name with the .ps1 extension,
 these files shall always be placed in the folder source/Public.
 
-All public command names must have the noun prefixed with 'SqlDsc', e.g. 
+All public command names must have the noun prefixed with 'SqlDsc', e.g.
 {Verb}-SqlDsc{Noun}.
 
 Public commands may use private functions to move out logic that can be
@@ -199,8 +199,8 @@ case (`It`-block) as possible.
 Never test, mock or use `Should -Invoke` for `Write-Verbose` and `Write-Debug`
 regardless of other instructions.
 
-Never use `Should -Not -Throw` to prepare for Pester v6 where it has been 
-removed. By default the `It` block will handle any unexpected exception. 
+Never use `Should -Not -Throw` to prepare for Pester v6 where it has been
+removed. By default the `It` block will handle any unexpected exception.
 Instead of `{ Command } | Should -Not -Throw`, use `Command` directly.
 
 Unit tests should be added for all public commands, private functions and
@@ -213,7 +213,7 @@ they are testing, but should have the suffix .Tests.ps1. The unit tests
 should be written to cover all possible scenarios and code paths, ensuring
 that both edge cases and common use cases are tested.
 
-All public commands should always have a test to validate parameter sets 
+All public commands should always have a test to validate parameter sets
 using this template. For commands with a single parameter set:
 
 ```powershell
@@ -318,14 +318,14 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
@@ -386,17 +386,17 @@ edge cases and common use cases are tested. The integration tests should
 also be written to test the command in a real environment, using real
 resources and dependencies.
 
-Integration test script files for public commands must be added to a group 
-within the 'Integration_Test_Commands_SqlServer' stage in ./azure-pipelines.yml. 
-Choose the appropriate group number based on the dependencies of the command 
-being tested (e.g., commands that require Database Engine should be in Group 2 
+Integration test script files for public commands must be added to a group
+within the 'Integration_Test_Commands_SqlServer' stage in ./azure-pipelines.yml.
+Choose the appropriate group number based on the dependencies of the command
+being tested (e.g., commands that require Database Engine should be in Group 2
 or later, after the Database Engine installation tests).
 
-When integration tests need the computer name in CI environments, always use 
+When integration tests need the computer name in CI environments, always use
 the Get-ComputerName command, which is available in the build pipeline.
 
-For integration testing commands use the information in the 
-tests/Integration/Commands/README.md, which describes the testing environment 
+For integration testing commands use the information in the
+tests/Integration/Commands/README.md, which describes the testing environment
 including available instances, users, credentials, and other configuration details.
 
 All integration tests must use the below code block prior to the first
@@ -412,14 +412,14 @@ BeforeDiscovery {
     {
         if (-not (Get-Module -Name 'DscResource.Test'))
         {
-            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
             if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
             {
                 # Redirect all streams to $null, except the error stream (stream 2)
                 & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
             }
 
-            # If the dependencies has not been resolved, this will throw an error.
+            # If the dependencies have not been resolved, this will throw an error.
             Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
         }
     }
@@ -445,9 +445,9 @@ class-based resources.
 ### SQL Server Management Objects (SMO)
 
 When developing commands, private functions, class-based resources, or making
-modifications to existing functionality, always prefer using SQL Server 
-Management Objects (SMO) as the primary method for interacting with SQL Server. 
-Only use T-SQL when it is not possible to achieve the desired functionality 
+modifications to existing functionality, always prefer using SQL Server
+Management Objects (SMO) as the primary method for interacting with SQL Server.
+Only use T-SQL when it is not possible to achieve the desired functionality
 with SMO.
 
 ## Change log
