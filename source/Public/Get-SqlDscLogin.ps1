@@ -12,11 +12,11 @@
         Specifies the name of the server login to get.
 
     .PARAMETER Refresh
-        Specifies that the **ServerObject**'s logins should be refreshed before
-        trying get the login object. This is helpful when logins could have been
-        modified outside of the **ServerObject**, for example through T-SQL. But
-        on instances with a large amount of logins it might be better to make
-        sure the **ServerObject** is recent enough.
+        Specifies that the **ServerObject** logins should be refreshed before
+        trying to get the login object. This is helpful when logins might have
+        been modified outside of the **ServerObject**, for example through T-SQL.
+        On instances with a large number of logins, consider ensuring the
+        **ServerObject** is recent enough.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
