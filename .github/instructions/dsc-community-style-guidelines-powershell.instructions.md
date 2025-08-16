@@ -54,6 +54,16 @@ applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 - Multi-line: `<# Comment #>` format (opening and closing brackets on own line), and indent text
 - No commented-out code
 
+### Comment-based help
+
+- Always add comment-based help to all functions and scripts
+- Comment-based help: SYNOPSIS, DESCRIPTION (40+ chars), PARAMETER, EXAMPLE sections before function/class
+- Comment-based help indentation: keywords 4 spaces, text 8 spaces
+- Include examples for all parameter sets and combinations
+- INPUTS: List each pipeline‑accepted type (one per line) with a 1‑line description.
+- OUTPUTS: List each return type (one per line) with a 1‑line description. Must match both [OutputType()] and actual returns.
+- .NOTES: Include only if it conveys critical info (constraints, side effects, security, version compatibility, breaking behavior). Keep to ≤2 short sentences.
+
 ## Functions
 
 - Avoid aliases (use full command names)
@@ -63,7 +73,7 @@ applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 - Don't redefine reserved parameters (Verbose, Debug, etc.)
 - Include a `Force` parameter for functions that support `$PSCmdlet.ShouldContinue` or that use `$PSCmdlet.ShouldProcess`
 - For state-changing functions, use `SupportsShouldProcess`
-- Use `Write-Error` for non-terminating errors
+- Use `Write-Error` for non-terminating errors, use relevant error category
 - Use `Write-Warning` for warnings
 - Use `Write-Debug` for debugging information
 - Use `Write-Verbose` for actionable information
@@ -82,6 +92,16 @@ applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 
     .PARAMETER Name
         Parameter description
+
+    .INPUTS
+        TypeName
+
+        Description
+
+    .OUTPUTS
+        TypeName
+
+        Description
 #>
 function Get-Something
 {
@@ -107,9 +127,6 @@ function Get-Something
 - Include `[CmdletBinding()]` on every function
 - Parameter block at top
 - Parameter block: `param ()` if empty, else opening/closing parentheses on own lines
-- Comment-based help: SYNOPSIS, DESCRIPTION (40+ chars), PARAMETER, EXAMPLE sections before function/class
-- Comment-based help indentation: keywords 4 spaces, text 8 spaces
-- Include examples for all parameter sets and combinations
 - `[OutputType()]` for functions with output
 - All parameters use `[Parameter()]` attribute, mandatory parameters use `[Parameter(Mandatory = $true)]`
 - Parameter attributes on separate lines
