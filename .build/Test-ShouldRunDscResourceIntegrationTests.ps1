@@ -69,19 +69,19 @@ function Get-PublicCommandsUsedByDscResources
         [System.String]
         $SourcePath = 'source'
     )
-    
+
     $usedCommands = @()
-    
+
     # Get all public command names
     $publicCommandFiles = Get-ChildItem -Path (Join-Path -Path $SourcePath -ChildPath 'Public') -Filter '*.ps1' -ErrorAction SilentlyContinue
     $publicCommandNames = $publicCommandFiles | ForEach-Object -Process { $_.BaseName }
-    
+
     if (-not $publicCommandNames)
     {
         Write-Warning "No public commands found in $SourcePath/Public"
         return @()
     }
-    
+
     # Search in DSC Resources
     $dscResourcesPath = Join-Path -Path $SourcePath -ChildPath 'DSCResources'
     if (Test-Path -Path $dscResourcesPath)
@@ -103,7 +103,7 @@ function Get-PublicCommandsUsedByDscResources
             }
         }
     }
-    
+
     # Search in Classes
     $classesPath = Join-Path -Path $SourcePath -ChildPath 'Classes'
     if (Test-Path -Path $classesPath)
@@ -125,7 +125,7 @@ function Get-PublicCommandsUsedByDscResources
             }
         }
     }
-    
+
     # Return unique commands
     return $usedCommands | Sort-Object -Unique
 }
@@ -164,26 +164,26 @@ function Get-ChangedFiles
         [System.String]
         $To
     )
-    
+
     try
     {
         # Try different git diff approaches
         $gitDiffOutput = $null
-        
+
         # First, try the standard diff
         $gitDiffOutput = & git diff --name-only "$From..$To" 2>&1
         if ($LASTEXITCODE -eq 0 -and $gitDiffOutput)
         {
             return $gitDiffOutput | Where-Object -FilterScript { $_ -and $_.Trim() }
         }
-        
+
         # If that fails, try without the range syntax
         $gitDiffOutput = & git diff --name-only $From $To 2>&1
         if ($LASTEXITCODE -eq 0 -and $gitDiffOutput)
         {
             return $gitDiffOutput | Where-Object -FilterScript { $_ -and $_.Trim() }
         }
-        
+
         # If we're comparing with HEAD and have untracked files, include them
         if ($To -eq 'HEAD')
         {
@@ -193,7 +193,7 @@ function Get-ChangedFiles
                 return $untrackedFiles | Where-Object -FilterScript { $_ -and $_.Trim() }
             }
         }
-        
+
         Write-Warning "Failed to get git diff between $From and $To. Exit code: $LASTEXITCODE. Output: $gitDiffOutput"
         return @()
     }
@@ -237,16 +237,16 @@ function Get-PrivateFunctionsUsedByCommand
         [System.String]
         $SourcePath
     )
-    
+
     $commandFile = Join-Path -Path $SourcePath -ChildPath "Public/$CommandName.ps1"
     if (-not (Test-Path -Path $commandFile))
     {
         return @()
     }
-    
+
     $privateFunctions = @()
     $content = Get-Content -Path $commandFile -Raw
-    
+
     # Look for direct function calls to private functions
     $privateFunctionFiles = Get-ChildItem -Path (Join-Path -Path $SourcePath -ChildPath "Private") -Filter "*.ps1" | Select-Object -ExpandProperty BaseName
     foreach ($privateFunction in $privateFunctionFiles)
@@ -256,7 +256,7 @@ function Get-PrivateFunctionsUsedByCommand
             $privateFunctions += $privateFunction
         }
     }
-    
+
     return $privateFunctions
 }
 
@@ -287,24 +287,24 @@ function Get-PrivateFunctionsUsedByClassResources
         [System.String]
         $SourcePath
     )
-    
+
     $privateFunctions = @()
     $classesPath = Join-Path -Path $SourcePath -ChildPath 'Classes'
-    
+
     if (-not (Test-Path -Path $classesPath))
     {
         return @()
     }
-    
+
     # Get all private function names
     $privateFunctionFiles = Get-ChildItem -Path (Join-Path -Path $SourcePath -ChildPath "Private") -Filter "*.ps1" -ErrorAction SilentlyContinue
     if (-not $privateFunctionFiles)
     {
         return @()
     }
-    
+
     $privateFunctionNames = $privateFunctionFiles | Select-Object -ExpandProperty BaseName
-    
+
     # Get all class files and check if they have [DscResource(...)] decoration
     $classFiles = Get-ChildItem -Path $classesPath -Filter '*.ps1' -ErrorAction SilentlyContinue
     foreach ($file in $classFiles)
@@ -326,7 +326,7 @@ function Get-PrivateFunctionsUsedByClassResources
             }
         }
     }
-    
+
     # Return unique private functions
     return $privateFunctions | Sort-Object -Unique
 }
@@ -378,30 +378,30 @@ function Test-ShouldRunDscResourceIntegrationTests
         [System.String]
         $SourcePath = 'source'
     )
-    
+
     Write-Host "##[section]Analyzing DSC Resource Integration Test Requirements"
     Write-Host "Analyzing changes between $BaseBranch and $CurrentBranch..."
     Write-Host ""
-    
+
     # Get list of public commands used by DSC resources dynamically
     $PublicCommandsUsedByDscResources = Get-PublicCommandsUsedByDscResources -SourcePath $SourcePath
     Write-Host "Discovered $($PublicCommandsUsedByDscResources.Count) public commands used by DSC resources and classes."
     Write-Host ""
-    
+
     $changedFiles = Get-ChangedFiles -From $BaseBranch -To $CurrentBranch
-    
+
     if (-not $changedFiles)
     {
         Write-Warning "No changed files detected. DSC resource integration tests will run by default."
         Write-Host ""
         return $true
     }
-    
+
     Write-Host "##[group]Changed Files"
     $changedFiles | ForEach-Object -Process { Write-Host "  $_" }
     Write-Host "##[endgroup]"
     Write-Host ""
-    
+
     # Check if any DSC resources are directly changed
     $changedDscResources = $changedFiles | Where-Object -FilterScript { $_ -match '^source/DSCResources/' -or $_ -match '^source/Classes/' }
     if ($changedDscResources)
@@ -413,11 +413,11 @@ function Test-ShouldRunDscResourceIntegrationTests
         Write-Host ""
         return $true
     }
-    
+
     # Check if any public commands used by DSC resources are changed
     $changedPublicCommands = $changedFiles | Where-Object -FilterScript { $_ -match '^source/Public/(.+)\.ps1$' } | 
         ForEach-Object -Process { [System.IO.Path]::GetFileNameWithoutExtension((Split-Path -Path $_ -Leaf)) }
-    
+
     $affectedCommands = $changedPublicCommands | Where-Object -FilterScript { $_ -in $PublicCommandsUsedByDscResources }
     if ($affectedCommands)
     {
@@ -428,27 +428,27 @@ function Test-ShouldRunDscResourceIntegrationTests
         Write-Host ""
         return $true
     }
-    
+
     # Check if any private functions used by the affected public commands or class-based DSC resources are changed
     $changedPrivateFunctions = $changedFiles | Where-Object -FilterScript { $_ -match '^source/Private/(.+)\.ps1$' } | 
         ForEach-Object -Process { [System.IO.Path]::GetFileNameWithoutExtension((Split-Path -Path $_ -Leaf)) }
-    
+
     $affectedPrivateFunctions = @()
-    
+
     # Check private functions used by public commands
     foreach ($command in $PublicCommandsUsedByDscResources)
     {
         $privateFunctionsUsed = Get-PrivateFunctionsUsedByCommand -CommandName $command -SourcePath $SourcePath
         $affectedPrivateFunctions += $privateFunctionsUsed | Where-Object -FilterScript { $_ -in $changedPrivateFunctions }
     }
-    
+
     # Check private functions used by class-based DSC resources
     $privateFunctionsUsedByClassResources = Get-PrivateFunctionsUsedByClassResources -SourcePath $SourcePath
     $affectedPrivateFunctions += $privateFunctionsUsedByClassResources | Where-Object -FilterScript { $_ -in $changedPrivateFunctions }
-    
+
     # Remove duplicates
     $affectedPrivateFunctions = $affectedPrivateFunctions | Sort-Object -Unique
-    
+
     if ($affectedPrivateFunctions)
     {
         Write-Warning "Private functions used by DSC resource-related public commands or class-based DSC resources have been modified. DSC resource integration tests will run."
@@ -458,7 +458,7 @@ function Test-ShouldRunDscResourceIntegrationTests
         Write-Host ""
         return $true
     }
-    
+
     # Check if integration test files themselves are changed
     $changedIntegrationTests = $changedFiles | Where-Object -FilterScript { $_ -match '^tests/Integration/Resources/' }
     if ($changedIntegrationTests)
@@ -470,7 +470,7 @@ function Test-ShouldRunDscResourceIntegrationTests
         Write-Host ""
         return $true
     }
-    
+
     Write-Host "No changes detected that would affect DSC resources. DSC resource integration tests can be skipped."
     Write-Host ""
     return $false
@@ -480,7 +480,7 @@ function Test-ShouldRunDscResourceIntegrationTests
 if ($MyInvocation.InvocationName -ne '.')
 {
     $shouldRun = Test-ShouldRunDscResourceIntegrationTests -BaseBranch $BaseBranch -CurrentBranch $CurrentBranch
-    
+
     # Provide clear final result with appropriate color coding
     Write-Host "##[section]Test Requirements Decision"
     if ($shouldRun)
@@ -491,11 +491,11 @@ if ($MyInvocation.InvocationName -ne '.')
     {
         Write-Host "RESULT: DSC resource integration tests will be SKIPPED"
     }
-    
+
     # Output the result for the calling script to capture
     Write-Output -InputObject ""
     Write-Output -InputObject "ShouldRunDscResourceIntegrationTests: $shouldRun"
-    
+
     # Return the boolean value for pipeline script to use
     return $shouldRun
 }
