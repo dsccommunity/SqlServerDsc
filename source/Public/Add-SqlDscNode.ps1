@@ -7,6 +7,8 @@
 
         See the link in the commands help for information on each parameter. The
         link points to SQL Server command line setup documentation.
+        
+        This is a test change to verify DSC resource integration test optimization.
 
     .PARAMETER AcceptLicensingTerms
         Required parameter to be able to run unattended install. By specifying this

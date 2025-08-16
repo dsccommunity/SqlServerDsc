@@ -1,0 +1,242 @@
+<#
+    .SYNOPSIS
+        Determines if DSC resource integration tests should run based on changed files.
+
+    .DESCRIPTION
+        This script analyzes the git diff to determine if DSC resource integration tests
+        need to run. It checks if changes affect:
+        - DSC resources themselves
+        - Public commands used by DSC resources or classes
+        - Private functions used by those public commands
+        - Classes used by DSC resources
+
+    .PARAMETER BaseBranch
+        The base branch to compare against. Default is 'origin/main'.
+
+    .PARAMETER CurrentBranch
+        The current branch or commit to compare. Default is 'HEAD'.
+
+    .EXAMPLE
+        Test-ShouldRunDscResourceIntegrationTests
+
+    .EXAMPLE
+        Test-ShouldRunDscResourceIntegrationTests -BaseBranch 'origin/main' -CurrentBranch 'HEAD'
+#>
+[CmdletBinding()]
+param(
+    [Parameter()]
+    [string]
+    $BaseBranch = 'origin/main',
+
+    [Parameter()]
+    [string]
+    $CurrentBranch = 'HEAD'
+)
+
+# Public commands that are used by DSC resources or classes
+$PublicCommandsUsedByDscResources = @(
+    'Add-SqlDscDatabaseRoleMember',
+    'Add-SqlDscServerRoleMember',
+    'Connect-SqlDscDatabaseEngine',
+    'Disable-SqlDscAudit',
+    'Enable-SqlDscAudit',
+    'Get-SqlDscAudit',
+    'Get-SqlDscDatabasePermission',
+    'Get-SqlDscDynamicMaxDop',
+    'Get-SqlDscDynamicMaxMemory',
+    'Get-SqlDscManagedComputer',
+    'Get-SqlDscPercentMemory',
+    'Get-SqlDscRSSetupConfiguration',
+    'Get-SqlDscServerPermission',
+    'Import-SqlDscPreferredModule',
+    'Install-SqlDscBIReportServer',
+    'Install-SqlDscReportingService',
+    'Invoke-SqlDscQuery',
+    'New-SqlDscAudit',
+    'Remove-SqlDscAudit',
+    'Remove-SqlDscDatabaseRoleMember',
+    'Remove-SqlDscServerRoleMember',
+    'Repair-SqlDscBIReportServer',
+    'Repair-SqlDscReportingService',
+    'Set-SqlDscAudit',
+    'Set-SqlDscDatabasePermission',
+    'Set-SqlDscServerPermission',
+    'Test-SqlDscIsDatabasePrincipal',
+    'Test-SqlDscIsLogin',
+    'Test-SqlDscIsSupportedFeature',
+    'Uninstall-SqlDscBIReportServer',
+    'Uninstall-SqlDscReportingService'
+)
+
+function Get-ChangedFiles {
+    <#
+        .SYNOPSIS
+            Gets the list of files changed between two git references.
+    #>
+    param(
+        [string]$From,
+        [string]$To
+    )
+    
+    try {
+        # Try different git diff approaches
+        $gitDiffOutput = $null
+        
+        # First, try the standard diff
+        $gitDiffOutput = & git diff --name-only "$From..$To" 2>&1
+        if ($LASTEXITCODE -eq 0 -and $gitDiffOutput) {
+            return $gitDiffOutput | Where-Object { $_ -and $_.Trim() }
+        }
+        
+        # If that fails, try without the range syntax
+        $gitDiffOutput = & git diff --name-only $From $To 2>&1
+        if ($LASTEXITCODE -eq 0 -and $gitDiffOutput) {
+            return $gitDiffOutput | Where-Object { $_ -and $_.Trim() }
+        }
+        
+        # If we're comparing with HEAD and have untracked files, include them
+        if ($To -eq 'HEAD') {
+            $untrackedFiles = & git ls-files --others --exclude-standard 2>&1
+            if ($LASTEXITCODE -eq 0 -and $untrackedFiles) {
+                return $untrackedFiles | Where-Object { $_ -and $_.Trim() }
+            }
+        }
+        
+        Write-Warning "Failed to get git diff between $From and $To. Exit code: $LASTEXITCODE. Output: $gitDiffOutput"
+        return @()
+    }
+    catch {
+        Write-Warning "Error getting changed files: $_"
+        return @()
+    }
+}
+
+function Get-PrivateFunctionsUsedByCommand {
+    <#
+        .SYNOPSIS
+            Gets private functions that a public command depends on.
+    #>
+    param(
+        [string]$CommandName,
+        [string]$SourcePath
+    )
+    
+    $commandFile = Join-Path $SourcePath "Public/$CommandName.ps1"
+    if (-not (Test-Path $commandFile)) {
+        return @()
+    }
+    
+    $privateFunctions = @()
+    $content = Get-Content $commandFile -Raw
+    
+    # Look for direct function calls to private functions
+    $privateFunctionFiles = Get-ChildItem (Join-Path $SourcePath "Private") -Filter "*.ps1" | Select-Object -ExpandProperty BaseName
+    foreach ($privateFunction in $privateFunctionFiles) {
+        if ($content -match "\b$privateFunction\b") {
+            $privateFunctions += $privateFunction
+        }
+    }
+    
+    return $privateFunctions
+}
+
+function Test-ShouldRunDscResourceIntegrationTests {
+    <#
+        .SYNOPSIS
+            Main function that determines if DSC resource integration tests should run.
+    #>
+    param(
+        [string]$BaseBranch = 'origin/main',
+        [string]$CurrentBranch = 'HEAD',
+        [string]$SourcePath = 'source'
+    )
+    
+    Write-Output "Analyzing changes between $BaseBranch and $CurrentBranch..."
+    
+    $changedFiles = Get-ChangedFiles -From $BaseBranch -To $CurrentBranch
+    
+    if (-not $changedFiles) {
+        Write-Output "No changed files detected. DSC resource integration tests will run by default."
+        return $true
+    }
+    
+    Write-Output "Changed files:"
+    $changedFiles | ForEach-Object { Write-Output "  $_" }
+    
+    # Check if any DSC resources are directly changed
+    $changedDscResources = $changedFiles | Where-Object { $_ -match '^source/DSCResources/' -or $_ -match '^source/Classes/' }
+    if ($changedDscResources) {
+        Write-Output "DSC resources or classes have been modified. DSC resource integration tests will run."
+        Write-Output "Changed DSC resources/classes:"
+        $changedDscResources | ForEach-Object { Write-Output "  $_" }
+        return $true
+    }
+    
+    # Check if any public commands used by DSC resources are changed
+    $changedPublicCommands = $changedFiles | Where-Object { $_ -match '^source/Public/(.+)\.ps1$' } | 
+        ForEach-Object { [System.IO.Path]::GetFileNameWithoutExtension((Split-Path $_ -Leaf)) }
+    
+    $affectedCommands = $changedPublicCommands | Where-Object { $_ -in $PublicCommandsUsedByDscResources }
+    if ($affectedCommands) {
+        Write-Output "Public commands used by DSC resources have been modified. DSC resource integration tests will run."
+        Write-Output "Affected commands:"
+        $affectedCommands | ForEach-Object { Write-Output "  $_" }
+        return $true
+    }
+    
+    # Check if any private functions used by the affected public commands are changed
+    $changedPrivateFunctions = $changedFiles | Where-Object { $_ -match '^source/Private/(.+)\.ps1$' } | 
+        ForEach-Object { [System.IO.Path]::GetFileNameWithoutExtension((Split-Path $_ -Leaf)) }
+    
+    $affectedPrivateFunctions = @()
+    foreach ($command in $PublicCommandsUsedByDscResources) {
+        $privateFunctionsUsed = Get-PrivateFunctionsUsedByCommand -CommandName $command -SourcePath $SourcePath
+        $affectedPrivateFunctions += $privateFunctionsUsed | Where-Object { $_ -in $changedPrivateFunctions }
+    }
+    
+    if ($affectedPrivateFunctions) {
+        Write-Output "Private functions used by DSC resource-related public commands have been modified. DSC resource integration tests will run."
+        Write-Output "Affected private functions:"
+        $affectedPrivateFunctions | ForEach-Object { Write-Output "  $_" }
+        return $true
+    }
+    
+    # Check if integration test files themselves are changed
+    $changedIntegrationTests = $changedFiles | Where-Object { $_ -match '^tests/Integration/Resources/' }
+    if ($changedIntegrationTests) {
+        Write-Output "DSC resource integration test files have been modified. DSC resource integration tests will run."
+        Write-Output "Changed integration test files:"
+        $changedIntegrationTests | ForEach-Object { Write-Output "  $_" }
+        return $true
+    }
+    
+    # Check if pipeline configuration is changed
+    $changedPipelineFiles = $changedFiles | Where-Object { $_ -match 'azure-pipelines\.yml$|\.build/' }
+    if ($changedPipelineFiles) {
+        Write-Output "Pipeline configuration has been modified. DSC resource integration tests will run."
+        Write-Output "Changed pipeline files:"
+        $changedPipelineFiles | ForEach-Object { Write-Output "  $_" }
+        return $true
+    }
+    
+    Write-Output "No changes detected that would affect DSC resources. DSC resource integration tests can be skipped."
+    return $false
+}
+
+# If script is run directly (not imported), execute the main function
+if ($MyInvocation.InvocationName -ne '.') {
+    $shouldRun = Test-ShouldRunDscResourceIntegrationTests -BaseBranch $BaseBranch -CurrentBranch $CurrentBranch
+    
+    # Output result for Azure DevOps variables
+    Write-Output "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests]$shouldRun"
+    
+    # Also output as regular output for local testing
+    Write-Output "ShouldRunDscResourceIntegrationTests: $shouldRun"
+    
+    # Set exit code based on result for script usage
+    if ($shouldRun) {
+        exit 0
+    } else {
+        exit 1
+    }
+}
