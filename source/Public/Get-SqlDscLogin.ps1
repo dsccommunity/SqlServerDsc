@@ -1,9 +1,11 @@
 <#
     .SYNOPSIS
-        Get server login.
+        Gets SQL Server logins.
 
     .DESCRIPTION
-        This command gets a server login from a SQL Server Database Engine instance.
+        Retrieves login objects from a SQL Server Database Engine instance. Specify -Name
+        to return a specific login, or omit -Name to return all logins. Use -Refresh to
+        refresh the login collection before retrieval.
 
     .PARAMETER ServerObject
         .PARAMETER ServerObject
