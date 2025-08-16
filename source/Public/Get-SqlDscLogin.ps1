@@ -8,7 +8,6 @@
         refresh the login collection before retrieval.
 
     .PARAMETER ServerObject
-        .PARAMETER ServerObject
             Specifies the current server connection object.
     .PARAMETER Name
         Specifies the name of the server login to get.
