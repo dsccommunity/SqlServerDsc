@@ -480,6 +480,12 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public void Disable()
         {
+            this.IsDisabled = true;
+        }
+
+        public void Enable()
+        {
+            this.IsDisabled = false;
         }
 
         public string Certificate;
