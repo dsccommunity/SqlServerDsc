@@ -80,12 +80,12 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
             }
 
             It 'Should verify the login type is SqlLogin' {
-                $loginObject = $script:serverObject.Logins[$script:testSqlLoginName]
+                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testSqlLoginName
                 $loginObject.LoginType | Should -Be 'SqlLogin'
             }
 
             It 'Should verify the default database is set correctly' {
-                $loginObject = $script:serverObject.Logins[$script:testSqlLoginName]
+                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testSqlLoginName
                 $loginObject.DefaultDatabase | Should -Be 'master'
             }
 
@@ -96,7 +96,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
                 {
                     { New-SqlDscLogin -ServerObject $script:serverObject -Name $customLoginName -SqlLogin -SecurePassword $script:testPassword -DefaultDatabase 'tempdb' -Confirm:$false } | Should -Not -Throw
 
-                    $loginObject = $script:serverObject.Logins[$customLoginName]
+                    $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $customLoginName
                     $loginObject.DefaultDatabase | Should -Be 'tempdb'
                 }
                 finally
@@ -151,7 +151,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
             }
 
             It 'Should throw an error when trying to create a login that already exists' {
-                { New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testSqlLoginName -SqlLogin -SecurePassword $script:testPassword -Confirm:$false } | Should -Throw -ExpectedMessage "*already exists*"
+                { New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testSqlLoginName -SqlLogin -SecurePassword $script:testPassword -Confirm:$false } | Should -Throw -ExpectedMessage "*The login '$script:testSqlLoginName' already exists on the instance '$($script:serverObject.InstanceName)'*"
             }
         }
 
@@ -167,7 +167,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
 
                     Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName | Should -BeTrue
 
-                    $loginObject = $script:serverObject.Logins[$script:testWindowsUserName]
+                    $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName
                     $loginObject.LoginType | Should -Be 'WindowsUser'
                 }
                 finally
@@ -189,7 +189,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
 
                     Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName | Should -BeTrue
 
-                    $loginObject = $script:serverObject.Logins[$script:testWindowsGroupName]
+                    $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName
                     $loginObject.LoginType | Should -Be 'WindowsGroup'
                 }
                 finally
