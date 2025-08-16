@@ -91,3 +91,7 @@ AfterAll {
 ### Integration tests
 
 When using command `Connect-SqlDscDatabaseEngine` always use `Disconnect-SqlDscDatabaseEngine` when connection is no longer needed.
+
+Instances and credentials to use in integration tests are available for:
+- Commands: tests/Integration/Commands/README.md
+- Resources: tests/Integration/Resources/README.md
