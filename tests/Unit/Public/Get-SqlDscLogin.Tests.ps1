@@ -75,6 +75,23 @@ Describe 'Get-SqlDscLogin' -Tag 'Public' {
         $result.ParameterListAsString | Should -Be $MockExpectedParameters
     }
 
+    It 'Should have the correct parameter metadata for ServerObject, Name, and Refresh' {
+        $cmd = Get-Command -Name 'Get-SqlDscLogin'
+        
+        # Test ServerObject parameter
+        $cmd.Parameters['ServerObject'].ParameterType.FullName | Should -Be 'Microsoft.SqlServer.Management.Smo.Server'
+        $cmd.Parameters['ServerObject'].Attributes.Mandatory | Should -BeTrue
+        $cmd.Parameters['ServerObject'].Attributes.ValueFromPipeline | Should -BeTrue
+        
+        # Test Name parameter
+        $cmd.Parameters['Name'].ParameterType.FullName | Should -Be 'System.String'
+        $cmd.Parameters['Name'].Attributes.Mandatory | Should -BeFalse
+        
+        # Test Refresh parameter
+        $cmd.Parameters['Refresh'].ParameterType.FullName | Should -Be 'System.Management.Automation.SwitchParameter'
+        $cmd.Parameters['Refresh'].Attributes.Mandatory | Should -BeFalse
+    }
+
     Context 'When no login exists' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server' |
