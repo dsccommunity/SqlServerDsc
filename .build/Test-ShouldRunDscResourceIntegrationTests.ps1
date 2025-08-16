@@ -481,9 +481,6 @@ if ($MyInvocation.InvocationName -ne '.')
 {
     $shouldRun = Test-ShouldRunDscResourceIntegrationTests -BaseBranch $BaseBranch -CurrentBranch $CurrentBranch
     
-    # Output result for Azure DevOps variables
-    Write-Output -InputObject "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests]$shouldRun"
-    
     # Provide clear final result with appropriate color coding
     Write-Host "##[section]Test Requirements Decision"
     if ($shouldRun)
@@ -495,17 +492,10 @@ if ($MyInvocation.InvocationName -ne '.')
         Write-Host "RESULT: DSC resource integration tests will be SKIPPED"
     }
     
+    # Set Azure DevOps output variable for pipeline conditions
+    Write-Host "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests;isOutput=true]$shouldRun"
+    
     # Also output as regular output for local testing
     Write-Output -InputObject ""
     Write-Output -InputObject "ShouldRunDscResourceIntegrationTests: $shouldRun"
-    
-    # Set exit code based on result for script usage
-    if ($shouldRun)
-    {
-        exit 0
-    }
-    else
-    {
-        exit 1
-    }
 }
