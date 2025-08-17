@@ -282,6 +282,7 @@ stages:
                   'tests/Integration/Commands/Connect-SqlDscDatabaseEngine.Integration.Tests.ps1'
                   # Group 2
                   'tests/Integration/Commands/Assert-SqlDscLogin.Integration.Tests.ps1'
+                  'tests/Integration/Commands/Get-SqlDscLogin.Integration.Tests.ps1'
                   # Group 9
                   'tests/Integration/Commands/Uninstall-SqlDscServer.Integration.Tests.ps1'
               )
