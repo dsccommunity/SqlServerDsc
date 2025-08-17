@@ -1,103 +1,18 @@
 ---
-description: Guidelines for writing and maintaining tests using Pester.
-applyTo: "tests/**/*.[Tt]ests.ps1"
+description: Guidelines for writing and maintaining unit tests using Pester.
+applyTo: "tests/[u]Unit/**/*.[Tt]ests.ps1"
 ---
 
 # Unit Tests Guidelines
 
-All public commands should always have a test to validate parameter sets
-using this template. For commands with a single parameter set:
+- Test with localized strings: Use `InModuleScope -ScriptBlock { $script:localizedData.Key }`
+- Mock files: Use `$TestDrive` variable (path to the test drive)
+- All public commands require parameter set validation tests
+- After modifying classes, always run tests in new session (for changes to take effect)
 
-```powershell
-It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
-    @{
-        MockParameterSetName = '__AllParameterSets'
-        MockExpectedParameters = '[-Parameter1] <Type> [-Parameter2] <Type> [<CommonParameters>]'
-    }
-) {
-    $result = (Get-Command -Name 'CommandName').ParameterSets |
-        Where-Object -FilterScript {
-            $_.Name -eq $mockParameterSetName
-        } |
-        Select-Object -Property @(
-            @{
-                Name = 'ParameterSetName'
-                Expression = { $_.Name }
-            },
-            @{
-                Name = 'ParameterListAsString'
-                Expression = { $_.ToString() }
-            }
-        )
+## Test Setup Requirements
 
-    $result.ParameterSetName | Should -Be $MockParameterSetName
-    $result.ParameterListAsString | Should -Be $MockExpectedParameters
-}
-```
-
-For commands with multiple parameter sets, use this pattern:
-
-```powershell
-It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
-    @{
-        MockParameterSetName = 'ParameterSet1'
-        MockExpectedParameters = '-ServerObject <Server> -Name <string> -Parameter1 <string> [<CommonParameters>]'
-    }
-    @{
-        MockParameterSetName = 'ParameterSet2'
-        MockExpectedParameters = '-ServerObject <Server> -Name <string> -Parameter2 <uint> [<CommonParameters>]'
-    }
-) {
-    $result = (Get-Command -Name 'CommandName').ParameterSets |
-        Where-Object -FilterScript {
-            $_.Name -eq $mockParameterSetName
-        } |
-        Select-Object -Property @(
-            @{
-                Name = 'ParameterSetName'
-                Expression = { $_.Name }
-            },
-            @{
-                Name = 'ParameterListAsString'
-                Expression = { $_.ToString() }
-            }
-        )
-
-    $result.ParameterSetName | Should -Be $MockParameterSetName
-    $result.ParameterListAsString | Should -Be $MockExpectedParameters
-}
-```
-
-All public commands should also include tests to validate parameter properties:
-
-```powershell
-It 'Should have ParameterName as a mandatory parameter' {
-    $parameterInfo = (Get-Command -Name 'CommandName').Parameters['ParameterName']
-    $parameterInfo.Attributes.Mandatory | Should -Contain $true
-}
-
-It 'Should accept ParameterName from pipeline' {
-    $parameterInfo = (Get-Command -Name 'CommandName').Parameters['ParameterName']
-    $parameterInfo.Attributes.ValueFromPipeline | Should -Contain $true
-}
-```
-
-Use localized strings in tests only when necessary. You can assign the
-localized text to a mock variable by getting the localized string key
-from $script:localizedData inside an `InModuleScope` block.
-Example of retrieving a localized string key from $script:localizedData:
-
-```powershell
-$mockLocalizedStringText = InModuleScope -ScriptBlock { $script:localizedData.LocalizedStringKey }
-```
-
-Files that need to be mocked should be created in Pester’s test drive. The
-variable `$TestDrive` holds the path to the test drive. `$TestDrive` is a
-temporary drive that is created for each test run and is automatically
-cleaned up after the test run is complete.
-
-All unit tests should use this code block before the `Describe` block to set
-up the test environment and load the correct module being tested:
+Use this exact setup block before `Describe`:
 
 ```powershell
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
@@ -143,5 +58,37 @@ AfterAll {
 
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
+}
+```
+
+## Required Test Templates
+
+### Parameter Set Validation
+Single parameter set:
+```powershell
+It 'Should have the correct parameters in parameter set <ExpectedParameterSetName>' -ForEach @(
+    @{
+        ExpectedParameterSetName = '{ParameterSetName}' # e.g. __AllParameterSets
+        ExpectedParameters = '[-Parameter1] <Type> [-Parameter2] <Type> [<CommonParameters>]'
+    }
+) {
+    $result = (Get-Command -Name 'CommandName').ParameterSets |
+        Where-Object -FilterScript { $_.Name -eq $ExpectedParameterSetName } |
+        Select-Object -Property @(
+            @{ Name = 'ParameterSetName'; Expression = { $_.Name } },
+            @{ Name = 'ParameterListAsString'; Expression = { $_.ToString() } }
+        )
+    $result.ParameterSetName | Should -Be $ExpectedParameterSetName
+    $result.ParameterListAsString | Should -Be $ExpectedParameters
+}
+```
+
+Multiple parameter sets: Use same pattern with multiple hashtables in `-ForEach` array.
+
+### Parameter Properties
+```powershell
+It 'Should have ParameterName as a mandatory parameter' {
+    $parameterInfo = (Get-Command -Name 'CommandName').Parameters['ParameterName']
+    $parameterInfo.Attributes.Mandatory | Should -BeTrue
 }
 ```

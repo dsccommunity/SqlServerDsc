@@ -73,6 +73,7 @@ applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
 - Don't redefine reserved parameters (Verbose, Debug, etc.)
 - Include a `Force` parameter for functions that support `$PSCmdlet.ShouldContinue` or that use `$PSCmdlet.ShouldProcess`
 - For state-changing functions, use `SupportsShouldProcess`
+- Use `$PSCmdlet.ThrowTerminatingError()` for terminating errors, use relevant error category
 - Use `Write-Error` for non-terminating errors, use relevant error category
 - Use `Write-Warning` for warnings
 - Use `Write-Debug` for debugging information
