@@ -339,9 +339,8 @@ function Get-PrivateFunctionsUsedByClassResources
         if DSC resource integration tests should run based on the files that have
         been modified. It checks for changes to DSC resources, classes, public
         commands used by DSC resources, private functions used by those public commands,
-        private functions used by class-based DSC resources, integration tests, and
-        pipeline configuration.
-
+        private functions used by class-based DSC resources, and integration
+        tests.
     .PARAMETER BaseBranch
         The base branch to compare against. Default is 'origin/main'.
 
