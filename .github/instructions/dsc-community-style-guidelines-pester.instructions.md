@@ -7,6 +7,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 
 ## Core Requirements
 - All public commands, private functions and classes must have unit tests
+- All public commands and class-based resources must have integration tests
 - Use Pester v5 syntax only
 - One `Describe` block per file matching the tested entity name
 - Test code only inside `Describe` blocks
@@ -15,7 +16,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Pass all mandatory parameters to avoid prompts
 
 ## Structure & Scope
-- Public commands: Never use `InModuleScope`
+- Public commands: Never use `InModuleScope` (unless retrieving localized strings)
 - Private functions/class resources: Always use `InModuleScope`
 - Each scenario = separate `Context` block
 - Use nested `Context` blocks for complex scenarios

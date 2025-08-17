@@ -28,9 +28,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Supports getting a specific login by name or all logins if no name is specified.
   - Includes a `-Refresh` parameter to refresh the server's login collection
     before retrieval.
+- `Remove-SqlDscLogin`
+  - Added new public command to remove a SQL Server login from a Database
+    Engine instance.
+  - Supports removing a login by specifying a `ServerObject` and `Name`, or by
+    passing a `LoginObject` through the pipeline.
+  - Includes confirmation prompts with `-Force` parameter to bypass confirmation.
+  - Includes a `-Refresh` parameter to refresh the server's login collection
+    before attempting removal.
+  - Provides detailed error messages with localization support.
 
 ### Changed
 
+- Module now outputs a verbose message instead of a warning when the SMO
+  dependency module is missing during import to work around a DSC v3 issue.
+- VS Code tasks configuration was improved to support AI.
 - `azure-pipelines.yml`
   - Remove `windows-2019` images fixes [#2106](https://github.com/dsccommunity/SqlServerDsc/issues/2106).
   - Move individual tasks to `windows-latest`.

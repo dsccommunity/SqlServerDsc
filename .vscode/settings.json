@@ -78,7 +78,8 @@
         "sqlcmd",
         "PBIRS",
         "SSRS",
-        "DSCSQLTEST"
+        "DSCSQLTEST",
+        "unshallow"
     ],
     "cSpell.ignorePaths": [
         ".git"

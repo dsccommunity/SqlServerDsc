@@ -41,7 +41,7 @@
             "label": "build",
             "type": "shell",
             "command": "&${cwd}/build.ps1",
-            "args": [],
+            "args": ["-AutoRestore", "-UseModuleFast", "-Tasks", "build"],
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -84,7 +84,7 @@
             "label": "test",
             "type": "shell",
             "command": "&${cwd}/build.ps1",
-            "args": ["-AutoRestore","-Tasks","test"],
+            "args": ["-AutoRestore", "-UseModuleFast", "-Tasks", "test"],
             "presentation": {
                 "echo": true,
                 "reveal": "always",

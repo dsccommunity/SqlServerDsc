@@ -362,6 +362,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public bool PasswordExpirationEnabled = false;
         public bool IsDisabled = false;
         public string DefaultDatabase;
+        public Server Parent;
 
         public Login( string name )
         {
@@ -371,11 +372,16 @@ namespace Microsoft.SqlServer.Management.Smo
         public Login( Server server, string name )
         {
             this.Name = name;
+            this.Parent = server;
         }
 
         public Login( Object server, string name )
         {
             this.Name = name;
+            if (server is Server)
+            {
+                this.Parent = (Server)server;
+            }
         }
 
         public void Alter()
