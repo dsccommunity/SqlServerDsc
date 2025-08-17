@@ -42,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Engine instance.
   - Supports creating SQL Server logins, Windows user logins, Windows group
     logins, certificate-based logins, and asymmetric key-based logins.
+  - Implements proper parameter sets to prevent combining hashed passwords
+    with password policy options, following SQL Server restrictions.
 
 ### Changed
 
