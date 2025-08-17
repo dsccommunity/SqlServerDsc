@@ -83,7 +83,8 @@
         "pullrequest",
         "targetbranch",
         "hqrm",
-        "sqlps"
+        "sqlps",
+        "securestring"
     ],
     "cSpell.ignorePaths": [
         ".git"
