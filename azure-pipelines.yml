@@ -95,7 +95,7 @@ stages:
                 if ($env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
                     $targetBranch = "origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH"
                 } else {
-                    $targetBranch = "origin/main"
+                    $targetBranch = "origin/$(defaultBranch)"
                 }
 
                 Write-Output "Target branch: $targetBranch"
