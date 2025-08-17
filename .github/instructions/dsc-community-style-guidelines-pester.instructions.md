@@ -15,7 +15,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 - Pass all mandatory parameters to avoid prompts
 
 ## Structure & Scope
-- Public commands: Never use `InModuleScope` (unless to get localized string)
+- Public commands: Never use `InModuleScope` (unless retrieving localized strings)
 - Private functions/class resources: Always use `InModuleScope`
 - Each scenario = separate `Context` block
 - Use nested `Context` blocks for complex scenarios
