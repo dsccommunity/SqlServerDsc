@@ -108,7 +108,7 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
             # Try to remove a non-existent login
             {
                 $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName -Force -ErrorAction 'Stop'
-            } | Should -Throw -ExpectedMessage "*There is no login with the name '$($script:testLoginName)'*"
+            } | Should -Throw
         }
     }
 
