@@ -35,7 +35,6 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         Start-Service -Name 'MSSQL$DSCSQLTEST' -Verbose -ErrorAction 'Stop'
 
         $script:mockInstanceName = 'DSCSQLTEST'
-        $script:mockComputerName = Get-ComputerName
 
         $mockSqlAdministratorUserName = 'SqlAdmin' # Using computer name as NetBIOS name throw exception.
         $mockSqlAdministratorPassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
