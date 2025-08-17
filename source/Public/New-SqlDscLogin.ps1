@@ -134,7 +134,8 @@
         $securePassword = ConvertTo-SecureString -String 'NewPassword123!' -AsPlainText -Force
         $serverObject | New-SqlDscLogin -Name 'ExistingLogin' -SqlLogin -SecurePassword $securePassword -Force
 
-        Replaces an existing SQL Server login named 'ExistingLogin' with a new login using the -Force parameter.
+        Creates a SQL Server login named 'ExistingLogin' without confirmation prompts.
++        Note: If the login already exists, the command throws a terminating error.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
