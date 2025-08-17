@@ -13,6 +13,7 @@ applyTo: "tests/[iI]ntegration/**/*.[iI]ntegration.[tT]ests.ps1"
 - Use `Get-ComputerName` for computer names in CI
 - Avoid `ExpectedMessage` for `Should -Throw` assertions
 - Only run integration tests in CI unless explicitly instructed.
+- Call commands with `-Force` parameter where applicable (avoids prompting).
 
 ## Required Setup Block
 
