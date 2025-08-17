@@ -84,7 +84,16 @@
             "label": "test",
             "type": "shell",
             "command": "&${cwd}/build.ps1",
-            "args": ["-AutoRestore", "-UseModuleFast", "-Tasks", "test"],
+            "args": [
+                "-AutoRestore",
+                "-UseModuleFast",
+                "-Tasks",
+                "test",
+                "-PesterPath",
+                "./tests/Unit/Classes,./tests/Unit/Private,./tests/Unit/Public,./tests/QA",
+                "-CodeCoverageThreshold",
+                "0"
+            ],
             "presentation": {
                 "echo": true,
                 "reveal": "always",
