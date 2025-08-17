@@ -55,12 +55,12 @@ Installs all the [instances](#instances).
 
 ### `New-SqlDscLogin`
 
-Creates test logins on the DSCSQLTEST instance for use by other integration
-tests. Tests SQL Server logins, Windows user logins, and Windows group logins
-(using the local SqlIntegrationTestGroup). The main test login
-`IntegrationTestSqlLogin` and the Windows group login for
-`.\SqlIntegrationTestGroup` are left in place after the test completes so other
-tests can use them for validation purposes.
+Creates test logins on the DSCSQLTEST instance for use by other
+integration tests. Tests SQL Server logins, Windows user logins,
+and Windows group logins (using the local SqlIntegrationTestGroup).
+The main test login `IntegrationTestSqlLogin` and the Windows group
+login for `.\SqlIntegrationTestGroup` are left in place after the
+test completes so other tests can use them for validation purposes.
 
 ## Dependencies
 
