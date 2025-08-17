@@ -56,8 +56,8 @@ Describe 'Get-SqlDscRole' -Tag 'Public' {
             $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
             $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
                 $roleCollection = @(
-                    (New-Object -TypeName Object | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'sysadmin' -PassThru -Force),
-                    (New-Object -TypeName Object | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'CustomRole1' -PassThru -Force)
+                    (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($mockServerObject, 'sysadmin')),
+                    (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($mockServerObject, 'CustomRole1'))
                 )
                 return $roleCollection | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
                     # Mock implementation
@@ -83,7 +83,7 @@ Describe 'Get-SqlDscRole' -Tag 'Public' {
             $mockServerObjectWithRefresh | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
             $mockServerObjectWithRefresh | Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
                 $roleCollection = @(
-                    (New-Object -TypeName Object | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'sysadmin' -PassThru -Force)
+                    (New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($mockServerObjectWithRefresh, 'sysadmin'))
                 )
                 return $roleCollection | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
                     $script:refreshCalled = $true
@@ -103,10 +103,8 @@ Describe 'Get-SqlDscRole' -Tag 'Public' {
             $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
             $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
                 return @{
-                    'sysadmin' = New-Object -TypeName Object |
-                        Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'sysadmin' -PassThru -Force
-                    'CustomRole1' = New-Object -TypeName Object |
-                        Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'CustomRole1' -PassThru -Force
+                    'sysadmin' = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($mockServerObject, 'sysadmin')
+                    'CustomRole1' = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($mockServerObject, 'CustomRole1')
                 } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
                     # Mock implementation
                 } -PassThru -Force
@@ -122,10 +120,20 @@ Describe 'Get-SqlDscRole' -Tag 'Public' {
             $result.Name | Should -Be 'sysadmin'
         }
 
-        It 'Should return null when the specified role does not exist' {
+        It 'Should throw the correct error when the specified role does not exist' {
             Mock -CommandName 'Write-Verbose'
 
-            $result = Get-SqlDscRole -ServerObject $mockServerObject -Name 'NonExistentRole'
+            # Test the exact error message first
+            $expectedMessage = 'Server role ''NonExistentRole'' was not found.'
+
+            { Get-SqlDscRole -ServerObject $mockServerObject -Name 'NonExistentRole' -ErrorAction 'Stop' } |
+                Should -Throw -ExpectedMessage $expectedMessage
+        }
+
+        It 'Should return empty result when ignoring the error' {
+            Mock -CommandName 'Write-Verbose'
+
+            $result = Get-SqlDscRole -ServerObject $mockServerObject -Name 'NonExistentRole' -ErrorAction 'SilentlyContinue'
 
             $result | Should -BeNullOrEmpty
         }

@@ -65,28 +65,39 @@ function Get-SqlDscRole
 
         Write-Verbose -Message ($script:localizedData.Role_Get -f $ServerObject.InstanceName)
 
+        $roleObject = @()
+
         if ($PSBoundParameters.ContainsKey('Name'))
         {
-            $serverRole = $ServerObject.Roles[$Name]
+            $roleObject = $ServerObject.Roles[$Name]
 
-            if ($serverRole)
+            if (-not $roleObject)
             {
-                Write-Verbose -Message ($script:localizedData.Role_Found -f $Name)
-                
-                return $serverRole
+                Write-Verbose -Message ($script:localizedData.Role_NotFound -f $Name)
+
+                $missingRoleMessage = $script:localizedData.Role_NotFound -f $Name
+
+                $writeErrorParameters = @{
+                    Message      = $missingRoleMessage
+                    Category     = 'ObjectNotFound'
+                    ErrorId      = 'GSDR0001' # cspell: disable-line
+                    TargetObject = $Name
+                }
+
+                Write-Error @writeErrorParameters
             }
             else
             {
-                Write-Verbose -Message ($script:localizedData.Role_NotFound -f $Name)
-                
-                return $null
+                Write-Verbose -Message ($script:localizedData.Role_Found -f $Name)
             }
         }
         else
         {
             Write-Verbose -Message ($script:localizedData.Role_GetAll)
-            
-            return , $ServerObject.Roles
+
+            $roleObject = $ServerObject.Roles
         }
+
+        return [Microsoft.SqlServer.Management.Smo.ServerRole[]] $roleObject
     }
 }
