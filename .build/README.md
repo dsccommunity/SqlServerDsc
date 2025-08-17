@@ -6,10 +6,9 @@ resource integration tests should run in Azure Pipelines.
 ## What the Script Does
 
 The `Test-ShouldRunDscResourceIntegrationTests.ps1` script analyzes git
-changes between two references and determines if DSC resource integration
-tests need to run. It automatically discovers which public commands are used
-by DSC resources and classes, then checks if any relevant files have been
-modified.
+changes between two references and determines if DSC resource integration tests
+need to run. It automatically discovers which public commands are used by DSC
+resources and classes, then checks if any relevant files have been modified.
 
 ## How It Works
 
@@ -45,6 +44,11 @@ Write-Host "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests
 Downstream stages reference this output variable using the pattern:
 `dependencies.JobName.outputs['StepName.VariableName']` to gate their
 execution based on whether DSC resource tests should run.
+
+**Note**: The step sets an output variable with `isOutput=true` using the
+variable name `ShouldRunDscResourceIntegrationTests`. Downstream stages consume
+this using the syntax:
+`dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests']`
 
 ### Command Line
 
