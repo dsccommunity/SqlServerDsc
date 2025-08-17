@@ -47,7 +47,7 @@ Describe 'Enable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         # Create a test login for testing
         $script:testLoginName = 'TestLogin_Enable'
         $testLoginPassword = ConvertTo-SecureString -String 'P@ssw0rd123!' -AsPlainText -Force
-        
+
         # Create the login if it doesn't exist
         $existingLogin = $script:serverObject.Logins[$script:testLoginName]
         if (-not $existingLogin)

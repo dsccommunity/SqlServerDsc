@@ -47,7 +47,7 @@ Describe 'Disable-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL201
         # Create a test login for testing
         $script:testLoginName = 'TestLogin_Disable'
         $testLoginPassword = ConvertTo-SecureString -String 'P@ssw0rd123!' -AsPlainText -Force
-        
+
         # Create the login if it doesn't exist
         $existingLogin = $script:serverObject.Logins[$script:testLoginName]
         if (-not $existingLogin)
