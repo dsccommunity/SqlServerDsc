@@ -375,7 +375,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
                 $script:mockSecurePassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
             }
 
-            It 'Should set ConfirmPreference to None when Force is used' {
+            It 'Should create when Force is used' {
                 $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'ForceLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -Force
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
