@@ -246,3 +246,4 @@ ConvertFrom-StringData @'
     Assert_Login_LoginMissing = The principal '{0}' does not exist as a login on the instance '{1}'.
     Assert_Login_LoginExists = The principal '{0}' exists as a login.
 '@
+
