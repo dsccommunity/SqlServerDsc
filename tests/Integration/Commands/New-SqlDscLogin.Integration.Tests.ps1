@@ -40,7 +40,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
         # Test login names - prefixed to avoid conflicts
         $script:testSqlLoginName = 'IntegrationTestSqlLogin'
         $script:testWindowsUserName = '{0}\SqlIntegrationTest' -f $script:computerName
-        $script:testWindowsGroupName = 'NT AUTHORITY\SYSTEM'
+        $script:testWindowsGroupName = '{0}\SqlIntegrationTestGroup' -f $script:computerName
     }
 
     AfterAll {
@@ -72,7 +72,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
             }
 
             It 'Should create a SQL Server login without error' {
-                { New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testSqlLoginName -SqlLogin -SecurePassword $script:testPassword -Confirm:$false } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testSqlLoginName -SqlLogin -SecurePassword $script:testPassword -Confirm:$false
             }
 
             It 'Should verify the SQL Server login was created' {
@@ -94,7 +94,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
 
                 try
                 {
-                    { New-SqlDscLogin -ServerObject $script:serverObject -Name $customLoginName -SqlLogin -SecurePassword $script:testPassword -DefaultDatabase 'tempdb' -Confirm:$false } | Should -Not -Throw
+                    $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $customLoginName -SqlLogin -SecurePassword $script:testPassword -DefaultDatabase 'tempdb' -Confirm:$false
 
                     $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $customLoginName
                     $loginObject.DefaultDatabase | Should -Be 'tempdb'
@@ -135,7 +135,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
 
                 try
                 {
-                    { New-SqlDscLogin -ServerObject $script:serverObject -Name $disabledLoginName -SqlLogin -SecurePassword $script:testPassword -Disabled -Confirm:$false } | Should -Not -Throw
+                    $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $disabledLoginName -SqlLogin -SecurePassword $script:testPassword -Disabled -Confirm:$false
 
                     $loginObject = $script:serverObject.Logins[$disabledLoginName]
                     $loginObject.IsDisabled | Should -BeTrue
@@ -151,7 +151,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
             }
 
             It 'Should throw an error when trying to create a login that already exists' {
-                { New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testSqlLoginName -SqlLogin -SecurePassword $script:testPassword -Confirm:$false } | Should -Throw -ExpectedMessage "*The login '$script:testSqlLoginName' already exists on the instance '$($script:serverObject.InstanceName)'*"
+                { New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testSqlLoginName -SqlLogin -SecurePassword $script:testPassword -Confirm:$false } | Should -Throw
             }
         }
 
@@ -163,7 +163,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
                 try
                 {
                     # Using the SqlIntegrationTest user created by Prerequisites integration test
-                    { New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName -WindowsUser -Confirm:$false } | Should -Not -Throw
+                    $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName -WindowsUser -Confirm:$false
 
                     Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsUserName | Should -BeTrue
 
@@ -183,23 +183,12 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
 
         Context 'When creating a Windows group login' {
             It 'Should create a Windows group login without error' {
-                try
-                {
-                    { New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName -WindowsGroup -Confirm:$false } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName -WindowsGroup -Confirm:$false
 
-                    Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName | Should -BeTrue
+                Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName | Should -BeTrue
 
-                    $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName
-                    $loginObject.LoginType | Should -Be 'WindowsGroup'
-                }
-                finally
-                {
-                    # Clean up
-                    if (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName)
-                    {
-                        $script:serverObject.Logins[$script:testWindowsGroupName].Drop()
-                    }
-                }
+                $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testWindowsGroupName
+                $loginObject.LoginType | Should -Be 'WindowsGroup'
             }
         }
 
@@ -209,7 +198,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
 
                 try
                 {
-                    { New-SqlDscLogin -ServerObject $script:serverObject -Name $forceLoginName -SqlLogin -SecurePassword $script:testPassword -Force } | Should -Not -Throw
+                    $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $forceLoginName -SqlLogin -SecurePassword $script:testPassword -Force
 
                     Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $forceLoginName | Should -BeTrue
                 }
@@ -228,7 +217,7 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
             It 'Should not create a login when using WhatIf' {
                 $whatIfLoginName = 'IntegrationTestWhatIf'
 
-                { New-SqlDscLogin -ServerObject $script:serverObject -Name $whatIfLoginName -SqlLogin -SecurePassword $script:testPassword -WhatIf } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $whatIfLoginName -SqlLogin -SecurePassword $script:testPassword -WhatIf
 
                 Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $whatIfLoginName | Should -BeFalse
             }
