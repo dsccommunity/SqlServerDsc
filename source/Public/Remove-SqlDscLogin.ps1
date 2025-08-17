@@ -123,7 +123,7 @@ function Remove-SqlDscLogin
                         [System.InvalidOperationException]::new($errorMessage, $_.Exception),
                         'RSDL0001', # cspell: disable-line
                         [System.Management.Automation.ErrorCategory]::InvalidOperation,
-                        $LoginObject.Name
+                        $LoginObject
                     )
                 )
             }
