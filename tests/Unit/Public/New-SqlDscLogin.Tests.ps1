@@ -67,7 +67,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             }
 
             It 'Should create a SQL Server login without throwing' {
-                { New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'TestLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -Confirm:$false } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'TestLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -Confirm:$false
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
             }
@@ -79,7 +79,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
 
         Context 'When creating a Windows user login' {
             It 'Should create a Windows user login without throwing' {
-                { New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'DOMAIN\TestUser' -WindowsUser -Confirm:$false } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'DOMAIN\TestUser' -WindowsUser -Confirm:$false
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
             }
@@ -115,19 +115,19 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
 
         Context 'When creating certificate-based login' {
             It 'Should create a certificate login without throwing' {
-                { New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'CertLogin' -Certificate -CertificateName 'MyCert' -Confirm:$false } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'CertLogin' -Certificate -CertificateName 'MyCert' -Confirm:$false
             }
         }
 
         Context 'When creating asymmetric key-based login' {
             It 'Should create an asymmetric key login without throwing' {
-                { New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'KeyLogin' -AsymmetricKey -AsymmetricKeyName 'MyKey' -Confirm:$false } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'KeyLogin' -AsymmetricKey -AsymmetricKeyName 'MyKey' -Confirm:$false
             }
         }
 
         Context 'When creating Windows group login' {
             It 'Should create a Windows group login without throwing' {
-                { New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'NT AUTHORITY\SYSTEM' -WindowsGroup -Confirm:$false } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'NT AUTHORITY\SYSTEM' -WindowsGroup -Confirm:$false
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
             }
@@ -139,7 +139,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             }
 
             It 'Should set ConfirmPreference to None when Force is used' {
-                { New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'ForceLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -Force } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'ForceLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -Force
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
             }
@@ -151,7 +151,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             }
 
             It 'Should set custom language on login object' {
-                { New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'LangLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -DefaultLanguage 'Swedish' -Confirm:$false } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'LangLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -DefaultLanguage 'Swedish' -Confirm:$false
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
             }
@@ -163,7 +163,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             }
 
             It 'Should set MustChange login create option' {
-                { New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'MustChangeLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -MustChangePassword -Confirm:$false } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'MustChangeLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -MustChangePassword -Confirm:$false
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
             }
@@ -175,7 +175,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             }
 
             It 'Should set IsHashed login create option' {
-                { New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'HashedLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -IsHashed -Confirm:$false } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'HashedLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -IsHashed -Confirm:$false
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
             }
@@ -187,7 +187,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             }
 
             It 'Should call Disable method on login object' {
-                { New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'DisabledLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -Disabled -Confirm:$false } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'DisabledLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -Disabled -Confirm:$false
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
             }
@@ -199,7 +199,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             }
 
             It 'Should handle multiple options together' {
-                { New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'ComplexLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -MustChangePassword -IsHashed -Disabled -DefaultLanguage 'English' -DefaultDatabase 'tempdb' -PasswordExpirationEnabled -PasswordPolicyEnforced -Confirm:$false } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'ComplexLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -MustChangePassword -IsHashed -Disabled -DefaultLanguage 'English' -DefaultDatabase 'tempdb' -PasswordExpirationEnabled -PasswordPolicyEnforced -Confirm:$false
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
             }
@@ -221,19 +221,19 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             }
 
             It 'Should create login with MustChangePassword option' {
-                { New-SqlDscLogin -ServerObject $mockServerObject -Name 'NewLogin' -SqlLogin -SecurePassword $mockSecurePassword -MustChangePassword } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $mockServerObject -Name 'NewLogin' -SqlLogin -SecurePassword $mockSecurePassword -MustChangePassword
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -ParameterFilter $mockTestSqlDscIsLoginParameterFilter -Exactly -Times 1 -Scope It
             }
 
             It 'Should create login with IsHashed option' {
-                { New-SqlDscLogin -ServerObject $mockServerObject -Name 'NewLogin' -SqlLogin -SecurePassword $mockSecurePassword -IsHashed } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $mockServerObject -Name 'NewLogin' -SqlLogin -SecurePassword $mockSecurePassword -IsHashed
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -ParameterFilter $mockTestSqlDscIsLoginParameterFilter -Exactly -Times 1 -Scope It
             }
 
             It 'Should create disabled login' {
-                { New-SqlDscLogin -ServerObject $mockServerObject -Name 'NewLogin' -SqlLogin -SecurePassword $mockSecurePassword -Disabled } | Should -Not -Throw
+                $null = New-SqlDscLogin -ServerObject $mockServerObject -Name 'NewLogin' -SqlLogin -SecurePassword $mockSecurePassword -Disabled
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -ParameterFilter $mockTestSqlDscIsLoginParameterFilter -Exactly -Times 1 -Scope It
             }
