@@ -117,6 +117,38 @@
 
         Creates a new SQL Server login and returns the Login object.
 
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | New-SqlDscLogin -Name 'MyAsymKeyLogin' -AsymmetricKey -AsymmetricKeyName 'MyAsymmetricKey'
+
+        Creates a new asymmetric key-based login using the specified asymmetric key.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | New-SqlDscLogin -Name 'MyAsymKeyLogin' -AsymmetricKey -AsymmetricKeyName 'MyAsymmetricKey' -PassThru
+
+        Creates a new asymmetric key-based login and returns the Login object.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $securePassword = ConvertTo-SecureString -String 'NewPassword123!' -AsPlainText -Force
+        $serverObject | New-SqlDscLogin -Name 'ExistingLogin' -SqlLogin -SecurePassword $securePassword -Force
+
+        Replaces an existing SQL Server login named 'ExistingLogin' with a new login using the -Force parameter.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $securePassword = ConvertTo-SecureString -String 'MyPassword123!' -AsPlainText -Force
+        $serverObject | New-SqlDscLogin -Name 'DisabledLogin' -SqlLogin -SecurePassword $securePassword -Disabled
+
+        Creates a new SQL Server login in a disabled state.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $serverObject | New-SqlDscLogin -Name 'DOMAIN\DisabledUser' -WindowsUser -Disabled -PassThru
+
+        Creates a new disabled Windows user login and returns the Login object.
+
     .OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.Login]` when passing parameter **PassThru**,
          otherwise none.
