@@ -18,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved AI instructions.
 - `Assert-SqlDscLogin`
   - Added new public command to validate that a specified SQL Server principal
+    is a login
+- `Enable-SqlDscLogin`
+  - Added new public command to enable a SQL Server login
+- `Disable-SqlDscLogin`
+  - Added new public command to disable a SQL Server login
+- `Test-SqlDscIsLoginEnabled`
+  - Added new public command to test if a SQL Server login is enabled or disabled
     exists as a login, throwing a terminating error if it doesn't exist.
   - Supports pipeline input and provides detailed error messages with localization.
   - Uses `Test-SqlDscIsLogin` command for login validation following module patterns.

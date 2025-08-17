@@ -67,6 +67,18 @@ ConvertFrom-StringData @'
     Login_Get_RetrievingByName = Retrieving login by name '{0}' from server '{1}'.
     Login_Get_ReturningAllLogins = Returning all logins from server '{0}'.
 
+    ## Enable-SqlDscLogin
+    Login_Enable_ShouldProcessVerboseDescription = Enabling the login '{0}' on the instance '{1}'.
+    Login_Enable_ShouldProcessVerboseWarning = Are you sure you want to enable the login '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Login_Enable_ShouldProcessCaption = Enable login on instance
+
+    ## Disable-SqlDscLogin
+    Login_Disable_ShouldProcessVerboseDescription = Disabling the login '{0}' on the instance '{1}'.
+    Login_Disable_ShouldProcessVerboseWarning = Are you sure you want to disable the login '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Login_Disable_ShouldProcessCaption = Disable login on instance
+
     ## Remove-SqlDscAudit
     Audit_Remove_ShouldProcessVerboseDescription = Removing the audit '{0}' on the instance '{1}'.
     Audit_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the audit '{0}'?
