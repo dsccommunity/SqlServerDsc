@@ -248,5 +248,4 @@ ConvertFrom-StringData @'
     Login_Add_ShouldProcessCaption = Create login on instance
     Login_Add_LoginCreated = Successfully created login '{0}' on the instance '{1}'.
     Login_Add_LoginAlreadyExists = The login '{0}' already exists on the instance '{1}'.
-    Login_Add_HashedPasswordPolicyConflict = Hashed passwords cannot be used with password policy options (PasswordExpirationEnabled, PasswordPolicyEnforced, or MustChangePassword). (NSDL0001)
 '@
