@@ -60,8 +60,7 @@ integration tests. Tests SQL Server logins, Windows user logins,
 and Windows group logins (using the local SqlIntegrationTestGroup).
 The main test login `IntegrationTestSqlLogin` and the Windows group
 login for `.\SqlIntegrationTestGroup` are left in place after the
-test completes so other tests can use them for validation purposes.
-
+test completes so other tests can use them for validation.
 ## Dependencies
 
 ### SqlServer module
