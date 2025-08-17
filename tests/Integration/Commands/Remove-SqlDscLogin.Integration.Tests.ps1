@@ -139,7 +139,8 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
 
         It 'Should work with the Refresh parameter' {
             # Create the test login
-            $null = $script:serverObject | New-SqlDscLogin -Name $script:testLoginName3 -SqlLogin -SecurePassword (ConvertTo-SecureString -String 'P@ssw0rd3!' -AsPlainText -Force) -Force
+            $script:testLoginPassword3 = ConvertTo-SecureString -String 'P@ssw0rd3!' -AsPlainText -Force
+            $null = $script:serverObject | New-SqlDscLogin -Name $script:testLoginName3 -SqlLogin -SecurePassword $script:testLoginPassword3 -Force
 
             # Verify the login exists
             $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName3
