@@ -79,6 +79,67 @@ Describe 'Remove-SqlDscLogin' -Tag 'Public' {
         $result.ParameterListAsString | Should -Be $MockExpectedParameters
     }
 
+    It 'Should have the correct command metadata' {
+        $command = Get-Command -Name 'Remove-SqlDscLogin'
+
+        $cmdletBindingAttribute = $command.ScriptBlock.Attributes |
+            Where-Object -FilterScript { $_ -is [System.Management.Automation.CmdletBindingAttribute] }
+
+        $cmdletBindingAttribute.SupportsShouldProcess | Should -BeTrue
+        $cmdletBindingAttribute.ConfirmImpact | Should -Be 'High'
+    }
+
+    It 'Should have correct parameter attributes for parameter set <ParameterSetName>' -ForEach @(
+        @{
+            ParameterSetName = 'ServerObject'
+            ExpectedParameterTests = @(
+                @{ ParameterName = 'ServerObject'; IsMandatory = $true; ValueFromPipeline = $true }
+                @{ ParameterName = 'Name'; IsMandatory = $true; ValueFromPipeline = $false }
+                @{ ParameterName = 'Refresh'; IsMandatory = $false; ValueFromPipeline = $false; ShouldExist = $true }
+            )
+        }
+        @{
+            ParameterSetName = 'LoginObject'
+            ExpectedParameterTests = @(
+                @{ ParameterName = 'LoginObject'; IsMandatory = $true; ValueFromPipeline = $true }
+                @{ ParameterName = 'Refresh'; IsMandatory = $false; ValueFromPipeline = $false; ShouldExist = $false }
+            )
+        }
+    ) {
+        $command = Get-Command -Name 'Remove-SqlDscLogin'
+
+        # Helper function to get parameter attribute for a specific parameter set
+        $getParameterAttribute = {
+            param($ParameterName, $ParameterSetName)
+
+            $parameter = $command.Parameters[$ParameterName]
+            if ($null -eq $parameter) {
+                return $null
+            }
+
+            $parameterAttribute = $parameter.Attributes |
+                Where-Object -FilterScript {
+                    $_ -is [System.Management.Automation.ParameterAttribute] -and
+                    ($_.ParameterSetName -eq $ParameterSetName -or $_.ParameterSetName -eq '__AllParameterSets')
+                } |
+                Select-Object -First 1
+
+            return $parameterAttribute
+        }
+
+        foreach ($parameterTest in $ExpectedParameterTests) {
+            $parameterAttribute = & $getParameterAttribute -ParameterName $parameterTest.ParameterName -ParameterSetName $ParameterSetName
+
+            if ($parameterTest.ContainsKey('ShouldExist') -and $parameterTest.ShouldExist -eq $false) {
+                $parameterAttribute | Should -BeNullOrEmpty -Because "Parameter '$($parameterTest.ParameterName)' should not exist in parameter set '$ParameterSetName'"
+            } else {
+                $parameterAttribute | Should -Not -BeNullOrEmpty -Because "Parameter '$($parameterTest.ParameterName)' should exist in parameter set '$ParameterSetName'"
+                $parameterAttribute.Mandatory | Should -Be $parameterTest.IsMandatory -Because "Parameter '$($parameterTest.ParameterName)' mandatory setting should be $($parameterTest.IsMandatory) in parameter set '$ParameterSetName'"
+                $parameterAttribute.ValueFromPipeline | Should -Be $parameterTest.ValueFromPipeline -Because "Parameter '$($parameterTest.ParameterName)' ValueFromPipeline setting should be $($parameterTest.ValueFromPipeline) in parameter set '$ParameterSetName'"
+            }
+        }
+    }
+
     Context 'When removing a login by ServerObject' {
         BeforeAll {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
