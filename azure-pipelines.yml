@@ -92,8 +92,9 @@ stages:
               targetType: 'inline'
               script: |
                 # Set the target branch for comparison
-                $targetBranch = "origin/$(System.PullRequest.TargetBranch)"
-                if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
+                if ($env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
+                    $targetBranch = "origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH"
+                } else {
                     $targetBranch = "origin/main"
                 }
 
