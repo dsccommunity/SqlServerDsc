@@ -74,6 +74,39 @@ stages:
     displayName: 'Quality Test and Unit Test'
     dependsOn: Build
     jobs:
+      - job: Determine_DSC_Resource_Test_Requirements
+        displayName: 'Determine DSC Resource Test Requirements'
+        pool:
+          vmImage: 'windows-latest'
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Build Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+          - task: PowerShell@2
+            name: determineDscResourceTests
+            displayName: 'Determine if DSC Resource Integration Tests Should Run'
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Set the target branch for comparison
+                $targetBranch = "origin/$(System.PullRequest.TargetBranch)"
+                if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
+                    $targetBranch = "origin/main"
+                }
+
+                Write-Output "Target branch: $targetBranch"
+                Write-Output "Current branch: HEAD"
+
+                # Run the script to determine if DSC resource integration tests should run
+                $shouldRun = ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch $targetBranch -CurrentBranch HEAD
+
+                # Set Azure DevOps output variable for pipeline conditions
+                Write-Host "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests;isOutput=true]$shouldRun"
+              pwsh: true
+
       - job: Test_HQRM
         displayName: 'HQRM'
         pool:
@@ -402,6 +435,11 @@ stages:
   - stage: Integration_Test_Resources_SqlServer
     displayName: 'Integration Test Resources - SQL Server'
     dependsOn: Quality_Test_and_Unit_Test
+    condition: |
+      and(
+        succeeded(),
+        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'True')
+      )
     jobs:
       - job: Test_Integration
         displayName: 'Integration'
@@ -495,6 +533,11 @@ stages:
   - stage: Integration_Test_Resources_SqlServer_dbatools
     displayName: 'Integration Test Resources - SQL Server (dbatools)'
     dependsOn: Integration_Test_Resources_SqlServer
+    condition: |
+      and(
+        succeeded(),
+        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'True')
+      )
     jobs:
       - job: Test_Integration
         displayName: 'Integration'
@@ -585,6 +628,11 @@ stages:
   - stage: Integration_Test_Resources_ReportingServices
     displayName: 'Integration Test Resources - Reporting Services'
     dependsOn: Integration_Test_Resources_SqlServer
+    condition: |
+      and(
+        succeeded(),
+        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'True')
+      )
     jobs:
       - job: Test_Integration
         displayName: 'Integration'
@@ -656,6 +704,11 @@ stages:
   - stage: Integration_Test_Resources_PowerBIReportServer
     displayName: 'Integration Test Resources - Power BI Report Server'
     dependsOn: Quality_Test_and_Unit_Test
+    condition: |
+      and(
+        succeeded(),
+        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'True')
+      )
     jobs:
       - job: Test_Integration
         displayName: 'Integration'
@@ -718,6 +771,11 @@ stages:
   - stage: Integration_Test_Resources_ReportingServices_dbatools
     displayName: 'Integration Test Resources - Reporting Services (dbatools)'
     dependsOn: Integration_Test_Resources_SqlServer
+    condition: |
+      and(
+        succeeded(),
+        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'True')
+      )
     jobs:
       - job: Test_Integration
         displayName: 'Integration'
@@ -783,6 +841,7 @@ stages:
     - Integration_Test_Resources_SqlServer
     - Integration_Test_Resources_SqlServer_dbatools
     - Integration_Test_Resources_ReportingServices
+    - Integration_Test_Resources_PowerBIReportServer
     - Integration_Test_Resources_ReportingServices_dbatools
     condition: |
       and(
