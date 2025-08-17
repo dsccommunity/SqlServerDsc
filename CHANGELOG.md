@@ -35,8 +35,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Remove `windows-2019` images fixes [#2106](https://github.com/dsccommunity/SqlServerDsc/issues/2106).
   - Move individual tasks to `windows-latest`.
   - Added integration tests for `Assert-SqlDscLogin` command in Group 2.
+  - Added conditional logic to skip DSC resource integration tests when
+    changes don't affect DSC resources, improving CI/CD performance for
+    non-DSC changes.
 - `SqlServerDsc.psd1`
   - Set `CmdletsToExport` to `*` in module manifest to fix issue [#2109](https://github.com/dsccommunity/SqlServerDsc/issues/2109).
+- Added optimization for DSC resource integration tests
+  - Created `.build/Test-ShouldRunDscResourceIntegrationTests.ps1` to analyze
+    git changes and decide when DSC resource integration tests are needed.
+  - DSC resource integration test stages now run only when changes affect DSC
+    resources, public commands used by resources, or related components.
+  - Unit tests, QA tests, and command integration tests continue to run for
+    all changes.
+  - Provides time savings for non-DSC changes while maintaining coverage.
 
 ## [17.1.0] - 2025-05-22
 
