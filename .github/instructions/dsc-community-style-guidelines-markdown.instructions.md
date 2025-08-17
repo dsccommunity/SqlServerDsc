@@ -7,3 +7,4 @@ applyTo: "**/*.md"
 
 - Wrap lines at 80 characters
 - Use 2 spaces for indentation
+- Use 1/1/1 numbering style
