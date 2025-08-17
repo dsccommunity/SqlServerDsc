@@ -1,6 +1,6 @@
 ---
 description: Guidelines for writing PowerShell scripts and modules.
-applyTo: "**/*.psm1,**/*.psd1,**/*.ps1"
+applyTo: "**/*.ps?(m|d)1"
 ---
 
 # PowerShell Guidelines
