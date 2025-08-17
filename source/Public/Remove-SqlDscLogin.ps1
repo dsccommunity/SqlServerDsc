@@ -19,11 +19,10 @@
 
     .PARAMETER Refresh
         Specifies that the **ServerObject**'s logins should be refreshed before
-        trying removing the login object. This is helpful when logins could have
+        trying to remove the login object. This is helpful when logins could have
         been modified outside of the **ServerObject**, for example through T-SQL.
-        But on instances with a large amount of logins it might be better to make
+        But on instances with a large number of logins it might be better to make
         sure the **ServerObject** is recent enough, or pass in **LoginObject**.
-
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $loginObject = $serverObject | Get-SqlDscLogin -Name 'MyLogin'
