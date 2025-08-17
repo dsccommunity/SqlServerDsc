@@ -245,8 +245,7 @@ function Get-PrivateFunctionsUsedByCommand
     }
 
     $privateFunctions = @()
-    $content = Get-Content -Path $commandFile -Raw
-
+    $content = Get-Content -Path $commandFile -Raw -ErrorAction SilentlyContinue
     # Look for direct function calls to private functions
     $privateFunctionFiles = Get-ChildItem -Path (Join-Path -Path $SourcePath -ChildPath "Private") -Filter "*.ps1" | Select-Object -ExpandProperty BaseName
     foreach ($privateFunction in $privateFunctionFiles)
