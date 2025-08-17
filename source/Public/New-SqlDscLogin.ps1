@@ -225,14 +225,12 @@ function New-SqlDscLogin
             )
         }
 
-        $verboseDescriptionMessage = $script:localizedData.Login_Add_ShouldProcessVerboseDescription -f $Name, $ServerObject.InstanceName
+        $verboseDescriptionMessage = $script:localizedData.Login_Add_ShouldProcessVerboseDescription -f $Name, $loginType, $ServerObject.InstanceName
         $verboseWarningMessage = $script:localizedData.Login_Add_ShouldProcessVerboseWarning -f $Name
         $captionMessage = $script:localizedData.Login_Add_ShouldProcessCaption
 
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
-            Write-Verbose -Message ($script:localizedData.Login_Add_CreatingLogin -f $Name, $loginType)
-
             # Create the login object
             $loginObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $ServerObject, $Name
 
