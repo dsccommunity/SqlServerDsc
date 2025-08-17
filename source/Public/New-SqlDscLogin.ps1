@@ -103,6 +103,15 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
+        $hashedPassword = ConvertTo-SecureString -String '0x020012345678...' -AsPlainText -Force
+        $serverObject | New-SqlDscLogin -Name 'MyHashedLogin' -SqlLogin -SecurePassword $hashedPassword -IsHashed
+
+        Creates a new SQL Server login with a pre-hashed password. Note that password
+        policy options (PasswordExpirationEnabled, PasswordPolicyEnforced, MustChangePassword)
+        cannot be used with hashed passwords.
+
+    .EXAMPLE
+        $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
         $securePassword = ConvertTo-SecureString -String 'MyPassword123!' -AsPlainText -Force
         $loginObject = $serverObject | New-SqlDscLogin -Name 'MyLogin' -SqlLogin -SecurePassword $securePassword -PassThru
 
@@ -132,6 +141,7 @@ function New-SqlDscLogin
         $Name,
 
         [Parameter(ParameterSetName = 'SqlLogin', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'SqlLoginHashed', Mandatory = $true)]
         [System.Management.Automation.SwitchParameter]
         $SqlLogin,
 
@@ -152,6 +162,7 @@ function New-SqlDscLogin
         $AsymmetricKey,
 
         [Parameter(ParameterSetName = 'SqlLogin', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'SqlLoginHashed', Mandatory = $true)]
         [System.Security.SecureString]
         $SecurePassword,
 
@@ -183,7 +194,7 @@ function New-SqlDscLogin
         [System.Management.Automation.SwitchParameter]
         $MustChangePassword,
 
-        [Parameter(ParameterSetName = 'SqlLogin')]
+        [Parameter(ParameterSetName = 'SqlLoginHashed', Mandatory = $true)]
         [System.Management.Automation.SwitchParameter]
         $IsHashed,
 
@@ -237,7 +248,7 @@ function New-SqlDscLogin
             # Set login type
             switch ($loginType)
             {
-                'SqlLogin'
+                { $_ -in 'SqlLogin', 'SqlLoginHashed' }
                 {
                     $loginObject.LoginType = [Microsoft.SqlServer.Management.Smo.LoginType]::SqlLogin
                 }
@@ -275,21 +286,25 @@ function New-SqlDscLogin
             }
 
             # Set SQL Server login specific properties
-            if ($loginType -eq 'SqlLogin')
+            if ($loginType -in 'SqlLogin', 'SqlLoginHashed')
             {
-                $loginObject.PasswordExpirationEnabled = $PasswordExpirationEnabled.IsPresent
-                $loginObject.PasswordPolicyEnforced = $PasswordPolicyEnforced.IsPresent
-
                 # Prepare login creation options
                 $loginCreateOptions = [Microsoft.SqlServer.Management.Smo.LoginCreateOptions]::None
 
-                if ($MustChangePassword.IsPresent)
+                if ($loginType -eq 'SqlLogin')
                 {
-                    $loginCreateOptions = $loginCreateOptions -bor [Microsoft.SqlServer.Management.Smo.LoginCreateOptions]::MustChange
-                }
+                    # Regular SQL login - can use password policy options
+                    $loginObject.PasswordExpirationEnabled = $PasswordExpirationEnabled.IsPresent
+                    $loginObject.PasswordPolicyEnforced = $PasswordPolicyEnforced.IsPresent
 
-                if ($IsHashed.IsPresent)
+                    if ($MustChangePassword.IsPresent)
+                    {
+                        $loginCreateOptions = $loginCreateOptions -bor [Microsoft.SqlServer.Management.Smo.LoginCreateOptions]::MustChange
+                    }
+                }
+                elseif ($loginType -eq 'SqlLoginHashed')
                 {
+                    # Hashed SQL login - cannot use password policy options
                     $loginCreateOptions = $loginCreateOptions -bor [Microsoft.SqlServer.Management.Smo.LoginCreateOptions]::IsHashed
                 }
 

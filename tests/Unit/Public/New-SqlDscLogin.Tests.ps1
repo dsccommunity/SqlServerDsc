@@ -54,7 +54,11 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
     It 'Should have the correct parameters in parameter set <MockParameterSetName>' -ForEach @(
         @{
             MockParameterSetName = 'SqlLogin'
-            MockExpectedParameters = '-ServerObject <Server> -Name <string> -SqlLogin -SecurePassword <securestring> [-DefaultDatabase <string>] [-DefaultLanguage <string>] [-PasswordExpirationEnabled] [-PasswordPolicyEnforced] [-MustChangePassword] [-IsHashed] [-Disabled] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -SqlLogin -SecurePassword <securestring> [-DefaultDatabase <string>] [-DefaultLanguage <string>] [-PasswordExpirationEnabled] [-PasswordPolicyEnforced] [-MustChangePassword] [-Disabled] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
+        }
+        @{
+            MockParameterSetName = 'SqlLoginHashed'
+            MockExpectedParameters = '-ServerObject <Server> -Name <string> -SqlLogin -SecurePassword <securestring> -IsHashed [-DefaultDatabase <string>] [-DefaultLanguage <string>] [-Disabled] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]'
         }
         @{
             MockParameterSetName = 'WindowsUser'
@@ -116,7 +120,6 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
                 @{ ParameterName = 'PasswordExpirationEnabled'; IsMandatory = $false; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
                 @{ ParameterName = 'PasswordPolicyEnforced'; IsMandatory = $false; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
                 @{ ParameterName = 'MustChangePassword'; IsMandatory = $false; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
-                @{ ParameterName = 'IsHashed'; IsMandatory = $false; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
                 @{ ParameterName = 'Disabled'; IsMandatory = $false; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
                 @{ ParameterName = 'Force'; IsMandatory = $false; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
                 @{ ParameterName = 'PassThru'; IsMandatory = $false; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
@@ -126,6 +129,31 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
                 @{ ParameterName = 'AsymmetricKey'; ShouldExist = $false }
                 @{ ParameterName = 'CertificateName'; ShouldExist = $false }
                 @{ ParameterName = 'AsymmetricKeyName'; ShouldExist = $false }
+                @{ ParameterName = 'IsHashed'; ShouldExist = $false }
+            )
+        }
+        @{
+            ParameterSetName = 'SqlLoginHashed'
+            ExpectedParameterTests = @(
+                @{ ParameterName = 'ServerObject'; IsMandatory = $true; ValueFromPipeline = $true; ValueFromPipelineByPropertyName = $false }
+                @{ ParameterName = 'Name'; IsMandatory = $true; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
+                @{ ParameterName = 'SqlLogin'; IsMandatory = $true; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
+                @{ ParameterName = 'SecurePassword'; IsMandatory = $true; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
+                @{ ParameterName = 'IsHashed'; IsMandatory = $true; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
+                @{ ParameterName = 'DefaultDatabase'; IsMandatory = $false; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
+                @{ ParameterName = 'DefaultLanguage'; IsMandatory = $false; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
+                @{ ParameterName = 'Disabled'; IsMandatory = $false; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
+                @{ ParameterName = 'Force'; IsMandatory = $false; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
+                @{ ParameterName = 'PassThru'; IsMandatory = $false; ValueFromPipeline = $false; ValueFromPipelineByPropertyName = $false }
+                @{ ParameterName = 'WindowsUser'; ShouldExist = $false }
+                @{ ParameterName = 'WindowsGroup'; ShouldExist = $false }
+                @{ ParameterName = 'Certificate'; ShouldExist = $false }
+                @{ ParameterName = 'AsymmetricKey'; ShouldExist = $false }
+                @{ ParameterName = 'CertificateName'; ShouldExist = $false }
+                @{ ParameterName = 'AsymmetricKeyName'; ShouldExist = $false }
+                @{ ParameterName = 'PasswordExpirationEnabled'; ShouldExist = $false }
+                @{ ParameterName = 'PasswordPolicyEnforced'; ShouldExist = $false }
+                @{ ParameterName = 'MustChangePassword'; ShouldExist = $false }
             )
         }
         @{
@@ -407,8 +435,14 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
                 $script:mockSecurePassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
             }
 
-            It 'Should handle multiple options together' {
-                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'ComplexLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -MustChangePassword -IsHashed -Disabled -DefaultLanguage 'English' -DefaultDatabase 'tempdb' -PasswordExpirationEnabled -PasswordPolicyEnforced -Confirm:$false
+            It 'Should handle multiple options together for regular SQL login' {
+                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'ComplexLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -MustChangePassword -Disabled -DefaultLanguage 'English' -DefaultDatabase 'tempdb' -PasswordExpirationEnabled -PasswordPolicyEnforced -Confirm:$false
+
+                Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
+            }
+
+            It 'Should handle hashed SQL login with compatible options' {
+                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'HashedLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -IsHashed -Disabled -DefaultLanguage 'English' -DefaultDatabase 'tempdb' -Confirm:$false
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
             }
