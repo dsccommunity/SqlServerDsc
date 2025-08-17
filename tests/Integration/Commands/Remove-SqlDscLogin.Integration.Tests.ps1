@@ -55,13 +55,11 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         BeforeAll {
             $script:testLoginName = 'TestRemoveLogin1'
             $script:testLoginPassword = ConvertTo-SecureString -String 'P@ssw0rd1!' -AsPlainText -Force
-            $script:testLoginCredential = [System.Management.Automation.PSCredential]::new($script:testLoginName, $script:testLoginPassword)
         }
 
         BeforeEach {
             # Create the test login
-            $createLoginQuery = "CREATE LOGIN [$($script:testLoginName)] WITH PASSWORD = 'P@ssw0rd1!'"
-            $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query $createLoginQuery -Force
+            $null = $script:serverObject | New-SqlDscLogin -Name $script:testLoginName -SqlLogin -SecurePassword $script:testLoginPassword -Force
         }
 
         AfterEach {
@@ -116,13 +114,11 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         BeforeAll {
             $script:testLoginName2 = 'TestRemoveLogin2'
             $script:testLoginPassword2 = ConvertTo-SecureString -String 'P@ssw0rd2!' -AsPlainText -Force
-            $script:testLoginCredential2 = [System.Management.Automation.PSCredential]::new($script:testLoginName2, $script:testLoginPassword2)
         }
 
         BeforeEach {
             # Create the test login
-            $createLoginQuery = "CREATE LOGIN [$($script:testLoginName2)] WITH PASSWORD = 'P@ssw0rd2!'"
-            $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query $createLoginQuery -Force
+            $null = $script:serverObject | New-SqlDscLogin -Name $script:testLoginName2 -SqlLogin -SecurePassword $script:testLoginPassword2 -Force
         }
 
         AfterEach {
@@ -169,8 +165,7 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
 
         BeforeEach {
             # Create the test login
-            $createLoginQuery = "CREATE LOGIN [$($script:testLoginName3)] WITH PASSWORD = 'P@ssw0rd3!'"
-            $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query $createLoginQuery -Force
+            $null = $script:serverObject | New-SqlDscLogin -Name $script:testLoginName3 -SqlLogin -SecurePassword (ConvertTo-SecureString -String 'P@ssw0rd3!' -AsPlainText -Force) -Force
         }
 
         AfterEach {
