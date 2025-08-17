@@ -27,28 +27,20 @@ The script checks for changes to:
 
 ### Azure Pipelines
 
-```yaml
-- powershell: |
-    .build/Test-ShouldRunDscResourceIntegrationTests.ps1
-  displayName: 'Determine if DSC resource tests should run'
-```
-
 The Azure Pipelines task sets an output variable that downstream stages can
 use to conditionally run DSC resource integration tests. The script returns
-a boolean value that the pipeline captures using:
+a boolean value that the pipeline captures, e.g.:
 
-```powershell
-Write-Host "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests;isOutput=true]$shouldRun"
+```yaml
+- powershell: |
+    $shouldRun = ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch $targetBranch -CurrentBranch HEAD
+    Write-Host "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests;isOutput=true]$shouldRun"
+  displayName: 'Determine if DSC resource tests should run'
 ```
 
 Downstream stages reference this output variable using the pattern:
 `dependencies.JobName.outputs['StepName.VariableName']` to gate their
 execution based on whether DSC resource tests should run.
-
-**Note**: The step sets an output variable with `isOutput=true` using the
-variable name `ShouldRunDscResourceIntegrationTests`. Downstream stages consume
-this using the syntax:
-`dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests']`
 
 ### Command Line
 
