@@ -147,13 +147,22 @@ Describe 'New-SqlDscRole' -Tag 'Public' {
                 return $mockNewRole
             }
 
-            # Track Refresh call
+            # Create a fresh mock server with refresh tracking
             $script:refreshCalled = $false
-            $mockServerObject.Roles | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
-                $script:refreshCalled = $true
+            $mockServerWithRefresh = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerWithRefresh | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
+            $mockServerWithRefresh | Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
+                return [PSCustomObject]@{
+                    PSTypeName = 'MockRoleCollection'
+                } | Add-Member -MemberType 'ScriptMethod' -Name 'get_Item' -Value {
+                    param($roleName)
+                    return $null  # No existing roles
+                } -PassThru | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                    $script:refreshCalled = $true
+                } -PassThru
             } -Force
 
-            New-SqlDscRole -ServerObject $mockServerObject -Name 'TestRole' -Refresh -Force
+            New-SqlDscRole -ServerObject $mockServerWithRefresh -Name 'TestRole' -Refresh -Force
 
             $script:refreshCalled | Should -BeTrue
         }
@@ -164,31 +173,26 @@ Describe 'New-SqlDscRole' -Tag 'Public' {
             $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
             $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
 
-            # Create mock roles collection that returns an existing role
+            # Create mock existing role
             $mockExistingRole = New-Object -TypeName Object
             $mockExistingRole | Add-Member -MemberType 'NoteProperty' -Name 'Name' -Value 'ExistingRole' -Force
             
-            $mockRoleCollection = @{
-                'ExistingRole' = $mockExistingRole
-            }
-
+            # Create mock roles collection that returns the existing role
             $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
-                return [PSCustomObject]@{
-                    PSTypeName = 'MockRoleCollection'
-                } | Add-Member -MemberType 'ScriptMethod' -Name 'get_Item' -Value {
-                    param($roleName)
-                    return $mockRoleCollection[$roleName]
-                } -PassThru | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                return @{
+                    'ExistingRole' = $mockExistingRole
+                } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
                     # Mock implementation
-                } -PassThru
+                } -PassThru -Force
             } -Force
         }
 
         It 'Should throw an error when role already exists' {
             Mock -CommandName 'Write-Verbose'
 
+            # Don't need to mock New-Object here since the command should fail before reaching that point
             { New-SqlDscRole -ServerObject $mockServerObject -Name 'ExistingRole' -Force } |
-                Should -Throw -ExpectedMessage '*already exists*'
+                Should -Throw '*already exists*'
         }
     }
 

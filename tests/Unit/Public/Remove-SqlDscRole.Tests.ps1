@@ -52,184 +52,156 @@ AfterAll {
 Describe 'Remove-SqlDscRole' -Tag 'Public' {
     Context 'When removing a server role using ServerObject parameter set' {
         BeforeAll {
-            InModuleScope -ScriptBlock {
-                $script:mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                $script:mockServerObject.InstanceName = 'TestInstance'
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
 
-                # Create mock role that can be removed
-                $script:mockRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($script:mockServerObject, 'CustomRole')
-                $script:mockRole | Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $false -Force
-                $script:mockRole | Add-Member -MemberType 'NoteProperty' -Name 'Parent' -Value $script:mockServerObject -Force
-                $script:mockRole | Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
+            # Create mock role that can be removed using the actual SMO type
+            $mockRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($mockServerObject, 'CustomRole')
+            $mockRole | Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $false -Force
+            $mockRole | Add-Member -MemberType 'NoteProperty' -Name 'Parent' -Value $mockServerObject -Force
+            $mockRole | Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
+                # Mock implementation
+            } -Force
+
+            # Create mock roles collection
+            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
+                return @{
+                    'CustomRole' = $mockRole
+                } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
                     # Mock implementation
-                } -Force
-
-                # Create mock roles collection
-                $mockRoleCollection = @{
-                    'CustomRole' = $script:mockRole
-                }
-
-                $script:mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
-                    return [PSCustomObject]@{
-                        PSTypeName = 'MockRoleCollection'
-                    } | Add-Member -MemberType 'ScriptMethod' -Name 'get_Item' -Value {
-                        param($roleName)
-                        return $mockRoleCollection[$roleName]
-                    } -PassThru | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
-                        # Mock implementation
-                    } -PassThru
-                } -Force
-            }
+                } -PassThru -Force
+            } -Force
         }
 
         It 'Should remove the server role successfully' {
-            InModuleScope -ScriptBlock {
-                Mock -CommandName 'Write-Verbose'
+            Mock -CommandName 'Write-Verbose'
 
-                { Remove-SqlDscRole -ServerObject $script:mockServerObject -Name 'CustomRole' -Force } |
-                    Should -Not -Throw
-            }
+            { Remove-SqlDscRole -ServerObject $mockServerObject -Name 'CustomRole' -Force } |
+                Should -Not -Throw
         }
 
         It 'Should call Refresh when Refresh parameter is specified' {
-            InModuleScope -ScriptBlock {
-                Mock -CommandName 'Write-Verbose'
+            Mock -CommandName 'Write-Verbose'
 
-                # Track Refresh call
-                $refreshCalled = $false
-                $script:mockServerObject.Roles | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
-                    $refreshCalled = $true
-                } -Force
+            # Create a fresh mock server with refresh tracking
+            $script:refreshCalled = $false
+            $mockServerWithRefresh = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerWithRefresh | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
 
-                Remove-SqlDscRole -ServerObject $script:mockServerObject -Name 'CustomRole' -Refresh -Force
+            # Create mock role that can be removed
+            $mockRoleWithRefresh = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($mockServerWithRefresh, 'CustomRole')
+            $mockRoleWithRefresh | Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $false -Force
+            $mockRoleWithRefresh | Add-Member -MemberType 'NoteProperty' -Name 'Parent' -Value $mockServerWithRefresh -Force
+            $mockRoleWithRefresh | Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
+                # Mock implementation
+            } -Force
 
-                $refreshCalled | Should -BeTrue
-            }
+            $mockServerWithRefresh | Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
+                return @{
+                    'CustomRole' = $mockRoleWithRefresh
+                } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                    $script:refreshCalled = $true
+                } -PassThru -Force
+            } -Force
+
+            Remove-SqlDscRole -ServerObject $mockServerWithRefresh -Name 'CustomRole' -Refresh -Force
+
+            $script:refreshCalled | Should -BeTrue
         }
 
         It 'Should throw an error when role does not exist' {
-            InModuleScope -ScriptBlock {
-                Mock -CommandName 'Write-Verbose'
+            Mock -CommandName 'Write-Verbose'
 
-                { Remove-SqlDscRole -ServerObject $script:mockServerObject -Name 'NonExistentRole' -Force } |
-                    Should -Throw -ExpectedMessage '*was not found*'
-            }
+            { Remove-SqlDscRole -ServerObject $mockServerObject -Name 'NonExistentRole' -Force } |
+                Should -Throw '*was not found*'
         }
     }
 
     Context 'When removing a server role using RoleObject parameter set' {
         BeforeAll {
-            InModuleScope -ScriptBlock {
-                $script:mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                $script:mockServerObject.InstanceName = 'TestInstance'
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
 
-                # Create mock role that can be removed
-                $script:mockRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($script:mockServerObject, 'CustomRole')
-                $script:mockRole | Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $false -Force
-                $script:mockRole | Add-Member -MemberType 'NoteProperty' -Name 'Parent' -Value $script:mockServerObject -Force
-                $script:mockRole | Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
-                    # Mock implementation
-                } -Force
-            }
+            # Create mock role that can be removed using the actual SMO type
+            $mockRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($mockServerObject, 'CustomRole')
+            $mockRole | Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $false -Force
+            $mockRole | Add-Member -MemberType 'NoteProperty' -Name 'Parent' -Value $mockServerObject -Force
+            $mockRole | Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
+                # Mock implementation
+            } -Force
         }
 
         It 'Should remove the server role successfully' {
-            InModuleScope -ScriptBlock {
-                Mock -CommandName 'Write-Verbose'
+            Mock -CommandName 'Write-Verbose'
 
-                { Remove-SqlDscRole -RoleObject $script:mockRole -Force } |
-                    Should -Not -Throw
-            }
+            { Remove-SqlDscRole -RoleObject $mockRole -Force } |
+                Should -Not -Throw
         }
     }
 
     Context 'When trying to remove a built-in role' {
         BeforeAll {
-            InModuleScope -ScriptBlock {
-                $script:mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                $script:mockServerObject.InstanceName = 'TestInstance'
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
 
-                # Create mock built-in role
-                $script:mockBuiltInRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($script:mockServerObject, 'sysadmin')
-                $script:mockBuiltInRole | Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -Force
-                $script:mockBuiltInRole | Add-Member -MemberType 'NoteProperty' -Name 'Parent' -Value $script:mockServerObject -Force
+            # Create mock built-in role using the actual SMO type
+            $mockBuiltInRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($mockServerObject, 'sysadmin')
+            $mockBuiltInRole | Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $true -Force
+            $mockBuiltInRole | Add-Member -MemberType 'NoteProperty' -Name 'Parent' -Value $mockServerObject -Force
 
-                # Create mock roles collection
-                $mockRoleCollection = @{
-                    'sysadmin' = $script:mockBuiltInRole
-                }
-
-                $script:mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
-                    return [PSCustomObject]@{
-                        PSTypeName = 'MockRoleCollection'
-                    } | Add-Member -MemberType 'ScriptMethod' -Name 'get_Item' -Value {
-                        param($roleName)
-                        return $mockRoleCollection[$roleName]
-                    } -PassThru | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
-                        # Mock implementation
-                    } -PassThru
-                } -Force
-            }
+            # Create mock roles collection
+            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
+                return @{
+                    'sysadmin' = $mockBuiltInRole
+                } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                    # Mock implementation
+                } -PassThru -Force
+            } -Force
         }
 
         It 'Should throw an error when trying to remove a built-in role using ServerObject' {
-            InModuleScope -ScriptBlock {
-                Mock -CommandName 'Write-Verbose'
+            Mock -CommandName 'Write-Verbose'
 
-                { Remove-SqlDscRole -ServerObject $script:mockServerObject -Name 'sysadmin' -Force } |
-                    Should -Throw -ExpectedMessage '*Cannot remove built-in*'
-            }
+            { Remove-SqlDscRole -ServerObject $mockServerObject -Name 'sysadmin' -Force } |
+                Should -Throw '*Cannot remove built-in*'
         }
 
         It 'Should throw an error when trying to remove a built-in role using RoleObject' {
-            InModuleScope -ScriptBlock {
-                Mock -CommandName 'Write-Verbose'
+            Mock -CommandName 'Write-Verbose'
 
-                { Remove-SqlDscRole -RoleObject $script:mockBuiltInRole -Force } |
-                    Should -Throw -ExpectedMessage '*Cannot remove built-in*'
-            }
+            { Remove-SqlDscRole -RoleObject $mockBuiltInRole -Force } |
+                Should -Throw '*Cannot remove built-in*'
         }
     }
 
     Context 'When role removal fails' {
         BeforeAll {
-            InModuleScope -ScriptBlock {
-                $script:mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
-                $script:mockServerObject.InstanceName = 'TestInstance'
+            $mockServerObject = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.Server'
+            $mockServerObject | Add-Member -MemberType 'NoteProperty' -Name 'InstanceName' -Value 'TestInstance' -Force
 
-                # Create mock role that fails to be removed
-                $script:mockRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($script:mockServerObject, 'CustomRole')
-                $script:mockRole | Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $false -Force
-                $script:mockRole | Add-Member -MemberType 'NoteProperty' -Name 'Parent' -Value $script:mockServerObject -Force
-                $script:mockRole | Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
-                    throw 'Removal failed'
-                } -Force
+            # Create mock role that fails to be removed using the actual SMO type
+            $mockRole = New-Object -TypeName 'Microsoft.SqlServer.Management.Smo.ServerRole' -ArgumentList @($mockServerObject, 'CustomRole')
+            $mockRole | Add-Member -MemberType 'NoteProperty' -Name 'IsFixedRole' -Value $false -Force
+            $mockRole | Add-Member -MemberType 'NoteProperty' -Name 'Parent' -Value $mockServerObject -Force
+            $mockRole | Add-Member -MemberType 'ScriptMethod' -Name 'Drop' -Value {
+                throw 'Removal failed'
+            } -Force
 
-                # Create mock roles collection
-                $mockRoleCollection = @{
-                    'CustomRole' = $script:mockRole
-                }
-
-                $script:mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
-                    return [PSCustomObject]@{
-                        PSTypeName = 'MockRoleCollection'
-                    } | Add-Member -MemberType 'ScriptMethod' -Name 'get_Item' -Value {
-                        param($roleName)
-                        return $mockRoleCollection[$roleName]
-                    } -PassThru | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
-                        # Mock implementation
-                    } -PassThru
-                } -Force
-            }
+            # Create mock roles collection
+            $mockServerObject | Add-Member -MemberType 'ScriptProperty' -Name 'Roles' -Value {
+                return @{
+                    'CustomRole' = $mockRole
+                } | Add-Member -MemberType 'ScriptMethod' -Name 'Refresh' -Value {
+                    # Mock implementation
+                } -PassThru -Force
+            } -Force
         }
 
         It 'Should throw an error when role removal fails' {
-            InModuleScope -ScriptBlock {
-                Mock -CommandName 'Write-Verbose'
+            Mock -CommandName 'Write-Verbose'
 
-                { Remove-SqlDscRole -ServerObject $script:mockServerObject -Name 'CustomRole' -Force } |
-                    Should -Throw -ExpectedMessage '*Failed to remove*'
-            }
+            { Remove-SqlDscRole -ServerObject $mockServerObject -Name 'CustomRole' -Force } |
+                Should -Throw '*Failed to remove*'
         }
     }
 
@@ -237,7 +209,7 @@ Describe 'Remove-SqlDscRole' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set ServerObject' -ForEach @(
             @{
                 ExpectedParameterSetName = 'ServerObject'
-                ExpectedParameters = '[-ServerObject] <Server> [-Name] <String> [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-ServerObject <Server> -Name <string> [-Force] [-Refresh] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Remove-SqlDscRole').ParameterSets |
@@ -254,7 +226,7 @@ Describe 'Remove-SqlDscRole' -Tag 'Public' {
         It 'Should have the correct parameters in parameter set RoleObject' -ForEach @(
             @{
                 ExpectedParameterSetName = 'RoleObject'
-                ExpectedParameters = '[-RoleObject] <ServerRole> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
+                ExpectedParameters = '-RoleObject <ServerRole> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]'
             }
         ) {
             $result = (Get-Command -Name 'Remove-SqlDscRole').ParameterSets |
