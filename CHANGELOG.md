@@ -41,10 +41,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SqlServerDsc.psd1`
   - Set `CmdletsToExport` to `*` in module manifest to fix issue [#2109](https://github.com/dsccommunity/SqlServerDsc/issues/2109).
 - Added optimization for DSC resource integration tests
-  - Created `.build/Test-ShouldRunDscResourceIntegrationTests.ps1` script to analyze git changes and determine when DSC resource integration tests are needed.
-  - DSC resource integration test stages now only run when changes affect DSC resources, public commands used by DSC resources, or related components.
-  - Unit tests, QA tests, and command integration tests continue to run for all changes.
-  - Provides significant time savings for changes that don't affect DSC resources while maintaining full test coverage when needed.
+  - Created `.build/Test-ShouldRunDscResourceIntegrationTests.ps1` to analyze
+    git changes and decide when DSC resource integration tests are needed.
+  - DSC resource integration test stages now run only when changes affect DSC
+    resources, public commands used by resources, or related components.
+  - Unit tests, QA tests, and command integration tests continue to run for
+    all changes.
+  - Provides time savings for non-DSC changes while maintaining coverage.
 
 ## [17.1.0] - 2025-05-22
 
