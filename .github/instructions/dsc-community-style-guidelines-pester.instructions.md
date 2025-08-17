@@ -7,6 +7,7 @@ applyTo: "**/*.[Tt]ests.ps1"
 
 ## Core Requirements
 - All public commands, private functions and classes must have unit tests
+- All public commands and class-based resources must have integration tests
 - Use Pester v5 syntax only
 - One `Describe` block per file matching the tested entity name
 - Test code only inside `Describe` blocks
