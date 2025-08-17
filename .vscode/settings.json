@@ -81,7 +81,7 @@
         "DSCSQLTEST",
         "unshallow",
         "pullrequest",
-        "targetbranch"
+        "targetbranch",
         "hqrm",
         "sqlps"
     ],
