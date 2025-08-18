@@ -448,8 +448,10 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
                 $script:mockSecurePassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
             }
 
-            It 'Should call Disable method on login object' {
-                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'DisabledLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -Disabled -Confirm:$false
+            It 'Should call Disable method on login object and set IsDisabled property' {
+                $login = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'DisabledLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -Disabled -PassThru -Confirm:$false
+
+                $login.IsDisabled | Should -BeTrue
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
             }
