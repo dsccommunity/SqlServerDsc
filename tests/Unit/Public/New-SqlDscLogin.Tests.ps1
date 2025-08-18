@@ -39,10 +39,9 @@ BeforeAll {
 }
 
 AfterAll {
-    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
     $PSDefaultParameterValues.Remove('Mock:ModuleName')
     $PSDefaultParameterValues.Remove('Should:ModuleName')
-
+}
     # Unload the module being tested so that it doesn't impact any other tests.
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 
