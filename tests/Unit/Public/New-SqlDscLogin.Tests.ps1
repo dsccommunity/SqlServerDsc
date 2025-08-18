@@ -303,7 +303,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
                 $script:mockSecurePassword = ConvertTo-SecureString -String 'P@ssw0rd1' -AsPlainText -Force
             }
 
-            It 'Should create a SQL Server login without throwing' {
+            It 'Should create a SQL Server login and invoke Test-SqlDscIsLogin' {
                 $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'TestLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -Confirm:$false
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
@@ -311,7 +311,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
         }
 
         Context 'When creating a Windows user login' {
-            It 'Should create a Windows user login without throwing' {
+            It 'Should create a Windows user login and return the created object' {
                 $result = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'DOMAIN\TestUser' -WindowsUser -PassThru -Confirm:$false
 
                 $result | Should -Not -BeNullOrEmpty
@@ -351,7 +351,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
             }
 
-            It 'Should create login without throwing when PassThru is not specified' {
+            It 'Should not return a login object when PassThru is not specified' {
                 $result = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'TestLogin2' -SqlLogin -SecurePassword $script:mockSecurePassword -Confirm:$false
                 $result | Should -BeNullOrEmpty
 
@@ -360,7 +360,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
         }
 
         Context 'When creating certificate-based login' {
-            It 'Should create a certificate login without throwing' {
+            It 'Should create a certificate login and return the created object' {
                 $result = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'CertLogin' -Certificate -CertificateName 'MyCert' -PassThru -Confirm:$false
 
                 $result | Should -Not -BeNullOrEmpty
@@ -371,7 +371,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
         }
 
         Context 'When creating asymmetric key-based login' {
-            It 'Should create an asymmetric key login without throwing' {
+            It 'Should create an asymmetric key login and return the created object' {
                 $result = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'KeyLogin' -AsymmetricKey -AsymmetricKeyName 'MyKey' -PassThru -Confirm:$false
 
                 $result | Should -Not -BeNullOrEmpty
@@ -382,7 +382,7 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
         }
 
         Context 'When creating Windows group login' {
-            It 'Should create a Windows group login without throwing' {
+            It 'Should create a Windows group login and return the created object' {
                 $result = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'NT AUTHORITY\SYSTEM' -WindowsGroup -PassThru -Confirm:$false
 
                 $result | Should -Not -BeNullOrEmpty
