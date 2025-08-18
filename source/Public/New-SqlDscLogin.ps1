@@ -267,7 +267,7 @@ function New-SqlDscLogin
             $PSCmdlet.ThrowTerminatingError(
                 [System.Management.Automation.ErrorRecord]::new(
                     $errorMessage,
-                    'ASDL0001', # cspell: disable-line
+                    'NSDL0001', # cspell: disable-line
                     [System.Management.Automation.ErrorCategory]::ResourceExists,
                     $Name
                 )
