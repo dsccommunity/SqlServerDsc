@@ -107,8 +107,12 @@ stages:
                 # Debug: print computed value before exporting as output
                 Write-Host "Computed ShouldRunDscResourceIntegrationTests: $shouldRun"
 
+                # Normalize to lowercase string so conditions can use a simple string comparison
+                $shouldRunNormalized = ([string] $shouldRun).ToLower()
+                Write-Host "Normalized ShouldRunDscResourceIntegrationTests: $shouldRunNormalized"
+
                 # Set Azure DevOps output variable for pipeline conditions
-                Write-Host "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests;isOutput=true]$shouldRun"
+                Write-Host "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests;isOutput=true]$shouldRunNormalized"
               pwsh: true
 
       - job: Debug_DSC_Resource_Test_Flag
@@ -123,13 +127,11 @@ stages:
           - pwsh: |
               $val = '$(ShouldRun)'
               Write-Host "Dependency output ShouldRunDscResourceIntegrationTests = '$val'"
-              $lower = $val.ToLower()
-              Write-Host "Lowercased = '$lower'"
-              if ($lower -eq 'true') {
-                  Write-Host "Stage condition eq(toLower(...), 'true') would be TRUE"
+              if ($val -eq 'true') {
+                Write-Host "Stage condition eq(..., 'true') would be TRUE"
               }
               else {
-                  Write-Host "Stage condition eq(toLower(...), 'true') would be FALSE"
+                Write-Host "Stage condition eq(..., 'true') would be FALSE"
               }
             displayName: 'Echo dependency output variable'
 
@@ -465,7 +467,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(toLower(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests']), 'true')
+        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'true')
       )
     jobs:
       - job: Test_Integration
@@ -563,7 +565,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(toLower(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests']), 'true')
+        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'true')
       )
     jobs:
       - job: Test_Integration
@@ -658,7 +660,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(toLower(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests']), 'true')
+        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'true')
       )
     jobs:
       - job: Test_Integration
@@ -734,7 +736,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(toLower(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests']), 'true')
+        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'true')
       )
     jobs:
       - job: Test_Integration
@@ -801,7 +803,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(toLower(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests']), 'true')
+        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'true')
       )
     jobs:
       - job: Test_Integration
