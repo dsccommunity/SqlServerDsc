@@ -119,13 +119,13 @@
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $serverObject | New-SqlDscLogin -Name 'MyAsymKeyLogin' -AsymmetricKey -AsymmetricKeyName 'MyAsymmetricKey'
+        $serverObject | New-SqlDscLogin -Name 'MyAsymmetricKeyLogin' -AsymmetricKey -AsymmetricKeyName 'MyAsymmetricKey'
 
         Creates a new asymmetric key-based login using the specified asymmetric key.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
-        $serverObject | New-SqlDscLogin -Name 'MyAsymKeyLogin' -AsymmetricKey -AsymmetricKeyName 'MyAsymmetricKey' -PassThru
+        $serverObject | New-SqlDscLogin -Name 'MyAsymmetricKeyLogin' -AsymmetricKey -AsymmetricKeyName 'MyAsymmetricKey' -PassThru
 
         Creates a new asymmetric key-based login and returns the Login object.
 
@@ -135,7 +135,7 @@
         $serverObject | New-SqlDscLogin -Name 'ExistingLogin' -SqlLogin -SecurePassword $securePassword -Force
 
         Creates a SQL Server login named 'ExistingLogin' without confirmation prompts.
-+        Note: If the login already exists, the command throws a terminating error.
+        Note: If the login already exists, the command throws a terminating error.
 
     .EXAMPLE
         $serverObject = Connect-SqlDscDatabaseEngine -InstanceName 'MyInstance'
@@ -153,6 +153,10 @@
     .OUTPUTS
         `[Microsoft.SqlServer.Management.Smo.Login]` when passing parameter **PassThru**,
          otherwise none.
+
+    .INPUTS
+        `[Microsoft.SqlServer.Management.Smo.Server]` Accepted from the pipeline. This cmdlet accepts a SMO Server
+        object (for example, the output of `Connect-SqlDscDatabaseEngine`) via the pipeline.
 
     .NOTES
         This command has the confirm impact level set to medium since a login is
