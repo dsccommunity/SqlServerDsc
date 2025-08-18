@@ -463,13 +463,43 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             }
 
             It 'Should handle multiple options together for regular SQL login' {
-                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'ComplexLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -MustChangePassword -Disabled -DefaultLanguage 'English' -DefaultDatabase 'tempdb' -PasswordExpirationEnabled -PasswordPolicyEnforced -Confirm:$false
+                $login = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'ComplexLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -MustChangePassword -Disabled -DefaultLanguage 'English' -DefaultDatabase 'tempdb' -PasswordExpirationEnabled -PasswordPolicyEnforced -PassThru -Confirm:$false
+
+                # Basic smoke assertions
+                $login | Should -Not -BeNullOrEmpty
+                $login.MockCreateCalled | Should -BeTrue
+                # LoginType is set to SqlLogin for both regular and hashed SQL logins
+                $login.LoginType | Should -Be 'SqlLogin'
+
+                # Options that New-SqlDscLogin assigns directly to the login object
+                $login.DefaultDatabase | Should -Be 'tempdb'
+                $login.Language | Should -Be 'English'
+                $login.PasswordExpirationEnabled | Should -BeTrue
+                $login.PasswordPolicyEnforced | Should -BeTrue
+
+                # Disabled should invoke Disable() on the login object
+                $login.IsDisabled | Should -BeTrue
+
+                # The created login should reference the same Server object passed in
+                $login.Parent | Should -Be $script:mockServerObject
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
             }
 
             It 'Should handle hashed SQL login with compatible options' {
-                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'HashedLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -IsHashed -Disabled -DefaultLanguage 'English' -DefaultDatabase 'tempdb' -Confirm:$false
+                $login = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'HashedLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -IsHashed -Disabled -DefaultLanguage 'English' -DefaultDatabase 'tempdb' -PassThru -Confirm:$false
+
+                $login | Should -Not -BeNullOrEmpty
+                $login.MockCreateCalled | Should -BeTrue
+                $login.LoginType | Should -Be 'SqlLogin'
+
+                # Hashed logins still set language/default database and can be disabled
+                $login.DefaultDatabase | Should -Be 'tempdb'
+                $login.Language | Should -Be 'English'
+                $login.IsDisabled | Should -BeTrue
+
+                # Parent/server reference check
+                $login.Parent | Should -Be $script:mockServerObject
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
             }
