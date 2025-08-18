@@ -74,6 +74,9 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         }
 
         It 'Should handle WhatIf parameter correctly' {
+            # Ensure the login exists for this scenario (don't rely on other Its)
+            $null = $script:serverObject | New-SqlDscLogin -Name $script:testLoginName -SqlLogin -SecurePassword $script:testLoginPassword -Force
+
             # Use WhatIf - login should not be removed
             $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName -WhatIf
 
@@ -83,6 +86,12 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         }
 
         It 'Should throw an error when the login does not exist' {
+            # Ensure the login does not exist for this scenario (don't rely on other Its)
+            if (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName)
+            {
+                $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName -Force
+            }
+
             # Try to remove a non-existent login
             {
                 $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName -Force -ErrorAction 'Stop'
