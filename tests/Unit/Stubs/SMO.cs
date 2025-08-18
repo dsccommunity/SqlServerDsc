@@ -357,6 +357,7 @@ namespace Microsoft.SqlServer.Management.Smo
 
         public string Name;
         public LoginType LoginType = LoginType.Unknown;
+        public bool MockCreateCalled = false;
         public bool MustChangePassword = false;
         public bool PasswordPolicyEnforced = false;
         public bool PasswordExpirationEnabled = false;
@@ -433,6 +434,8 @@ namespace Microsoft.SqlServer.Management.Smo
             if( this.LoginType == LoginType.SqlLogin && _mockPasswordPassed != true ) {
                 throw new System.Exception( "Called Create() method for the LoginType 'SqlLogin' but called with the wrong overloaded method. Did not pass the password with the Create() method." );
             }
+
+            this.MockCreateCalled = true;
         }
 
         public void Create( SecureString secureString )
