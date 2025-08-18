@@ -4,8 +4,8 @@
 
     .DESCRIPTION
         This command creates a new login on a SQL Server Database Engine instance.
-        The login can be a SQL Server login or a Windows login (user or group).
-
+        The login can be a SQL Server login, a Windows login (user or group),
+        a certificate-based login, or an asymmetric key-based login.
     .PARAMETER ServerObject
         Specifies current server connection object.
 
