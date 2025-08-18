@@ -113,6 +113,8 @@ stages:
 
                 # Set Azure DevOps output variable for pipeline conditions
                 Write-Host "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests;isOutput=true]$shouldRunNormalized"
+                # Also set a short alias for easier referencing (lowercase name)
+                Write-Host "##vso[task.setvariable variable=runDscResIT;isOutput=true]$shouldRunNormalized"
               pwsh: true
 
       - job: Debug_DSC_Resource_Test_Flag
@@ -121,16 +123,19 @@ stages:
         pool:
           vmImage: 'windows-latest'
         variables:
-          # Read the job output from the previous job via dependencies
-          ShouldRun: $[ dependencies.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests'] ]
+          # Read the job output from the previous job via dependencies (both casings)
+          ShouldRunUpper: $[ dependencies.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests'] ]
+          ShouldRunLower: $[ dependencies.Determine_DSC_Resource_Test_Requirements.outputs['determinedscresourcetests.shouldrundscresourceintegrationtests'] ]
+          ShouldRunShort: $[ dependencies.Determine_DSC_Resource_Test_Requirements.outputs['determinedscresourcetests.rundscresit'] ]
         steps:
           - pwsh: |
-              $val = '$(ShouldRun)'
-              Write-Host "Dependency output ShouldRunDscResourceIntegrationTests = '$val'"
-              if ($val -eq 'true') {
+              Write-Host "dependencies.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests'] = '$(ShouldRunUpper)'"
+              Write-Host "dependencies.Determine_DSC_Resource_Test_Requirements.outputs['determinedscresourcetests.shouldrundscresourceintegrationtests'] = '$(ShouldRunLower)'"
+              Write-Host "dependencies.Determine_DSC_Resource_Test_Requirements.outputs['determinedscresourcetests.rundscresit'] = '$(ShouldRunShort)'"
+
+              if ('$(ShouldRunLower)' -eq 'true' -or '$(ShouldRunShort)' -eq 'true') {
                 Write-Host "Stage condition eq(..., 'true') would be TRUE"
-              }
-              else {
+              } else {
                 Write-Host "Stage condition eq(..., 'true') would be FALSE"
               }
             displayName: 'Echo dependency output variable'
@@ -467,7 +472,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'true')
+        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determinedscresourcetests.rundscresit'], 'true')
       )
     jobs:
       - job: Test_Integration
@@ -565,7 +570,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'true')
+        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determinedscresourcetests.rundscresit'], 'true')
       )
     jobs:
       - job: Test_Integration
@@ -660,7 +665,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'true')
+        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determinedscresourcetests.rundscresit'], 'true')
       )
     jobs:
       - job: Test_Integration
@@ -736,7 +741,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'true')
+        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determinedscresourcetests.rundscresit'], 'true')
       )
     jobs:
       - job: Test_Integration
@@ -803,7 +808,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'true')
+        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determinedscresourcetests.rundscresit'], 'true')
       )
     jobs:
       - job: Test_Integration
