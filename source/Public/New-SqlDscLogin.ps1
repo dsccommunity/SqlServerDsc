@@ -165,7 +165,12 @@ function New-SqlDscLogin
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'WindowsUser')]
     param
     (
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(ParameterSetName = 'WindowsUser', Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(ParameterSetName = 'WindowsGroup', Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(ParameterSetName = 'SqlLogin', Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(ParameterSetName = 'SqlLoginHashed', Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(ParameterSetName = 'Certificate', Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(ParameterSetName = 'AsymmetricKey', Mandatory = $true, ValueFromPipeline = $true)]
         [Microsoft.SqlServer.Management.Smo.Server]
         $ServerObject,
 
