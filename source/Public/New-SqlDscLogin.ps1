@@ -281,7 +281,7 @@ function New-SqlDscLogin
         if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
         {
             # Create the login object
-            $loginObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $ServerObject, $Name
+            $loginObject = [Microsoft.SqlServer.Management.Smo.Login]::new($ServerObject, $Name)
 
             # Set login type
             switch ($loginType)
