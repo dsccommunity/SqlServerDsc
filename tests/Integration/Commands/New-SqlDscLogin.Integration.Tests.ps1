@@ -210,8 +210,8 @@ Describe 'New-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017', 
             }
         }
 
-        Context 'When testing ShouldProcess functionality' {
-            It 'Should not create a login when using WhatIf' {
+        Context 'When running with WhatIf' {
+            It 'Should not create a login' {
                 $whatIfLoginName = 'IntegrationTestWhatIf'
 
                 $null = New-SqlDscLogin -ServerObject $script:serverObject -Name $whatIfLoginName -SqlLogin -SecurePassword $script:testPassword -WhatIf
