@@ -440,7 +440,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'True')
+        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], True)
       )
     jobs:
       - job: Test_Integration
@@ -538,7 +538,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'True')
+        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], True)
       )
     jobs:
       - job: Test_Integration
@@ -633,7 +633,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'True')
+        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], True)
       )
     jobs:
       - job: Test_Integration
@@ -709,7 +709,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'True')
+        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], True)
       )
     jobs:
       - job: Test_Integration
@@ -776,7 +776,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'True')
+        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], True)
       )
     jobs:
       - job: Test_Integration

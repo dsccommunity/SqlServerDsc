@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Make sure tests forcibly imports the module being tested to avoid AI failing
   when testing changes.
+- Fixed Azure DevOps pipeline conditions that were preventing DSC resource
+  integration tests from running when they should by removing incorrect quotes
+  around boolean values.
 
 ### Added
 
