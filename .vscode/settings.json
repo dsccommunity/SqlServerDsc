@@ -84,7 +84,9 @@
         "targetbranch",
         "hqrm",
         "sqlps",
-        "securestring"
+        "securestring",
+        "encryptorname",
+        "wsfc"
     ],
     "cSpell.ignorePaths": [
         ".git"
