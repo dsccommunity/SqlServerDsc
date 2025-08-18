@@ -410,7 +410,10 @@ Describe 'New-SqlDscLogin' -Tag 'Public' {
             }
 
             It 'Should set custom language on login object' {
-                $null = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'LangLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -DefaultLanguage 'Swedish' -Confirm:$false
+                $login = New-SqlDscLogin -ServerObject $script:mockServerObject -Name 'LangLogin' -SqlLogin -SecurePassword $script:mockSecurePassword -DefaultLanguage 'Swedish' -PassThru -Confirm:$false
+
+                $login.Language | Should -Be 'Swedish'
+                $login.MockCreateCalled | Should -BeTrue
 
                 Should -Invoke -CommandName Test-SqlDscIsLogin -Exactly -Times 1 -Scope It
             }
