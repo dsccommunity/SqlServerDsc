@@ -61,6 +61,19 @@ ConvertFrom-StringData @'
     ## Get-SqlDscAudit
     Audit_Missing = There is no audit with the name '{0}'.
 
+    ## Get-SqlDscLogin
+    Login_Get_Missing = There is no login with the name '{0}'.
+    Login_Get_RefreshingLogins = Refreshing logins on server '{0}'.
+    Login_Get_RetrievingByName = Retrieving login by name '{0}' from server '{1}'.
+    Login_Get_ReturningAllLogins = Returning all logins from server '{0}'.
+
+    ## Remove-SqlDscLogin
+    Login_Remove_ShouldProcessVerboseDescription = Removing the login '{0}' on the instance '{1}'.
+    Login_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the login '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Login_Remove_ShouldProcessCaption = Remove login on instance
+    Login_Remove_Failed = Removal of the login '{0}' failed. (RSDL0001)
+
     ## Remove-SqlDscAudit
     Audit_Remove_ShouldProcessVerboseDescription = Removing the audit '{0}' on the instance '{1}'.
     Audit_Remove_ShouldProcessVerboseWarning = Are you sure you want to remove the audit '{0}'?
@@ -227,4 +240,12 @@ ConvertFrom-StringData @'
     Assert_Login_CheckingLogin = Checking if the principal '{0}' exists as a login on the instance '{1}'.
     Assert_Login_LoginMissing = The principal '{0}' does not exist as a login on the instance '{1}'.
     Assert_Login_LoginExists = The principal '{0}' exists as a login.
+
+    ## New-SqlDscLogin
+    Login_Add_ShouldProcessVerboseDescription = Creating the login '{0}' of type '{1}' on the instance '{2}'.
+    Login_Add_ShouldProcessVerboseWarning = Are you sure you want to create the login '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Login_Add_ShouldProcessCaption = Create login on instance
+    Login_Add_LoginCreated = Successfully created login '{0}' on the instance '{1}'.
+    Login_Add_LoginAlreadyExists = The login '{0}' already exists on the instance '{1}'.
 '@

@@ -5,25 +5,76 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Make sure tests forcibly imports the module being tested to avoid AI failing
+  when testing changes.
+- Fixed Azure DevOps pipeline conditions that were preventing DSC resource
+  integration tests from running when they should by removing incorrect quotes
+  around boolean values.
+
 ### Added
 
 - Added setup workflow for GitHub Copilot.
   - Switch the workflow to use Linux.
   - Attempt to unshallow the Copilot branch
+  - Improved AI instructions.
 - `Assert-SqlDscLogin`
   - Added new public command to validate that a specified SQL Server principal
     exists as a login, throwing a terminating error if it doesn't exist.
   - Supports pipeline input and provides detailed error messages with localization.
   - Uses `Test-SqlDscIsLogin` command for login validation following module patterns.
+- `Get-SqlDscLogin`
+  - Added new public command to get a SQL Server login from a Database Engine instance.
+  - Returns a `Microsoft.SqlServer.Management.Smo.Login` object that represents
+    the login.
+  - Supports getting a specific login by name or all logins if no name is specified.
+  - Includes a `-Refresh` parameter to refresh the server's login collection
+    before retrieval.
+- `Remove-SqlDscLogin`
+  - Added new public command to remove a SQL Server login from a Database
+    Engine instance.
+  - Supports removing a login by specifying a `ServerObject` and `Name`, or by
+    passing a `LoginObject` through the pipeline.
+  - Includes confirmation prompts with `-Force` parameter to bypass confirmation.
+  - Includes a `-Refresh` parameter to refresh the server's login collection
+    before attempting removal.
+  - Provides detailed error messages with localization support.
+- `New-SqlDscLogin`
+  - Added new public command to create a new login on a SQL Server Database
+    Engine instance.
+  - Supports creating SQL Server logins, Windows user logins, Windows group
+    logins, certificate-based logins, and asymmetric key-based logins.
+  - Implements proper parameter sets to prevent combining hashed passwords
+    with password policy options, following SQL Server restrictions.
 
 ### Changed
 
+- Module now outputs a verbose message instead of a warning when the SMO
+  dependency module is missing during import to work around a DSC v3 issue.
+- VS Code tasks configuration was improved to support AI.
+- `Prerequisites` tests
+  - Added creation of `SqlIntegrationTest` local Windows user for integration testing.
+- `tests/Integration/Commands/README.md`
+  - Added documentation for `SqlIntegrationTest` user and
+    `IntegrationTestSqlLogin` login.
+  - Added run order information for `New-SqlDscLogin` integration test.
 - `azure-pipelines.yml`
   - Remove `windows-2019` images fixes [#2106](https://github.com/dsccommunity/SqlServerDsc/issues/2106).
   - Move individual tasks to `windows-latest`.
   - Added integration tests for `Assert-SqlDscLogin` command in Group 2.
+  - Added conditional logic to skip DSC resource integration tests when
+    changes don't affect DSC resources, improving CI/CD performance for
+    non-DSC changes.
 - `SqlServerDsc.psd1`
   - Set `CmdletsToExport` to `*` in module manifest to fix issue [#2109](https://github.com/dsccommunity/SqlServerDsc/issues/2109).
+- Added optimization for DSC resource integration tests
+  - Created `.build/Test-ShouldRunDscResourceIntegrationTests.ps1` to analyze
+    git changes and decide when DSC resource integration tests are needed.
+  - DSC resource integration test stages now run only when changes affect DSC
+    resources, public commands used by resources, or related components.
+  - Unit tests, QA tests, and command integration tests continue to run for
+    all changes.
 
 ## [17.1.0] - 2025-05-22
 
