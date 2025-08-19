@@ -53,6 +53,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Module now outputs a verbose message instead of a warning when the SMO
   dependency module is missing during import to work around a DSC v3 issue.
 - VS Code tasks configuration was improved to support AI.
+- `.github/workflows/copilot-setup-steps.yml`
+  - Ensure full Git history/tags for GitVersion with a robust shallow check.
+  - Generalize workflow via `MODULE_NAME` env var and Linux‑friendly paths.
+  - Make .NET tool install idempotent and tighten module import verification.
 - `Prerequisites` tests
   - Added creation of `SqlIntegrationTest` local Windows user for integration testing.
 - `tests/Integration/Commands/README.md`
