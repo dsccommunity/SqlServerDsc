@@ -435,7 +435,7 @@ function Test-ShouldRunDscResourceIntegrationTests
     Write-Host "##[section]Analyzing DSC Resource Integration Test Requirements"
     if ($UseMergeBase)
     {
-        Write-Host "Analyzing changes between $BaseBranch (merge-base) and $CurrentBranch..."
+        Write-Host "Analyzing changes introduced by $CurrentBranch since merge-base with $BaseBranch..."
     }
     else
     {
