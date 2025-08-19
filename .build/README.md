@@ -1,4 +1,4 @@
-# Scripts
+# .build scripts
 
 Documentation for the specific SqlServerDsc module pipeline scripts.
 
