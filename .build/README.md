@@ -4,9 +4,7 @@ Documentation for the SqlServerDsc module build/pipeline scripts.
 
 ## `Test-ShouldRunDscResourceIntegrationTests.ps1`
 
-The script is used to dynamically determine whether DSC
-resource integration tests should run in Azure Pipelines.
-
+This script dynamically determines whether DSC resource integration tests should run in Azure Pipelines.
 ### What the Script Does
 
 The `Test-ShouldRunDscResourceIntegrationTests.ps1` script analyzes git
