@@ -9,11 +9,10 @@ should run in Azure Pipelines.
 
 ### What the Script Does
 
-The `Test-ShouldRunDscResourceIntegrationTests.ps1` script analyzes git
+The [`Test-ShouldRunDscResourceIntegrationTests.ps1`](./.build/Test-ShouldRunDscResourceIntegrationTests.ps1) script analyzes git
 changes between two references and determines if DSC resource integration tests
 need to run. It automatically discovers which public commands are used by DSC
 resources and classes, then checks if any relevant files have been modified.
-
 ### How It Works
 
 The script checks for changes to:
