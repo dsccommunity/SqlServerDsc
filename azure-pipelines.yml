@@ -98,7 +98,7 @@ stages:
                 {
                     $targetBranch = "origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH"
                     Write-Host "Pull request detected, branch $targetBranch. Using script analysis to determine test requirements."
-                    $shouldRun = ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch $targetBranch -CurrentBranch 'HEAD'
+                    $shouldRun = & ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch $targetBranch -CurrentBranch 'HEAD'
                 }
                 elseif ($env:BUILD.SOURCEBRANCHNAME) -eq '$(defaultBranch)'')
                 {
@@ -108,7 +108,7 @@ stages:
                 else
                 {
                     Write-Host "Target is non-default branch ($env:BUILD.SOURCEBRANCH). Using script analysis to determine test requirements against default branch."
-                    $shouldRun = ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch 'origin/main' -CurrentBranch $env:BUILD.SOURCEBRANCH
+                    $shouldRun = & ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch 'origin/main' -CurrentBranch $env:BUILD.SOURCEBRANCH
                 }
 
                 # Set Azure DevOps output variable for pipeline conditions
