@@ -53,7 +53,8 @@ jobs:
           {
               Write-Host 'Repository is not shallow. Refreshing tags...' -ForegroundColor DarkGray
 
-              git fetch --prune --tags --no-recurse-submodules
+              #git fetch --prune --tags --no-recurse-submodules
+              git fetch --prune --unshallow --tags --no-recurse-submodules
 
               if ($LASTEXITCODE -ne 0)
               {
