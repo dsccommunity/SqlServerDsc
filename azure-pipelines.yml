@@ -447,7 +447,7 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(stageDependencies.Quality_Test_and_Unit_Test.Determine_DSC_Resource_Test_Requirements.outputs['determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'true')
+        eq(dependencies.Quality_Test_and_Unit_Test.outputs['Determine_DSC_Resource_Test_Requirements.determineDscResourceTests.ShouldRunDscResourceIntegrationTests'], 'true'))
       )
     jobs:
       - job: Test_Integration
