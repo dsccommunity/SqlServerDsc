@@ -63,6 +63,22 @@ jobs:
 
           Write-Host 'History ready for GitVersion.' -ForegroundColor Green
 
+      - name: Install Linux Dependencies
+        shell: bash
+        run: |
+          echo "Installing Linux dependencies for PowerShell DSC..."
+
+          # Update package list
+          sudo apt-get update
+
+          # Install OMI (Open Management Infrastructure) which provides libmi
+          sudo apt-get install -y omi
+
+          # Also install other dependencies that might be needed
+          sudo apt-get install -y libc6-dev libssl-dev
+
+          echo "Linux dependencies installed successfully."
+
       - name: Configure PowerShell Environment
         shell: pwsh
         run: |
@@ -76,6 +92,9 @@ jobs:
 
       - name: Install DSCv3
         shell: pwsh
+        env:
+          # Ensure OMI libraries can be found
+          LD_LIBRARY_PATH: /opt/omi/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
         run: |
           Write-Host "Install DSCv3 in environment..." -ForegroundColor Green
 
@@ -86,6 +105,9 @@ jobs:
 
       - name: Verify DSCv3
         shell: pwsh
+        env:
+          # Ensure OMI libraries can be found
+          LD_LIBRARY_PATH: /opt/omi/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
         run: |
           Write-Host "Running DSCv3 to validate correct operation..." -ForegroundColor Green
           dsc --version
@@ -124,6 +146,9 @@ jobs:
 
       - name: Build Module
         shell: pwsh
+        env:
+          # Ensure OMI libraries can be found
+          LD_LIBRARY_PATH: /opt/omi/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
         run: |
           Write-Host "Building $env:MODULE_NAME module..." -ForegroundColor Green
 
@@ -144,6 +169,9 @@ jobs:
 
       - name: Import Built Module
         shell: pwsh
+        env:
+          # Ensure OMI libraries can be found
+          LD_LIBRARY_PATH: /opt/omi/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
         run: |
           Write-Host "Importing built $env:MODULE_NAME module..." -ForegroundColor Green
 
