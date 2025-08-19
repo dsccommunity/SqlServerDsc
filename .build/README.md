@@ -36,9 +36,11 @@ The script checks for changes to:
 
 ### Outputs
 
+<!-- markdownlint-disable MD013 - Table with long descriptions -->
 | Output | Type | Description |
 |--------|------|-------------|
-| Return value | Boolean | `$true` if branches differ, `$false` otherwise |
+| Return value | Boolean | `$true` when the monitored categories have relevant changes between the specified refs, `$false` when no such changes are detected |
+<!-- markdownlint-enable MD013 -->
 
 ### Usage
 
