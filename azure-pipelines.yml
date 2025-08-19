@@ -100,7 +100,7 @@ stages:
                     Write-Host "Pull request detected, branch $targetBranch. Using script analysis to determine test requirements."
                     $shouldRun = & ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch $targetBranch -CurrentBranch 'HEAD'
                 }
-                elseif ($env:BUILD.SOURCEBRANCHNAME) -eq '$(defaultBranch)'')
+                elseif ($env:BUILD.SOURCEBRANCHNAME -eq '$(defaultBranch)'')
                 {
                     Write-Host "Target is default branch ($(defaultBranch)). Always running DSC resource integration tests."
                     $shouldRun = $true
