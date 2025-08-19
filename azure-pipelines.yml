@@ -108,7 +108,7 @@ stages:
                 else
                 {
                     Write-Host "Target is non-default branch ($env:BUILD.SOURCEBRANCH). Using script analysis to determine test requirements against default branch."
-                    $shouldRun = & ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch "origin/$env:BUILD.SOURCEBRANCH" -CurrentBranch 'HEAD'
+                    $shouldRun = & ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch "origin/$(defaultBranch)" -CurrentBranch 'HEAD' -UseMergeBase
                 }
 
                 # Set Azure DevOps output variable for pipeline conditions
