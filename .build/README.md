@@ -33,6 +33,7 @@ The script checks for changes to:
 |-----------|------|---------|---------|
 | `BaseBranch` | String | `'origin/main'` | Base branch to compare against |
 | `CurrentBranch` | String | `'HEAD'` | Current branch or commit to compare |
+| `UseMergeBase` | Switch | `$false` | Use merge-base to compute diff base |
 
 ### Outputs
 
@@ -53,7 +54,7 @@ a boolean value that the pipeline captures, e.g.:
 <!-- markdownlint-disable MD013 -->
 ```yaml
 - powershell: |
-    $shouldRun = ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch $targetBranch -CurrentBranch HEAD
+    $shouldRun = & ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch $targetBranch -CurrentBranch HEAD -UseMergeBase
     Write-Host "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests;isOutput=true]$shouldRun"
   displayName: 'Determine if DSC resource tests should run'
   name: determineShouldRun
