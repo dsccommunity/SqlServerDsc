@@ -177,6 +177,7 @@ jobs:
 
               $dscResources = @(dsc resource list --adapter Microsoft.DSC/PowerShell --output-format json | ConvertFrom-Json)
               Write-Host "  Available class-based DSC Resources: $($dscResources.Count)" -ForegroundColor Cyan
+              $dscResources
           }
           else
           {
