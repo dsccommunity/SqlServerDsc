@@ -1,6 +1,6 @@
 # .build scripts
 
-Documentation for the specific SqlServerDsc module pipeline scripts.
+Documentation for the SqlServerDsc module build/pipeline scripts.
 
 ## `Test-ShouldRunDscResourceIntegrationTests.ps1`
 
