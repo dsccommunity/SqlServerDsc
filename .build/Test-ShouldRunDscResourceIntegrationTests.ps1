@@ -17,11 +17,19 @@
     .PARAMETER CurrentBranch
         The current branch or commit to compare. Default is 'HEAD'.
 
+    .PARAMETER UseMergeBase
+        When specified, compares the current branch against the merge-base with the base branch
+        instead of directly comparing against the base branch. This is useful for comparing
+        only the changes introduced by the current branch.
+
     .EXAMPLE
         Test-ShouldRunDscResourceIntegrationTests
 
     .EXAMPLE
         Test-ShouldRunDscResourceIntegrationTests -BaseBranch 'origin/main' -CurrentBranch 'HEAD'
+
+    .EXAMPLE
+        Test-ShouldRunDscResourceIntegrationTests -BaseBranch 'origin/main' -CurrentBranch 'HEAD' -UseMergeBase
 
     .OUTPUTS
         System.Boolean. Returns $true if DSC resource integration tests should run, $false otherwise.
@@ -35,7 +43,11 @@ param
 
     [Parameter()]
     [System.String]
-    $CurrentBranch = 'HEAD'
+    $CurrentBranch = 'HEAD',
+
+    [Parameter()]
+    [System.Management.Automation.SwitchParameter]
+    $UseMergeBase
 )
 
 <#
@@ -137,7 +149,8 @@ function Get-PublicCommandsUsedByDscResources
     .DESCRIPTION
         This function retrieves the list of files that have been modified between
         two git references using git diff. It handles various scenarios including
-        different diff syntax and untracked files.
+        different diff syntax and untracked files. Optionally can compare against
+        the merge-base of the two references.
 
     .PARAMETER From
         The source git reference (branch, commit, tag).
@@ -145,8 +158,15 @@ function Get-PublicCommandsUsedByDscResources
     .PARAMETER To
         The target git reference (branch, commit, tag).
 
+    .PARAMETER UseMergeBase
+        When specified, finds the merge-base between From and To references and
+        compares To against that merge-base instead of directly against From.
+
     .EXAMPLE
         Get-ChangedFiles -From 'origin/main' -To 'HEAD'
+
+    .EXAMPLE
+        Get-ChangedFiles -From 'origin/main' -To 'HEAD' -UseMergeBase
 
     .OUTPUTS
         System.String[]. Array of file paths that have been changed.
@@ -162,23 +182,46 @@ function Get-ChangedFiles
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $To
+        $To,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $UseMergeBase
     )
 
     try
     {
+        $compareFrom = $From
+
+        # If UseMergeBase is specified, find the merge-base between From and To
+        if ($UseMergeBase)
+        {
+            Write-Verbose "Finding merge-base between $From and $To"
+            $mergeBase = & git merge-base $From $To 2>&1
+            if ($LASTEXITCODE -eq 0 -and $mergeBase)
+            {
+                $compareFrom = $mergeBase.Trim()
+                Write-Verbose "Using merge-base: $compareFrom"
+            }
+            else
+            {
+                Write-Warning "Failed to find merge-base between $From and $To. Falling back to direct comparison. Exit code: $LASTEXITCODE. Output: $mergeBase"
+                $compareFrom = $From
+            }
+        }
+
         # Try different git diff approaches
         $gitDiffOutput = $null
 
         # First, try the standard diff
-        $gitDiffOutput = & git diff --name-only "$From..$To" 2>&1
+        $gitDiffOutput = & git diff --name-only "$compareFrom..$To" 2>&1
         if ($LASTEXITCODE -eq 0 -and $gitDiffOutput)
         {
             return $gitDiffOutput | Where-Object -FilterScript { $_ -and $_.Trim() }
         }
 
         # If that fails, try without the range syntax
-        $gitDiffOutput = & git diff --name-only $From $To 2>&1
+        $gitDiffOutput = & git diff --name-only $compareFrom $To 2>&1
         if ($LASTEXITCODE -eq 0 -and $gitDiffOutput)
         {
             return $gitDiffOutput | Where-Object -FilterScript { $_ -and $_.Trim() }
@@ -194,7 +237,7 @@ function Get-ChangedFiles
             }
         }
 
-        Write-Warning "Failed to get git diff between $From and $To. Exit code: $LASTEXITCODE. Output: $gitDiffOutput"
+        Write-Warning "Failed to get git diff between $compareFrom and $To. Exit code: $LASTEXITCODE. Output: $gitDiffOutput"
         return @()
     }
     catch
@@ -347,6 +390,11 @@ function Get-PrivateFunctionsUsedByClassResources
     .PARAMETER CurrentBranch
         The current branch or commit to compare. Default is 'HEAD'.
 
+    .PARAMETER UseMergeBase
+        When specified, compares the current branch against the merge-base with the base branch
+        instead of directly comparing against the base branch. This is useful for comparing
+        only the changes introduced by the current branch.
+
     .PARAMETER SourcePath
         The source path containing the source code directories. Default is 'source'.
 
@@ -355,6 +403,9 @@ function Get-PrivateFunctionsUsedByClassResources
 
     .EXAMPLE
         Test-ShouldRunDscResourceIntegrationTests -BaseBranch 'origin/main' -CurrentBranch 'feature-branch'
+
+    .EXAMPLE
+        Test-ShouldRunDscResourceIntegrationTests -BaseBranch 'origin/main' -CurrentBranch 'feature-branch' -UseMergeBase
 
     .OUTPUTS
         System.Boolean. Returns $true if DSC resource integration tests should run, $false otherwise.
@@ -373,12 +424,23 @@ function Test-ShouldRunDscResourceIntegrationTests
         $CurrentBranch = 'HEAD',
 
         [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $UseMergeBase,
+
+        [Parameter()]
         [System.String]
         $SourcePath = 'source'
     )
 
     Write-Host "##[section]Analyzing DSC Resource Integration Test Requirements"
-    Write-Host "Analyzing changes between $BaseBranch and $CurrentBranch..."
+    if ($UseMergeBase)
+    {
+        Write-Host "Analyzing changes introduced by $CurrentBranch since merge-base with $BaseBranch..."
+    }
+    else
+    {
+        Write-Host "Analyzing changes between $BaseBranch and $CurrentBranch..."
+    }
     Write-Host ""
 
     # Get list of public commands used by DSC resources dynamically
@@ -386,7 +448,7 @@ function Test-ShouldRunDscResourceIntegrationTests
     Write-Host "Discovered $($PublicCommandsUsedByDscResources.Count) public commands used by DSC resources and classes."
     Write-Host ""
 
-    $changedFiles = Get-ChangedFiles -From $BaseBranch -To $CurrentBranch
+    $changedFiles = Get-ChangedFiles -From $BaseBranch -To $CurrentBranch -UseMergeBase:$UseMergeBase
 
     if (-not $changedFiles)
     {
@@ -477,7 +539,7 @@ function Test-ShouldRunDscResourceIntegrationTests
 # If script is run directly (not imported), execute the main function
 if ($MyInvocation.InvocationName -ne '.')
 {
-    $shouldRun = Test-ShouldRunDscResourceIntegrationTests -BaseBranch $BaseBranch -CurrentBranch $CurrentBranch
+    $shouldRun = Test-ShouldRunDscResourceIntegrationTests -BaseBranch $BaseBranch -CurrentBranch $CurrentBranch -UseMergeBase:$UseMergeBase
 
     # Provide clear final result with appropriate color coding
     Write-Host "##[section]Test Requirements Decision"

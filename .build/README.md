@@ -1,16 +1,20 @@
-# DSC Resource Integration Test Optimization
+# .build scripts
 
-This document describes the script used to dynamically determine whether DSC
-resource integration tests should run in Azure Pipelines.
+Documentation for the SqlServerDsc module build and pipeline scripts.
 
-## What the Script Does
+## `Test-ShouldRunDscResourceIntegrationTests.ps1`
 
-The `Test-ShouldRunDscResourceIntegrationTests.ps1` script analyzes git
+This script dynamically determines whether DSC resource integration tests
+should run in Azure Pipelines.
+
+### What the Script Does
+<!-- markdownlint-disable-next-line MD013 -->
+The [`Test-ShouldRunDscResourceIntegrationTests.ps1`](./Test-ShouldRunDscResourceIntegrationTests.ps1) script analyzes git
 changes between two references and determines if DSC resource integration tests
 need to run. It automatically discovers which public commands are used by DSC
 resources and classes, then checks if any relevant files have been modified.
 
-## How It Works
+### How It Works
 
 The script checks for changes to:
 
@@ -23,26 +27,53 @@ The script checks for changes to:
 1. **Integration Tests**: DSC resource integration test files under
    `tests/Integration/Resources/`
 
-## Usage
+### Parameters
 
-### Azure Pipelines
+| Parameter | Type | Default | Purpose |
+|-----------|------|---------|---------|
+| `BaseBranch` | String | `'origin/main'` | Base branch to compare against |
+| `CurrentBranch` | String | `'HEAD'` | Current branch or commit to compare |
+| `UseMergeBase` | Switch | `$false` | Use merge-base to compute diff base |
+
+### Outputs
+
+<!-- markdownlint-disable MD013 - Table with long descriptions -->
+| Output | Type | Description |
+|--------|------|-------------|
+| Return value | Boolean | `$true` when the monitored categories have relevant changes between the specified refs, `$false` when no such changes are detected |
+<!-- markdownlint-enable MD013 -->
+
+### Usage
+
+#### Azure Pipelines
 
 The Azure Pipelines task sets an output variable that downstream stages can
 use to conditionally run DSC resource integration tests. The script returns
 a boolean value that the pipeline captures, e.g.:
 
+<!-- markdownlint-disable MD013 -->
 ```yaml
 - powershell: |
-    $shouldRun = ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch $targetBranch -CurrentBranch HEAD
+    $shouldRun = & ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch $targetBranch -CurrentBranch HEAD -UseMergeBase
     Write-Host "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests;isOutput=true]$shouldRun"
   displayName: 'Determine if DSC resource tests should run'
+  name: determineShouldRun
 ```
+<!-- markdownlint-enable MD013 -->
 
-Downstream stages reference this output variable using the pattern:
-`dependencies.JobName.outputs['StepName.VariableName']` to gate their
-execution based on whether DSC resource tests should run.
+Downstream stages reference this output variable in a stage `condition:`
+using the pattern:
+<!-- markdownlint-disable MD013 -->
+```yaml
+condition: |
+and(
+   succeeded(),
+   eq(lower(dependencies.stageName.outputs['jobName.taskName.ShouldRunDscResourceIntegrationTests']), 'true')
+)
+```
+<!-- markdownlint-enable MD013 -->
 
-### Command Line
+#### Command Line
 
 ```powershell
 # Basic usage (compares current HEAD with origin/main)
@@ -52,9 +83,3 @@ execution based on whether DSC resource tests should run.
 .build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch 'origin/dev' \
     -CurrentBranch 'feature-branch'
 ```
-
-## Dynamic Discovery
-
-The script automatically discovers public commands used by DSC resources by
-scanning source files, eliminating the need to maintain hardcoded lists.
-This ensures accuracy and reduces maintenance overhead.

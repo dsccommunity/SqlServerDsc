@@ -86,7 +86,10 @@
         "sqlps",
         "securestring",
         "encryptorname",
-        "wsfc"
+        "wsfc",
+        "SOURCEBRANCH",
+        "SOURCEBRANCHNAME",
+        "setvariable"
     ],
     "cSpell.ignorePaths": [
         ".git"
