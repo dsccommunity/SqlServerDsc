@@ -108,6 +108,7 @@ jobs:
         shell: pwsh
         run: |
           Write-Host 'Running GitVersion to determine semantic version...' -ForegroundColor Green
+          dotnet-gitversion
           dotnet-gitversion | ConvertFrom-Json
 
       - name: Resolve Dependencies
