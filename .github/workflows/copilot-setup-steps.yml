@@ -118,7 +118,7 @@ jobs:
           Write-Host 'Resolving project dependencies...' -ForegroundColor Green
 
           # Run dependency resolution
-          ./build.ps1 -ResolveDependency -Tasks 'noop' -ErrorAction Stop
+          ./build.ps1 -ResolveDependency -Tasks 'noop' -UseModuleFast -ErrorAction Stop
 
           Write-Host 'Dependencies resolved successfully.' -ForegroundColor Green
 
