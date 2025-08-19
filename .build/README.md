@@ -56,6 +56,7 @@ a boolean value that the pipeline captures, e.g.:
     $shouldRun = ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch $targetBranch -CurrentBranch HEAD
     Write-Host "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests;isOutput=true]$shouldRun"
   displayName: 'Determine if DSC resource tests should run'
+  name: determineShouldRun
 ```
 <!-- markdownlint-enable MD013 -->
 
