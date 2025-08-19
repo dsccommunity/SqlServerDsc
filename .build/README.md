@@ -8,11 +8,12 @@ This script dynamically determines whether DSC resource integration tests
 should run in Azure Pipelines.
 
 ### What the Script Does
-
+<!-- markdownlint-disable-next-line MD013 -->
 The [`Test-ShouldRunDscResourceIntegrationTests.ps1`](./.build/Test-ShouldRunDscResourceIntegrationTests.ps1) script analyzes git
 changes between two references and determines if DSC resource integration tests
 need to run. It automatically discovers which public commands are used by DSC
 resources and classes, then checks if any relevant files have been modified.
+
 ### How It Works
 
 The script checks for changes to:
@@ -25,6 +26,13 @@ The script checks for changes to:
    class-based DSC resources
 1. **Integration Tests**: DSC resource integration test files under
    `tests/Integration/Resources/`
+
+### Parameters
+
+| Parameter | Type | Default | Purpose |
+|-----------|------|---------|---------|
+| `BaseBranch` | String | `'origin/main'` | Base branch to compare against |
+| `CurrentBranch` | String | `'HEAD'` | Current branch or commit to compare |
 
 ### Usage
 
