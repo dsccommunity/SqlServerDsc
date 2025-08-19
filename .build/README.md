@@ -4,7 +4,9 @@ Documentation for the SqlServerDsc module build/pipeline scripts.
 
 ## `Test-ShouldRunDscResourceIntegrationTests.ps1`
 
-This script dynamically determines whether DSC resource integration tests should run in Azure Pipelines.
+This script dynamically determines whether DSC resource integration tests
+should run in Azure Pipelines.
+
 ### What the Script Does
 
 The `Test-ShouldRunDscResourceIntegrationTests.ps1` script analyzes git
@@ -33,16 +35,27 @@ The Azure Pipelines task sets an output variable that downstream stages can
 use to conditionally run DSC resource integration tests. The script returns
 a boolean value that the pipeline captures, e.g.:
 
+<!-- markdownlint-disable MD013 -->
 ```yaml
 - powershell: |
     $shouldRun = ./.build/Test-ShouldRunDscResourceIntegrationTests.ps1 -BaseBranch $targetBranch -CurrentBranch HEAD
     Write-Host "##vso[task.setvariable variable=ShouldRunDscResourceIntegrationTests;isOutput=true]$shouldRun"
   displayName: 'Determine if DSC resource tests should run'
 ```
+<!-- markdownlint-enable MD013 -->
 
-Downstream stages reference this output variable using the pattern:
-`dependencies.JobName.outputs['StepName.VariableName']` to gate their
-execution based on whether DSC resource tests should run.
+Downstream stages reference this output variable in a stage `condition:`
+using the pattern:
+<!-- markdownlint-disable MD013 -->
+```yaml
+condition: |
+and(
+   succeeded(),
+   eq(lower(dependencies.stageName.outputs['jobName.taskName.ShouldRunDscResourceIntegrationTests']), 'true')`
+
+)
+```
+<!-- markdownlint-enable MD013 -->
 
 #### Command Line
 
