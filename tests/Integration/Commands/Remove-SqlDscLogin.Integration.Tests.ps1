@@ -55,27 +55,12 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         BeforeAll {
             $script:testLoginName = 'TestRemoveLogin1'
             $script:testLoginPassword = ConvertTo-SecureString -String 'P@ssw0rd1!' -AsPlainText -Force
-            $script:testLoginCredential = [System.Management.Automation.PSCredential]::new($script:testLoginName, $script:testLoginPassword)
-        }
-
-        BeforeEach {
-            # Create the test login
-            $createLoginQuery = "CREATE LOGIN [$($script:testLoginName)] WITH PASSWORD = 'P@ssw0rd1!'"
-            $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query $createLoginQuery -Force
-        }
-
-        AfterEach {
-            # Clean up - remove the login if it still exists
-            try {
-                $cleanupQuery = "IF EXISTS (SELECT name FROM sys.server_principals WHERE name = '$($script:testLoginName)') DROP LOGIN [$($script:testLoginName)]"
-                $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query $cleanupQuery -Force
-            }
-            catch {
-                # Ignore cleanup errors
-            }
         }
 
         It 'Should remove the login when it exists' {
+            # Create the test login
+            $null = $script:serverObject | New-SqlDscLogin -Name $script:testLoginName -SqlLogin -SecurePassword $script:testLoginPassword -Force
+
             # Verify the login exists
             $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName
             $loginExists | Should -BeTrue
@@ -89,9 +74,8 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         }
 
         It 'Should handle WhatIf parameter correctly' {
-            # Verify the login exists
-            $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName
-            $loginExists | Should -BeTrue
+            # Ensure the login exists for this scenario (don't rely on other Its)
+            $null = $script:serverObject | New-SqlDscLogin -Name $script:testLoginName -SqlLogin -SecurePassword $script:testLoginPassword -Force
 
             # Use WhatIf - login should not be removed
             $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName -WhatIf
@@ -102,8 +86,11 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         }
 
         It 'Should throw an error when the login does not exist' {
-            # Remove the login first to ensure it doesn't exist
-            $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName -Force
+            # Ensure the login does not exist for this scenario (don't rely on other Its)
+            if (Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName)
+            {
+                $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName -Force
+            }
 
             # Try to remove a non-existent login
             {
@@ -116,27 +103,12 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         BeforeAll {
             $script:testLoginName2 = 'TestRemoveLogin2'
             $script:testLoginPassword2 = ConvertTo-SecureString -String 'P@ssw0rd2!' -AsPlainText -Force
-            $script:testLoginCredential2 = [System.Management.Automation.PSCredential]::new($script:testLoginName2, $script:testLoginPassword2)
-        }
-
-        BeforeEach {
-            # Create the test login
-            $createLoginQuery = "CREATE LOGIN [$($script:testLoginName2)] WITH PASSWORD = 'P@ssw0rd2!'"
-            $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query $createLoginQuery -Force
-        }
-
-        AfterEach {
-            # Clean up - remove the login if it still exists
-            try {
-                $cleanupQuery = "IF EXISTS (SELECT name FROM sys.server_principals WHERE name = '$($script:testLoginName2)') DROP LOGIN [$($script:testLoginName2)]"
-                $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query $cleanupQuery -Force
-            }
-            catch {
-                # Ignore cleanup errors
-            }
         }
 
         It 'Should remove the login when passed as LoginObject' {
+            # Create the test login
+            $null = $script:serverObject | New-SqlDscLogin -Name $script:testLoginName2 -SqlLogin -SecurePassword $script:testLoginPassword2 -Force
+
             # Get the login object
             $loginObject = Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName2
 
@@ -153,6 +125,13 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
         }
 
         It 'Should handle pipeline input correctly' {
+            # Create the test login
+            $null = $script:serverObject | New-SqlDscLogin -Name $script:testLoginName2 -SqlLogin -SecurePassword $script:testLoginPassword2 -Force
+
+            # Verify the login exists
+            $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName2
+            $loginExists | Should -BeTrue
+
             # Get the login object and remove it via pipeline
             Get-SqlDscLogin -ServerObject $script:serverObject -Name $script:testLoginName2 | Remove-SqlDscLogin -Force
 
@@ -167,24 +146,15 @@ Describe 'Remove-SqlDscLogin' -Tag @('Integration_SQL2016', 'Integration_SQL2017
             $script:testLoginName3 = 'TestRemoveLogin3'
         }
 
-        BeforeEach {
-            # Create the test login
-            $createLoginQuery = "CREATE LOGIN [$($script:testLoginName3)] WITH PASSWORD = 'P@ssw0rd3!'"
-            $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query $createLoginQuery -Force
-        }
-
-        AfterEach {
-            # Clean up - remove the login if it still exists
-            try {
-                $cleanupQuery = "IF EXISTS (SELECT name FROM sys.server_principals WHERE name = '$($script:testLoginName3)') DROP LOGIN [$($script:testLoginName3)]"
-                $null = Invoke-SqlDscQuery -ServerObject $script:serverObject -DatabaseName 'master' -Query $cleanupQuery -Force
-            }
-            catch {
-                # Ignore cleanup errors
-            }
-        }
-
         It 'Should work with the Refresh parameter' {
+            # Create the test login
+            $testLoginPassword3 = ConvertTo-SecureString -String 'P@ssw0rd3!' -AsPlainText -Force
+            $null = $script:serverObject | New-SqlDscLogin -Name $script:testLoginName3 -SqlLogin -SecurePassword $testLoginPassword3 -Force
+
+            # Verify the login exists
+            $loginExists = Test-SqlDscIsLogin -ServerObject $script:serverObject -Name $script:testLoginName3
+            $loginExists | Should -BeTrue
+
             # Remove the login with Refresh parameter
             $script:serverObject | Remove-SqlDscLogin -Name $script:testLoginName3 -Refresh -Force
 

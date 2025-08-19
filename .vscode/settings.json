@@ -79,7 +79,14 @@
         "PBIRS",
         "SSRS",
         "DSCSQLTEST",
-        "unshallow"
+        "unshallow",
+        "pullrequest",
+        "targetbranch",
+        "hqrm",
+        "sqlps",
+        "securestring",
+        "encryptorname",
+        "wsfc"
     ],
     "cSpell.ignorePaths": [
         ".git"

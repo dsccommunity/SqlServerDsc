@@ -134,6 +134,7 @@ function Get-Something
 - Parameter type on line above parameter name
 - Parameters separated by blank line
 - Parameters should use full type name.
+- Pipeline parameters (`ValueFromPipeline = $true`) must be declared in ALL parameter sets
 
 ## Best Practices
 

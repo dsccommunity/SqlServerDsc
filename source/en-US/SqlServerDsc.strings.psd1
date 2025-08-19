@@ -240,4 +240,12 @@ ConvertFrom-StringData @'
     Assert_Login_CheckingLogin = Checking if the principal '{0}' exists as a login on the instance '{1}'.
     Assert_Login_LoginMissing = The principal '{0}' does not exist as a login on the instance '{1}'.
     Assert_Login_LoginExists = The principal '{0}' exists as a login.
+
+    ## New-SqlDscLogin
+    Login_Add_ShouldProcessVerboseDescription = Creating the login '{0}' of type '{1}' on the instance '{2}'.
+    Login_Add_ShouldProcessVerboseWarning = Are you sure you want to create the login '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    Login_Add_ShouldProcessCaption = Create login on instance
+    Login_Add_LoginCreated = Successfully created login '{0}' on the instance '{1}'.
+    Login_Add_LoginAlreadyExists = The login '{0}' already exists on the instance '{1}'.
 '@

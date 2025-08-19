@@ -413,7 +413,7 @@ function Test-ShouldRunDscResourceIntegrationTests
     }
 
     # Check if any public commands used by DSC resources are changed
-    $changedPublicCommands = $changedFiles | Where-Object -FilterScript { $_ -match '^source/Public/(.+)\.ps1$' } | 
+    $changedPublicCommands = $changedFiles | Where-Object -FilterScript { $_ -match '^source/Public/(.+)\.ps1$' } |
         ForEach-Object -Process { [System.IO.Path]::GetFileNameWithoutExtension((Split-Path -Path $_ -Leaf)) }
 
     $affectedCommands = $changedPublicCommands | Where-Object -FilterScript { $_ -in $PublicCommandsUsedByDscResources }
@@ -428,7 +428,7 @@ function Test-ShouldRunDscResourceIntegrationTests
     }
 
     # Check if any private functions used by the affected public commands or class-based DSC resources are changed
-    $changedPrivateFunctions = $changedFiles | Where-Object -FilterScript { $_ -match '^source/Private/(.+)\.ps1$' } | 
+    $changedPrivateFunctions = $changedFiles | Where-Object -FilterScript { $_ -match '^source/Private/(.+)\.ps1$' } |
         ForEach-Object -Process { [System.IO.Path]::GetFileNameWithoutExtension((Split-Path -Path $_ -Leaf)) }
 
     $affectedPrivateFunctions = @()
@@ -489,10 +489,6 @@ if ($MyInvocation.InvocationName -ne '.')
     {
         Write-Host "RESULT: DSC resource integration tests will be SKIPPED"
     }
-
-    # Output the result for the calling script to capture
-    Write-Output -InputObject ""
-    Write-Output -InputObject "ShouldRunDscResourceIntegrationTests: $shouldRun"
 
     # Return the boolean value for pipeline script to use
     return $shouldRun
