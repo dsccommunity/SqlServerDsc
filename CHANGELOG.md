@@ -59,7 +59,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     resources, public commands used by resources, or related components.
   - Unit tests, QA tests, and command integration tests continue to run for
     all changes.
-  - Provides time savings for non-DSC changes while maintaining coverage.
 
 ## [17.1.0] - 2025-05-22
 
