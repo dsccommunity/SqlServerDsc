@@ -109,6 +109,7 @@ jobs:
         run: |
           Write-Host 'Running GitVersion to determine semantic version...' -ForegroundColor Green
           dotnet-gitversion
+          Write-Host 'Running GitVersion to determine semantic version (parsing to PowerShell object)...' -ForegroundColor Green
           dotnet-gitversion | ConvertFrom-Json
 
       - name: Resolve Dependencies
