@@ -18,7 +18,8 @@ resources and classes, then checks if any relevant files have been modified.
 
 The script performs an optimized analysis by checking for changes in this order:
 
-1. **Early Source Check**: First checks if any files under `source/` have changed
+1. **Early Source Check**: First checks if any files under the configured
+   source path (`-SourcePath`, default `source/`) have changed
    - If no source changes, skips integration tests immediately
 1. **DSC Resources**: Files under `source/DSCResources/`
 1. **Classes**: Files under `source/Classes/`
@@ -42,7 +43,7 @@ flowchart TD
     GetChanges --> HasChanges{Any Changed<br/>Files?}
     HasChanges -->|No| RunTrue[Return TRUE<br/>Run integration tests]
 
-    HasChanges -->|Yes| CheckSource{Any Changes<br/>Under source/?}
+    HasChanges -->|Yes| CheckSource{Any Changes<br/>Under SourcePath?}
     CheckSource -->|No| Skip[Return FALSE<br/>Skip integration tests]
 
     CheckSource -->|Yes| Discover[Discover Public Commands<br/>Used by DSC Resources]
