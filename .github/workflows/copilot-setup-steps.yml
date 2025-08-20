@@ -17,13 +17,16 @@ jobs:
   copilot-setup-steps:
     name: Setup PowerShell Development Environment
     runs-on: ubuntu-latest
-    env:
-      MODULE_NAME: 'SqlServerDsc'
 
     permissions:
       contents: read
 
     steps:
+      - name: Set Environment Variables
+        shell: bash
+        run: |
+          echo "MODULE_NAME=SqlServerDsc" >> "$GITHUB_ENV"
+
       - name: Checkout Repository
         uses: actions/checkout@v5
         with:
