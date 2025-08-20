@@ -380,10 +380,12 @@ function Get-PrivateFunctionsUsedByClassResources
     .DESCRIPTION
         This function analyzes the changes between two git references and determines
         if DSC resource integration tests should run based on the files that have
-        been modified. It checks for changes to DSC resources, classes, public
-        commands used by DSC resources, private functions used by those public commands,
-        private functions used by class-based DSC resources, and integration
-        tests.
+        been modified. It performs an optimized analysis by first checking if any
+        changes exist under the source/ folder. If no source changes are detected,
+        it skips the expensive analysis and returns false. Otherwise, it checks for
+        changes to DSC resources, classes, public commands used by DSC resources,
+        private functions used by those public commands, private functions used by
+        class-based DSC resources, and integration tests.
     .PARAMETER BaseBranch
         The base branch to compare against. Default is 'origin/main'.
 
@@ -443,11 +445,6 @@ function Test-ShouldRunDscResourceIntegrationTests
     }
     Write-Host ""
 
-    # Get list of public commands used by DSC resources dynamically
-    $PublicCommandsUsedByDscResources = Get-PublicCommandsUsedByDscResources -SourcePath $SourcePath
-    Write-Host "Discovered $($PublicCommandsUsedByDscResources.Count) public commands used by DSC resources and classes."
-    Write-Host ""
-
     $changedFiles = Get-ChangedFiles -From $BaseBranch -To $CurrentBranch -UseMergeBase:$UseMergeBase
 
     if (-not $changedFiles)
@@ -460,6 +457,20 @@ function Test-ShouldRunDscResourceIntegrationTests
     Write-Host "##[group]Changed Files"
     $changedFiles | ForEach-Object -Process { Write-Host "  $_" }
     Write-Host "##[endgroup]"
+    Write-Host ""
+
+    # Early optimization: Check if any changes are under the source folder
+    $changedSourceFiles = $changedFiles | Where-Object -FilterScript { $_ -match '^source/' }
+    if (-not $changedSourceFiles)
+    {
+        Write-Host "No changes detected under the source folder. DSC resource integration tests can be skipped."
+        Write-Host ""
+        return $false
+    }
+
+    # Get list of public commands used by DSC resources dynamically (only when needed)
+    $PublicCommandsUsedByDscResources = Get-PublicCommandsUsedByDscResources -SourcePath $SourcePath
+    Write-Host "Discovered $($PublicCommandsUsedByDscResources.Count) public commands used by DSC resources and classes."
     Write-Host ""
 
     # Check if any DSC resources are directly changed

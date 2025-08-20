@@ -79,6 +79,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Unit tests, QA tests, and command integration tests continue to run for
     all changes.
 - Bump actions/checkout task to v5.
+- `.build/Test-ShouldRunDscResourceIntegrationTests.ps1`
+  - Improved performance by adding early optimization to check for changes
+    under source folder before expensive analysis.
+  - Moved public command discovery to only run when source changes are detected.
+- `.build/README.md`
+  - Added flow diagram showing decision process for DSC resource integration tests.
+  - Improved documentation with optimized analysis workflow description.
+- DSC community style guidelines
+  - Added requirement to follow guidelines over existing code patterns.
 
 ## [17.1.0] - 2025-05-22
 
