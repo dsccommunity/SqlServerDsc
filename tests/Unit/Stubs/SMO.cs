@@ -295,6 +295,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public Hashtable Logins = new Hashtable();
         public string Name;
         public string NetName;
+        public string ServerInstance;
         public Hashtable Roles = new Hashtable();
         public Hashtable Version = new Hashtable();
 
@@ -322,6 +323,7 @@ namespace Microsoft.SqlServer.Management.Smo
                 Logins = this.Logins,
                 Name = this.Name,
                 NetName = this.NetName,
+                ServerInstance = this.ServerInstance,
                 Roles = this.Roles,
                 ServiceName = this.ServiceName,
                 Version = this.Version
@@ -564,6 +566,7 @@ namespace Microsoft.SqlServer.Management.Smo
         public Database() {}
 
         public string Name;
+        public string ServerInstance;
 
         public void Create()
         {
