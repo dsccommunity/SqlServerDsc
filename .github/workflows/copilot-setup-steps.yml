@@ -1,6 +1,4 @@
 name: 'Copilot Setup Steps'
-env:
-  MODULE_NAME: 'SqlServerDsc'
 
 # This workflow sets up a complete development environment for the PowerShell module project
 # when executed by GitHub Copilot Agent for development assistance.
@@ -19,6 +17,8 @@ jobs:
   copilot-setup-steps:
     name: Setup PowerShell Development Environment
     runs-on: ubuntu-latest
+    env:
+      MODULE_NAME: 'SqlServerDsc'
 
     permissions:
       contents: read
