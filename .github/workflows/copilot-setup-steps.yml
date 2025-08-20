@@ -104,21 +104,21 @@ jobs:
           echo "::group::Install OMI and dependencies"
           if apt-cache policy omi 2>/dev/null | grep -q 'Candidate:'; then
             echo "Installing OMI package..."
-            
+
             # Set a shorter hostname to avoid SSL certificate generation errors
             # OMI generates SSL certificates during installation and GitHub Actions runners
             # often have very long hostnames that exceed the 64-character limit for CN fields
             echo "Setting temporary hostname to avoid SSL certificate generation errors..."
             ORIGINAL_HOSTNAME=$(hostname)
             sudo hostname "dsc-runner"
-            
+
             if ! sudo apt-get install -y omi; then
               echo "OMI package failed to install; continuing..."
               echo "::warning::OMI package failed to install; continuing without OMI"
             else
               echo "OMI package installed successfully"
             fi
-            
+
             # Restore original hostname
             echo "Restoring original hostname..."
             sudo hostname "$ORIGINAL_HOSTNAME"
