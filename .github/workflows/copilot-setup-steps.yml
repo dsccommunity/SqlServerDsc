@@ -112,8 +112,8 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Installing additional development dependencies..."
-          echo "Installing development dependencies (libc6-dev, libssl-dev)..."
-          sudo apt-get install -y libc6-dev libssl-dev
+          echo "Installing development dependencies..."
+          sudo apt-get install -y libc6-dev libssl-dev tree
           echo "Development dependencies installed successfully"
           echo "::endgroup::"
 
@@ -199,10 +199,16 @@ jobs:
           ./build.ps1 -Tasks 'build' -ErrorAction Stop
 
           # Verify build output
-          if (Test-Path -Path "output/builtModule/$env:MODULE_NAME")
+          $builtPath = "output/builtModule/$env:MODULE_NAME"
+          if (Test-Path -Path $builtPath)
           {
-              Write-Host "Module built successfully at: output/builtModule/$env:MODULE_NAME"
-              Get-ChildItem -Path "output/builtModule/$env:MODULE_NAME" -Recurse | Select-Object Name, Length | Format-Table
+              Write-Host "Module built successfully at: $builtPath"
+              # Show files with paths relative to the built module base path using `tree` (run directly in PowerShell)
+              $base = (Resolve-Path -Path $builtPath).ProviderPath
+              Write-Host "Files under $base (relative paths):"
+
+              # Run tree directly and strip leading './' from its output
+              tree --noreport $builtPath
           }
           else
           {
