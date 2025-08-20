@@ -4,23 +4,37 @@
 
 #>
 
-return
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Suppressing this rule because Script Analyzer does not understand Pester syntax.')]
+param ()
 
-Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
-
-$script:dscModuleName = 'SqlServerDsc'
-$script:dscResourceName = 'DSC_SqlAGDatabase'
-
-function Invoke-TestSetup
-{
+BeforeDiscovery {
     try
     {
-        Import-Module -Name DscResource.Test -Force -ErrorAction 'Stop'
+        if (-not (Get-Module -Name 'DscResource.Test'))
+        {
+            # Assumes dependencies have been resolved, so if this module is not available, run 'noop' task.
+            if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
+            {
+                # Redirect all streams to $null, except the error stream (stream 2)
+                & "$PSScriptRoot/../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
+            }
+
+            # If the dependencies have not been resolved, this will throw an error.
+            Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        }
     }
     catch [System.IO.FileNotFoundException]
     {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
     }
+}
+
+BeforeAll {
+    $script:dscModuleName = 'SqlServerDsc'
+    $script:dscResourceName = 'DSC_SqlAGDatabase'
+
+    $env:SqlServerDscCI = $true
 
     $script:testEnvironment = Initialize-TestEnvironment `
         -DSCModuleName $script:dscModuleName `
@@ -28,24 +42,39 @@ function Invoke-TestSetup
         -ResourceType 'Mof' `
         -TestType 'Unit'
 
+    Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\TestHelpers\CommonTestHelper.psm1')
+
     # Loading mocked classes
     Add-Type -Path (Join-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath 'Stubs') -ChildPath 'SMO.cs')
 
     # Load the default SQL Module stub
-    Import-SQLModuleStub
+    $script:stubModuleName = Import-SQLModuleStub -PassThru
+
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
 }
 
-function Invoke-TestCleanup
-{
+AfterAll {
+    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
+    $PSDefaultParameterValues.Remove('Mock:ModuleName')
+    $PSDefaultParameterValues.Remove('Should:ModuleName')
+
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+
+    # Unload the module being tested so that it doesn't impact any other tests.
+    Get-Module -Name $script:dscResourceName -All | Remove-Module -Force
+
+    # Unload the stub module.
+    Remove-SqlModuleStub -Name $script:stubModuleName
+
+    # Remove module common test helper.
+    Get-Module -Name 'CommonTestHelper' -All | Remove-Module -Force
+
+    Remove-Item -Path 'env:SqlServerDscCI'
 }
 
-Invoke-TestSetup
-
-try
-{
-    InModuleScope $script:dscResourceName {
-        Describe 'SqlAGDatabase\Get-TargetResource' {
+Describe 'SqlAGDatabase\Get-TargetResource' {
             BeforeAll {
                 #region Parameter Mocks
 
@@ -399,8 +428,8 @@ REVERT'
                     $result.AvailabilityGroupName | Should -BeNullOrEmpty
                     $result.DatabaseName | Should -BeNullOrEmpty
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 0 -Exactly
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 0 -Scope It
                 }
 
                 It 'Should not return any databases if there are no databases in the availability group' {
@@ -413,8 +442,8 @@ REVERT'
                     $result.AvailabilityGroupName | Should -Be $mockAvailabilityGroupWithoutDatabasesObject.Name
                     $result.DatabaseName | Should -BeNullOrEmpty
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 0 -Exactly
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 0 -Scope It
                 }
 
                 It 'Should return databases when there are databases in the availability group' {
@@ -434,8 +463,8 @@ REVERT'
                         $result.DatabaseName -contains $mockAvailabilityDatabaseName | Should -Be $true
                     }
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 0 -Exactly
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 0 -Scope It
                 }
             }
         }
@@ -811,26 +840,26 @@ REVERT'
                     It 'Should add the specified databases to the availability group' {
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should add the specified databases to the availability group when the primary replica is on another server' {
@@ -838,26 +867,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should not do anything if no databases were found to add' {
@@ -865,26 +894,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 0 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 0 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 0 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 0 -Scope It
                     }
 
                     It 'Should add the specified databases to the availability group when "MatchDatabaseOwner" is $false' {
@@ -892,26 +921,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 0 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 0 -Scope It
                     }
 
                     It 'Should add the specified databases to the availability group when "ReplaceExisting" is $true' {
@@ -920,26 +949,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should throw the correct error when "MatchDatabaseOwner" is $true and the current login does not have impersonate permissions' {
@@ -947,26 +976,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The login '$([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)' is missing impersonate any login, control server, impersonate login, or control login permissions in the instances 'Server2'."
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
 
                     $prerequisiteChecks = @{
@@ -998,26 +1027,26 @@ REVERT'
                                 }
                             }
 
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                            Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                            Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                            Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                            Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                            Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                            Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                            Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                            Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                            Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                            Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                            Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                            Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                            Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                            Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                            Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                                Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                            Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                            Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                            Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                            Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                            Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                            Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                            Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                            Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                            Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                            Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                                Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
 
                             $mockServerObject.Databases['DB1'].($prerequisiteCheck.Key) = $originalValue
                         }
@@ -1028,26 +1057,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The operation on the database 'master' failed with the following errors: The following prerequisite checks failed: The database cannot be a system database."
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
 
                     $filestreamProperties = @{
@@ -1064,26 +1093,26 @@ REVERT'
 
                             { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The operation on the database 'DB1' failed with the following errors: The following prerequisite checks failed: Filestream is disabled on the following instances: Server2"
 
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                            Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                            Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                            Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                            Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                            Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                            Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                            Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                            Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                            Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                            Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                            Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                            Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                            Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                            Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                            Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                                Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                            Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                            Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                            Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                            Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                            Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                            Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                            Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                            Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                            Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                            Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                                Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
 
                             $mockServerObject.Databases['DB1'].($filestreamProperty.Key) = $originalValue
                         }
@@ -1095,26 +1124,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The operation on the database 'DB1' failed with the following errors: The following prerequisite checks failed: Contained Database Authentication is not enabled on the following instances: "
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
 
                         $mockServerObject.Databases['DB1'].ContainmentType = $originalValue
                     }
@@ -1126,26 +1155,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The operation on the database 'DB1' failed with the following errors: The following prerequisite checks failed: The instance 'Server2' is missing the following directories: X:\, F:\SqlLog"
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
 
                         $mockServer2Object.Databases['DB1'].FileGroups.Files.FileName = $originalValue
                     }
@@ -1157,26 +1186,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw 'The operation on the database ''DB1'' failed with the following errors: The following prerequisite checks failed: The instance ''Server2'' is missing the following directories: E:\SqlData, Y:\'
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
 
                         $mockServer2Object.Databases['DB1'].LogFiles.FileName = $originalValue
                     }
@@ -1188,26 +1217,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw 'The operation on the database ''DB1'' failed with the following errors: The following prerequisite checks failed: The instance ''Server2'' is missing the following certificates: TDE Cert'
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
 
                         $mockServerObject.Databases['DB1'].EncryptionEnabled = $false
                         $mockServerObject.Databases['DB1'].DatabaseEncryptionKey = $null
@@ -1219,26 +1248,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should throw the correct error when it fails to perform a full backup' {
@@ -1246,26 +1275,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw 'The operation on the database ''DB1'' failed with the following errors: System.Management.Automation.RuntimeException: ScriptHalted'
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should throw the correct error when it fails to perform a log backup' {
@@ -1273,26 +1302,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw 'The operation on the database ''DB1'' failed with the following errors: System.Management.Automation.RuntimeException: ScriptHalted'
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should throw the correct error when it fails to add the database to the primary replica' {
@@ -1300,26 +1329,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw 'The operation on the database ''DB1'' failed with the following errors: System.Management.Automation.RuntimeException: ScriptHalted'
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should throw the correct error when it fails to add the database to the primary replica' {
@@ -1327,26 +1356,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw 'The operation on the database ''DB1'' failed with the following errors: System.Management.Automation.RuntimeException: ScriptHalted'
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -1359,26 +1388,26 @@ REVERT'
                     It 'Should ensure the database membership of the availability group is exactly as specified' {
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -1472,9 +1501,9 @@ REVERT'
                     It 'Should remove the specified database from the availability group(s)' {
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It
                         Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -ParameterFilter {
                             $InputObject.Name -eq 'DB2'
                         } -Scope It -Times 1 -Exactly
@@ -1493,10 +1522,10 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw $errorMessage
 
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -1871,26 +1900,26 @@ REVERT'
                      It 'Should add the specified databases to the availability group.' {
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should add the specified databases to the availability group when the primary replica is on another server' {
@@ -1898,26 +1927,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should not do anything if no databases were found to add' {
@@ -1925,26 +1954,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 0 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 0 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 0 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 0 -Scope It
                     }
 
                     It 'Should add the specified databases to the availability group when "MatchDatabaseOwner" is $false' {
@@ -1952,26 +1981,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 0 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 0 -Scope It
                     }
 
                     It 'Should add the specified databases to the availability group when "ReplaceExisting" is $true' {
@@ -1980,26 +2009,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should throw the correct error when "MatchDatabaseOwner" is $true and the current login does not have impersonate permissions' {
@@ -2007,26 +2036,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The login '$([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)' is missing impersonate any login, control server, impersonate login, or control login permissions in the instances 'Server2'."
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
 
                     $prerequisiteChecks = @{
@@ -2058,26 +2087,26 @@ REVERT'
                                 }
                             }
 
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                            Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                            Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                            Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                            Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                            Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                            Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                            Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                            Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                            Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                            Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                            Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                            Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                            Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                            Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                            Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                                Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                            Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                            Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                            Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                            Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                            Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                            Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                            Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                            Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                            Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                            Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                                Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
 
                             $mockServerObject.Databases['DB1'].($prerequisiteCheck.Key) = $originalValue
                         }
@@ -2088,26 +2117,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The operation on the database 'master' failed with the following errors: The following prerequisite checks failed: The database cannot be a system database."
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
 
                     $filestreamProperties = @{
@@ -2124,26 +2153,26 @@ REVERT'
 
                             { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The operation on the database 'DB1' failed with the following errors: The following prerequisite checks failed: Filestream is disabled on the following instances: Server2"
 
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                            Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                            Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                            Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                            Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                            Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                            Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                            Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                            Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                            Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                            Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                            Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                            Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                            Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                            Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                            Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                            Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                                Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                            Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                            Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                            Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                            Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                            Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                            Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                            Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                            Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                            Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                            Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                            Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                            Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                            Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                                Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
 
                             $mockServerObject.Databases['DB1'].($filestreamProperty.Key) = $originalValue
                         }
@@ -2155,26 +2184,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The operation on the database 'DB1' failed with the following errors: The following prerequisite checks failed: Contained Database Authentication is not enabled on the following instances: "
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
 
                         $mockServerObject.Databases['DB1'].ContainmentType = $originalValue
                     }
@@ -2186,26 +2215,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The operation on the database 'DB1' failed with the following errors: The following prerequisite checks failed: The instance 'Server2' is missing the following directories: X:\, F:\SqlLog"
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
 
                         $mockServer2Object.Databases['DB1'].FileGroups.Files.FileName = $originalValue
                     }
@@ -2217,26 +2246,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw 'The operation on the database ''DB1'' failed with the following errors: The following prerequisite checks failed: The instance ''Server2'' is missing the following directories: E:\SqlData, Y:\'
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
 
                         $mockServer2Object.Databases['DB1'].LogFiles.FileName = $originalValue
                     }
@@ -2248,26 +2277,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw 'The operation on the database ''DB1'' failed with the following errors: The following prerequisite checks failed: The instance ''Server2'' is missing the following certificates: TDE Cert'
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
 
                         $mockServerObject.Databases['DB1'].EncryptionEnabled = $false
                         $mockServerObject.Databases['DB1'].DatabaseEncryptionKey = $null
@@ -2280,26 +2309,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 1 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 1 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
 
                         #reset so others will not trip. Fix for pester 5
                         $mockServerObject.Databases['DB1'].CreateDate = '2020-10-10 10:00:00'
@@ -2311,26 +2340,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw 'The operation on the database ''DB1'' failed with the following errors: System.Management.Automation.RuntimeException: ScriptHalted'
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
 
                     It 'Should throw the correct error when it fails to add the database to the primary replica' {
@@ -2338,26 +2367,26 @@ REVERT'
 
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw 'The operation on the database ''DB1'' failed with the following errors: System.Management.Automation.RuntimeException: ScriptHalted'
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
                 }
 
@@ -2370,26 +2399,26 @@ REVERT'
                     It 'Should ensure the database membership of the availability group is exactly as specified' {
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
-                        Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Database' }
-                        Assert-MockCalled -CommandName Backup-SqlDatabase -Scope It -Times 0 -Exactly -ParameterFilter { $BackupAction -eq 'Log' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly -ParameterFilter { $ServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 3 -Exactly -ParameterFilter { $ServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                        Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                        Assert-MockCalled -CommandName Import-SqlDscPreferredModule -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 2 -Exactly -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                        Assert-MockCalled -CommandName Invoke-SqlDscQuery -Scope It -Times 0 -Exactly -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
-                        Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
-                        Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
-                        Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly
-                        Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Primary' }
+                        Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server2' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Database' }
+                        Should -Invoke -CommandName Backup-SqlDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $BackupAction -eq 'Log' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' -and $InstanceName -eq 'MSSQLSERVER' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It -ParameterFilter { $ServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Connect-SQL -Exactly -Times 3 -Scope It -ParameterFilter { $ServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                        Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                        Should -Invoke -CommandName Import-SqlDscPreferredModule -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 2 -Scope It -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
+                        Should -Invoke -CommandName Invoke-SqlDscQuery -Exactly -Times 0 -Scope It -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
+                        Should -Invoke -CommandName Join-Path -Exactly -Times 0 -Scope It -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
+                        Should -Invoke -CommandName Remove-Item -Exactly -Times 0 -Scope It
+                        Should -Invoke -CommandName Remove-SqlAvailabilityDatabase -Exactly -Times 1 -Scope It
+                        Should -Invoke -CommandName Test-ImpersonatePermissions -Exactly -Times 1 -Scope It
                     }
                 }
             }
@@ -2755,10 +2784,10 @@ REVERT'
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                    Should -Invoke -CommandName Test-ActiveNode -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return $false when the specified availability group is not found' {
@@ -2766,10 +2795,10 @@ REVERT'
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                    Should -Invoke -CommandName Test-ActiveNode -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return $false when no matching databases are found' {
@@ -2777,19 +2806,19 @@ REVERT'
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                    Should -Invoke -CommandName Test-ActiveNode -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return $false when databases are found to add to the availability group' {
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                    Should -Invoke -CommandName Test-ActiveNode -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return $true when the configuration is in the desired state and the primary replica is on another server' {
@@ -2798,10 +2827,10 @@ REVERT'
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                    Should -Invoke -CommandName Test-ActiveNode -Exactly -Times 1 -Scope It
                 }
 
                 It 'Should return $true when ProcessOnlyOnActiveNode is "$true" and the current node is not actively hosting the instance' {
@@ -2812,10 +2841,10 @@ REVERT'
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 1 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
-                    Assert-MockCalled -CommandName Test-ActiveNode -Scope It -Times 1 -Exactly
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 1 -Scope It
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                    Should -Invoke -CommandName Test-ActiveNode -Exactly -Times 1 -Scope It
                 }
             }
 
@@ -2829,9 +2858,9 @@ REVERT'
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
 
                 }
 
@@ -2840,17 +2869,17 @@ REVERT'
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
                 }
 
                 It 'Should return $false when databases are found to remove from the availability group' {
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
                 }
 
                 It 'Should return $true when the configuration is in the desired state and the primary replica is on another server' {
@@ -2859,9 +2888,9 @@ REVERT'
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
                 }
             }
 
@@ -2875,9 +2904,9 @@ REVERT'
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
                 }
 
                 It 'Should return $false when no matching databases are found' {
@@ -2885,25 +2914,25 @@ REVERT'
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
                 }
 
                 It 'Should return $false when databases are found to add to the availability group' {
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
                 }
 
                 It 'Should return $false when databases are found to remove from the availability group' {
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
                 }
 
                 It 'Should return $true when the configuration is in the desired state and the primary replica is on another server' {
@@ -2912,9 +2941,9 @@ REVERT'
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
 
-                    Assert-MockCalled -CommandName Connect-SQL -Scope It -Times 2 -Exactly
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 0 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
-                    Assert-MockCalled -CommandName Get-PrimaryReplicaServerObject -Scope It -Times 1 -Exactly -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
+                    Should -Invoke -CommandName Connect-SQL -Exactly -Times 2 -Scope It
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 0 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server1' }
+                    Should -Invoke -CommandName Get-PrimaryReplicaServerObject -Exactly -Times 1 -Scope It -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
                 }
             }
         }
@@ -3120,10 +3149,3 @@ REVERT'
                 }
             }
         }
-    }
-}
-finally
-{
-    Invoke-TestCleanup
-
-}
