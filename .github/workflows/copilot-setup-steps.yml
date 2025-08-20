@@ -233,7 +233,7 @@ jobs:
               if ($commands.Count -gt 0)
               {
                   Write-Host "  Exported Commands: $($commands.Count)"
-                  Write-Host 'Available Commands:'
+                  Write-Host "`nAvailable Commands:"
 
                   $commands |
                     Select-Object Name, ModuleName | Format-Table -AutoSize
@@ -244,7 +244,7 @@ jobs:
               }
 
               $dscResources = @(dsc resource list --adapter Microsoft.DSC/PowerShell --output-format json | ConvertFrom-Json)
-              Write-Host "  Available class-based DSC Resources: $($dscResources.Count)"
+              Write-Host "`n  Available class-based DSC Resources: $($dscResources.Count)`n"
               $dscResources | Format-Table type, capabilities, implementedAs, requireAdapter -GroupBy kind
           }
           else
