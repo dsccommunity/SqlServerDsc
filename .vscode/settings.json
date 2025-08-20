@@ -89,13 +89,7 @@
         "wsfc",
         "SOURCEBRANCH",
         "SOURCEBRANCHNAME",
-        "setvariable",
-        "libmi",
-        "libc",
-        "endgroup",
-        "keyrings",
-        "distro",
-        "dearmor"
+        "setvariable"
     ],
     "cSpell.ignorePaths": [
         ".git"

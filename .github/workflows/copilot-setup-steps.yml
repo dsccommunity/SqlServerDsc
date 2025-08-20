@@ -14,7 +14,7 @@ on:
     paths:
       - '.github/workflows/copilot-setup-steps.yml'
 
-# cSpell: ignore unshallow LASTEXITCODE PSDSC
+# cSpell: ignore unshallow LASTEXITCODE PSDSC noreport dearmor distro keyrings endgroup libmi libc
 jobs:
   copilot-setup-steps:
     name: Setup PowerShell Development Environment
