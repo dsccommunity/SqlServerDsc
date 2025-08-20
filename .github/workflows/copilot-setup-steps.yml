@@ -88,7 +88,9 @@ jobs:
 
             # Update package list again after adding the new repo
             echo "Updating package list after adding Microsoft repository..."
-            sudo apt-get update
+            if ! sudo apt-get update; then
+              echo "::warning::apt-get update failed after adding Microsoft repo (repo may be unavailable for this distro). Continuing..."
+            fi
             echo "Microsoft repository added successfully"
             echo "::endgroup::"
           else
@@ -119,7 +121,7 @@ jobs:
 
           # Set LD_LIBRARY_PATH permanently for the runner session
           echo "Setting LD_LIBRARY_PATH environment variable..."
-          echo "LD_LIBRARY_PATH=/opt/omi/lib:/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=/opt/omi/lib:/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
           echo "Environment variable set successfully"
 
           echo "Linux dependencies installed successfully"
