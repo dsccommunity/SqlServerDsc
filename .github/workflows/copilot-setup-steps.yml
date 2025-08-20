@@ -34,13 +34,13 @@ jobs:
       - name: Ensure full history for GitVersion
         shell: pwsh
         run: |
-          Write-Host 'Ensuring full history for GitVersion...' -ForegroundColor Green
+          Write-Host 'Ensuring full history for GitVersion...'
 
           $isShallow = (& git rev-parse --is-shallow-repository) -eq 'true'
 
           if ($isShallow)
           {
-              Write-Host 'Repository is shallow. Fetching full history and tags...' -ForegroundColor DarkGray
+              Write-Host 'Repository is shallow. Fetching full history and tags...'
 
               git fetch --prune --unshallow --tags --no-recurse-submodules
 
@@ -51,7 +51,7 @@ jobs:
           }
           else
           {
-              Write-Host 'Repository is not shallow. Refreshing tags...' -ForegroundColor DarkGray
+              Write-Host 'Repository is not shallow. Refreshing tags...'
 
               git fetch --prune --tags --no-recurse-submodules
 
@@ -61,24 +61,24 @@ jobs:
               }
           }
 
-          Write-Host 'History ready for GitVersion.' -ForegroundColor Green
+          Write-Host 'History ready for GitVersion.'
 
       - name: Install Linux Dependencies
         shell: bash
         run: |
-          echo -e "\033[32mInstalling Linux dependencies for PowerShell DSC...\033[0m"
+          echo "Installing Linux dependencies for PowerShell DSC..."
 
           # Update package list
           echo "::group::Update package list"
-          echo -e "\033[36mUpdating package list...\033[0m"
+          echo "Updating package list..."
           sudo apt-get update
-          echo -e "\033[32m✓ Package list updated successfully\033[0m"
+          echo "Package list updated successfully"
           echo "::endgroup::"
 
           # Check if Microsoft repository is already added, if not add it
           if ! grep -q "packages.microsoft.com" /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null; then
             echo "::group::Add Microsoft repository"
-            echo -e "\033[33mAdding Microsoft repository...\033[0m"
+            echo "Adding Microsoft repository..."
             # Add Microsoft's GPG key and repository (keyring)
             sudo install -m 0755 -d /etc/apt/keyrings
             curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/microsoft.gpg >/dev/null
@@ -87,82 +87,81 @@ jobs:
             echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/microsoft-ubuntu-${DISTRO_CODENAME}-prod ${DISTRO_CODENAME} main" | sudo tee "/etc/apt/sources.list.d/microsoft-${DISTRO_CODENAME}-prod.list" >/dev/null
 
             # Update package list again after adding the new repo
-            echo -e "\033[36mUpdating package list after adding Microsoft repository...\033[0m"
+            echo "Updating package list after adding Microsoft repository..."
             sudo apt-get update
-            echo -e "\033[32m✓ Microsoft repository added successfully\033[0m"
+            echo "Microsoft repository added successfully"
             echo "::endgroup::"
           else
-            echo -e "\033[33mMicrosoft repository already configured, skipping...\033[0m"
-            echo "::notice::Microsoft repository was already configured"
+            echo "Microsoft repository already configured, skipping..."
           fi
 
           # Install OMI (Open Management Infrastructure) which provides libmi
           echo "::group::Install OMI and dependencies"
           if apt-cache policy omi 2>/dev/null | grep -q 'Candidate:'; then
-            echo -e "\033[36mInstalling OMI package...\033[0m"
+            echo "Installing OMI package..."
             if ! sudo apt-get install -y omi; then
-              echo -e "\033[31m⚠ OMI package failed to install; continuing...\033[0m"
+              echo "OMI package failed to install; continuing..."
               echo "::warning::OMI package failed to install; continuing without OMI"
             else
-              echo -e "\033[32m✓ OMI package installed successfully\033[0m"
+              echo "OMI package installed successfully"
             fi
           else
-            echo -e "\033[33mPackage 'omi' not found in repositories; skipping OMI install.\033[0m"
-            echo "::notice::OMI package not found in repositories, skipping installation"
+            echo "Package 'omi' not found in repositories; skipping OMI install."
+            echo "::warning::OMI package not found in repositories, skipping installation"
           fi
           echo "::endgroup::"
 
           echo "::group::Installing additional development dependencies..."
-          echo -e "\033[36mInstalling development dependencies (libc6-dev, libssl-dev)...\033[0m"
+          echo "Installing development dependencies (libc6-dev, libssl-dev)..."
           sudo apt-get install -y libc6-dev libssl-dev
-          echo -e "\033[32m✓ Development dependencies installed successfully\033[0m"
+          echo "Development dependencies installed successfully"
           echo "::endgroup::"
 
           # Set LD_LIBRARY_PATH permanently for the runner session
-          echo -e "\033[36mSetting LD_LIBRARY_PATH environment variable...\033[0m"
+          echo "Setting LD_LIBRARY_PATH environment variable..."
           echo "LD_LIBRARY_PATH=/opt/omi/lib:/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}" >> $GITHUB_ENV
-          echo -e "\033[32m✓ Environment variable set successfully\033[0m"
+          echo "Environment variable set successfully"
 
-          echo -e "\033[32m🎉 Linux dependencies installed successfully!\033[0m"
+          echo "Linux dependencies installed successfully"
 
       - name: Configure PowerShell Environment
         shell: pwsh
         run: |
-          Write-Host "Configure PowerShell environment..." -ForegroundColor Green
+          Write-Host "Configure PowerShell environment..."
 
           # Install dependent PowerShell modules
-          Write-Host "Installing SqlServer module..." -ForegroundColor Cyan
+          Write-Host "Installing SqlServer module..."
           Install-PSResource -Name 'SqlServer' -Version '21.1.18256' -Scope 'CurrentUser' -Repository 'PSGallery' -TrustRepository
-          Write-Host "✓ SqlServer module installed successfully" -ForegroundColor Green
+          Write-Host "SqlServer module installed successfully"
 
-          Write-Host "Installing PSDSC module..." -ForegroundColor Cyan
+          Write-Host "Installing PSDSC module..."
           Install-PSResource -Name 'PSDSC' -Scope 'CurrentUser' -Repository 'PSGallery' -TrustRepository
-          Write-Host "✓ PSDSC module installed successfully" -ForegroundColor Green
+          Write-Host "PSDSC module installed successfully"
 
-          Write-Host "🎉 PowerShell environment configuration complete!" -ForegroundColor Green
+          Write-Host "PowerShell environment configuration complete"
 
       - name: Install DSCv3
         shell: pwsh
         run: |
-          Write-Host "Install DSCv3 in environment..." -ForegroundColor Green
+          Write-Host "Install DSCv3 in environment..."
 
           # Install dependent PowerShell modules
-          Write-Host "Installing DSCv3 executable..." -ForegroundColor Cyan
+          Write-Host "Installing DSCv3 executable..."
           Install-DscExe -IncludePrerelease -Force
-          Write-Host "✓ DSCv3 installed successfully" -ForegroundColor Green
+          Write-Host "DSCv3 installed successfully"
 
-          Write-Host "🎉 DSCv3 install complete!" -ForegroundColor Green
+          Write-Host "DSCv3 install complete"
 
       - name: Verify DSCv3
         shell: pwsh
         run: |
-          Write-Host "Running DSCv3 to validate correct operation..." -ForegroundColor Green
+          Write-Host "Running DSCv3 to validate correct operation..."
           dsc --version
 
       - name: Install .NET Tools
         shell: pwsh
         run: |
-          Write-Host 'Installing/Updating .NET tools...' -ForegroundColor Green
+          Write-Host 'Installing/Updating .NET tools...'
 
           # Install GitVersion for semantic versioning (idempotent)
           dotnet tool update --global GitVersion.Tool --version 5.* `
@@ -171,30 +170,30 @@ jobs:
           # Verify installation
           dotnet-gitversion /version
 
-          Write-Host '.NET tools ready.' -ForegroundColor Green
+          Write-Host '.NET tools ready.'
 
       - name: Verify GitVersion
         shell: pwsh
         run: |
-          Write-Host 'Running GitVersion to determine semantic version...' -ForegroundColor Green
+          Write-Host 'Running GitVersion to determine semantic version...'
           dotnet-gitversion
-          Write-Host 'Running GitVersion to determine semantic version (parsing to PowerShell object)...' -ForegroundColor Green
+          Write-Host 'Running GitVersion to determine semantic version (parsing to PowerShell object)...'
           dotnet-gitversion | ConvertFrom-Json
 
       - name: Resolve Dependencies
         shell: pwsh
         run: |
-          Write-Host 'Resolving project dependencies...' -ForegroundColor Green
+          Write-Host 'Resolving project dependencies...'
 
           # Run dependency resolution
           ./build.ps1 -ResolveDependency -Tasks 'noop' -UseModuleFast -ErrorAction Stop
 
-          Write-Host 'Dependencies resolved successfully.' -ForegroundColor Green
+          Write-Host 'Dependencies resolved successfully.'
 
       - name: Build Module
         shell: pwsh
         run: |
-          Write-Host "Building $env:MODULE_NAME module..." -ForegroundColor Green
+          Write-Host "Building $env:MODULE_NAME module..."
 
           # Build the module
           ./build.ps1 -Tasks 'build' -ErrorAction Stop
@@ -202,7 +201,7 @@ jobs:
           # Verify build output
           if (Test-Path -Path "output/builtModule/$env:MODULE_NAME")
           {
-              Write-Host "Module built successfully at: output/builtModule/$env:MODULE_NAME" -ForegroundColor Green
+              Write-Host "Module built successfully at: output/builtModule/$env:MODULE_NAME"
               Get-ChildItem -Path "output/builtModule/$env:MODULE_NAME" -Recurse | Select-Object Name, Length | Format-Table
           }
           else
@@ -214,7 +213,7 @@ jobs:
       - name: Import Built Module
         shell: pwsh
         run: |
-          Write-Host "Importing built $env:MODULE_NAME module..." -ForegroundColor Green
+          Write-Host "Importing built $env:MODULE_NAME module..."
 
           ./build.ps1 -Tasks 'noop'
           Import-Module -Name $env:MODULE_NAME -Force
@@ -224,28 +223,28 @@ jobs:
 
           if ($module)
           {
-              Write-Host 'Module imported successfully:' -ForegroundColor Green
-              Write-Host "  Name: $($module.Name)" -ForegroundColor Cyan
-              Write-Host "  Version: $($module.Version)" -ForegroundColor Cyan
-              Write-Host "  Path: $($module.Path)" -ForegroundColor Cyan
+              Write-Host 'Module imported successfully:'
+              Write-Host "  Name: $($module.Name)"
+              Write-Host "  Version: $($module.Version)"
+              Write-Host "  Path: $($module.Path)"
 
               # Show available commands
               $commands = @(Get-Command -Module $env:MODULE_NAME)
               if ($commands.Count -gt 0)
               {
-                  Write-Host "  Exported Commands: $($commands.Count)" -ForegroundColor Cyan
-                  Write-Host 'Available Commands:' -ForegroundColor Cyan
+                  Write-Host "  Exported Commands: $($commands.Count)"
+                  Write-Host 'Available Commands:'
 
                   $commands |
                     Select-Object Name, ModuleName | Format-Table -AutoSize
               }
               else
               {
-                  Write-Host 'No commands exported by the module.' -ForegroundColor Yellow
+                  Write-Host 'No commands exported by the module.'
               }
 
               $dscResources = @(dsc resource list --adapter Microsoft.DSC/PowerShell --output-format json | ConvertFrom-Json)
-              Write-Host "  Available class-based DSC Resources: $($dscResources.Count)" -ForegroundColor Cyan
+              Write-Host "  Available class-based DSC Resources: $($dscResources.Count)"
               $dscResources
           }
           else
