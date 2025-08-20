@@ -89,7 +89,9 @@
         "wsfc",
         "SOURCEBRANCH",
         "SOURCEBRANCHNAME",
-        "setvariable"
+        "setvariable",
+        "libmi",
+        "libc"
     ],
     "cSpell.ignorePaths": [
         ".git"
