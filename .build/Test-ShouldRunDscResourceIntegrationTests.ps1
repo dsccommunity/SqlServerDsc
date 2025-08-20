@@ -460,7 +460,8 @@ function Test-ShouldRunDscResourceIntegrationTests
     Write-Host ""
 
     # Early optimization: Check if any changes are under the source folder
-    $changedSourceFiles = $changedFiles | Where-Object -FilterScript { $_ -match '^source/' }
+    $sourcePrefix = '^' + [regex]::Escape((($SourcePath -replace '\\','/') -replace '/+$','')) + '/'
+    $changedSourceFiles = $changedFiles | Where-Object -FilterScript { $_ -match $sourcePrefix }
     if (-not $changedSourceFiles)
     {
         Write-Host "No changes detected under the source folder. DSC resource integration tests can be skipped."

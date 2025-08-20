@@ -1,6 +1,20 @@
 # Needed for publishing of examples, build worker defaults to core.autocrlf=input.
 * text eol=crlf
 
+# YAML files should use LF (YAML standard)
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Markdown files should use LF (cross-platform standard)
+*.md text eol=lf
+
+# JSON files should use LF
+*.json text eol=lf
+
+# Source control files should use LF
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
 # Ensure any exe files are treated as binary
 *.exe binary
 *.jpg binary
