@@ -409,7 +409,7 @@ REVERT'
 
             BeforeEach {
                 $getTargetResourceParameters = @{
-                    DatabaseName = $mockDatabaseNameParameter.Clone()
+                    DatabaseName = $mockDatabaseNameParameter
                     ServerName = 'Server1'
                     InstanceName = 'MSSQLSERVER'
                     AvailabilityGroupName = 'AvailabilityGroup1'
@@ -803,7 +803,7 @@ REVERT'
                     Mock -CommandName Get-PrimaryReplicaServerObject -MockWith { return $mockServer2Object } -Verifiable -ParameterFilter { $AvailabilityGroup.PrimaryReplicaServerName -eq 'Server2' }
                     Mock -CommandName Import-SqlDscPreferredModule -Verifiable
                     Mock -CommandName Invoke-SqlDscQuery -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabase
-                    Mock -CommandName invokeSqlDscQueryParameters -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
+                    Mock -CommandName Invoke-SqlDscQuery -Verifiable -ParameterFilter $mockInvokeQueryParameterRestoreDatabaseWithExecuteAs
                     Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak") } -Verifiable -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn") } -Verifiable -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                     Mock -CommandName Remove-Item -Verifiable
@@ -2765,7 +2765,7 @@ REVERT'
 
             BeforeEach {
                 $mockTestTargetResourceParameters = @{
-                    DatabaseName = $mockDatabaseNameParameter.Clone()
+                    DatabaseName = $mockDatabaseNameParameter
                     ServerName = $mockServerObject.DomainInstanceName
                     InstanceName = 'MSSQLSERVER'
                     AvailabilityGroupName = $mockAvailabilityGroupObject.Name
@@ -2780,7 +2780,7 @@ REVERT'
 
             Context 'When Ensure is Present' {
                 It 'Should return $true when the configuration is in the desired state' {
-                    $mockTestTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames.Clone()
+                    $mockTestTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
 
@@ -2802,7 +2802,7 @@ REVERT'
                 }
 
                 It 'Should return $false when no matching databases are found' {
-                    $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases.Clone()
+                    $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
 
@@ -2822,7 +2822,7 @@ REVERT'
                 }
 
                 It 'Should return $true when the configuration is in the desired state and the primary replica is on another server' {
-                    $mockTestTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames.Clone()
+                    $mockTestTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames
                     $mockTestTargetResourceParameters.AvailabilityGroupName = $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Name
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
@@ -2836,7 +2836,7 @@ REVERT'
                 It 'Should return $true when ProcessOnlyOnActiveNode is "$true" and the current node is not actively hosting the instance' {
                     $mockProcessOnlyOnActiveNode = $true
 
-                    $mockTestTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames.Clone()
+                    $mockTestTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames
                     $mockTestTargetResourceParameters.ProcessOnlyOnActiveNode = $mockProcessOnlyOnActiveNode
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
@@ -2854,7 +2854,7 @@ REVERT'
                 }
 
                 It 'Should return $true when the configuration is in the desired state' {
-                    $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases.Clone()
+                    $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
 
@@ -2865,7 +2865,7 @@ REVERT'
                 }
 
                 It 'Should return $true when no matching databases are found' {
-                    $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases.Clone()
+                    $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
 
@@ -2883,7 +2883,7 @@ REVERT'
                 }
 
                 It 'Should return $true when the configuration is in the desired state and the primary replica is on another server' {
-                    $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases.Clone()
+                    $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases
                     $mockTestTargetResourceParameters.AvailabilityGroupName = $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Name
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
@@ -2900,7 +2900,7 @@ REVERT'
                 }
 
                 It 'Should return $true when the configuration is in the desired state' {
-                    $mockTestTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames.Clone()
+                    $mockTestTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
 
@@ -2910,7 +2910,7 @@ REVERT'
                 }
 
                 It 'Should return $false when no matching databases are found' {
-                    $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases.Clone()
+                    $mockTestTargetResourceParameters.DatabaseName = $mockDatabaseNameParameterWithNonExistingDatabases
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $false
 
@@ -2936,7 +2936,7 @@ REVERT'
                 }
 
                 It 'Should return $true when the configuration is in the desired state and the primary replica is on another server' {
-                    $mockTestTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames.Clone()
+                    $mockTestTargetResourceParameters.DatabaseName = $mockAvailabilityDatabaseNames
                     $mockTestTargetResourceParameters.AvailabilityGroupName = $mockAvailabilityGroupObjectWithPrimaryReplicaOnAnotherServer.Name
 
                     Test-TargetResource @mockTestTargetResourceParameters | Should -Be $true
@@ -2951,7 +2951,7 @@ REVERT'
         Describe 'SqlAGDatabase\Get-DatabasesToAddToAvailabilityGroup' {
             BeforeEach {
                 $getDatabasesToAddToAvailabilityGroup = @{
-                    DatabaseName = $mockDatabaseNameParameter.Clone()
+                    DatabaseName = $mockDatabaseNameParameter
                     Ensure = 'Present'
                     ServerObject = $mockServerObject
                     AvailabilityGroup = $mockAvailabilityGroupObject
@@ -2990,7 +2990,7 @@ REVERT'
         Describe 'SqlAGDatabase\Get-DatabasesToRemoveFromAvailabilityGroup' {
             BeforeEach {
                 $getDatabasesToRemoveFromAvailabilityGroupParameters = @{
-                    DatabaseName = $mockDatabaseNameParameter.Clone()
+                    DatabaseName = $mockDatabaseNameParameter
                     Ensure = 'Present'
                     Force = $false
                     ServerObject = $mockServerObject
@@ -3065,28 +3065,66 @@ REVERT'
         }
 
         Describe 'SqlAGDatabase\Get-MatchingDatabaseNames' {
+            BeforeAll {
+                # Setup mock variables needed for this test
+                $mockDatabaseNameParameter = @(
+                    'DB*'
+                    'AnotherDB'
+                    '3rd*OfDatabase'
+                    '4th*OfDatabase'
+                )
+
+                $mockPresentDatabaseNames = @(
+                    'DB1'
+                    'AnotherDB'
+                    '3rdOfDatabase'
+                    '4thOfDatabase'
+                )
+
+                # Create a simple mock server object for testing
+                $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+                $mockServerObject.Databases = New-Object -TypeName Microsoft.SqlServer.Management.Smo.DatabaseCollection
+                
+                # Add mock databases to the server
+                foreach ($dbName in $mockPresentDatabaseNames) {
+                    $mockDb = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
+                    $mockDb.Name = $dbName
+                    $mockServerObject.Databases.Add($mockDb)
+                }
+
+                $mockBadServerObject = New-Object -TypeName Object
+            }
+
             BeforeEach {
                 $getMatchingDatabaseNamesParameters = @{
-                    DatabaseName = $mockDatabaseNameParameter.Clone()
+                    DatabaseName = $mockDatabaseNameParameter
                     ServerObject = $mockServerObject
                 }
             }
 
             Context 'When the Get-MatchingDatabaseNames function is called' {
                 It 'Should throw the correct error when and invalid object type is passed to the method' {
-                    $getMatchingDatabaseNamesParameters.ServerObject = $mockBadServerObject
-
-                    { Get-MatchingDatabaseNames @getMatchingDatabaseNamesParameters } | Should -Throw 'ServerObject'
+                    { InModuleScope -Parameters @{ DatabaseName = $mockDatabaseNameParameter; ServerObject = $mockBadServerObject } -ScriptBlock { 
+                        $params = @{
+                            DatabaseName = $DatabaseName
+                            ServerObject = $ServerObject
+                        }
+                        Get-MatchingDatabaseNames @params 
+                    } } | Should -Throw '*ServerObject*'
                 }
 
                 It 'Should return an empty object when no matching databases are found' {
-                     $getMatchingDatabaseNamesParameters.DatabaseName = @('DatabaseNotHere')
-
-                     Get-MatchingDatabaseNames @getMatchingDatabaseNamesParameters | Should -BeNullOrEmpty
+                     InModuleScope -Parameters @{ DatabaseName = @('DatabaseNotHere'); ServerObject = $mockServerObject } -ScriptBlock { 
+                        $params = @{
+                            DatabaseName = $DatabaseName
+                            ServerObject = $ServerObject
+                        }
+                        Get-MatchingDatabaseNames @params 
+                    } | Should -BeNullOrEmpty
                 }
 
                 It 'Should return an array of database names that match the defined databases' {
-                     $results = Get-MatchingDatabaseNames @getMatchingDatabaseNamesParameters
+                     $results = InModuleScope -Parameters @{ params = $getMatchingDatabaseNamesParameters } -ScriptBlock { Get-MatchingDatabaseNames @params }
 
                      foreach ( $result in $results )
                      {
@@ -3097,7 +3135,7 @@ REVERT'
                 It 'Should return an array of database names that match the defined databases when the case does not match' {
                     $getMatchingDatabaseNamesParameters.DatabaseName = $getMatchingDatabaseNamesParameters.DatabaseName | ForEach-Object -Process { $_.ToLower() }
 
-                    $results = Get-MatchingDatabaseNames @getMatchingDatabaseNamesParameters
+                    $results = InModuleScope -Parameters @{ params = $getMatchingDatabaseNamesParameters } -ScriptBlock { Get-MatchingDatabaseNames @params }
 
                     foreach ( $result in $results )
                     {
@@ -3119,7 +3157,7 @@ REVERT'
 
                 BeforeEach {
                     $getDatabaseNamesNotFoundOnTheInstanceParameters = @{
-                        DatabaseName = $mockDatabaseNameParameter.Clone()
+                        DatabaseName = $mockDatabaseNameParameter
                         MatchingDatabaseNames = @()
                     }
                 }
@@ -3127,13 +3165,13 @@ REVERT'
                 It 'Should return an empty object when no missing databases were identified' {
                     $getDatabaseNamesNotFoundOnTheInstanceParameters.MatchingDatabaseNames = $mockDatabaseNameParameter
 
-                    Get-DatabaseNamesNotFoundOnTheInstance @getDatabaseNamesNotFoundOnTheInstanceParameters | Should -BeNullOrEmpty
+                    InModuleScope -Parameters @{ params = $getDatabaseNamesNotFoundOnTheInstanceParameters } -ScriptBlock { Get-DatabaseNamesNotFoundOnTheInstance @params } | Should -BeNullOrEmpty
                 }
 
                 It 'Should return a string array of database names when missing databases are identified' {
                     $getDatabaseNamesNotFoundOnTheInstanceParameters.MatchingDatabaseNames = $mockPresentDatabaseNames
 
-                    $results = Get-DatabaseNamesNotFoundOnTheInstance @getDatabaseNamesNotFoundOnTheInstanceParameters
+                    $results = InModuleScope -Parameters @{ params = $getDatabaseNamesNotFoundOnTheInstanceParameters } -ScriptBlock { Get-DatabaseNamesNotFoundOnTheInstance @params }
 
                     foreach ( $result in $results )
                     {
@@ -3145,7 +3183,7 @@ REVERT'
                     $getDatabaseNamesNotFoundOnTheInstanceParameters.DatabaseName = @()
                     $getDatabaseNamesNotFoundOnTheInstanceParameters.MatchingDatabaseNames = $mockPresentDatabaseNames
 
-                    Get-DatabaseNamesNotFoundOnTheInstance @getDatabaseNamesNotFoundOnTheInstanceParameters | Should -BeNullOrEmpty
+                    InModuleScope -Parameters @{ params = $getDatabaseNamesNotFoundOnTheInstanceParameters } -ScriptBlock { Get-DatabaseNamesNotFoundOnTheInstance @params } | Should -BeNullOrEmpty
                 }
             }
         }
