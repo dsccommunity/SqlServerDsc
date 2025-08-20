@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Attempt to unshallow the Copilot branch
   - Improved AI instructions.
   - Enhanced workflow with proper environment variable configuration and DSCv3 verification.
+  - Fixed environment variable persistence by using $GITHUB_ENV instead of
+    job-level env declaration.
 - `Assert-SqlDscLogin`
   - Added new public command to validate that a specified SQL Server principal
     exists as a login, throwing a terminating error if it doesn't exist.

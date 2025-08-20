@@ -24,6 +24,11 @@ jobs:
       contents: read
 
     steps:
+      - name: Set Environment Variables
+        shell: bash
+        run: |
+          echo "MODULE_NAME=SqlServerDsc" >> "$GITHUB_ENV"
+
       - name: Checkout Repository
         uses: actions/checkout@v5
         with:
