@@ -74,9 +74,12 @@ jobs:
           # Check if Microsoft repository is already added, if not add it
           if ! grep -q "packages.microsoft.com" /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null; then
             echo "Adding Microsoft repository..."
-            # Add Microsoft's GPG key and repository
-            wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
-            sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -cs)-prod $(lsb_release -cs) main"
+            # Add Microsoft's GPG key and repository (keyring)
+            sudo install -m 0755 -d /etc/apt/keyrings
+            curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/microsoft.gpg >/dev/null
+            sudo chmod a+r /etc/apt/keyrings/microsoft.gpg
+            DISTRO_CODENAME="$(lsb_release -cs)"
+            echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/microsoft-ubuntu-${DISTRO_CODENAME}-prod ${DISTRO_CODENAME} main" | sudo tee "/etc/apt/sources.list.d/microsoft-${DISTRO_CODENAME}-prod.list" >/dev/null
 
             # Update package list again after adding the new repo
             sudo apt-get update
@@ -85,13 +88,19 @@ jobs:
           fi
 
           # Install OMI (Open Management Infrastructure) which provides libmi
-          sudo apt-get install -y omi
+          if apt-cache policy omi 2>/dev/null | grep -q 'Candidate:'; then
+            if ! sudo apt-get install -y omi; then
+              echo "WARNING: 'omi' package failed to install; continuing."
+            fi
+          else
+            echo "Package 'omi' not found in repositories; skipping OMI install."
+          fi
 
           # Also install other dependencies that might be needed
           sudo apt-get install -y libc6-dev libssl-dev
 
           # Set LD_LIBRARY_PATH permanently for the runner session
-          echo "LD_LIBRARY_PATH=/opt/omi/lib:/usr/lib/x86_64-linux-gnu" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=/opt/omi/lib:/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}" >> $GITHUB_ENV
 
           echo "Linux dependencies installed successfully."
 
