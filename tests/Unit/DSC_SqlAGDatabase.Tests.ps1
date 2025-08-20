@@ -2949,6 +2949,29 @@ REVERT'
         }
 
         Describe 'SqlAGDatabase\Get-DatabasesToAddToAvailabilityGroup' {
+            BeforeAll {
+                # Setup mock variables needed for this test (reused from parent context)
+                $mockDatabaseNameParameter = @(
+                    'DB*'
+                    'AnotherDB'
+                    '3rd*OfDatabase'
+                    '4th*OfDatabase'
+                )
+
+                $mockAvailabilityDatabasePresentResults = @(
+                    'DB1'
+                    '3rdOfDatabase'
+                )
+
+                # Create availability group object with databases
+                $mockAvailabilityGroupObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+                $mockAvailabilityGroupObject.Name = 'AvailabilityGroup1'
+                $mockAvailabilityGroupObject.AvailabilityDatabases = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityDatabaseCollection
+                
+                # Create server object
+                $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+            }
+
             BeforeEach {
                 $getDatabasesToAddToAvailabilityGroup = @{
                     DatabaseName = $mockDatabaseNameParameter
@@ -2960,7 +2983,7 @@ REVERT'
 
             Context 'When Ensure is Present' {
                 It 'Should return an array of database names to add when matches are found' {
-                    $results = Get-DatabasesToAddToAvailabilityGroup @getDatabasesToAddToAvailabilityGroup
+                    $results = InModuleScope -Parameters @{ params = $getDatabasesToAddToAvailabilityGroup } -ScriptBlock { Get-DatabasesToAddToAvailabilityGroup @params }
 
                     foreach ( $result in $results )
                     {
@@ -2971,7 +2994,7 @@ REVERT'
                 It 'Should return an array of database names no databases are in the availability group' {
                     $getDatabasesToAddToAvailabilityGroup.AvailabilityGroup = $mockAvailabilityGroupWithoutDatabasesObject
 
-                    $results = Get-DatabasesToAddToAvailabilityGroup @getDatabasesToAddToAvailabilityGroup
+                    $results = InModuleScope -Parameters @{ params = $getDatabasesToAddToAvailabilityGroup } -ScriptBlock { Get-DatabasesToAddToAvailabilityGroup @params }
 
                     foreach ( $result in $results )
                     {
@@ -2982,12 +3005,47 @@ REVERT'
                 It 'Should return an empty object when no matches are found' {
                     $getDatabasesToAddToAvailabilityGroup.DatabaseName = @()
 
-                    Get-DatabasesToAddToAvailabilityGroup @getDatabasesToAddToAvailabilityGroup | Should -BeNullOrEmpty
+                    InModuleScope -Parameters @{ params = $getDatabasesToAddToAvailabilityGroup } -ScriptBlock { Get-DatabasesToAddToAvailabilityGroup @params } | Should -BeNullOrEmpty
                 }
             }
         }
 
         Describe 'SqlAGDatabase\Get-DatabasesToRemoveFromAvailabilityGroup' {
+            BeforeAll {
+                # Setup mock variables needed for this test 
+                $mockDatabaseNameParameter = @(
+                    'DB*'
+                    'AnotherDB'
+                    '3rd*OfDatabase'
+                    '4th*OfDatabase'
+                )
+
+                $mockAvailabilityDatabaseAbsentResults = @(
+                    'DB2'
+                )
+
+                $mockAvailabilityDatabaseNames = @(
+                    'DB2'
+                    'AnotherDB'
+                )
+
+                $mockAvailabilityDatabaseExactlyRemoveResults = @(
+                    'DB2'
+                )
+
+                # Create availability group object with databases
+                $mockAvailabilityGroupObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+                $mockAvailabilityGroupObject.Name = 'AvailabilityGroup1'
+                $mockAvailabilityGroupObject.AvailabilityDatabases = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityDatabaseCollection
+                
+                $mockAvailabilityGroupWithoutDatabasesObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+                $mockAvailabilityGroupWithoutDatabasesObject.Name = 'AvailabilityGroup2'
+                $mockAvailabilityGroupWithoutDatabasesObject.AvailabilityDatabases = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityDatabaseCollection
+
+                # Create server object
+                $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
+            }
+
             BeforeEach {
                 $getDatabasesToRemoveFromAvailabilityGroupParameters = @{
                     DatabaseName = $mockDatabaseNameParameter
@@ -3004,7 +3062,7 @@ REVERT'
                 }
 
                 It 'Should return an array of database names to remove when matches are found' {
-                    $results = Get-DatabasesToRemoveFromAvailabilityGroup @getDatabasesToRemoveFromAvailabilityGroupParameters
+                    $results = InModuleScope -Parameters @{ params = $getDatabasesToRemoveFromAvailabilityGroupParameters } -ScriptBlock { Get-DatabasesToRemoveFromAvailabilityGroup @params }
 
                     foreach ( $result in $results )
                     {
@@ -3015,7 +3073,7 @@ REVERT'
                 It 'Should return an array of database names to remove when no databases are in the availability group' {
                     $getDatabasesToRemoveFromAvailabilityGroupParameters.AvailabilityGroup = $mockAvailabilityGroupWithoutDatabasesObject
 
-                    $results = Get-DatabasesToRemoveFromAvailabilityGroup @getDatabasesToRemoveFromAvailabilityGroupParameters
+                    $results = InModuleScope -Parameters @{ params = $getDatabasesToRemoveFromAvailabilityGroupParameters } -ScriptBlock { Get-DatabasesToRemoveFromAvailabilityGroup @params }
 
                     foreach ( $result in $results )
                     {
@@ -3026,7 +3084,7 @@ REVERT'
                 It 'Should return an empty object when no matches are found' {
                     $getDatabasesToRemoveFromAvailabilityGroupParameters.DatabaseName = @()
 
-                    Get-DatabasesToRemoveFromAvailabilityGroup @getDatabasesToRemoveFromAvailabilityGroupParameters | Should -BeNullOrEmpty
+                    InModuleScope -Parameters @{ params = $getDatabasesToRemoveFromAvailabilityGroupParameters } -ScriptBlock { Get-DatabasesToRemoveFromAvailabilityGroup @params } | Should -BeNullOrEmpty
                 }
             }
 
@@ -3036,7 +3094,7 @@ REVERT'
                 }
 
                 It 'Should return an array of database names to remove when matches are found' {
-                    $results = Get-DatabasesToRemoveFromAvailabilityGroup @getDatabasesToRemoveFromAvailabilityGroupParameters
+                    $results = InModuleScope -Parameters @{ params = $getDatabasesToRemoveFromAvailabilityGroupParameters } -ScriptBlock { Get-DatabasesToRemoveFromAvailabilityGroup @params }
 
                     foreach ( $result in $results )
                     {
@@ -3047,7 +3105,7 @@ REVERT'
                 It 'Should return all of the databases in the availability group if no matches were found' {
                     $getDatabasesToRemoveFromAvailabilityGroupParameters.DatabaseName = @()
 
-                    $results = Get-DatabasesToRemoveFromAvailabilityGroup @getDatabasesToRemoveFromAvailabilityGroupParameters
+                    $results = InModuleScope -Parameters @{ params = $getDatabasesToRemoveFromAvailabilityGroupParameters } -ScriptBlock { Get-DatabasesToRemoveFromAvailabilityGroup @params }
 
                     # Ensure all of the results are in the Availability Databases
                     foreach ( $result in $results )
@@ -3146,14 +3204,30 @@ REVERT'
         }
 
         Describe 'SqlAGDatabase\Get-DatabaseNamesNotFoundOnTheInstance' {
+            BeforeAll {
+                # Setup mock variables needed for this test
+                $mockDatabaseNameParameter = @(
+                    'DB*'
+                    'AnotherDB'
+                    '3rd*OfDatabase'
+                    '4th*OfDatabase'
+                )
+
+                # The defined databases that should be identified as missing
+                $mockMissingDatabases = @(
+                    'AnotherDB'
+                    '4th*OfDatabase'
+                )
+
+                $mockPresentDatabaseNames = @(
+                    'DB1'
+                    'AnotherDB'
+                    '3rdOfDatabase'
+                    '4thOfDatabase'
+                )
+            }
+
             Context 'When the Get-DatabaseNamesNotFoundOnTheInstance function is called' {
-                BeforeAll {
-                    # The defined databases that should be identified as missing
-                    $mockMissingDatabases = @(
-                        'AnotherDB'
-                        '4th*OfDatabase'
-                    )
-                }
 
                 BeforeEach {
                     $getDatabaseNamesNotFoundOnTheInstanceParameters = @{
@@ -3163,15 +3237,23 @@ REVERT'
                 }
 
                 It 'Should return an empty object when no missing databases were identified' {
-                    $getDatabaseNamesNotFoundOnTheInstanceParameters.MatchingDatabaseNames = $mockDatabaseNameParameter
-
-                    InModuleScope -Parameters @{ params = $getDatabaseNamesNotFoundOnTheInstanceParameters } -ScriptBlock { Get-DatabaseNamesNotFoundOnTheInstance @params } | Should -BeNullOrEmpty
+                    InModuleScope -Parameters @{ DatabaseName = $mockDatabaseNameParameter; MatchingDatabaseNames = $mockDatabaseNameParameter } -ScriptBlock { 
+                        $params = @{
+                            DatabaseName = $DatabaseName
+                            MatchingDatabaseNames = $MatchingDatabaseNames
+                        }
+                        Get-DatabaseNamesNotFoundOnTheInstance @params 
+                    } | Should -BeNullOrEmpty
                 }
 
                 It 'Should return a string array of database names when missing databases are identified' {
-                    $getDatabaseNamesNotFoundOnTheInstanceParameters.MatchingDatabaseNames = $mockPresentDatabaseNames
-
-                    $results = InModuleScope -Parameters @{ params = $getDatabaseNamesNotFoundOnTheInstanceParameters } -ScriptBlock { Get-DatabaseNamesNotFoundOnTheInstance @params }
+                    $results = InModuleScope -Parameters @{ DatabaseName = $mockDatabaseNameParameter; MatchingDatabaseNames = $mockPresentDatabaseNames } -ScriptBlock { 
+                        $params = @{
+                            DatabaseName = $DatabaseName
+                            MatchingDatabaseNames = $MatchingDatabaseNames
+                        }
+                        Get-DatabaseNamesNotFoundOnTheInstance @params 
+                    }
 
                     foreach ( $result in $results )
                     {
@@ -3180,10 +3262,13 @@ REVERT'
                 }
 
                 It 'Should return an empty object is supplied and no databases are defined' {
-                    $getDatabaseNamesNotFoundOnTheInstanceParameters.DatabaseName = @()
-                    $getDatabaseNamesNotFoundOnTheInstanceParameters.MatchingDatabaseNames = $mockPresentDatabaseNames
-
-                    InModuleScope -Parameters @{ params = $getDatabaseNamesNotFoundOnTheInstanceParameters } -ScriptBlock { Get-DatabaseNamesNotFoundOnTheInstance @params } | Should -BeNullOrEmpty
+                    InModuleScope -Parameters @{ DatabaseName = @(); MatchingDatabaseNames = $mockPresentDatabaseNames } -ScriptBlock { 
+                        $params = @{
+                            DatabaseName = $DatabaseName
+                            MatchingDatabaseNames = $MatchingDatabaseNames
+                        }
+                        Get-DatabaseNamesNotFoundOnTheInstance @params 
+                    } | Should -BeNullOrEmpty
                 }
             }
         }
