@@ -16,8 +16,10 @@ resources and classes, then checks if any relevant files have been modified.
 
 ### How It Works
 
-The script checks for changes to:
+The script performs an optimized analysis by checking for changes in this order:
 
+1. **Early Source Check**: First checks if any files under `source/` have changed
+   - If no source changes, skips integration tests immediately
 1. **DSC Resources**: Files under `source/DSCResources/`
 1. **Classes**: Files under `source/Classes/`
 1. **Public Commands**: Commands that are actually used by DSC resources or
@@ -26,6 +28,47 @@ The script checks for changes to:
    class-based DSC resources
 1. **Integration Tests**: DSC resource integration test files under
    `tests/Integration/Resources/`
+
+### Flow Diagram
+
+The following diagram illustrates the decision flow of the script:
+
+<!-- markdownlint-disable MD013 - Mermaid diagram has long lines -->
+```mermaid
+flowchart TD
+    Start([Start Script]) --> Init[Initialize Parameters<br/>BaseBranch, CurrentBranch, UseMergeBase]
+    Init --> GetChanges[Get Changed Files<br/>git diff between branches]
+
+    GetChanges --> HasChanges{Any Changed<br/>Files?}
+    HasChanges -->|No| RunTrue[Return TRUE<br/>Run integration tests]
+
+    HasChanges -->|Yes| CheckSource{Any Changes<br/>Under source/?}
+    CheckSource -->|No| Skip[Return FALSE<br/>Skip integration tests]
+
+    CheckSource -->|Yes| Discover[Discover Public Commands<br/>Used by DSC Resources]
+    Discover --> CheckDscRes{DSC Resources or<br/>Classes Changed?<br/>source/DSCResources/<br/>source/Classes/}
+    CheckDscRes -->|Yes| RunTrue
+
+    CheckDscRes -->|No| CheckPublic{Public Commands<br/>Used by DSC<br/>Resources Changed?<br/>source/Public/}
+    CheckPublic -->|Yes| RunTrue
+
+    CheckPublic -->|No| CheckPrivate{Private Functions<br/>Used by DSC-related<br/>Commands Changed?<br/>source/Private/}
+    CheckPrivate -->|Yes| RunTrue
+
+    CheckPrivate -->|No| CheckTests{Integration Test<br/>Files Changed?<br/>tests/Integration/Resources/}
+    CheckTests -->|Yes| RunTrue
+
+    CheckTests -->|No| Skip
+
+    RunTrue --> End([End])
+    Skip --> End
+
+    style Start fill:#e1f5fe
+    style End fill:#e8f5e8
+    style RunTrue fill:#fff3e0
+    style Skip fill:#f3e5f5
+```
+<!-- markdownlint-enable MD013 -->
 
 ### Parameters
 
