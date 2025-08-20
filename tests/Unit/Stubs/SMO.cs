@@ -277,7 +277,7 @@ namespace Microsoft.SqlServer.Management.Smo
     public class Server
     {
         public AvailabilityGroupCollection AvailabilityGroups = new AvailabilityGroupCollection();
-        public ServerConnection ConnectionContext;
+        public ServerConnection ConnectionContext = new ServerConnection();
         public string ComputerNamePhysicalNetBIOS;
         public DatabaseCollection Databases = new DatabaseCollection();
         public string DisplayName;
@@ -756,6 +756,11 @@ namespace Microsoft.SqlServer.Management.Smo
     public class ServerConnection
     {
         public string TrueLogin;
+        public string ServerInstance;
+        public int StatementTimeout;
+        public int ConnectTimeout;
+        public string ApplicationName;
+        public bool EncryptConnection;
 
         public void Create()
         {}

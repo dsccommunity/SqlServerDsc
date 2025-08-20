@@ -272,6 +272,7 @@ Describe 'SqlAGDatabase\Get-TargetResource' {
                 $mockMasterDatabaseName = 'master'
                 $mockMasterDatabaseObject1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                 $mockMasterDatabaseObject1.Name = $mockMasterDatabaseName
+                    $mockMasterDatabaseObject1.ServerInstance = $mockServerObjectDomainInstanceName
                 $mockMasterDatabaseObject1.ID = 1
                 $mockMasterDatabaseObject1.Certificates = @($mockCertificateObject1)
                 $mockMasterDatabaseObject1.FileGroups = @{
@@ -289,6 +290,7 @@ Describe 'SqlAGDatabase\Get-TargetResource' {
                 {
                     $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                     $newDatabaseObject.Name = $mockPresentDatabaseName
+                        $newDatabaseObject.ServerInstance = $mockServerObjectDomainInstanceName
                     $newDatabaseObject.FileGroups = @{
                         Name = 'PRIMARY'
                         Files = @{
@@ -310,6 +312,7 @@ Describe 'SqlAGDatabase\Get-TargetResource' {
                 {
                     $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                     $newDatabaseObject.Name = $mockPresentDatabaseName
+                        $newDatabaseObject.ServerInstance = $mockServerObjectDomainInstanceName
                     $newDatabaseObject.FileGroups = @{
                         Name = 'PRIMARY'
                         Files = @{
@@ -340,6 +343,7 @@ Describe 'SqlAGDatabase\Get-TargetResource' {
                 $mockServerObject.ConnectionContext.TrueLogin = $mockTrueLogin
                 $mockServerObject.Databases = $mockDatabaseObjects
                 $mockServerObject.DomainInstanceName = $mockServerObjectDomainInstanceName
+                    $mockServerObject.ServerInstance = $mockServerObjectDomainInstanceName
                 $mockServerObject.NetName = $mockServerObjectDomainInstanceName
                 $mockServerObject.ServiceName = 'MSSQLSERVER'
                 $mockServerObject.AvailabilityGroups[$mockAvailabilityGroupObject.Name].LocalReplicaRole = 'Primary'
@@ -356,6 +360,7 @@ Describe 'SqlAGDatabase\Get-TargetResource' {
                 $mockServer2Object.ConnectionContext.TrueLogin = $mockTrueLogin
                 $mockServer2Object.Databases = $mockDatabaseObjects
                 $mockServer2Object.DomainInstanceName = $mockPrimaryServerObjectDomainInstanceName
+                    $mockServer2Object.ServerInstance = $mockPrimaryServerObjectDomainInstanceName
                 $mockServer2Object.NetName = $mockPrimaryServerObjectDomainInstanceName
                 $mockServer2Object.ServiceName = 'MSSQLSERVER'
                 $mockServer2Object.AvailabilityGroups[$mockAvailabilityGroupObject.Name].LocalReplicaRole = 'Secondary'
@@ -668,6 +673,7 @@ REVERT'
                     $mockMasterDatabaseName = 'master'
                     $mockMasterDatabaseObject1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                     $mockMasterDatabaseObject1.Name = $mockMasterDatabaseName
+                    $mockMasterDatabaseObject1.ServerInstance = $mockServerObjectDomainInstanceName
                     $mockMasterDatabaseObject1.ID = 1
                     $mockMasterDatabaseObject1.Certificates = @($mockCertificateObject1)
                     $mockMasterDatabaseObject1.FileGroups = @{
@@ -685,6 +691,7 @@ REVERT'
                     {
                         $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                         $newDatabaseObject.Name = $mockPresentDatabaseName
+                        $newDatabaseObject.ServerInstance = $mockServerObjectDomainInstanceName
                         $newDatabaseObject.FileGroups = @{
                             Name = 'PRIMARY'
                             Files = @{
@@ -706,6 +713,7 @@ REVERT'
                     {
                         $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                         $newDatabaseObject.Name = $mockPresentDatabaseName
+                        $newDatabaseObject.ServerInstance = $mockServerObjectDomainInstanceName
                         $newDatabaseObject.FileGroups = @{
                             Name = 'PRIMARY'
                             Files = @{
@@ -736,6 +744,7 @@ REVERT'
                     $mockServerObject.ConnectionContext.TrueLogin = $mockTrueLogin
                     $mockServerObject.Databases = $mockDatabaseObjects
                     $mockServerObject.DomainInstanceName = $mockServerObjectDomainInstanceName
+                    $mockServerObject.ServerInstance = $mockServerObjectDomainInstanceName
                     $mockServerObject.NetName = $mockServerObjectDomainInstanceName
                     $mockServerObject.ServiceName = 'MSSQLSERVER'
                     $mockServerObject.AvailabilityGroups[$mockAvailabilityGroupObject.Name].LocalReplicaRole = 'Primary'
@@ -752,6 +761,7 @@ REVERT'
                     $mockServer2Object.ConnectionContext.TrueLogin = $mockTrueLogin
                     $mockServer2Object.Databases = $mockDatabaseObjects
                     $mockServer2Object.DomainInstanceName = $mockPrimaryServerObjectDomainInstanceName
+                    $mockServer2Object.ServerInstance = $mockPrimaryServerObjectDomainInstanceName
                     $mockServer2Object.NetName = $mockPrimaryServerObjectDomainInstanceName
                     $mockServer2Object.ServiceName = 'MSSQLSERVER'
                     $mockServer2Object.AvailabilityGroups[$mockAvailabilityGroupObject.Name].LocalReplicaRole = 'Secondary'
@@ -1729,6 +1739,7 @@ REVERT'
                     $mockMasterDatabaseName = 'master'
                     $mockMasterDatabaseObject1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                     $mockMasterDatabaseObject1.Name = $mockMasterDatabaseName
+                    $mockMasterDatabaseObject1.ServerInstance = $mockServerObjectDomainInstanceName
                     $mockMasterDatabaseObject1.ID = 1
                     $mockMasterDatabaseObject1.Certificates = @($mockCertificateObject1)
                     $mockMasterDatabaseObject1.FileGroups = @{
@@ -1746,6 +1757,7 @@ REVERT'
                     {
                         $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                         $newDatabaseObject.Name = $mockPresentDatabaseName
+                        $newDatabaseObject.ServerInstance = $mockServerObjectDomainInstanceName
                         $newDatabaseObject.FileGroups = @{
                             Name = 'PRIMARY'
                             Files = @{
@@ -1767,6 +1779,7 @@ REVERT'
                     {
                         $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                         $newDatabaseObject.Name = $mockPresentDatabaseName
+                        $newDatabaseObject.ServerInstance = $mockServerObjectDomainInstanceName
                         $newDatabaseObject.FileGroups = @{
                             Name = 'PRIMARY'
                             Files = @{
@@ -1797,6 +1810,7 @@ REVERT'
                     $mockServerObject.ConnectionContext.TrueLogin = $mockTrueLogin
                     $mockServerObject.Databases = $mockDatabaseObjects
                     $mockServerObject.DomainInstanceName = $mockServerObjectDomainInstanceName
+                    $mockServerObject.ServerInstance = $mockServerObjectDomainInstanceName
                     $mockServerObject.NetName = $mockServerObjectDomainInstanceName
                     $mockServerObject.ServiceName = 'MSSQLSERVER'
                     $mockServerObject.AvailabilityGroups[$mockAvailabilityGroupObject.Name].LocalReplicaRole = 'Primary'
@@ -1813,6 +1827,7 @@ REVERT'
                     $mockServer2Object.ConnectionContext.TrueLogin = $mockTrueLogin
                     $mockServer2Object.Databases = $mockDatabaseObjects
                     $mockServer2Object.DomainInstanceName = $mockPrimaryServerObjectDomainInstanceName
+                    $mockServer2Object.ServerInstance = $mockPrimaryServerObjectDomainInstanceName
                     $mockServer2Object.NetName = $mockPrimaryServerObjectDomainInstanceName
                     $mockServer2Object.ServiceName = 'MSSQLSERVER'
                     $mockServer2Object.AvailabilityGroups[$mockAvailabilityGroupObject.Name].LocalReplicaRole = 'Secondary'
@@ -2622,6 +2637,7 @@ REVERT'
                 $mockMasterDatabaseName = 'master'
                 $mockMasterDatabaseObject1 = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                 $mockMasterDatabaseObject1.Name = $mockMasterDatabaseName
+                    $mockMasterDatabaseObject1.ServerInstance = $mockServerObjectDomainInstanceName
                 $mockMasterDatabaseObject1.ID = 1
                 $mockMasterDatabaseObject1.Certificates = @($mockCertificateObject1)
                 $mockMasterDatabaseObject1.FileGroups = @{
@@ -2639,6 +2655,7 @@ REVERT'
                 {
                     $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                     $newDatabaseObject.Name = $mockPresentDatabaseName
+                        $newDatabaseObject.ServerInstance = $mockServerObjectDomainInstanceName
                     $newDatabaseObject.FileGroups = @{
                         Name = 'PRIMARY'
                         Files = @{
@@ -2660,6 +2677,7 @@ REVERT'
                 {
                     $newDatabaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                     $newDatabaseObject.Name = $mockPresentDatabaseName
+                        $newDatabaseObject.ServerInstance = $mockServerObjectDomainInstanceName
                     $newDatabaseObject.FileGroups = @{
                         Name = 'PRIMARY'
                         Files = @{
@@ -2690,6 +2708,7 @@ REVERT'
                 $mockServerObject.ConnectionContext.TrueLogin = $mockTrueLogin
                 $mockServerObject.Databases = $mockDatabaseObjects
                 $mockServerObject.DomainInstanceName = $mockServerObjectDomainInstanceName
+                    $mockServerObject.ServerInstance = $mockServerObjectDomainInstanceName
                 $mockServerObject.NetName = $mockServerObjectDomainInstanceName
                 $mockServerObject.ServiceName = 'MSSQLSERVER'
                 $mockServerObject.AvailabilityGroups[$mockAvailabilityGroupObject.Name].LocalReplicaRole = 'Primary'
@@ -2706,6 +2725,7 @@ REVERT'
                 $mockServer2Object.ConnectionContext.TrueLogin = $mockTrueLogin
                 $mockServer2Object.Databases = $mockDatabaseObjects
                 $mockServer2Object.DomainInstanceName = $mockPrimaryServerObjectDomainInstanceName
+                    $mockServer2Object.ServerInstance = $mockPrimaryServerObjectDomainInstanceName
                 $mockServer2Object.NetName = $mockPrimaryServerObjectDomainInstanceName
                 $mockServer2Object.ServiceName = 'MSSQLSERVER'
                 $mockServer2Object.AvailabilityGroups[$mockAvailabilityGroupObject.Name].LocalReplicaRole = 'Secondary'
@@ -3147,6 +3167,7 @@ REVERT'
                 foreach ($dbName in $mockPresentDatabaseNames) {
                     $mockDb = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database
                     $mockDb.Name = $dbName
+                    $mockDb.ServerInstance = $mockServerObjectDomainInstanceName
                     $mockServerObject.Databases.Add($mockDb)
                 }
 
