@@ -71,6 +71,19 @@ jobs:
           # Update package list
           sudo apt-get update
 
+          # Check if Microsoft repository is already added, if not add it
+          if ! grep -q "packages.microsoft.com" /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null; then
+            echo "Adding Microsoft repository..."
+            # Add Microsoft's GPG key and repository
+            wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+            sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -cs)-prod $(lsb_release -cs) main"
+
+            # Update package list again after adding the new repo
+            sudo apt-get update
+          else
+            echo "Microsoft repository already configured, skipping..."
+          fi
+
           # Install OMI (Open Management Infrastructure) which provides libmi
           sudo apt-get install -y omi
 
