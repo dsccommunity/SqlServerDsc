@@ -180,7 +180,7 @@ jobs:
               Write-Host "  Path: $($module.Path)" -ForegroundColor Cyan
 
               # Show available commands
-              $commands = Get-Command -Module $env:MODULE_NAME
+              $commands = @(Get-Command -Module $env:MODULE_NAME)
               if ($commands.Count -gt 0)
               {
                   Write-Host "  Exported Commands: $($commands.Count)" -ForegroundColor Cyan
