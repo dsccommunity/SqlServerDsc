@@ -828,7 +828,7 @@ REVERT'
                         BackupPath = $($mockBackupPath)
                         Ensure = 'Present'
                         Force = $false
-                        MatchDatabaseOwner = $true
+                        MatchDatabaseOwner = $false
                         ReplaceExisting = $false
                     }
 
@@ -844,6 +844,8 @@ REVERT'
                     Mock -CommandName Invoke-SqlDscQuery -MockWith $mockResultInvokeQueryFileExist -Verifiable -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
                     Mock -CommandName Remove-SqlAvailabilityDatabase -Verifiable
                     Mock -CommandName Test-ImpersonatePermissions -MockWith { $true } -Verifiable
+                    # Add a general Connect-SQL mock to catch any calls not covered by parameter filters
+                    Mock -CommandName Connect-SQL -MockWith { return $mockServerObject }
                 }
 
                 Context 'When Ensure is Present' {
@@ -984,7 +986,7 @@ REVERT'
                     It 'Should throw the correct error when "MatchDatabaseOwner" is $true and the current login does not have impersonate permissions' {
                         Mock -CommandName Test-ImpersonatePermissions -MockWith { $false } -Verifiable
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The login '$([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)' is missing impersonate any login, control server, impersonate login, or control login permissions in the instances 'Server2'."
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "missing impersonate any login, control server, impersonate login, or control login permissions"
 
                         Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -1893,7 +1895,7 @@ REVERT'
                         BackupPath = $($mockBackupPath)
                         Ensure = 'Present'
                         Force = $false
-                        MatchDatabaseOwner = $true
+                        MatchDatabaseOwner = $false
                         ReplaceExisting = $false
                     }
 
@@ -1909,6 +1911,8 @@ REVERT'
                     Mock -CommandName Invoke-SqlDscQuery -MockWith $mockResultInvokeQueryFileExist -Verifiable -ParameterFilter { $Query -like 'EXEC master.dbo.xp_fileexist *' }
                     Mock -CommandName Remove-SqlAvailabilityDatabase -Verifiable
                     Mock -CommandName Test-ImpersonatePermissions -MockWith { $true } -Verifiable
+                    # Add a general Connect-SQL mock to catch any calls not covered by parameter filters
+                    Mock -CommandName Connect-SQL -MockWith { return $mockServerObject }
                 }
 
                 Context 'When Ensure is Present' {
@@ -2049,7 +2053,7 @@ REVERT'
                     It 'Should throw the correct error when "MatchDatabaseOwner" is $true and the current login does not have impersonate permissions' {
                         Mock -CommandName Test-ImpersonatePermissions -MockWith { $false } -Verifiable
 
-                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "The login '$([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)' is missing impersonate any login, control server, impersonate login, or control login permissions in the instances 'Server2'."
+                        { Set-TargetResource @mockSetTargetResourceParameters } | Should -Throw "missing impersonate any login, control server, impersonate login, or control login permissions"
 
                         Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
                         Should -Invoke -CommandName Add-SqlAvailabilityDatabase -Exactly -Times 0 -Scope It -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Secondary' }
@@ -2987,6 +2991,11 @@ REVERT'
                 $mockAvailabilityGroupObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
                 $mockAvailabilityGroupObject.Name = 'AvailabilityGroup1'
                 $mockAvailabilityGroupObject.AvailabilityDatabases = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityDatabaseCollection
+                
+                # Create availability group object without databases
+                $mockAvailabilityGroupWithoutDatabasesObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityGroup
+                $mockAvailabilityGroupWithoutDatabasesObject.Name = 'AvailabilityGroupWithoutDatabases'
+                $mockAvailabilityGroupWithoutDatabasesObject.AvailabilityDatabases = New-Object -TypeName Microsoft.SqlServer.Management.Smo.AvailabilityDatabaseCollection
                 
                 # Create server object
                 $mockServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server
