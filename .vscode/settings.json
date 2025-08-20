@@ -91,7 +91,11 @@
         "SOURCEBRANCHNAME",
         "setvariable",
         "libmi",
-        "libc"
+        "libc",
+        "endgroup",
+        "keyrings",
+        "distro",
+        "dearmor"
     ],
     "cSpell.ignorePaths": [
         ".git"
