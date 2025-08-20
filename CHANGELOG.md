@@ -78,6 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     resources, public commands used by resources, or related components.
   - Unit tests, QA tests, and command integration tests continue to run for
     all changes.
+- Bump actions/checkout task to v5.
 - `.build/Test-ShouldRunDscResourceIntegrationTests.ps1`
   - Improved performance by adding early optimization to check for changes
     under source folder before expensive analysis.
