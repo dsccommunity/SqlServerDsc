@@ -66,14 +66,19 @@ jobs:
       - name: Install Linux Dependencies
         shell: bash
         run: |
-          echo "Installing Linux dependencies for PowerShell DSC..."
+          echo -e "\033[32mInstalling Linux dependencies for PowerShell DSC...\033[0m"
 
           # Update package list
-          sudo apt-get update -qq
+          echo "::group::Update package list"
+          echo -e "\033[36mUpdating package list...\033[0m"
+          sudo apt-get update
+          echo -e "\033[32m✓ Package list updated successfully\033[0m"
+          echo "::endgroup::"
 
           # Check if Microsoft repository is already added, if not add it
           if ! grep -q "packages.microsoft.com" /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null; then
-            echo "Adding Microsoft repository..."
+            echo "::group::Add Microsoft repository"
+            echo -e "\033[33mAdding Microsoft repository...\033[0m"
             # Add Microsoft's GPG key and repository (keyring)
             sudo install -m 0755 -d /etc/apt/keyrings
             curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/microsoft.gpg >/dev/null
@@ -82,27 +87,43 @@ jobs:
             echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/microsoft-ubuntu-${DISTRO_CODENAME}-prod ${DISTRO_CODENAME} main" | sudo tee "/etc/apt/sources.list.d/microsoft-${DISTRO_CODENAME}-prod.list" >/dev/null
 
             # Update package list again after adding the new repo
-            sudo apt-get update -qq
+            echo -e "\033[36mUpdating package list after adding Microsoft repository...\033[0m"
+            sudo apt-get update
+            echo -e "\033[32m✓ Microsoft repository added successfully\033[0m"
+            echo "::endgroup::"
           else
-            echo "Microsoft repository already configured, skipping..."
+            echo -e "\033[33mMicrosoft repository already configured, skipping...\033[0m"
+            echo "::notice::Microsoft repository was already configured"
           fi
 
           # Install OMI (Open Management Infrastructure) which provides libmi
+          echo "::group::Install OMI and dependencies"
           if apt-cache policy omi 2>/dev/null | grep -q 'Candidate:'; then
-            if ! sudo apt-get install -y -qq omi; then
-              echo "WARNING: 'omi' package failed to install; continuing."
+            echo -e "\033[36mInstalling OMI package...\033[0m"
+            if ! sudo apt-get install -y omi; then
+              echo -e "\033[31m⚠ OMI package failed to install; continuing...\033[0m"
+              echo "::warning::OMI package failed to install; continuing without OMI"
+            else
+              echo -e "\033[32m✓ OMI package installed successfully\033[0m"
             fi
           else
-            echo "Package 'omi' not found in repositories; skipping OMI install."
+            echo -e "\033[33mPackage 'omi' not found in repositories; skipping OMI install.\033[0m"
+            echo "::notice::OMI package not found in repositories, skipping installation"
           fi
+          echo "::endgroup::"
 
-          # Also install other dependencies that might be needed
-          sudo apt-get install -y -qq libc6-dev libssl-dev
+          echo "::group::Installing additional development dependencies..."
+          echo -e "\033[36mInstalling development dependencies (libc6-dev, libssl-dev)...\033[0m"
+          sudo apt-get install -y libc6-dev libssl-dev
+          echo -e "\033[32m✓ Development dependencies installed successfully\033[0m"
+          echo "::endgroup::"
 
           # Set LD_LIBRARY_PATH permanently for the runner session
+          echo -e "\033[36mSetting LD_LIBRARY_PATH environment variable...\033[0m"
           echo "LD_LIBRARY_PATH=/opt/omi/lib:/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}" >> $GITHUB_ENV
+          echo -e "\033[32m✓ Environment variable set successfully\033[0m"
 
-          echo "Linux dependencies installed successfully."
+          echo -e "\033[32m🎉 Linux dependencies installed successfully!\033[0m"
 
       - name: Configure PowerShell Environment
         shell: pwsh
@@ -110,10 +131,15 @@ jobs:
           Write-Host "Configure PowerShell environment..." -ForegroundColor Green
 
           # Install dependent PowerShell modules
+          Write-Host "Installing SqlServer module..." -ForegroundColor Cyan
           Install-PSResource -Name 'SqlServer' -Version '21.1.18256' -Scope 'CurrentUser' -Repository 'PSGallery' -TrustRepository
-          Install-PSResource -Name 'PSDSC' -Scope 'CurrentUser' -Repository 'PSGallery' -TrustRepository
+          Write-Host "✓ SqlServer module installed successfully" -ForegroundColor Green
 
-          Write-Host "PowerShell environment configuration complete." -ForegroundColor Green
+          Write-Host "Installing PSDSC module..." -ForegroundColor Cyan
+          Install-PSResource -Name 'PSDSC' -Scope 'CurrentUser' -Repository 'PSGallery' -TrustRepository
+          Write-Host "✓ PSDSC module installed successfully" -ForegroundColor Green
+
+          Write-Host "🎉 PowerShell environment configuration complete!" -ForegroundColor Green
 
       - name: Install DSCv3
         shell: pwsh
@@ -121,9 +147,11 @@ jobs:
           Write-Host "Install DSCv3 in environment..." -ForegroundColor Green
 
           # Install dependent PowerShell modules
+          Write-Host "Installing DSCv3 executable..." -ForegroundColor Cyan
           Install-DscExe -IncludePrerelease -Force
+          Write-Host "✓ DSCv3 installed successfully" -ForegroundColor Green
 
-          Write-Host "DSCv3 install complete." -ForegroundColor Green
+          Write-Host "🎉 DSCv3 install complete!" -ForegroundColor Green
 
       - name: Verify DSCv3
         shell: pwsh
