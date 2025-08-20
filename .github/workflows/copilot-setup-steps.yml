@@ -77,6 +77,9 @@ jobs:
           # Also install other dependencies that might be needed
           sudo apt-get install -y libc6-dev libssl-dev
 
+          # Set LD_LIBRARY_PATH permanently for the runner session
+          echo "LD_LIBRARY_PATH=/opt/omi/lib:/usr/lib/x86_64-linux-gnu" >> $GITHUB_ENV
+
           echo "Linux dependencies installed successfully."
 
       - name: Configure PowerShell Environment
@@ -92,9 +95,6 @@ jobs:
 
       - name: Install DSCv3
         shell: pwsh
-        env:
-          # Ensure OMI libraries can be found
-          LD_LIBRARY_PATH: /opt/omi/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
         run: |
           Write-Host "Install DSCv3 in environment..." -ForegroundColor Green
 
@@ -105,9 +105,6 @@ jobs:
 
       - name: Verify DSCv3
         shell: pwsh
-        env:
-          # Ensure OMI libraries can be found
-          LD_LIBRARY_PATH: /opt/omi/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
         run: |
           Write-Host "Running DSCv3 to validate correct operation..." -ForegroundColor Green
           dsc --version
@@ -146,9 +143,6 @@ jobs:
 
       - name: Build Module
         shell: pwsh
-        env:
-          # Ensure OMI libraries can be found
-          LD_LIBRARY_PATH: /opt/omi/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
         run: |
           Write-Host "Building $env:MODULE_NAME module..." -ForegroundColor Green
 
@@ -169,9 +163,6 @@ jobs:
 
       - name: Import Built Module
         shell: pwsh
-        env:
-          # Ensure OMI libraries can be found
-          LD_LIBRARY_PATH: /opt/omi/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
         run: |
           Write-Host "Importing built $env:MODULE_NAME module..." -ForegroundColor Green
 
