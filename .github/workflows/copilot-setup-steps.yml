@@ -75,6 +75,9 @@ jobs:
           echo "Package list updated successfully"
           echo "::endgroup::"
 
+          # Ensure gpg is available
+          sudo apt-get install -y gnupg
+
           # Check if Microsoft repository is already added, if not add it
           if ! grep -q "packages.microsoft.com" /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null; then
             echo "::group::Add Microsoft repository"
