@@ -50,6 +50,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Refactored GitHub Copilot workflow setup to be module-agnostic via MODULE_NAME
+  environment variable, includes full-history detection, uses idempotent .NET
+  tool install, and adds Linux dependency handling ([issue #2127](https://github.com/dsccommunity/SqlServerDsc/issues/2127)).
 - Module now outputs a verbose message instead of a warning when the SMO
   dependency module is missing during import to work around a DSC v3 issue.
 - VS Code tasks configuration was improved to support AI.
