@@ -110,6 +110,15 @@ jobs:
             # often have very long hostnames that exceed the 64-character limit for CN fields
             echo "Setting temporary hostname to avoid SSL certificate generation errors..."
             ORIGINAL_HOSTNAME=$(hostname)
+
+            # Install trap to always restore hostname on EXIT or ERR
+            restore_hostname() {
+              echo "Restoring original hostname..."
+              sudo hostname "$ORIGINAL_HOSTNAME"
+              trap - EXIT ERR  # Remove the trap after restore
+            }
+            trap 'restore_hostname' EXIT ERR
+
             sudo hostname "dsc-runner"
 
             if ! sudo apt-get install -y omi; then
@@ -119,9 +128,8 @@ jobs:
               echo "OMI package installed successfully"
             fi
 
-            # Restore original hostname
-            echo "Restoring original hostname..."
-            sudo hostname "$ORIGINAL_HOSTNAME"
+            # Restore original hostname and remove trap
+            restore_hostname
           else
             echo "Package 'omi' not found in repositories; skipping OMI install."
             echo "::warning::OMI package not found in repositories, skipping installation"
