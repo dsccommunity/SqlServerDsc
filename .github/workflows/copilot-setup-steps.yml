@@ -150,10 +150,10 @@ jobs:
           ./build.ps1 -Tasks 'build' -ErrorAction Stop
 
           # Verify build output
-          if (Test-Path -Path "output\builtModule\$env:MODULE_NAME")
+          if (Test-Path -Path "output/builtModule/$env:MODULE_NAME")
           {
-              Write-Host "Module built successfully at: output\builtModule\$env:MODULE_NAME" -ForegroundColor Green
-              Get-ChildItem -Path "output\builtModule\$env:MODULE_NAME" -Recurse | Select-Object Name, Length | Format-Table
+              Write-Host "Module built successfully at: output/builtModule/$env:MODULE_NAME" -ForegroundColor Green
+              Get-ChildItem -Path "output/builtModule/$env:MODULE_NAME" -Recurse | Select-Object Name, Length | Format-Table
           }
           else
           {
