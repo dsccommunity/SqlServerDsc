@@ -817,6 +817,7 @@ REVERT'
                     Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak") } -Verifiable -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn") } -Verifiable -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                     Mock -CommandName Remove-Item -Verifiable
+                    Mock -CommandName Get-CurrentWindowsIdentityName -MockWith { return 'DOMAIN\TestUser' } -Verifiable -ModuleName 'DSC_SqlAGDatabase'
                 }
 
                 BeforeEach {
@@ -1884,6 +1885,7 @@ REVERT'
                     Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak") } -Verifiable -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn") } -Verifiable -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                     Mock -CommandName Remove-Item -Verifiable
+                    Mock -CommandName Get-CurrentWindowsIdentityName -MockWith { return 'DOMAIN\TestUser' } -Verifiable -ModuleName 'DSC_SqlAGDatabase'
                 }
 
                 BeforeEach {

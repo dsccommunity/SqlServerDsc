@@ -274,7 +274,7 @@ function Set-TargetResource
                 if ( $impersonatePermissionsStatus.Values -contains $false )
                 {
                     $impersonatePermissionsMissingParameters = @(
-                        [System.Security.Principal.WindowsIdentity]::GetCurrent().Name,
+                        Get-CurrentWindowsIdentityName,
                         ( ( $impersonatePermissionsStatus.GetEnumerator() | Where-Object -FilterScript { -not $_.Value } | Select-Object -ExpandProperty Key ) -join ', ' )
                     )
                     throw ($script:localizedData.ImpersonatePermissionsMissing -f $impersonatePermissionsMissingParameters )
@@ -1106,3 +1106,5 @@ function Get-DatabaseNamesNotFoundOnTheInstance
 
     return $result
 }
+
+function Get-CurrentWindowsIdentityName { return [System.Security.Principal.WindowsIdentity]::GetCurrent().Name }
