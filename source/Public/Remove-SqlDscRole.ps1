@@ -92,7 +92,7 @@ function Remove-SqlDscRole
 
             if (-not $RoleObject)
             {
-                $errorMessage = $script:localizedData.Role_NotFound -f $Name, $ServerObject.InstanceName
+                $errorMessage = $script:localizedData.Role_NotFound -f $Name
                 New-InvalidOperationException -Message $errorMessage
             }
         }

@@ -82,6 +82,17 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017'
 
     Context 'When removing a SQL Server role by name' {
         BeforeEach {
+            # Clean up any existing test role first
+            try {
+                $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'SilentlyContinue'
+                if ($existingRole) {
+                    Remove-SqlDscRole -RoleObject $existingRole -Force
+                }
+            }
+            catch {
+                # Ignore cleanup errors
+            }
+            
             # Create a test role for each test
             New-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -Force
         }
@@ -101,12 +112,12 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017'
 
         It 'Should throw an error when removing a non-existent role' {
             { Remove-SqlDscRole -ServerObject $script:serverObject -Name 'NonExistentRole' -Force -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage 'Server role ''NonExistentRole'' was not found.'
+                Should -Throw -ExpectedMessage '*Server role ''NonExistentRole'' was not found.*'
         }
 
         It 'Should throw an error when trying to remove a fixed role' {
             { Remove-SqlDscRole -ServerObject $script:serverObject -Name 'sysadmin' -Force -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage 'The role ''sysadmin'' is a fixed role and cannot be removed.'
+                Should -Throw -ExpectedMessage '*Cannot remove built-in server role ''sysadmin''*'
         }
     }
 
@@ -135,6 +146,17 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017'
 
     Context 'When removing a SQL Server role by object' {
         BeforeEach {
+            # Clean up any existing test role first
+            try {
+                $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleNameByObject -ErrorAction 'SilentlyContinue'
+                if ($existingRole) {
+                    Remove-SqlDscRole -RoleObject $existingRole -Force
+                }
+            }
+            catch {
+                # Ignore cleanup errors
+            }
+            
             # Create a test role for each test
             New-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleNameByObject -Force
         }
@@ -156,12 +178,23 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017'
             $fixedRoleObject = Get-SqlDscRole -ServerObject $script:serverObject -Name 'sysadmin'
 
             { Remove-SqlDscRole -RoleObject $fixedRoleObject -Force -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage 'The role ''sysadmin'' is a fixed role and cannot be removed.'
+                Should -Throw -ExpectedMessage '*Cannot remove built-in server role ''sysadmin''*'
         }
     }
 
     Context 'When using pipeline input' {
         BeforeEach {
+            # Clean up any existing test role first
+            try {
+                $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'SilentlyContinue'
+                if ($existingRole) {
+                    Remove-SqlDscRole -RoleObject $existingRole -Force
+                }
+            }
+            catch {
+                # Ignore cleanup errors
+            }
+            
             # Create a test role for each test
             New-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -Force
         }
