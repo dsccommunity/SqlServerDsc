@@ -44,6 +44,10 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017'
 
         $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
 
+        # Shared test role names created by New-SqlDscRole integration tests
+        $script:sharedTestRoleForRemoval = 'SharedTestRole_ForRemoval'
+        $script:persistentTestRole = 'SqlDscIntegrationTestRole_Persistent'
+
         # Test role names that will be created for removal tests
         $script:testRoleName = 'TestRoleForRemoval_' + (Get-Random)
         $script:testRoleNameByObject = 'TestRoleByObject_' + (Get-Random)
@@ -97,12 +101,35 @@ Describe 'Remove-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017'
 
         It 'Should throw an error when removing a non-existent role' {
             { Remove-SqlDscRole -ServerObject $script:serverObject -Name 'NonExistentRole' -Force -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage 'There is no role with the name ''NonExistentRole''.'
+                Should -Throw -ExpectedMessage 'Server role ''NonExistentRole'' was not found.'
         }
 
         It 'Should throw an error when trying to remove a fixed role' {
             { Remove-SqlDscRole -ServerObject $script:serverObject -Name 'sysadmin' -Force -ErrorAction 'Stop' } |
                 Should -Throw -ExpectedMessage 'The role ''sysadmin'' is a fixed role and cannot be removed.'
+        }
+    }
+
+    Context 'When removing shared test roles' {
+        It 'Should remove the shared test role for removal' {
+            # Verify the shared role exists before removal
+            $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForRemoval
+            $existingRole | Should -Not -BeNullOrEmpty
+
+            # Remove the shared role
+            { Remove-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForRemoval -Force } | Should -Not -Throw
+
+            # Verify the role no longer exists
+            $removedRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForRemoval -ErrorAction 'SilentlyContinue'
+            $removedRole | Should -BeNullOrEmpty
+        }
+
+        It 'Should NOT remove the persistent test role (verify it exists)' {
+            # Verify the persistent role still exists and should not be removed
+            $persistentRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:persistentTestRole -ErrorAction 'SilentlyContinue'
+            $persistentRole | Should -Not -BeNullOrEmpty
+            $persistentRole.Name | Should -Be $script:persistentTestRole
+            $persistentRole.Owner | Should -Be 'sa'
         }
     }
 

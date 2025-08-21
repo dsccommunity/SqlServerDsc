@@ -47,10 +47,15 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
         # Test role names that will be created and cleaned up
         $script:testRoleName = 'TestRole_' + (Get-Random)
         $script:testRoleNameWithOwner = 'TestRoleOwner_' + (Get-Random)
+        
+        # Shared test roles for other integration tests
+        $script:sharedTestRoleForIntegrationTests = 'SharedTestRole_ForIntegrationTests'
+        $script:sharedTestRoleForRemoval = 'SharedTestRole_ForRemoval'
+        $script:persistentTestRole = 'SqlDscIntegrationTestRole_Persistent'
     }
 
     AfterAll {
-        # Clean up any test roles that might have been created
+        # Clean up only the temporary test roles, not the shared ones
         try 
         {
             $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'SilentlyContinue'
@@ -136,6 +141,52 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
                     # Ignore cleanup errors
                 }
             }
+        }
+    }
+
+    Context 'When creating shared test roles for other integration tests' {
+        It 'Should create a shared role for integration tests' {
+            # Create shared role for Get-SqlDscRole integration tests
+            $result = New-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForIntegrationTests -Force
+
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $result.Name | Should -Be $script:sharedTestRoleForIntegrationTests
+            $result.IsFixedRole | Should -BeFalse
+
+            # Verify the role exists in the server
+            $verifyRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForIntegrationTests
+            $verifyRole | Should -Not -BeNullOrEmpty
+            $verifyRole.Name | Should -Be $script:sharedTestRoleForIntegrationTests
+        }
+
+        It 'Should create a shared role for removal tests' {
+            # Create shared role for Remove-SqlDscRole integration tests
+            $result = New-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForRemoval -Force
+
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $result.Name | Should -Be $script:sharedTestRoleForRemoval
+            $result.IsFixedRole | Should -BeFalse
+
+            # Verify the role exists in the server
+            $verifyRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForRemoval
+            $verifyRole | Should -Not -BeNullOrEmpty
+            $verifyRole.Name | Should -Be $script:sharedTestRoleForRemoval
+        }
+
+        It 'Should create a persistent role that remains on the instance' {
+            # Create persistent role with sa owner that will remain on the instance
+            $result = New-SqlDscRole -ServerObject $script:serverObject -Name $script:persistentTestRole -Owner 'sa' -Force
+
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $result.Name | Should -Be $script:persistentTestRole
+            $result.Owner | Should -Be 'sa'
+            $result.IsFixedRole | Should -BeFalse
+
+            # Verify the role exists in the server
+            $verifyRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:persistentTestRole
+            $verifyRole | Should -Not -BeNullOrEmpty
+            $verifyRole.Name | Should -Be $script:persistentTestRole
+            $verifyRole.Owner | Should -Be 'sa'
         }
     }
 }

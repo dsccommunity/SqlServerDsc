@@ -61,6 +61,29 @@ and Windows group logins (using the local SqlIntegrationTestGroup).
 The main test login `IntegrationTestSqlLogin` and the Windows group
 login for `.\SqlIntegrationTestGroup` are left in place after the
 test completes so other tests can use them for validation.
+
+### `New-SqlDscRole`
+
+Creates test server roles on the DSCSQLTEST instance for use by other
+integration tests. Creates several shared roles:
+- `SharedTestRole_ForIntegrationTests` (used by Get-SqlDscRole tests)
+- `SharedTestRole_ForRemoval` (used by Remove-SqlDscRole tests)  
+- `SqlDscIntegrationTestRole_Persistent` (persistent role with sa owner that remains on the instance)
+
+The persistent role `SqlDscIntegrationTestRole_Persistent` is left in place after the
+test completes so other tests can use it for validation.
+
+### `Get-SqlDscRole`
+
+Tests retrieving server roles from the DSCSQLTEST instance using both
+system roles and the shared test roles created by New-SqlDscRole tests.
+
+### `Remove-SqlDscRole`
+
+Tests removing server roles from the DSCSQLTEST instance. Uses the shared
+test roles created by New-SqlDscRole tests. The persistent role
+`SqlDscIntegrationTestRole_Persistent` is intentionally not removed to
+ensure it remains available for other integration tests.
 ## Dependencies
 
 ### SqlServer module
@@ -132,6 +155,12 @@ Login | Password | Permission | Description
 sa | P@ssw0rd1 | sysadmin | Administrator of all the Database Engine instances.
 IntegrationTestSqlLogin | P@ssw0rd123! | - | SQL Server login created by New-SqlDscLogin integration tests for testing purposes.
 .\SqlIntegrationTestGroup | - | - | Windows group login created by New-SqlDscLogin integration tests for testing purposes.
+
+### SQL Server Roles
+
+Role | Owner | Permission | Description
+--- | --- | --- | ---
+SqlDscIntegrationTestRole_Persistent | sa | - | Server role created by New-SqlDscRole integration tests that remains on the instance for testing purposes.
 <!-- markdownlint-enable MD013 -->
 
 ### Image media (ISO)

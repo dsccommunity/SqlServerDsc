@@ -43,6 +43,10 @@ Describe 'Get-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
         $script:mockSqlAdminCredential = [System.Management.Automation.PSCredential]::new($mockSqlAdministratorUserName, $mockSqlAdministratorPassword)
 
         $script:serverObject = Connect-SqlDscDatabaseEngine -InstanceName $script:mockInstanceName -Credential $script:mockSqlAdminCredential
+
+        # Shared test role names created by New-SqlDscRole integration tests
+        $script:sharedTestRoleForIntegrationTests = 'SharedTestRole_ForIntegrationTests'
+        $script:persistentTestRole = 'SqlDscIntegrationTestRole_Persistent'
     }
 
     AfterAll {
@@ -72,7 +76,7 @@ Describe 'Get-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
     }
 
     Context 'When getting a specific SQL Server role' {
-        It 'Should return the specified role when it exists' {
+        It 'Should return the specified role when it exists (system role)' {
             $result = Get-SqlDscRole -ServerObject $script:serverObject -Name 'sysadmin'
 
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
@@ -80,9 +84,26 @@ Describe 'Get-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
             $result.IsFixedRole | Should -BeTrue
         }
 
+        It 'Should return the specified role when it exists (shared test role)' {
+            $result = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:sharedTestRoleForIntegrationTests
+
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $result.Name | Should -Be $script:sharedTestRoleForIntegrationTests
+            $result.IsFixedRole | Should -BeFalse
+        }
+
+        It 'Should return the specified role when it exists (persistent test role)' {
+            $result = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:persistentTestRole
+
+            $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
+            $result.Name | Should -Be $script:persistentTestRole
+            $result.Owner | Should -Be 'sa'
+            $result.IsFixedRole | Should -BeFalse
+        }
+
         It 'Should throw an error when the role does not exist' {
             { Get-SqlDscRole -ServerObject $script:serverObject -Name 'NonExistentRole' -ErrorAction 'Stop' } |
-                Should -Throw -ExpectedMessage 'There is no role with the name ''NonExistentRole''.'
+                Should -Throw -ExpectedMessage 'Server role ''NonExistentRole'' was not found.'
         }
 
         It 'Should return null when the role does not exist and error action is SilentlyContinue' {
@@ -103,10 +124,10 @@ Describe 'Get-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
 
     Context 'When using pipeline input' {
         It 'Should accept ServerObject from pipeline' {
-            $result = $script:serverObject | Get-SqlDscRole -Name 'sysadmin'
+            $result = $script:serverObject | Get-SqlDscRole -Name $script:sharedTestRoleForIntegrationTests
 
             $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
-            $result.Name | Should -Be 'sysadmin'
+            $result.Name | Should -Be $script:sharedTestRoleForIntegrationTests
         }
     }
 }
