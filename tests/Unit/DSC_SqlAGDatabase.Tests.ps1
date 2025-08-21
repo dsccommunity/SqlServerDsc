@@ -50,6 +50,24 @@ BeforeAll {
     # Load the default SQL Module stub
     $script:stubModuleName = Import-SQLModuleStub -PassThru
 
+    # Import the DSC resource module explicitly
+    try {
+        $resourceModulePath = Join-Path -Path $PSScriptRoot -ChildPath "../../source/DSCResources/$script:dscResourceName/$script:dscResourceName.psm1"
+        Import-Module -Name $resourceModulePath -Force -ErrorAction Stop -Global
+        Write-Verbose "Successfully imported DSC resource module: $resourceModulePath"
+    } catch {
+        Write-Warning "Failed to import DSC resource module: $_"
+        # Fallback to try loading from built module
+        try {
+            $builtResourceModulePath = Join-Path -Path $PSScriptRoot -ChildPath "../../output/builtModule/$script:dscModuleName/*/DSCResources/$script:dscResourceName/$script:dscResourceName.psm1"
+            $resolvedPath = Get-ChildItem -Path $builtResourceModulePath | Select-Object -First 1 -ExpandProperty FullName
+            Import-Module -Name $resolvedPath -Force -ErrorAction Stop -Global
+            Write-Verbose "Successfully imported built DSC resource module: $resolvedPath"
+        } catch {
+            Write-Warning "Failed to import built DSC resource module: $_"
+        }
+    }
+
     $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscResourceName
     $PSDefaultParameterValues['Should:ModuleName'] = $script:dscResourceName
@@ -817,7 +835,7 @@ REVERT'
                     Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak") } -Verifiable -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn") } -Verifiable -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                     Mock -CommandName Remove-Item -Verifiable
-                    Mock -CommandName Get-CurrentWindowsIdentityName -MockWith { return 'DOMAIN\TestUser' } -Verifiable -ModuleName 'DSC_SqlAGDatabase'
+                    Mock -CommandName Get-CurrentWindowsIdentityName -MockWith { return 'DOMAIN\TestUser' } -Verifiable
                 }
 
                 BeforeEach {
@@ -1885,7 +1903,7 @@ REVERT'
                     Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Full_$(Get-Date -Format 'yyyyMMddhhmmss').bak") } -Verifiable -ParameterFilter { $ChildPath -like '*_Full_*.bak' }
                     Mock -CommandName Join-Path -MockWith { [IO.Path]::Combine($databaseMembershipClass.BackupPath,"$($database.Name)_Log_$(Get-Date -Format 'yyyyMMddhhmmss').trn") } -Verifiable -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                     Mock -CommandName Remove-Item -Verifiable
-                    Mock -CommandName Get-CurrentWindowsIdentityName -MockWith { return 'DOMAIN\TestUser' } -Verifiable -ModuleName 'DSC_SqlAGDatabase'
+                    Mock -CommandName Get-CurrentWindowsIdentityName -MockWith { return 'DOMAIN\TestUser' } -Verifiable
                 }
 
                 BeforeEach {

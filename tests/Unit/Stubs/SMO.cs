@@ -781,6 +781,8 @@ namespace Microsoft.SqlServer.Management.Smo
     //  SqlAGDatabase
     public class DatabaseCollection : Collection<Database>
     {
+        public DatabaseCollection() : base() { }
+
         public Database this[string name]
         {
             get
@@ -803,6 +805,8 @@ namespace Microsoft.SqlServer.Management.Smo
     //  SqlAGDatabase
     public class AvailabilityReplicaCollection : Collection<AvailabilityReplica>
     {
+        public AvailabilityReplicaCollection() : base() { }
+
         public AvailabilityReplica this[string name]
         {
             get
@@ -842,6 +846,8 @@ namespace Microsoft.SqlServer.Management.Smo
     //  SqlAGDatabase
     public class AvailabilityDatabaseCollection : Collection<AvailabilityDatabase>
     {
+        public AvailabilityDatabaseCollection() : base() { }
+
         public AvailabilityDatabase this[string name]
         {
             get
