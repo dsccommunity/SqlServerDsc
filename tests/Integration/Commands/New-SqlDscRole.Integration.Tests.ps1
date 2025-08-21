@@ -47,7 +47,6 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
         # Test role names that will be created and cleaned up
         $script:testRoleName = 'TestRole_' + (Get-Random)
         $script:testRoleNameWithOwner = 'TestRoleOwner_' + (Get-Random)
-        
         # Shared test roles for other integration tests
         $script:sharedTestRoleForIntegrationTests = 'SharedTestRole_ForIntegrationTests'
         $script:sharedTestRoleForRemoval = 'SharedTestRole_ForRemoval'
@@ -56,23 +55,16 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
 
     AfterAll {
         # Clean up only the temporary test roles, not the shared ones
-        try 
+        $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'Ignore'
+        if ($existingRole)
         {
-            $existingRole = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleName -ErrorAction 'SilentlyContinue'
-            if ($existingRole) 
-            {
-                Remove-SqlDscRole -RoleObject $existingRole -Force
-            }
-
-            $existingRoleWithOwner = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleNameWithOwner -ErrorAction 'SilentlyContinue'
-            if ($existingRoleWithOwner) 
-            {
-                Remove-SqlDscRole -RoleObject $existingRoleWithOwner -Force
-            }
+            Remove-SqlDscRole -RoleObject $existingRole -Force -ErrorAction 'Ignore'
         }
-        catch 
+
+        $existingRoleWithOwner = Get-SqlDscRole -ServerObject $script:serverObject -Name $script:testRoleNameWithOwner -ErrorAction 'Ignore'
+        if ($existingRoleWithOwner)
         {
-            # Ignore cleanup errors
+            Remove-SqlDscRole -RoleObject $existingRoleWithOwner -Force -ErrorAction 'Ignore'
         }
 
         Disconnect-SqlDscDatabaseEngine -ServerObject $script:serverObject
@@ -107,7 +99,7 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
         It 'Should throw an error when creating a role that already exists' {
             # Use a unique role name for this test to avoid conflicts
             $duplicateTestRoleName = 'DuplicateTestRole_' + (Get-Random)
-            
+
             try {
                 # First, create the role
                 New-SqlDscRole -ServerObject $script:serverObject -Name $duplicateTestRoleName -Force
@@ -118,14 +110,9 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
             }
             finally {
                 # Clean up the duplicate test role
-                try {
-                    $roleToCleanup = Get-SqlDscRole -ServerObject $script:serverObject -Name $duplicateTestRoleName -ErrorAction 'SilentlyContinue'
-                    if ($roleToCleanup) {
-                        Remove-SqlDscRole -RoleObject $roleToCleanup -Force
-                    }
-                }
-                catch {
-                    # Ignore cleanup errors
+                $roleToCleanup = Get-SqlDscRole -ServerObject $script:serverObject -Name $duplicateTestRoleName -ErrorAction 'Ignore'
+                if ($roleToCleanup) {
+                    Remove-SqlDscRole -RoleObject $roleToCleanup -Force -ErrorAction 'Ignore'
                 }
             }
         }
@@ -134,28 +121,21 @@ Describe 'New-SqlDscRole' -Tag @('Integration_SQL2016', 'Integration_SQL2017', '
     Context 'When using pipeline input' {
         It 'Should accept ServerObject from pipeline' {
             $uniqueRoleName = 'PipelineTestRole_' + (Get-Random)
-            
-            try 
+
+            try
             {
                 $result = $script:serverObject | New-SqlDscRole -Name $uniqueRoleName -Force
 
                 $result | Should -BeOfType 'Microsoft.SqlServer.Management.Smo.ServerRole'
                 $result.Name | Should -Be $uniqueRoleName
             }
-            finally 
+            finally
             {
                 # Clean up
-                try 
+                $roleToCleanup = Get-SqlDscRole -ServerObject $script:serverObject -Name $uniqueRoleName -ErrorAction 'Ignore'
+                if ($roleToCleanup)
                 {
-                    $roleToCleanup = Get-SqlDscRole -ServerObject $script:serverObject -Name $uniqueRoleName -ErrorAction 'SilentlyContinue'
-                    if ($roleToCleanup) 
-                    {
-                        Remove-SqlDscRole -RoleObject $roleToCleanup -Force
-                    }
-                }
-                catch 
-                {
-                    # Ignore cleanup errors
+                    Remove-SqlDscRole -RoleObject $roleToCleanup -Force -ErrorAction 'Ignore'
                 }
             }
         }
