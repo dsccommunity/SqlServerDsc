@@ -10,3 +10,14 @@ applyTo: "**/*.md"
 - Use '1.' for all items in ordered lists (1/1/1 numbering style)
 - Surround fenced code blocks with blank lines
 - Disable `MD013` rule by adding a comment for tables/code blocks exceeding 80 characters
+- Ensure empty line before and after headings
+- Escape backslashes in file paths only (not in code blocks)
+- Ensure empty line before and after code blocks
+- Code blocks must specify language identifiers
+
+## Text Formatting
+
+- Parameters: **bold**
+- Values/literals: `inline code`
+- Resource/module/product names: _italic_
+- Commands/files/paths: `inline code`
