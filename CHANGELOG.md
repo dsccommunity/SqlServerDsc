@@ -27,7 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     exists as a login, throwing a terminating error if it doesn't exist.
   - Supports pipeline input and provides detailed error messages with localization.
   - Uses `Test-SqlDscIsLogin` command for login validation following module patterns.
-- Added `Get-SqlDscLogin`, `Get-SqlDscRole`, `New-SqlDscLogin`, `New-SqlDscRole`, `Remove-SqlDscRole`, and `Remove-SqlDscLogin` commands for retrieving and managing SQL Server logins and roles with support for refresh, pipeline input, and ShouldProcess.
+- Added `Get-SqlDscLogin`, `Get-SqlDscRole`, `New-SqlDscLogin`, `New-SqlDscRole`,
+  `Remove-SqlDscRole`, and `Remove-SqlDscLogin` commands for retrieving and managing
+   SQL Server logins and roles with support for refresh, pipeline input, and ShouldProcess.
 
 ### Changed
 
@@ -70,7 +72,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DSC community style guidelines
   - Added requirement to follow guidelines over existing code patterns.
 - Improved markdown, pester, powershell, and changelog instructions.
-  - Fixed `Ingore` that seems in edge-cases fail.
+  - Fixed `Ignore` that seems in edge-cases fail.
+  - Improved markdown and changelog instructions.
 
 ## [17.1.0] - 2025-05-22
 
